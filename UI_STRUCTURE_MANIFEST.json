@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "description": "Single source of truth for UI structure. Documents current layout, target structure during refactors, and history. Agents MUST refer to this before any structural changes.",
+    "version": "1.0.0",
+    "last_updated": "2026-03-19",
+    "locked": false,
+    "refactor_in_progress": false,
+    "refactor_branch": null
+  },
+
+  "current_structure": {
+    "status": "initial",
+    "description": "Initial placeholder structure (Phase 1 complete, Phase 2 not started)",
+    "pages": [],
+    "routes": [
+      { "path": "/", "component": "PublicShell", "status": "planned" },
+      { "path": "/auth/signin", "component": "SignInPage", "status": "planned" },
+      { "path": "/dashboard", "component": "Dashboard", "status": "planned" }
+    ],
+    "components": {
+      "shared": [],
+      "services": {}
+    },
+    "last_verified": "2026-03-19T00:00:00Z",
+    "verified_by": "Initial setup"
+  },
+
+  "target_structure": null,
+
+  "refactor_history": [
+    {
+      "id": "initial-setup",
+      "date": "2026-03-19",
+      "title": "Initial Architecture & Rules Setup",
+      "type": "setup",
+      "from_state": "empty",
+      "to_state": "initial",
+      "description": "Established architectural foundation, coding rules, and configuration guides",
+      "status": "completed",
+      "changes": [
+        "Added .cursorrules (1000+ lines)",
+        "Added ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md",
+        "Added CONFIG_REFERENCE.md",
+        "Added SHARDING_DIMENSIONS.md",
+        "Added API_FRONTEND_GAPS.md",
+        "Created UI_STRUCTURE_MANIFEST.json"
+      ],
+      "approved_by": "Iggy Ikenna",
+      "notes": "No code changes, only documentation and rules"
+    }
+  ],
+
+  "breaking_changes_log": [],
+
+  "notes": {
+    "rules": [
+      "Any structural change (new page, hiding old page, renaming route, removing component) MUST be documented here FIRST",
+      "Before making breaking changes, agent MUST ask user: 'I plan to [change]. Approve?'",
+      "If user says yes, agent updates 'target_structure' and documents in 'refactor_history'",
+      "If refactor spans multiple sessions, agent updates 'current_structure' to match actual state before resuming",
+      "At end of each session, verify manifest matches actual code structure",
+      "Never hide old pages without documenting: which old page is being hidden, where to find it in git history, what replaces it"
+    ],
+    "on_session_resume": [
+      "Agent MUST read this manifest first",
+      "If 'refactor_in_progress' is true, agent should resume at the exact state documented",
+      "If actual code structure doesn't match 'current_structure', agent should ask user to clarify which is source of truth",
+      "Agent should NOT proceed if manifest and code are out of sync"
+    ],
+    "on_breaking_changes": [
+      "Removing a page? Document: old path, new location (or that it's gone), why, when users will see change",
+      "Renaming a route? Document: old path, new path, redirect strategy",
+      "Hiding a component? Document: which component, where it was, what replaces it, when this becomes active",
+      "Merging two pages? Document: page A path, page B path, new merged path, data migration strategy"
+    ]
+  }
+}

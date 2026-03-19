@@ -988,7 +988,194 @@ export * from '../services/execution/types';  // Also shared
 
 ---
 
-## 9. Summary: Before You Start Coding
+## 9. Breaking Changes & Refactor Transparency
+
+### Rule 9.1: Ask Before Removing/Hiding Old Code
+
+**Any structural change requires explicit user approval.**
+
+**Structural changes include:**
+- Creating a new page (user might not notice old one is hidden)
+- Renaming a route (user might not find the page they expect)
+- Hiding an old page (replacing it with new version)
+- Removing a component from view
+- Changing navigation paths
+- Merging multiple pages into one
+
+**ALWAYS ask:**
+
+```
+"I'm planning to [specific change]. This will [specific impact].
+Should I proceed? (yes/no)"
+```
+
+**Examples:**
+
+```
+❌ WRONG: Agent silently creates TradesPageV2, updates route to point to it
+→ User clicks "Trades", sees different version, confusion
+
+✅ RIGHT: "I'm going to refactor the Trades page. The layout will change
+from [old structure] to [new structure]. Should I proceed?"
+→ User approves → agent makes change
+→ User can decide if this breaks their workflow
+```
+
+**Why:** Structural changes affect user experience. Users need to approve.
+
+---
+
+### Rule 9.2: Track Structure in UI_STRUCTURE_MANIFEST.json
+
+**Before any structural change:**
+
+1. **Read `UI_STRUCTURE_MANIFEST.json`** (current source of truth)
+2. **Check if refactor is in progress** (`refactor_in_progress: true`)
+3. **If resuming mid-refactor:** Use `target_structure` to know what you're building toward
+4. **If starting new refactor:**
+   - Update `target_structure` to show what you're building
+   - Mark `refactor_in_progress: true`
+   - Document in `refactor_history`
+
+**Example: Refactoring Positions Page**
+
+```json
+{
+  "_meta": {
+    "refactor_in_progress": true,
+    "refactor_branch": "refactor/positions-page-2026-03-20"
+  },
+
+  "current_structure": {
+    "status": "in-refactor",
+    "routes": [
+      { "path": "/positions", "component": "PositionsPage", "status": "old-version" }
+    ]
+  },
+
+  "target_structure": {
+    "status": "target",
+    "routes": [
+      { "path": "/execution/positions", "component": "PositionsPageRefactored", "status": "new-location" }
+    ],
+    "changes": [
+      "Move from services/data/pages/PositionsPage to services/execution/pages/PositionsPage",
+      "Rename route from /positions to /execution/positions",
+      "Update navigation to link to new route",
+      "Old route at /positions redirects to /execution/positions"
+    ]
+  },
+
+  "refactor_history": [
+    {
+      "id": "refactor-positions-2026-03-20",
+      "title": "Reorganize Positions page to execution domain",
+      "type": "refactor",
+      "from_state": "services/data/pages/PositionsPage (route: /positions)",
+      "to_state": "services/execution/pages/PositionsPage (route: /execution/positions)",
+      "description": "Move positions from data service to execution service (better aligns with domain)",
+      "status": "in_progress",
+      "approved_by": "User",
+      "approval_date": "2026-03-20T14:30:00Z"
+    }
+  ]
+}
+```
+
+**At end of session:**
+1. Update `current_structure` to match actual code
+2. If refactor is complete, mark `refactor_in_progress: false`
+3. Move completed refactor from `refactor_history` to archive (add `status: "completed"`)
+
+---
+
+### Rule 9.3: On Session Resume, Verify Manifest
+
+**When you start a new session:**
+
+```
+1. Read UI_STRUCTURE_MANIFEST.json
+2. Check: Is refactor_in_progress = true?
+   → YES: You're resuming a refactor. Check target_structure to see what you're building.
+   → NO: You're starting fresh. Ask user if this is a new feature or continuing old work.
+3. Check: Does current_structure match actual code structure?
+   → If NO: Ask user: "The manifest says [X] but I see [Y] in the code. Which is the source of truth?"
+   → If YES: Proceed.
+```
+
+**Why:** If a session ends mid-refactor, the next agent knows:
+- What state the code was in
+- What state it should be in
+- Whether the refactor is done
+- Who approved it and when
+
+---
+
+### Rule 9.4: Document Breaking Changes
+
+**When removing/hiding/renaming anything:**
+
+Add to `breaking_changes_log`:
+
+```json
+{
+  "id": "breaking-change-1",
+  "date": "2026-03-20T15:45:00Z",
+  "type": "route-rename",
+  "old_path": "/positions",
+  "new_path": "/execution/positions",
+  "impact": "Users bookmarked /positions will hit 404 (redirect added)",
+  "redirect": "/positions → /execution/positions",
+  "approved_by": "User",
+  "notes": "Positions page moved to execution domain for better alignment"
+}
+```
+
+---
+
+### Rule 9.5: No Silent Rewrites
+
+**DON'T:**
+```typescript
+// ❌ Agent silently creates new version
+// Old: services/data/pages/PositionsPage.tsx
+// New: services/execution/pages/PositionsPageV2.tsx
+// Route: /positions → points to PositionsPageV2
+// Result: User has no idea the page changed
+```
+
+**DO:**
+```typescript
+// ✅ Agent asks first
+// "I want to refactor PositionsPage. Should I proceed?"
+// → User approves
+// Agent updates UI_STRUCTURE_MANIFEST.json
+// Agent refactors PositionsPage in place (or moves with clear trail)
+// User knows exactly what changed
+```
+
+---
+
+### Rule 9.6: Keep History for Rollback
+
+**Never delete old code without documenting where it went.**
+
+If you move/replace code:
+
+```typescript
+// ✅ Document the move
+// Old location: services/data/pages/PositionsPage.tsx
+// New location: services/execution/pages/PositionsPage.tsx
+// Git history: git log --follow services/execution/pages/PositionsPage.tsx
+// Rollback: git revert [commit-sha]
+
+// Don't just delete and recreate with new name
+// Keep the git history intact
+```
+
+---
+
+## 10. Summary: Before You Start Coding
 
 **Every time you start a new feature or refactor:**
 
