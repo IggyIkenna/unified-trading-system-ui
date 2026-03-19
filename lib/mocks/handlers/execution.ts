@@ -44,7 +44,7 @@ export const executionHandlers = [
     const isInternal = persona.role === "internal" || persona.role === "admin"
     const orders = isInternal
       ? MOCK_RECENT_ORDERS
-      : MOCK_RECENT_ORDERS.filter((o) => o.clientId === persona.org.id)
+      : MOCK_RECENT_ORDERS.filter((o) => (o as unknown as Record<string, unknown>).clientId === persona.org.id)
 
     return HttpResponse.json({ orders, total: orders.length })
   }),

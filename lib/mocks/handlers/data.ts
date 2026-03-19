@@ -33,7 +33,7 @@ export const dataHandlers = [
     const persona = getPersonaFromRequest(request)
     if (!persona) return HttpResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const scoped = scopeByEntitlement(MOCK_INSTRUMENTS, [...persona.entitlements], {
+    const scoped = scopeByEntitlement(MOCK_INSTRUMENTS as unknown[] as Record<string, unknown>[], [...persona.entitlements], {
       categoryField: "category",
       basicLimit: 180,
     })

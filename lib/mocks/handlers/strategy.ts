@@ -37,7 +37,7 @@ export const strategyHandlers = [
     const isInternal = persona.role === "internal" || persona.role === "admin"
     const configs = isInternal
       ? STRATEGY_CONFIGS
-      : STRATEGY_CONFIGS.filter((c) => c.clientId === persona.org.id)
+      : STRATEGY_CONFIGS.filter((c) => (c as unknown as Record<string, unknown>).clientId === persona.org.id)
 
     return HttpResponse.json({ configs, total: configs.length })
   }),
