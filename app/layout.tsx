@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { IBM_Plex_Sans, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ExecutionModeProvider } from '@/lib/execution-mode-context'
+import { Providers } from '@/lib/providers'
 import './globals.css'
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -52,9 +53,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${ibmPlexSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
-        <ExecutionModeProvider>
-          {children}
-        </ExecutionModeProvider>
+        <Providers>
+          <ExecutionModeProvider>
+            {children}
+          </ExecutionModeProvider>
+        </Providers>
         <Analytics />
       </body>
     </html>
