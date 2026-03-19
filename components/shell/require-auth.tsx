@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth"
 
 // Demo accounts mirrored from portal/login so either login page works
 const DEMO_ACCOUNTS = [
+  { email: "admin@odum.io", password: "demo", org: "Odum Research", role: "internal", services: ["*"], entitlements: ["*"] },
   { email: "demo@hedgefund.com", password: "demo", org: "Alpha Capital",           role: "Investment Client", services: ["data", "backtesting", "execution"] },
   { email: "trader@propdesk.com", password: "demo", org: "Velocity Trading",       role: "Internal Trader",   services: ["whitelabel"] },
   { email: "cfo@familyoffice.com", password: "demo", org: "Sterling Family Office", role: "Executive",         services: ["investment", "regulatory"] },
