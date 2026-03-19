@@ -76,19 +76,37 @@ These repos exist to:
 
 ---
 
-### versa-deployment-ui/
-**Purpose:** Deployment, operations, DevOps, infrastructure status
+### deployment-ui/ + deployment-api/ + deployment-service/
+**Purpose:** Complete deployment stack for production operations
 **Audience:** Internal ops, deployment engineers (hidden from clients)
-**Key patterns:**
+
+**deployment-ui/** (React/Next.js frontend)
 - Deployment pipeline visualization
-- Service health monitoring
-- Configuration management
+- Service health monitoring and alerting
+- Configuration management UI
 - Operational dashboards
+- Rollback controls
+
+**deployment-api/** (Backend API service)
+- REST endpoints for deployment operations
+- Health check aggregation from all services
+- Deployment history and audit logging
+- Configuration persistence
+- WebSocket support for real-time status updates
+
+**deployment-service/** (Core orchestration service)
+- Deployment orchestration (CI/CD integration)
+- Service topology management
+- Infrastructure as Code (IaC) patterns
+- Rollback/rollforward logic
+- Multi-environment support (staging, prod, per-shard)
 
 **When to reference:**
-- Building internal deployment/ops surfaces
-- Understanding operational readiness patterns
-- Infrastructure status visualization
+- Understanding full-stack deployment architecture
+- Building operational readiness dashboards
+- Implementing deployment control panels in other UIs
+- Learning health check aggregation patterns
+- Understanding multi-environment deployment strategies
 
 ---
 

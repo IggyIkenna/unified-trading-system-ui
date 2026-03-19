@@ -1,0 +1,158 @@
+[project]
+name = "deployment-service"
+version = "0.1.1"
+requires-python = ">=3.13,<3.14"
+description = "Deployment orchestration engine (split from unified-trading-deployment-v3 2026-03-03)"
+dependencies = [
+    "unified-trading-library>=0.1.0,<1.0.0",
+    "unified-api-contracts>=0.2.0,<1.0.0",
+    "unified-cloud-interface>=0.11.6,<1.0.0",
+    "unified-config-interface>=0.1.0,<1.0.0",
+    "deployment-api>=0.1.0,<1.0.0",
+    "pyyaml>=6.0.1,<7.0.0",
+    "prometheus-client>=0.20.0,<1.0.0",
+    "fastapi>=0.110.0,<1.0.0",
+    "uvicorn[standard]>=0.27.0,<1.0.0",
+    "pytest>=9.0.1,<10.0.0",
+    "pytest-asyncio>=0.25.0,<2.0.0",
+    "pytest-mock>=3.15.0,<4.0.0",
+    "pytest-cov>=7.0.0,<8.0.0",
+    "pytest-socket>=0.7.0,<1.0.0",
+    "pytest-xdist>=3.6.0,<4.0.0",
+    "pytest-timeout>=2.4.0,<3.0.0",
+    "botocore>=1.34.0,<2.0.0",
+    "google-cloud-run<1.0.0,>=0.15.0",
+    "google-cloud-compute>=1.45.0,<2.0.0",
+    "flask>=3.0.0,<4.0.0",
+    "functions-framework>=3.8.0,<4.0.0",
+    "pip-audit>=2.7.0,<3.0.0",
+    "bandit>=1.7.0,<2.0.0",
+    "ruff==0.15.0",
+    "basedpyright==1.38.2",
+]
+
+[project.scripts]
+deploy-shards = "deployment_service.cli:main"
+
+[tool.uv.sources.unified-trading-library]
+path = "../unified-trading-library"
+editable = true
+
+[tool.uv.sources.unified-events-interface]
+path = "../unified-events-interface"
+editable = true
+
+[tool.uv.sources.unified-api-contracts]
+path = "../unified-api-contracts"
+editable = true
+
+[tool.uv.sources.unified-cloud-interface]
+path = "../unified-cloud-interface"
+editable = true
+
+[tool.uv.sources.unified-config-interface]
+path = "../unified-config-interface"
+editable = true
+
+[tool.uv.sources.deployment-api]
+path = "../deployment-api"
+editable = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+    "SIM",
+    "G",
+    "C90",
+]
+ignore = [
+    "E402",
+    "E501",
+    "G003",
+    "G004",
+    "G201",
+    "G202",
+    "SIM103",
+    "B905",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"deployment_service/deployment/quota_broker_client.py" = [
+    "E402",
+]
+"deployment_service/backends/provider_factory.py" = [
+    "E402",
+]
+"deployment_service/backends/aws_batch.py" = [
+    "C901",
+]
+"deployment_service/backends/aws_ec2.py" = [
+    "C901",
+]
+"deployment_service/calculators/shard_dimensions.py" = [
+    "C901",
+]
+"deployment_service/calculators/shard_distribution.py" = [
+    "C901",
+]
+"scripts/**/*.py" = [
+    "C901",
+]
+"tests/**/*.py" = [
+    "C901",
+    "B007",
+    "SIM102",
+]
+"tests/*.py" = [
+    "C901",
+    "B007",
+    "SIM102",
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 55
+
+[tool.basedpyright]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
+reportAny = "error"
+reportUnknownVariableType = "error"
+reportUnknownParameterType = "error"
+reportUnknownArgumentType = "error"
+reportUnknownMemberType = "error"
+exclude = [
+    "**/__pycache__",
+    "**/.venv",
+    "**/node_modules",
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+    "e2e: marks end-to-end tests (deselect with '-m \"not e2e\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "smoke: mark test as smoke test",
+    "unit: mark test as unit test",
+    "cli: mark test as CLI test",
+]
+
+[tool.coverage.report]
+fail_under = 76
+
+[build-system]
+requires = [
+    "hatchling",
+]
+build-backend = "hatchling.build"

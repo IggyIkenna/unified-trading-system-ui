@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {"path": "../..", "name": "unified-trading-system-repos"},
+    {"path": "../../../../../Downloads/formattings 2"}
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "python3.13",
+    "python.analysis.extraPaths": [
+      "${workspaceFolder:unified-trading-system-repos}/execution-algo-library",
+      "${workspaceFolder:unified-trading-system-repos}/execution-services",
+      "${workspaceFolder:unified-trading-system-repos}/features-calendar-service",
+      "${workspaceFolder:unified-trading-system-repos}/features-delta-one-service",
+      "${workspaceFolder:unified-trading-system-repos}/features-onchain-service",
+      "${workspaceFolder:unified-trading-system-repos}/features-volatility-service",
+      "${workspaceFolder:unified-trading-system-repos}/instruments-service",
+      "${workspaceFolder:unified-trading-system-repos}/market-data-processing-service",
+      "${workspaceFolder:unified-trading-system-repos}/market-tick-data-handler",
+      "${workspaceFolder:unified-trading-system-repos}/ml-inference-service",
+      "${workspaceFolder:unified-trading-system-repos}/ml-training-service",
+      "${workspaceFolder:unified-trading-system-repos}/mr_report",
+      "${workspaceFolder:unified-trading-system-repos}/position-balance-monitor-service",
+      "${workspaceFolder:unified-trading-system-repos}/risk-and-exposure-service",
+      "${workspaceFolder:unified-trading-system-repos}/strategy-service",
+      "${workspaceFolder:unified-trading-system-repos}/unified-trading-library",
+      "${workspaceFolder:unified-trading-system-repos}/unified-config-interface",
+      "${workspaceFolder:unified-trading-system-repos}/unified-domain-client",
+      "${workspaceFolder:unified-trading-system-repos}/unified-events-interface",
+      "${workspaceFolder:unified-trading-system-repos}/unified-market-interface",
+      "${workspaceFolder:unified-trading-system-repos}/unified-trade-execution-interface"
+    ],
+    "python.analysis.autoSearchPaths": true
+  }
+}

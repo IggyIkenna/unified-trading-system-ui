@@ -1,0 +1,41 @@
+# Example terraform.tfvars for features-delta-one-service on AWS
+# Copy to terraform.tfvars and fill in your values
+
+# AWS Region
+region = "ap-northeast-1"
+
+# Job Configuration
+job_name     = "features-delta-one-service"
+docker_image = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/features-delta-one-service:latest"
+
+vcpus           = "4"
+memory_mb       = "8192"
+timeout_seconds = 7200
+max_retries     = 3
+environment     = "prod"
+
+# IAM Roles (from shared-infrastructure module)
+execution_role_arn = "arn:aws:iam::123456789012:role/trading-execution-role"
+job_role_arn       = "arn:aws:iam::123456789012:role/trading-job-role"
+
+# Networking (from shared-infrastructure module)
+subnet_ids         = ["subnet-abc123", "subnet-def456"]
+security_group_ids = ["sg-abc123"]
+job_queue_arn      = "arn:aws:batch:ap-northeast-1:123456789012:job-queue/trading-queue"
+
+# S3 Buckets - Input (candles)
+s3_bucket_cefi   = "market-data-tick-cefi"
+s3_bucket_tradfi = "market-data-tick-tradfi"
+s3_bucket_defi   = "market-data-tick-defi"
+
+# S3 Buckets - Output (features)
+features_bucket_cefi   = "features-delta-one-cefi"
+features_bucket_tradfi = "features-delta-one-tradfi"
+features_bucket_defi   = "features-delta-one-defi"
+
+# Workflow Configuration
+workflow_name = "features-delta-one-service-daily"
+
+# Scheduler Configuration
+schedule  = "30 10 * * *"  # 10:30 AM UTC daily
+time_zone = "UTC"

@@ -1,0 +1,41 @@
+# Example terraform.tfvars for features-volatility-service on AWS
+# Copy to terraform.tfvars and fill in your values
+# Note: DEFI is NOT supported (no options data)
+
+# AWS Region
+region = "ap-northeast-1"
+
+# Job Configuration
+job_name     = "features-volatility-service"
+docker_image = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/features-volatility-service:latest"
+
+vcpus           = "4"
+memory_mb       = "8192"
+timeout_seconds = 3600
+max_retries     = 3
+environment     = "prod"
+
+# IAM Roles (from shared-infrastructure module)
+execution_role_arn = "arn:aws:iam::123456789012:role/trading-execution-role"
+job_role_arn       = "arn:aws:iam::123456789012:role/trading-job-role"
+
+# Networking (from shared-infrastructure module)
+subnet_ids         = ["subnet-abc123", "subnet-def456"]
+security_group_ids = ["sg-abc123"]
+job_queue_arn      = "arn:aws:batch:ap-northeast-1:123456789012:job-queue/trading-queue"
+
+# S3 Buckets - Input (tick data with options chain)
+# Only CEFI and TRADFI - no DEFI (no options data)
+s3_bucket_cefi   = "market-data-tick-cefi"
+s3_bucket_tradfi = "market-data-tick-tradfi"
+
+# S3 Buckets - Output (volatility features)
+features_bucket_cefi   = "features-volatility-cefi"
+features_bucket_tradfi = "features-volatility-tradfi"
+
+# Workflow Configuration
+workflow_name = "features-volatility-service-daily"
+
+# Scheduler Configuration
+schedule  = "30 10 * * *"  # 10:30 AM UTC daily
+time_zone = "UTC"

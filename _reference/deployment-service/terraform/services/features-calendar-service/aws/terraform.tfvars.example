@@ -1,0 +1,38 @@
+# Terraform variables for features-calendar-service on AWS
+# Copy this file to terraform.tfvars and customize
+
+region      = "ap-northeast-1"
+environment = "prod"
+
+# Job Configuration
+job_name    = "features-calendar-service"
+vcpus       = "2"
+memory_mb   = "4096"
+
+# Docker image (update with your ECR URL after building)
+docker_image = "ACCOUNT_ID.dkr.ecr.ap-northeast-1.amazonaws.com/features-calendar-service:latest"
+
+# Timeout and retries
+timeout_seconds = 3600  # 1 hour
+max_retries     = 3
+
+# IAM Roles (from shared infrastructure)
+execution_role_arn = "arn:aws:iam::ACCOUNT_ID:role/unified-trading-execution-role"
+job_role_arn       = "arn:aws:iam::ACCOUNT_ID:role/unified-trading-job-role"
+
+# Networking (from shared infrastructure)
+subnet_ids         = ["subnet-xxx", "subnet-yyy"]
+security_group_ids = ["sg-xxx"]
+job_queue_arn      = "arn:aws:batch:ap-northeast-1:ACCOUNT_ID:job-queue/unified-trading-queue"
+
+# S3 Buckets (from shared infrastructure)
+features_bucket_cefi   = "unified-trading-features-calendar-cefi-ACCOUNT_ID"
+features_bucket_tradfi = "unified-trading-features-calendar-tradfi-ACCOUNT_ID"
+features_bucket_defi   = "unified-trading-features-calendar-defi-ACCOUNT_ID"
+
+# Workflow Configuration
+workflow_name = "features-calendar-service-daily"
+
+# Schedule - 08:00 UTC daily (before other feature services)
+schedule  = "0 8 * * *"
+time_zone = "UTC"

@@ -1,0 +1,23 @@
+# Docker Compose for Unified Trading Deployment Dashboard
+#
+# Usage:
+#   1. cp .env.example .env        # create production config
+#   2. Edit .env as needed          # adjust GCP project, region, etc.
+#   3. docker compose up --build    # build image & start container
+#
+# The .env file is the single source of truth for all runtime configuration.
+# See .env.example for documentation on every variable.
+
+services:
+  app:
+    build: .
+    env_file: .env
+    ports:
+      - "${API_PORT:-8080}:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3

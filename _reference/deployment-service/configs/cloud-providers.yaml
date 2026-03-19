@@ -1,0 +1,63 @@
+# Cloud Providers Configuration
+#
+# Bucket name templates use ${VAR} substitution (resolved by substitute_env_vars):
+#   ${DEPLOYMENT_ENV}  — staging | prod | development
+#   ${GCP_PROJECT_ID}  — GCP project ID
+#   ${AWS_ACCOUNT_ID}  — AWS account ID
+#
+# Per-category domains use a dict keyed by UPPER-case category name.
+# Shared (no-category) domains use a plain string.
+
+gcp:
+  storage:
+    features-delta-one:
+      CEFI: "features-delta-one-cefi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      TRADFI: "features-delta-one-tradfi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      DEFI: "features-delta-one-defi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+    features-volatility:
+      CEFI: "features-volatility-cefi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      TRADFI: "features-volatility-tradfi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+    features-onchain:
+      CEFI: "features-onchain-cefi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      DEFI: "features-onchain-defi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+    ml-models-store: "ml-models-store-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+    ml-predictions-store: "ml-predictions-store-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+    ml-configs-store: "ml-configs-store-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+    strategy-store:
+      CEFI: "strategy-store-cefi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      TRADFI: "strategy-store-tradfi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      DEFI: "strategy-store-defi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+    execution-store:
+      CEFI: "execution-store-cefi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      TRADFI: "execution-store-tradfi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+      DEFI: "execution-store-defi-${DEPLOYMENT_ENV}-${GCP_PROJECT_ID}"
+  container_registry:
+    url_pattern: "{region}-docker.pkg.dev/${GCP_PROJECT_ID}/{repository}:{tag}"
+    default_tag: "latest"
+
+aws:
+  storage:
+    features-delta-one:
+      CEFI: "unified-trading-features-delta-one-cefi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      TRADFI: "unified-trading-features-delta-one-tradfi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      DEFI: "unified-trading-features-delta-one-defi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+    features-volatility:
+      CEFI: "unified-trading-features-volatility-cefi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      TRADFI: "unified-trading-features-volatility-tradfi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+    features-onchain:
+      CEFI: "unified-trading-features-onchain-cefi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      DEFI: "unified-trading-features-onchain-defi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+    ml-models-store: "unified-trading-ml-models-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+    ml-predictions-store: "unified-trading-ml-predictions-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+    ml-configs-store: "unified-trading-ml-configs-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+    strategy-store:
+      CEFI: "unified-trading-strategy-cefi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      TRADFI: "unified-trading-strategy-tradfi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      DEFI: "unified-trading-strategy-defi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+    execution-store:
+      CEFI: "unified-trading-execution-cefi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      TRADFI: "unified-trading-execution-tradfi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+      DEFI: "unified-trading-execution-defi-${DEPLOYMENT_ENV}-${AWS_ACCOUNT_ID}"
+  container_registry:
+    url_pattern: "{account_id}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag}"
+    default_tag: "latest"

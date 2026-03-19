@@ -1,0 +1,90 @@
+# Quality Gates Template for Python Services
+#
+# This workflow runs the EXACT same checks as:
+#   - Local: ./scripts/quality-gates.sh
+#   - Cloud Build: cloudbuild.yaml
+#
+# All three MUST be kept in sync. If you change one, change all three.
+#
+# CRITICAL REQUIREMENTS:
+# 1. basedpyright MUST have timeout (hangs without it)
+# 2. NEVER run basedpyright in parallel across repos
+# 3. Sequential execution only
+#
+name: Quality Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15 # Global job timeout
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv pip install --system -e ".[dev]"
+
+      # ========================================================================
+      # LINT + FORMAT - Ruff with proper timeout handling
+      # ========================================================================
+      - name: Run Ruff Linter
+        run: |
+          ruff check . --output-format=github
+          ruff format . --check
+
+      # ========================================================================
+      # TYPE CHECK (basedpyright) - CRITICAL: Must have timeout
+      # ========================================================================
+      - name: Run Basedpyright with Timeout
+        run: |
+          # CRITICAL: Use timeout to prevent hangs
+          # Replace <source_dir> with actual source directory name
+          timeout 60 basedpyright <source_dir>/ || exit_code=$?
+          if [ "${exit_code:-0}" -eq 124 ]; then
+            echo "::error::Basedpyright timed out after 60 seconds"
+            exit 1
+          elif [ "${exit_code:-0}" -ne 0 ]; then
+            echo "::error::Basedpyright failed with exit code $exit_code"
+            exit $exit_code
+          fi
+          echo "✅ Type check passed"
+
+      # ========================================================================
+      # TESTS - With coverage and timeout
+      # ========================================================================
+      - name: Run Tests with Coverage
+        run: |
+          # Replace <source_dir> and <threshold> with actual values
+          pytest --cov=<source_dir> --cov-report=term-missing --cov-fail-under=<threshold>
+
+      # ========================================================================
+      # UPLOAD ARTIFACTS
+      # ========================================================================
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: htmlcov/
+
+      - name: Quality gates passed
+        run: |
+          echo ""
+          echo "======================================================================"
+          echo "✅ ALL QUALITY GATES PASSED"
+          echo "======================================================================"

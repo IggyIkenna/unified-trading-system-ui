@@ -1,0 +1,170 @@
+# GitHub Actions Workflow Template for AWS Deployments
+#
+# This workflow provides AWS authentication and can be used for:
+# - Running quality gates with AWS credentials
+# - Building and pushing to ECR
+# - Deploying to AWS Batch/ECS
+#
+# Usage: Copy to your service repo's .github/workflows/ and customize.
+#
+# Required GitHub Secrets:
+# - AWS_ACCESS_KEY_ID: AWS access key for deployment
+# - AWS_SECRET_ACCESS_KEY: AWS secret key
+# - AWS_REGION: AWS region (e.g., us-east-1)
+# - AWS_ACCOUNT_ID: AWS account ID
+#
+# Or use OIDC (recommended):
+# - AWS_ROLE_TO_ASSUME: IAM role ARN for OIDC authentication
+
+name: AWS CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  SERVICE_NAME: instruments-service # CUSTOMIZE: Your service name
+  PYTHON_VERSION: "3.13"
+  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
+jobs:
+  quality-gates:
+    name: Quality Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+
+      # AWS Authentication using OIDC (recommended)
+      - name: Configure AWS credentials (OIDC)
+        if: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # AWS Authentication using static credentials (fallback)
+      - name: Configure AWS credentials (Static)
+        if: ${{ !secrets.AWS_ROLE_TO_ASSUME && secrets.AWS_ACCESS_KEY_ID }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Clone dependencies
+        run: |
+          git clone https://github.com/IggyIkenna/unified-trading-library.git ../unified-trading-library
+          git clone https://github.com/IggyIkenna/deployment-service-v2.git ../deployment-service-v2
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv pip install -e ../unified-trading-library
+          uv pip install -e ../deployment-service-v2 || true  # || true: cleanup step, failure is intentional (deployment-service-v2 is optional dep)
+          uv pip install -e . || uv pip install -e ".[dev]"
+          uv pip install ruff pytest
+
+      - name: Run linting
+        run: |
+          # Replace dashes with underscores for Python package name
+          PKG_NAME=$(echo "${{ env.SERVICE_NAME }}" | tr '-' '_')
+          ruff check ${PKG_NAME}/ tests/ --ignore E501
+
+      - name: Run tests
+        env:
+          CLOUD_PROVIDER: aws
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        run: |
+          if [ -d "tests" ]; then
+            pytest tests/ -v --tb=short
+          fi
+
+  build-and-push:
+    name: Build and Push to ECR
+    needs: quality-gates
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # AWS Authentication
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build with GitHub token if private dependencies
+          docker build \
+            --build-arg GH_PAT=${{ secrets.GITHUB_TOKEN }} \
+            -t $ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG \
+            -t $ECR_REGISTRY/${{ env.SERVICE_NAME }}:latest \
+            .
+
+          docker push $ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG
+          docker push $ECR_REGISTRY/${{ env.SERVICE_NAME }}:latest
+
+          echo "Image pushed: $ECR_REGISTRY/${{ env.SERVICE_NAME }}:$IMAGE_TAG"
+
+  deploy:
+    name: Deploy to AWS
+    needs: build-and-push
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout deployment repo
+        uses: actions/checkout@v4
+        with:
+          repository: IggyIkenna/deployment-service-v2
+          path: deployment
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install deployment CLI
+        run: |
+          uv pip install -e deployment/
+
+      - name: Deploy service
+        env:
+          CLOUD_PROVIDER: aws
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+        run: |
+          # Customize deployment command as needed
+          echo "Deployment would run here"
+          echo "Example: python -m deployment_service.cli deploy -s ${{ env.SERVICE_NAME }} --cloud aws"

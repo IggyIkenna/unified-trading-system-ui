@@ -1,0 +1,4 @@
+#!/bin/bash
+# Wrapper script that suppresses third-party deprecation warnings
+# These warnings come from openbb_*/pydantic and bypass Python's -W flag
+exec python -m deployment_service "$@" 2> >(grep -vE "PydanticDeprecatedSince|@model_validator|DeprecationWarning|Connection pool is full|ClientSession" >&2)

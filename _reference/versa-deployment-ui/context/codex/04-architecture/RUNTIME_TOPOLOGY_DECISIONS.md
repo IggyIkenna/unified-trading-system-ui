@@ -1,1 +1,0 @@
-../../deployment-service/configs/RUNTIME_TOPOLOGY_DECISIONS.md

@@ -1,0 +1,58 @@
+# Quality Gates Template for TypeScript/UI Repositories
+#
+# This workflow ensures code quality for TypeScript/React/Vue applications
+#
+name: Quality Gates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10 # Global job timeout for UI builds
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript Check
+        timeout-minutes: 2
+        run: npx tsc --noEmit
+
+      - name: Run ESLint
+        timeout-minutes: 2
+        run: npx eslint . --max-warnings 0
+
+      - name: Run Tests
+        timeout-minutes: 5
+        run: npm test -- --coverage
+
+      - name: Build Application
+        timeout-minutes: 3
+        run: npm run build
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
+
+      - name: Quality gates passed
+        run: |
+          echo ""
+          echo "======================================================================"
+          echo "✅ ALL QUALITY GATES PASSED"
+          echo "======================================================================"

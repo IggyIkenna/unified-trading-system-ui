@@ -98,22 +98,23 @@ This document maps the reference repos to the service areas defined in the refac
 
 ---
 
-### `versa-deployment-ui/`
+### `deployment-ui/` + `deployment-api/` + `deployment-service/`
 
 **Maps to:** Deployment / DevOps / Operational Readiness (Internal-only)
 
-**Alignment: ✅ STRONG**
-- Correctly positioned as internal-only
-- Deployment pipeline and health monitoring align with vision
-- Operational readiness patterns are relevant
+**Alignment: ✅ EXCELLENT (Production Code)**
+- Full-stack reference (not just old patterns, but current production architecture)
+- Deployment pipeline, health monitoring, service orchestration all aligned with vision
+- Three-tier architecture: UI (frontend) + API (middleware) + Service (orchestration)
 
-**Value: MEDIUM-HIGH**
-- Reference for: Deployment UI, service health, operational dashboards
-- Use for: Understanding how to build deployment/ops surfaces
+**Value: VERY HIGH**
+- `deployment-ui/`: React/Next.js frontend patterns, dashboard UX, real-time status updates
+- `deployment-api/`: REST API design, health check aggregation, audit logging patterns
+- `deployment-service/`: Orchestration logic, multi-environment support, rollback strategies, IaC patterns
 
 **Current Codebase:** Has `app/devops/` and `app/ops/` but minimal implementation
-- **Assessment:** Current deployment/ops surfaces are stubs. Reference shows what full implementation looks like.
-- **Action:** Use as reference for building out deployment/ops service area. May want to merge current structure with reference patterns.
+- **Assessment:** Current deployment/ops surfaces are stubs. This is production-grade reference for building operational readiness layer.
+- **Action:** Reference for full-stack deployment architecture. deployment-api endpoints can inform shell health aggregation. deployment-service patterns inform internal ops orchestration.
 
 ---
 

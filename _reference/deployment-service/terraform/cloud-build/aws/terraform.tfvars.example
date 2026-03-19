@@ -1,0 +1,15 @@
+# Terraform variables for AWS CodeBuild
+# Copy this file to terraform.tfvars and customize
+
+region       = "ap-northeast-1"
+environment  = "prod"
+github_owner = "IggyIkenna"
+
+# Branch pattern (regex) - builds triggered on push to main
+branch_pattern = "^refs/heads/main$"
+
+# CodeBuild compute type
+# Options: BUILD_GENERAL1_SMALL (3 GB, 2 vCPU)
+#          BUILD_GENERAL1_MEDIUM (7 GB, 4 vCPU)
+#          BUILD_GENERAL1_LARGE (15 GB, 8 vCPU)
+compute_type = "BUILD_GENERAL1_MEDIUM"

@@ -1,0 +1,67 @@
+# CodeBuild buildspec template — Unified Trading System Services
+#
+# Service variant: Python 3.13, docker build, docker run QG, docker push.
+# Optional GH dispatch for deploy_via_dispatch repos.
+#
+# Placeholders: deployment-api, unified-trading-system.
+# Registry image: {{REGISTRY_URI}}/unified-trading-system/deployment-api
+
+version: 0.2
+
+env:
+  variables:
+    SERVICE_NAME: "deployment-api"
+    REGISTRY_REPO: "unified-trading-system"
+    IMAGE_TAG: "latest"
+  # AWS_ACCOUNT_ID, AWS_DEFAULT_REGION available in CodeBuild
+
+phases:
+  install:
+    runtime-versions:
+      python: "3.13"
+    commands:
+      - echo "Installing Docker..."
+      - yum install -y docker || true
+      - service docker start || true
+
+  pre_build:
+    commands:
+      - echo "Logging in to ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo "Creating ECR repo if needed..."
+      - aws ecr describe-repositories --repository-names $REGISTRY_REPO --region $AWS_DEFAULT_REGION 2>/dev/null || aws
+        ecr create-repository --repository-name $REGISTRY_REPO --region $AWS_DEFAULT_REGION
+      - IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REGISTRY_REPO/$SERVICE_NAME"
+      - echo "Image URI: $IMAGE_URI"
+
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -f Dockerfile -t $IMAGE_URI:$IMAGE_TAG -t $IMAGE_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - echo "Running quality gates inside image..."
+      - |
+        docker run --rm \
+          -e CLOUD_BUILD=true \
+          -e CLOUD_MOCK_MODE=true \
+          -e GCP_PROJECT_ID=test-project \
+          $IMAGE_URI:$IMAGE_TAG \
+          /bin/bash -c "bash scripts/quality-gates.sh --no-fix --quick"
+      - echo "Quality gates passed"
+
+  post_build:
+    commands:
+      - echo "Pushing image..."
+      - docker push $IMAGE_URI:$IMAGE_TAG
+      - docker push $IMAGE_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo "Build complete"
+
+artifacts:
+  files:
+    - "**/*"
+
+cache:
+  paths:
+    - "/root/.cache/pip/**/*"
+# Optional: add GH dispatch step for deploy_via_dispatch repos
+# (inject via rollout script when manifest has deploy_via_dispatch: true)

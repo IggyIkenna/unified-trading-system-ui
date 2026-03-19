@@ -1,0 +1,61 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.egg-info
+.eggs
+dist
+build
+.venv
+venv
+.pytest_cache
+.ruff_cache
+.coverage
+htmlcov
+
+# Node (UI has its own node_modules in COPY)
+ui/node_modules
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Terraform
+terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+.terraform
+
+# Docs
+docs/
+
+# Tests
+tests/
+
+# Templates (not needed at runtime)
+templates/
+
+# Scripts (not needed at runtime)
+scripts/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# Build artifacts
+*.tar
+*.tar.gz

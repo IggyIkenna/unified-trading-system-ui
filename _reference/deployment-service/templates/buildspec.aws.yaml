@@ -1,0 +1,87 @@
+# AWS CodeBuild Buildspec Template
+#
+# This is a template for AWS CodeBuild to mirror the functionality of GCP Cloud Build.
+# Copy this file to your service directory and customize the SERVICE_NAME and REPOSITORY variables.
+#
+# Environment variables required:
+# - AWS_ACCOUNT_ID: AWS account ID
+# - AWS_DEFAULT_REGION: AWS region (e.g., us-east-1)
+# - SERVICE_NAME: Service name (e.g., instruments-service)
+# - REPOSITORY: ECR repository name (e.g., instruments)
+# - GH_PAT_SECRET_NAME: Name of the GitHub PAT secret in AWS Secrets Manager
+
+version: 0.2
+
+env:
+  secrets-manager:
+    GITHUB_TOKEN: ${GH_PAT_SECRET_NAME}:github-token
+  variables:
+    # Override these per service
+    SERVICE_NAME: "my-service"
+    REPOSITORY: "my-repository"
+    AWS_DEFAULT_REGION: "us-east-1"
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.13
+    commands:
+      - echo "=== Installing dependencies ==="
+      - pip install uv
+
+  pre_build:
+    commands:
+      - echo "=== Pre-build setup ==="
+      # Clone unified-trading-library
+      - git clone https://x-access-token:${GITHUB_TOKEN}@github.com/IggyIkenna/unified-trading-library.git /tmp/unified-trading-library
+      # Clone deployment-service
+      - git clone https://x-access-token:${GITHUB_TOKEN}@github.com/IggyIkenna/deployment-service.git /tmp/deployment-service || true # || true: cleanup step, failure is intentional (deployment-service is optional dep)
+
+      # Install dependencies
+      - uv pip install -e /tmp/unified-trading-library
+      - uv pip install -e /tmp/deployment-service || true # || true: cleanup step, failure is intentional (deployment-service is optional dep)
+      - uv pip install -e . || uv pip install -e "."
+      - uv pip install ruff pytest
+
+      # ECR login
+      - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+
+  build:
+    commands:
+      - echo "=== Running quality gates ==="
+
+      # Linting
+      - echo "Running linting (ruff)..."
+      - ruff check . --ignore E501 || exit 1
+      - echo "Linting passed"
+
+      # Tests
+      - echo "Running tests (pytest)..."
+      - |
+        if [ -d "tests" ]; then
+          pytest tests/ -v --tb=short || exit 1
+          echo "Tests passed"
+        else
+          echo "No tests directory found, skipping tests"
+        fi
+
+      - echo "=== Building Docker image ==="
+      - export IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - export ECR_REPO=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPOSITORY}
+      - docker build --build-arg GH_PAT=${GITHUB_TOKEN} -t ${ECR_REPO}:${IMAGE_TAG} -t ${ECR_REPO}:latest .
+
+  post_build:
+    commands:
+      - echo "=== Pushing Docker images ==="
+      - docker push ${ECR_REPO}:${IMAGE_TAG}
+      - docker push ${ECR_REPO}:latest
+      - echo "Build completed on `date`"
+
+artifacts:
+  files:
+    - "**/*"
+  discard-paths: no
+
+cache:
+  paths:
+    - "/root/.cache/pip/**/*"

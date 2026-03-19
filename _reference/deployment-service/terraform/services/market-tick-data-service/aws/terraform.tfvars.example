@@ -1,0 +1,43 @@
+# Example terraform.tfvars for market-tick-data-service on AWS
+# Copy to terraform.tfvars and fill in your values
+
+# AWS Region
+region = "ap-northeast-1"
+
+# Job Configuration
+job_name     = "market-tick-data-service"
+docker_image = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/market-tick-data-service:latest"
+
+# Sized for 8 concurrent workers with max 409MB parquet files (1.2GB in memory each)
+# Using 64GB for extra safety margin on busy days
+vcpus           = "8"
+memory_mb       = "65536"  # 64 GB (was 8192)
+timeout_seconds = 86400   # 24 hours (matched to GCP)
+max_retries     = 3
+environment     = "prod"
+
+# IAM Roles (from shared-infrastructure module)
+execution_role_arn = "arn:aws:iam::123456789012:role/trading-execution-role"
+job_role_arn       = "arn:aws:iam::123456789012:role/trading-job-role"
+
+# Networking (from shared-infrastructure module)
+subnet_ids         = ["subnet-abc123", "subnet-def456"]
+security_group_ids = ["sg-abc123"]
+job_queue_arn      = "arn:aws:batch:ap-northeast-1:123456789012:job-queue/trading-queue"
+
+# S3 Buckets
+s3_bucket_cefi   = "market-data-tick-cefi"
+s3_bucket_tradfi = "market-data-tick-tradfi"
+s3_bucket_defi   = "market-data-tick-defi"
+
+# Secrets (ARNs from AWS Secrets Manager)
+tardis_secret_arn    = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:tardis-api-key-AbCdEf"
+databento_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:databento-api-key-GhIjKl"
+
+# Workflow Configuration
+daily_workflow_name    = "market-tick-daily"
+backfill_workflow_name = "market-tick-backfill"
+
+# Scheduler Configuration
+schedule  = "0 9 * * *"  # 9:00 AM UTC daily (30 min after instruments-service)
+time_zone = "UTC"
