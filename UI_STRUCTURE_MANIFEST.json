@@ -41,10 +41,10 @@
     "new_infrastructure": {
       "lib/config/": ["api.ts", "branding.ts", "auth.ts", "services.ts", "index.ts"],
       "lib/mocks/": ["browser.ts", "utils.ts", "handlers.ts", "index.ts"],
-      "lib/mocks/handlers/": ["auth.ts", "data.ts", "execution.ts", "strategy.ts", "index.ts"],
+      "lib/mocks/handlers/": ["auth.ts", "data.ts", "execution.ts", "strategy.ts", "positions.ts", "risk.ts", "ml.ts", "trading.ts", "alerts.ts", "index.ts"],
       "lib/mocks/fixtures/": ["personas.ts"],
       "lib/stores/": ["auth-store.ts", "filters-store.ts", "ui-store.ts", "index.ts"],
-      "hooks/api/": ["use-data.ts", "use-execution.ts", "use-strategies.ts", "index.ts"]
+      "hooks/api/": ["use-data.ts", "use-execution.ts", "use-strategies.ts", "use-positions.ts", "use-risk.ts", "use-ml-models.ts", "use-trading.ts", "use-alerts.ts", "use-reports.ts", "use-market-data.ts", "use-deployments.ts", "use-service-status.ts", "use-audit.ts", "use-organizations.ts", "index.ts"]
     }
   },
 
