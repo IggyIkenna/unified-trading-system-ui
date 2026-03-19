@@ -12,29 +12,34 @@ RULES (violation = wasted work):
 
 BEFORE CODING:
 1. ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md (vision)
-2. context/CONFIG_REFERENCE.md (configurable?)
-3. context/SHARDING_DIMENSIONS.md (data partition)
+2. context/CONFIG_REFERENCE.md (fields?)
+3. context/SHARDING_DIMENSIONS.md (partition?)
 4. context/API_FRONTEND_GAPS.md (ready? 🟢/🟡/🔴)
 5. UI_STRUCTURE_MANIFEST.json (state?)
-6. .cursorrules or CODING_RULES_QUICK_START.md
+6. .cursorrules
 
 REFACTOR vs NEW:
 — Refactoring? Read manifest. Ask "Approve?". Mark target_structure. Update in place.
 — New feature? Create services/{domain}/pages/{name}/. Add route to routing.tsx.
 
-CODE PATTERNS (Never Hardcode):
+CODE PATTERNS:
 — API: import API_CONFIG from 'shared/config/api'
 — Branding: import COLORS, LOGOS from 'shared/config/branding'
-— Shard: shard → venue → instrument. Never mix shards in one component.
+— Shard: shard → venue → instrument (no cross-shard in one component)
 
 STRUCTURE:
 services/{domain}/ → pages/, components/, hooks/, types/
-shared/ → components/, config/, hooks/, mocks/, types/
+shared/ → components/, config/, hooks/, mocks/
+
+QA GATE (Before PR/Deploy):
+bash .scripts/verify.sh → clean install → type-check → build → test
+Catches: broken imports, TypeScript errors, missing deps. See QA_GATES.md.
 
 RESOURCES:
-• config-registry.json = 2000+ fields (lookup, don't hardcode)
-• .cursorrules = Rules 1-9 + patterns
+• config-registry.json = 2000+ fields
+• .cursorrules = Rules + patterns
 • REFACTORING_GUIDE.md = protocol
 • UI_STRUCTURE_MANIFEST.json = state tracker
+• QA_GATES.md = pre-deploy checks
 
-MANDATE: Don't guess. Look it up. Shared components. Centralized config. One truth. Ask before breaking.
+MANDATE: Don't guess. Look it up. Shared. Centralized. One truth. Ask before breaking.
