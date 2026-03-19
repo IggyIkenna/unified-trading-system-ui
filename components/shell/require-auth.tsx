@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/use-auth"
 
 // Demo accounts mirrored from portal/login so either login page works
 const DEMO_ACCOUNTS = [
-  { email: "admin@odum.io", password: "demo", org: "Odum Research", role: "internal", services: ["*"], entitlements: ["*"] },
+  { email: "admin@odum.io", password: "demo", org: "Odum Research", role: "internal", services: ["*"], entitlements: ["*"], isAdmin: true },
   { email: "demo@hedgefund.com", password: "demo", org: "Alpha Capital",           role: "Investment Client", services: ["data", "backtesting", "execution"] },
   { email: "trader@propdesk.com", password: "demo", org: "Velocity Trading",       role: "Internal Trader",   services: ["whitelabel"] },
   { email: "cfo@familyoffice.com", password: "demo", org: "Sterling Family Office", role: "Executive",         services: ["investment", "regulatory"] },
@@ -146,10 +146,17 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
                 <button
                   key={a.email}
                   onClick={() => quickLogin(a)}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
+                    (a as any).isAdmin 
+                      ? "border-primary bg-primary/5 hover:bg-primary/10" 
+                      : "border-border hover:bg-accent"
+                  }`}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{a.org}</div>
+                    <div className="text-sm font-medium truncate">
+                      {a.org}
+                      {(a as any).isAdmin && <span className="ml-2 text-xs text-primary">(Full Access)</span>}
+                    </div>
                     <div className="text-xs text-muted-foreground truncate">{a.email} · {a.role}</div>
                   </div>
                   <ArrowRight className="size-3.5 text-muted-foreground flex-shrink-0" />

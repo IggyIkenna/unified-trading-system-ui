@@ -13,11 +13,11 @@ import { Sparkles, ArrowRight, Mail, Lock, Building2 } from "lucide-react"
 
 // Demo accounts — shared with RequireAuth
 const demoAccounts = [
-  { email: "trader@odum.io",       password: "demo", org: "Odum Research",          role: "Internal Trader",   redirect: "/overview" },
-  { email: "demo@hedgefund.com",   password: "demo", org: "Alpha Capital",           role: "Investment Client", redirect: "/executive" },
-  { email: "cfo@familyoffice.com", password: "demo", org: "Sterling Family Office",  role: "Executive",         redirect: "/executive" },
-  { email: "demo@quant.com",       password: "demo", org: "Quantum Research",        role: "Quant Client",      redirect: "/quant" },
-  { email: "demo@compliance.com",  password: "demo", org: "Compliance Co",           role: "Compliance AR",     redirect: "/compliance" },
+  { email: "admin@odum.io",        password: "demo", org: "Odum Research",          role: "Admin (Full Access)", redirect: "/overview", services: ["*"], entitlements: ["*"], isAdmin: true },
+  { email: "trader@odum.io",       password: "demo", org: "Odum Research",          role: "Internal Trader",     redirect: "/overview", services: ["*"] },
+  { email: "demo@hedgefund.com",   password: "demo", org: "Alpha Capital",          role: "Investment Client",   redirect: "/overview", services: ["data", "backtesting", "execution"] },
+  { email: "cfo@familyoffice.com", password: "demo", org: "Sterling Family Office", role: "Executive",           redirect: "/overview", services: ["investment", "regulatory"] },
+  { email: "quant@boutique.com",   password: "demo", org: "Quantum Research",       role: "Quant Client",        redirect: "/overview", services: ["data", "backtesting"] },
 ]
 
 export default function LoginPage() {
@@ -130,14 +130,23 @@ export default function LoginPage() {
                     <button
                       key={account.email}
                       onClick={() => handleDemoLogin(account)}
-                      className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
+                        (account as any).isAdmin 
+                          ? "border-primary bg-primary/5 hover:bg-primary/10" 
+                          : "border-border hover:bg-accent"
+                      }`}
                     >
-                      <Building2 className="size-4 text-muted-foreground" />
+                      <Building2 className={`size-4 ${(account as any).isAdmin ? "text-primary" : "text-muted-foreground"}`} />
                       <div className="flex-1">
-                        <div className="text-sm font-medium">{account.org}</div>
+                        <div className="text-sm font-medium">
+                          {account.org}
+                          {(account as any).isAdmin && <span className="ml-2 text-xs text-primary">(Full Access)</span>}
+                        </div>
                         <div className="text-xs text-muted-foreground">{account.email} · {account.role}</div>
                       </div>
-                      <Badge variant="outline" className="text-xs">demo</Badge>
+                      <Badge variant={(account as any).isAdmin ? "default" : "outline"} className="text-xs">
+                        {(account as any).isAdmin ? "admin" : "demo"}
+                      </Badge>
                     </button>
                   ))}
                 </div>
