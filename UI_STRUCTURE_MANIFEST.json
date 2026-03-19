@@ -9,35 +9,35 @@
   },
 
   "current_structure": {
-    "status": "pre-phase-2",
-    "description": "V0-generated prototype. Flat app/ directory, inline mock data, no route groups, no state management, no API layer.",
+    "status": "post-phase-2",
+    "description": "Phase 2 complete. Route groups (public)/(platform)/(ops) created. MSW mock infrastructure in lib/mocks/. Zustand stores in lib/stores/. React Query wired with proof-of-concept. Centralized config in lib/config/. Auth personas with entitlements. Generated types from openapi.json.",
     "framework": "Next.js 16 App Router",
-    "app_structure": "FLAT — 30+ route directories directly under app/, no (public)/(platform)/(ops) route groups yet",
-    "mock_data": "INLINE — ~9,100 lines of hardcoded objects in lib/*.ts files (strategy-registry.ts, reference-data.ts, ml-mock-data.ts, trading-data.ts, etc.)",
-    "state_management": "NONE — no Zustand stores, no React Query, no centralized state",
-    "api_layer": "NONE — no fetch calls, no hooks/api/, pages render static data directly",
-    "auth": "MINIMAL — hooks/use-auth.ts reads localStorage, no personas, no entitlements, no role-based scoping",
-    "shells": "PARTIAL — components/shell/ has unified-shell.tsx, lifecycle-nav.tsx, require-auth.tsx, role-layout.tsx but NOT wired as App Router layout.tsx files",
+    "app_structure": "ROUTE GROUPS — app/(public)/, app/(platform)/, app/(ops)/",
+    "mock_data": "MSW — lib/mocks/handlers/ with persona-scoped fixtures in lib/mocks/fixtures/",
+    "state_management": "Zustand stores in lib/stores/ + React Query in hooks/api/",
+    "api_layer": "React Query hooks in hooks/api/, MSW serves data when NEXT_PUBLIC_MOCK_API=true",
+    "auth": "Demo personas with role/org/entitlements in hooks/use-auth.ts, persona data in lib/mocks/fixtures/personas.ts",
+    "shells": "WIRED — app/(public)/layout.tsx (SiteHeader+footer), app/(platform)/layout.tsx (RequireAuth+UnifiedShell), app/(ops)/layout.tsx (RequireAuth+role gate)",
     "components": "GOOD — 59 Radix UI primitives in components/ui/, 34 trading components in components/trading/, 6 dashboards",
     "design_system": "GOOD — globals.css with semantic tokens, IBM Plex Sans + JetBrains Mono, dark institutional theme",
     "registry_data": "FRESH — lib/registry/ has latest openapi.json (298 endpoints), config-registry.json (46 configs), sharding_config.yaml, system-topology.json, ui-reference-data.json",
     "tests": "MINIMAL — 4 unit tests, 2 E2E specs, coverage threshold set to 50% (target: 70%)",
     "routes": [
-      { "path": "/", "component": "app/page.tsx", "status": "exists", "notes": "Marketing landing page (712 lines)" },
-      { "path": "/login", "component": "app/login/page.tsx", "status": "exists" },
-      { "path": "/trader", "component": "app/trader/page.tsx", "status": "exists", "notes": "Trader dashboard" },
-      { "path": "/positions", "component": "app/positions/page.tsx", "status": "exists" },
-      { "path": "/risk", "component": "app/risk/page.tsx", "status": "exists" },
-      { "path": "/execution/*", "component": "app/execution/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
-      { "path": "/strategy-platform/*", "component": "app/strategy-platform/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
-      { "path": "/ml/*", "component": "app/ml/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
-      { "path": "/trading", "component": "app/trading/page.tsx", "status": "exists" },
-      { "path": "/markets", "component": "app/markets/page.tsx", "status": "exists" },
-      { "path": "/reports", "component": "app/reports/page.tsx", "status": "exists" },
-      { "path": "/admin", "component": "app/admin/page.tsx", "status": "exists" },
-      { "path": "/ops", "component": "app/ops/page.tsx", "status": "exists" },
-      { "path": "/devops", "component": "app/devops/page.tsx", "status": "exists" },
-      { "path": "/manage/*", "component": "app/manage/", "status": "exists", "notes": "Has layout.tsx + sub-routes" }
+      { "path": "/", "component": "app/(public)/page.tsx", "status": "exists", "notes": "Marketing landing page" },
+      { "path": "/login", "component": "app/(public)/login/page.tsx", "status": "exists" },
+      { "path": "/positions", "component": "app/(platform)/positions/page.tsx", "status": "exists" },
+      { "path": "/risk", "component": "app/(platform)/risk/page.tsx", "status": "exists" },
+      { "path": "/execution/*", "component": "app/(platform)/execution/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/strategy-platform/*", "component": "app/(platform)/strategy-platform/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/ml/*", "component": "app/(platform)/ml/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/trading", "component": "app/(platform)/trading/page.tsx", "status": "exists" },
+      { "path": "/markets", "component": "app/(platform)/markets/page.tsx", "status": "exists" },
+      { "path": "/reports", "component": "app/(platform)/reports/page.tsx", "status": "exists" },
+      { "path": "/admin", "component": "app/(ops)/admin/page.tsx", "status": "exists" },
+      { "path": "/ops", "component": "app/(ops)/ops/page.tsx", "status": "exists" },
+      { "path": "/devops", "component": "app/(ops)/devops/page.tsx", "status": "exists" },
+      { "path": "/manage/*", "component": "app/(ops)/manage/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/client-portal/*", "component": "app/(platform)/client-portal/", "status": "exists", "notes": "Renamed from app/platform/" }
     ]
   },
 
@@ -142,6 +142,35 @@
         "Updated PM .cursor/rules/ui/ui-runtime-validation.mdc",
         "Updated codex ui-service-separation.md"
       ]
+    },
+    {
+      "id": "phase-2-structural-refactor",
+      "date": "2026-03-19",
+      "title": "Phase 2 Structural Refactor — Shell Infrastructure + MSW Migration",
+      "type": "refactor",
+      "from_state": "pre-phase-2",
+      "to_state": "post-phase-2",
+      "description": "Created route groups (public)/(platform)/(ops) with shell layouts. Moved all 32 page directories. Created lib/config/ (api, branding, auth, services). Set up MSW with 4 handlers (data, execution, strategy, ML). Created 4 personas (admin, internal-trader, client-full, client-data-only) with entitlement-based scoping. Added Zustand stores (filter, auth, ui-prefs) + React Query client + reset-demo. Generated 20K lines of types from openapi.json. Created proof-of-concept React Query hook (use-instruments).",
+      "status": "completed",
+      "approved_by": "Iggy Ikenna",
+      "changes": [
+        "app/(public)/layout.tsx — PublicShell: SiteHeader + footer, no auth",
+        "app/(platform)/layout.tsx — PlatformShell: RequireAuth + UnifiedShell",
+        "app/(ops)/layout.tsx — OpsShell: RequireAuth + role=internal/admin gate",
+        "32 page directories moved into route groups (URLs unchanged)",
+        "app/platform/ renamed to app/(platform)/client-portal/",
+        "lib/config/ — api.ts, branding.ts, auth.ts, services.ts, index.ts",
+        "lib/mocks/ — browser.ts, server.ts, utils.ts",
+        "lib/mocks/handlers/ — data.ts, execution.ts, strategy.ts, ml.ts, index.ts",
+        "lib/mocks/fixtures/personas.ts — 4 demo personas",
+        "lib/stores/ — filter-store.ts, auth-store.ts, ui-prefs-store.ts",
+        "lib/query-client.ts, lib/reset-demo.ts, lib/providers.tsx",
+        "hooks/use-auth.ts upgraded — role/org/entitlements, persona login/switch",
+        "hooks/api/use-instruments.ts — React Query proof-of-concept",
+        "lib/types/api-generated.ts — 20K lines from openapi.json",
+        "app/layout.tsx — wrapped with QueryClientProvider + MSW init",
+        "Dependencies: msw, zustand, @tanstack/react-query, openapi-typescript"
+      ]
     }
   ],
 
@@ -149,9 +178,10 @@
 
   "notes": {
     "for_agents": [
-      "CURRENT STATE: app/ is FLAT (30+ routes, no route groups). lib/ has inline mocks, no lib/config/ or lib/mocks/ yet.",
-      ".cursorrules describes the TARGET state, not the current state. Follow the REFACTORING_PLAN to get there.",
-      "Phase 2 is NEXT: create route groups, create lib/config/ + lib/mocks/ + lib/stores/, migrate inline data to MSW.",
+      "CURRENT STATE: Phase 2 COMPLETE. Route groups, MSW, Zustand, React Query, auth personas all in place.",
+      "Phase 3 is NEXT: Wire ALL existing pages through React Query hooks (PLANS_2.md Phase 3).",
+      "Original lib/*.ts mock data files still exist — pages still import directly. Delete after wiring to React Query.",
+      "4 demo personas: admin, internal-trader, client-full, client-data-only. Switch via require-auth quick-login.",
       "All references in docs point to files INSIDE this repo. No broken links to external repos."
     ],
     "rules": [
