@@ -11,17 +11,30 @@ RULES (violation = wasted work):
 6. Shard-aware: scope data shard→venue→instrument. Never cross-shard.
 
 BEFORE CODING:
-1. ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md (platform vision)
-2. context/CONFIG_REFERENCE.md (what's configurable?)
-3. context/SHARDING_DIMENSIONS.md (data partitioning)
-4. context/API_FRONTEND_GAPS.md (API ready? 🟢/🟡/🔴)
-5. UI_STRUCTURE_MANIFEST.json (current state, refactors?)
+1. ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md (vision)
+2. context/CONFIG_REFERENCE.md (configurable?)
+3. context/SHARDING_DIMENSIONS.md (data partition)
+4. context/API_FRONTEND_GAPS.md (ready? 🟢/🟡/🔴)
+5. UI_STRUCTURE_MANIFEST.json (state?)
 6. .cursorrules or CODING_RULES_QUICK_START.md
 
+REFACTOR vs NEW:
+— Refactoring? Read manifest. Ask "Approve?". Mark target_structure. Update in place.
+— New feature? Create services/{domain}/pages/{name}/. Add route to routing.tsx.
+
+CODE PATTERNS (Never Hardcode):
+— API: import API_CONFIG from 'shared/config/api'
+— Branding: import COLORS, LOGOS from 'shared/config/branding'
+— Shard: shard → venue → instrument. Never mix shards in one component.
+
+STRUCTURE:
+services/{domain}/ → pages/, components/, hooks/, types/
+shared/ → components/, config/, hooks/, mocks/, types/
+
 RESOURCES:
-• config-registry.json = 46 services, 2000+ config fields
-• .cursorrules = Rules 1-9
-• REFACTORING_GUIDE.md = refactoring protocol
-• context/ = backend architecture, standards, sharding
+• config-registry.json = 2000+ fields (lookup, don't hardcode)
+• .cursorrules = Rules 1-9 + patterns
+• REFACTORING_GUIDE.md = protocol
+• UI_STRUCTURE_MANIFEST.json = state tracker
 
 MANDATE: Don't guess. Look it up. Shared components. Centralized config. One truth. Ask before breaking.
