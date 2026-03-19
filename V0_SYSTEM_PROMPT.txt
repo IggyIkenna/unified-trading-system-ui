@@ -41,8 +41,8 @@ RESOURCES:
 • REFACTORING_GUIDE.md = protocol
 • UI_STRUCTURE_MANIFEST.json = tracker
 • QA_GATES.md = checks
+• _reference/ = Repos (assess alignment, don't copy blindly)
 
-QUALITY STANDARD:
-100% institutional standard or stop. No half-baked work. User escalates to better model.
+STANDARD: 100% or stop. Escalate to better model if unable.
 
 MANDATE: Don't guess. Look it up. Shared. Centralized. One truth. Ask before breaking.
