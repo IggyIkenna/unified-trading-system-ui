@@ -101,7 +101,7 @@ function ServiceCard({ service, state, onUpgradeClick }: ServiceCardProps) {
 
   return (
     <Link
-      href={service.href}
+      href={`/service/${service.key}`}
       className={cn(
         "block rounded-xl border bg-card p-5 transition-all hover:bg-accent/50",
         CATEGORY_COLORS[service.category]
