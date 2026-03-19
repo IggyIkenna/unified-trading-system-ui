@@ -28,10 +28,10 @@ function OpsAccessGate({ children }: { children: React.ReactNode }) {
     )
   }
   
-  // Check if user is internal (has "*" entitlements or role is internal)
-  const isInternal = user?.role === "Internal Trader" || 
-                     user?.role === "internal-trader" ||
-                     user?.services?.includes("whitelabel")
+  // Check if user is internal (role="internal" or has "*" entitlements)
+  const isInternal = user?.role === "internal" || 
+                     user?.role === "admin" ||
+                     user?.entitlements?.includes("*")
   
   if (!isInternal) {
     return (
