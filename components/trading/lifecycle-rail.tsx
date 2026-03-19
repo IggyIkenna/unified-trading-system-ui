@@ -81,7 +81,7 @@ const phases: PhaseConfig[] = [
     id: "monitor", 
     label: "Monitor", 
     description: "Real-time alerts, system health, and P&L overview",
-    href: "/trader",
+    href: "/overview",
     icon: MonitorCheck,
     shortcut: "5",
     actions: ["View alerts", "Check health", "P&L overview"],

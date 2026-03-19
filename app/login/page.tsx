@@ -13,7 +13,7 @@ import { Sparkles, ArrowRight, Mail, Lock, Building2 } from "lucide-react"
 
 // Demo accounts — shared with RequireAuth
 const demoAccounts = [
-  { email: "trader@odum.io",       password: "demo", org: "Odum Research",          role: "Internal Trader",   redirect: "/trader" },
+  { email: "trader@odum.io",       password: "demo", org: "Odum Research",          role: "Internal Trader",   redirect: "/overview" },
   { email: "demo@hedgefund.com",   password: "demo", org: "Alpha Capital",           role: "Investment Client", redirect: "/executive" },
   { email: "cfo@familyoffice.com", password: "demo", org: "Sterling Family Office",  role: "Executive",         redirect: "/executive" },
   { email: "demo@quant.com",       password: "demo", org: "Quantum Research",        role: "Quant Client",      redirect: "/quant" },

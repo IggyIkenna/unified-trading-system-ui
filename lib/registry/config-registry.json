@@ -2,15 +2,19 @@
   "_meta": {
     "description": "Config registry: every Pydantic config class from every service and interface repo, with all fields, types, and defaults. Grouped by repo/domain.",
     "generated_by": "generate_config_registry.py",
-    "total_configs": 45,
-    "total_repos": 28
+    "total_configs": 46,
+    "total_repos": 29
   },
   "configs_by_repo": {
     "deployment-api": [
       {
         "class_name": "DeploymentApiConfig",
         "module": "deployment_api.deployment_api_config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 143,
         "fields": {
           "service_name": {
@@ -140,7 +144,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -735,7 +743,11 @@
       {
         "class_name": "ConfigApiConfig",
         "module": "config_api.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 84,
         "fields": {
           "service_name": {
@@ -865,7 +877,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -1165,7 +1181,11 @@
       {
         "class_name": "TradingAnalyticsApiConfig",
         "module": "trading_analytics_api.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 91,
         "fields": {
           "service_name": {
@@ -1295,7 +1315,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -1630,7 +1654,11 @@
       {
         "class_name": "BatchAuditApiConfig",
         "module": "batch_audit_api.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 83,
         "fields": {
           "service_name": {
@@ -1760,7 +1788,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -2055,7 +2087,11 @@
       {
         "class_name": "MLInferenceApiConfig",
         "module": "ml_inference_api.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 85,
         "fields": {
           "service_name": {
@@ -2185,7 +2221,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -2490,7 +2530,11 @@
       {
         "class_name": "MLTrainingApiConfig",
         "module": "ml_training_api.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 85,
         "fields": {
           "service_name": {
@@ -2620,7 +2664,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -2925,7 +2973,11 @@
       {
         "class_name": "MarketDataApiConfig",
         "module": "market_data_api.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 82,
         "fields": {
           "service_name": {
@@ -3055,7 +3107,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -3341,11 +3397,448 @@
         }
       }
     ],
+    "client-reporting-api": [
+      {
+        "class_name": "ClientReportingApiConfig",
+        "module": "client_reporting_api.config",
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
+        "field_count": 83,
+        "fields": {
+          "service_name": {
+            "type": "<class 'str'>",
+            "default": "base-service",
+            "required": false
+          },
+          "project_id": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "environment": {
+            "type": "<class 'str'>",
+            "default": "development",
+            "required": false
+          },
+          "tardis_base_url": {
+            "type": "<class 'str'>",
+            "default": "https://api.tardis.dev/v1",
+            "required": false
+          },
+          "tardis_datasets_url": {
+            "type": "<class 'str'>",
+            "default": "https://datasets.tardis.dev/v1",
+            "required": false
+          },
+          "tardis_timeout": {
+            "type": "<class 'int'>",
+            "default": 30,
+            "required": false
+          },
+          "tardis_max_retries": {
+            "type": "<class 'int'>",
+            "default": 3,
+            "required": false
+          },
+          "databento_timeout": {
+            "type": "<class 'int'>",
+            "default": 60,
+            "required": false
+          },
+          "thegraph_gateway_url": {
+            "type": "<class 'str'>",
+            "default": "https://gateway.thegraph.com/api",
+            "required": false
+          },
+          "thegraph_studio_url": {
+            "type": "<class 'str'>",
+            "default": "https://api.studio.thegraph.com/query",
+            "required": false
+          },
+          "thegraph_timeout": {
+            "type": "<class 'int'>",
+            "default": 30,
+            "required": false
+          },
+          "alchemy_default_chain": {
+            "type": "<class 'str'>",
+            "default": "ETHEREUM",
+            "required": false
+          },
+          "alchemy_timeout": {
+            "type": "<class 'int'>",
+            "default": 30,
+            "required": false
+          },
+          "enable_csv_sampling": {
+            "type": "<class 'bool'>",
+            "default": false,
+            "required": false
+          },
+          "csv_sample_size": {
+            "type": "<class 'int'>",
+            "default": 20000,
+            "required": false
+          },
+          "csv_sample_dir": {
+            "type": "<class 'str'>",
+            "default": "data/samples",
+            "required": false
+          },
+          "cloud_provider": {
+            "type": "<class 'str'>",
+            "default": "gcp",
+            "required": false
+          },
+          "cloud_mock_mode": {
+            "type": "<class 'bool'>",
+            "default": false,
+            "required": false
+          },
+          "fork_mode": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "testnet_mode": {
+            "type": "<class 'bool'>",
+            "default": false,
+            "required": false
+          },
+          "defi_rpc_url": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "data_mode": {
+            "type": "<class 'str'>",
+            "default": "real",
+            "required": false
+          },
+          "runtime_mode": {
+            "type": "<class 'str'>",
+            "default": "live",
+            "required": false
+          },
+          "phase_mode": {
+            "type": "<class 'str'>",
+            "default": "phase3",
+            "required": false
+          },
+          "testing_stage": {
+            "type": "<class 'str'>",
+            "default": "MOCK",
+            "required": false
+          },
+          "enabled_categories": {
+            "type": "list[str]",
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
+            "required": false
+          },
+          "otel_exporter_otlp_endpoint": {
+            "type": "<class 'str'>",
+            "default": "http://localhost:4317",
+            "required": false
+          },
+          "disable_auth": {
+            "type": "<class 'bool'>",
+            "default": false,
+            "required": false
+          },
+          "api_key": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "secrets_cloud_provider": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "storage_cloud_provider": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "gcp_project_id": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "google_application_credentials_path": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "gcs_region": {
+            "type": "<class 'str'>",
+            "default": "us-central1",
+            "required": false
+          },
+          "gcs_location": {
+            "type": "<class 'str'>",
+            "default": "US",
+            "required": false
+          },
+          "aws_account_id": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "aws_region": {
+            "type": "<class 'str'>",
+            "default": "us-east-1",
+            "required": false
+          },
+          "aws_profile": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "instruments_s3_bucket_cefi": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "instruments_s3_bucket_tradfi": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "instruments_s3_bucket_defi": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "market_data_s3_bucket_cefi": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "market_data_s3_bucket_tradfi": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "market_data_s3_bucket_defi": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "features_s3_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "execution_s3_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "ml_models_s3_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "athena_database": {
+            "type": "<class 'str'>",
+            "default": "default",
+            "required": false
+          },
+          "athena_workgroup": {
+            "type": "<class 'str'>",
+            "default": "primary",
+            "required": false
+          },
+          "athena_output_location": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "gcs_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "instruments_gcs_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "instruments_bigquery_dataset": {
+            "type": "<class 'str'>",
+            "default": "instruments",
+            "required": false
+          },
+          "market_data_gcs_bucket": {
+            "type": "<class 'str'>",
+            "default": "market-data-tick",
+            "required": false
+          },
+          "market_data_bigquery_dataset": {
+            "type": "<class 'str'>",
+            "default": "market_tick_data",
+            "required": false
+          },
+          "features_gcs_bucket": {
+            "type": "<class 'str'>",
+            "default": "features-data",
+            "required": false
+          },
+          "execution_gcs_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "execution_bigquery_dataset": {
+            "type": "<class 'str'>",
+            "default": "execution",
+            "required": false
+          },
+          "market_data_gcs_bucket_test": {
+            "type": "<class 'str'>",
+            "default": "market-data-tick-test",
+            "required": false
+          },
+          "bigquery_dataset": {
+            "type": "<class 'str'>",
+            "default": "market_data",
+            "required": false
+          },
+          "bigquery_location": {
+            "type": "<class 'str'>",
+            "default": "US",
+            "required": false
+          },
+          "tardis_api_key": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "databento_api_key": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "the_graph_api_key": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "alchemy_api_key": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "aavescan_api_key": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "use_secret_manager": {
+            "type": "<class 'bool'>",
+            "default": true,
+            "required": false
+          },
+          "tardis_secret_name": {
+            "type": "<class 'str'>",
+            "default": "tardis-api-key",
+            "required": false
+          },
+          "tardis_full_secret_name": {
+            "type": "<class 'str'>",
+            "default": "tardis-api-key-full",
+            "required": false
+          },
+          "databento_secret_name": {
+            "type": "<class 'str'>",
+            "default": "databento-api-key",
+            "required": false
+          },
+          "thegraph_secret_name": {
+            "type": "<class 'str'>",
+            "default": "thegraph-api-key",
+            "required": false
+          },
+          "alchemy_secret_name": {
+            "type": "<class 'str'>",
+            "default": "alchemy-api-key",
+            "required": false
+          },
+          "aavescan_secret_name": {
+            "type": "<class 'str'>",
+            "default": "aavescan-api-key",
+            "required": false
+          },
+          "ibkr_gateway_host": {
+            "type": "<class 'str'>",
+            "default": "127.0.0.1",
+            "required": false
+          },
+          "ibkr_gateway_port": {
+            "type": "<class 'int'>",
+            "default": 4001,
+            "required": false
+          },
+          "ibkr_client_id_base": {
+            "type": "<class 'int'>",
+            "default": 1,
+            "required": false
+          },
+          "ibkr_credentials_secret_name": {
+            "type": "<class 'str'>",
+            "default": "ibkr-account-credentials",
+            "required": false
+          },
+          "service_auth_token": {
+            "type": "str | None",
+            "default": null,
+            "required": false
+          },
+          "log_level": {
+            "type": "<class 'str'>",
+            "default": "INFO",
+            "required": false
+          },
+          "enable_debug": {
+            "type": "<class 'bool'>",
+            "default": false,
+            "required": false
+          },
+          "testing_mode": {
+            "type": "<class 'bool'>",
+            "default": false,
+            "required": false
+          },
+          "config_store_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          },
+          "reports_bucket": {
+            "type": "<class 'str'>",
+            "default": "",
+            "required": false
+          }
+        }
+      }
+    ],
     "alerting-service": [
       {
         "class_name": "AlertingSystemConfig",
         "module": "alerting_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 91,
         "fields": {
           "service_name": {
@@ -3475,7 +3968,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -3810,7 +4307,11 @@
       {
         "class_name": "ExecutionServicesConfig",
         "module": "execution_service.service_config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 140,
         "fields": {
           "service_name": {
@@ -3940,7 +4441,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -4492,12 +4997,17 @@
           },
           "auth_allowed_domains": {
             "type": "list[str]",
-            "default": ["company.com"],
+            "default": [
+              "company.com"
+            ],
             "required": false
           },
           "auth_admin_groups": {
             "type": "list[str]",
-            "default": ["admins@company.com", "execution-admins@company.com"],
+            "default": [
+              "admins@company.com",
+              "execution-admins@company.com"
+            ],
             "required": false
           },
           "auth_group_permissions": {
@@ -4520,7 +5030,11 @@
                 "trade",
                 "manual-instruction"
               ],
-              "developers@company.com": ["read", "write", "debug"],
+              "developers@company.com": [
+                "read",
+                "write",
+                "debug"
+              ],
               "admins@company.com": [
                 "admin",
                 "read",
@@ -4549,7 +5063,11 @@
       {
         "class_name": "RiskAndExposureServiceConfig",
         "module": "risk_and_exposure_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 109,
         "fields": {
           "service_name": {
@@ -4679,7 +5197,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -5104,7 +5626,11 @@
       {
         "class_name": "PositionBalanceMonitorServiceConfig",
         "module": "position_balance_monitor_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 110,
         "fields": {
           "service_name": {
@@ -5234,7 +5760,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -5664,7 +6194,11 @@
       {
         "class_name": "DeploymentConfig",
         "module": "deployment_service.deployment_config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 140,
         "fields": {
           "service_name": {
@@ -5794,7 +6328,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -6374,7 +6912,11 @@
       {
         "class_name": "PnlAttributionServiceConfig",
         "module": "pnl_attribution_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 83,
         "fields": {
           "service_name": {
@@ -6504,7 +7046,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -6799,7 +7345,11 @@
       {
         "class_name": "StrategyServiceConfig",
         "module": "strategy_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 90,
         "fields": {
           "service_name": {
@@ -6929,7 +7479,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -7495,7 +8049,11 @@
       {
         "class_name": "FeaturesSportsServiceConfig",
         "module": "features_sports_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 82,
         "fields": {
           "service_name": {
@@ -7625,7 +8183,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -7915,7 +8477,11 @@
       {
         "class_name": "FeaturesCrossInstrumentConfig",
         "module": "features_cross_instrument_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 89,
         "fields": {
           "service_name": {
@@ -8045,7 +8611,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -8335,7 +8905,15 @@
           },
           "supported_timeframes": {
             "type": "list[str]",
-            "default": ["15s", "1m", "5m", "15m", "1h", "4h", "24h"],
+            "default": [
+              "15s",
+              "1m",
+              "5m",
+              "15m",
+              "1h",
+              "4h",
+              "24h"
+            ],
             "required": false
           },
           "enabled_feature_groups": {
@@ -8375,7 +8953,11 @@
       {
         "class_name": "FeaturesDeltaOneConfig",
         "module": "features_delta_one_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 89,
         "fields": {
           "service_name": {
@@ -8505,7 +9087,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -8790,7 +9376,15 @@
           },
           "supported_timeframes": {
             "type": "list[str]",
-            "default": ["15s", "1m", "5m", "15m", "1h", "4h", "24h"],
+            "default": [
+              "15s",
+              "1m",
+              "5m",
+              "15m",
+              "1h",
+              "4h",
+              "24h"
+            ],
             "required": false
           },
           "enabled_feature_groups": {
@@ -8849,7 +9443,11 @@
       {
         "class_name": "CalendarFeaturesConfig",
         "module": "features_calendar_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 88,
         "fields": {
           "service_name": {
@@ -8979,7 +9577,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -9299,7 +9901,11 @@
       {
         "class_name": "CommodityFeaturesConfig",
         "module": "features_commodity_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 89,
         "fields": {
           "service_name": {
@@ -9429,7 +10035,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -9709,7 +10319,10 @@
           },
           "enabled_commodities": {
             "type": "list[str]",
-            "default": ["NG", "CL"],
+            "default": [
+              "NG",
+              "CL"
+            ],
             "required": false
           },
           "enabled_factor_groups": {
@@ -9760,7 +10373,11 @@
       {
         "class_name": "FeaturesMtfConfig",
         "module": "features_multi_timeframe_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 90,
         "fields": {
           "service_name": {
@@ -9890,7 +10507,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -10175,7 +10796,14 @@
           },
           "supported_timeframes": {
             "type": "list[str]",
-            "default": ["1m", "5m", "15m", "1h", "4h", "1d"],
+            "default": [
+              "1m",
+              "5m",
+              "15m",
+              "1h",
+              "4h",
+              "1d"
+            ],
             "required": false
           },
           "enabled_feature_groups": {
@@ -10250,7 +10878,11 @@
       {
         "class_name": "MarketDataProcessingServiceConfig",
         "module": "market_data_processing_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 99,
         "fields": {
           "service_name": {
@@ -10380,7 +11012,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -10755,7 +11391,11 @@
       {
         "class_name": "ReconConfig",
         "module": "batch_live_reconciliation_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 86,
         "fields": {
           "service_name": {
@@ -10885,7 +11525,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -11195,7 +11839,11 @@
       {
         "class_name": "InferenceConfig",
         "module": "ml_inference_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 105,
         "fields": {
           "service_name": {
@@ -11325,7 +11973,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -11650,7 +12302,14 @@
           },
           "enabled_timeframes": {
             "type": "list[str]",
-            "default": ["1m", "5m", "15m", "1h", "4h", "1d"],
+            "default": [
+              "1m",
+              "5m",
+              "15m",
+              "1h",
+              "4h",
+              "1d"
+            ],
             "required": false
           },
           "training_categories": {
@@ -11730,7 +12389,11 @@
       {
         "class_name": "TradingAgentConfig",
         "module": "trading_agent_service.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 103,
         "fields": {
           "service_name": {
@@ -11860,7 +12523,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -12255,7 +12922,10 @@
       {
         "class_name": "UnifiedCloudConfig",
         "module": "unified_config_interface.cloud_config",
-        "bases": ["_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 81,
         "fields": {
           "service_name": {
@@ -12385,7 +13055,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -12691,7 +13365,11 @@
       {
         "class_name": "MLTrainingConfig",
         "module": "unified_config_interface.ml_config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 100,
         "fields": {
           "service_name": {
@@ -12821,7 +13499,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -13120,7 +13802,9 @@
           },
           "tradfi_instruments": {
             "type": "list[str]",
-            "default": ["NASDAQ:ETF:SPY-USD"],
+            "default": [
+              "NASDAQ:ETF:SPY-USD"
+            ],
             "required": false
           },
           "auxiliary_instrument_ids": {
@@ -13130,22 +13814,44 @@
           },
           "timeframes": {
             "type": "list[str]",
-            "default": ["1m", "5m", "15m", "1h", "4h"],
+            "default": [
+              "1m",
+              "5m",
+              "15m",
+              "1h",
+              "4h"
+            ],
             "required": false
           },
           "lookback_windows": {
             "type": "list[int]",
-            "default": [2, 3, 5, 10, 20, 50],
+            "default": [
+              2,
+              3,
+              5,
+              10,
+              20,
+              50
+            ],
             "required": false
           },
           "std_dev_thresholds": {
             "type": "list[float]",
-            "default": [1.0, 1.5, 2.0, 2.5],
+            "default": [
+              1.0,
+              1.5,
+              2.0,
+              2.5
+            ],
             "required": false
           },
           "breakout_thresholds": {
             "type": "list[float]",
-            "default": [0.5, 1.0, 1.5],
+            "default": [
+              0.5,
+              1.0,
+              1.5
+            ],
             "required": false
           },
           "feature_selection_samples": {
@@ -13212,7 +13918,9 @@
       {
         "class_name": "InstrumentDomainConfig",
         "module": "unified_config_interface.domain_configs",
-        "bases": ["BaseConfig"],
+        "bases": [
+          "BaseConfig"
+        ],
         "field_count": 7,
         "fields": {
           "service_name": {
@@ -13255,7 +13963,9 @@
       {
         "class_name": "StrategyDomainConfig",
         "module": "unified_config_interface.domain_configs",
-        "bases": ["BaseConfig"],
+        "bases": [
+          "BaseConfig"
+        ],
         "field_count": 6,
         "fields": {
           "service_name": {
@@ -13293,7 +14003,9 @@
       {
         "class_name": "ClientDomainConfig",
         "module": "unified_config_interface.domain_configs",
-        "bases": ["BaseConfig"],
+        "bases": [
+          "BaseConfig"
+        ],
         "field_count": 6,
         "fields": {
           "service_name": {
@@ -13331,7 +14043,9 @@
       {
         "class_name": "VenueDomainConfig",
         "module": "unified_config_interface.domain_configs",
-        "bases": ["BaseConfig"],
+        "bases": [
+          "BaseConfig"
+        ],
         "field_count": 6,
         "fields": {
           "service_name": {
@@ -13417,7 +14131,11 @@
       {
         "class_name": "MarketDataProviderConfig",
         "module": "unified_market_interface.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 138,
         "fields": {
           "service_name": {
@@ -13547,7 +14265,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {
@@ -14117,7 +14839,11 @@
       {
         "class_name": "OrderInterfaceConfig",
         "module": "unified_trade_execution_interface.config",
-        "bases": ["UnifiedCloudConfig", "_ApiClientFields", "BaseConfig"],
+        "bases": [
+          "UnifiedCloudConfig",
+          "_ApiClientFields",
+          "BaseConfig"
+        ],
         "field_count": 88,
         "fields": {
           "service_name": {
@@ -14247,7 +14973,11 @@
           },
           "enabled_categories": {
             "type": "list[str]",
-            "default": ["CEFI", "TRADFI", "DEFI"],
+            "default": [
+              "CEFI",
+              "TRADFI",
+              "DEFI"
+            ],
             "required": false
           },
           "otel_exporter_otlp_endpoint": {

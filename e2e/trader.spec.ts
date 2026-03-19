@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test'
 
 /**
- * TRADER PAGE E2E TESTS
- * Tests all interactive elements on the trader dashboard
+ * OVERVIEW PAGE E2E TESTS
+ * Tests all interactive elements on the overview dashboard
  */
 
-test.describe('Trader Dashboard', () => {
+test.describe('Overview Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/trader')
+    await page.goto('/overview')
     await page.waitForLoadState('networkidle')
   })
 

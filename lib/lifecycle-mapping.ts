@@ -174,7 +174,6 @@ export const routeMappings: RouteMapping[] = [
   // RUN stage routes
   { path: "/overview", label: "Overview", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
   { path: "/trading", label: "Trading", primaryStage: "run", lanes: ["execution"], requiresAuth: true },
-  { path: "/trader", label: "Trader Dashboard", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
   { path: "/positions", label: "Positions", primaryStage: "run", secondaryStage: "observe", lanes: ["execution", "capital"], requiresAuth: true },
   { path: "/strategies", label: "Strategies", primaryStage: "run", secondaryStage: "build", lanes: ["strategy"], requiresAuth: true },
   

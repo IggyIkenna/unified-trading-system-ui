@@ -1,0 +1,223 @@
+# Sharding Configuration SSOT
+# Defines sharding dimensions for all services in batch and live modes
+# Used by deployment-engine to generate per-shard deployment configs
+
+version: 1
+ssot:
+  purpose: Service sharding dimensions for batch and live modes
+  owner: deployment-service
+  paired_runtime_ssot: runtime-topology.yaml
+
+# ---------------------------------------------------------------------------
+# Sharding Dimensions by Service
+# ---------------------------------------------------------------------------
+
+services:
+  instruments-service:
+    batch:
+      dimensions: [category, venue, date]
+      category_values: [cefi, defi, tradfi, sports]
+      sports_notes: >-
+        Sports instruments: league, fixture, and team instruments following InstrumentId conventions. category=sports;
+        venue = bookmaker key or "api_football" for metadata.
+    live:
+      dimensions: [venue]
+      notes: Poll ~15min, publish PubSub for adds/removes/status
+
+  features-sports-service:
+    batch:
+      dimensions: [league, feature_group, date]
+      league_values: [EPL, LA_LIGA, BUNDESLIGA, SERIE_A, LIGUE_1, CHAMPIONSHIP, EREDIVISIE, PRIMEIRA_LIGA]
+      feature_group_values:
+        [
+          team_form,
+          h2h,
+          league_stats,
+          halftime,
+          goal_timing,
+          season_context,
+          venue_context,
+          referee,
+          player_lineup,
+          odds,
+          xg,
+          advanced_stats,
+          weather,
+        ]
+      notes: >-
+        Sports features are sharded by league (not by cefi/tradfi/defi category). Each league is an independent shard.
+        Detail: sharding.features-sports-service.yaml.
+    live:
+      dimensions: [league]
+      notes: >-
+        Live mode subscribes to LIVE_ODDS_RECEIVED Pub/Sub topic, calls compute_for_fixture(), broadcasts
+        LIVE_FEATURES_COMPUTED. Calculators: odds, progressive_stats, goal_timing, halftime (team_form cached). Ref:
+        B3.3 LIVE_CALCULATORS subset.
+
+  market-tick-data-service:
+    batch:
+      dimensions: [category, venue, instrument_type, data_type, date]
+      category_values: [cefi, defi, tradfi, sports]
+      instrument_type_values: [spot, perpetual, future, option, odds]
+      data_type_values:
+        [
+          trades,
+          book_snapshot_5,
+          derivative_ticker,
+          liquidations,
+          incremental_book_l2,
+          opra_options,
+          cme_options,
+          odds_tick,
+          book_update,
+        ]
+      sports_notes: >-
+        Sports category: venue = bookmaker/exchange key (betfair, pinnacle, odds_api, etc.); instrument_type = odds;
+        data_type = odds_tick or book_update. Tier 1 (odds_api) uses REST polling; Tier 3 (scrapers) uses Playwright.
+    live:
+      dimensions: [venue, instrument_type, data_type]
+      notes: >-
+        One stream per (venue, data_type). For sports: Tier 1 = Odds API REST poll; Tier 3 = USEI scraper polling loop.
+        All normalize to CanonicalOdds.
+
+  market-data-processing-service:
+    batch:
+      dimensions: [category, venue, instrument_type, date, timeframe]
+      category_values: [cefi, defi, tradfi]
+      timeframe_values: [15s, 1min, 5min, 15min, 1h, 4h, 1d]
+    live:
+      dimensions: [venue, instrument_type]
+      notes: Holds rolling historical candle window (~1 year, Redis/memcached)
+
+  features-calendar-service:
+    batch:
+      dimensions: [category, date]
+      category_values: [cefi, defi, tradfi]
+    live: null
+    notes: Batch only, calendar data changes infrequently
+
+  features-delta-one-service:
+    batch:
+      dimensions: [category, venue, feature_category, date]
+      category_values: [cefi, defi, tradfi]
+      feature_category_values:
+        [
+          technical_indicators,
+          moving_averages,
+          oscillators,
+          volatility_realized,
+          momentum,
+          volume_analysis,
+          vwap,
+          candlestick_patterns,
+          market_structure,
+          returns,
+          round_numbers,
+          streaks,
+          microstructure,
+          funding_oi,
+          liquidations,
+          temporal,
+        ]
+    live:
+      dimensions: [venue, feature_category]
+      notes: Triggered by MDPS completion event
+
+  features-volatility-service:
+    batch:
+      dimensions: [category, venue, feature_category, date]
+      category_values: [cefi, defi, tradfi]
+      feature_category_values: [options_volatility, futures_basis, tradfi_vol_surface]
+    live:
+      dimensions: [venue, feature_category]
+      notes: Triggered by MDPS completion event
+
+  features-onchain-service:
+    batch:
+      dimensions: [protocol, chain, date]
+      protocol_values: [aave_v3, uniswap_v3, curve, morpho, euler, fluid]
+      chain_values: [ethereum, base, arbitrum, optimism]
+    live: null
+    notes: Batch only, on-chain data fetched periodically
+
+  features-cross-instrument-service:
+    batch:
+      dimensions: [category, feature_category, date]
+      category_values: [cefi, defi, tradfi]
+      feature_category_values: [regime, cross_venue_spread, realized_vs_implied, cross_asset_correlation]
+    live:
+      dimensions: [feature_category]
+      notes: Aggregates across venues/instruments. Triggered by FDS+FVS completion.
+
+  features-multi-timeframe-service:
+    batch:
+      dimensions: [category, feature_category, date]
+      category_values: [cefi, defi, tradfi]
+      feature_category_values: [tf_momentum_alignment, tf_structure_context, tf_vol_compression, tf_session_context]
+    live:
+      dimensions: [feature_category]
+      notes: L3b cross-TF aggregation. Triggered by FDS completion per instrument.
+
+  ml-training-service:
+    batch:
+      dimensions: [model, instrument, timeframe, target_type, config]
+      model_values: [lstm, xgboost, lightgbm, ensemble]
+      timeframe_values: [15s, 1min, 5min, 15min, 1h]
+      target_type_values: [return, volatility, direction, regime]
+    live: null
+    notes: Batch only, scheduled ~quarterly
+
+  ml-inference-service:
+    batch:
+      dimensions: [model, venue, instrument, date]
+    live:
+      dimensions: [model, venue, instrument]
+      notes: Event-driven on features arrival
+
+  strategy-service:
+    batch:
+      dimensions: [strategy_id, client, date]
+    live:
+      dimensions: [strategy_id, client]
+      notes: >-
+        NOT sharded by venue - strategy may span venues (arb, spread). Sports arb strategy type: consumes live sports
+        features, emits BettingSignal when ArbitrageStatus.FREE_MONEY. Uses same strategy_id/client sharding as TradFi.
+
+  execution-service:
+    batch:
+      dimensions: [client, subaccount, date]
+    live:
+      dimensions: [client, subaccount]
+      notes: >-
+        Default subaccount used in batch for uniform implementation. Sports live: routes BettingSignal to USEI exchange
+        adapters (Betfair, Smarkets, etc.) via category=sports in signal. Validates freshness (<5s), checks
+        MarketStatus.ACTIVE.
+
+  position-balance-monitor-service:
+    batch:
+      dimensions: [client, venue, date]
+    live:
+      dimensions: [client, venue]
+      raw_granularity: [client, subaccount, venue, instrument]
+      notes: Raw positions at finest granularity, aggregation is downstream
+
+  risk-and-exposure-service:
+    batch:
+      dimensions: [client, date]
+    live:
+      dimensions: [client]
+      aggregation_dimensions: [client, underlying, risk_category, pool]
+      notes: Subscribes to positions + market data, aggregates
+
+  pnl-attribution-service:
+    batch:
+      dimensions: [client, date]
+    live:
+      dimensions: [client]
+      output_dimensions: [client, strategy, date]
+      notes: Subscribes to execution + risk + positions, aggregates
+
+  alerting-service:
+    batch: null
+    live: singleton
+    notes: No sharding. Cloud Run auto-restart + PubSub message retention for recovery.

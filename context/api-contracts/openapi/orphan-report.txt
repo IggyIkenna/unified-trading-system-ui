@@ -1,7 +1,7 @@
 # Orphan Report: Domain models not exposed by any service endpoint
 # Generated from 16 services
 # Total schemas in spec: 149
-# Orphaned models: 547
+# Orphaned models: 546
 
 UAC: AaveBorrowParams
 UAC: AaveDepositParams
@@ -79,7 +79,6 @@ UAC: CanonicalOdds
 UAC: CanonicalOhlcvBar
 UAC: CanonicalOnChainMetric
 UAC: CanonicalOptionsChainEntry
-UAC: CanonicalOraclePriceFeed
 UAC: CanonicalOrder
 UAC: CanonicalOrderAmendment
 UAC: CanonicalOrderBook

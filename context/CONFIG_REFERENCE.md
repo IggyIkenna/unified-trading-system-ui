@@ -28,7 +28,7 @@ Configuration includes:
 
 ### Source 1: `config-registry.json` (Canonical)
 
-**Location:** `unified-api-contracts/openapi/config-registry.json`
+**Location:** `lib/registry/config-registry.json` (copied from unified-api-contracts/openapi/)
 
 **What it contains:**
 - Every Pydantic config class from every service
@@ -87,10 +87,10 @@ find . -name "*config*" -type f | head -20
 
 ### Source 3: Service Documentation
 
-In `unified-trading-codex/`, find service-specific config docs:
+Service-specific config docs are in the codex copy within this repo:
 
 ```
-unified-trading-codex/
+context/codex/
 ├── 01-domain/
 │   ├── execution-service-config-guide.md
 │   ├── strategy-service-configuration.md
@@ -343,7 +343,7 @@ See **API_FRONTEND_GAPS.md** for a running list of:
 
 ### How `config-registry.json` is Generated
 
-**Script:** `unified-trading-pm/scripts/openapi/generate_config_registry.py`
+**Script:** `unified-trading-pm/scripts/openapi/generate_config_registry.py` (in the multi-repo workspace, not this repo)
 
 **What it does:**
 1. Scans all service repos in the workspace
@@ -368,12 +368,14 @@ python scripts/openapi/generate_config_registry.py --output-dir ../unified-api-c
 
 ## 11. Quick Links
 
-- **Full config registry:** `unified-api-contracts/openapi/config-registry.json`
+- **Full config registry:** `lib/registry/config-registry.json`
 - **Sharding guide:** [`SHARDING_DIMENSIONS.md`](./SHARDING_DIMENSIONS.md)
 - **API/frontend gaps:** [`API_FRONTEND_GAPS.md`](./API_FRONTEND_GAPS.md)
-- **Execution config deep-dive:** `unified-trading-codex/01-domain/execution-service-config-guide.md`
-- **General config patterns:** `unified-trading-codex/06-coding-standards/config-types.md`
-- **Regenerate configs:** `cd unified-trading-pm && python scripts/openapi/generate_config_registry.py`
+- **Execution config deep-dive:** `context/codex/01-domain/execution-service-config-guide.md`
+- **General config patterns:** `context/codex/06-coding-standards/config-types.md`
+- **OpenAPI spec:** `lib/registry/openapi.json`
+- **System topology:** `lib/registry/system-topology.json`
+- **Sharding config:** `lib/registry/sharding_config.yaml`
 
 ---
 

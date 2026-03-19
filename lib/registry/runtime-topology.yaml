@@ -1,0 +1,1792 @@
+# Runtime Topology SSOT
+# Defines runtime interaction behavior (messaging, API edges, storage flows).
+# This file is machine-readable and consumed by deployment + quality gates.
+# SVG visualization: unified-trading-codex/04-architecture/RUNTIME_DEPLOYMENT_TOPOLOGY_DAG.svg
+#
+# Transport is parameterized by CLOUD_PROVIDER (gcp | aws | local).
+# At deployment time, the deployment system reads CLOUD_PROVIDER to select
+# the correct transport per edge. Services never see cloud-specific transports.
+
+version: 6
+ssot:
+  purpose: Runtime interaction topology and deployment transport policy
+  owner: unified-trading-pm
+  paired_code_ssot: unified-trading-pm/workspace-manifest.json
+  svg_diagram: unified-trading-codex/04-architecture/RUNTIME_DEPLOYMENT_TOPOLOGY_DAG.svg
+  decisions_doc: unified-trading-codex/04-architecture/RUNTIME_TOPOLOGY_DECISIONS.md
+
+# ---------------------------------------------------------------------------
+# KEY DISTINCTION: Transport vs Persistence
+# ---------------------------------------------------------------------------
+# Transport = how data moves between services at runtime
+#   - batch: GCS (GCP) or S3 (AWS) — producer writes parquet, consumer reads parquet
+#   - live: PubSub (GCP) or SQS (AWS) — producer publishes, consumer subscribes
+#   - live co-located: in_memory (same VM, process-to-process; fast path when services share VM)
+#   - Redis: hot transient state (execution-service order state); not transport between pipeline services
+# Kernel bypass (e.g. DPDK, zero-copy kernel bypass): not used in this topology. in_memory is the
+#   colocated fast path; kernel bypass would be a future option only if sub-microsecond latency required.
+#
+# Persistence = durable storage sink (ALL services persist output to cloud storage)
+#   - In batch mode: transport and persistence are the SAME write (GCS or S3)
+#   - In live mode: transport (PubSub/SQS) and persistence (GCS/S3 sink) are SEPARATE
+#   - Every service that produces data MUST persist to cloud storage regardless of mode
+#   - BigQuery is for OLAP analytics (not transport)
+#   - Redis is for hot transient state (not persistence)
+#   - CLOUD_PROVIDER env var selects GCP or AWS transport/persistence at deployment time
+
+# ---------------------------------------------------------------------------
+# Deployment profiles
+# ---------------------------------------------------------------------------
+deployment_profiles:
+  distributed:
+    description: Each service on its own VM / Cloud Run instance (cross-VM safe)
+    allowed_transports: [gcs, pubsub, s3, sqs]
+  co_located_vm:
+    description: Bundled services on one VM for low-latency handoff
+    allowed_transports: [gcs, pubsub, s3, sqs, in_memory]
+
+# ---------------------------------------------------------------------------
+# Defaults
+# ---------------------------------------------------------------------------
+defaults:
+  deployment_profile: distributed
+  transport_by_mode:
+    batch:
+      gcp:
+        transport: gcs
+        dependency_check: gcs
+      aws:
+        transport: s3
+        dependency_check: s3
+    live:
+      gcp:
+        transport: pubsub
+        dependency_check: pubsub
+      aws:
+        transport: sqs
+        dependency_check: sqs
+  persistence:
+    gcp:
+      sink: gcs
+      format: parquet
+    aws:
+      sink: s3
+      format: parquet
+    note: "CLOUD_PROVIDER env var determines which cloud's transport is used at deployment time"
+
+# ---------------------------------------------------------------------------
+# Messaging / storage primitives
+# ---------------------------------------------------------------------------
+message_bus:
+  gcs:
+    role: batch message bus + persistence sink (GCP)
+    format: parquet
+    scope: cross-service
+    cloud: gcp
+    note: In batch mode, GCS is BOTH transport and persistence (same write)
+  s3:
+    role: batch message bus + persistence sink (AWS)
+    format: parquet
+    scope: cross-service
+    cloud: aws
+    note: In batch mode, S3 is BOTH transport and persistence (same write)
+  pubsub:
+    role: live event bus (transport only, ephemeral)
+    protocol: cloud_pubsub
+    scope: cross-vm
+    cloud: gcp
+    note: Data published to PubSub must ALSO be persisted separately
+  sqs:
+    role: live event bus (transport only, ephemeral)
+    protocol: aws_sqs
+    scope: cross-vm
+    cloud: aws
+    note: Data published to SQS must ALSO be persisted separately
+  in_memory:
+    role: process-local live handoff (co-located services only)
+    scope: same-vm-only
+    note: Same as PubSub/SQS — still requires separate persistence
+  redis:
+    role: hot transient state (NOT persistence, NOT transport)
+    scope: same-vm-only
+    note: Used only by execution-service for order state; not a data sink
+
+storage_systems:
+  gcs:
+    role: canonical timeseries, features, models, execution results
+    cloud: gcp
+    note: The universal persistence sink on GCP — every service writes here
+  s3:
+    role: canonical timeseries, features, models, execution results
+    cloud: aws
+    note: The universal persistence sink on AWS — every service writes here
+  bigquery:
+    role: OLAP analytics and reporting warehouse
+    cloud: gcp
+    note: Fed by services via UDC BigQueryCatalog; not a transport
+  redis:
+    role: low-latency transient state
+    note: Execution-services hot order state only; ephemeral
+
+# ---------------------------------------------------------------------------
+# Service clusters (logical grouping for deployment)
+# ---------------------------------------------------------------------------
+clusters:
+  data_pipeline:
+    services:
+      - instruments-service
+      - market-tick-data-service
+      - market-data-processing-service
+    layer: "L1-L2"
+  features:
+    services:
+      - features-calendar-service
+      - features-delta-one-service
+      - features-volatility-service
+      - features-onchain-service
+      - features-cross-instrument-service
+      - features-multi-timeframe-service
+      - features-sports-service
+    layer: "L3"
+  ml_pipeline:
+    services:
+      - ml-training-service
+      - ml-inference-service
+    layer: "L4"
+  strategy_execution:
+    services:
+      - strategy-service
+      - execution-service
+    layer: "L5"
+  monitoring:
+    services:
+      - position-balance-monitor-service
+      - risk-and-exposure-service
+      - pnl-attribution-service
+      - alerting-service
+    layer: "L6"
+  api_services:
+    services:
+      - execution-results-api
+      - market-data-api
+      - client-reporting-api
+      - deployment-api
+    layer: "API"
+  website:
+    services:
+      - odum-research-website
+    layer: "Web"
+    note: >
+      External-facing website. Self-contained Next.js app with built-in API routes (Firebase Auth + Firestore + GCS
+      proxy). No inter-service data flows. Deployment: Cloud Run (live only, not batch). Staging requires internal OAuth
+      gate.
+
+# ---------------------------------------------------------------------------
+# Complete service data flows (producer → consumer)
+# ---------------------------------------------------------------------------
+# NOTE: UDC is a library (Tier 3), NOT a service. Services use UDC to
+# read/write GCS/BigQuery. UDC never appears as a flow participant.
+
+service_flows:
+  # === Layer 1 → Layer 2: Data Ingestion → Processing ===
+  - producer: instruments-service
+    consumer: market-tick-data-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: market-data-processing-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: features-delta-one-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: features-volatility-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: features-cross-instrument-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: features-multi-timeframe-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: ml-training-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+
+  - producer: instruments-service
+    consumer: ml-inference-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: strategy-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: instruments-service
+    consumer: execution-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: market-tick-data-service
+    consumer: market-data-processing-service
+    data: raw_tick_data
+    modes:
+      batch: { transport: gcs }
+      live:
+        distributed:
+          gcp: { transport: pubsub }
+          aws: { transport: sqs }
+        co_located_vm: { transport: in_memory }
+
+  # === Layer 2 → Layer 3: Processing → Features ===
+  - producer: market-data-processing-service
+    consumer: features-delta-one-service
+    data: processed_candles_ohlcv
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: market-data-processing-service
+    consumer: features-volatility-service
+    data: processed_candles_ohlcv
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 2 → API: Processing → Market Data API ===
+  - producer: market-data-processing-service
+    consumer: market-data-api
+    data: candles_stream
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: market-tick-data-service
+    consumer: market-data-api
+    data: orderbook_stream
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 3 → Layer 4: Features → ML ===
+  - producer: features-delta-one-service
+    consumer: ml-training-service
+    data: delta_one_features
+    modes:
+      batch: { transport: gcs }
+
+  - producer: features-volatility-service
+    consumer: ml-training-service
+    data: volatility_features
+    modes:
+      batch: { transport: gcs }
+
+  - producer: features-onchain-service
+    consumer: ml-training-service
+    data: onchain_features
+    modes:
+      batch: { transport: gcs }
+
+  - producer: features-calendar-service
+    consumer: ml-training-service
+    data: calendar_features
+    modes:
+      batch: { transport: gcs }
+
+  # === Layer 2-3 → Cross-Instrument: Inputs for cross-instrument aggregation ===
+  - producer: features-delta-one-service
+    consumer: features-cross-instrument-service
+    data: delta_one_features_for_cross_instrument
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Cross-instrument service aggregates features from multiple sources
+
+  - producer: features-volatility-service
+    consumer: features-cross-instrument-service
+    data: volatility_features_for_cross_instrument
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: market-data-processing-service
+    consumer: features-cross-instrument-service
+    data: processed_market_data_multi_venue
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Multi-venue candles for cross-venue spread calculations
+
+  # === Cross-Instrument → ML ===
+  - producer: features-cross-instrument-service
+    consumer: ml-training-service
+    data: cross_instrument_features
+    modes:
+      batch: { transport: gcs }
+
+  - producer: features-cross-instrument-service
+    consumer: ml-inference-service
+    data: live_cross_instrument_features
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Multi-Timeframe Service (L3b): FDS → FMTS → ML ===
+  - producer: features-delta-one-service
+    consumer: features-multi-timeframe-service
+    data: delta_one_features_multi_tf
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Multi-timeframe service aggregates delta-one features at 5m/15m/1h/4h/1d per instrument
+
+  - producer: features-multi-timeframe-service
+    consumer: ml-training-service
+    data: multi_timeframe_features
+    modes:
+      batch: { transport: gcs }
+
+  - producer: features-multi-timeframe-service
+    consumer: ml-inference-service
+    data: live_multi_timeframe_features
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 3 → Layer 4: Features → ML inference (live features) ===
+  - producer: features-delta-one-service
+    consumer: ml-inference-service
+    data: live_delta_one_features
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: ML inference needs live features to generate predictions. Live→live = PubSub.
+
+  - producer: features-volatility-service
+    consumer: ml-inference-service
+    data: live_volatility_features
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Same reasoning as delta-one features.
+
+  # === Sports Features (L3): instruments + market-data-processing → features-sports → ML ===
+  - producer: instruments-service
+    consumer: features-sports-service
+    data: sports_reference_data
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Leagues, teams, stadiums, venues from instruments-service
+
+  - producer: market-data-processing-service
+    consumer: features-sports-service
+    data: sports_odds
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Odds snapshots, HT snapshots for feature calculation
+
+  - producer: features-sports-service
+    consumer: ml-training-service
+    data: sports_features
+    modes:
+      batch: { transport: gcs }
+
+  - producer: features-sports-service
+    consumer: ml-inference-service
+    data: live_sports_features
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 4: ML training → ML inference (model artifacts only) ===
+  - producer: ml-training-service
+    consumer: ml-inference-service
+    data: model_artifacts_registry
+    modes:
+      batch: { transport: gcs }
+    # note: see comment below
+  # Training is batch/infrequent (~quarterly). Inference reads models from GCS.
+  # No PubSub needed — batch producer, live consumer = GCS read per messaging rules.
+  #
+  # === Layer 4 → Layer 5: ML → Strategy ===
+  - producer: ml-inference-service
+    consumer: strategy-service
+    data: predictions
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 2 → Layer 5: Market data → Strategy ===
+  - producer: market-data-processing-service
+    consumer: strategy-service
+    data: processed_market_data
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 6 → Layer 5: PBM → Strategy (position state) ===
+  - producer: position-balance-monitor-service
+    consumer: strategy-service
+    data: position_state
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    # note: see comment below
+  # Strategy gets position from PBM, NOT execution. PBM is the authoritative
+  # position source — it reconciles exchange positions vs filled orders.
+  # At startup, PBM publishes initial state so strategy knows current position.
+  #
+  # === Layer 5: Strategy → Execution ===
+  - producer: strategy-service
+    consumer: execution-service
+    data: trade_signals_orders
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 5: Execution → Strategy (order handshake) ===
+  - producer: execution-service
+    consumer: strategy-service
+    data: order_handshake
+    modes:
+      live: { transport: pubsub }
+    # note: see comment below
+  # Bidirectional: strategy sends orders, execution sends back order status
+  # (created, filled, cancelled, rejected). Strategy needs this to know
+  # whether its orders were accepted before deciding next action.
+  #
+  # === Layer 5 → Layer 6: Execution → Monitoring ===
+  - producer: execution-service
+    consumer: position-balance-monitor-service
+    data: order_lifecycle_events
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    # note: see comment below
+  # Full order lifecycle: ORDER_CREATED, ORDER_UPDATED, ORDER_CANCELLED,
+  # ORDER_FILLED, ORDER_REJECTED. Not just fills.
+  #
+  - producer: execution-service
+    consumer: pnl-attribution-service
+    data: order_lifecycle_events
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 6 internal: Monitoring chain ===
+  - producer: position-balance-monitor-service
+    consumer: risk-and-exposure-service
+    data: position_snapshots
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: market-data-processing-service
+    consumer: risk-and-exposure-service
+    data: market_data_for_risk
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: risk-and-exposure-service
+    consumer: pnl-attribution-service
+    data: risk_metrics
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 5 → API: Execution → Results API ===
+  - producer: execution-service
+    consumer: execution-results-api
+    data: execution_results
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === Layer 6 → API: PnL/Risk → Reporting ===
+  - producer: pnl-attribution-service
+    consumer: client-reporting-api
+    data: pnl_reports
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: risk-and-exposure-service
+    consumer: client-reporting-api
+    data: risk_exposure_reports
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: position-balance-monitor-service
+    consumer: client-reporting-api
+    data: position_balance_reports
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === MTDH → Execution (live market feed, co-located) ===
+  - producer: market-tick-data-service
+    consumer: execution-service
+    data: live_market_feed
+    modes:
+      batch: { transport: gcs }
+      live:
+        distributed:
+          gcp: { transport: pubsub }
+          aws: { transport: sqs }
+        co_located_vm: { transport: in_memory }
+    # note: see comment below
+  # Execution needs live market feed for all allocation clients (one stream,
+  # many consumers). Co-located with MTDH same as MDPS for low-latency.
+  #
+  # === Alerting (cross-cutting, one-to-many) ===
+  - producer: risk-and-exposure-service
+    consumer: alerting-service
+    data: risk_alerts_circuit_breaker_triggers
+    modes:
+      live: { transport: pubsub }
+      batch: { transport: gcs }
+
+  - producer: position-balance-monitor-service
+    consumer: alerting-service
+    data: balance_discrepancy_alerts
+    modes:
+      live: { transport: pubsub }
+      batch: { transport: gcs }
+
+  - producer: execution-service
+    consumer: alerting-service
+    data: order_rejection_spikes
+    modes:
+      live: { transport: pubsub }
+
+  - producer: alerting-service
+    consumer: execution-service
+    data: circuit_breaker_commands
+    modes:
+      live: { transport: pubsub }
+    # note: see comment below
+  # Alerting can publish circuit breaker commands (halt execution, flatten
+  # positions) that services MUST honor. This is the disaster recovery trigger.
+  #
+  - producer: alerting-service
+    consumer: strategy-service
+    data: circuit_breaker_commands
+    modes:
+      live: { transport: pubsub }
+    note: Strategy must honor halt commands from alerting system.
+
+  # === Alerting → Deployment API: operational stop/restart triggers ===
+  - producer: alerting-service
+    consumer: deployment-api
+    data: service_stop_restart_triggers
+    modes:
+      live: { transport: pubsub }
+    note: Alerting publishes stop/restart commands; deployment-api executes them against Cloud Run services.
+
+  # === Layer 1-2 → Commodity Features (L3): instruments + MDPS → features-commodity-service ===
+  - producer: instruments-service
+    consumer: features-commodity-service
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  - producer: market-data-processing-service
+    consumer: features-commodity-service
+    data: processed_candles_ohlcv
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Commodity features consume OHLCV candles for fundamental factor and signal computation.
+
+  # === Commodity Features → ML ===
+  - producer: features-commodity-service
+    consumer: ml-training-service
+    data: commodity_features
+    modes:
+      batch: { transport: gcs }
+
+  - producer: features-commodity-service
+    consumer: ml-inference-service
+    data: live_commodity_features
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+
+  # === On-chain Features → ML inference (batch read of on-chain feature snapshots) ===
+  - producer: features-onchain-service
+    consumer: ml-inference-service
+    data: onchain_feature_snapshots
+    modes:
+      batch: { transport: gcs }
+    note: On-chain service is batch-only; inference reads latest on-chain feature snapshots from GCS.
+
+  # === Layer 5-6 → Reconciliation: execution + position + strategy → batch-live-reconciliation-service ===
+  - producer: execution-service
+    consumer: batch-live-reconciliation-service
+    data: execution_results_for_reconciliation
+    modes:
+      batch: { transport: gcs }
+    note: T+1 reconciliation reads execution fills to compare live vs batch-replayed benchmark.
+
+  - producer: position-balance-monitor-service
+    consumer: batch-live-reconciliation-service
+    data: position_snapshots_for_reconciliation
+    modes:
+      batch: { transport: gcs }
+    note: Reconciliation validates live positions against batch-computed expected positions.
+
+  - producer: strategy-service
+    consumer: batch-live-reconciliation-service
+    data: signals_for_reconciliation
+    modes:
+      batch: { transport: gcs }
+    note: Reconciliation compares live signals to deterministic batch-replayed signals.
+
+  # === Trading Agent: ML + strategy → trading-agent-service → execution ===
+  - producer: ml-inference-service
+    consumer: trading-agent-service
+    data: predictions
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Agent supervisor consumes ML predictions to drive autonomous TradFi commodity options/futures decisions.
+
+  - producer: strategy-service
+    consumer: trading-agent-service
+    data: trade_signals
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Agent observes strategy signals for supervised micro-loop decision-making.
+
+  - producer: trading-agent-service
+    consumer: execution-service
+    data: agent_trade_orders
+    modes:
+      live: { transport: pubsub }
+    note: Agent submits orders to execution-service; same pipeline as strategy-service orders.
+
+  # === API read edges: pipeline services → API layer ===
+  - producer: execution-service
+    consumer: batch-audit-api
+    data: execution_audit_events
+    modes:
+      batch: { transport: gcs }
+    note: Audit API reads execution audit trail from GCS/BigQuery for compliance and data-health queries.
+
+  - producer: execution-service
+    consumer: trading-analytics-api
+    data: execution_results
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Trading analytics API aggregates execution results for slippage, fill quality, and trade analytics.
+
+  - producer: pnl-attribution-service
+    consumer: trading-analytics-api
+    data: pnl_reports
+    modes:
+      batch: { transport: gcs }
+      live: { transport: pubsub }
+    note: Trading analytics API serves PnL breakdowns alongside execution analytics.
+
+  - producer: ml-inference-service
+    consumer: ml-inference-api
+    data: predictions_model_registry
+    modes:
+      batch: { transport: gcs }
+    note: Inference API fronts the inference service — exposes model registry reads and prediction queries.
+
+  - producer: ml-training-service
+    consumer: ml-training-api
+    data: training_artifacts_status
+    modes:
+      batch: { transport: gcs }
+    note: Training API fronts the training service — exposes job status, artifact paths, and training metadata.
+
+  - producer: instruments-service
+    consumer: config-api
+    data: instruments_universe
+    modes:
+      batch: { transport: gcs }
+    note: Config API exposes system configuration including instrument universe; reads GCS-persisted instruments data.
+
+# ---------------------------------------------------------------------------
+# API interaction edges (network boundaries only)
+# ---------------------------------------------------------------------------
+api_interactions:
+  # Trading UIs → execution-results-api (:8002)
+  - caller: trading-analytics-ui
+    callee: execution-results-api
+    protocol: sse
+    endpoint_family: /events/*
+    data_mode: live
+  - caller: strategy-ui
+    callee: execution-results-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch+live
+  - caller: execution-analytics-ui
+    callee: execution-results-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+  - caller: settlement-ui
+    callee: execution-results-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+
+  # Client UIs → client-reporting-api (:8003)
+  - caller: client-reporting-ui
+    callee: client-reporting-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+
+  # Ops UIs → deployment-api (:8001)
+  - caller: deployment-ui
+    callee: deployment-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+  - caller: live-health-monitor-ui
+    callee: deployment-api
+    protocol: sse
+    endpoint_family: /events/*
+    data_mode: live
+  - caller: batch-audit-ui
+    callee: deployment-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+  - caller: ml-training-ui
+    callee: deployment-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+  - caller: logs-dashboard-ui
+    callee: deployment-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+  - caller: onboarding-ui
+    callee: deployment-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch
+
+# ---------------------------------------------------------------------------
+# Persistence flows (every service → cloud storage sink: GCS on GCP, S3 on AWS)
+# Separate from transport — this is durable storage.
+# CLOUD_PROVIDER determines which sink is used. 'gcs' entries become 's3' on AWS.
+# ---------------------------------------------------------------------------
+persistence_flows:
+  - actor: instruments-service
+    sink: gcs
+    dataset: instruments_universe
+    retention: { hot_days: 90, warm_days: 365, cold_years: 3 }
+  - actor: market-tick-data-service
+    sink: gcs
+    dataset: raw_tick_data
+    retention: { hot_days: 90, warm_days: 365, cold_years: 3 }
+  - actor: market-data-processing-service
+    sink: gcs
+    dataset: processed_candles_ohlcv
+  - actor: features-calendar-service
+    sink: gcs
+    dataset: calendar_features
+  - actor: features-delta-one-service
+    sink: gcs
+    dataset: delta_one_features
+  - actor: features-volatility-service
+    sink: gcs
+    dataset: volatility_features
+  - actor: features-onchain-service
+    sink: gcs
+    dataset: onchain_features
+  - actor: features-cross-instrument-service
+    sink: gcs
+    dataset: cross_instrument_features
+  - actor: features-multi-timeframe-service
+  - actor: features-sports-service
+    sink: gcs
+    dataset: multi_timeframe_features
+  - actor: ml-training-service
+    sink: gcs
+    dataset: model_artifacts_registry
+  - actor: ml-inference-service
+    sink: gcs
+    dataset: predictions
+  - actor: strategy-service
+    sink: gcs
+    dataset: signals_backtest_results
+  - actor: execution-service
+    sink: gcs
+    dataset: execution_results
+    retention: { hot_days: 90, warm_days: 365, cold_years: 7 }
+    audit: true
+  - actor: execution-service
+    sink: redis
+    dataset: hot_order_state
+    note: Transient, not durable persistence
+  - actor: pnl-attribution-service
+    sink: gcs
+    dataset: pnl_reports
+  - actor: position-balance-monitor-service
+    sink: gcs
+    dataset: position_snapshots
+  - actor: risk-and-exposure-service
+    sink: gcs
+    dataset: risk_metrics
+
+# ---------------------------------------------------------------------------
+# Co-location rules
+# ---------------------------------------------------------------------------
+co_location_rules:
+  - group: [market-data-processing-service, market-tick-data-service]
+    profile: co_located_vm
+    reason: >
+      Live mode optimization — MDPS reads from MTDH via in_memory to avoid Pub/Sub latency on the hot path.
+    constraints:
+      - in_memory transport allowed ONLY under co_located_vm profile
+      - in distributed profile, MDPS reads from MTDH via pubsub (live) or gcs (batch)
+      - co-location does NOT create service-to-service Python import dependencies
+      - each service remains independently deployable and testable
+
+  - group: [execution-service, market-tick-data-service]
+    profile: co_located_vm
+    reason: >
+      Execution needs live market feed for all allocation clients. One MTDH stream serves many execution consumers.
+      Co-location avoids PubSub latency on the order execution hot path.
+    constraints:
+      - same constraints as MDPS+MTDH group
+      - execution-service does NOT import market-tick-data-service Python code
+      - in distributed profile, execution reads from MTDH via pubsub
+      - MTDH may be co-located with BOTH MDPS and execution on the same VM
+
+# ---------------------------------------------------------------------------
+# Services with ONLY batch mode (no live transport)
+# ---------------------------------------------------------------------------
+batch_only_services:
+  - features-calendar-service
+  - features-onchain-service
+  - ml-training-service
+  # note: see comment below
+  # These services only process historical data. They read from GCS and write
+  # to GCS. They have no PubSub subscriptions or publications.
+  # ML training runs ~quarterly. Calendar/onchain data changes infrequently.
+  #
+# ---------------------------------------------------------------------------
+# Services with BOTH batch and live modes
+# ---------------------------------------------------------------------------
+batch_and_live_services:
+  - instruments-service
+  - market-tick-data-service
+  - market-data-processing-service
+  - features-delta-one-service
+  - features-volatility-service
+  - features-cross-instrument-service
+  - features-multi-timeframe-service
+  - features-sports-service
+  - features-commodity-service
+  - ml-inference-service
+  - strategy-service
+  - execution-service
+  - position-balance-monitor-service
+  - risk-and-exposure-service
+  - pnl-attribution-service
+  - alerting-service
+  - batch-live-reconciliation-service
+  # note: see comment below
+  # These services support --mode batch|live. In batch, transport=GCS.
+  # In live, transport=PubSub (or in_memory for co-located).
+  # In BOTH modes, output is persisted to GCS.
+  # instruments-service live: publishes PubSub events for instrument adds/removes/status.
+  # alerting-service: cross-cutting — consumes all events, publishes circuit breaker commands.
+  #
+# ---------------------------------------------------------------------------
+# IBKR Gateway connectivity (live vs batch routing)
+# ---------------------------------------------------------------------------
+ibkr_gateway_connectivity:
+  single_source: ibkr-gateway-infra
+  # note: see comment below
+  # All IBKR connectivity routes through the long-lived ibkr-gateway-infra process (IB Gateway Java
+  # app). Do NOT add direct IB Gateway connections anywhere else in the workspace — one process,
+  # one connection point. The four adapters (UMI ibkr_adapter, UTEI ibkr_tradfi, UPI ibkr,
+  # URDI ibkr) all accept an injected ib_insync.IB object. The caller owns the connection lifecycle.
+  live_mode:
+    source: ibkr-gateway-infra
+    protocol: TWS socket (ib_insync EClient/EWrapper)
+    consumers:
+      market-tick-data-service:
+        adapter: unified_market_interface.adapters.ibkr_adapter
+        data: real-time tick data, historical bars (reqMktData, reqHistoricalData)
+      instruments-service:
+        adapter: unified_reference_data_interface.adapters.ibkr
+        data: contract details, options chains, corporate actions (reqContractDetails)
+      execution-service:
+        adapter: unified_trade_execution_interface.adapters.ibkr_tradfi
+        data: order routing, fill callbacks (placeOrder, reqOpenOrders)
+      position-balance-monitor-service:
+        adapter: unified_position_interface.adapters.ibkr
+        data: position and account updates (reqAccountUpdates, reqPositions)
+  batch_mode:
+    source: matching-engine-library (MEL)
+    protocol: synthetic EWrapper callbacks (same interface as live)
+    # note: see comment below
+    # In batch mode, MEL replays historical events through the same adapter EWrapper callback
+    # interface that IB Gateway uses live. Adapters are written against the callback protocol
+    # only — they do not know whether the source is real or synthetic. This is the invariant
+    # that makes batch/live symmetry possible for TradFi.
+    consumers:
+      market-tick-data-service: MEL replays tick events -> ibkr_adapter callbacks
+      instruments-service: MEL replays contract events -> ibkr callbacks
+      execution-service: MEL replays fill/order events -> ibkr_tradfi callbacks
+      position-balance-monitor-service: MEL replays position events -> ibkr callbacks
+  config:
+    host_key: ibkr_gateway_host (UnifiedCloudConfig)
+    port_key: ibkr_gateway_port (UnifiedCloudConfig)
+    client_id_key: ibkr_client_id_base (UnifiedCloudConfig)
+    credentials_secret: ibkr-account-credentials (Secret Manager)
+
+# ---------------------------------------------------------------------------
+# IBKR Gateway infrastructure service entry
+# ---------------------------------------------------------------------------
+ibkr-gateway-infra:
+  tier: T3-service
+  type: gateway
+  protocol: socket
+  port: 4001
+  depends_on: [unified-trading-settings]
+  connects_to:
+    [
+      unified-market-interface,
+      unified-trade-execution-interface,
+      unified-position-interface,
+      unified-reference-data-interface,
+    ]
+  status: planned
+  notes: >
+    IB Client Portal Gateway Docker container; inject-IB pattern. Single long-lived IB Gateway Java process for all IBKR
+    connectivity. All four adapters (UMI ibkr_adapter, UTEI ibkr_tradfi, UPI ibkr, URDI ibkr) accept an injected
+    ib_insync.IB object — caller owns lifecycle. Credentials: ibkr-account-credentials in Secret Manager. Config keys:
+    ibkr_gateway_host, ibkr_gateway_port, ibkr_client_id_base (all in UnifiedCloudConfig). Port 4001 = IB Gateway paper
+    trading default; port 7497 = TWS paper trading. See ibkr_gateway_connectivity section above.
+
+# ---------------------------------------------------------------------------
+# Alerting architecture (cross-cutting concern)
+# ---------------------------------------------------------------------------
+alerting:
+  architecture: one-to-many
+  consumes_from:
+    - all services via unified-events-interface lifecycle events (PubSub)
+    - risk-and-exposure-service: risk breach triggers
+    - position-balance-monitor-service: balance discrepancy alerts
+    - execution-service: order rejection spike alerts
+  publishes_to:
+    - execution-service: circuit breaker halt commands (PubSub)
+    - strategy-service: circuit breaker halt commands (PubSub)
+    - deployment-api: service stop/restart triggers
+    - external: Slack webhooks, PagerDuty alerts, email
+  role: >
+    Disaster recovery trigger. Sits above the pipeline as a cross-cutting concern. Uses unified-events-interface
+    EventSink protocol for event consumption. Circuit breaker commands are PubSub events that services MUST honor.
+    Separate from normal business PubSub flows — this is operational control.
+
+# ---------------------------------------------------------------------------
+# Instruments service live events
+# ---------------------------------------------------------------------------
+instruments_live_events:
+  # note: see comment below
+  # instruments-service updates are infrequent (~15 min polling) but publishes
+  # PubSub events for instrument add/remove/status changes so live services
+  # react immediately without polling GCS. The GCS write is persistence;
+  # the PubSub event is the notification.
+  event_types:
+    - INSTRUMENT_ADDED
+    - INSTRUMENT_REMOVED
+    - INSTRUMENT_STATUS_CHANGED
+  consumers:
+    - market-tick-data-service
+    - market-data-processing-service
+    - strategy-service
+    - execution-service
+
+# ---------------------------------------------------------------------------
+# Strategy-execution-position loop
+# ---------------------------------------------------------------------------
+trading_loop:
+  # note: see comment below
+  # Core live trading loop. Understanding this is critical for topology.
+  # 1. PBM starts → queries exchange → publishes initial position state
+  # 2. Strategy starts → subscribes to PBM → knows current position
+  # 3. Strategy computes signals → sends orders to execution (PubSub)
+  # 4. Execution executes → sends order lifecycle events to PBM + handshake to strategy
+  # 5. PBM reconciles exchange position vs filled orders → publishes updated position
+  # 6. Strategy sees new position → loop repeats
+  position_authority: position-balance-monitor-service
+  why_not_execution: >
+    Execution knows what it SENT. PBM knows what the EXCHANGE actually holds. PBM reconciles discrepancies (partial
+    fills, venue rejections, connection drops). If strategy restarts, it gets authoritative position from PBM
+    immediately.
+
+# ===========================================================================
+# SHARDING DIMENSIONS
+# ===========================================================================
+# Two-plane model:
+#   Shared data plane (L1-L4): category x venue x instrument_type. No client.
+#   Client-specific plane (L5-L6): + client x subaccount x strategy_id.
+# Finest granularity = scaling unit = one PubSub topic = one horizontal scale unit.
+# Batch trigger is NOT a dimension — it's "run affirmatively" per sharding config.
+
+sharding_dimensions:
+  instruments-service:
+    batch: [category, venue, date]
+    live: [venue]
+    topic_template: "instrument-events-{venue}"
+    notes: poll ~15min, publish PubSub for adds/removes/status
+
+  market-tick-data-service:
+    batch: [category, venue, instrument_type, data_type, date]
+    live: [venue, instrument_type, data_type]
+    topic_template: "raw-ticks-{venue}-{instrument_type}-{data_type}"
+    notes: >
+      instrument_type added — memory/SSD heavy per venue, splitting helps. One WebSocket per stream, multiplexed
+      internally per venue.
+
+  market-data-processing-service:
+    batch: [category, venue, instrument_type, date, timeframe]
+    live: [venue, instrument_type]
+    topic_template: "processed-candles-{venue}-{instrument_type}-{timeframe}"
+    notes: >
+      Holds rolling historical candle window (~1 year, Redis/memcached). Smallest timeframe (~15s) drives trigger.
+      Larger timeframes update on natural boundaries (1min=4 triggers, 5min=20, 15min=60, 1h=240).
+
+  features-delta-one-service:
+    batch: [category, venue, feature_category, date]
+    live: [venue, feature_category]
+    topic_template: "features-delta-one-{feature_category}-{venue}"
+    notes: triggered by MDPS completion event, not independent timer
+
+  features-volatility-service:
+    batch: [category, venue, feature_category, date]
+    live: [venue, feature_category]
+    topic_template: "features-volatility-{feature_category}-{venue}"
+    notes: triggered by MDPS completion event
+
+  features-calendar-service:
+    batch: [category, date]
+    live: null
+    schedule: "daily at 00:05 UTC (Cloud Scheduler)"
+    notes: batch only, calendar data changes infrequently; full re-fetch once per day
+
+  features-onchain-service:
+    batch: [protocol, chain, date]
+    live: null
+    schedule: "every 60 seconds (Cloud Scheduler, config-driven interval)"
+    notes: batch only, on-chain data fetched periodically; interval configurable via ConfigStore
+
+  features-cross-instrument-service:
+    batch: [category, feature_category, date]
+    live: [feature_category]
+    topic_template: "features-cross-instrument-{feature_category}"
+    notes: >
+      Aggregates across venues/instruments. Feature categories: regime (HMM, correlation), cross_venue_spread,
+      realized_vs_implied_vol, cross_asset_correlation. Triggered by completion events from features-delta-one and
+      features-volatility.
+
+  features-multi-timeframe-service:
+    batch: [category, venue, instrument, timeframe, date]
+    live: [category, venue, instrument, timeframe]
+    topic_template: "features-multi-timeframe-{category}-{venue}-{instrument}-{timeframe}"
+    notes: >
+      L3b: 1 instrument × many TFs. Feature categories: tf_momentum_alignment, tf_structure_context, tf_vol_compression,
+      tf_session_context. Triggered by FDS completion events per instrument. Sharding includes category (unlike FCIS
+      which is cross-category by design).
+
+  features-sports-service:
+    batch: [feature_group, date]
+    live: [feature_group]
+    topic_template: "features-sports-{feature_group}"
+    notes: >
+      Sports pre-match ML features (team form, H2H, referee, venue, weather, odds). Consumes reference from
+      instruments-service, odds from market-data-processing. Supports --mode batch|live. 14 data exporters, 1000+
+      features.
+
+  ml-training-service:
+    batch: [model, instrument, timeframe, target_type, config]
+    live: null
+    notes: batch only, scheduled ~quarterly
+
+  ml-inference-service:
+    batch: [model, venue, instrument, date]
+    live: [model, venue, instrument]
+    topic_template: "predictions-{model}-{venue}-{instrument}"
+    notes: event-driven on features arrival
+
+  strategy-service:
+    batch: [strategy_id, client, date]
+    live: [strategy_id, client]
+    topic_template: "trade-signals-{strategy_id}-{client}"
+    notes: >
+      NOT sharded by venue — strategy may span venues (arb, spread). Has underlying concept for cross-instrument
+      exposure aggregation. Has pool concept = groups of correlated underlyings.
+
+  execution-service:
+    batch: [client, subaccount, date]
+    live: [client, subaccount]
+    topic_template: "order-events-{client}-{subaccount}-{venue}"
+    notes: >
+      Default subaccount used in batch for uniform implementation. Category (CeFi/DeFi) determines routing, not a shard
+      dimension. Three modes: single-leg, spread/multi-leg, atomic (blockchain). Margin type (isolated/cross/unified) is
+      metadata, not a shard dim.
+
+  position-balance-monitor-service:
+    batch: [client, venue, date]
+    live: [client, venue]
+    raw_granularity: [client, subaccount, venue, instrument]
+    topic_template: "position-updates-{client}-{venue}"
+    notes: raw positions at finest granularity, aggregation is downstream
+
+  risk-and-exposure-service:
+    batch: [client, date]
+    live: [client]
+    aggregation_dimensions: [client, underlying, risk_category, pool]
+    topic_template: "risk-metrics-{client}"
+    notes: subscribes to positions + market data, aggregates. Has pool dim.
+
+  pnl-attribution-service:
+    batch: [client, date]
+    live: [client]
+    output_dimensions: [client, strategy, date]
+    topic_template: "pnl-updates-{client}"
+    notes: subscribes to execution + risk + positions, aggregates
+
+  alerting-service:
+    batch: null
+    live: singleton
+    notes: >
+      No sharding. Cloud Run auto-restart + PubSub message retention for recovery. Deployment-engine health watchdog
+      monitors alerting uptime.
+
+# ===========================================================================
+# EVENT TRIGGER TAXONOMY
+# ===========================================================================
+
+event_triggers:
+  continuous_stream:
+    cadence: "~0ms"
+    services: [market-tick-data-service]
+    trigger: WebSocket message arrival
+  time_throttled_short:
+    cadence:
+      "~15s base timer; 1m (every 4), 5m (every 20), 15m (every 60), 1h (every 240), 4h (every 960), 24h (every 5760)"
+    services: [market-data-processing-service]
+    trigger:
+      timer aggregates buffer; MDPS only starts at even time boundaries since midnight (ensures full candle blocks)
+  event_driven_chain:
+    cadence: after MDPS completion
+    services: [features-delta-one-service, features-volatility-service]
+    trigger: MDPS completion PubSub event
+  event_driven:
+    cadence: on upstream data
+    services:
+      [
+        ml-inference-service,
+        strategy-service,
+        execution-service,
+        position-balance-monitor-service,
+        risk-and-exposure-service,
+        pnl-attribution-service,
+      ]
+    trigger: upstream PubSub event
+  time_throttled_medium:
+    cadence: "~15 min"
+    services: [instruments-service]
+    trigger: timer polls venues
+  scheduled_daily:
+    cadence: "daily at 00:05 UTC"
+    services: [features-calendar-service]
+    trigger: Cloud Scheduler
+  scheduled_minutely:
+    cadence: "every 60 seconds"
+    services: [features-onchain-service]
+    trigger: Cloud Scheduler (config-driven interval)
+  scheduled_long:
+    cadence: "~quarterly"
+    services: [ml-training-service]
+    trigger: Cloud Scheduler or manual
+  batch_affirmative:
+    cadence: per sharding config (day/week/month)
+    services: all services in batch mode
+    trigger: deployment command (not a trigger type)
+
+# ===========================================================================
+# PUBSUB TOPIC TEMPLATES
+# ===========================================================================
+
+pubsub_topic_templates:
+  shared_data_plane:
+    pattern: "{data_type}-{venue}-{instrument_type}-{...}"
+    examples:
+      - raw-ticks-binance-perpetual-trades
+      - processed-candles-okx-spot-15s
+      - features-delta-one-momentum-binance
+      - predictions-lstm-binance-btcusdt
+    notes: L1-L4, no client dimension
+  client_specific_plane:
+    pattern: "{data_type}-{client}-{subaccount}-{venue}"
+    examples:
+      - trade-signals-arb-v2-client-alpha
+      - order-events-client-alpha-sub1-binance
+      - position-updates-client-alpha-binance
+      - risk-metrics-client-alpha
+      - pnl-updates-client-alpha
+    notes: L5-L6, client dimension present
+  control_plane:
+    pattern: "{control_type}-commands"
+    examples:
+      - kill-switch-commands
+      - circuit-breaker-commands
+      - instrument-events
+    notes: operational control, not business data
+
+# ===========================================================================
+# PUBLISH + PERSIST POLICY
+# ===========================================================================
+
+publish_persist_policy:
+  rule: parallel
+  description: >
+    Publish to PubSub and persist to GCS in PARALLEL, not sequentially. Persistence is too slow to block live
+    publishing. Consumer deduplicates by timestamp. Tradeoff: live latency not blocked by persistence, but switchover
+    needs timestamp-based dedup at consumer.
+
+# ===========================================================================
+# TIMESTAMP ORDERING POLICY
+# ===========================================================================
+
+timestamp_ordering:
+  publisher_policy: publish_as_is
+  description: >
+    No reorder buffer at publisher. MTDH publishes messages as they arrive. Each message carries BOTH exchange_timestamp
+    and local_timestamp.
+  fields:
+    exchange_timestamp: canonical ordering key (when exchange says it happened)
+    local_timestamp: when our system received it (latency monitoring)
+    sequence_number: per-stream sequence for gap detection
+  consumer_options:
+    - process_in_arrival_order: lowest latency, acceptable for most use cases
+    - reorder_by_exchange_timestamp: correctness-critical (PBM reconciliation)
+    - skip_late_messages: MDPS candle aggregation ignores ticks after candle close
+  gap_detection: >
+    MTDH tracks sequence numbers per stream. Gaps trigger recovery from venue REST API or Tardis/Databento replay.
+
+# ===========================================================================
+# KILL SWITCHES AND CIRCUIT BREAKERS
+# ===========================================================================
+
+kill_switches:
+  manual:
+    endpoint: deployment-api /kill-switch/{service}/activate
+    auth: OAuth-gated
+    propagation: PubSub topic kill-switch-commands
+    persistence: Secret Manager (few ms latency, survives restarts)
+    target_services: [execution-service, strategy-service]
+    ui: live-health-monitor-ui shows status per service
+  automated_circuit_breaker:
+    publisher: alerting-service
+    topic: circuit-breaker-commands
+    triggers:
+      - risk_breach: manual reset only
+      - order_rejection_spike: auto-reset after cooldown
+      - balance_discrepancy: reconciliation on restart, then auto-reset
+      - network_connectivity_loss: restart execution stack, auto-reset when reconnected
+    target_services: [execution-service, strategy-service]
+    escalation: PubSub command -> Slack -> PagerDuty (if not ack in N min)
+    reset_policy: error-type-dependent per unified-internal-contracts schema
+
+# ===========================================================================
+# ERROR RETRY POLICY (reference — SSOT in unified-internal-contracts)
+# ===========================================================================
+
+error_retry_policy:
+  ssot: unified-internal-contracts/schemas/errors.py
+  summary:
+    RATE_LIMIT:
+      { strategy: RETRY_WITH_BACKOFF, max_retries: 5, backoff: "exp 1s-60s + jitter", after_exhaustion: "ALERT + SKIP" }
+    TIMEOUT: { strategy: RETRY, max_retries: 3, backoff: "linear 2s", after_exhaustion: "ALERT + FAIL" }
+    NETWORK:
+      {
+        strategy: RETRY_WITH_BACKOFF,
+        max_retries: 10,
+        backoff: "exp 1s-120s",
+        after_exhaustion: "CIRCUIT_BREAKER + ALERT",
+      }
+    SERVER_ERROR: { strategy: RETRY, max_retries: 3, backoff: "linear 5s", after_exhaustion: "ALERT + FAIL" }
+    VALIDATION: { strategy: FAIL_FAST, max_retries: 0, after_exhaustion: "ALERT + LOG" }
+    AUTH_FAILURE: { strategy: FAIL_FAST, max_retries: 0, after_exhaustion: "CIRCUIT_BREAKER + ALERT" }
+
+# ===========================================================================
+# RECOVERY PATTERNS
+# ===========================================================================
+
+recovery_patterns:
+  cefi_crypto:
+    priority_chain:
+      - step: 1
+        method: UMI WebSocket reconnect
+        scope: brief disconnects
+        details: exponential backoff 1s-32s, max 10 attempts
+      - step: 2
+        method: Venue REST API backfill
+        scope: gaps < 3 months
+        details: paginate trades/orderbook from exchange REST
+      - step: 3
+        method: Tardis.dev replay
+        scope: gaps > 3 months or full recovery
+        details: as-if-live WS format, 7yr lookback, 40+ exchanges
+      - step: 4
+        method: GCS historical data
+        scope: last resort
+        details: replay from our own persistence
+
+  tradfi:
+    priority_chain:
+      - step: 1
+        method: Venue reconnect
+        scope: brief disconnects
+      - step: 2
+        method: Databento replay
+        scope: deep recovery
+        details: 7yr lookback, live-identical, CME/Nasdaq/NYSE
+      - step: 3
+        method: IBKR TWS API backfill
+        scope: limited recovery
+        details: 6mo tick, rate-limited
+      - step: 4
+        method: GCS historical data
+        scope: last resort
+
+  defi:
+    priority_chain:
+      - step: 1
+        method: Chain RPC reconnect
+        scope: brief disconnects
+        details: The Graph / Alchemy / direct node
+      - step: 2
+        method: Replay from block number
+        scope: any gap, any duration
+        details: blockchain is immutable, full history always available
+    notes: >
+      DeFi is the simplest recovery story. The chain IS the source of truth. No third-party dependency needed. No data
+      loss possible.
+
+  reference_data:
+    notes: >
+      Trivial — latest live state only, can drop a packet. No replay needed. instruments-service just re-fetches from
+      venues on restart.
+
+  internal_services:
+    pattern: concurrent_replay_with_flip
+    steps:
+      - subscribe to live PubSub topic (messages queue)
+      - replay from GCS up to last persisted timestamp (separate thread)
+      - drain queued PubSub messages
+      - at merge point, live takes over, replay thread stops
+      - overlap deduplicated by timestamp
+    services:
+      [
+        market-data-processing-service,
+        features-*,
+        ml-inference-service,
+        strategy-service,
+        risk-and-exposure-service,
+        pnl-attribution-service,
+      ]
+    catch_up_math: "if 24h takes 2h to process, recovery = 2h then caught up"
+
+  execution_recovery:
+    steps:
+      - WebSocket reconnect (UMI exponential backoff)
+      - query exchange REST API for all open orders and recent fills
+      - compare exchange state vs internal OMS
+      - missing fills -> apply to OMS
+      - unknown orders -> cancel or adopt
+      - stale orders -> cancel
+      - PBM independently reconciles from exchange feed
+      - reconciliation events published to alerting-service
+
+# ===========================================================================
+# VENUE REPLAY CAPABILITIES (reference — SSOT in unified-api-contracts)
+# ===========================================================================
+
+venue_replay_capabilities:
+  ssot: unified-api-contracts (per-venue schemas)
+  summary:
+    tardis_dev: { lookback: "~7 years", method: "WS-style replay (Tardis Machine)", assets: "crypto 40+ exchanges" }
+    databento: { lookback: "7 years", method: "REST + live-identical replay", assets: "TradFi 60+ venues" }
+    binance_futures: { lookback: "3 months", method: "REST pagination only", replay: false }
+    okx: { lookback: "3 months", method: "REST pagination only", replay: false }
+    deribit: { lookback: "shallow public", method: "REST only", replay: false }
+    bybit: { lookback: "2 years (7-day windows)", method: "REST pagination", replay: false }
+    ibkr: { lookback: "6 months tick", method: "TWS API callbacks", replay: false }
+    defi: { lookback: "unlimited", method: "block replay via RPC", replay: true }
+
+# ===========================================================================
+# INITIAL STATE BOOTSTRAP
+# ===========================================================================
+
+initial_state_bootstrap:
+  instruments-service: { source: "venue REST APIs", method: "full fetch on start" }
+  market-tick-data-service: { source: "venue WebSocket + Tardis", method: "subscribe + backfill gaps" }
+  market-data-processing-service: { source: "GCS + Redis/memcached", method: "load rolling window (~1yr)" }
+  features-services: { source: "GCS historical features", method: "load from GCS, recalculate if stale" }
+  ml-inference-service: { source: "GCS models + PubSub features", method: "load model, subscribe features" }
+  strategy-service: { source: "PBM positions + ML + MDPS", method: "subscribe PBM (initial snapshot), ML, MDPS" }
+  execution-service: { source: "exchange REST + Redis", method: "query exchange open orders, restore Redis" }
+  position-balance-monitor-service:
+    { source: "exchange REST (positions+balances)", method: "query exchange, publish initial snapshot" }
+  risk-and-exposure-service: { source: "PBM + MDPS PubSub", method: "subscribe to both" }
+  pnl-attribution-service: { source: "GCS historical + live PubSub", method: "load GCS, subscribe exec+risk" }
+  alerting-service: { source: "PubSub replay", method: "Cloud Run auto-restart, PubSub retention" }
+
+# ===========================================================================
+# T+1 RECONCILIATION (two-layer)
+# ===========================================================================
+
+t_plus_1_reconciliation:
+  strategy_t1:
+    service: batch-live-reconciliation-service
+    validates: [signals, strategy_instructions, positions_at_snapshots]
+    compares: live signals vs batch-replayed signals (same inputs)
+    output: strategy PnL (benchmark fills)
+    dimensions: [strategy_id, client, date]
+    expectations:
+      ml_signals: identical (deterministic)
+      strategy_instructions: close (time-triggered)
+  execution_t1:
+    service: execution-service or batch-live-reconciliation-service
+    validates: [order_timing, fill_quality, slippage]
+    compares: live fills vs benchmark (TWAP/VWAP/arrival)
+    output: execution alpha PnL (actual vs benchmark)
+    dimensions: [client, subaccount, venue, date]
+  aggregated:
+    formula: "overall PnL = strategy PnL + execution alpha PnL"
+    purpose: "decompose: wrong strategy vs expensive execution"
+    output: full report (no threshold initially, AI-interpreted later)
+    schedule: daily Cloud Scheduler after batch completes
+
+# ===========================================================================
+# MDPS ROLLING WINDOW
+# ===========================================================================
+
+mdps_rolling_window:
+  storage: redis_or_memcached
+  capacity: "~1 year of historical candles per venue x instrument_type"
+  survives_restarts: true
+  warmup_source: GCS historical candles
+  purpose: >
+    Downstream features services do not need their own warmup logic. MDPS provides candles with sufficient history
+    context.
+  multi_timeframe_update:
+    smallest_trigger: "~15s"
+    "1min": "every 4 triggers"
+    "5min": "every 20 triggers"
+    "15min": "every 60 triggers"
+    "1h": "every 240 triggers"
+
+# ===========================================================================
+# DATA RETENTION POLICY
+# ===========================================================================
+
+data_retention_policy:
+  tiers:
+    hot: { storage: bigquery_standard, description: "fast queries, recent data" }
+    warm: { storage: gcs_standard, description: "accessible archive" }
+    cold: { storage: gcs_nearline, description: "regulatory archive, infrequent access" }
+  regulatory_minimum:
+    execution_audit: { cold_years: 7, note: "FCA/MiFID II minimum for transaction records" }
+    strategy_audit: { cold_years: 3, note: "strategy decision audit trail" }
+    market_data: { cold_years: 3, note: "market data for best execution proof" }
+    default: { hot_days: 90, warm_days: 365, cold_years: 3 }
+  ssot: unified-internal-contracts/schemas/audit.py
+
+# ===========================================================================
+# HEALTH PROBES
+# ===========================================================================
+
+health_probes:
+  api_services:
+    endpoints: ["/health", "/readiness"]
+    services: [execution-results-api, market-data-api, client-reporting-api, deployment-api]
+    note: Cloud Run auto-restart on health check failure
+  vm_services:
+    method: deployment-engine-watchdog
+    metrics: [cpu, memory, disk, serial_console_oom]
+    thresholds: { memory_warning_pct: 85, memory_critical_pct: 90 }
+    pre_crash_checkpoint: true
+    # note: see comment below
+  # ResourceAwareShutdownHandler persists state checkpoint to GCS at 85% memory.
+  # If VM crashes before logging, Cloud Logging + serial console are the forensics source.
+  alerting_integration:
+    cloud_logging_crash_subscription: true
+    note: alerting-service subscribes to Cloud Logging error/crash entries for automated incident creation
+
+# ===========================================================================
+# DEPLOYMENT MODES (Cloud Run scaling behavior)
+# ===========================================================================
+
+deployment_modes:
+  always_on:
+    description: Services that must be running continuously with no cold start
+    services:
+      - market-tick-data-service
+      - market-data-processing-service
+      - execution-service
+      - strategy-service
+      - position-balance-monitor-service
+      - risk-and-exposure-service
+      - alerting-service
+    note: These services maintain live state (WebSocket connections, PubSub subscriptions, Redis state)
+
+  scale_to_zero:
+    description: Services that can cold-start on demand (1-2s cold start acceptable)
+    services:
+      - instruments-service
+      - features-calendar-service
+      - features-onchain-service
+      - pnl-attribution-service
+      - client-reporting-api
+    note: Infrequent or batch-oriented. Cloud Run scale-to-zero saves cost.
+
+  vm_heavy_compute:
+    description: Services requiring VM due to compute intensity or long-running jobs
+    services:
+      - ml-training-service
+    # note: see comment below
+  # ML training runs for ~2hr+ on GPU/high-CPU VMs. Cloud Run max timeout (3600s) is
+  # insufficient. ML training is triggered by Cloud Scheduler or manually.
+  #
+  auto_scale:
+    description: API services that scale based on request load
+    services:
+      - execution-results-api
+      - market-data-api
+      - deployment-api
+    note: Scale based on HTTP/SSE connection count. Min instances configurable.
+
+  features_live:
+    description: Features services - can scale to zero in batch, always-on in live
+    services:
+      - features-delta-one-service
+      - features-volatility-service
+      - features-cross-instrument-service
+      - ml-inference-service
+    note: Mode-dependent. Batch = scale-to-zero. Live = always-on (PubSub subscriber).
+
+# ===========================================================================
+# DEPLOYMENT TARGETS
+# Per-service compute platform and scaling mode.
+# See RUNTIME_TOPOLOGY_DECISIONS.md Section 21 for rationale.
+# ===========================================================================
+
+deployment_targets:
+  vm_colocated:
+    deploy_type: vm
+    scaling: always_on
+    services:
+      market-tick-data-service:
+        reason: Continuous WebSocket connections; co-located with MDPS + execution for in_memory transport
+      market-data-processing-service:
+        reason: Co-located with MTDH for in_memory hot path; maintains ~1yr Redis candle window
+      execution-service:
+        reason: Co-located with MTDH for live market feed; maintains Redis order state
+
+  vm_standalone:
+    deploy_type: vm
+    scaling: manual_or_scheduled
+    services:
+      ml-training-service:
+        reason: Heavy compute (~2hr training runs); Cloud Run max timeout too short
+
+  cloud_run_service_always_on:
+    deploy_type: cloud_run_service
+    scaling: always_on
+    services:
+      strategy-service:
+        reason: Live PubSub subscriber; stateless enough for Cloud Run; auto-restarts on crash
+      position-balance-monitor-service:
+        reason: Continuous exchange feed + PubSub subscription
+      risk-and-exposure-service:
+        reason: Live PubSub subscriber; computes risk on every position update
+      pnl-attribution-service:
+        reason:
+          Continuous subscriber to execution + risk PubSub events; runs P&L attribution on every update (not batch-only)
+      alerting-service:
+        reason: Must be 24/7; auto-restart + PubSub retention for recovery
+
+  cloud_run_service_mode_dependent:
+    deploy_type: cloud_run_service
+    scaling: scale_to_zero_batch__always_on_live
+    services:
+      ml-inference-service:
+        reason: Live mode needs persistent PubSub subscription; batch is occasional
+      features-delta-one-service:
+        reason: Live mode needs MDPS event subscription
+      features-volatility-service:
+        reason: Live mode needs MDPS event subscription
+      features-cross-instrument-service:
+        reason: Live mode subscribes to multiple MDPS topics per underlying
+      features-multi-timeframe-service:
+        reason: Live mode subscribes to MDPS candle topics; batch runs T+1
+      features-sports-service:
+        reason: Live mode subscribes to sports-odds PubSub topic; batch runs intraday
+      features-commodity-service:
+        reason: Live mode subscribes to commodity market-tick topics; batch runs T+1
+
+  cloud_run_job_scale_to_zero:
+    deploy_type: cloud_run_job
+    scaling: scale_to_zero
+    services:
+      instruments-service:
+        reason: Infrequent ~15min polls; one-shot batch runs
+      features-calendar-service:
+        reason: Batch only; calendar data changes rarely
+      features-onchain-service:
+        reason: Batch only; periodic on-chain data fetch
+      # pnl-attribution-service moved to cloud_run_service_always_on (continuous subscriber)
+      batch-live-reconciliation-service:
+        reason: Triggered T+1 reconciliation run; compares live positions to exchange records
+
+  cloud_run_service_auto_scale:
+    deploy_type: cloud_run_service
+    scaling: auto_scale_on_connections
+    auth: oauth
+    services:
+      execution-results-api:
+        port: 8002
+        reason: Scales with HTTP/SSE connection count
+      market-data-api:
+        port: 8003
+        reason: Scales with HTTP/SSE connection count
+      deployment-api:
+        port: 8001
+        reason: Request-driven; SSE for health monitoring stream
+      client-reporting-api:
+        port: 8005
+        reason: Batch report generation; target state includes live SSE
+      ml-inference-api:
+        port: 8010
+        reason: REST API for inference requests; scales with request count
+      ml-training-api:
+        port: 8011
+        reason: REST API for training job management; request-driven
+      trading-analytics-api:
+        port: 8012
+        reason: REST/SSE API for analytics queries; scales with query load
+      batch-audit-api:
+        port: 8013
+        reason: REST API for audit queries against BigQuery audit dataset
+
+  cloud_run_service_ui:
+    deploy_type: cloud_run_service
+    scaling: auto_scale_on_requests
+    # note: see comment below
+    # All UIs serve React/TypeScript static build from Cloud Run.
+    # UI and API are separate Cloud Run Services (separate repos, separate scaling, separate rollouts).
+    services:
+      - trading-analytics-ui
+      - execution-analytics-ui
+      - ml-training-ui
+      - strategy-ui
+      - deployment-ui
+      - live-health-monitor-ui
+      - batch-audit-ui
+      - logs-dashboard-ui
+      - onboarding-ui
+      - client-reporting-ui
+      - settlement-ui
+      - unified-admin-ui
+
+  # ---------------------------------------------------------------------------
+  # Trading agent — LLM-driven strategy commentary and signal generation
+  # ---------------------------------------------------------------------------
+  vm_standalone_agents:
+    deploy_type: vm
+    scaling: manual_or_scheduled
+    services:
+      trading-agent-service:
+        reason: >
+          LLM inference loops (Claude API); not latency-sensitive but memory-heavy. Runs on demand or scheduled; not a
+          persistent 24/7 service.
+
+# ---------------------------------------------------------------------------
+# PROTOCOL DEFINITIONS
+# ---------------------------------------------------------------------------
+# Defines messaging transport, storage backend, and deployment targets per mode.
+# Services read these via unified_config_interface.topology_reader — never branch
+# on CLOUD_PROVIDER directly.
+#
+# messaging.live.default: transport for live streaming between services
+# messaging.batch.default: transport for batch pipelines (typically in_memory or none)
+# storage.live.default / storage.batch.default: durable storage backend
+# deployment.{service}: Cloud Run vs VM per service; falls back to deployment.default
+# ---------------------------------------------------------------------------
+
+protocols:
+  messaging:
+    live:
+      default: pubsub # GCP Cloud Pub/Sub; set to 'sqs' for AWS
+      co_located: in_memory # Same-VM fast path
+    batch:
+      default: in_memory # Batch: producer writes to storage, no messaging bus
+  storage:
+    live:
+      default: gcs # GCP: 'gcs'; AWS: 's3'; local dev: 'local'
+    batch:
+      default: gcs # ALL services persist output to GCS/S3 regardless of mode
+  deployment:
+    default: vm # Default deployment target: VM
+    # Per-service overrides (Cloud Run for stateless HTTP services):
+    deployment-api: cloud_run
+    market-data-api: cloud_run
+    execution-results-api: cloud_run
+    client-reporting-api: cloud_run

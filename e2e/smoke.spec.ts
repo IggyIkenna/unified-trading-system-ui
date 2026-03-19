@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test'
 
 const PAGES = [
   { path: '/', name: 'Home' },
-  { path: '/trader', name: 'Trader Dashboard' },
+  { path: '/overview', name: 'Overview' },
   { path: '/positions', name: 'Positions' },
   { path: '/risk', name: 'Risk' },
   { path: '/ml', name: 'ML' },
@@ -51,7 +51,7 @@ test.describe('Smoke Tests - All Pages Load', () => {
 
 test.describe('Navigation - All Links Work', () => {
   test('global nav links are clickable and navigate', async ({ page }) => {
-    await page.goto('/trader')
+    await page.goto('/overview')
     await page.waitForLoadState('networkidle')
     
     // Find all nav links
@@ -74,7 +74,7 @@ test.describe('Navigation - All Links Work', () => {
 
 test.describe('Interactive Elements - Buttons Have Handlers', () => {
   test('trader page - all buttons are clickable', async ({ page }) => {
-    await page.goto('/trader')
+    await page.goto('/overview')
     await page.waitForLoadState('networkidle')
     
     // Find all buttons
@@ -94,7 +94,7 @@ test.describe('Interactive Elements - Buttons Have Handlers', () => {
   })
   
   test('dialogs open and have action buttons', async ({ page }) => {
-    await page.goto('/trader')
+    await page.goto('/overview')
     await page.waitForLoadState('networkidle')
     
     // Look for dialog triggers (buttons that open modals)
@@ -120,7 +120,7 @@ test.describe('Interactive Elements - Buttons Have Handlers', () => {
 
 test.describe('Filters - Selection Propagates', () => {
   test('selecting a strategy updates the scope summary', async ({ page }) => {
-    await page.goto('/trader')
+    await page.goto('/overview')
     await page.waitForLoadState('networkidle')
     
     // Look for strategy filter/selector

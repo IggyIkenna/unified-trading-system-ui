@@ -42,7 +42,7 @@ const roles: Role[] = [
     description: "Real-time positions, strategies, execution, and risk monitoring",
     icon: TrendingUp,
     color: "text-emerald-400",
-    href: "/trader",
+    href: "/overview",
     features: ["Portfolio Overview", "Strategy Management", "Order Execution", "Risk Dashboard"],
   },
   {

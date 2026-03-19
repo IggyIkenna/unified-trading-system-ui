@@ -1,48 +1,34 @@
-UNIFIED TRADING SYSTEM UI — V0 Core Context
+UNIFIED TRADING SYSTEM UI — Next.js 16 App Router
 
-ONE platform. THREE tiers (public/client/internal). SHARDS: CEFI/DeFi/Sports/TradFi. Workflow: Design→Simulate→Promote→Run→Monitor→Explain→Reconcile.
+⚠️ CODE ≠ RULES YET. app/ is flat, mocks are inline. Rules describe TARGET.
+Read UI_STRUCTURE_MANIFEST.json first (current state + target + migration manifest).
 
-RULES (violation = wasted work):
-1. NO V2/Refactored. Ask before breaking changes. Update UI_STRUCTURE_MANIFEST.json.
-2. Shared components (filters/tables/headers) in shared/, not per-service. One impl, everywhere.
-3. Zero hardcoding. API endpoints, colors, strings from shared/config/. Change once = everywhere.
-4. Mocking: shared/mocks/ only (same in dev & tests). No per-page mocks.
-5. Auth: useAuth() hook in shared/. One place for permission rules.
-6. Shard-aware: scope data shard→venue→instrument. Never cross-shard.
-7. If unable to follow rules, tell user immediately they will use a better agent.
+ONE platform. Data-driven scoping. Internal/client/prospect see SAME pages, different data.
+Never build separate client vs internal versions. API scopes by org + entitlements.
 
-BEFORE CODING:
-1. ARCHITECTURE.md (vision) 2. CONFIG_REFERENCE.md (fields?)
-3. SHARDING_DIMENSIONS.md (partition?)
-4. API_FRONTEND_GAPS.md (ready? 🟢/🟡/🔴)
-5. UI_STRUCTURE_MANIFEST.json (state?)
-6. .cursorrules
+USPs: (1) 33 venues, 5 asset classes, full trading system access (2) seamless internal/external — same system, filtered (3) backtest↔live diff if using our data/models/strategies.
 
-REFACTOR vs NEW:
-— Refactor? Read manifest. Ask "Approve?". Mark target. Update in place.
-— New? Create services/{domain}/pages/{name}/. Add route in routing.tsx.
+RULES:
+1. No V2/Refactored. Update in place. Ask before breaking. Update UI_STRUCTURE_MANIFEST.json.
+2. One page per view. PositionsTable, not ClientPositionsTable + InternalPositionsTable.
+3. Zero hardcoding. Everything from lib/config/. Colors from globals.css tokens.
+4. Mocking: migrating lib/*.ts inline → lib/mocks/ MSW. Dimensional: same endpoint, different data per persona. See REFACTORING_PLAN §2.4 migration manifest.
+5. Auth: hooks/use-auth.ts → { role, org, entitlements }. Internal=["*"]. Client=subset.
+6. Shard-aware: shard→venue→instrument. Market data=shared. Positions/risk=client-scoped. Registry=subscription-filtered. See context/SHARDING_DIMENSIONS.md.
+7. State: Zustand (lib/stores/, every store has reset()). React Query (hooks/api/). URL params for filters.
+8. Can't follow rules? Tell user immediately.
 
-CODE PATTERNS:
-— API: import API_CONFIG from 'shared/config/api'
-— Branding: import COLORS, LOGOS from 'shared/config/branding'
-— Shard: shard → venue → instrument (no cross-shard in one component)
+TARGET STRUCTURE (not built yet — see manifest):
+app/(public)/      marketing, login    app/(platform)/    THE product (internal+client)
+app/(ops)/         admin/devops only   components/        ui/, trading/, shell/, dashboards/
+lib/config/        API, branding       lib/mocks/         MSW handlers + fixtures
+lib/stores/        Zustand stores      lib/types/         Generated from openapi.json
+lib/registry/      OpenAPI, configs    hooks/api/         React Query per-service
 
-STRUCTURE:
-services/{domain}/ → pages/, components/, hooks/, types/
-shared/ → components/, config/, hooks/, mocks/
+BEFORE CODING: UI_STRUCTURE_MANIFEST.json → .cursorrules → REFACTORING_PLAN_PHASE_1-4.md → ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md → context/SHARDING_DIMENSIONS.md → context/CONFIG_REFERENCE.md → context/API_FRONTEND_GAPS.md
 
-QA GATE (Before PR/Deploy):
-bash .scripts/verify.sh → clean → type-check → build → test
-Catches broken imports, TypeScript, missing deps. See QA_GATES.md.
+QA: pnpm lint && pnpm tsc --noEmit && pnpm build && pnpm test (70% coverage)
 
-RESOURCES:
-• config-registry.json = 2000+ fields
-• .cursorrules = Rules + patterns
-• REFACTORING_GUIDE.md = protocol
-• UI_STRUCTURE_MANIFEST.json = tracker
-• QA_GATES.md = checks
-• _reference/ = Repos (assess alignment, don't copy blindly)
+All resources inside this repo. No external references. lib/registry/ has fresh OpenAPI (298 endpoints), config-registry (46 configs), sharding_config, system-topology, ui-reference-data.
 
-STANDARD: 100% or stop. Escalate to better model if unable.
-
-MANDATE: Don't guess. Look it up. Shared. Centralized. One truth. Ask before breaking.
+Institutional grade. Premium dark. Don't guess — look it up. One platform, not three.

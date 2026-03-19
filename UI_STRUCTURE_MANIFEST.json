@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "description": "Single source of truth for UI structure. Documents current layout, target structure during refactors, and history. Agents MUST refer to this before any structural changes.",
-    "version": "1.0.0",
+    "description": "Single source of truth for UI structure. Documents current layout, target structure during refactors, and history. Agents MUST read this before any structural changes.",
+    "version": "2.0.0",
     "last_updated": "2026-03-19",
     "locked": false,
     "refactor_in_progress": false,
@@ -9,23 +9,102 @@
   },
 
   "current_structure": {
-    "status": "initial",
-    "description": "Initial placeholder structure (Phase 1 complete, Phase 2 not started)",
-    "pages": [],
+    "status": "pre-phase-2",
+    "description": "V0-generated prototype. Flat app/ directory, inline mock data, no route groups, no state management, no API layer.",
+    "framework": "Next.js 16 App Router",
+    "app_structure": "FLAT — 30+ route directories directly under app/, no (public)/(platform)/(ops) route groups yet",
+    "mock_data": "INLINE — ~9,100 lines of hardcoded objects in lib/*.ts files (strategy-registry.ts, reference-data.ts, ml-mock-data.ts, trading-data.ts, etc.)",
+    "state_management": "NONE — no Zustand stores, no React Query, no centralized state",
+    "api_layer": "NONE — no fetch calls, no hooks/api/, pages render static data directly",
+    "auth": "MINIMAL — hooks/use-auth.ts reads localStorage, no personas, no entitlements, no role-based scoping",
+    "shells": "PARTIAL — components/shell/ has unified-shell.tsx, lifecycle-nav.tsx, require-auth.tsx, role-layout.tsx but NOT wired as App Router layout.tsx files",
+    "components": "GOOD — 59 Radix UI primitives in components/ui/, 34 trading components in components/trading/, 6 dashboards",
+    "design_system": "GOOD — globals.css with semantic tokens, IBM Plex Sans + JetBrains Mono, dark institutional theme",
+    "registry_data": "FRESH — lib/registry/ has latest openapi.json (298 endpoints), config-registry.json (46 configs), sharding_config.yaml, system-topology.json, ui-reference-data.json",
+    "tests": "MINIMAL — 4 unit tests, 2 E2E specs, coverage threshold set to 50% (target: 70%)",
     "routes": [
-      { "path": "/", "component": "PublicShell", "status": "planned" },
-      { "path": "/auth/signin", "component": "SignInPage", "status": "planned" },
-      { "path": "/dashboard", "component": "Dashboard", "status": "planned" }
-    ],
-    "components": {
-      "shared": [],
-      "services": {}
-    },
-    "last_verified": "2026-03-19T00:00:00Z",
-    "verified_by": "Initial setup"
+      { "path": "/", "component": "app/page.tsx", "status": "exists", "notes": "Marketing landing page (712 lines)" },
+      { "path": "/login", "component": "app/login/page.tsx", "status": "exists" },
+      { "path": "/trader", "component": "app/trader/page.tsx", "status": "exists", "notes": "Trader dashboard" },
+      { "path": "/positions", "component": "app/positions/page.tsx", "status": "exists" },
+      { "path": "/risk", "component": "app/risk/page.tsx", "status": "exists" },
+      { "path": "/execution/*", "component": "app/execution/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/strategy-platform/*", "component": "app/strategy-platform/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/ml/*", "component": "app/ml/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/trading", "component": "app/trading/page.tsx", "status": "exists" },
+      { "path": "/markets", "component": "app/markets/page.tsx", "status": "exists" },
+      { "path": "/reports", "component": "app/reports/page.tsx", "status": "exists" },
+      { "path": "/admin", "component": "app/admin/page.tsx", "status": "exists" },
+      { "path": "/ops", "component": "app/ops/page.tsx", "status": "exists" },
+      { "path": "/devops", "component": "app/devops/page.tsx", "status": "exists" },
+      { "path": "/manage/*", "component": "app/manage/", "status": "exists", "notes": "Has layout.tsx + sub-routes" }
+    ]
   },
 
-  "target_structure": null,
+  "target_structure": {
+    "status": "Phase 2 — Shell Infrastructure + MSW Migration",
+    "description": "Route groups, auth personas, MSW mock handlers, Zustand stores, React Query hooks. See REFACTORING_PLAN_PHASE_1-4.md for full details.",
+    "key_changes": [
+      "Create app/(public)/ route group — marketing pages, no auth",
+      "Create app/(platform)/ route group — THE product, same pages for internal AND client, auth required",
+      "Create app/(ops)/ route group — internal-only admin/deployment surfaces",
+      "Create lib/config/ — API config, branding, service registry with entitlements",
+      "Create lib/mocks/ — MSW handlers returning different data per persona (dimensional mocking)",
+      "Create lib/stores/ — Zustand stores with reset() for demo cache cleanup",
+      "Create hooks/api/ — React Query hooks consuming MSW handlers",
+      "Migrate 9,100 lines of inline mock data from lib/*.ts into lib/mocks/fixtures/",
+      "Generate lib/types/api-generated.ts from lib/registry/openapi.json",
+      "Wire useAuth() to demo personas with entitlements for role-based scoping"
+    ],
+    "directories_to_create": [
+      "app/(public)/",
+      "app/(platform)/",
+      "app/(ops)/",
+      "lib/config/",
+      "lib/mocks/",
+      "lib/mocks/handlers/",
+      "lib/mocks/fixtures/",
+      "lib/mocks/adapters/",
+      "lib/stores/",
+      "lib/types/",
+      "hooks/api/"
+    ],
+    "mock_handler_manifest": {
+      "_note": "16 handlers matching backend service boundaries. See REFACTORING_PLAN §2.4 for full details.",
+      "core_trading_handlers": [
+        "handlers/auth.ts — login, profile, persona switch",
+        "handlers/data.ts — instruments, catalogue, download status (subscription-filtered)",
+        "handlers/execution.ts — orders, fills, execution results, backtest grids (client-scoped)",
+        "handlers/positions.ts — positions, risk groups, margin, historical (client-scoped)",
+        "handlers/strategy.ts — strategies, configs, backtests, candidates (client-scoped)",
+        "handlers/ml.ts — models, features, experiments, training (subscription-filtered)",
+        "handlers/risk.ts — limits, exposure, VaR, Greeks, stress scenarios (client-scoped)",
+        "handlers/trading.ts — live P&L, attribution, performance (client-scoped)",
+        "handlers/market-data.ts — OHLCV candles, book snapshots, trades (shared, REST only)"
+      ],
+      "platform_feature_handlers": [
+        "handlers/alerts.ts — alert CRUD, severity filtering, acknowledge/resolve (client-scoped)",
+        "handlers/reporting.ts — reports, settlement, reconciliation, invoicing (client-scoped)"
+      ],
+      "ops_internal_handlers": [
+        "handlers/deployment.ts — services, deployments, cloud builds, shards (internal-only)",
+        "handlers/service-status.ts — service health, feature freshness, system overview (internal-only for full view)",
+        "handlers/audit.ts — compliance checks, event history, data health (internal-only)",
+        "handlers/user-management.ts — orgs, users, roles, subscriptions (internal sees all; client sees own org)"
+      ]
+    },
+    "files_to_delete_after_migration": [
+      "lib/strategy-registry.ts (1,856 lines → handlers/strategy.ts + handlers/positions.ts)",
+      "lib/reference-data.ts (895 lines → handlers/data.ts + fixtures/venues.json)",
+      "lib/ml-mock-data.ts (1,019 lines → handlers/ml.ts)",
+      "lib/trading-data.ts (769 lines → handlers/trading.ts + handlers/user-management.ts)",
+      "lib/data-service-mock-data.ts (638 lines → handlers/data.ts)",
+      "lib/strategy-platform-mock-data.ts (617 lines → handlers/strategy.ts)",
+      "lib/execution-platform-mock-data.ts (551 lines → handlers/execution.ts)",
+      "lib/taxonomy.ts (810 lines → handlers/data.ts or keep as lib/config/taxonomy.ts)",
+      "CODING_RULES_QUICK_START.md (deleted — .cursorrules is the source)"
+    ]
+  },
 
   "refactor_history": [
     {
@@ -34,44 +113,51 @@
       "title": "Initial Architecture & Rules Setup",
       "type": "setup",
       "from_state": "empty",
-      "to_state": "initial",
-      "description": "Established architectural foundation, coding rules, and configuration guides",
+      "to_state": "pre-phase-2",
+      "description": "V0 generated prototype with marketing pages, trading components, inline mock data. Architecture docs and coding rules established.",
       "status": "completed",
-      "changes": [
-        "Added .cursorrules (1000+ lines)",
-        "Added ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md",
-        "Added CONFIG_REFERENCE.md",
-        "Added SHARDING_DIMENSIONS.md",
-        "Added API_FRONTEND_GAPS.md",
-        "Created UI_STRUCTURE_MANIFEST.json"
-      ],
+      "approved_by": "Iggy Ikenna"
+    },
+    {
+      "id": "rules-alignment-2026-03-19",
+      "date": "2026-03-19",
+      "title": "Rules Alignment for Next.js App Router + Dimensional Scoping",
+      "type": "documentation",
+      "from_state": "pre-phase-2",
+      "to_state": "pre-phase-2",
+      "description": "Rewrote .cursorrules, V0_SYSTEM_PROMPT.txt, REFACTORING_PLAN for Next.js 16 App Router. Added dimensional mocking (same endpoint, different data per persona), demo personas with entitlements, Zustand+React Query rules, cache reset protocol, MSW migration manifest, expanded SHARDING_DIMENSIONS.md with 3-layer model. Deleted stale CODING_RULES_QUICK_START.md. Refreshed lib/registry/ with latest OpenAPI/config/topology from generator. Updated workspace cursor rules in PM and codex.",
+      "status": "completed",
       "approved_by": "Iggy Ikenna",
-      "notes": "No code changes, only documentation and rules"
+      "changes": [
+        ".cursorrules rewritten for Next.js App Router + (public)/(platform)/(ops) route groups",
+        "V0_SYSTEM_PROMPT.txt rewritten with one-platform model + 3 USPs + dimensional scoping",
+        "REFACTORING_PLAN Phase 2 expanded: shells in-repo, MSW migration manifest, type-gen, auth personas, state mgmt",
+        "REFACTORING_PLAN Phase 3 rewritten: route group reorganization, React Query migration, auth scoping",
+        "SHARDING_DIMENSIONS.md rewritten as 3-layer model (infrastructure + client + access/subscription)",
+        "CONFIG_REFERENCE.md references fixed to in-repo paths",
+        "lib/registry/ refreshed with latest generated files (openapi.json, config-registry.json, etc.)",
+        "lib/registry/sharding_config.yaml + runtime-topology.yaml copied in from PM",
+        "Deleted CODING_RULES_QUICK_START.md (contradicted .cursorrules)",
+        "Updated PM cursor-rules/ui/component-patterns.mdc, ui-quality-gates.mdc",
+        "Updated PM .cursor/rules/ui/ui-runtime-validation.mdc",
+        "Updated codex ui-service-separation.md"
+      ]
     }
   ],
 
   "breaking_changes_log": [],
 
   "notes": {
+    "for_agents": [
+      "CURRENT STATE: app/ is FLAT (30+ routes, no route groups). lib/ has inline mocks, no lib/config/ or lib/mocks/ yet.",
+      ".cursorrules describes the TARGET state, not the current state. Follow the REFACTORING_PLAN to get there.",
+      "Phase 2 is NEXT: create route groups, create lib/config/ + lib/mocks/ + lib/stores/, migrate inline data to MSW.",
+      "All references in docs point to files INSIDE this repo. No broken links to external repos."
+    ],
     "rules": [
-      "Any structural change (new page, hiding old page, renaming route, removing component) MUST be documented here FIRST",
+      "Any structural change MUST be documented here FIRST",
       "Before making breaking changes, agent MUST ask user: 'I plan to [change]. Approve?'",
-      "If user says yes, agent updates 'target_structure' and documents in 'refactor_history'",
-      "If refactor spans multiple sessions, agent updates 'current_structure' to match actual state before resuming",
-      "At end of each session, verify manifest matches actual code structure",
-      "Never hide old pages without documenting: which old page is being hidden, where to find it in git history, what replaces it"
-    ],
-    "on_session_resume": [
-      "Agent MUST read this manifest first",
-      "If 'refactor_in_progress' is true, agent should resume at the exact state documented",
-      "If actual code structure doesn't match 'current_structure', agent should ask user to clarify which is source of truth",
-      "Agent should NOT proceed if manifest and code are out of sync"
-    ],
-    "on_breaking_changes": [
-      "Removing a page? Document: old path, new location (or that it's gone), why, when users will see change",
-      "Renaming a route? Document: old path, new path, redirect strategy",
-      "Hiding a component? Document: which component, where it was, what replaces it, when this becomes active",
-      "Merging two pages? Document: page A path, page B path, new merged path, data migration strategy"
+      "If refactor spans multiple sessions, agent updates 'current_structure' to match actual state before resuming"
     ]
   }
 }

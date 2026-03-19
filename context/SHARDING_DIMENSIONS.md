@@ -1,467 +1,251 @@
-# Sharding Dimensions for Unified Trading System
+# Sharding, Access Scoping & Subscription Model
 
 ## Overview
 
-Data availability, configuration, and capacity in the Unified Trading System is **sharded** — partitioned across dimensions.
+The Unified Trading System partitions data across **three layers**:
 
-When building the UI, understanding sharding dimensions tells you:
-- **Data availability:** "Am I looking at the right subset of data?"
-- **Configuration grouping:** "Is this config per-venue? Per-shard? Global?"
-- **Capacity planning:** "How is load distributed?"
+1. **Infrastructure Sharding** — How services partition and deploy data (category, venue, instrument, date, etc.)
+2. **Client Sharding** — How positions, risk, strategies, and execution are isolated per client/org
+3. **Access & Subscription Scoping** — What each user/org can SEE and DO based on their subscription tier
 
----
+Understanding all three layers is critical for building the UI correctly. They are orthogonal but intersect:
+a shared data feed (layer 1) is accessed through a subscription filter (layer 3) by a client whose
+positions are isolated (layer 2).
 
-## 1. Primary Sharding Dimensions
-
-### Dimension 1: **Shard** (Trading Domain)
-
-Services are sharded by **market domain**. Each shard is independently deployed, scaled, and configured.
-
-| Shard | Name | Markets | Examples |
-|-------|------|---------|----------|
-| **CEFI** | Centralized Finance | Spot, Futures, Options | Binance, Kraken, CME, OTC |
-| **DeFi** | Decentralized Finance | DEXs, Lending, Staking | Aave, Uniswap, Hyperliquid, dYdX |
-| **Sports** | Sports & Prediction | Sports betting, prediction markets | FanDuel, DraftKings, Polymarket |
-| **TradFi** | Traditional Finance | Equities, Bonds, FX | NYSE, LSE, EUREX, FX dealers |
-| **OnChain** | On-Chain Perps | Perpetual futures on-chain | Hyperliquid (on-chain), dYdX v4 |
-
-**In the UI:**
-- Many screens are shard-specific (e.g., "DeFi Positions", "Sports Betting")
-- If showing all shards, make shard clear in the UI (badge, label, color)
-- Some metrics are **per-shard** (e.g., risk limits, position limits, P&L)
-
-**Example:** Risk dashboard might show:
-```
-┌─ CEFI Risk
-│  ├─ Max daily loss: $100K (global config)
-│  ├─ Max position: 5% (per-venue, Binance specific)
-│
-├─ DeFi Risk
-│  ├─ Max daily loss: $50K (lower risk tolerance)
-│  ├─ Slippage target: 50 bps (per-protocol)
-│
-└─ Sports Risk
-   ├─ Max daily loss: $10K
-   └─ Max position: 1% of bankroll
-```
-
-### Dimension 2: **Venue** (Exchange / Market)
-
-Within each shard, data is partitioned by **venue** (exchange, DEX, bookmaker, etc.).
-
-#### CEFI Venues
-
-| Venue | Type | Region | API | Specialization |
-|-------|------|--------|-----|-----------------|
-| **BINANCE** | CEX | Global | RESTful | Largest spot + futures |
-| **KRAKEN** | CEX | Europe | RESTful | Institutional, low fees |
-| **COINBASE** | CEX | US | RESTful | US retail/institutional |
-| **BYBIT** | CEX | Global | WebSocket | Derivatives, fast fills |
-| **DERIBIT** | Derivatives | Europe | WebSocket | Options (Ethereum) |
-| **CME** | Derivatives | US | FIX | Traditional futures (BTC/ETH) |
-| **OTC** | OTC Desk | Global | Custom | Large block trades |
-
-#### DeFi Venues
-
-| Venue | Type | Chain | Protocol |
-|-------|------|-------|----------|
-| **UNISWAP** | DEX | Ethereum | Automated market maker |
-| **AAVE** | Lending | Ethereum | Lending protocol |
-| **HYPERLIQUID** | Perps | Solana | On-chain perpetuals |
-| **DYDX** | Perps | Cosmos | Cross-chain perps |
-| **CURVE** | Stableswap | Ethereum | Stablecoin specialization |
-
-#### Sports Venues
-
-| Venue | Type | Markets |
-|-------|------|---------|
-| **FANDUEL** | Bookmaker | US sports |
-| **DRAFTKINGS** | Bookmaker | US sports, betting lines |
-| **POLYMARKET** | Prediction | Political, event outcomes |
-
-#### TradFi Venues
-
-| Venue | Type | Region |
-|-------|------|--------|
-| **NYSE** | Equity | US |
-| **LSE** | Equity | UK |
-| **EUREX** | Futures | EU |
-| **LIFFE** | Derivatives | EU |
-
-**In the UI:**
-- Positions, orders, fills are always **per-venue**
-- When showing cross-venue data, aggregate carefully (P&L is per-venue, then summed)
-- Venue-specific parameters (fees, tick sizes, limits) come from configuration
-
-### Dimension 3: **Instrument** (Asset / Product)
-
-Within a venue, data is partitioned by **instrument**.
-
-| Type | Examples | Venues |
-|------|----------|--------|
-| **Spot** | BTC/USD, ETH/USD, AAPL/USD | CEFI, TradFi |
-| **Futures** | BTC-PERP-USD, ES (S&P 500) | CEFI, TradFi |
-| **Options** | BTC-USD-C-50000, SPY-USD-C-450 | DERIBIT, CME |
-| **Sports** | MLB-Team-A-vs-Team-B | Sports venues |
-| **Lending** | USDC-lending-Aave | DeFi |
-| **LP Token** | UNI-V3-ETH-USDC-0.30% | DeFi |
-
-**In the UI:**
-- Instruments are typically **filtered, not paginated** (use dropdowns, search, favorites)
-- Instrument metadata (decimal places, min/max order size) from config
-- P&L, positions, orders grouped by instrument
-
-### Dimension 4: **Organization / Client** (Account Segmentation)
-
-Some data is partitioned by **organization** (client account).
-
-**In single-account operation:**
-- You typically work with one org at a time
-
-**In multi-account internal operations:**
-- May see data across orgs (admin view)
-- Shard + venue + instrument + org = unique data point
-
-**In the UI:**
-- Multi-client UIs have org selector at top
-- Role determines if you can see other orgs
-- Dashboard filters include org selector for internal users
+**SSOT for infrastructure sharding:** `lib/registry/sharding_config.yaml` (copied from unified-trading-pm/configs/)
+**SSOT for market categories:** `context/internal-contracts/schemas/market_category.py`
 
 ---
 
-## 2. Sharding in Key Services
+## Layer 1: Infrastructure Sharding (How Data is Partitioned)
 
-### Market Data Service
-
-**Sharding:** Shard → Venue → Instrument → Timeframe
-
-```
-Market Data Service
-├─ CEFI shard
-│  ├─ BINANCE venue
-│  │  ├─ BTC/USD (1m, 5m, 1h, 1d candles; L2 book; trades)
-│  │  └─ ETH/USD (1m, 5m, 1h, 1d candles; L2 book; trades)
-│  └─ KRAKEN venue
-│     └─ BTC/USD (different candles, different book depth)
-│
-└─ DeFi shard
-   ├─ UNISWAP venue
-   │  └─ ETH/USDC (CPMM pricing, TVL, fees)
-   └─ AAVE venue
-      └─ USDC (deposit/borrow rates, utilization, risk params)
-```
-
-**UI relevance:**
-- Data catalogue: Filter by shard → venue → instrument
-- Backtesting: Select shard/venue/instrument combo
-- Real-time monitoring: Subscribe per-shard to avoid overload
-
-### Execution Service
-
-**Sharding:** Shard → Venue → Account (optional multi-account)
-
-```
-Execution Service
-├─ CEFI shard
-│  ├─ BINANCE account
-│  │  ├─ Open orders (BTC/USD, ETH/USD, ...)
-│  │  ├─ Fills (execution history)
-│  │  └─ Positions (spot holdings, margin)
-│  │
-│  └─ KRAKEN account
-│     └─ (same structure)
-│
-└─ DeFi shard
-   ├─ UNISWAP protocol
-   │  └─ Pending transactions, swap quotes
-   └─ AAVE protocol
-      └─ Lending positions, collateral
-```
-
-**UI relevance:**
-- Order placement: Shard → Venue → Instrument → Amount
-- Positions dashboard: Show per-shard summary, expandable per-venue
-- Order history: Filter by shard/venue date range
-
-### Strategy Service
-
-**Sharding:** Shard → Strategy Instance → Venue Constraints
-
-```
-Strategy Service
-├─ CEFI shard
-│  ├─ Strategy A (BTC carry trade)
-│  │  ├─ Config per BINANCE
-│  │  ├─ Config per KRAKEN
-│  │  └─ Config per OTC (venue-specific overrides)
-│  │
-│  └─ Strategy B (Stat arb)
-│     └─ (shard-level config)
-│
-└─ DeFi shard
-   ├─ Strategy C (Yield farming)
-   │  ├─ Config per UNISWAP
-   │  ├─ Config per AAVE
-   │  └─ Config per CURVE
-```
-
-**UI relevance:**
-- Strategy dashboard: Shard-aware (CEFI strategies separate from DeFi)
-- Configuration: Per-shard config + per-venue overrides
-- P&L attribution: Break down by shard, then venue
-
-### Risk Service
-
-**Sharding:** Shard → Risk Dimension (per-venue limits, cross-venue correlation, shard-level exposure)
-
-```
-Risk Dashboard
-├─ CEFI Risk
-│  ├─ Shard-level exposure: $5M (total)
-│  ├─ Per-venue limits: BINANCE $2M, KRAKEN $1.5M, OTC $1.5M
-│  ├─ Cross-venue correlation (BINANCE ↔ KRAKEN)
-│  └─ Per-instrument concentration: BTC 30%, ETH 20%, ...
-│
-├─ DeFi Risk
-│  ├─ Shard-level exposure: $2M
-│  ├─ Per-protocol limits: UNISWAP $1M, AAVE $1M
-│  ├─ Smart contract risk (UNISWAP v3 vs v2)
-│  └─ Slippage risk per-protocol
-│
-└─ Sports Risk
-   ├─ Shard-level exposure: $100K
-   ├─ Per-venue limits
-   └─ Bet correlation risk
-```
-
-**UI relevance:**
-- Risk dashboard is **always shard-first** (shows CEFI, DeFi, Sports separately)
-- Within each shard, show per-venue breakdown
-- Alert thresholds configured per-shard
-
----
-
-## 3. Data Availability Implications
-
-### Implication 1: Real-Time vs Batch
-
-Different shards have different **data freshness guarantees**:
-
-| Shard | Real-Time | Batch | Frequency |
-|-------|-----------|-------|-----------|
-| **CEFI** | WebSocket (sub-100ms) | OHLCV candles | 1min, 5min, 1hr, 1d |
-| **DeFi** | Event logs (per-block) | Quotes | Per-block (~12s) |
-| **TradFi** | REST polling | End-of-day | Daily |
-| **Sports** | API polling | Historical | 1-5min |
-
-**In the UI:**
-- CEFI dashboard: Can show real-time positions, fills, order book
-- DeFi dashboard: Block-based updates (less frequent)
-- TradFi dashboard: EOD updates sufficient
-- Show data freshness timestamp to users
-
-### Implication 2: Shard Failure Isolation
-
-If one shard fails:
-- Other shards continue unaffected
-- UI should show shard-level health status
-- Don't block entire dashboard if DeFi shard is down; just mark it unavailable
-
-**In the UI:**
-```
-CEFI     ✅ Online
-DeFi     ⚠️  Degraded (Event service latency)
-Sports   ✅ Online
-TradFi   ⚠️  Offline (Scheduled maintenance)
-```
-
-### Implication 3: Data Scoping
-
-When fetching data, specify **shard + venue + instrument**:
-
-```typescript
-// Good
-fetchPositions({ shard: 'CEFI', venue: 'BINANCE' })
-
-// Bad (ambiguous)
-fetchPositions({ symbol: 'BTC/USD' })  // which shard? which venue?
-```
-
----
-
-## 4. Configuration by Shard
-
-Different shards have **different configuration**:
+### Market Categories (the "shards")
 
 ```python
-class ExecutionServiceConfig:
-    # Global config
-    default_timeout_ms: int = 5000
-
-    # Shard-specific config
-    shards: dict[str, ShardExecutionConfig] = {
-        "CEFI": ShardExecutionConfig(
-            max_position_pct=5.0,  # 5% of portfolio
-            preferred_venues=["BINANCE", "KRAKEN"],
-            smart_order_routing=True,
-        ),
-        "DeFi": ShardExecutionConfig(
-            max_position_pct=2.0,  # More conservative
-            slippage_target_bps=50,  # Slippage matters in DeFi
-            router="1INCH",
-        ),
-        "Sports": ShardExecutionConfig(
-            max_position_pct=0.5,  # Very conservative
-            max_single_bet=10000,
-        ),
-    }
+class MarketCategory(StrEnum):
+    CEFI = "CEFI"      # Centralized crypto exchanges (Binance, Kraken, CME, etc.)
+    TRADFI = "TRADFI"  # Traditional finance (equities, bonds, FX)
+    DEFI = "DEFI"      # Decentralized finance (Uniswap, Aave, Curve, etc.)
+    SPORTS = "SPORTS"  # Sports betting & prediction markets
 ```
+
+Default enabled: `["CEFI", "TRADFI", "DEFI"]`. SPORTS can be enabled via `ENABLED_CATEGORIES`.
+
+### Sharding Dimensions by Service (from PM configs SSOT)
+
+Services shard differently depending on their domain. Below is the canonical truth from `sharding_config.yaml`.
+
+#### Data Pipeline Services
+
+| Service | Batch Dimensions | Live Dimensions |
+|---------|------------------|-----------------|
+| **instruments-service** | `[category, venue, date]` | `[venue]` |
+| **market-tick-data-service** | `[category, venue, instrument_type, data_type, date]` | `[venue, instrument_type, data_type]` |
+| **market-data-processing-service** | `[category, venue, instrument_type, date, timeframe]` | `[venue, instrument_type]` |
+
+Instrument types: `spot, perpetual, future, option, odds`
+Data types: `trades, book_snapshot_5, derivative_ticker, liquidations, incremental_book_l2, opra_options, cme_options, odds_tick, book_update`
+Timeframes: `15s, 1min, 5min, 15min, 1h, 4h, 1d`
+
+#### Feature Services
+
+| Service | Batch Dimensions | Live Dimensions |
+|---------|------------------|-----------------|
+| **features-delta-one-service** | `[category, venue, feature_category, date]` | `[venue, feature_category]` |
+| **features-volatility-service** | `[category, venue, feature_category, date]` | `[venue, feature_category]` |
+| **features-calendar-service** | `[category, date]` | N/A (batch only) |
+| **features-onchain-service** | `[protocol, chain, date]` | N/A (batch only) |
+| **features-cross-instrument-service** | `[category, feature_category, date]` | `[feature_category]` |
+| **features-multi-timeframe-service** | `[category, feature_category, date]` | `[feature_category]` |
+| **features-sports-service** | `[league, feature_group, date]` | `[league]` |
+
+**Sports shards by league, NOT category:** EPL, LA_LIGA, BUNDESLIGA, SERIE_A, LIGUE_1, CHAMPIONSHIP, EREDIVISIE, PRIMEIRA_LIGA
+
+Feature categories (delta-one): `technical_indicators, moving_averages, oscillators, volatility_realized, momentum, volume_analysis, vwap, candlestick_patterns, market_structure, returns, round_numbers, streaks, microstructure, funding_oi, liquidations, temporal`
+
+On-chain protocols: `aave_v3, uniswap_v3, curve, morpho, euler, fluid` across chains: `ethereum, base, arbitrum, optimism`
+
+#### ML Services
+
+| Service | Batch Dimensions | Live Dimensions |
+|---------|------------------|-----------------|
+| **ml-training-service** | `[model, instrument, timeframe, target_type, config]` | N/A (batch only, ~quarterly) |
+| **ml-inference-service** | `[model, venue, instrument, date]` | `[model, venue, instrument]` |
+
+Models: `lstm, xgboost, lightgbm, ensemble`
+Target types: `return, volatility, direction, regime`
+
+#### Trading Services (Client-Sharded — see Layer 2)
+
+| Service | Batch Dimensions | Live Dimensions |
+|---------|------------------|-----------------|
+| **strategy-service** | `[strategy_id, client, date]` | `[strategy_id, client]` |
+| **execution-service** | `[client, subaccount, date]` | `[client, subaccount]` |
+| **position-balance-monitor-service** | `[client, venue, date]` | `[client, venue]` |
+| **risk-and-exposure-service** | `[client, date]` | `[client]` |
+| **pnl-attribution-service** | `[client, date]` | `[client]` |
+| **alerting-service** | N/A | singleton |
+
+**Key notes:**
+- **strategy-service is NOT sharded by venue** — a strategy may span venues (arb, spread)
+- **execution-service uses subaccount** — finer than client-level isolation
+- **position-balance-monitor raw granularity:** `[client, subaccount, venue, instrument]`
+- **risk aggregation dimensions:** `[client, underlying, risk_category, pool]`
+- **pnl output dimensions:** `[client, strategy, date]`
+
+### Dimension Types (deployment-service)
+
+| Type | Description | Example |
+|------|-------------|---------|
+| **fixed** | Static list of values | `category_values: [cefi, defi, tradfi]` |
+| **hierarchical** | Depends on parent dimension | venue depends on category |
+| **date_range** | Date-based with granularity (daily/weekly/monthly/none) | `[..., date]` |
+| **cloud_dynamic / gcs_dynamic** | Discovered from GCS bucket paths at runtime | Dynamic instrument lists |
+
+---
+
+## Layer 2: Client Sharding (How Org/Client Data is Isolated)
+
+Client is a **real sharding dimension** on trading services. Each client has their own:
+- Strategies (deployed per-client with separate configs)
+- Execution (separate subaccounts, separate order flows)
+- Positions (isolated position state per client per venue)
+- Risk (separate risk limits, separate exposure calculations)
+- P&L (separate attribution, separate reporting)
 
 **In the UI:**
-- When configuring risk limits, ask: "For which shard?"
-- Configuration form should have shard selector
-- Show shard-specific defaults and constraints
+- Internal users see ALL clients via org/client selector at top
+- Client users see ONLY their client (selector is read-only or hidden)
+- The pages are the same — the API scopes the data by the `client` dimension
+- The hierarchy is: Organisation → Client → Subaccount → Venue → Instrument
+
+**Client values in the system today:** `internal`, `external` (will expand as more orgs onboard)
+
+**What already exists per-client:**
+- Strategy configs deployed per-client (strategy-service)
+- Execution per-client with subaccount (execution-service)
+- Positions per-client per-venue (position-balance-monitor-service)
+- Risk per-client (risk-and-exposure-service)
+- P&L per-client per-strategy (pnl-attribution-service)
 
 ---
 
-## 5. Common Sharding Mistakes
+## Layer 3: Access & Subscription Scoping (What Users See)
 
-### Mistake 1: Ignoring Shard When Aggregating P&L
+This layer controls what a user/org can ACCESS through the platform. It sits ON TOP of the
+infrastructure sharding and client isolation.
+
+### Scoping Rules by Data Type
+
+| Data Type | Infrastructure Shard | Client Isolation | Subscription Scoping | Notes |
+|-----------|---------------------|------------------|---------------------|-------|
+| **Market data** (OHLCV, books, ticks) | category→venue→instrument | **None** — shared infrastructure | **None** — everyone accesses same data | Data exists; clients use it within the platform. No duplication. |
+| **Instrument registry** | category→venue | **None** — shared | **Subscription-filtered** | Same registry, filtered view. Basic tier = 180 instruments. Pro = 2400. |
+| **Download/data status** | category→venue | **None** — shared | **Subscription-scoped** | Progress bars for entitled instruments. Same UI as internal data status page. |
+| **Features** (delta-one, vol, etc.) | category→venue→feature_category | **None** — shared computation | **Subscription-filtered** | Full feature subscription = see all. Basic = subset. Same feature pipeline. |
+| **ML models** | model→instrument→timeframe | **None** — shared models | **Subscription-filtered** | Full ML sub = all models/features/targets. Basic = restricted set. |
+| **Strategies** | strategy_id→client | **Client-isolated** | **Client-scoped** | Each org has their own strategies. Internal sees all. |
+| **Execution/Orders** | client→subaccount | **Client-isolated** | **Client-scoped** | Each org's order flow. Internal sees all via client selector. |
+| **Positions** | client→venue→instrument | **Client-isolated** | **Client-scoped** | Each org's positions. Internal sees all. |
+| **Risk/Exposure** | client | **Client-isolated** | **Client-scoped** | Each org's risk limits and exposure. |
+| **P&L/Attribution** | client→strategy→date | **Client-isolated** | **Client-scoped** | Each org's P&L. Key USP: backtest↔live diff visible here. |
+| **Reports/Settlement** | client→date | **Client-isolated** | **Client-scoped** | Each org's reports. |
+| **Data export** | category→venue | N/A | **Premium add-on** | Optional: export to client's GCP/AWS or download. Not default. |
+
+### Key Principle: Shared Data, Not Duplicated
+
+Market data, features, and ML models are **shared infrastructure**. Clients don't get copies — they
+access the same data feeds through the platform. If they don't need to take data out of the platform,
+there's no extra cost. Data export (to their own GCP/AWS bucket or file download) is a premium add-on.
+
+### Subscription Tiers (Mock Demo)
+
+| Tier | Data | Features | ML | Strategy | Execution | Analytics |
+|------|------|----------|----|----------|-----------|-----------|
+| **data-basic** | 180 instruments, CEFI only | — | — | — | — | — |
+| **data-pro** | 2400 instruments, all categories | All features | — | — | — | — |
+| **execution-basic** | Via data tier | Via data tier | — | — | Basic algos (TWAP, VWAP) | — |
+| **execution-full** | Via data tier | Via data tier | — | — | All algos + SOR + dark pool | TCA, fill analysis |
+| **ml-full** | Via data tier | All features | All models, targets, training | — | — | Model performance |
+| **strategy-full** | Via data tier | All features | All models | Full strategy suite | Full execution | Backtest↔live diff |
+| **reporting** | — | — | — | — | — | P&L, settlement, attribution |
+
+Internal users: `entitlements: ["*"]` — see everything.
+
+### Data Export (Premium Add-On)
+
+Clients who need data outside the platform can:
+1. **Export to their cloud** (GCP bucket or AWS S3) — aligned with our cloud infrastructure
+2. **Download** (CSV/Parquet) — for offline analysis
+
+This is NOT the default. Using data within the platform is the default experience. Export is an
+upsell. In the demo, show an "Export Data" button that opens a modal: "Contact sales for cloud
+export pricing" with options for GCP and AWS.
+
+---
+
+## UI Implementation Guidance
+
+### How to Scope API Calls
 
 ```typescript
-// ❌ WRONG: P&L by shard are NOT directly comparable
-const totalPnL = shards.CEFI.pnl + shards.DeFi.pnl
-// CEFI P&L is realized (closed positions)
-// DeFi P&L includes unrealized (active LP positions)
-// Not directly comparable!
+// Always include shard dimensions
+const { data } = useInstrumentRegistry({
+  category: shard,      // CEFI, DEFI, TRADFI, SPORTS
+  venue: selectedVenue,  // BINANCE, UNISWAP, etc.
+});
 
-// ✅ CORRECT: Understand shard semantics
-const totalRealized = shards.CEFI.realized_pnl + shards.DeFi.realized_pnl
-const totalUnrealized = shards.CEFI.unrealized_pnl + shards.DeFi.unrealized_pnl
-const totalPnL = totalRealized + totalUnrealized
+// Client-scoped calls include org_id (from auth)
+const { data } = usePositions({
+  shard: "CEFI",
+  venue: "BINANCE",
+  // org_id comes from auth context — internal sees all, client sees theirs
+});
 ```
 
-### Mistake 2: Mixing Venue Namespaces
+### How to Build Shard-Aware Pages
 
-```typescript
-// ❌ WRONG: Treating venues as globally unique
-positions['BTC/USD']  // which venue? BINANCE or KRAKEN?
+1. **Identify which layer applies** — Is this shared data (Layer 1), client-isolated (Layer 2), or subscription-filtered (Layer 3)?
+2. **Use shard selectors** — Category tabs/dropdown at top of data pipeline pages
+3. **Use client selector** — Org/client dropdown at top of trading pages (read-only for clients)
+4. **Show shard health** — Badge per category (online/degraded/offline)
+5. **Never cross-shard** in one API call — fetch per-shard, aggregate in UI
+6. **Show subscription context** — If client can't access something, show locked state with upgrade CTA
 
-// ✅ CORRECT: Always scope by shard + venue
-positions['CEFI']['BINANCE']['BTC/USD']
-positions['CEFI']['KRAKEN']['BTC/USD']
-```
+### Venue Hierarchy by Category
 
-### Mistake 3: Ignoring Configuration Shards
+| Category | Venues |
+|----------|--------|
+| **CEFI** | BINANCE, KRAKEN, COINBASE, BYBIT, DERIBIT, CME, OTC |
+| **DEFI** | UNISWAP, AAVE, HYPERLIQUID, DYDX, CURVE, MORPHO, EULER, FLUID |
+| **SPORTS** | FANDUEL, DRAFTKINGS, POLYMARKET, BETFAIR, PINNACLE, ODDS_API |
+| **TRADFI** | NYSE, LSE, EUREX, LIFFE |
 
-```typescript
-// ❌ WRONG: Using global config for all shards
-const maxPosition = config.max_position_pct  // 5%
-// But DeFi should be 2%!
+### Sports: League-Based Sharding
 
-// ✅ CORRECT: Use shard-specific config
-const maxPosition = config.shards[shard].max_position_pct
-// For CEFI: 5%, for DeFi: 2%, for Sports: 0.5%
-```
+Sports features are sharded by **league**, not by category. The UI should use league selectors
+(EPL, La Liga, Bundesliga, etc.) rather than the category→venue pattern used by other shards.
+
+### Common Mistakes
+
+1. **Don't duplicate shared data per org** — Market data is shared. Don't mock separate data feeds per client.
+2. **Don't build separate pages for internal vs client** — Same page, different API scope.
+3. **Don't ignore batch vs live** — Some services are batch-only (ml-training, features-calendar, features-onchain). UI should show "last updated" timestamps, not real-time indicators.
+4. **Don't mix venue namespaces** — `BTC/USD` on BINANCE ≠ `BTC/USD` on KRAKEN. Always scope by category + venue.
+5. **Don't aggregate P&L across categories naively** — CEFI P&L is realized; DeFi includes unrealized LP positions. Show per-category first, then total with caveats.
 
 ---
 
-## 6. Sharding by Service
+**References (all paths relative to this repo root):**
+- Infrastructure sharding: `lib/registry/sharding_config.yaml`
+- Market categories: `context/internal-contracts/schemas/market_category.py`
+- Runtime topology: `lib/registry/runtime-topology.yaml`
+- System topology: `lib/registry/system-topology.json`
+- Data alignment: `_reference/deployment-service/docs/SHARDING_AND_DATA_ALIGNMENT.md`
+- Dimension processor: `_reference/deployment-service/deployment_service/calculators/shard_dimensions.py`
+- OpenAPI spec: `lib/registry/openapi.json`
+- Config registry: `lib/registry/config-registry.json`
+- UI reference data (venues, instruments): `lib/registry/ui-reference-data.json`
 
-### API Services
-
-- **Market Data API:** Shard + Venue + Instrument + Timeframe
-- **Config API:** Shard (some configs are shard-specific)
-- **Trading Analytics API:** Shard + Venue + TimeRange
-
-### Core Services
-
-- **Execution:** Shard + Venue (per-shard execution engines)
-- **Risk:** Shard (per-shard risk models, limits, correlation)
-- **Strategy:** Shard (strategies don't cross shards)
-- **Alerting:** Shard (alerts are shard-aware)
-
-### Feature Services
-
-- **Features Sports:** Sports shard only
-- **Features DeFi:** DeFi shard only
-- **Features Liquidity:** Shard-agnostic (all)
-- **Features Volatility:** Shard-agnostic
-
----
-
-## 7. Quick Reference: Sharding by UI Screen
-
-| Screen | Shards | Grouping | Notes |
-|--------|--------|----------|-------|
-| **Dashboard** | All | Shard tabs or cards | Shard selector at top |
-| **Positions** | All | Shard → Venue → Instrument | Show shard badge |
-| **Orders** | All | Shard → Venue | Filter by shard |
-| **Risk Limits** | All | Shard → Config section | Different limits per shard |
-| **Strategy Config** | Single | Shard-specific | Create separate UIs per shard |
-| **Backtesting** | Single | Shard selector → venue → instrument | One shard per backtest |
-| **Data Catalogue** | All | Shard → Venue → Instrument | Hierarchical browse |
-| **Alerts** | All | Shard-specific rules | Alert type varies by shard |
-
----
-
-## 8. Sharding Registry
-
-**Source:** `unified-trading-pm/workspace-manifest.json`
-
-Each service declares its sharding model:
-
-```json
-{
-  "service": "execution-service",
-  "sharding_dimensions": ["shard", "venue"],
-  "shards": ["CEFI", "DeFi", "Sports", "TradFi"],
-  "venues_per_shard": {
-    "CEFI": ["BINANCE", "KRAKEN", "COINBASE", "BYBIT", "CME", "OTC"],
-    "DeFi": ["UNISWAP", "AAVE", "HYPERLIQUID", "DYDX", "CURVE"],
-    "Sports": ["FANDUEL", "DRAFTKINGS", "POLYMARKET"],
-    "TradFi": ["NYSE", "LSE", "EUREX", "LIFFE"]
-  }
-}
-```
-
-**To find sharding info:**
-1. Open `unified-trading-pm/workspace-manifest.json`
-2. Search for service name
-3. Look for `sharding_dimensions` and `shards`
-
----
-
-## 9. For Agents Building UI
-
-### Before building any data view:
-
-1. **Identify the shard(s):** "Is this CEFI? Multi-shard?"
-2. **Identify the venue:** "Which venue(s) in that shard?"
-3. **Identify the instrument:** "Specific or all instruments?"
-4. **Check the sharding registry:** Confirm shard list matches manifest
-5. **Use shard-aware selectors:** Add shard/venue dropdown filters
-6. **Show shard context:** Badge or label to remind user which shard they're viewing
-
-### Example: Building a Positions Table
-
-```typescript
-// Component
-<PositionsTable
-  shard="CEFI"                    // ← Required
-  venues={["BINANCE", "KRAKEN"]}  // ← Filter venues
-  instrument="BTC/USD"            // ← Or null for all
-/>
-
-// Inside component:
-// 1. Fetch positions for shard+venues
-// 2. Group by shard → venue → instrument
-// 3. Render table with shard context visible
-// 4. Show shard-specific config (limits, etc.)
-```
-
----
-
-**Version:** 1.0
+**Version:** 2.0
 **Last Updated:** 2026-03-19
-**Maintainer:** Unified Trading System UI Team
