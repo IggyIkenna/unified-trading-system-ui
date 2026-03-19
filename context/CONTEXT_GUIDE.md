@@ -1,8 +1,7 @@
-# System Context Guide for Versa Repos
+# System Context Guide for Unified Trading System UI
 
-Every `versa-*` repo contains a `context/` folder with read-only reference material from four source repos.
-This guide explains what is in each folder, when to use it, and how to trace data from a backend service through to
-the UI component that renders it.
+This `context/` folder contains reference material from the Unified Trading System backend.
+This guide explains what is in each folder, when to use it, and how to understand backend configuration, API surface, and data flows.
 
 ---
 
@@ -10,57 +9,154 @@ the UI component that renders it.
 
 ```
 context/
-├── CONTEXT_GUIDE.md          ← you are here
-├── codex/                    ← architecture standards, domain glossary, coding rules
-├── api-contracts/            ← external/normalised data schemas (what APIs return to UIs)
-│   ├── docs/                 ← human-readable: venue matrix, schema audit, architecture
-│   ├── openapi/              ← OpenAPI 3.0 specs — the API surface UIs call
-│   ├── canonical-schemas/    ← Pydantic models: CanonicalTrade, CanonicalPosition, etc.
-│   └── facades/              ← top-level domain facades (market.py, execution.py, …)
-├── internal-contracts/       ← internal service-to-service data types
-│   ├── docs/                 ← schema changelog, architecture, adoption matrix
-│   ├── schemas/              ← Python types: events, positions, execution, features, …
-│   │   └── domain/           ← per-service schemas (execution_service/, risk_service/, …)
-│   └── schema_registry.json  ← machine-readable index of every schema type
+├── CONTEXT_GUIDE.md                  ← you are here
+├── AGENT_UI_STRUCTURE.md             ← first-pass implementation prompt for UI refactor
+│
+├── CONFIG_REFERENCE.md               ★ START HERE for backend configuration
+├── SHARDING_DIMENSIONS.md            ★ START HERE for data partitioning model
+├── API_FRONTEND_GAPS.md              ★ START HERE for known API/UI misalignments
+│
+├── codex/                            ← architecture standards, domain glossary, coding rules
+├── api-contracts/                    ← external/normalised data schemas (what APIs return to UIs)
+│   ├── docs/                         ← human-readable: venue matrix, schema audit, architecture
+│   ├── openapi/                      ← OpenAPI 3.0 specs — the API surface UIs call
+│   │   └── config-registry.json      ← CRITICAL: every service config class, all fields + types
+│   ├── canonical-schemas/            ← Pydantic models: CanonicalTrade, CanonicalPosition, etc.
+│   └── facades/                      ← top-level domain facades (market.py, execution.py, …)
+├── internal-contracts/               ← internal service-to-service data types
+│   ├── docs/                         ← schema changelog, architecture, adoption matrix
+│   ├── schemas/                      ← Python types: events, positions, execution, features, …
+│   │   └── domain/                   ← per-service schemas (execution_service/, risk_service/, …)
+│   └── schema_registry.json          ← machine-readable index of every schema type
 └── pm/
-    ├── docs/                 ← dev environment, CI/CD, cloud mode patterns, handover notes
-    ├── plans-active/         ← current active work plans (what is being built right now)
-    ├── data-flow-manifest.json  ← service → API → UI mapping for every data domain
-    ├── TOPOLOGY-DAG.md       ← full system Mermaid diagram (T0–T3 tiers, all services)
-    └── workspace-manifest.json  ← canonical repo list, versions, tier membership
+    ├── docs/                         ← dev environment, CI/CD, cloud mode patterns, handover notes
+    ├── plans-active/                 ← current active work plans (what is being built right now)
+    ├── data-flow-manifest.json       ← service → API → UI mapping for every data domain
+    ├── TOPOLOGY-DAG.md               ← full system Mermaid diagram (T0–T3 tiers, all services)
+    └── workspace-manifest.json       ← canonical repo list, versions, tier membership, sharding model
 ```
+
+**★ NEW: Configuration & Sharding Guides** — Start with these three documents if you're building UI features that depend on backend configuration or data availability.
 
 ---
 
-## The Three Documents That Explain Everything
+## Essential Reading for UI Builders
 
-If you only read three things, read these:
+### Configuration & Sharding (READ FIRST)
 
-### 1. `pm/TOPOLOGY-DAG.md`
+**Before building any UI feature**, understand what configuration actually exists and how data is partitioned:
+
+#### 1. **`CONFIG_REFERENCE.md`** — What can be configured?
+
+Where to find backend configurations, what fields exist, how they map to UI controls.
+
+- Find config for any service (execution, risk, strategy, etc.)
+- Understand types, defaults, required fields
+- Learn how to build config UI panels without guessing
+- Know when to regenerate `config-registry.json`
+
+**Key artifact:** `api-contracts/openapi/config-registry.json` — machine-readable catalogue of every service's config fields.
+
+#### 2. **`SHARDING_DIMENSIONS.md`** — How is data partitioned?
+
+Understand how data is split across domains (CEFI, DeFi, Sports, TradFi) and venues (BINANCE, KRAKEN, UNISWAP, etc.).
+
+- Know which data belongs to which shard
+- Understand shard-level failure isolation
+- Build shard-aware UIs (selector, filters, badges)
+- Avoid mixing data across incompatible shards
+- See per-shard configuration and resource limits
+
+**Key insight:** Data is **always** partitioned by shard → venue → instrument. Never ignore shard.
+
+#### 3. **`API_FRONTEND_GAPS.md`** — What's missing?
+
+A living document of what the UI needs but the APIs don't yet provide.
+
+- Don't build features that require 🔴 blocked APIs
+- Plan deferred features that depend on 🟡 in-progress APIs
+- Understand known API/UI misalignments (status terminology, price formats, etc.)
+- Add discoveries as you build
+
+---
+
+### System Architecture (READ SECOND)
+
+#### 4. **`pm/TOPOLOGY-DAG.md`**
 The full system map as a Mermaid diagram. Shows every repo, how they depend on each other (T0→T1→T2→T3), which
 services talk to which APIs, and which UIs consume which APIs. Use this to understand where any given repo sits in
 the system.
 
-### 2. `pm/data-flow-manifest.json`
+#### 5. **`pm/data-flow-manifest.json`**
 A compact JSON that answers the question "for domain X, which backend service produces the data, which API serves
-it, and which UI renders it?" One entry per data domain (client-reporting, execution, risk, features, etc.).
+it, and which UI renders it?" One entry per data domain (execution, risk, features, etc.).
 
 Example entry:
 ```json
 {
-  "id": "client-reporting",
-  "domain": "client-reporting",
-  "mode": "batch",
-  "service": "pnl-attribution-service",
-  "data_source": "gcs",
-  "api": "client-reporting-api",
-  "ui": "client-reporting-ui"
+  "id": "execution",
+  "domain": "execution",
+  "mode": "live",
+  "service": "execution-service",
+  "data_source": "pubsub",
+  "api": "execution-results-api",
+  "ui": "unified-trading-system-ui"
 }
 ```
 
-### 3. `codex/04-architecture/data-flow-map.md`
+#### 6. **`codex/04-architecture/data-flow-map.md`**
 Prose explanation of how data moves through the pipeline: market data ingestion → feature calculation → strategy
 → execution → reporting. Read this before reading any schema files.
+
+---
+
+## Before You Start Building a Feature
+
+Follow this checklist every time:
+
+### Step 1: Understand Data Partitioning (5 min)
+
+- [ ] Read [`SHARDING_DIMENSIONS.md`](./SHARDING_DIMENSIONS.md) → Identify which shard(s) your feature belongs to
+- [ ] Check: Is this feature per-shard? Per-venue? Multi-shard?
+- [ ] Plan your UI: shard selector? venue filters? how to show shard context?
+
+### Step 2: Find the Configuration (10 min)
+
+- [ ] Read [`CONFIG_REFERENCE.md`](./CONFIG_REFERENCE.md) → Find the backend service's config class
+- [ ] Open `api-contracts/openapi/config-registry.json`
+- [ ] Search for your service (e.g., "execution-service", "risk-and-exposure-service")
+- [ ] List all configurable fields, their types, defaults
+- [ ] Plan your config UI: which fields to expose? validation rules? defaults?
+
+### Step 3: Check for API Gaps (5 min)
+
+- [ ] Read [`API_FRONTEND_GAPS.md`](./API_FRONTEND_GAPS.md)
+- [ ] Does your feature depend on any 🔴 **BLOCKED** APIs? If yes, defer the feature.
+- [ ] Does it depend on 🟡 **IN PROGRESS** APIs? Plan it, but don't start yet.
+- [ ] Any known differentials that affect your UI? (status terminology, timestamp format, aggregation semantics)
+
+### Step 4: Find API Specs & Schemas (10 min)
+
+- [ ] Open `api-contracts/openapi/<your-api>.yaml` → see endpoint signatures and response shapes
+- [ ] Open `api-contracts/canonical-schemas/` → see Pydantic models (the ground truth)
+- [ ] Open `internal-contracts/schemas/` → see internal event types if your feature consumes events
+
+### Step 5: Check Data Flow & Sharding (5 min)
+
+- [ ] Open `pm/data-flow-manifest.json` → find your domain, confirm service→API→UI flow
+- [ ] Open `pm/TOPOLOGY-DAG.md` → confirm service dependencies
+- [ ] Check `pm/workspace-manifest.json` → confirm shard list matches your feature's scope
+
+### Done ✓
+
+You now have:
+- ✓ Shard model for your UI (CEFI vs DeFi vs Sports)
+- ✓ List of configurable fields (no guessing)
+- ✓ Known API gaps (no surprises mid-build)
+- ✓ Endpoint specs and data shapes (ready to implement)
+- ✓ Data flow diagram (know which service provides what)
+
+**Start coding.**
 
 ---
 
