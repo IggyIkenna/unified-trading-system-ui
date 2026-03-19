@@ -25,7 +25,8 @@ function PlatformShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <UnifiedShell
-      orgName={user?.org ?? "Odum Internal"}
+      orgName={user?.org?.name ?? "Odum Internal"}
+      orgId={user?.org?.id ?? "odum-internal"}
       userName={user?.email?.split("@")[0] ?? "Trader"}
       userRole={user?.role ?? "internal"}
     >

@@ -23,6 +23,9 @@ export type Entitlement = (typeof ENTITLEMENTS)[number]
 /** Wildcard entitlement for internal/admin users */
 export const ALL_ENTITLEMENTS = "*" as const
 
+/** Entitlement or wildcard — used in persona definitions and auth checks */
+export type EntitlementOrWildcard = Entitlement | typeof ALL_ENTITLEMENTS
+
 export interface Org {
   id: string
   name: string
@@ -35,7 +38,7 @@ export interface AuthPersona {
   displayName: string
   role: UserRole
   org: Org
-  entitlements: readonly Entitlement[] | readonly [typeof ALL_ENTITLEMENTS]
+  entitlements: readonly EntitlementOrWildcard[]
   description: string
 }
 

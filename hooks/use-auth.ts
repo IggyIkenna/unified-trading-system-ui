@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import type { UserRole, Entitlement, Org } from "@/lib/config/auth"
+import type { UserRole, Entitlement, EntitlementOrWildcard, Org } from "@/lib/config/auth"
+import { ALL_ENTITLEMENTS } from "@/lib/config/auth"
 import {
   PERSONAS,
   getPersonaByEmail,
@@ -14,7 +15,7 @@ export interface AuthUser {
   displayName: string
   role: UserRole
   org: Org
-  entitlements: readonly Entitlement[] | readonly ["*"]
+  entitlements: readonly EntitlementOrWildcard[]
 }
 
 const STORAGE_KEY = "portal_user"
@@ -90,8 +91,8 @@ export function useAuth() {
   /** Check if user has a specific entitlement */
   function hasEntitlement(entitlement: Entitlement): boolean {
     if (!user) return false
-    if (user.entitlements.includes("*" as Entitlement)) return true
-    return (user.entitlements as readonly Entitlement[]).includes(entitlement)
+    if (user.entitlements.includes(ALL_ENTITLEMENTS)) return true
+    return user.entitlements.includes(entitlement)
   }
 
   /** Check if user has internal/admin access */
