@@ -181,8 +181,8 @@ export default function ExecutionTCAPage() {
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
-                {mounted ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                {mounted && (
+                  <ResponsiveContainer key="timeline-chart" width="100%" height="100%">
                     <LineChart data={EXECUTION_TIMELINE}>
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                       <XAxis 
@@ -230,7 +230,8 @@ export default function ExecutionTCAPage() {
                       />
                     </LineChart>
                   </ResponsiveContainer>
-                ) : (
+                )}
+                {!mounted && (
                   <div className="h-full flex items-center justify-center text-muted-foreground">Loading chart...</div>
                 )}
               </div>
@@ -327,8 +328,8 @@ export default function ExecutionTCAPage() {
           </CardHeader>
           <CardContent>
             <div className="h-[200px]">
-              {mounted ? (
-                <ResponsiveContainer width="100%" height="100%">
+              {mounted && (
+                <ResponsiveContainer key="slippage-chart" width="100%" height="100%">
                   <BarChart data={SLIPPAGE_DISTRIBUTION}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="range" tick={{ fontSize: 11 }} />
@@ -347,7 +348,8 @@ export default function ExecutionTCAPage() {
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
-              ) : (
+              )}
+              {!mounted && (
                 <div className="h-full flex items-center justify-center text-muted-foreground">Loading chart...</div>
               )}
             </div>
