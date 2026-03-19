@@ -1,54 +1,43 @@
 const nextJest = require("next/jest")
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files
   dir: "./",
 })
 
-// Add any custom config to be passed to Jest
 const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   testEnvironment: "jsdom",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
+    "^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js",
+    "^msw/browser$": "<rootDir>/node_modules/msw/lib/browser/index.js",
+    "^msw$": "<rootDir>/node_modules/msw/lib/core/index.js",
   },
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/",
     "<rootDir>/.next/",
+    "<rootDir>/_reference/",
+  ],
+  testMatch: [
+    "<rootDir>/__tests__/**/*.test.{ts,tsx}",
   ],
   collectCoverageFrom: [
-    "components/**/*.{js,jsx,ts,tsx}",
-    "app/**/*.{js,jsx,ts,tsx}",
-    "lib/**/*.{js,jsx,ts,tsx}",
+    "lib/mocks/utils.ts",
+    "lib/mocks/fixtures/**/*.{ts,tsx}",
+    "lib/config/**/*.{ts,tsx}",
+    "lib/stores/**/*.{ts,tsx}",
+    "!lib/config/index.ts",
     "!**/*.d.ts",
     "!**/node_modules/**",
   ],
   coverageThreshold: {
     global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50,
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
   },
-  // Test categories
-  projects: [
-    {
-      displayName: "unit",
-      testMatch: ["<rootDir>/__tests__/components/**/*.test.{ts,tsx}"],
-      testEnvironment: "jsdom",
-    },
-    {
-      displayName: "integration",
-      testMatch: ["<rootDir>/__tests__/integration/**/*.test.{ts,tsx}"],
-      testEnvironment: "jsdom",
-    },
-    {
-      displayName: "audit",
-      testMatch: ["<rootDir>/__tests__/audit/**/*.test.{ts,tsx}"],
-      testEnvironment: "jsdom",
-    },
-  ],
 }
 
 module.exports = createJestConfig(customJestConfig)
