@@ -14,7 +14,11 @@
 
 **Relationship to PLANS_2:** PLANS_2 created the mock/hook/handler infrastructure. PLANS_3 uses that infrastructure to build the actual user experience — deepening pages from stubs to functional service surfaces, building the service hub, and establishing end-to-end user journeys.
 
-**Scope per phase:** Each phase (5A through 5I) is 1-2 agent sessions. Do NOT attempt all phases in one session. Complete 5A first, then pick service areas in priority order.
+**Urgency:** This needs to be a COMPLETE platform experience — not slides in the form of web pages. Users must be able to create accounts, configure strategies, run backtests, set up ML experiments, trade, monitor, generate reports. Everything operates on mock data, but the interactions must be REAL (forms submit, state changes, new items appear in lists, filters work end-to-end).
+
+**Porting strategy:** Several `_reference/` UIs have production-grade components that should be PORTED (adapted) not just referenced. Especially `deployment-ui` (17K lines, 20 components) and `versa-client-reporting`. See ARCHITECTURE_HARDENING.md §10 for the porting checklist.
+
+**Execution:** Work through phases sequentially: 5A first, then 5B-5G (which can be parallelized), then 5H-5I. Each phase should complete fully before moving on.
 
 **Scope:** This plan covers what PLANS_2 does NOT — the service architecture consistency, commercial packaging UX, hub experience, and completion of all service areas using reference UI patterns.
 
@@ -31,6 +35,24 @@ Read these files IN ORDER:
 5. `_reference/REFERENCE_MAPPING.md` — Which reference UIs to consult per service
 6. `context/API_FRONTEND_GAPS.md` — API readiness
 7. `.cursorrules` — Coding patterns, especially §1.5 (service layer pattern), §1.6 (reference usage), §1.7 (lifecycle naming)
+
+---
+
+## KEY PRINCIPLE: Universal Service Funnel
+
+Every service follows the SAME funnel. Three doors, same destination:
+
+1. **Prospect** → Landing → `/services/{domain}` marketing page → Subscribe → Register → Login → Hub (subscription overview) → Service detail
+2. **Client** → Login → Hub (shows entitled vs locked) → Click entitled → Service detail (org-scoped)
+3. **Internal** → Login → Hub (everything available) → Service detail (all data + admin surfaces)
+
+The hub IS the subscription overview. The service detail IS the same page for everyone.
+The only difference is data filtering. See ARCHITECTURE_HARDENING.md §2A-PRE for full spec.
+
+**This means:** Every service page must handle three states:
+- **Subscribed:** Full functionality, org-scoped data
+- **Not subscribed:** Locked overlay with "Upgrade" CTA showing what they'd get
+- **Internal:** Full data, no restrictions, plus admin/ops links
 
 ---
 
@@ -484,7 +506,15 @@ Reference patterns from `_reference/versa-onboarding/`:
 - `_reference/deployment-api/` — 92 API endpoints for deployment operations
 - `_reference/deployment-service/` — Orchestration patterns
 
-**IMPORTANT:** This is the service area most directly informed by reference UIs. The deployment stack reference is production code, not just design patterns.
+**IMPORTANT:** This service area should be PORTED from `_reference/deployment-ui/`, not built from scratch. The deployment-ui has 17K+ lines of production-grade UI (20 components, 67 types, 5 hooks). See ARCHITECTURE_HARDENING.md §10 for the porting checklist.
+
+**Porting approach:**
+1. Copy component files from `_reference/deployment-ui/src/components/` to `components/ops/`
+2. Replace `react-router-dom` → Next.js `Link` + `useRouter`
+3. Replace `@unified-trading/ui-kit` → `@/components/ui/` (shadcn)
+4. Replace `createApiClient()` → `fetchWithPersona()` from our hooks
+5. Replace inline state → React Query hooks (`useDeploymentServices`, `useDeployments`, `useBuildTriggers`)
+6. Copy types from `_reference/deployment-ui/src/types/index.ts` to `lib/types/deployment.ts`
 
 ### 5F.1: DevOps Dashboard
 
@@ -802,6 +832,29 @@ After this plan is complete:
 6. **All service areas** have at least product-layer pages wired to React Query
 7. **Commercial packaging** visible (locked states, upgrade CTAs)
 8. **Navigation** lifecycle-aligned across all shells
+
+---
+
+## INTERACTIVITY REQUIREMENTS (NOT SLIDES)
+
+Every page must have WORKING interactions, not just data display. Mock data changes
+when users take actions. State persists within the session (Zustand stores).
+
+| Action | What Must Happen |
+|--------|-----------------|
+| Create new strategy | Form → submit → new strategy appears in list → toast confirmation |
+| Run backtest | Select strategy → configure params → "Run" → progress bar → results appear |
+| Set up ML experiment | Configure model/features/target → "Train" → experiment appears in list |
+| Generate grid config | Select parameter ranges → "Generate" → grid configs appear |
+| Place trade | Order form → submit → fill appears in "Own Trades" → position updates |
+| Create user/org | Admin form → submit → new org/user in management list |
+| Generate report | Select params → "Generate" → report appears in list with "Ready" status |
+| Acknowledge alert | Click "Acknowledge" → alert status changes → count updates |
+| Confirm settlement | Click "Confirm" → status changes to "Confirmed" |
+| Deploy service | Select service/env → "Deploy" → deployment appears with progress |
+
+These use Zustand stores and MSW handlers to persist state within the demo session.
+The "Reset Demo" button (in shell debug panel) clears all state back to initial.
 
 ---
 

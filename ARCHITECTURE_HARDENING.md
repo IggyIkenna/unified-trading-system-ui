@@ -24,6 +24,63 @@ This document fixes that by specifying every doc/rule update needed.
 
 ## 2. Updates to ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md
 
+### 2A-PRE. Add: Universal Service Funnel (new §5.1)
+
+Insert after §5 "Three Experience Modes". This is the CORE UX model:
+
+```markdown
+## 5.1 Universal Service Funnel — Same Destination, Different Entry Points
+
+Every service area follows the SAME funnel. Users arrive from different doors but
+always converge on the SAME service detail page with data-driven filtering.
+
+### The Three Doors
+
+| Door | Who | Entry Point | Journey |
+|------|-----|------------|---------|
+| **Prospect** | Unauthenticated visitor | Landing page → `/services/{domain}` | Sees marketing page → "Subscribe" CTA → Register → Login → Subscription overview → Service detail |
+| **Client** | Authenticated, subscribed | Login → `/overview` | Sees subscription overview (entitled vs locked) → Click entitled service → Service detail (org-scoped data) |
+| **Internal** | Authenticated, internal role | Login → `/overview` | Sees all services available → Click any service → Service detail (all data, plus admin/ops surfaces) |
+
+### The Subscription Overview (Hub)
+
+After authentication, ALL users land on `/overview` — the subscription-aware hub.
+
+**What clients see:**
+- Services they're subscribed to: full-color cards with quick stats → click for detail
+- Services they're NOT subscribed to: locked cards with "Upgrade" → click shows what they'd get + pricing
+- Option to subscribe to additional services (updates entitlements dynamically)
+- Link to the same detailed page internal users see, but with org-scoped data
+
+**What internal users see:**
+- All services available (wildcard entitlements)
+- Per-client view option (select a client org to see what they see)
+- Admin/ops links visible that clients never see
+
+### The Service Detail (Same Page, Different Data)
+
+Once a user clicks through from the hub, they arrive at the SAME service page:
+- `/data/*` — same catalogue for everyone, filtered by subscription tier
+- `/strategy-platform/*` — same backtest/strategy UI, filtered by org's strategies
+- `/trading/*` — same trading terminal, filtered by org's positions/accounts
+- `/reports/*` — same reporting UI, filtered by org's P&L/settlements
+- `/execution/*` — same execution analytics, filtered by org's order flow
+
+The pages are IDENTICAL. The API scopes the data. A client subscribed to everything
+sees nearly the same thing as internal — minus the ops/admin surfaces.
+
+### Example: Investment Management Service
+
+| Step | Prospect | Client | Internal |
+|------|----------|--------|----------|
+| 1. Discover | Landing page → `/services/investment` → sees capabilities, pricing, FCA registration | Already subscribed | Already has access |
+| 2. Subscribe | Clicks "Subscribe" → registration → chooses package | Already done | N/A (wildcard) |
+| 3. Hub | Logs in → `/overview` → sees Investment Management as "Available" | Same — sees it as "Available" with quick stats | Same — sees all services |
+| 4. Detail | Clicks card → `/reports` → sees own org's strategies, P&L, settlements | Same page, own org data | Same page, can switch between all client orgs |
+| 5. Deep dive | Clicks a strategy → sees detailed returns, attribution, backtest↔live diff | Same | Same, plus admin actions |
+| 6. Billing | Sees invoices for their org | Same | Can generate invoices for any org |
+```
+
 ### 2A. Add: Generalized Service Layer Model (new §6.1)
 
 Insert after §6 "Service / Product Areas". This makes the Data pattern the canonical template:
@@ -435,11 +492,55 @@ Only then proceed with implementation.
 
 ---
 
-## 10. Summary of All Changes
+## 10. Reference UI Porting Strategy
+
+Not all references are "design inspiration only." Some have production-grade UI that should be **ported** (adapted to our architecture), not just referenced for patterns.
+
+### Portability Assessment
+
+| Reference | Lines | Portability | Action |
+|-----------|-------|-------------|--------|
+| `deployment-ui` | 23,299 | 4.5/5 | **PORT** — 20 components, 67 types, 5 hooks. Fills entire DevOps/Deployment service. Strip router, swap UI kit imports, adapt API calls to our fetch layer. |
+| `versa-client-reporting` | 2,222 | 3.5/5 | **PORT** — KPI card grid, cascading dropdowns, performance table. Fills reporting gaps. |
+| `versa-audit-ui` | 3,202 | 3/5 | **PARTIAL PORT** — JobCompletionChart (stacked bar), job tracking pattern. |
+| `versa-execution-analytics-ui` | 13,190 | 2/5 | **REFERENCE ONLY** — Navigation patterns, React Query usage. Too specialized to port. |
+| `versa-invoicing` | ~1,000 | 3/5 | **PORT** — Invoice template rendering, payment status display. |
+| `versa-onboarding` | 4,225 | 1/5 | **SKIP** — Marketing content, not operational UI. |
+
+### What "Porting" Means
+
+1. Copy the component file into `components/{domain}/`
+2. Replace `react-router-dom` with Next.js `Link` and `useRouter`
+3. Replace `@unified-trading/ui-kit` imports with `@/components/ui/` (shadcn)
+4. Replace `@unified-admin/core` API client with our `fetchWithPersona` pattern
+5. Replace inline state with React Query hooks (from `hooks/api/`)
+6. Keep the TSX/UI logic — that's the valuable part
+7. Adapt types to `lib/types/` or keep inline
+
+### deployment-ui Porting Checklist (Phase 5F)
+
+The deployment-ui has 20 components. Priority order for porting:
+
+| Component | Lines | What it does | Port to |
+|-----------|-------|-------------|---------|
+| DataStatusTab | 4,013 | Data completeness heatmap + drill-down | `components/ops/data-status.tsx` |
+| DeploymentDetails | 3,685 | Deployment detail view with shard tracking | `components/ops/deployment-details.tsx` |
+| DeployForm | 1,759 | Deployment creation wizard | `components/ops/deploy-form.tsx` |
+| DeploymentHistory | 636 | Deployment list with bulk ops | `components/ops/deployment-history.tsx` |
+| ExecutionDataStatus | 1,573 | Execution results data status | `components/ops/execution-data-status.tsx` |
+| HeatmapCalendar | ~500 | Custom calendar heatmap | `components/ops/heatmap-calendar.tsx` |
+| EpicReadinessView | 491 | Service readiness scorecard | `components/ops/epic-readiness.tsx` |
+| BuildSelector | ~200 | Build tag selection | `components/ops/build-selector.tsx` |
+
+Types file (674 lines) ports directly to `lib/types/deployment.ts`.
+
+---
+
+## 11. Summary of All Changes
 
 | File | Action | What Changes |
 |------|--------|-------------|
-| `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | UPDATE | Add §6.1 (service layer model), expand §7 (service hub), add §11.1 (commercial mapping) |
+| `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | UPDATE | Add §5.1 (universal service funnel), §6.1 (service layer model), expand §7 (service hub), add §11.1 (commercial mapping) |
 | `.cursorrules` | UPDATE | Add §0 (pre-flight), §1.5 (service layer pattern), §1.6 (reference usage), §1.7 (lifecycle naming) |
 | `REFACTORING_PLAN_PHASE_1-4.md` | UPDATE | Expand Phase 5 with service completion scope |
 | `SERVICE_COMPLETION_STATUS.md` | CREATE | Living tracker of per-service completion |
