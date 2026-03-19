@@ -1,0 +1,70 @@
+import type { AuthPersona } from "@/lib/config/auth"
+
+/**
+ * 4 demo personas covering all access tiers.
+ *
+ * - admin: sees everything including ops/deployment/user-management
+ * - internal-trader: internal desk, all entitlements
+ * - client-full: external client with broad subscription
+ * - client-data-only: external client with minimal data-only tier
+ */
+export const PERSONAS: readonly AuthPersona[] = [
+  {
+    id: "admin",
+    email: "admin@odum.internal",
+    password: "demo",
+    displayName: "Admin",
+    role: "admin",
+    org: { id: "odum-internal", name: "Odum Internal" },
+    entitlements: ["*"],
+    description:
+      "Full system admin. Sees everything: platform, ops, deployments, user management.",
+  },
+  {
+    id: "internal-trader",
+    email: "trader@odum.internal",
+    password: "demo",
+    displayName: "Internal Trader",
+    role: "internal",
+    org: { id: "odum-internal", name: "Odum Internal" },
+    entitlements: ["*"],
+    description:
+      "Internal trading desk. All platform features, no ops/admin pages.",
+  },
+  {
+    id: "client-full",
+    email: "pm@alphacapital.com",
+    password: "demo",
+    displayName: "Portfolio Manager",
+    role: "client",
+    org: { id: "acme", name: "Alpha Capital" },
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "ml-full",
+      "strategy-full",
+      "reporting",
+    ],
+    description:
+      "External client with full subscription. Sees own org data only.",
+  },
+  {
+    id: "client-data-only",
+    email: "analyst@betafund.com",
+    password: "demo",
+    displayName: "Data Analyst",
+    role: "client",
+    org: { id: "beta", name: "Beta Fund" },
+    entitlements: ["data-basic"],
+    description:
+      "External client with basic data tier. 180 instruments, CEFI only.",
+  },
+] as const
+
+export function getPersonaById(id: string): AuthPersona | undefined {
+  return PERSONAS.find((p) => p.id === id)
+}
+
+export function getPersonaByEmail(email: string): AuthPersona | undefined {
+  return PERSONAS.find((p) => p.email === email)
+}
