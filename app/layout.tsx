@@ -3,6 +3,7 @@ import { IBM_Plex_Sans, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ExecutionModeProvider } from '@/lib/execution-mode-context'
 import { Providers } from '@/lib/providers'
+import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -58,6 +59,7 @@ export default function RootLayout({
             {children}
           </ExecutionModeProvider>
         </Providers>
+        <Toaster />
         <Analytics />
       </body>
     </html>
