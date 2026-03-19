@@ -3,25 +3,38 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Sparkles, ArrowRight, Mail, Lock, Building2 } from "lucide-react"
+import { Sparkles, ArrowRight, Mail, Lock, Building2, Shield, Users, Eye } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
+import { PERSONAS } from "@/lib/mocks/fixtures/personas"
 
-// Demo accounts — shared with RequireAuth
-const demoAccounts = [
-  { email: "trader@odum.io",       password: "demo", org: "Odum Research",          role: "Internal Trader",   redirect: "/overview" },
-  { email: "demo@hedgefund.com",   password: "demo", org: "Alpha Capital",           role: "Investment Client", redirect: "/executive" },
-  { email: "cfo@familyoffice.com", password: "demo", org: "Sterling Family Office",  role: "Executive",         redirect: "/executive" },
-  { email: "demo@quant.com",       password: "demo", org: "Quantum Research",        role: "Quant Client",      redirect: "/quant" },
-  { email: "demo@compliance.com",  password: "demo", org: "Compliance Co",           role: "Compliance AR",     redirect: "/compliance" },
-]
+// Map persona roles to redirect targets and display info
+const PERSONA_REDIRECTS: Record<string, string> = {
+  admin: "/admin",
+  "internal-trader": "/overview",
+  "client-full": "/overview",
+  "client-data-only": "/overview",
+}
+
+const ROLE_ICONS: Record<string, typeof Shield> = {
+  admin: Shield,
+  internal: Eye,
+  client: Users,
+}
+
+const ROLE_COLORS: Record<string, string> = {
+  admin: "text-red-400",
+  internal: "text-emerald-400",
+  client: "text-blue-400",
+}
 
 export default function LoginPage() {
   const router = useRouter()
+  const { loginByEmail, login } = useAuth()
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search) : null
   const redirectTo = searchParams?.get("redirect") || null
@@ -35,20 +48,26 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     setError("")
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    const account = demoAccounts.find((a) => a.email === email && a.password === password)
-    if (account) {
-      localStorage.setItem("portal_user", JSON.stringify(account))
-      router.push(redirectTo || account.redirect)
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
+    const success = loginByEmail(email, password)
+    if (success) {
+      // Find matching persona to get redirect
+      const persona = PERSONAS.find((p) => p.email === email)
+      const target = redirectTo || (persona ? PERSONA_REDIRECTS[persona.id] : "/overview") || "/overview"
+      router.push(target)
     } else {
-      setError("Invalid credentials. Use any demo account with password: demo")
+      setError("Invalid credentials. Try any demo account below with password: demo")
     }
     setIsLoading(false)
   }
 
-  const handleDemoLogin = (account: typeof demoAccounts[0]) => {
-    localStorage.setItem("portal_user", JSON.stringify(account))
-    router.push(redirectTo || account.redirect)
+  const handleDemoLogin = (personaId: string) => {
+    const success = login(personaId)
+    if (success) {
+      const target = redirectTo || PERSONA_REDIRECTS[personaId] || "/overview"
+      router.push(target)
+    }
   }
 
   return (
@@ -120,26 +139,41 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              {/* Demo Accounts */}
+              {/* Demo Personas */}
               <div className="mt-6 pt-6 border-t border-border">
                 <p className="text-sm text-muted-foreground text-center mb-4">
-                  Or try a demo account:
+                  Or try a demo account <span className="text-xs">(password: demo)</span>
                 </p>
                 <div className="space-y-2">
-                  {demoAccounts.map((account) => (
-                    <button
-                      key={account.email}
-                      onClick={() => handleDemoLogin(account)}
-                      className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
-                    >
-                      <Building2 className="size-4 text-muted-foreground" />
-                      <div className="flex-1">
-                        <div className="text-sm font-medium">{account.org}</div>
-                        <div className="text-xs text-muted-foreground">{account.email} · {account.role}</div>
-                      </div>
-                      <Badge variant="outline" className="text-xs">demo</Badge>
-                    </button>
-                  ))}
+                  {PERSONAS.map((persona) => {
+                    const Icon = ROLE_ICONS[persona.role] || Users
+                    const colorClass = ROLE_COLORS[persona.role] || "text-muted-foreground"
+                    return (
+                      <button
+                        key={persona.id}
+                        onClick={() => handleDemoLogin(persona.id)}
+                        className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
+                      >
+                        <Icon className={`size-4 ${colorClass}`} />
+                        <div className="flex-1">
+                          <div className="text-sm font-medium">{persona.org.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {persona.email} · {persona.displayName}
+                          </div>
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${
+                            persona.role === "admin" ? "border-red-500/30 text-red-400" :
+                            persona.role === "internal" ? "border-emerald-500/30 text-emerald-400" :
+                            "border-blue-500/30 text-blue-400"
+                          }`}
+                        >
+                          {persona.role}
+                        </Badge>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             </CardContent>

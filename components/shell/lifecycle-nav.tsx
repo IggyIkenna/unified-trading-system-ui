@@ -50,6 +50,7 @@ import {
   buildLifecycleNav,
   getRouteMapping,
 } from "@/lib/lifecycle-mapping"
+import { useAuth } from "@/hooks/use-auth"
 
 // Icon mapping for lifecycle stages
 const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: string }>> = {
@@ -79,9 +80,40 @@ export function LifecycleNav({
 }: LifecycleNavProps) {
   const pathname = usePathname() || ""
   const [searchOpen, setSearchOpen] = React.useState(false)
-  
-  // Build navigation from lifecycle mapping
-  const navItems = buildLifecycleNav(true)
+  const { user, hasEntitlement, isInternal, switchPersona: doSwitchPersona, logout: doLogout } = useAuth()
+
+  // Build navigation from lifecycle mapping, filter by entitlements
+  const allNavItems = buildLifecycleNav(true)
+
+  // Internal-only routes (ops pages)
+  const opsRoutes = ["/admin", "/ops", "/devops", "/manage", "/compliance", "/config", "/engagement", "/internal"]
+  // Routes requiring specific entitlements
+  const mlRoutes = ["/ml"]
+  const executionRoutes = ["/execution"]
+  const strategyRoutes = ["/strategy-platform", "/strategies"]
+
+  const navItems = allNavItems.map(nav => ({
+    ...nav,
+    items: nav.items.filter(item => {
+      // Hide ops routes from non-internal users
+      if (opsRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
+        return isInternal()
+      }
+      // Hide ML routes if no ml-full entitlement
+      if (mlRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
+        return hasEntitlement("ml-full")
+      }
+      // Hide execution routes if no execution entitlement
+      if (executionRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
+        return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
+      }
+      // Hide strategy routes if no strategy entitlement
+      if (strategyRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
+        return hasEntitlement("strategy-full")
+      }
+      return true
+    }),
+  })).filter(nav => nav.items.length > 0)
   
   // Get current route mapping
   const currentMapping = getRouteMapping(pathname)
@@ -265,7 +297,40 @@ export function LifecycleNav({
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Zap className="mr-2 size-4" />
+                Switch Persona
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-56">
+                {(user ? [
+                  { id: "admin", label: "Admin", desc: "Full system access", role: "admin" },
+                  { id: "internal-trader", label: "Internal Trader", desc: "Platform + wildcard", role: "internal" },
+                  { id: "client-full", label: "Client (Full)", desc: "Alpha Capital — all services", role: "client" },
+                  { id: "client-data-only", label: "Client (Basic)", desc: "Beta Fund — data only", role: "client" },
+                ] : []).map((p) => (
+                  <DropdownMenuItem
+                    key={p.id}
+                    onClick={() => doSwitchPersona(p.id)}
+                    className={user?.id === p.id ? "bg-primary/10" : ""}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm">{p.label}</span>
+                      <span className="text-[10px] text-muted-foreground">{p.desc}</span>
+                    </div>
+                    {user?.id === p.id && <Check className="ml-auto size-4 text-primary" />}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive"
+              onClick={() => {
+                doLogout()
+                window.location.href = "/login"
+              }}
+            >
               <LogOut className="mr-2 size-4" />
               Log out
             </DropdownMenuItem>
