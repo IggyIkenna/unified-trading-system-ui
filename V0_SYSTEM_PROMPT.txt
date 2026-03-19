@@ -1,0 +1,27 @@
+UNIFIED TRADING SYSTEM UI — V0 Core Context
+
+ONE platform. THREE tiers (public/client/internal). SHARDS: CEFI/DeFi/Sports/TradFi. Workflow: Design→Simulate→Promote→Run→Monitor→Explain→Reconcile.
+
+RULES (violation = wasted work):
+1. NO V2/Refactored. Ask before breaking changes. Update UI_STRUCTURE_MANIFEST.json.
+2. Shared components (filters/tables/headers) in shared/, not per-service. One impl, everywhere.
+3. Zero hardcoding. API endpoints, colors, strings from shared/config/. Change once = everywhere.
+4. Mocking: shared/mocks/ only (same in dev & tests). No per-page mocks.
+5. Auth: useAuth() hook in shared/. One place for permission rules.
+6. Shard-aware: scope data shard→venue→instrument. Never cross-shard.
+
+BEFORE CODING:
+1. ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md (platform vision)
+2. context/CONFIG_REFERENCE.md (what's configurable?)
+3. context/SHARDING_DIMENSIONS.md (data partitioning)
+4. context/API_FRONTEND_GAPS.md (API ready? 🟢/🟡/🔴)
+5. UI_STRUCTURE_MANIFEST.json (current state, refactors?)
+6. .cursorrules or CODING_RULES_QUICK_START.md
+
+RESOURCES:
+• config-registry.json = 46 services, 2000+ config fields
+• .cursorrules = Rules 1-9
+• REFACTORING_GUIDE.md = refactoring protocol
+• context/ = backend architecture, standards, sharding
+
+MANDATE: Don't guess. Look it up. Shared components. Centralized config. One truth. Ask before breaking.
