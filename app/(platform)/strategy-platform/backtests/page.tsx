@@ -1,13 +1,38 @@
 "use client"
 
 import * as React from "react"
-import { Suspense } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  ArrowUpDown,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  FlaskConical,
+  Play,
+  Plus,
+  Search,
+  Star,
+  X,
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Progress } from "@/components/ui/progress"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -16,675 +41,621 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ContextBar } from "@/components/platform/context-bar"
-import { BatchLiveRail } from "@/components/platform/batch-live-rail"
-import { FilterBar, FilterDefinition, useFilterState } from "@/components/platform/filter-bar"
-import { CandidateBasket, useCandidateBasket, CandidateItem } from "@/components/platform/candidate-basket"
-import {
-  CheckCircle2,
-  Clock,
-  XCircle,
-  RefreshCw,
-  ArrowUpDown,
-  ChevronRight,
-  Eye,
-  Plus,
-  Filter,
-  Grid3X3,
-  List,
-  GitCompare,
-} from "lucide-react"
+
 import {
   BACKTEST_RUNS,
+  STRATEGY_TEMPLATES,
   ARCHETYPE_OPTIONS,
   ASSET_CLASS_OPTIONS,
   VENUE_OPTIONS,
   TESTING_STAGE_OPTIONS,
 } from "@/lib/strategy-platform-mock-data"
-import { cn } from "@/lib/utils"
+import type { BacktestRun, StrategyArchetype } from "@/lib/strategy-platform-types"
 
-// Filter definitions
-const FILTERS: FilterDefinition[] = [
-  {
-    key: "archetype",
-    label: "Archetype",
-    type: "multi-select",
-    options: ARCHETYPE_OPTIONS,
-  },
-  {
-    key: "assetClass",
-    label: "Asset Class",
-    type: "select",
-    options: ASSET_CLASS_OPTIONS,
-  },
-  {
-    key: "venue",
-    label: "Venue",
-    type: "multi-select",
-    options: VENUE_OPTIONS,
-  },
-  {
-    key: "testingStage",
-    label: "Stage",
-    type: "select",
-    options: TESTING_STAGE_OPTIONS,
-  },
-  {
-    key: "dateRange",
-    label: "Date Range",
-    type: "date-range",
-  },
-  {
-    key: "search",
-    label: "Search",
-    type: "search",
-    placeholder: "Search strategies...",
-  },
-]
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-// Status badge
-function StatusBadge({ status }: { status: string }) {
-  const config: Record<string, { icon: React.ReactNode; className: string }> = {
-    completed: {
-      icon: <CheckCircle2 className="size-3" />,
-      className: "text-[var(--status-live)] border-[var(--status-live)]/30 bg-[var(--status-live)]/10",
-    },
-    running: {
-      icon: <RefreshCw className="size-3 animate-spin" />,
-      className: "text-[var(--surface-strategy)] border-[var(--surface-strategy)]/30 bg-[var(--surface-strategy)]/10",
-    },
-    queued: {
-      icon: <Clock className="size-3" />,
-      className: "text-muted-foreground border-border bg-muted/50",
-    },
-    failed: {
-      icon: <XCircle className="size-3" />,
-      className: "text-[var(--status-critical)] border-[var(--status-critical)]/30 bg-[var(--status-critical)]/10",
-    },
-  }
-
-  const cfg = config[status] || config.queued
-
-  return (
-    <Badge variant="outline" className={cn("gap-1 text-[10px]", cfg.className)}>
-      {cfg.icon}
-      {status}
-    </Badge>
-  )
-}
-
-// Metric cell with conditional coloring
-function MetricCell({
-  value,
-  format = "number",
-  goodThreshold,
-  badThreshold,
-  inverted = false,
-}: {
-  value: number | null | undefined
-  format?: "number" | "percent" | "currency"
-  goodThreshold?: number
-  badThreshold?: number
-  inverted?: boolean
-}) {
-  if (value === null || value === undefined) {
-    return <span className="text-muted-foreground">—</span>
-  }
-
-  let displayValue: string
-  switch (format) {
-    case "percent":
-      displayValue = `${(value * 100).toFixed(1)}%`
-      break
-    case "currency":
-      displayValue = `$${value.toLocaleString()}`
-      break
+function backtestStatusColor(status: BacktestRun["status"]) {
+  switch (status) {
+    case "completed":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "running":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "queued":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "failed":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    case "cancelled":
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
     default:
-      displayValue = value.toFixed(2)
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
   }
-
-  let colorClass = "text-foreground"
-  if (goodThreshold !== undefined && badThreshold !== undefined) {
-    if (inverted) {
-      if (value <= goodThreshold) colorClass = "text-[var(--status-live)]"
-      else if (value >= badThreshold) colorClass = "text-[var(--status-critical)]"
-    } else {
-      if (value >= goodThreshold) colorClass = "text-[var(--status-live)]"
-      else if (value <= badThreshold) colorClass = "text-[var(--status-critical)]"
-    }
-  }
-
-  return <span className={cn("font-mono", colorClass)}>{displayValue}</span>
 }
 
-// Detail panel for selected backtest
-function DetailPanel({ runId, onClose }: { runId: string | null; onClose: () => void }) {
-  const run = BACKTEST_RUNS.find((r) => r.id === runId)
-
-  if (!run) {
-    return (
-      <div className="p-6 text-center text-muted-foreground">
-        <p className="text-sm">Select a backtest to view details</p>
-      </div>
-    )
-  }
-
-  return (
-    <ScrollArea className="h-full">
-      <div className="p-4 space-y-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="font-medium">{run.templateName}</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {run.instrument} / {run.venue}
-            </p>
-          </div>
-          <StatusBadge status={run.status} />
-        </div>
-
-        {/* Config info */}
-        <Card>
-          <CardHeader className="py-2 px-3">
-            <CardTitle className="text-xs">Config</CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 pb-3 space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Version</span>
-              <span className="font-mono">v{run.configVersion}</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Config ID</span>
-              <span className="font-mono text-[10px]">{run.configId}</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Archetype</span>
-              <Badge variant="outline" className="text-[10px]">
-                {run.archetype.replace(/_/g, " ")}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Provenance */}
-        <Card>
-          <CardHeader className="py-2 px-3">
-            <CardTitle className="text-xs">Provenance</CardTitle>
-          </CardHeader>
-          <CardContent className="px-3 pb-3 space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Date Window</span>
-              <span className="font-mono">{run.dateWindow.start} - {run.dateWindow.end}</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Data Source</span>
-              <span>{run.dataSource}</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Snapshot ID</span>
-              <span className="font-mono text-[10px]">{run.dataSnapshotId}</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">Code Commit</span>
-              <span className="font-mono text-[10px]">{run.codeCommitHash}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Metrics */}
-        {run.metrics && (
-          <Card>
-            <CardHeader className="py-2 px-3">
-              <CardTitle className="text-xs">Performance Metrics</CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-0.5">
-                  <div className="text-[10px] text-muted-foreground">Sharpe</div>
-                  <div className="text-lg font-mono font-bold">{run.metrics.sharpe.toFixed(2)}</div>
-                </div>
-                <div className="space-y-0.5">
-                  <div className="text-[10px] text-muted-foreground">Return</div>
-                  <div className={cn("text-lg font-mono font-bold", run.metrics.totalReturn >= 0 ? "text-[var(--status-live)]" : "text-[var(--status-critical)]")}>
-                    {(run.metrics.totalReturn * 100).toFixed(1)}%
-                  </div>
-                </div>
-                <div className="space-y-0.5">
-                  <div className="text-[10px] text-muted-foreground">Max DD</div>
-                  <div className="text-lg font-mono font-bold text-[var(--status-critical)]">
-                    {(run.metrics.maxDrawdown * 100).toFixed(1)}%
-                  </div>
-                </div>
-                <div className="space-y-0.5">
-                  <div className="text-[10px] text-muted-foreground">Hit Rate</div>
-                  <div className="text-lg font-mono font-bold">
-                    {(run.metrics.hitRate * 100).toFixed(0)}%
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-4 border-t space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Sortino</span>
-                  <span className="font-mono">{run.metrics.sortino.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Calmar</span>
-                  <span className="font-mono">{run.metrics.calmar.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Turnover</span>
-                  <span className="font-mono">{run.metrics.turnover.toFixed(1)}x</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Avg Slippage</span>
-                  <span className="font-mono">{(run.metrics.avgSlippage * 10000).toFixed(1)} bps</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Drift */}
-        {run.driftScore !== null && (
-          <Card>
-            <CardHeader className="py-2 px-3">
-              <CardTitle className="text-xs flex items-center gap-2">
-                <GitCompare className="size-3" />
-                Batch/Live Drift
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-3 pb-3">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Drift Score</span>
-                  <span
-                    className={cn(
-                      "text-lg font-mono font-bold",
-                      run.driftScore < 0.1
-                        ? "text-[var(--status-live)]"
-                        : run.driftScore < 0.2
-                        ? "text-[var(--status-warning)]"
-                        : "text-[var(--status-critical)]"
-                    )}
-                  >
-                    {(run.driftScore * 100).toFixed(0)}%
-                  </span>
-                </div>
-                <Progress value={100 - run.driftScore * 100} className="h-2" />
-                <p className="text-[10px] text-muted-foreground">
-                  Live analog: {run.liveAnalogId}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="flex-1 text-xs">
-            View Results
-          </Button>
-          <Button variant="outline" size="sm" className="flex-1 text-xs">
-            Compare
-          </Button>
-        </div>
-      </div>
-    </ScrollArea>
-  )
+function fmtPct(v: number) {
+  return `${(v * 100).toFixed(1)}%`
 }
 
-function StrategyBacktestsContent() {
-  const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH")
-  const [viewMode, setViewMode] = React.useState<"table" | "grid">("table")
-  const [selectedRunId, setSelectedRunId] = React.useState<string | null>(null)
-  const [sortField, setSortField] = React.useState<string>("completedAt")
+function fmtNum(v: number, decimals = 2) {
+  return v.toFixed(decimals)
+}
+
+type SortField = "sharpe" | "return" | "drawdown" | "sortino" | "hitRate"
+
+// ---------------------------------------------------------------------------
+// Filters
+// ---------------------------------------------------------------------------
+
+interface FilterState {
+  archetype: string
+  assetClass: string
+  venue: string
+  stage: string
+  search: string
+}
+
+const EMPTY_FILTERS: FilterState = {
+  archetype: "",
+  assetClass: "",
+  venue: "",
+  stage: "",
+  search: "",
+}
+
+// ---------------------------------------------------------------------------
+// New Backtest Form
+// ---------------------------------------------------------------------------
+
+interface BacktestFormState {
+  templateId: string
+  instrument: string
+  venue: string
+  dateStart: string
+  dateEnd: string
+  entryThreshold: string
+  exitThreshold: string
+  maxLeverage: string
+}
+
+const INITIAL_FORM: BacktestFormState = {
+  templateId: "",
+  instrument: "",
+  venue: "",
+  dateStart: "2024-01-01",
+  dateEnd: "2024-12-31",
+  entryThreshold: "0.05",
+  exitThreshold: "0.02",
+  maxLeverage: "3.0",
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+export default function BacktestsPage() {
+  const [backtests, setBacktests] = React.useState<BacktestRun[]>(BACKTEST_RUNS)
+  const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS)
+  const [sortField, setSortField] = React.useState<SortField>("sharpe")
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
-  
-  const { filters, updateFilter, resetFilters } = useFilterState({
-    archetype: [],
-    assetClass: "",
-    venue: [],
-    testingStage: "",
-    dateRange: undefined,
-    search: "",
+  const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM)
+  const [candidateBasket, setCandidateBasket] = React.useState<Set<string>>(new Set())
+
+  // Filter logic
+  const filtered = backtests.filter((bt) => {
+    if (filters.archetype && bt.archetype !== filters.archetype) return false
+    if (filters.venue && bt.venue !== filters.venue) return false
+    if (filters.stage && bt.testingStage !== filters.stage) return false
+    if (filters.search) {
+      const q = filters.search.toLowerCase()
+      if (
+        !bt.templateName.toLowerCase().includes(q) &&
+        !bt.instrument.toLowerCase().includes(q)
+      )
+        return false
+    }
+    return true
   })
 
-  const candidateBasket = useCandidateBasket()
-
-  // Sort and filter data
-  const filteredRuns = React.useMemo(() => {
-    let runs = [...BACKTEST_RUNS]
-
-    // Apply filters
-    if (filters.search) {
-      const search = (filters.search as string).toLowerCase()
-      runs = runs.filter(
-        (r) =>
-          r.templateName.toLowerCase().includes(search) ||
-          r.configId.toLowerCase().includes(search)
-      )
+  // Sort logic
+  const sorted = [...filtered].sort((a, b) => {
+    if (!a.metrics && !b.metrics) return 0
+    if (!a.metrics) return 1
+    if (!b.metrics) return -1
+    const aM = a.metrics
+    const bM = b.metrics
+    let aV: number, bV: number
+    switch (sortField) {
+      case "sharpe":
+        aV = aM.sharpe; bV = bM.sharpe; break
+      case "return":
+        aV = aM.totalReturn; bV = bM.totalReturn; break
+      case "drawdown":
+        aV = aM.maxDrawdown; bV = bM.maxDrawdown; break
+      case "sortino":
+        aV = aM.sortino; bV = bM.sortino; break
+      case "hitRate":
+        aV = aM.hitRate; bV = bM.hitRate; break
     }
+    return sortDir === "desc" ? bV - aV : aV - bV
+  })
 
-    if ((filters.archetype as string[])?.length > 0) {
-      runs = runs.filter((r) => (filters.archetype as string[]).includes(r.archetype))
-    }
-
-    if ((filters.venue as string[])?.length > 0) {
-      runs = runs.filter((r) => (filters.venue as string[]).includes(r.venue))
-    }
-
-    // Sort
-    runs.sort((a, b) => {
-      let aVal: number | string | null = null
-      let bVal: number | string | null = null
-
-      switch (sortField) {
-        case "sharpe":
-          aVal = a.metrics?.sharpe ?? -Infinity
-          bVal = b.metrics?.sharpe ?? -Infinity
-          break
-        case "return":
-          aVal = a.metrics?.totalReturn ?? -Infinity
-          bVal = b.metrics?.totalReturn ?? -Infinity
-          break
-        case "maxDrawdown":
-          aVal = a.metrics?.maxDrawdown ?? Infinity
-          bVal = b.metrics?.maxDrawdown ?? Infinity
-          break
-        case "completedAt":
-          aVal = a.completedAt ?? ""
-          bVal = b.completedAt ?? ""
-          break
-        default:
-          return 0
-      }
-
-      if (sortDir === "asc") {
-        return aVal > bVal ? 1 : -1
-      }
-      return aVal < bVal ? 1 : -1
-    })
-
-    return runs
-  }, [filters, sortField, sortDir])
-
-  const handleSort = (field: string) => {
+  function handleSort(field: SortField) {
     if (sortField === field) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc")
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
     } else {
       setSortField(field)
       setSortDir("desc")
     }
   }
 
-  const addToBasket = (run: typeof BACKTEST_RUNS[0]) => {
-    if (!run.metrics) return
-    
-    candidateBasket.addCandidate({
-      id: run.id,
-      type: "strategy_config",
-      name: run.templateName,
-      version: run.configVersion,
-      metrics: {
-        sharpe: run.metrics.sharpe,
-        return: run.metrics.totalReturn,
-        maxDrawdown: run.metrics.maxDrawdown,
-      },
+  function SortIcon({ field }: { field: SortField }) {
+    if (sortField !== field) return <ArrowUpDown className="size-3 opacity-30" />
+    return sortDir === "desc" ? (
+      <ChevronDown className="size-3" />
+    ) : (
+      <ChevronUp className="size-3" />
+    )
+  }
+
+  function toggleCandidate(id: string) {
+    setCandidateBasket((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
     })
   }
 
+  function handleSubmitBacktest() {
+    if (!form.templateId) return
+    const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
+    if (!tpl) return
+
+    const newBt: BacktestRun = {
+      id: `bt-new-${Date.now()}`,
+      configId: `cfg-new-${Date.now()}`,
+      configVersion: "1.0.0",
+      templateId: tpl.id,
+      templateName: tpl.name,
+      archetype: tpl.archetype,
+      status: "queued",
+      progress: 0,
+      instrument: form.instrument || tpl.instruments[0],
+      venue: form.venue || tpl.venues[0],
+      dateWindow: { start: form.dateStart, end: form.dateEnd },
+      shard: "SHARD_1",
+      testingStage: "BACKTEST",
+      dataSource: "HISTORICAL_TICK",
+      dataSnapshotId: `snap-${Date.now()}`,
+      asOfDate: new Date().toISOString().slice(0, 10),
+      metrics: null,
+      startedAt: null,
+      completedAt: null,
+      durationMs: null,
+      codeCommitHash: "head",
+      configHash: `cfg-hash-${Date.now()}`,
+      liveAnalogId: null,
+      driftScore: null,
+    }
+
+    setBacktests((prev) => [newBt, ...prev])
+    setForm(INITIAL_FORM)
+    setDialogOpen(false)
+  }
+
+  const selectedTemplate = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
+  const activeFilterCount = Object.values(filters).filter(Boolean).length
+
   return (
-    <div className="flex flex-col flex-1">
-      {/* Context Bar */}
-      <ContextBar
-        platform="strategy"
-        scope={{ fund: "ODUM", client: "Internal" }}
-        context={context}
-        badges={[{ label: "Runs", value: String(filteredRuns.length) }]}
-        dataSource="HISTORICAL_TICK"
-        asOfDate="2024-10-18"
-        showFilters
-        onFiltersToggle={() => {}}
-        actions={
-          <CandidateBasket
-            platform="strategy"
-            candidates={candidateBasket.candidates}
-            onRemove={candidateBasket.removeCandidate}
-            onClearAll={candidateBasket.clearAll}
-            onUpdateNote={candidateBasket.updateNote}
-            onSendToReview={() => alert("Send to review")}
-            onPreparePackage={() => alert("Prepare package")}
-          />
-        }
-      />
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Backtest Management</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {filtered.length} backtests &middot; {backtests.filter((b) => b.status === "running").length} running
+            </p>
+          </div>
+          <Button onClick={() => setDialogOpen(true)}>
+            <Play className="size-4" />
+            Run New Backtest
+          </Button>
+        </div>
 
-      {/* Batch/Live Rail */}
-      <BatchLiveRail
-        platform="strategy"
-        currentStage="Backtest"
-        context={context}
-        onContextChange={setContext}
-      />
+        {/* Filter Bar */}
+        <Card className="border-border/50">
+          <CardContent className="pt-0">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
+                <Filter className="size-3.5" />
+                Filters
+                {activeFilterCount > 0 && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </div>
 
-      {/* Filter Bar */}
-      <FilterBar
-        filters={FILTERS}
-        values={filters}
-        onChange={updateFilter}
-        onReset={resetFilters}
-      />
+              <Select
+                value={filters.archetype}
+                onValueChange={(v) => setFilters((f) => ({ ...f, archetype: v === "__all__" ? "" : v }))}
+              >
+                <SelectTrigger size="sm" className="w-40">
+                  <SelectValue placeholder="Archetype" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Archetypes</SelectItem>
+                  {ARCHETYPE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label} ({opt.count})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Table/Grid */}
-        <div className="flex-1 overflow-auto">
-          {/* Toolbar */}
-          <div className="flex items-center justify-between p-3 border-b">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                {filteredRuns.length} results
-              </span>
-              {candidateBasket.count > 0 && (
-                <Badge variant="secondary" className="text-xs">
-                  {candidateBasket.count} selected
-                </Badge>
+              <Select
+                value={filters.venue}
+                onValueChange={(v) => setFilters((f) => ({ ...f, venue: v === "__all__" ? "" : v }))}
+              >
+                <SelectTrigger size="sm" className="w-36">
+                  <SelectValue placeholder="Venue" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Venues</SelectItem>
+                  {VENUE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label} ({opt.count})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={filters.stage}
+                onValueChange={(v) => setFilters((f) => ({ ...f, stage: v === "__all__" ? "" : v }))}
+              >
+                <SelectTrigger size="sm" className="w-36">
+                  <SelectValue placeholder="Stage" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Stages</SelectItem>
+                  {TESTING_STAGE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label} ({opt.count})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search by name or instrument..."
+                  value={filters.search}
+                  onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
+                  className="pl-8 h-8 text-sm"
+                />
+              </div>
+
+              {activeFilterCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFilters(EMPTY_FILTERS)}
+                >
+                  <X className="size-3" />
+                  Clear
+                </Button>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === "table" ? "secondary" : "ghost"}
-                size="icon"
-                className="size-8"
-                onClick={() => setViewMode("table")}
-              >
-                <List className="size-4" />
-              </Button>
-              <Button
-                variant={viewMode === "grid" ? "secondary" : "ghost"}
-                size="icon"
-                className="size-8"
-                onClick={() => setViewMode("grid")}
-              >
-                <Grid3X3 className="size-4" />
-              </Button>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Table View */}
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-10" />
-                <TableHead>Strategy / Config</TableHead>
-                <TableHead>Instrument / Venue</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right cursor-pointer" onClick={() => handleSort("sharpe")}>
-                  <div className="flex items-center justify-end gap-1">
-                    Sharpe
-                    <ArrowUpDown className="size-3" />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right cursor-pointer" onClick={() => handleSort("return")}>
-                  <div className="flex items-center justify-end gap-1">
-                    Return
-                    <ArrowUpDown className="size-3" />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right cursor-pointer" onClick={() => handleSort("maxDrawdown")}>
-                  <div className="flex items-center justify-end gap-1">
-                    Max DD
-                    <ArrowUpDown className="size-3" />
-                  </div>
-                </TableHead>
-                <TableHead className="text-right">Hit Rate</TableHead>
-                <TableHead className="text-right">Drift</TableHead>
-                <TableHead className="w-20" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRuns.map((run) => (
-                <TableRow
-                  key={run.id}
-                  className={cn(
-                    "cursor-pointer",
-                    selectedRunId === run.id && "bg-muted/50"
-                  )}
-                  onClick={() => setSelectedRunId(run.id)}
-                >
-                  <TableCell>
-                    <Checkbox
-                      checked={candidateBasket.isSelected(run.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          addToBasket(run)
-                        } else {
-                          candidateBasket.removeCandidate(run.id)
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium text-sm">{run.templateName}</div>
-                      <div className="text-xs text-muted-foreground flex items-center gap-2">
-                        <span className="font-mono">v{run.configVersion}</span>
-                        <Badge variant="outline" className="text-[10px]">
-                          {run.archetype.replace(/_/g, " ")}
+        {/* Results Table */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FlaskConical className="size-4" />
+              Backtest Results
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/50 hover:bg-transparent">
+                  <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Strategy</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Instrument</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Venue</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("sharpe")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Sharpe <SortIcon field="sharpe" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("return")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Return <SortIcon field="return" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("drawdown")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Max DD <SortIcon field="drawdown" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("sortino")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Sortino <SortIcon field="sortino" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("hitRate")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Hit Rate <SortIcon field="hitRate" />
+                    </span>
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Window</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sorted.map((bt) => {
+                  const m = bt.metrics
+                  return (
+                    <TableRow
+                      key={bt.id}
+                      className={`border-border/30 ${candidateBasket.has(bt.id) ? "bg-amber-500/5" : ""}`}
+                    >
+                      <TableCell>
+                        {bt.status === "completed" && (
+                          <button
+                            onClick={() => toggleCandidate(bt.id)}
+                            className="p-0.5 rounded hover:bg-muted"
+                            title={candidateBasket.has(bt.id) ? "Remove from basket" : "Add to candidate basket"}
+                          >
+                            <Star
+                              className={`size-3.5 ${candidateBasket.has(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+                            />
+                          </button>
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
+                      <TableCell className="text-muted-foreground text-xs font-mono">
+                        {bt.instrument}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={backtestStatusColor(bt.status)}>
+                          {bt.status === "running" ? `${bt.progress}%` : bt.status}
                         </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtNum(m.sharpe) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtPct(m.totalReturn) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm text-red-400">
+                        {m ? fmtPct(m.maxDrawdown) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtNum(m.sortino) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtPct(m.hitRate) : "--"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {bt.dateWindow.start} - {bt.dateWindow.end}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Candidate Basket */}
+        {candidateBasket.size > 0 && (
+          <Card className="border-amber-500/30 bg-amber-500/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Star className="size-4 text-amber-400" />
+                Candidate Basket ({candidateBasket.size})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {Array.from(candidateBasket).map((btId) => {
+                  const bt = backtests.find((b) => b.id === btId)
+                  if (!bt) return null
+                  return (
+                    <Badge
+                      key={btId}
+                      variant="outline"
+                      className="gap-1.5 border-amber-500/30 text-amber-300 pr-1"
+                    >
+                      {bt.templateName} / {bt.venue}
+                      <button
+                        onClick={() => toggleCandidate(btId)}
+                        className="rounded-full p-0.5 hover:bg-amber-500/20"
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </Badge>
+                  )
+                })}
+              </div>
+              <div className="mt-3">
+                <Button size="sm" variant="outline" className="border-amber-500/30 text-amber-300">
+                  <Plus className="size-3.5" />
+                  Promote Selected to Candidates
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* New Backtest Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Run New Backtest</DialogTitle>
+              <DialogDescription>
+                Configure strategy template, parameters, and test window.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label>Strategy Template</Label>
+                <Select
+                  value={form.templateId}
+                  onValueChange={(v) =>
+                    setForm((f) => ({ ...f, templateId: v, instrument: "", venue: "" }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select template..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STRATEGY_TEMPLATES.map((tpl) => (
+                      <SelectItem key={tpl.id} value={tpl.id}>
+                        <span className="flex items-center gap-2">
+                          {tpl.name}
+                          <span className="text-muted-foreground text-xs">
+                            {tpl.archetype.replace(/_/g, " ")}
+                          </span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedTemplate && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Instrument</Label>
+                      <Select
+                        value={form.instrument}
+                        onValueChange={(v) => setForm((f) => ({ ...f, instrument: v }))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedTemplate.instruments.map((inst) => (
+                            <SelectItem key={inst} value={inst}>{inst}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Venue</Label>
+                      <Select
+                        value={form.venue}
+                        onValueChange={(v) => setForm((f) => ({ ...f, venue: v }))}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedTemplate.venues.map((v) => (
+                            <SelectItem key={v} value={v}>{v}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Start Date</Label>
+                      <Input
+                        type="date"
+                        value={form.dateStart}
+                        onChange={(e) => setForm((f) => ({ ...f, dateStart: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>End Date</Label>
+                      <Input
+                        type="date"
+                        value={form.dateEnd}
+                        onChange={(e) => setForm((f) => ({ ...f, dateEnd: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Parameters
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs">Entry Threshold</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={form.entryThreshold}
+                          onChange={(e) => setForm((f) => ({ ...f, entryThreshold: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Exit Threshold</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={form.exitThreshold}
+                          onChange={(e) => setForm((f) => ({ ...f, exitThreshold: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Max Leverage</Label>
+                        <Input
+                          type="number"
+                          step="0.5"
+                          value={form.maxLeverage}
+                          onChange={(e) => setForm((f) => ({ ...f, maxLeverage: e.target.value }))}
+                        />
                       </div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">{run.instrument}</div>
-                    <div className="text-xs text-muted-foreground">{run.venue}</div>
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={run.status} />
-                    {run.status === "running" && (
-                      <Progress value={run.progress} className="h-1 mt-1 w-16" />
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <MetricCell
-                      value={run.metrics?.sharpe}
-                      goodThreshold={1.5}
-                      badThreshold={0.5}
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <MetricCell
-                      value={run.metrics?.totalReturn}
-                      format="percent"
-                      goodThreshold={0.15}
-                      badThreshold={0}
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <MetricCell
-                      value={run.metrics?.maxDrawdown}
-                      format="percent"
-                      goodThreshold={0.05}
-                      badThreshold={0.15}
-                      inverted
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <MetricCell
-                      value={run.metrics?.hitRate}
-                      format="percent"
-                      goodThreshold={0.55}
-                      badThreshold={0.45}
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {run.driftScore !== null ? (
-                      <span
-                        className={cn(
-                          "font-mono text-sm",
-                          run.driftScore < 0.1
-                            ? "text-[var(--status-live)]"
-                            : run.driftScore < 0.2
-                            ? "text-[var(--status-warning)]"
-                            : "text-[var(--status-critical)]"
-                        )}
-                      >
-                        {(run.driftScore * 100).toFixed(0)}%
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-7"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setSelectedRunId(run.id)
-                        }}
-                      >
-                        <Eye className="size-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-7"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          addToBasket(run)
-                        }}
-                        disabled={!run.metrics || candidateBasket.isSelected(run.id)}
-                      >
-                        <Plus className="size-3.5" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Detail Panel */}
-        <div className="w-[360px] border-l bg-card/50">
-          <DetailPanel
-            runId={selectedRunId}
-            onClose={() => setSelectedRunId(null)}
-          />
-        </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitBacktest} disabled={!form.templateId}>
+                <Play className="size-4" />
+                Run Backtest
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
-  )
-}
-
-// Wrapper with Suspense boundary for useSearchParams
-export default function StrategyBacktestsPage() {
-  return (
-    <Suspense fallback={<div className="flex-1 flex items-center justify-center"><div className="animate-pulse">Loading backtests...</div></div>}>
-      <StrategyBacktestsContent />
-    </Suspense>
   )
 }

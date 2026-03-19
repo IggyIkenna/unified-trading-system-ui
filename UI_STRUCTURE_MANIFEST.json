@@ -176,12 +176,26 @@
 
   "breaking_changes_log": [],
 
+  "service_completion": {
+    "_note": "Machine-readable service completion status. See SERVICE_COMPLETION_STATUS.md for human-readable version.",
+    "data": { "public": "complete", "product": "complete", "admin": "basic", "ops": "basic" },
+    "research_simulate": { "public": "basic", "product": "partial", "admin": "n/a", "ops": "n/a" },
+    "trading_run_monitor": { "public": "basic", "product": "partial", "admin": "n/a", "ops": "not_started" },
+    "reporting_explain_reconcile": { "public": "basic", "product": "partial", "admin": "partial", "ops": "not_started" },
+    "admin_onboarding": { "public": "hidden", "product": "hidden", "admin": "stub", "ops": "n/a" },
+    "deployment_devops": { "public": "hidden", "product": "hidden", "admin": "n/a", "ops": "stub" },
+    "audit_compliance": { "public": "basic", "product": "stub", "admin": "n/a", "ops": "stub" },
+    "service_hub": "not_started"
+  },
+
   "notes": {
     "for_agents": [
-      "CURRENT STATE: Phase 2 COMPLETE. Route groups, MSW, Zustand, React Query, auth personas all in place.",
-      "Phase 3 is NEXT: Wire ALL existing pages through React Query hooks (PLANS_2.md Phase 3).",
+      "CURRENT STATE: Phase 2 COMPLETE. 16 MSW handlers, 14 React Query hooks, auth fixed, nav entitlement filtering done.",
+      "NEXT: PLANS_3.md Phase 5A (Post-Login Hub) → then parallel service area completion (5B-5G).",
+      "See SERVICE_COMPLETION_STATUS.md for what's done vs stub vs missing per service area.",
+      "See ARCHITECTURE_HARDENING.md for doc/rule updates that define the target architecture.",
       "Original lib/*.ts mock data files still exist — pages still import directly. Delete after wiring to React Query.",
-      "4 demo personas: admin, internal-trader, client-full, client-data-only. Switch via require-auth quick-login.",
+      "4 demo personas: admin, internal-trader, client-full, client-data-only. Switch via nav user menu or require-auth.",
       "All references in docs point to files INSIDE this repo. No broken links to external repos."
     ],
     "rules": [

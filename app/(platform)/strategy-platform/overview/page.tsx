@@ -1,500 +1,610 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  FlaskConical,
+  Play,
+  Target,
+  TrendingUp,
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { KPICard } from "@/components/trading/kpi-card"
-import { ContextBar } from "@/components/platform/context-bar"
-import { BatchLiveRail } from "@/components/platform/batch-live-rail"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  FlaskConical,
-  TrendingUp,
-  TrendingDown,
-  Activity,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  XCircle,
-  ArrowRight,
-  GitCompare,
-  BarChart3,
-  ShoppingBasket,
-  ChevronRight,
-  Play,
-  Pause,
-  RefreshCw,
-} from "lucide-react"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
-  STRATEGY_TEMPLATES,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+import {
   STRATEGY_CONFIGS,
   BACKTEST_RUNS,
-  STRATEGY_ALERTS,
   STRATEGY_CANDIDATES,
-  ARCHETYPE_OPTIONS,
+  STRATEGY_ALERTS,
+  STRATEGY_TEMPLATES,
 } from "@/lib/strategy-platform-mock-data"
+import type { BacktestRun, StrategyConfig } from "@/lib/strategy-platform-types"
 
-// Archetype catalog strip
-function ArchetypeCatalog() {
-  const [selected, setSelected] = React.useState<string | null>(null)
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-  return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2">
-      <span className="text-xs text-muted-foreground whitespace-nowrap">Archetypes:</span>
-      {ARCHETYPE_OPTIONS.map((arch) => (
-        <button
-          key={arch.value}
-          onClick={() => setSelected(selected === arch.value ? null : arch.value)}
-          className={`
-            flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap
-            ${selected === arch.value
-              ? "bg-[var(--surface-strategy)] text-white"
-              : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-            }
-          `}
-        >
-          {arch.label}
-          <Badge variant="secondary" className="h-4 text-[10px] px-1">
-            {arch.count}
-          </Badge>
-        </button>
-      ))}
-    </div>
-  )
+function statusColor(status: StrategyConfig["status"]) {
+  switch (status) {
+    case "live":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "shadow":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "paper":
+      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+    case "validated":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "backtest":
+      return "bg-purple-500/15 text-purple-400 border-purple-500/30"
+    case "draft":
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+    case "deprecated":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
 }
 
-// Running backtests card
-function RunningBacktests() {
-  const running = BACKTEST_RUNS.filter((r) => r.status === "running")
-  const queued = BACKTEST_RUNS.filter((r) => r.status === "queued")
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <RefreshCw className="size-4 text-[var(--surface-strategy)]" />
-          Active Backtests
-          <Badge variant="secondary" className="ml-auto">
-            {running.length} running
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {running.length === 0 && queued.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No active backtests</p>
-        ) : (
-          <>
-            {running.map((run) => (
-              <div key={run.id} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-mono font-medium">{run.templateName}</span>
-                  <span className="text-muted-foreground">
-                    {run.instrument} / {run.venue}
-                  </span>
-                </div>
-                <Progress value={run.progress} className="h-1.5" />
-                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                  <span>Config v{run.configVersion}</span>
-                  <span>{run.progress}% complete</span>
-                </div>
-              </div>
-            ))}
-            {queued.length > 0 && (
-              <div className="pt-2 border-t text-xs text-muted-foreground">
-                {queued.length} backtest(s) queued
-              </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  )
+function backtestStatusColor(status: BacktestRun["status"]) {
+  switch (status) {
+    case "completed":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "running":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "queued":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "failed":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    case "cancelled":
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
 }
 
-// Recent completions card
-function RecentCompletions() {
-  const completed = BACKTEST_RUNS.filter((r) => r.status === "completed")
-    .slice(0, 5)
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <CheckCircle2 className="size-4 text-[var(--status-live)]" />
-          Recent Completions
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {completed.map((run) => (
-            <Link
-              key={run.id}
-              href={`/strategy-platform/results?runId=${run.id}`}
-              className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors group"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-medium truncate">
-                    {run.templateName}
-                  </span>
-                  <Badge variant="outline" className="text-[10px]">
-                    v{run.configVersion}
-                  </Badge>
-                </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">
-                  {run.instrument} / {run.venue} / {run.dateWindow.start} - {run.dateWindow.end}
-                </div>
-              </div>
-              {run.metrics && (
-                <div className="flex items-center gap-3 text-xs">
-                  <div className="text-right">
-                    <div className="font-mono font-medium">
-                      {run.metrics.sharpe.toFixed(2)}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">Sharpe</div>
-                  </div>
-                  <div className="text-right">
-                    <div className={`font-mono font-medium ${run.metrics.totalReturn >= 0 ? "text-[var(--status-live)]" : "text-[var(--status-critical)]"}`}>
-                      {(run.metrics.totalReturn * 100).toFixed(1)}%
-                    </div>
-                    <div className="text-[10px] text-muted-foreground">Return</div>
-                  </div>
-                  <ChevronRight className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              )}
-            </Link>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  )
+function alertSeverityColor(severity: string) {
+  switch (severity) {
+    case "critical":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    case "warning":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "info":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
 }
 
-// Strategy templates overview
-function TemplatesCatalog() {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center justify-between">
-          Strategy Templates
-          <Badge variant="secondary">{STRATEGY_TEMPLATES.length}</Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {STRATEGY_TEMPLATES.slice(0, 6).map((tpl) => (
-            <div
-              key={tpl.id}
-              className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium truncate">{tpl.name}</span>
-                  <Badge variant="outline" className="text-[10px]">
-                    {tpl.archetype.replace(/_/g, " ")}
-                  </Badge>
-                </div>
-                <div className="text-[10px] text-muted-foreground mt-0.5">
-                  {tpl.venues.slice(0, 3).join(", ")}
-                  {tpl.venues.length > 3 && ` +${tpl.venues.length - 3}`}
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                v{tpl.version}
-              </div>
-            </div>
-          ))}
-        </div>
-        <Button variant="ghost" size="sm" className="w-full mt-2 text-xs">
-          View all templates
-          <ArrowRight className="size-3 ml-1" />
-        </Button>
-      </CardContent>
-    </Card>
-  )
+function fmtPct(v: number) {
+  return `${(v * 100).toFixed(1)}%`
 }
 
-// Alerts feed
-function AlertsFeed() {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <AlertTriangle className="size-4 text-[var(--status-warning)]" />
-          Alerts
-          <Badge variant="destructive" className="ml-auto">
-            {STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt).length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {STRATEGY_ALERTS.map((alert) => (
-            <div
-              key={alert.id}
-              className={`p-2 rounded-md border text-xs ${
-                alert.severity === "critical"
-                  ? "border-[var(--status-critical)]/30 bg-[var(--status-critical)]/5"
-                  : alert.severity === "warning"
-                  ? "border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5"
-                  : "border-border bg-muted/30"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-medium">{alert.message}</span>
-                {!alert.acknowledgedAt && (
-                  <Badge variant="outline" className="text-[10px] shrink-0">
-                    NEW
-                  </Badge>
-                )}
-              </div>
-              <div className="text-[10px] text-muted-foreground mt-1">
-                {new Date(alert.triggeredAt).toLocaleString()}
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  )
+function fmtNum(v: number, decimals = 2) {
+  return v.toFixed(decimals)
 }
 
-// Candidate basket summary
-function CandidateSummary() {
-  const pending = STRATEGY_CANDIDATES.filter((c) => c.reviewState === "pending").length
-  const inReview = STRATEGY_CANDIDATES.filter((c) => c.reviewState === "in_review").length
-  const approved = STRATEGY_CANDIDATES.filter((c) => c.reviewState === "approved").length
+// ---------------------------------------------------------------------------
+// New Backtest Form
+// ---------------------------------------------------------------------------
+
+interface BacktestFormState {
+  templateId: string
+  instrument: string
+  venue: string
+  dateStart: string
+  dateEnd: string
+}
+
+const INITIAL_FORM: BacktestFormState = {
+  templateId: "",
+  instrument: "",
+  venue: "",
+  dateStart: "2024-01-01",
+  dateEnd: "2024-12-31",
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+export default function StrategyOverviewPage() {
+  const [backtests, setBacktests] = React.useState<BacktestRun[]>(BACKTEST_RUNS)
+  const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM)
+  const [sortField, setSortField] = React.useState<"sharpe" | "return" | "drawdown">("sharpe")
+  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
+
+  // Derived KPIs
+  const activeStrategies = STRATEGY_CONFIGS.filter(
+    (c) => c.status === "live" || c.status === "shadow"
+  ).length
+  const runningBacktests = backtests.filter((b) => b.status === "running").length
+  const candidatesPending = STRATEGY_CANDIDATES.filter(
+    (c) => c.reviewState === "pending" || c.reviewState === "in_review"
+  ).length
+  const unresolvedAlerts = STRATEGY_ALERTS.filter((a) => !a.resolvedAt).length
+
+  // Recent completed backtests sorted
+  const completedBacktests = backtests
+    .filter((b) => b.status === "completed" && b.metrics)
+    .sort((a, b) => {
+      const aM = a.metrics!
+      const bM = b.metrics!
+      let aV: number, bV: number
+      switch (sortField) {
+        case "sharpe":
+          aV = aM.sharpe
+          bV = bM.sharpe
+          break
+        case "return":
+          aV = aM.totalReturn
+          bV = bM.totalReturn
+          break
+        case "drawdown":
+          aV = aM.maxDrawdown
+          bV = bM.maxDrawdown
+          break
+      }
+      return sortDir === "desc" ? bV - aV : aV - bV
+    })
+
+  function handleSort(field: "sharpe" | "return" | "drawdown") {
+    if (sortField === field) {
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
+    } else {
+      setSortField(field)
+      setSortDir("desc")
+    }
+  }
+
+  function SortIcon({ field }: { field: string }) {
+    if (sortField !== field) return <ChevronDown className="size-3 opacity-30" />
+    return sortDir === "desc" ? (
+      <ChevronDown className="size-3" />
+    ) : (
+      <ChevronUp className="size-3" />
+    )
+  }
+
+  function handleSubmitBacktest() {
+    if (!form.templateId) return
+    const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
+    if (!tpl) return
+
+    const newBt: BacktestRun = {
+      id: `bt-new-${Date.now()}`,
+      configId: `cfg-new-${Date.now()}`,
+      configVersion: "1.0.0",
+      templateId: tpl.id,
+      templateName: tpl.name,
+      archetype: tpl.archetype,
+      status: "queued",
+      progress: 0,
+      instrument: form.instrument || tpl.instruments[0],
+      venue: form.venue || tpl.venues[0],
+      dateWindow: { start: form.dateStart, end: form.dateEnd },
+      shard: "SHARD_1",
+      testingStage: "BACKTEST",
+      dataSource: "HISTORICAL_TICK",
+      dataSnapshotId: `snap-${Date.now()}`,
+      asOfDate: new Date().toISOString().slice(0, 10),
+      metrics: null,
+      startedAt: null,
+      completedAt: null,
+      durationMs: null,
+      codeCommitHash: "head",
+      configHash: `cfg-hash-${Date.now()}`,
+      liveAnalogId: null,
+      driftScore: null,
+    }
+
+    setBacktests((prev) => [newBt, ...prev])
+    setForm(INITIAL_FORM)
+    setDialogOpen(false)
+  }
+
+  const selectedTemplate = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <ShoppingBasket className="size-4 text-[var(--surface-strategy)]" />
-          Candidate Basket
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold font-mono">{pending}</div>
-            <div className="text-[10px] text-muted-foreground">Pending</div>
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Strategy Research Platform</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Backtest, validate, and promote trading strategies
+            </p>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold font-mono text-[var(--status-warning)]">{inReview}</div>
-            <div className="text-[10px] text-muted-foreground">In Review</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold font-mono text-[var(--status-live)]">{approved}</div>
-            <div className="text-[10px] text-muted-foreground">Approved</div>
-          </div>
-        </div>
-        <div className="space-y-2">
-          {STRATEGY_CANDIDATES.slice(0, 3).map((cand) => {
-            const config = STRATEGY_CONFIGS.find((c) => c.id === cand.configId)
-            return (
-              <div key={cand.id} className="flex items-center justify-between p-2 rounded-md bg-muted/30">
-                <div>
-                  <div className="text-xs font-medium">{config?.name}</div>
-                  <div className="text-[10px] text-muted-foreground">
-                    v{cand.configVersion} • Sharpe: {cand.metricsSnapshot.sharpe.toFixed(2)}
-                  </div>
-                </div>
-                <Badge
-                  variant="outline"
-                  className={`text-[10px] ${
-                    cand.reviewState === "approved"
-                      ? "text-[var(--status-live)] border-[var(--status-live)]/30"
-                      : cand.reviewState === "in_review"
-                      ? "text-[var(--status-warning)] border-[var(--status-warning)]/30"
-                      : ""
-                  }`}
-                >
-                  {cand.reviewState.replace("_", " ")}
-                </Badge>
-              </div>
-            )
-          })}
-        </div>
-        <Link href="/strategy-platform/candidates">
-          <Button variant="outline" size="sm" className="w-full mt-3 text-xs">
-            View all candidates
-            <ArrowRight className="size-3 ml-1" />
+          <Button onClick={() => setDialogOpen(true)}>
+            <Play className="size-4" />
+            New Backtest
           </Button>
-        </Link>
-      </CardContent>
-    </Card>
-  )
-}
-
-// Batch vs Live drift summary
-function DriftSummary() {
-  const withDrift = BACKTEST_RUNS.filter((r) => r.driftScore !== null)
-
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <GitCompare className="size-4" />
-          Batch/Live Drift
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          {withDrift.map((run) => (
-            <div key={run.id} className="space-y-1">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-medium">{run.templateName}</span>
-                <span
-                  className={`font-mono ${
-                    (run.driftScore || 0) < 0.1
-                      ? "text-[var(--status-live)]"
-                      : (run.driftScore || 0) < 0.2
-                      ? "text-[var(--status-warning)]"
-                      : "text-[var(--status-critical)]"
-                  }`}
-                >
-                  {((run.driftScore || 0) * 100).toFixed(0)}%
-                </span>
-              </div>
-              <Progress
-                value={100 - (run.driftScore || 0) * 100}
-                className="h-1.5"
-              />
-              <div className="text-[10px] text-muted-foreground">
-                v{run.configVersion} • {run.venue}
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-export default function StrategyPlatformOverviewPage() {
-  const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH")
-
-  // Calculate KPIs
-  const totalBacktests = BACKTEST_RUNS.length
-  const completedBacktests = BACKTEST_RUNS.filter((r) => r.status === "completed").length
-  const avgSharpe = BACKTEST_RUNS
-    .filter((r) => r.metrics)
-    .reduce((sum, r) => sum + (r.metrics?.sharpe || 0), 0) / completedBacktests
-  const candidatesInReview = STRATEGY_CANDIDATES.filter((c) => c.reviewState === "in_review").length
-
-  return (
-    <div className="flex flex-col flex-1">
-      {/* Context Bar */}
-      <ContextBar
-        platform="strategy"
-        scope={{ fund: "ODUM", client: "Internal" }}
-        context={context}
-        badges={[
-          { label: "Stage", value: "Research" },
-          { label: "Templates", value: String(STRATEGY_TEMPLATES.length) },
-        ]}
-        dataSource="HISTORICAL_TICK"
-        asOfDate="2024-10-18"
-      />
-
-      {/* Batch/Live Rail */}
-      <BatchLiveRail
-        platform="strategy"
-        currentStage="Backtest"
-        context={context}
-        onContextChange={setContext}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 p-6 space-y-6 overflow-auto">
-        {/* Archetype Catalog */}
-        <ArchetypeCatalog />
-
-        {/* KPI Row */}
-        <div className="grid grid-cols-4 gap-4">
-          <KPICard
-            title="Total Backtests"
-            value={totalBacktests}
-            icon={<FlaskConical className="size-4" />}
-            subtitle={`${completedBacktests} completed`}
-          />
-          <KPICard
-            title="Avg Sharpe"
-            value={avgSharpe.toFixed(2)}
-            icon={<TrendingUp className="size-4" />}
-            trend={{ value: 12, direction: "up" }}
-          />
-          <KPICard
-            title="Candidates"
-            value={STRATEGY_CANDIDATES.length}
-            icon={<ShoppingBasket className="size-4" />}
-            subtitle={`${candidatesInReview} in review`}
-          />
-          <KPICard
-            title="Active Alerts"
-            value={STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt).length}
-            icon={<AlertTriangle className="size-4" />}
-            status={STRATEGY_ALERTS.some((a) => a.severity === "critical" && !a.acknowledgedAt) ? "critical" : "nominal"}
-          />
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <RunningBacktests />
-            <TemplatesCatalog />
-          </div>
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Strategies
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{activeStrategies}</p>
+                </div>
+                <div className="rounded-lg bg-emerald-500/10 p-2.5">
+                  <Activity className="size-5 text-emerald-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Center Column */}
-          <div className="space-y-6">
-            <RecentCompletions />
-            <DriftSummary />
-          </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Running Backtests
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{runningBacktests}</p>
+                </div>
+                <div className="rounded-lg bg-blue-500/10 p-2.5">
+                  <FlaskConical className="size-5 text-blue-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            <CandidateSummary />
-            <AlertsFeed />
-          </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Candidates Pending
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{candidatesPending}</p>
+                </div>
+                <div className="rounded-lg bg-amber-500/10 p-2.5">
+                  <Target className="size-5 text-amber-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Unresolved Alerts
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{unresolvedAlerts}</p>
+                </div>
+                <div className="rounded-lg bg-red-500/10 p-2.5">
+                  <AlertTriangle className="size-5 text-red-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Quick Actions */}
-        <Card>
-          <CardContent className="py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Link href="/strategy-platform/backtests">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <FlaskConical className="size-4" />
-                    View Backtests Grid
-                  </Button>
-                </Link>
-                <Link href="/strategy-platform/compare">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <GitCompare className="size-4" />
-                    Compare Configs
-                  </Button>
-                </Link>
-                <Link href="/strategy-platform/heatmap">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <BarChart3 className="size-4" />
-                    Performance Heatmap
-                  </Button>
-                </Link>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>Last sync:</span>
-                <span className="font-mono">2 min ago</span>
-                <Button variant="ghost" size="icon" className="size-6">
-                  <RefreshCw className="size-3" />
-                </Button>
-              </div>
-            </div>
+        {/* Strategy Configs List */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <BarChart3 className="size-4" />
+              Strategy Configurations
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/50 hover:bg-transparent">
+                  <TableHead className="text-xs text-muted-foreground">Name</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Archetype</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Asset Class</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Version</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {STRATEGY_CONFIGS.map((cfg) => (
+                  <TableRow key={cfg.id} className="border-border/30">
+                    <TableCell className="font-medium">{cfg.name}</TableCell>
+                    <TableCell>
+                      <span className="text-muted-foreground text-xs">
+                        {cfg.archetype.replace(/_/g, " ")}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-muted-foreground text-xs">
+                        {cfg.assetClass.replace(/_/g, " ")}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={statusColor(cfg.status)}
+                      >
+                        {cfg.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground font-mono text-xs">
+                      v{cfg.version}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Recent Backtest Results */}
+          <div className="lg:col-span-2">
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <TrendingUp className="size-4" />
+                  Recent Backtest Results
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-border/50 hover:bg-transparent">
+                      <TableHead className="text-xs text-muted-foreground">Strategy</TableHead>
+                      <TableHead className="text-xs text-muted-foreground">Venue</TableHead>
+                      <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                      <TableHead
+                        className="text-xs text-muted-foreground cursor-pointer select-none"
+                        onClick={() => handleSort("sharpe")}
+                      >
+                        <span className="flex items-center gap-1">
+                          Sharpe <SortIcon field="sharpe" />
+                        </span>
+                      </TableHead>
+                      <TableHead
+                        className="text-xs text-muted-foreground cursor-pointer select-none"
+                        onClick={() => handleSort("return")}
+                      >
+                        <span className="flex items-center gap-1">
+                          Return <SortIcon field="return" />
+                        </span>
+                      </TableHead>
+                      <TableHead
+                        className="text-xs text-muted-foreground cursor-pointer select-none"
+                        onClick={() => handleSort("drawdown")}
+                      >
+                        <span className="flex items-center gap-1">
+                          Max DD <SortIcon field="drawdown" />
+                        </span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {completedBacktests.map((bt) => (
+                      <TableRow key={bt.id} className="border-border/30">
+                        <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
+                        <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={backtestStatusColor(bt.status)}
+                          >
+                            {bt.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">
+                          {fmtNum(bt.metrics!.sharpe)}
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">
+                          {fmtPct(bt.metrics!.totalReturn)}
+                        </TableCell>
+                        <TableCell className="font-mono text-sm text-red-400">
+                          {fmtPct(bt.metrics!.maxDrawdown)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {/* Show running backtests */}
+                    {backtests
+                      .filter((b) => b.status === "running" || b.status === "queued")
+                      .map((bt) => (
+                        <TableRow key={bt.id} className="border-border/30">
+                          <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={backtestStatusColor(bt.status)}
+                            >
+                              {bt.status === "running" ? `running ${bt.progress}%` : bt.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">--</TableCell>
+                          <TableCell className="text-muted-foreground">--</TableCell>
+                          <TableCell className="text-muted-foreground">--</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Alerts */}
+          <Card className="border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <AlertTriangle className="size-4" />
+                Active Alerts
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {STRATEGY_ALERTS.filter((a) => !a.resolvedAt).map((alert) => (
+                <div
+                  key={alert.id}
+                  className="rounded-lg border border-border/50 p-3 space-y-1.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <Badge
+                      variant="outline"
+                      className={alertSeverityColor(alert.severity)}
+                    >
+                      {alert.severity}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      <Clock className="inline size-3 mr-1" />
+                      {new Date(alert.triggeredAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-sm">{alert.message}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* New Backtest Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Run New Backtest</DialogTitle>
+              <DialogDescription>
+                Select a strategy template and configure backtest parameters.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label>Strategy Template</Label>
+                <Select
+                  value={form.templateId}
+                  onValueChange={(v) =>
+                    setForm((f) => ({
+                      ...f,
+                      templateId: v,
+                      instrument: "",
+                      venue: "",
+                    }))
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select template..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STRATEGY_TEMPLATES.map((tpl) => (
+                      <SelectItem key={tpl.id} value={tpl.id}>
+                        {tpl.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedTemplate && (
+                <>
+                  <div className="space-y-2">
+                    <Label>Instrument</Label>
+                    <Select
+                      value={form.instrument}
+                      onValueChange={(v) => setForm((f) => ({ ...f, instrument: v }))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select instrument..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectedTemplate.instruments.map((inst) => (
+                          <SelectItem key={inst} value={inst}>
+                            {inst}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Venue</Label>
+                    <Select
+                      value={form.venue}
+                      onValueChange={(v) => setForm((f) => ({ ...f, venue: v }))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select venue..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectedTemplate.venues.map((v) => (
+                          <SelectItem key={v} value={v}>
+                            {v}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Start Date</Label>
+                  <Input
+                    type="date"
+                    value={form.dateStart}
+                    onChange={(e) => setForm((f) => ({ ...f, dateStart: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>End Date</Label>
+                  <Input
+                    type="date"
+                    value={form.dateEnd}
+                    onChange={(e) => setForm((f) => ({ ...f, dateEnd: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitBacktest} disabled={!form.templateId}>
+                <Play className="size-4" />
+                Run Backtest
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

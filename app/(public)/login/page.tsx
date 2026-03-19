@@ -13,8 +13,10 @@ import { useAuth } from "@/hooks/use-auth"
 import { PERSONAS } from "@/lib/mocks/fixtures/personas"
 
 // Map persona roles to redirect targets and display info
+// ALL personas land on the service hub — the hub shows different services
+// based on role/entitlements. Admin sees ops services; clients see their subscriptions.
 const PERSONA_REDIRECTS: Record<string, string> = {
-  admin: "/admin",
+  admin: "/overview",
   "internal-trader": "/overview",
   "client-full": "/overview",
   "client-data-only": "/overview",

@@ -1,13 +1,30 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import {
+  ArrowUpDown,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Crown,
+  GitCompare,
+  Layers,
+  Rocket,
+  Shield,
+  X,
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { EntityLink } from "@/components/trading/entity-link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -16,517 +33,574 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 import {
-  Box,
-  RefreshCw,
-  Search,
-  MoreHorizontal,
-  Play,
-  Shield,
-  GitBranch,
-  ArrowUpRight,
-  History,
-  Archive,
-  ChevronRight,
-  Trophy,
-  Swords,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  Activity,
-  Layers,
-} from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { MODEL_FAMILIES, MODEL_VERSIONS, CHAMPION_CHALLENGER_PAIRS, LIVE_DEPLOYMENTS } from "@/lib/ml-mock-data"
+  MODEL_VERSIONS,
+  MODEL_FAMILIES,
+  CHAMPION_CHALLENGER_PAIRS,
+} from "@/lib/ml-mock-data"
+import type { ModelVersion } from "@/lib/ml-types"
 
-// Context badge
-function ContextBadge({ context }: { context: "BATCH" | "LIVE" }) {
-  return (
-    <Badge
-      variant="outline"
-      className={
-        context === "LIVE"
-          ? "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30"
-          : "bg-[var(--surface-ml)]/10 text-[var(--surface-ml)] border-[var(--surface-ml)]/30"
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function versionStatusColor(status: ModelVersion["status"]) {
+  switch (status) {
+    case "live":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "shadow":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "validated":
+      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+    case "validating":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "registered":
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+    case "deprecated":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    case "archived":
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
+}
+
+function fmtPct(v: number) {
+  return `${(v * 100).toFixed(1)}%`
+}
+
+function fmtNum(v: number, decimals = 2) {
+  return v.toFixed(decimals)
+}
+
+function fmtLatency(v: number) {
+  return `${v.toFixed(1)}ms`
+}
+
+type SortField = "accuracy" | "sharpe" | "maxDrawdown" | "latencyP50"
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+export default function RegistryPage() {
+  const [versions, setVersions] = React.useState<ModelVersion[]>(MODEL_VERSIONS)
+  const [familyFilter, setFamilyFilter] = React.useState("")
+  const [sortField, setSortField] = React.useState<SortField>("sharpe")
+  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
+  const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set())
+  const [deployDialog, setDeployDialog] = React.useState<string | null>(null)
+  const [deployTarget, setDeployTarget] = React.useState<"shadow" | "live">("shadow")
+
+  // Filter
+  const filtered = versions.filter((v) => {
+    if (familyFilter && v.modelFamilyId !== familyFilter) return false
+    return true
+  })
+
+  // Sort
+  const sorted = [...filtered].sort((a, b) => {
+    const aM = a.metrics
+    const bM = b.metrics
+    let aV: number, bV: number
+    switch (sortField) {
+      case "accuracy":
+        aV = aM.accuracy; bV = bM.accuracy; break
+      case "sharpe":
+        aV = aM.sharpe; bV = bM.sharpe; break
+      case "maxDrawdown":
+        aV = aM.maxDrawdown; bV = bM.maxDrawdown; break
+      case "latencyP50":
+        aV = aM.inferenceLatencyP50; bV = bM.inferenceLatencyP50; break
+    }
+    return sortDir === "desc" ? bV - aV : aV - bV
+  })
+
+  function handleSort(field: SortField) {
+    if (sortField === field) {
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
+    } else {
+      setSortField(field)
+      setSortDir(field === "maxDrawdown" || field === "latencyP50" ? "asc" : "desc")
+    }
+  }
+
+  function SortIcon({ field }: { field: SortField }) {
+    if (sortField !== field) return <ArrowUpDown className="size-3 opacity-30" />
+    return sortDir === "desc" ? (
+      <ChevronDown className="size-3" />
+    ) : (
+      <ChevronUp className="size-3" />
+    )
+  }
+
+  function toggleCompare(id: string) {
+    setCompareSet((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
       }
-    >
-      {context}
-    </Badge>
-  )
-}
-
-// Status badge for model versions
-function ModelStatusBadge({ status, isChampion, isChallenger }: { status: string; isChampion?: boolean; isChallenger?: boolean }) {
-  if (isChampion) {
-    return (
-      <Badge className="bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30 gap-1">
-        <Trophy className="size-3" />
-        Champion
-      </Badge>
-    )
-  }
-  if (isChallenger) {
-    return (
-      <Badge className="bg-[var(--surface-ml)]/10 text-[var(--surface-ml)] border-[var(--surface-ml)]/30 gap-1">
-        <Swords className="size-3" />
-        Challenger
-      </Badge>
-    )
-  }
-  
-  const colors: Record<string, string> = {
-    live: "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30",
-    shadow: "bg-[var(--surface-ml)]/10 text-[var(--surface-ml)] border-[var(--surface-ml)]/30",
-    validated: "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30",
-    validating: "bg-[var(--status-warning)]/10 text-[var(--status-warning)] border-[var(--status-warning)]/30",
-    registered: "bg-muted text-muted-foreground",
-    deprecated: "bg-muted text-muted-foreground",
-    archived: "bg-muted text-muted-foreground/50",
-  }
-  
-  const icons: Record<string, React.ReactNode> = {
-    live: <Activity className="size-3" />,
-    shadow: <Shield className="size-3" />,
-    validated: <CheckCircle2 className="size-3" />,
-    validating: <RefreshCw className="size-3" />,
-    registered: <Box className="size-3" />,
-    deprecated: <AlertTriangle className="size-3" />,
-    archived: <Archive className="size-3" />,
-  }
-  
-  return (
-    <Badge variant="outline" className={`gap-1 ${colors[status] || ""}`}>
-      {icons[status]}
-      {status}
-    </Badge>
-  )
-}
-
-export default function ModelRegistryPage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all")
-  const [statusFilter, setStatusFilter] = React.useState<string>("all")
-  const [selectedFamily, setSelectedFamily] = React.useState<string | null>(MODEL_FAMILIES[0]?.id || null)
-  
-  // Filter model families
-  const filteredFamilies = React.useMemo(() => {
-    return MODEL_FAMILIES.filter(family => {
-      const matchesSearch = family.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        family.id.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesArchetype = archetypeFilter === "all" || family.archetype === archetypeFilter
-      return matchesSearch && matchesArchetype
+      return next
     })
-  }, [searchQuery, archetypeFilter])
-  
-  // Get versions for selected family
-  const familyVersions = React.useMemo(() => {
-    if (!selectedFamily) return []
-    return MODEL_VERSIONS.filter(v => v.modelFamilyId === selectedFamily)
-      .filter(v => statusFilter === "all" || v.status === statusFilter)
-      .sort((a, b) => b.version.localeCompare(a.version))
-  }, [selectedFamily, statusFilter])
-  
-  const selectedFamilyData = MODEL_FAMILIES.find(f => f.id === selectedFamily)
-  const championVersion = familyVersions.find(v => v.isChampion)
-  const challengerVersion = familyVersions.find(v => v.isChallenger)
-  
-  // Count stats
-  const liveModels = MODEL_VERSIONS.filter(v => v.status === "live").length
-  const shadowModels = MODEL_VERSIONS.filter(v => v.status === "shadow").length
-  const totalVersions = MODEL_VERSIONS.length
+  }
+
+  function handleDeploy() {
+    if (!deployDialog) return
+    setVersions((prev) =>
+      prev.map((v) => {
+        if (v.id !== deployDialog) return v
+        return {
+          ...v,
+          status: deployTarget as ModelVersion["status"],
+          approvedAt: new Date().toISOString(),
+          approvedBy: "current_user",
+        }
+      })
+    )
+    setDeployDialog(null)
+  }
+
+  const compareVersions = versions.filter((v) => compareSet.has(v.id))
 
   return (
-    <AppShell
-      activeSurface="ml"
-      showLifecycleRail={false}
-      breadcrumbs={[
-        { label: "ML Platform", href: "/ml" },
-        { label: "Model Registry" },
-      ]}
-      contextLevels={{ organization: true, client: false, strategy: false, underlying: false }}
-    >
-      <div className="max-w-[1800px] mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Model Registry</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Model Registry</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Model families, versions, champion/challenger management
+              {versions.length} registered versions &middot;{" "}
+              {versions.filter((v) => v.status === "live").length} live
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <RefreshCw className="size-4" />
-              Refresh
-            </Button>
-          </div>
+          <Select
+            value={familyFilter}
+            onValueChange={(v) => setFamilyFilter(v === "__all__" ? "" : v)}
+          >
+            <SelectTrigger className="w-56">
+              <SelectValue placeholder="Filter by family..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all__">All Families</SelectItem>
+              {MODEL_FAMILIES.map((fam) => (
+                <SelectItem key={fam.id} value={fam.id}>
+                  {fam.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-5 gap-4">
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--surface-ml)]/10">
-                <Layers className="size-5" style={{ color: "var(--surface-ml)" }} />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">{MODEL_FAMILIES.length}</p>
-                <p className="text-xs text-muted-foreground">Model Families</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-muted">
-                <Box className="size-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">{totalVersions}</p>
-                <p className="text-xs text-muted-foreground">Total Versions</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--status-live)]/10">
-                <Trophy className="size-5" style={{ color: "var(--status-live)" }} />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">{liveModels}</p>
-                <p className="text-xs text-muted-foreground">Live (Champions)</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--surface-ml)]/10">
-                <Swords className="size-5" style={{ color: "var(--surface-ml)" }} />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">{shadowModels}</p>
-                <p className="text-xs text-muted-foreground">Shadow Testing</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                <Activity className="size-5" style={{ color: "var(--status-warning)" }} />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">{CHAMPION_CHALLENGER_PAIRS.length}</p>
-                <p className="text-xs text-muted-foreground">Active A/B Tests</p>
-              </div>
-            </div>
-          </Card>
-        </div>
+        {/* Champion/Challenger Pairs */}
+        {CHAMPION_CHALLENGER_PAIRS.length > 0 && (
+          <div className="space-y-3">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Crown className="size-5 text-amber-400" />
+              Champion vs Challenger
+            </h2>
+            {CHAMPION_CHALLENGER_PAIRS.map((pair) => {
+              const champion = versions.find((v) => v.id === pair.championId)
+              const challenger = versions.find((v) => v.id === pair.challengerId)
+              const family = MODEL_FAMILIES.find((f) => f.id === pair.modelFamilyId)
 
-        {/* Filters */}
-        <Card className="p-4">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input
-                placeholder="Search model families..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            
-            <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Archetype" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Archetypes</SelectItem>
-                <SelectItem value="DIRECTIONAL">Directional</SelectItem>
-                <SelectItem value="MARKET_MAKING">Market Making</SelectItem>
-                <SelectItem value="ARBITRAGE">Arbitrage</SelectItem>
-                <SelectItem value="YIELD">Yield</SelectItem>
-                <SelectItem value="SPORTS_ML">Sports ML</SelectItem>
-                <SelectItem value="PREDICTION_MARKET_ML">Prediction ML</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </Card>
+              if (!champion || !challenger) return null
 
-        {/* Main Content */}
-        <div className="grid grid-cols-3 gap-6">
-          {/* Model Family List */}
-          <Card className="col-span-1">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Model Families</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="space-y-1 px-4 pb-4">
-                {filteredFamilies.map((family) => {
-                  const hasChallenger = family.currentChallenger !== null
-                  const deployment = LIVE_DEPLOYMENTS.find(d => 
-                    MODEL_VERSIONS.find(m => m.id === d.modelVersionId)?.modelFamilyId === family.id
-                  )
-                  
-                  return (
-                    <div
-                      key={family.id}
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        selectedFamily === family.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"
-                      }`}
-                      onClick={() => setSelectedFamily(family.id)}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-sm">{family.name}</span>
-                        <ChevronRight className="size-4 text-muted-foreground" />
-                      </div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline" className="text-[10px]">{family.archetype}</Badge>
-                        {deployment && <ContextBadge context="LIVE" />}
-                        {hasChallenger && (
-                          <Badge variant="outline" className="text-[10px] bg-[var(--surface-ml)]/10 text-[var(--surface-ml)]">
-                            A/B Test
+              return (
+                <Card key={pair.id} className="border-border/50">
+                  <CardContent className="pt-0">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{family?.name}</span>
+                          <Badge
+                            variant="outline"
+                            className={
+                              pair.status === "active"
+                                ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                : "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                            }
+                          >
+                            {pair.status}
                           </Badge>
-                        )}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          Traffic: {pair.trafficSplit.champion}% / {pair.trafficSplit.challenger}%
+                        </span>
                       </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Champion */}
+                        <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Crown className="size-4 text-emerald-400" />
+                            <span className="font-mono text-sm font-medium">
+                              v{champion.version}
+                            </span>
+                            <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]">
+                              champion
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <span className="text-muted-foreground">Accuracy</span>
+                              <p className="font-mono font-medium">
+                                {fmtPct(pair.comparisonMetrics.championAccuracy)}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Sharpe</span>
+                              <p className="font-mono font-medium">
+                                {fmtNum(pair.comparisonMetrics.championSharpe)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Challenger */}
+                        <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Shield className="size-4 text-blue-400" />
+                            <span className="font-mono text-sm font-medium">
+                              v{challenger.version}
+                            </span>
+                            <Badge variant="outline" className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]">
+                              challenger
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <span className="text-muted-foreground">Accuracy</span>
+                              <p className="font-mono font-medium">
+                                {fmtPct(pair.comparisonMetrics.challengerAccuracy)}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Sharpe</span>
+                              <p className="font-mono font-medium">
+                                {fmtNum(pair.comparisonMetrics.challengerSharpe)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{family.totalVersions} versions</span>
-                        <span>{family.linkedStrategies.length} strategies</span>
+                        <span>
+                          Significance: {fmtPct(pair.comparisonMetrics.significanceLevel)}
+                        </span>
+                        <span>Started {new Date(pair.startedAt).toLocaleDateString()}</span>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Model Versions Table */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Layers className="size-4" />
+              Registered Versions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/50 hover:bg-transparent">
+                  <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Version</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Family</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Role</TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("accuracy")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Accuracy <SortIcon field="accuracy" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("sharpe")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Sharpe <SortIcon field="sharpe" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("maxDrawdown")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Max DD <SortIcon field="maxDrawdown" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("latencyP50")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Latency P50 <SortIcon field="latencyP50" />
+                    </span>
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Predictions</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sorted.map((ver) => {
+                  const family = MODEL_FAMILIES.find((f) => f.id === ver.modelFamilyId)
+                  return (
+                    <TableRow
+                      key={ver.id}
+                      className={`border-border/30 ${compareSet.has(ver.id) ? "bg-blue-500/5" : ""}`}
+                    >
+                      <TableCell>
+                        <button
+                          onClick={() => toggleCompare(ver.id)}
+                          className="p-0.5 rounded hover:bg-muted"
+                        >
+                          <GitCompare
+                            className={`size-3.5 ${compareSet.has(ver.id) ? "text-blue-400" : "text-muted-foreground"}`}
+                          />
+                        </button>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-mono font-medium text-sm">v{ver.version}</span>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {family?.name ?? ver.modelFamilyId}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={versionStatusColor(ver.status)}>
+                          {ver.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {ver.isChampion && (
+                          <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]">
+                            <Crown className="size-3 mr-0.5" />
+                            champion
+                          </Badge>
+                        )}
+                        {ver.isChallenger && (
+                          <Badge variant="outline" className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]">
+                            <Shield className="size-3 mr-0.5" />
+                            challenger
+                          </Badge>
+                        )}
+                        {!ver.isChampion && !ver.isChallenger && (
+                          <span className="text-muted-foreground text-xs">--</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {fmtPct(ver.metrics.accuracy)}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {fmtNum(ver.metrics.sharpe)}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm text-red-400">
+                        {fmtPct(ver.metrics.maxDrawdown)}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {fmtLatency(ver.metrics.inferenceLatencyP50)}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {ver.metrics.predictionCount.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {ver.status !== "live" && ver.status !== "deprecated" && ver.status !== "archived" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs"
+                            onClick={() => setDeployDialog(ver.id)}
+                          >
+                            <Rocket className="size-3" />
+                            Deploy
+                          </Button>
+                        )}
+                        {ver.status === "live" && (
+                          <span className="text-xs text-emerald-400 flex items-center gap-1">
+                            <CheckCircle2 className="size-3" />
+                            Deployed
+                          </span>
+                        )}
+                      </TableCell>
+                    </TableRow>
                   )
                 })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Version Comparison */}
+        {compareVersions.length >= 2 && (
+          <Card className="border-blue-500/30 bg-blue-500/5">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <GitCompare className="size-4 text-blue-400" />
+                  Version Comparison ({compareVersions.length})
+                </CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => setCompareSet(new Set())}>
+                  <X className="size-3" />
+                  Clear
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/50">
+                      <th className="text-left py-2 pr-4 text-xs text-muted-foreground font-medium">
+                        Metric
+                      </th>
+                      {compareVersions.map((ver) => {
+                        const family = MODEL_FAMILIES.find((f) => f.id === ver.modelFamilyId)
+                        return (
+                          <th
+                            key={ver.id}
+                            className="text-right py-2 px-3 text-xs text-muted-foreground font-medium min-w-[120px]"
+                          >
+                            <div>
+                              <span className="font-mono">v{ver.version}</span>
+                              <br />
+                              <span className="text-[10px]">{family?.name}</span>
+                            </div>
+                          </th>
+                        )
+                      })}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(
+                      [
+                        { key: "accuracy", label: "Accuracy", fmt: fmtPct, lower: false },
+                        { key: "sharpe", label: "Sharpe", fmt: (v: number) => fmtNum(v), lower: false },
+                        { key: "maxDrawdown", label: "Max Drawdown", fmt: fmtPct, lower: true },
+                        { key: "directionalAccuracy", label: "Dir. Accuracy", fmt: fmtPct, lower: false },
+                        { key: "calibration", label: "Calibration", fmt: fmtPct, lower: false },
+                        { key: "inferenceLatencyP50", label: "Latency P50", fmt: fmtLatency, lower: true },
+                        { key: "inferenceLatencyP99", label: "Latency P99", fmt: fmtLatency, lower: true },
+                        { key: "predictionCount", label: "Predictions", fmt: (v: number) => v.toLocaleString(), lower: false },
+                      ] as const
+                    ).map((metric) => {
+                      const values = compareVersions.map(
+                        (v) => v.metrics[metric.key as keyof typeof v.metrics] as number
+                      )
+                      const best = metric.lower ? Math.min(...values) : Math.max(...values)
+
+                      return (
+                        <tr key={metric.key} className="border-b border-border/30">
+                          <td className="py-2 pr-4 text-muted-foreground text-xs">
+                            {metric.label}
+                          </td>
+                          {compareVersions.map((ver) => {
+                            const val = ver.metrics[metric.key as keyof typeof ver.metrics] as number
+                            const isBest = val === best
+                            return (
+                              <td
+                                key={ver.id}
+                                className={`text-right py-2 px-3 font-mono ${isBest ? "text-emerald-400 font-bold" : ""}`}
+                              >
+                                {metric.fmt(val)}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
+        )}
 
-          {/* Model Family Details */}
-          <Card className="col-span-2">
-            {selectedFamilyData ? (
-              <>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <CardTitle className="text-base">{selectedFamilyData.name}</CardTitle>
-                        <Badge variant="outline">{selectedFamilyData.archetype}</Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">{selectedFamilyData.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-[140px] h-8">
-                          <SelectValue placeholder="Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Statuses</SelectItem>
-                          <SelectItem value="live">Live</SelectItem>
-                          <SelectItem value="shadow">Shadow</SelectItem>
-                          <SelectItem value="validated">Validated</SelectItem>
-                          <SelectItem value="registered">Registered</SelectItem>
-                          <SelectItem value="deprecated">Deprecated</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Champion/Challenger Summary */}
-                  {championVersion && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 rounded-lg border border-[var(--status-live)]/30 bg-[var(--status-live)]/5">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Trophy className="size-4 text-[var(--status-live)]" />
-                          <span className="font-medium">Champion</span>
-                          <Badge variant="outline" className="font-mono text-xs ml-auto">
-                            v{championVersion.version}
-                          </Badge>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">Sharpe</span>
-                            <p className="font-mono font-semibold">{championVersion.metrics.sharpe.toFixed(2)}</p>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Accuracy</span>
-                            <p className="font-mono font-semibold">{(championVersion.metrics.accuracy * 100).toFixed(1)}%</p>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Predictions</span>
-                            <p className="font-mono">{championVersion.metrics.predictionCount.toLocaleString()}</p>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Latency P50</span>
-                            <p className="font-mono">{championVersion.metrics.inferenceLatencyP50}ms</p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {challengerVersion ? (
-                        <div className="p-4 rounded-lg border border-[var(--surface-ml)]/30 bg-[var(--surface-ml)]/5">
-                          <div className="flex items-center gap-2 mb-3">
-                            <Swords className="size-4 text-[var(--surface-ml)]" />
-                            <span className="font-medium">Challenger</span>
-                            <Badge variant="outline" className="font-mono text-xs ml-auto">
-                              v{challengerVersion.version}
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                              <span className="text-muted-foreground">Sharpe</span>
-                              <p className={`font-mono font-semibold ${challengerVersion.metrics.sharpe > championVersion.metrics.sharpe ? "text-[var(--status-live)]" : ""}`}>
-                                {challengerVersion.metrics.sharpe.toFixed(2)}
-                                {challengerVersion.metrics.sharpe > championVersion.metrics.sharpe && " ↑"}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Accuracy</span>
-                              <p className={`font-mono font-semibold ${challengerVersion.metrics.accuracy > championVersion.metrics.accuracy ? "text-[var(--status-live)]" : ""}`}>
-                                {(challengerVersion.metrics.accuracy * 100).toFixed(1)}%
-                                {challengerVersion.metrics.accuracy > championVersion.metrics.accuracy && " ↑"}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Shadow Predictions</span>
-                              <p className="font-mono">{challengerVersion.metrics.predictionCount.toLocaleString()}</p>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Traffic Split</span>
-                              <p className="font-mono">10%</p>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="p-4 rounded-lg border border-dashed border-border flex items-center justify-center">
-                          <div className="text-center text-muted-foreground">
-                            <Swords className="size-6 mx-auto mb-2 opacity-50" />
-                            <p className="text-sm">No challenger configured</p>
-                            <Button variant="outline" size="sm" className="mt-2">
-                              Setup A/B Test
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Version History */}
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium flex items-center gap-2">
-                        <History className="size-4" />
-                        Version History
-                      </h4>
-                      <span className="text-xs text-muted-foreground">{familyVersions.length} versions</span>
-                    </div>
-                    <div className="space-y-2">
-                      {familyVersions.map((version) => (
-                        <div
-                          key={version.id}
-                          className="p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors cursor-pointer"
-                          onClick={() => router.push(`/ml/registry/${version.id}`)}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-3">
-                              <Badge variant="outline" className="font-mono">v{version.version}</Badge>
-                              <ModelStatusBadge status={version.status} isChampion={version.isChampion} isChallenger={version.isChallenger} />
-                            </div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <Button variant="ghost" size="sm" className="size-8 p-0">
-                                  <MoreHorizontal className="size-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
-                                  <ArrowUpRight className="size-4 mr-2" />
-                                  View Details
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <GitBranch className="size-4 mr-2" />
-                                  View Lineage
-                                </DropdownMenuItem>
-                                {version.status === "validated" && (
-                                  <DropdownMenuItem>
-                                    <Play className="size-4 mr-2" />
-                                    Deploy as Shadow
-                                  </DropdownMenuItem>
-                                )}
-                                {version.status === "shadow" && (
-                                  <DropdownMenuItem>
-                                    <Swords className="size-4 mr-2" />
-                                    Promote to Challenger
-                                  </DropdownMenuItem>
-                                )}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                  <Archive className="size-4 mr-2" />
-                                  Archive
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                          
-                          <div className="flex items-center gap-6 text-xs">
-                            <span>
-                              Sharpe: <span className="font-mono font-semibold">{version.metrics.sharpe.toFixed(2)}</span>
-                            </span>
-                            <span>
-                              Accuracy: <span className="font-mono">{(version.metrics.accuracy * 100).toFixed(1)}%</span>
-                            </span>
-                            <span>
-                              Max DD: <span className="font-mono">{(version.metrics.maxDrawdown * 100).toFixed(1)}%</span>
-                            </span>
-                            <span className="text-muted-foreground ml-auto">
-                              Registered {new Date(version.registeredAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Linked Strategies */}
-                  <div>
-                    <h4 className="text-sm font-medium mb-3">Linked Strategies</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedFamilyData.linkedStrategies.map((strategyId) => (
-                        <EntityLink
-                          key={strategyId}
-                          type="strategy"
-                          id={strategyId}
-                          label={strategyId}
-                          className="text-sm"
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Asset Classes */}
-                  <div>
-                    <h4 className="text-sm font-medium mb-3">Asset Classes</h4>
-                    <div className="flex gap-2">
-                      {selectedFamilyData.assetClasses.map((ac) => (
-                        <Badge key={ac} variant="outline">{ac}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </>
-            ) : (
-              <div className="flex items-center justify-center h-[600px] text-muted-foreground">
-                Select a model family to view details
+        {/* Deploy Dialog */}
+        <Dialog
+          open={deployDialog !== null}
+          onOpenChange={(open) => {
+            if (!open) setDeployDialog(null)
+          }}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Deploy Model</DialogTitle>
+              <DialogDescription>
+                {deployDialog && (
+                  <>
+                    Deploy{" "}
+                    <span className="font-mono font-medium">
+                      v{versions.find((v) => v.id === deployDialog)?.version}
+                    </span>{" "}
+                    to production.
+                  </>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-2">
+              <div className="space-y-2">
+                <Label>Deployment Target</Label>
+                <Select
+                  value={deployTarget}
+                  onValueChange={(v) => setDeployTarget(v as "shadow" | "live")}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="shadow">Shadow (challenger)</SelectItem>
+                    <SelectItem value="live">Live (champion)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            )}
-          </Card>
-        </div>
+              {deployTarget === "live" && (
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+                  <p className="text-xs text-amber-300">
+                    Deploying to live will replace the current champion model. This action
+                    will immediately route 100% of traffic to this version.
+                  </p>
+                </div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDeployDialog(null)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDeploy}
+                className={
+                  deployTarget === "live"
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                    : ""
+                }
+              >
+                <Rocket className="size-4" />
+                Deploy to {deployTarget === "live" ? "Live" : "Shadow"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-    </AppShell>
+    </div>
   )
 }
