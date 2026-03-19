@@ -21,12 +21,21 @@ export function makeQueryClient() {
 
 let browserQueryClient: QueryClient | undefined
 
+/**
+ * Get the query client.
+ *
+ * Server: fresh client per request (prevents cross-request state leakage).
+ * Browser: singleton (persists across navigations).
+ *
+ * NOTE: For full SSR hydration (dehydrate/HydrationBoundary), this pattern
+ * needs to be extended when we move from MSW (client-only) to real API calls.
+ * Current demo mode is client-rendered, so hydration isn't needed yet.
+ * See: https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr
+ */
 export function getQueryClient() {
   if (typeof window === "undefined") {
-    // Server: always new client (no sharing between requests)
     return makeQueryClient()
   }
-  // Browser: singleton
   if (!browserQueryClient) {
     browserQueryClient = makeQueryClient()
   }

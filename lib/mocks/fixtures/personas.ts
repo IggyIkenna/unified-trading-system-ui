@@ -3,6 +3,11 @@ import type { AuthPersona } from "@/lib/config/auth"
 /**
  * 4 demo personas covering all access tiers.
  *
+ * SECURITY NOTE: Passwords are plaintext because this is a demo/mock-only
+ * fixture. These credentials are intentionally visible in the client bundle
+ * to enable instant demo login. In production, auth would use OAuth/OIDC
+ * with server-side session management — never client-side password storage.
+ *
  * - admin: sees everything including ops/deployment/user-management
  * - internal-trader: internal desk, all entitlements
  * - client-full: external client with broad subscription
