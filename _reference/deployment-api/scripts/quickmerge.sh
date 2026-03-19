@@ -1,1 +1,0 @@
-../../unified-trading-pm/scripts/quickmerge.sh

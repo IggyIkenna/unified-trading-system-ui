@@ -1,1 +1,0 @@
-../../unified-trading-pm/cursor-configs/CLAUDE.md

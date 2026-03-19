@@ -1,1 +1,0 @@
-../../../unified-trading-pm/scripts/validation/check-import-patterns.py
