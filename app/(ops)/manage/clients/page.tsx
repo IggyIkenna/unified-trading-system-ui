@@ -1,370 +1,464 @@
 "use client"
 
-/**
- * Manage > Clients Page
- * 
- * Client/Organisation oversight - one of the high-value Manage pages.
- * Lifecycle Stage: Manage
- * Domain Lanes: Capital
- */
-
 import * as React from "react"
-import { GlobalNavBar } from "@/components/trading/global-nav-bar"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "sonner"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
+  DialogDescription, DialogFooter, DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Building2,
-  Search,
-  Filter,
-  MoreHorizontal,
-  Plus,
-  Users,
-  DollarSign,
-  TrendingUp,
-  Shield,
-  FileText,
-  Settings,
-  Eye,
-  Mail,
+  Building2, Plus, ArrowLeft, Users, Key, Database, CreditCard,
+  BarChart3,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
+interface Organization {
+  id: string; name: string; type: string; status: string; memberCount: number;
+  subscriptionTier: string; createdAt: string; monthlyFee: number;
+  apiKeys?: number; usageGb?: number
+}
+interface Subscription {
+  orgId: string; tier: string; entitlements: string[]; startDate: string; renewalDate: string; monthlyFee: number;
+  managementFeePct?: number; performanceFeePct?: number; dataFeePct?: number; aumUsd?: number
+}
 
-// Mock client data
-const clients = [
-  {
-    id: "cli-001",
-    name: "Alpha Capital Partners",
-    type: "institutional",
-    tier: "full-platform",
-    status: "active",
-    aum: 12500000,
-    strategies: 4,
-    mandates: 2,
-    users: 8,
-    onboardedAt: "2025-06-15",
-    lastActivity: "2026-03-18",
-    primaryContact: "james.wilson@alphacap.com",
-    feeStructure: "0% + 20%",
-    compliance: "compliant",
-  },
-  {
-    id: "cli-002",
-    name: "Nordic Quant Fund",
-    type: "institutional",
-    tier: "execution-only",
-    status: "active",
-    aum: 8200000,
-    strategies: 0,
-    mandates: 1,
-    users: 3,
-    onboardedAt: "2025-09-01",
-    lastActivity: "2026-03-17",
-    primaryContact: "erik.larsson@nordicquant.se",
-    feeStructure: "30% alpha",
-    compliance: "compliant",
-  },
-  {
-    id: "cli-003",
-    name: "Meridian Research",
-    type: "research",
-    tier: "data-only",
-    status: "active",
-    aum: 0,
-    strategies: 0,
-    mandates: 0,
-    users: 5,
-    onboardedAt: "2025-11-20",
-    lastActivity: "2026-03-16",
-    primaryContact: "sarah.chen@meridian.io",
-    feeStructure: "$499/mo",
-    compliance: "compliant",
-  },
-  {
-    id: "cli-004",
-    name: "Vertex Trading Ltd",
-    type: "ar-client",
-    tier: "regulatory",
-    status: "active",
-    aum: 0,
-    strategies: 12,
-    mandates: 0,
-    users: 15,
-    onboardedAt: "2026-01-10",
-    lastActivity: "2026-03-18",
-    primaryContact: "michael.brown@vertex.co.uk",
-    feeStructure: "GBP 4k/mo",
-    compliance: "under-review",
-  },
-  {
-    id: "cli-005",
-    name: "Pacific Investments",
-    type: "institutional",
-    tier: "investment-mgmt",
-    status: "onboarding",
-    aum: 5000000,
-    strategies: 0,
-    mandates: 1,
-    users: 2,
-    onboardedAt: "2026-03-01",
-    lastActivity: "2026-03-15",
-    primaryContact: "david.lee@pacificinv.com",
-    feeStructure: "0% + 35%",
-    compliance: "pending",
-  },
+const INITIAL_ORGS: Organization[] = [
+  { id: "odum-internal", name: "Odum Research", type: "internal", status: "active", memberCount: 12, subscriptionTier: "full-platform", createdAt: "2024-01-01", monthlyFee: 0 },
+  { id: "acme", name: "Alpha Capital", type: "client", status: "active", memberCount: 5, subscriptionTier: "execution-full", createdAt: "2025-06-15", monthlyFee: 25000 },
+  { id: "beta", name: "Beta Fund", type: "client", status: "active", memberCount: 2, subscriptionTier: "data-basic", createdAt: "2026-01-10", monthlyFee: 2500 },
+  { id: "vertex", name: "Vertex Partners", type: "client", status: "onboarding", memberCount: 1, subscriptionTier: "data-pro", createdAt: "2026-03-01", monthlyFee: 8000 },
+]
+const INITIAL_SUBS: Subscription[] = [
+  { orgId: "acme", tier: "execution-full", entitlements: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"], startDate: "2025-06-15", renewalDate: "2026-06-15", monthlyFee: 25000 },
+  { orgId: "beta", tier: "data-basic", entitlements: ["data-basic"], startDate: "2026-01-10", renewalDate: "2027-01-10", monthlyFee: 2500 },
+  { orgId: "vertex", tier: "data-pro", entitlements: ["data-pro"], startDate: "2026-03-01", renewalDate: "2027-03-01", monthlyFee: 8000 },
 ]
 
-const tierLabels: Record<string, { label: string; color: string }> = {
-  "full-platform": { label: "Full Platform", color: "text-violet-400 bg-violet-400/10 border-violet-400/30" },
-  "execution-only": { label: "Execution", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30" },
-  "data-only": { label: "Data", color: "text-sky-400 bg-sky-400/10 border-sky-400/30" },
-  "regulatory": { label: "AR Client", color: "text-amber-400 bg-amber-400/10 border-amber-400/30" },
-  "investment-mgmt": { label: "Investment", color: "text-rose-400 bg-rose-400/10 border-rose-400/30" },
-}
+const TIERS = ["starter", "professional", "institutional", "enterprise"] as const
 
-const statusLabels: Record<string, { label: string; color: string }> = {
-  "active": { label: "Active", color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30" },
-  "onboarding": { label: "Onboarding", color: "text-amber-400 bg-amber-400/10 border-amber-400/30" },
-  "suspended": { label: "Suspended", color: "text-destructive bg-destructive/10 border-destructive/30" },
-}
+export default function ClientsManagementPage() {
+  const [orgs, setOrgs] = React.useState<Organization[]>(INITIAL_ORGS)
+  const [subscriptions, setSubscriptions] = React.useState<Subscription[]>(INITIAL_SUBS)
+  const addOrg = (org: Organization) => setOrgs((prev) => [...prev, org])
+  const updateOrg = (id: string, updates: Partial<Organization>) => setOrgs((prev) => prev.map((o) => o.id === id ? { ...o, ...updates } : o))
+  const updateSubscription = (orgId: string, updates: Partial<Subscription>) => setSubscriptions((prev) => prev.map((s) => s.orgId === orgId ? { ...s, ...updates } : s))
+  const addSubscription = (sub: Subscription) => setSubscriptions((prev) => [...prev, sub])
+  const [selectedOrgId, setSelectedOrgId] = React.useState<string | null>(null)
+  const [createOpen, setCreateOpen] = React.useState(false)
 
-const complianceLabels: Record<string, { label: string; color: string }> = {
-  "compliant": { label: "Compliant", color: "text-emerald-400" },
-  "under-review": { label: "Under Review", color: "text-amber-400" },
-  "pending": { label: "Pending", color: "text-muted-foreground" },
-  "issue": { label: "Issue", color: "text-destructive" },
-}
+  // Create form state
+  const [newName, setNewName] = React.useState("")
+  const [newType, setNewType] = React.useState<"internal" | "client">("client")
+  const [newTier, setNewTier] = React.useState<typeof TIERS[number]>("professional")
 
-function formatCurrency(value: number): string {
-  if (value === 0) return "-"
-  if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`
-  if (value >= 1000) return `$${(value / 1000).toFixed(0)}K`
-  return `$${value}`
-}
+  const selectedOrg = orgs.find((o) => o.id === selectedOrgId)
+  const selectedSub = subscriptions.find((s) => s.orgId === selectedOrgId)
 
-export default function ManageClientsPage() {
-  const [searchQuery, setSearchQuery] = React.useState("")
-  
-  const filteredClients = clients.filter(c => 
-    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.primaryContact.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-  
-  // Summary stats
-  const totalAUM = clients.reduce((sum, c) => sum + c.aum, 0)
-  const activeClients = clients.filter(c => c.status === "active").length
-  const totalUsers = clients.reduce((sum, c) => sum + c.users, 0)
+  function handleCreateOrg() {
+    if (!newName.trim()) {
+      toast.error("Organization name is required")
+      return
+    }
+    const id = `org-${String(Date.now()).slice(-6)}`
+    const monthlyFee =
+      newTier === "starter" ? 1500
+        : newTier === "professional" ? 5500
+          : newTier === "institutional" ? 15000
+            : 25000
 
-  return (
-    <div className="min-h-screen bg-background">
-      <GlobalNavBar />
-      
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Clients & Organisations</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Manage client relationships, mandates, and access entitlements
-            </p>
-          </div>
-          <Button className="gap-2">
-            <Plus className="size-4" />
-            Add Client
-          </Button>
-        </div>
+    const org: Organization = {
+      id,
+      name: newName.trim(),
+      type: newType,
+      status: "onboarding",
+      memberCount: 0,
+      subscriptionTier: newTier,
+      monthlyFee,
+      apiKeys: 0,
+      usageGb: 0,
+      createdAt: new Date().toISOString().split("T")[0],
+    }
+    addOrg(org)
+    addSubscription({
+      orgId: id,
+      tier: newTier,
+      entitlements: ["data-basic"],
+      startDate: new Date().toISOString().split("T")[0],
+      renewalDate: new Date(Date.now() + 365 * 86400000).toISOString().split("T")[0],
+      monthlyFee,
+      managementFeePct: newTier === "enterprise" ? 1.0 : newTier === "institutional" ? 1.5 : 2.0,
+      performanceFeePct: 20,
+      dataFeePct: 0.05,
+      aumUsd: 0,
+    })
+    toast.success("Organization created", {
+      description: `${org.name} added as ${org.type} (${org.subscriptionTier})`,
+    })
+    setNewName("")
+    setNewType("client")
+    setNewTier("professional")
+    setCreateOpen(false)
+  }
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Building2 className="size-5 text-primary" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{clients.length}</div>
-                  <div className="text-xs text-muted-foreground">Total Clients</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-emerald-400/10">
-                  <TrendingUp className="size-5 text-emerald-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{activeClients}</div>
-                  <div className="text-xs text-muted-foreground">Active</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-violet-400/10">
-                  <DollarSign className="size-5 text-violet-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{formatCurrency(totalAUM)}</div>
-                  <div className="text-xs text-muted-foreground">Total AUM</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-sky-400/10">
-                  <Users className="size-5 text-sky-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{totalUsers}</div>
-                  <div className="text-xs text-muted-foreground">Total Users</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+  function handleTierChange(orgId: string, tier: typeof TIERS[number]) {
+    const monthlyFee =
+      tier === "starter" ? 1500
+        : tier === "professional" ? 5500
+          : tier === "institutional" ? 15000
+            : 25000
+    updateOrg(orgId, { subscriptionTier: tier, monthlyFee })
+    updateSubscription(orgId, { tier, monthlyFee })
+    const org = orgs.find((o) => o.id === orgId)
+    toast.success("Subscription updated", {
+      description: `${org?.name} moved to ${tier}`,
+    })
+  }
 
-        {/* Client Table */}
-        <Card>
-          <CardHeader className="pb-3">
+  // Detail view
+  if (selectedOrg) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b border-border">
+          <div className="container px-4 py-6 md:px-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedOrgId(null)}
+              className="mb-2"
+            >
+              <ArrowLeft className="mr-2 size-4" />
+              Back to Clients
+            </Button>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Client Directory</CardTitle>
-                <CardDescription>All clients and their access entitlements</CardDescription>
+                <h1 className="text-2xl font-bold tracking-tight">{selectedOrg.name}</h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {selectedOrg.type === "internal" ? "Internal Team" : "Client Organization"} — Created {selectedOrg.createdAt}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search clients..."
-                    className="pl-9 w-64"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Filter className="size-4" />
-                  Filter
-                </Button>
-              </div>
+              <Badge
+                className={
+                  selectedOrg.status === "active"
+                    ? "bg-emerald-500/20 text-emerald-400"
+                    : selectedOrg.status === "onboarding"
+                      ? "bg-amber-500/20 text-amber-400"
+                      : "bg-red-500/20 text-red-400"
+                }
+              >
+                {selectedOrg.status}
+              </Badge>
             </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Client</TableHead>
-                  <TableHead>Tier</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">AUM</TableHead>
-                  <TableHead className="text-center">Users</TableHead>
-                  <TableHead>Fee Structure</TableHead>
-                  <TableHead>Compliance</TableHead>
-                  <TableHead className="w-10"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredClients.map((client) => {
-                  const tier = tierLabels[client.tier]
-                  const status = statusLabels[client.status]
-                  const compliance = complianceLabels[client.compliance]
-                  
-                  return (
-                    <TableRow key={client.id} className="group">
-                      <TableCell>
+          </div>
+        </div>
+
+        <div className="container px-4 py-8 md:px-6">
+          <Tabs defaultValue="overview">
+            <TabsList className="mb-6">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="users">Users</TabsTrigger>
+              <TabsTrigger value="subscription">Subscription</TabsTrigger>
+              <TabsTrigger value="usage">API & Usage</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-lg bg-sky-500/10 p-2.5">
+                        <Users className="size-5 text-sky-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Members</p>
+                        <p className="text-xl font-bold font-mono">{selectedOrg.memberCount}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-lg bg-emerald-500/10 p-2.5">
+                        <CreditCard className="size-5 text-emerald-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Tier</p>
+                        <p className="text-xl font-bold capitalize">{selectedOrg.subscriptionTier}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-lg bg-amber-500/10 p-2.5">
+                        <Key className="size-5 text-amber-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">API Keys</p>
+                        <p className="text-xl font-bold font-mono">{selectedOrg.apiKeys}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-lg bg-violet-500/10 p-2.5">
+                        <Database className="size-5 text-violet-400" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Usage</p>
+                        <p className="text-xl font-bold font-mono">{selectedOrg.usageGb} GB</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="users">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Organization Members</CardTitle>
+                  <CardDescription>
+                    {selectedOrg.memberCount} member{selectedOrg.memberCount !== 1 ? "s" : ""} in {selectedOrg.name}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {selectedOrg.memberCount === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      No members yet. Invite users from the User Management page.
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Visit User Management to manage members for this organization.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="subscription">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Subscription Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Current Tier</p>
+                      <Select
+                        value={selectedOrg.subscriptionTier}
+                        onValueChange={(val) => handleTierChange(selectedOrg.id, val as typeof TIERS[number])}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TIERS.map((t) => (
+                            <SelectItem key={t} value={t} className="capitalize">{t}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Monthly Fee</p>
+                      <p className="text-lg font-bold font-mono">${selectedOrg.monthlyFee.toLocaleString()}</p>
+                    </div>
+                    {selectedSub && (
+                      <>
                         <div>
-                          <div className="font-medium">{client.name}</div>
-                          <div className="text-xs text-muted-foreground">{client.primaryContact}</div>
+                          <p className="text-xs text-muted-foreground mb-1">Management Fee</p>
+                          <p className="text-lg font-bold font-mono">{selectedSub.managementFeePct}%</p>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={cn("text-xs", tier.color)}>
-                          {tier.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={cn("text-xs", status.color)}>
-                          {status.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-sm">
-                        {formatCurrency(client.aum)}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <div className="flex items-center justify-center gap-1">
-                          <Users className="size-3 text-muted-foreground" />
-                          {client.users}
+                        <div>
+                          <p className="text-xs text-muted-foreground mb-1">AUM</p>
+                          <p className="text-lg font-bold font-mono">
+                            ${((selectedSub?.aumUsd ?? 0) / 1_000_000).toFixed(1)}M
+                          </p>
                         </div>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {client.feeStructure}
-                      </TableCell>
-                      <TableCell>
-                        <div className={cn("flex items-center gap-1 text-xs", compliance.color)}>
-                          <Shield className="size-3" />
-                          {compliance.label}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="size-8 opacity-0 group-hover:opacity-100">
-                              <MoreHorizontal className="size-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                              <Eye className="mr-2 size-4" />
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <FileText className="mr-2 size-4" />
-                              View Mandates
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Mail className="mr-2 size-4" />
-                              Contact
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>
-                              <Settings className="mr-2 size-4" />
-                              Manage Access
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="usage">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">API Keys & Usage</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg border p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Key className="size-4 text-amber-400" />
+                        <p className="text-sm font-medium">Active API Keys</p>
+                      </div>
+                      <p className="text-2xl font-bold font-mono">{selectedOrg.apiKeys}</p>
+                    </div>
+                    <div className="rounded-lg border p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <BarChart3 className="size-4 text-sky-400" />
+                        <p className="text-sm font-medium">Data Usage (this month)</p>
+                      </div>
+                      <p className="text-2xl font-bold font-mono">{selectedOrg.usageGb} GB</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+    )
+  }
+
+  // List view
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="border-b border-border">
+        <div className="container px-4 py-6 md:px-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight">Client Management</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Manage client organizations, subscriptions, and access
+              </p>
+            </div>
+            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 size-4" />
+                  Create Org
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create Organization</DialogTitle>
+                  <DialogDescription>
+                    Add a new organization to the platform.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Organization Name <span className="text-destructive">*</span>
+                    </label>
+                    <Input
+                      placeholder="e.g. Apex Trading Group"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Type</label>
+                    <Select value={newType} onValueChange={(v) => setNewType(v as "internal" | "client")}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="client">Client</SelectItem>
+                        <SelectItem value="internal">Internal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Subscription Tier</label>
+                    <Select value={newTier} onValueChange={(v) => setNewTier(v as typeof TIERS[number])}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIERS.map((t) => (
+                          <SelectItem key={t} value={t} className="capitalize">{t}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setCreateOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCreateOrg}>
+                    Create Organization
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+      </div>
+
+      <div className="container px-4 py-8 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {orgs.map((org) => {
+            const sub = subscriptions.find((s) => s.orgId === org.id)
+            return (
+              <Card
+                key={org.id}
+                className="cursor-pointer hover:border-foreground/20 transition-colors"
+                onClick={() => setSelectedOrgId(org.id)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Building2 className="size-4 text-muted-foreground" />
+                      <CardTitle className="text-base">{org.name}</CardTitle>
+                    </div>
+                    <Badge
+                      className={
+                        org.status === "active"
+                          ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
+                          : org.status === "onboarding"
+                            ? "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+                            : "bg-red-500/20 text-red-400"
+                      }
+                    >
+                      {org.status}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    {org.type === "internal" ? "Internal" : "Client"} — {org.memberCount} members
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-3 gap-2 text-sm">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Tier</p>
+                      <p className="font-medium capitalize">{org.subscriptionTier}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Monthly</p>
+                      <p className="font-mono font-medium">${org.monthlyFee.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Usage</p>
+                      <p className="font-mono font-medium">{org.usageGb} GB</p>
+                    </div>
+                  </div>
+                  {sub && (sub.aumUsd ?? 0) > 0 && (
+                    <div className="text-xs text-muted-foreground">
+                      AUM: ${((sub.aumUsd ?? 0) / 1_000_000).toFixed(1)}M — Mgmt: {sub.managementFeePct}% — Perf: {sub.performanceFeePct}%
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

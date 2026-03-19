@@ -1,342 +1,486 @@
 "use client"
 
 import * as React from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { cn } from "@/lib/utils"
-import { StrategyPlatformNav } from "@/components/strategy-platform/strategy-nav"
-import { 
-  ShoppingBasket, 
-  CheckCircle2, 
-  XCircle, 
-  AlertTriangle,
+import {
   ArrowRight,
-  TrendingUp,
-  TrendingDown,
+  CheckCircle2,
   Clock,
-  FileCheck,
-  GitCompare,
-  Trash2,
-  Send
+  MessageSquare,
+  Rocket,
+  Shield,
+  Target,
+  XCircle,
 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-// Mock candidates in basket
-const MOCK_CANDIDATES = [
-  {
-    id: "cand-1",
-    strategyId: "ETH_BASIS_v3.2",
-    backtestId: "bt-001",
-    addedAt: "2 hours ago",
-    addedBy: "alice@odum.com",
-    status: "approved" as const,
-    metrics: { sharpe: 1.82, returns: 24.3, maxDD: -8.2, winRate: 58.4 },
-    checks: { riskLimits: true, configValid: true, dataQuality: true, backtestCoverage: true },
-    notes: "Strong performance across all regimes. Ready for shadow trading.",
-    championComparison: { sharpe: 1.65, returnsDelta: "+2.1%", ddDelta: "-0.4%" }
-  },
-  {
-    id: "cand-2",
-    strategyId: "BTC_MM_v2.1",
-    backtestId: "bt-003",
-    addedAt: "5 hours ago",
-    addedBy: "bob@odum.com",
-    status: "pending" as const,
-    metrics: { sharpe: 1.45, returns: 18.7, maxDD: -12.1, winRate: 52.1 },
-    checks: { riskLimits: true, configValid: true, dataQuality: false, backtestCoverage: true },
-    notes: "Data quality issue flagged - missing 2 days in Feb.",
-    championComparison: { sharpe: 1.52, returnsDelta: "-1.2%", ddDelta: "+1.8%" }
-  },
-  {
-    id: "cand-3",
-    strategyId: "SOL_ARB_v1.4",
-    backtestId: "bt-007",
-    addedAt: "1 day ago",
-    addedBy: "carol@odum.com",
-    status: "rejected" as const,
-    metrics: { sharpe: 0.95, returns: 12.4, maxDD: -18.3, winRate: 48.9 },
-    checks: { riskLimits: false, configValid: true, dataQuality: true, backtestCoverage: false },
-    notes: "Failed risk limits check - max drawdown exceeds threshold.",
-    championComparison: { sharpe: 1.21, returnsDelta: "-4.2%", ddDelta: "+6.1%" }
-  },
-  {
-    id: "cand-4",
-    strategyId: "DOGE_MOM_v1.0",
-    backtestId: "bt-012",
-    addedAt: "3 days ago",
-    addedBy: "alice@odum.com",
-    status: "pending" as const,
-    metrics: { sharpe: 1.33, returns: 31.2, maxDD: -15.4, winRate: 51.2 },
-    checks: { riskLimits: true, configValid: true, dataQuality: true, backtestCoverage: true },
-    notes: "New strategy - needs additional review of edge cases.",
-    championComparison: null
-  },
-]
+import { STRATEGY_CANDIDATES, BACKTEST_RUNS } from "@/lib/strategy-platform-mock-data"
+import type { StrategyCandidate } from "@/lib/strategy-platform-types"
 
-const statusConfig = {
-  approved: { label: "Approved", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle2 },
-  pending: { label: "Pending Review", color: "text-amber-500", bg: "bg-amber-500/10", icon: Clock },
-  rejected: { label: "Rejected", color: "text-red-500", bg: "bg-red-500/10", icon: XCircle },
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function reviewStateColor(state: StrategyCandidate["reviewState"]) {
+  switch (state) {
+    case "approved":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "in_review":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "pending":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "rejected":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
 }
 
-export default function StrategyCandidatesPage() {
-  const [selectedCandidates, setSelectedCandidates] = React.useState<string[]>([])
-  const [activeTab, setActiveTab] = React.useState("all")
-  
-  const toggleCandidate = (id: string) => {
-    setSelectedCandidates(prev => 
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+function fmtPct(v: number) {
+  return `${(v * 100).toFixed(1)}%`
+}
+
+function fmtNum(v: number, decimals = 2) {
+  return v.toFixed(decimals)
+}
+
+// Approval workflow stages
+const WORKFLOW_STAGES = [
+  { key: "pending", label: "Pending", icon: Clock },
+  { key: "in_review", label: "In Review", icon: Shield },
+  { key: "approved", label: "Approved", icon: CheckCircle2 },
+  { key: "promoted", label: "Promoted", icon: Rocket },
+] as const
+
+type PromotionTarget = "paper" | "live"
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+export default function CandidatesPage() {
+  const [candidates, setCandidates] = React.useState<StrategyCandidate[]>(STRATEGY_CANDIDATES)
+  const [promotionTargets, setPromotionTargets] = React.useState<
+    Record<string, PromotionTarget | null>
+  >({})
+  const [commentDialog, setCommentDialog] = React.useState<string | null>(null)
+  const [commentText, setCommentText] = React.useState("")
+
+  function promoteCandidate(candidateId: string, target: PromotionTarget) {
+    setCandidates((prev) =>
+      prev.map((c) => {
+        if (c.id !== candidateId) return c
+        return {
+          ...c,
+          reviewState: "approved" as const,
+          reviewComments: [
+            ...c.reviewComments,
+            {
+              id: `rc-${Date.now()}`,
+              userId: "current_user",
+              userName: "Current User",
+              comment: `Promoted to ${target} trading`,
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        }
+      })
+    )
+    setPromotionTargets((prev) => ({ ...prev, [candidateId]: target }))
+  }
+
+  function rejectCandidate(candidateId: string) {
+    setCandidates((prev) =>
+      prev.map((c) => {
+        if (c.id !== candidateId) return c
+        return { ...c, reviewState: "rejected" as const }
+      })
     )
   }
-  
-  const filteredCandidates = activeTab === "all" 
-    ? MOCK_CANDIDATES 
-    : MOCK_CANDIDATES.filter(c => c.status === activeTab)
-  
-  const approvedCount = MOCK_CANDIDATES.filter(c => c.status === "approved").length
-  const pendingCount = MOCK_CANDIDATES.filter(c => c.status === "pending").length
-  const rejectedCount = MOCK_CANDIDATES.filter(c => c.status === "rejected").length
+
+  function addComment(candidateId: string) {
+    if (!commentText.trim()) return
+    setCandidates((prev) =>
+      prev.map((c) => {
+        if (c.id !== candidateId) return c
+        return {
+          ...c,
+          reviewComments: [
+            ...c.reviewComments,
+            {
+              id: `rc-${Date.now()}`,
+              userId: "current_user",
+              userName: "Current User",
+              comment: commentText.trim(),
+              createdAt: new Date().toISOString(),
+            },
+          ],
+        }
+      })
+    )
+    setCommentText("")
+    setCommentDialog(null)
+  }
+
+  // Compute workflow stage for display
+  function getWorkflowStageIndex(candidate: StrategyCandidate): number {
+    const target = promotionTargets[candidate.id]
+    if (target) return 3 // promoted
+    switch (candidate.reviewState) {
+      case "pending":
+        return 0
+      case "in_review":
+        return 1
+      case "approved":
+        return 2
+      case "rejected":
+        return -1
+      default:
+        return 0
+    }
+  }
+
+  const pendingCandidates = candidates.filter(
+    (c) => c.reviewState === "pending" || c.reviewState === "in_review"
+  )
+  const resolvedCandidates = candidates.filter(
+    (c) => c.reviewState === "approved" || c.reviewState === "rejected"
+  )
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b">
-        <div className="max-w-[1800px] mx-auto px-6 py-3">
-          <StrategyPlatformNav />
-        </div>
-      </div>
-      
-      <div className="max-w-[1800px] mx-auto p-6 space-y-6">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-3">
-              <ShoppingBasket className="size-6" />
-              Candidate Basket
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Review and approve strategy candidates before promotion to live trading
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {selectedCandidates.length > 0 && (
-              <>
-                <Button variant="outline" size="sm" className="text-red-500">
-                  <Trash2 className="size-4 mr-2" />
-                  Remove ({selectedCandidates.length})
-                </Button>
-                <Button size="sm">
-                  <Send className="size-4 mr-2" />
-                  Promote to Handoff
-                </Button>
-              </>
-            )}
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Promotion Pipeline</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {pendingCandidates.length} pending &middot; {resolvedCandidates.length} resolved
+          </p>
         </div>
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold">{MOCK_CANDIDATES.length}</div>
-                  <div className="text-xs text-muted-foreground">Total in Basket</div>
-                </div>
-                <ShoppingBasket className="size-8 text-muted-foreground/50" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-emerald-500">{approvedCount}</div>
-                  <div className="text-xs text-muted-foreground">Approved</div>
-                </div>
-                <CheckCircle2 className="size-8 text-emerald-500/50" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-amber-500">{pendingCount}</div>
-                  <div className="text-xs text-muted-foreground">Pending Review</div>
-                </div>
-                <Clock className="size-8 text-amber-500/50" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-red-500">{rejectedCount}</div>
-                  <div className="text-xs text-muted-foreground">Rejected</div>
-                </div>
-                <XCircle className="size-8 text-red-500/50" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Pending Candidates */}
+        {pendingCandidates.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Target className="size-5 text-amber-400" />
+              Awaiting Review
+            </h2>
+            {pendingCandidates.map((candidate) => {
+              const bt = BACKTEST_RUNS.find((b) => b.id === candidate.backtestRunId)
+              const m = candidate.metricsSnapshot
+              const stageIdx = getWorkflowStageIndex(candidate)
 
-        {/* Tabs & Table */}
-        <Card>
-          <CardHeader className="pb-3">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="all">All ({MOCK_CANDIDATES.length})</TabsTrigger>
-                <TabsTrigger value="approved">Approved ({approvedCount})</TabsTrigger>
-                <TabsTrigger value="pending">Pending ({pendingCount})</TabsTrigger>
-                <TabsTrigger value="rejected">Rejected ({rejectedCount})</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-10">
-                    <Checkbox 
-                      checked={selectedCandidates.length === filteredCandidates.length && filteredCandidates.length > 0}
-                      onCheckedChange={(checked) => {
-                        setSelectedCandidates(checked ? filteredCandidates.map(c => c.id) : [])
-                      }}
-                    />
-                  </TableHead>
-                  <TableHead>Strategy</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Sharpe</TableHead>
-                  <TableHead className="text-right">Returns</TableHead>
-                  <TableHead className="text-right">Max DD</TableHead>
-                  <TableHead>Checks</TableHead>
-                  <TableHead>vs Champion</TableHead>
-                  <TableHead>Added</TableHead>
-                  <TableHead className="w-10"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCandidates.map(candidate => {
-                  const status = statusConfig[candidate.status]
-                  const StatusIcon = status.icon
-                  const passedChecks = Object.values(candidate.checks).filter(Boolean).length
-                  const totalChecks = Object.keys(candidate.checks).length
-                  
-                  return (
-                    <TableRow key={candidate.id} className={cn(selectedCandidates.includes(candidate.id) && "bg-muted/50")}>
-                      <TableCell>
-                        <Checkbox 
-                          checked={selectedCandidates.includes(candidate.id)}
-                          onCheckedChange={() => toggleCandidate(candidate.id)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{candidate.strategyId}</div>
-                          <div className="text-xs text-muted-foreground">{candidate.backtestId}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={cn("gap-1", status.bg, status.color)}>
-                          <StatusIcon className="size-3" />
-                          {status.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-mono">{candidate.metrics.sharpe.toFixed(2)}</TableCell>
-                      <TableCell className={cn("text-right font-mono", candidate.metrics.returns >= 0 ? "text-emerald-500" : "text-red-500")}>
-                        {candidate.metrics.returns >= 0 ? "+" : ""}{candidate.metrics.returns.toFixed(1)}%
-                      </TableCell>
-                      <TableCell className="text-right font-mono text-red-500">
-                        {candidate.metrics.maxDD.toFixed(1)}%
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Progress value={(passedChecks / totalChecks) * 100} className="h-2 w-16" />
-                          <span className="text-xs text-muted-foreground">{passedChecks}/{totalChecks}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {candidate.championComparison ? (
-                          <div className="text-xs">
-                            <span className={cn(
-                              "font-mono",
-                              candidate.championComparison.returnsDelta.startsWith("+") ? "text-emerald-500" : "text-red-500"
-                            )}>
-                              {candidate.championComparison.returnsDelta}
+              return (
+                <Card key={candidate.id} className="border-border/50">
+                  <CardContent className="pt-0">
+                    <div className="space-y-4">
+                      {/* Top row: info + actions */}
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">
+                              {bt?.templateName ?? candidate.configId}
                             </span>
-                            <span className="text-muted-foreground ml-1">ret</span>
+                            <Badge variant="outline" className={reviewStateColor(candidate.reviewState)}>
+                              {candidate.reviewState.replace(/_/g, " ")}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground font-mono">
+                              v{candidate.configVersion}
+                            </span>
                           </div>
-                        ) : (
-                          <Badge variant="outline" className="text-xs">New</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-xs text-muted-foreground">{candidate.addedAt}</div>
-                        <div className="text-xs text-muted-foreground">{candidate.addedBy}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="sm">
-                          <ArrowRight className="size-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                          <p className="text-sm text-muted-foreground">{candidate.rationale}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Selected by {candidate.selectedBy} on{" "}
+                            {new Date(candidate.selectedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setCommentDialog(candidate.id)}
+                          >
+                            <MessageSquare className="size-3.5" />
+                            Comment
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                            onClick={() => rejectCandidate(candidate.id)}
+                          >
+                            <XCircle className="size-3.5" />
+                            Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
+                            onClick={() => promoteCandidate(candidate.id, "paper")}
+                          >
+                            Promote to Paper
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            onClick={() => promoteCandidate(candidate.id, "live")}
+                          >
+                            <Rocket className="size-3.5" />
+                            Promote to Live
+                          </Button>
+                        </div>
+                      </div>
 
-        {/* Validation Checklist Legend */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <FileCheck className="size-4" />
-              Validation Checklist
-            </CardTitle>
-            <CardDescription>All checks must pass before a candidate can be promoted</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4">
-              <div className="flex items-center gap-2 p-3 rounded-lg border">
-                <CheckCircle2 className="size-4 text-emerald-500" />
-                <div>
-                  <div className="text-sm font-medium">Risk Limits</div>
-                  <div className="text-xs text-muted-foreground">VaR, drawdown, concentration within bounds</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 rounded-lg border">
-                <CheckCircle2 className="size-4 text-emerald-500" />
-                <div>
-                  <div className="text-sm font-medium">Config Valid</div>
-                  <div className="text-xs text-muted-foreground">Schema validation, parameter ranges</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 rounded-lg border">
-                <AlertTriangle className="size-4 text-amber-500" />
-                <div>
-                  <div className="text-sm font-medium">Data Quality</div>
-                  <div className="text-xs text-muted-foreground">No gaps, outliers handled, sufficient history</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 rounded-lg border">
-                <CheckCircle2 className="size-4 text-emerald-500" />
-                <div>
-                  <div className="text-sm font-medium">Backtest Coverage</div>
-                  <div className="text-xs text-muted-foreground">All regimes tested, walk-forward validation</div>
-                </div>
-              </div>
+                      {/* Metrics row */}
+                      <div className="grid grid-cols-6 gap-4 rounded-lg border border-border/30 p-3">
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sharpe</p>
+                          <p className="text-lg font-bold font-mono">{fmtNum(m.sharpe)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Return</p>
+                          <p className="text-lg font-bold font-mono">{fmtPct(m.totalReturn)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Max DD</p>
+                          <p className="text-lg font-bold font-mono text-red-400">
+                            {fmtPct(m.maxDrawdown)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sortino</p>
+                          <p className="text-lg font-bold font-mono">{fmtNum(m.sortino)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Hit Rate</p>
+                          <p className="text-lg font-bold font-mono">{fmtPct(m.hitRate)}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            Profit Factor
+                          </p>
+                          <p className="text-lg font-bold font-mono">{fmtNum(m.profitFactor)}</p>
+                        </div>
+                      </div>
+
+                      {/* Approval Workflow Visualization */}
+                      <div className="flex items-center gap-2">
+                        {WORKFLOW_STAGES.map((stage, idx) => {
+                          const Icon = stage.icon
+                          const isActive = idx <= stageIdx
+                          const isCurrent = idx === stageIdx
+                          return (
+                            <React.Fragment key={stage.key}>
+                              {idx > 0 && (
+                                <ArrowRight
+                                  className={`size-4 ${isActive ? "text-emerald-400" : "text-muted-foreground/30"}`}
+                                />
+                              )}
+                              <div
+                                className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium ${
+                                  isCurrent
+                                    ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                    : isActive
+                                      ? "text-emerald-400/70"
+                                      : "text-muted-foreground/40"
+                                }`}
+                              >
+                                <Icon className="size-3.5" />
+                                {stage.label}
+                              </div>
+                            </React.Fragment>
+                          )
+                        })}
+                      </div>
+
+                      {/* Review Comments */}
+                      {candidate.reviewComments.length > 0 && (
+                        <div className="space-y-2 border-t border-border/30 pt-3">
+                          <p className="text-xs font-medium text-muted-foreground">Comments</p>
+                          {candidate.reviewComments.map((rc) => (
+                            <div
+                              key={rc.id}
+                              className="flex items-start gap-2 text-sm"
+                            >
+                              <div className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
+                                {rc.userName}
+                              </div>
+                              <div>
+                                <p>{rc.comment}</p>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">
+                                  {new Date(rc.createdAt).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Resolved Candidates */}
+        {resolvedCandidates.length > 0 && (
+          <Card className="border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <CheckCircle2 className="size-4" />
+                Resolved
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border/50 hover:bg-transparent">
+                    <TableHead className="text-xs text-muted-foreground">Strategy</TableHead>
+                    <TableHead className="text-xs text-muted-foreground">Version</TableHead>
+                    <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                    <TableHead className="text-xs text-muted-foreground">Promoted To</TableHead>
+                    <TableHead className="text-xs text-muted-foreground">Sharpe</TableHead>
+                    <TableHead className="text-xs text-muted-foreground">Return</TableHead>
+                    <TableHead className="text-xs text-muted-foreground">Selected By</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {resolvedCandidates.map((candidate) => {
+                    const bt = BACKTEST_RUNS.find((b) => b.id === candidate.backtestRunId)
+                    const target = promotionTargets[candidate.id]
+                    return (
+                      <TableRow key={candidate.id} className="border-border/30">
+                        <TableCell className="font-medium">
+                          {bt?.templateName ?? candidate.configId}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground font-mono text-xs">
+                          v{candidate.configVersion}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={reviewStateColor(candidate.reviewState)}
+                          >
+                            {candidate.reviewState}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {target ? (
+                            <Badge
+                              variant="outline"
+                              className={
+                                target === "live"
+                                  ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                  : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+                              }
+                            >
+                              {target}
+                            </Badge>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">--</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">
+                          {fmtNum(candidate.metricsSnapshot.sharpe)}
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">
+                          {fmtPct(candidate.metricsSnapshot.totalReturn)}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-xs">
+                          {candidate.selectedBy}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Empty state */}
+        {candidates.length === 0 && (
+          <Card className="border-border/50">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <Target className="size-12 text-muted-foreground/30 mb-4" />
+              <p className="text-muted-foreground">No candidates in the pipeline</p>
+              <p className="text-sm text-muted-foreground/70 mt-1">
+                Add candidates from the Backtests page
+              </p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Comment Dialog */}
+        <Dialog
+          open={commentDialog !== null}
+          onOpenChange={(open) => {
+            if (!open) {
+              setCommentDialog(null)
+              setCommentText("")
+            }
+          }}
+        >
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Review Comment</DialogTitle>
+              <DialogDescription>
+                Add a comment to the candidate review.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-2">
+              <Label>Comment</Label>
+              <Input
+                placeholder="Enter your review comment..."
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && commentDialog) {
+                    addComment(commentDialog)
+                  }
+                }}
+              />
             </div>
-          </CardContent>
-        </Card>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setCommentDialog(null)
+                  setCommentText("")
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => commentDialog && addComment(commentDialog)}
+                disabled={!commentText.trim()}
+              >
+                <MessageSquare className="size-4" />
+                Add Comment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

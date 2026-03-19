@@ -1,15 +1,30 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import {
+  ArrowUpDown,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  FlaskConical,
+  GitCompare,
+  Play,
+  Search,
+  X,
+} from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { EntityLink } from "@/components/trading/entity-link"
-import { DimensionalGrid } from "@/components/trading/dimensional-grid"
+import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -18,465 +33,672 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Beaker,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Filter,
-  Search,
-  MoreHorizontal,
-  Play,
-  Pause,
-  Trash2,
-  Copy,
-  ArrowUpRight,
-  GitCompare,
-  BarChart3,
-  Plus,
-} from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { EXPERIMENTS, MODEL_FAMILIES, DATASET_SNAPSHOTS, FEATURE_SET_VERSIONS } from "@/lib/ml-mock-data"
-import type { ModelArchetype } from "@/lib/ml-types"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-// Context badge component
-function ContextBadge({ context }: { context: "BATCH" | "LIVE" }) {
-  return (
-    <Badge
-      variant="outline"
-      className={
-        context === "LIVE"
-          ? "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30"
-          : "bg-[var(--surface-ml)]/10 text-[var(--surface-ml)] border-[var(--surface-ml)]/30"
-      }
-    >
-      {context}
-    </Badge>
-  )
+import { EXPERIMENTS, MODEL_FAMILIES, FEATURE_SET_VERSIONS, DATASET_SNAPSHOTS } from "@/lib/ml-mock-data"
+import type { Experiment } from "@/lib/ml-types"
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function statusColor(status: string) {
+  switch (status) {
+    case "running":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "completed":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "failed":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    case "queued":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "cancelled":
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+    case "draft":
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
 }
 
-// Status badge
-function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    running: "bg-[var(--status-running)]/10 text-[var(--status-running)] border-[var(--status-running)]/30",
-    completed: "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30",
-    failed: "bg-[var(--status-critical)]/10 text-[var(--status-critical)] border-[var(--status-critical)]/30",
-    queued: "bg-muted text-muted-foreground",
-    draft: "bg-muted text-muted-foreground",
-    cancelled: "bg-muted text-muted-foreground",
-  }
-  
-  const icons: Record<string, React.ReactNode> = {
-    running: <RefreshCw className="size-3 animate-spin" />,
-    completed: <CheckCircle2 className="size-3" />,
-    failed: <XCircle className="size-3" />,
-    queued: <Clock className="size-3" />,
-  }
-  
-  return (
-    <Badge variant="outline" className={`gap-1 ${colors[status] || ""}`}>
-      {icons[status]}
-      {status}
-    </Badge>
-  )
+function fmtPct(v: number) {
+  return `${(v * 100).toFixed(1)}%`
 }
+
+function fmtNum(v: number, decimals = 2) {
+  return v.toFixed(decimals)
+}
+
+type SortField = "accuracy" | "sharpe" | "loss" | "maxDrawdown" | "directionalAccuracy"
+
+// ---------------------------------------------------------------------------
+// Filter State
+// ---------------------------------------------------------------------------
+
+interface FilterState {
+  familyId: string
+  status: string
+  search: string
+}
+
+const EMPTY_FILTERS: FilterState = {
+  familyId: "",
+  status: "",
+  search: "",
+}
+
+// ---------------------------------------------------------------------------
+// New Experiment Form
+// ---------------------------------------------------------------------------
+
+interface ExperimentFormState {
+  familyId: string
+  name: string
+  description: string
+  featureSetId: string
+  datasetId: string
+  epochs: string
+  batchSize: string
+  learningRate: string
+  optimizer: string
+}
+
+const INITIAL_FORM: ExperimentFormState = {
+  familyId: "",
+  name: "",
+  description: "",
+  featureSetId: "",
+  datasetId: "",
+  epochs: "100",
+  batchSize: "256",
+  learningRate: "0.001",
+  optimizer: "AdamW",
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export default function ExperimentsPage() {
-  const router = useRouter()
-  const [selectedExperiments, setSelectedExperiments] = React.useState<Set<string>>(new Set())
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [statusFilter, setStatusFilter] = React.useState<string>("all")
-  const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all")
-  const [viewMode, setViewMode] = React.useState<"list" | "grid">("list")
-  
-  // Filter experiments
-  const filteredExperiments = React.useMemo(() => {
-    return EXPERIMENTS.filter(exp => {
-      const matchesSearch = exp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exp.id.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesStatus = statusFilter === "all" || exp.status === statusFilter
-      const family = MODEL_FAMILIES.find(f => f.id === exp.modelFamilyId)
-      const matchesArchetype = archetypeFilter === "all" || family?.archetype === archetypeFilter
-      return matchesSearch && matchesStatus && matchesArchetype
-    })
-  }, [searchQuery, statusFilter, archetypeFilter])
-  
-  // Grid data for hyperparameter comparison
-  const gridData = React.useMemo(() => {
-    return filteredExperiments.filter(exp => exp.metrics).map(exp => ({
-      id: exp.id,
-      name: exp.name,
-      archetype: MODEL_FAMILIES.find(f => f.id === exp.modelFamilyId)?.archetype || "Unknown",
-      status: exp.status,
-      learning_rate: exp.hyperparameters.learning_rate || exp.hyperparameters.lr || 0,
-      layers: exp.hyperparameters.layers || exp.hyperparameters.hidden_layers || 0,
-      dropout: exp.hyperparameters.dropout || 0,
-      sharpe: exp.metrics?.sharpe || 0,
-      accuracy: (exp.metrics?.accuracy || 0) * 100,
-      directional_accuracy: (exp.metrics?.directionalAccuracy || 0) * 100,
-      max_drawdown: (exp.metrics?.maxDrawdown || 0) * 100,
-      stability_score: (exp.metrics?.stabilityScore || 0) * 100,
-    }))
-  }, [filteredExperiments])
-  
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedExperiments(new Set(filteredExperiments.map(e => e.id)))
-    } else {
-      setSelectedExperiments(new Set())
+  const [experiments, setExperiments] = React.useState<Experiment[]>(EXPERIMENTS)
+  const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS)
+  const [sortField, setSortField] = React.useState<SortField>("sharpe")
+  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
+  const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [form, setForm] = React.useState<ExperimentFormState>(INITIAL_FORM)
+  const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set())
+
+  // Filter
+  const filtered = experiments.filter((exp) => {
+    if (filters.familyId && exp.modelFamilyId !== filters.familyId) return false
+    if (filters.status && exp.status !== filters.status) return false
+    if (filters.search) {
+      const q = filters.search.toLowerCase()
+      if (!exp.name.toLowerCase().includes(q) && !exp.description.toLowerCase().includes(q))
+        return false
     }
-  }
-  
-  const handleSelectExperiment = (id: string) => {
-    const newSelected = new Set(selectedExperiments)
-    if (newSelected.has(id)) {
-      newSelected.delete(id)
-    } else {
-      newSelected.add(id)
+    return true
+  })
+
+  // Sort
+  const sorted = [...filtered].sort((a, b) => {
+    if (!a.metrics && !b.metrics) return 0
+    if (!a.metrics) return 1
+    if (!b.metrics) return -1
+    const aM = a.metrics
+    const bM = b.metrics
+    let aV: number, bV: number
+    switch (sortField) {
+      case "accuracy":
+        aV = aM.accuracy; bV = bM.accuracy; break
+      case "sharpe":
+        aV = aM.sharpe; bV = bM.sharpe; break
+      case "loss":
+        aV = aM.loss; bV = bM.loss; break
+      case "maxDrawdown":
+        aV = aM.maxDrawdown; bV = bM.maxDrawdown; break
+      case "directionalAccuracy":
+        aV = aM.directionalAccuracy; bV = bM.directionalAccuracy; break
     }
-    setSelectedExperiments(newSelected)
+    return sortDir === "desc" ? bV - aV : aV - bV
+  })
+
+  function handleSort(field: SortField) {
+    if (sortField === field) {
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
+    } else {
+      setSortField(field)
+      setSortDir(field === "loss" || field === "maxDrawdown" ? "asc" : "desc")
+    }
   }
 
+  function SortIcon({ field }: { field: SortField }) {
+    if (sortField !== field) return <ArrowUpDown className="size-3 opacity-30" />
+    return sortDir === "desc" ? (
+      <ChevronDown className="size-3" />
+    ) : (
+      <ChevronUp className="size-3" />
+    )
+  }
+
+  function toggleCompare(id: string) {
+    setCompareSet((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }
+
+  function handleSubmitExperiment() {
+    if (!form.familyId || !form.name) return
+
+    const newExp: Experiment = {
+      id: `exp-${Date.now()}`,
+      name: form.name,
+      description: form.description || "New experiment",
+      modelFamilyId: form.familyId,
+      status: "queued",
+      progress: 0,
+      datasetSnapshotId: form.datasetId || "ds-auto-latest",
+      featureSetVersionId: form.featureSetId || "fs-auto-latest",
+      hyperparameters: {
+        learning_rate: parseFloat(form.learningRate),
+        batch_size: parseInt(form.batchSize),
+        optimizer: form.optimizer,
+      },
+      trainingConfig: {
+        epochs: parseInt(form.epochs),
+        batchSize: parseInt(form.batchSize),
+        learningRate: parseFloat(form.learningRate),
+        optimizer: form.optimizer,
+        lossFunction: "CrossEntropyWithLabelSmoothing",
+        earlyStopping: true,
+        earlyStoppingPatience: 15,
+        gpuType: "A100",
+        numGpus: 4,
+      },
+      metrics: null,
+      startedAt: null,
+      completedAt: null,
+      createdBy: "current_user",
+      createdAt: new Date().toISOString(),
+    }
+
+    setExperiments((prev) => [newExp, ...prev])
+    setForm(INITIAL_FORM)
+    setDialogOpen(false)
+  }
+
+  const activeFilterCount = Object.values(filters).filter(Boolean).length
+  const compareExps = experiments.filter((e) => compareSet.has(e.id) && e.metrics)
+
   return (
-    <AppShell
-      activeSurface="ml"
-      showLifecycleRail={false}
-      breadcrumbs={[
-        { label: "ML Platform", href: "/ml" },
-        { label: "Experiments" },
-      ]}
-      contextLevels={{ organization: true, client: false, strategy: false, underlying: false }}
-    >
-      <div className="max-w-[1800px] mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Experiments</h1>
+            <h1 className="text-2xl font-bold tracking-tight">Experiment Tracking</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Hyperparameter tuning, model comparison, and validation
+              {filtered.length} experiments &middot;{" "}
+              {experiments.filter((e) => e.status === "running").length} running
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <RefreshCw className="size-4" />
-              Refresh
-            </Button>
-            <Link href="/ml/experiments/new">
-              <Button size="sm" className="gap-2" style={{ backgroundColor: "var(--surface-ml)" }}>
-                <Plus className="size-4" />
-                New Experiment
-              </Button>
-            </Link>
-          </div>
+          <Button onClick={() => setDialogOpen(true)}>
+            <FlaskConical className="size-4" />
+            New Experiment
+          </Button>
         </div>
 
-        {/* Filters */}
-        <Card className="p-4">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <Input
-                placeholder="Search experiments..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
-              />
-            </div>
-            
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[150px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="running">Running</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-                <SelectItem value="queued">Queued</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Archetype" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Archetypes</SelectItem>
-                <SelectItem value="DIRECTIONAL">Directional</SelectItem>
-                <SelectItem value="MARKET_MAKING">Market Making</SelectItem>
-                <SelectItem value="ARBITRAGE">Arbitrage</SelectItem>
-                <SelectItem value="YIELD">Yield</SelectItem>
-                <SelectItem value="SPORTS_ML">Sports ML</SelectItem>
-                <SelectItem value="PREDICTION_MARKET_ML">Prediction ML</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <div className="flex items-center gap-2 ml-auto">
-              <Button
-                variant={viewMode === "list" ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("list")}
+        {/* Filter Bar */}
+        <Card className="border-border/50">
+          <CardContent className="pt-0">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5 text-muted-foreground text-xs font-medium">
+                <Filter className="size-3.5" />
+                Filters
+                {activeFilterCount > 0 && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                    {activeFilterCount}
+                  </Badge>
+                )}
+              </div>
+
+              <Select
+                value={filters.familyId}
+                onValueChange={(v) => setFilters((f) => ({ ...f, familyId: v === "__all__" ? "" : v }))}
               >
-                List
-              </Button>
-              <Button
-                variant={viewMode === "grid" ? "secondary" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                className="gap-1"
+                <SelectTrigger size="sm" className="w-48">
+                  <SelectValue placeholder="Model Family" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Families</SelectItem>
+                  {MODEL_FAMILIES.map((fam) => (
+                    <SelectItem key={fam.id} value={fam.id}>
+                      {fam.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={filters.status}
+                onValueChange={(v) => setFilters((f) => ({ ...f, status: v === "__all__" ? "" : v }))}
               >
-                <BarChart3 className="size-4" />
-                Grid
-              </Button>
+                <SelectTrigger size="sm" className="w-36">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__all__">All Status</SelectItem>
+                  <SelectItem value="running">Running</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                  <SelectItem value="queued">Queued</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="relative flex-1 min-w-[200px]">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+                <Input
+                  placeholder="Search experiments..."
+                  value={filters.search}
+                  onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
+                  className="pl-8 h-8 text-sm"
+                />
+              </div>
+
+              {activeFilterCount > 0 && (
+                <Button variant="ghost" size="sm" onClick={() => setFilters(EMPTY_FILTERS)}>
+                  <X className="size-3" />
+                  Clear
+                </Button>
+              )}
             </div>
-          </div>
+          </CardContent>
         </Card>
 
-        {/* Selection Toolbar */}
-        {selectedExperiments.size > 0 && (
-          <Card className="p-4 bg-primary/5 border-primary/20">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium">{selectedExperiments.size} selected</span>
-              <Button variant="outline" size="sm" className="gap-1">
-                <GitCompare className="size-4" />
-                Compare
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1">
-                <ArrowUpRight className="size-4" />
-                Promote to Validation
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-1 text-destructive">
-                <Trash2 className="size-4" />
-                Delete
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="ml-auto"
-                onClick={() => setSelectedExperiments(new Set())}
-              >
-                Clear selection
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        {/* Main Content */}
-        {viewMode === "list" ? (
-          <Card>
-            <CardContent className="p-0">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border bg-muted/50">
-                    <th className="text-left py-3 px-4 w-10">
-                      <Checkbox
-                        checked={selectedExperiments.size === filteredExperiments.length && filteredExperiments.length > 0}
-                        onCheckedChange={handleSelectAll}
-                      />
-                    </th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Experiment</th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Model Family</th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Progress</th>
-                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">Sharpe</th>
-                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">Accuracy</th>
-                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">Dir. Acc.</th>
-                    <th className="text-right py-3 px-4 font-medium text-muted-foreground">Max DD</th>
-                    <th className="text-center py-3 px-4 font-medium text-muted-foreground w-10"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredExperiments.map((exp) => {
-                    const family = MODEL_FAMILIES.find(f => f.id === exp.modelFamilyId)
-                    const isSelected = selectedExperiments.has(exp.id)
-                    
-                    return (
-                      <tr
-                        key={exp.id}
-                        className={`border-b border-border hover:bg-muted/30 transition-colors cursor-pointer ${
-                          isSelected ? "bg-primary/5" : ""
-                        }`}
-                        onClick={() => router.push(`/ml/experiments/${exp.id}`)}
-                      >
-                        <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={isSelected}
-                            onCheckedChange={() => handleSelectExperiment(exp.id)}
+        {/* Experiment Table */}
+        <Card className="border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FlaskConical className="size-4" />
+              Experiments
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/50 hover:bg-transparent">
+                  <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Name</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Family</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("accuracy")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Accuracy <SortIcon field="accuracy" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("sharpe")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Sharpe <SortIcon field="sharpe" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("loss")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Loss <SortIcon field="loss" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("maxDrawdown")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Max DD <SortIcon field="maxDrawdown" />
+                    </span>
+                  </TableHead>
+                  <TableHead
+                    className="text-xs text-muted-foreground cursor-pointer select-none"
+                    onClick={() => handleSort("directionalAccuracy")}
+                  >
+                    <span className="flex items-center gap-1">
+                      Dir. Acc <SortIcon field="directionalAccuracy" />
+                    </span>
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Created By</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sorted.map((exp) => {
+                  const m = exp.metrics
+                  const family = MODEL_FAMILIES.find((f) => f.id === exp.modelFamilyId)
+                  return (
+                    <TableRow
+                      key={exp.id}
+                      className={`border-border/30 ${compareSet.has(exp.id) ? "bg-blue-500/5" : ""}`}
+                    >
+                      <TableCell>
+                        <button
+                          onClick={() => toggleCompare(exp.id)}
+                          className="p-0.5 rounded hover:bg-muted"
+                          title={
+                            compareSet.has(exp.id) ? "Remove from comparison" : "Add to comparison"
+                          }
+                        >
+                          <GitCompare
+                            className={`size-3.5 ${compareSet.has(exp.id) ? "text-blue-400" : "text-muted-foreground"}`}
                           />
-                        </td>
-                        <td className="py-3 px-4">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{exp.name}</span>
-                              <ContextBadge context="BATCH" />
-                            </div>
-                            <span className="text-xs text-muted-foreground font-mono">{exp.id}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="text-xs">
-                              {family?.archetype || "Unknown"}
-                            </Badge>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <StatusBadge status={exp.status} />
-                        </td>
-                        <td className="py-3 px-4 w-32">
-                          {exp.status === "running" ? (
-                            <div>
-                              <Progress value={exp.progress} className="h-1.5" />
-                              <span className="text-xs text-muted-foreground">{exp.progress}%</span>
-                            </div>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              {exp.status === "completed" ? "Complete" : exp.status === "failed" ? "Failed" : "-"}
-                            </span>
+                        </button>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium text-sm">{exp.name}</p>
+                          <p className="text-[10px] text-muted-foreground font-mono">{exp.id}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {family?.name ?? exp.modelFamilyId}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline" className={statusColor(exp.status)}>
+                            {exp.status}
+                          </Badge>
+                          {exp.status === "running" && (
+                            <span className="text-xs text-muted-foreground">{exp.progress}%</span>
                           )}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {exp.metrics ? (
-                            <span className={`font-mono font-semibold ${exp.metrics.sharpe >= 2.0 ? "text-[var(--status-live)]" : ""}`}>
-                              {exp.metrics.sharpe.toFixed(2)}
-                            </span>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {exp.metrics ? (
-                            <span className="font-mono">{(exp.metrics.accuracy * 100).toFixed(1)}%</span>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {exp.metrics ? (
-                            <span className="font-mono">{(exp.metrics.directionalAccuracy * 100).toFixed(1)}%</span>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          {exp.metrics ? (
-                            <span className="font-mono">{(exp.metrics.maxDrawdown * 100).toFixed(1)}%</span>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="size-8 p-0">
-                                <MoreHorizontal className="size-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <ArrowUpRight className="size-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Copy className="size-4 mr-2" />
-                                Clone Experiment
-                              </DropdownMenuItem>
-                              {exp.status === "running" && (
-                                <DropdownMenuItem>
-                                  <Pause className="size-4 mr-2" />
-                                  Pause Training
-                                </DropdownMenuItem>
-                              )}
-                              {exp.status === "completed" && (
-                                <DropdownMenuItem>
-                                  <Play className="size-4 mr-2" />
-                                  Promote to Validation
-                                </DropdownMenuItem>
-                              )}
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-destructive">
-                                <Trash2 className="size-4 mr-2" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtPct(m.accuracy) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtNum(m.sharpe) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtNum(m.loss, 3) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm text-red-400">
+                        {m ? fmtPct(m.maxDrawdown) : "--"}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {m ? fmtPct(m.directionalAccuracy) : "--"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {exp.createdBy}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Side-by-Side Comparison */}
+        {compareExps.length >= 2 && (
+          <Card className="border-blue-500/30 bg-blue-500/5">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <GitCompare className="size-4 text-blue-400" />
+                  Experiment Comparison ({compareExps.length})
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCompareSet(new Set())}
+                >
+                  <X className="size-3" />
+                  Clear
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border/50">
+                      <th className="text-left py-2 pr-4 text-xs text-muted-foreground font-medium">
+                        Metric
+                      </th>
+                      {compareExps.map((exp) => (
+                        <th
+                          key={exp.id}
+                          className="text-right py-2 px-3 text-xs text-muted-foreground font-medium min-w-[120px]"
+                        >
+                          {exp.name.length > 25 ? `${exp.name.slice(0, 25)}...` : exp.name}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(
+                      [
+                        { key: "accuracy", label: "Accuracy", fmt: fmtPct },
+                        { key: "sharpe", label: "Sharpe", fmt: (v: number) => fmtNum(v) },
+                        { key: "loss", label: "Loss", fmt: (v: number) => fmtNum(v, 3) },
+                        { key: "directionalAccuracy", label: "Dir. Accuracy", fmt: fmtPct },
+                        { key: "maxDrawdown", label: "Max Drawdown", fmt: fmtPct },
+                        { key: "calibration", label: "Calibration", fmt: fmtPct },
+                        { key: "precision", label: "Precision", fmt: fmtPct },
+                        { key: "recall", label: "Recall", fmt: fmtPct },
+                        { key: "stabilityScore", label: "Stability", fmt: fmtPct },
+                      ] as const
+                    ).map((metric) => {
+                      const values = compareExps.map(
+                        (e) => e.metrics![metric.key as keyof typeof e.metrics] as number
+                      )
+                      const best =
+                        metric.key === "loss" || metric.key === "maxDrawdown"
+                          ? Math.min(...values)
+                          : Math.max(...values)
+
+                      return (
+                        <tr key={metric.key} className="border-b border-border/30">
+                          <td className="py-2 pr-4 text-muted-foreground text-xs">
+                            {metric.label}
+                          </td>
+                          {compareExps.map((exp) => {
+                            const val = exp.metrics![metric.key as keyof typeof exp.metrics] as number
+                            const isBest = val === best
+                            return (
+                              <td
+                                key={exp.id}
+                                className={`text-right py-2 px-3 font-mono ${isBest ? "text-emerald-400 font-bold" : ""}`}
+                              >
+                                {metric.fmt(val)}
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
-        ) : (
-          <Card className="p-6">
-            <DimensionalGrid
-              data={gridData}
-              dimensions={[
-                { key: "archetype", label: "Archetype", values: ["DIRECTIONAL", "MARKET_MAKING", "ARBITRAGE", "SPORTS_ML"] },
-                { key: "status", label: "Status", values: ["completed", "running", "failed"] },
-              ]}
-              metrics={[
-                { key: "sharpe", label: "Sharpe", format: "decimal", colorize: true },
-                { key: "accuracy", label: "Accuracy %", format: "decimal" },
-                { key: "directional_accuracy", label: "Dir. Acc %", format: "decimal" },
-                { key: "max_drawdown", label: "Max DD %", format: "decimal", colorize: true },
-                { key: "stability_score", label: "Stability %", format: "decimal" },
-              ]}
-              enableSelection={true}
-              enableHeatmap={true}
-              enableExport={true}
-              onRowClick={(id) => router.push(`/ml/experiments/${id}`)}
-              selectionToolbar={(selected) => (
-                <>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <GitCompare className="size-4" />
-                    Compare Selected
-                  </Button>
-                  <Button variant="outline" size="sm" className="gap-1">
-                    <ArrowUpRight className="size-4" />
-                    Promote Best
-                  </Button>
-                </>
-              )}
-            />
+        )}
+
+        {compareExps.length === 1 && (
+          <Card className="border-blue-500/30 bg-blue-500/5">
+            <CardContent className="flex items-center justify-center py-6">
+              <p className="text-sm text-muted-foreground">
+                Select at least 2 experiments to compare side-by-side
+              </p>
+            </CardContent>
           </Card>
         )}
 
-        {/* Summary Stats */}
-        <div className="grid grid-cols-4 gap-4">
-          <Card className="p-4">
-            <div className="text-sm text-muted-foreground">Total Experiments</div>
-            <div className="text-2xl font-semibold mt-1">{EXPERIMENTS.length}</div>
-          </Card>
-          <Card className="p-4">
-            <div className="text-sm text-muted-foreground">Avg Sharpe (Completed)</div>
-            <div className="text-2xl font-semibold mt-1 font-mono">
-              {(EXPERIMENTS.filter(e => e.metrics).reduce((sum, e) => sum + (e.metrics?.sharpe || 0), 0) / 
-                EXPERIMENTS.filter(e => e.metrics).length).toFixed(2)}
+        {/* New Experiment Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>New Experiment</DialogTitle>
+              <DialogDescription>
+                Configure model type, features, target, and hyperparameters.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label>Model Family</Label>
+                <Select
+                  value={form.familyId}
+                  onValueChange={(v) => setForm((f) => ({ ...f, familyId: v }))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select model family..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MODEL_FAMILIES.map((fam) => (
+                      <SelectItem key={fam.id} value={fam.id}>
+                        {fam.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Experiment Name</Label>
+                <Input
+                  placeholder="e.g., ETH Vol - Larger Context Window"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Input
+                  placeholder="Brief description of hypothesis..."
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Feature Set</Label>
+                  <Select
+                    value={form.featureSetId}
+                    onValueChange={(v) => setForm((f) => ({ ...f, featureSetId: v }))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FEATURE_SET_VERSIONS.map((fs) => (
+                        <SelectItem key={fs.id} value={fs.id}>
+                          {fs.name} v{fs.version}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Dataset</Label>
+                  <Select
+                    value={form.datasetId}
+                    onValueChange={(v) => setForm((f) => ({ ...f, datasetId: v }))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DATASET_SNAPSHOTS.map((ds) => (
+                        <SelectItem key={ds.id} value={ds.id}>
+                          {ds.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Hyperparameters
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Epochs</Label>
+                    <Input
+                      type="number"
+                      value={form.epochs}
+                      onChange={(e) => setForm((f) => ({ ...f, epochs: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Batch Size</Label>
+                    <Input
+                      type="number"
+                      value={form.batchSize}
+                      onChange={(e) => setForm((f) => ({ ...f, batchSize: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Learning Rate</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={form.learningRate}
+                      onChange={(e) => setForm((f) => ({ ...f, learningRate: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Optimizer</Label>
+                    <Select
+                      value={form.optimizer}
+                      onValueChange={(v) => setForm((f) => ({ ...f, optimizer: v }))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AdamW">AdamW</SelectItem>
+                        <SelectItem value="Adam">Adam</SelectItem>
+                        <SelectItem value="SGD">SGD</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
             </div>
-          </Card>
-          <Card className="p-4">
-            <div className="text-sm text-muted-foreground">Avg Accuracy</div>
-            <div className="text-2xl font-semibold mt-1 font-mono">
-              {((EXPERIMENTS.filter(e => e.metrics).reduce((sum, e) => sum + (e.metrics?.accuracy || 0), 0) / 
-                EXPERIMENTS.filter(e => e.metrics).length) * 100).toFixed(1)}%
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="text-sm text-muted-foreground">GPU Hours (Today)</div>
-            <div className="text-2xl font-semibold mt-1">24.5h</div>
-          </Card>
-        </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmitExperiment}
+                disabled={!form.familyId || !form.name}
+              >
+                <FlaskConical className="size-4" />
+                Create Experiment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-    </AppShell>
+    </div>
   )
 }

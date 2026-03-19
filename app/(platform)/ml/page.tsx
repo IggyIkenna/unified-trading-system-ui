@@ -1,567 +1,591 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { EntityLink } from "@/components/trading/entity-link"
 import {
-  Cpu,
-  Beaker,
-  Box,
   Activity,
-  TrendingUp,
-  Clock,
+  AlertTriangle,
+  Brain,
   CheckCircle2,
-  XCircle,
+  Clock,
+  Cpu,
+  FlaskConical,
+  Layers,
   Play,
-  Pause,
-  ArrowRight,
   RefreshCw,
-  GitBranch,
-  BarChart3,
+  Zap,
 } from "lucide-react"
-import { SERVICES, STRATEGY_ARCHETYPES, UNDERLYINGS } from "@/lib/reference-data"
-import { LossCurves, ModelStrategyLinkage } from "@/components/ml/loss-curves"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-// Feature services from reference data
-const FEATURE_SERVICES = SERVICES.filter(s => s.domain === "features")
+import {
+  MODEL_FAMILIES,
+  EXPERIMENTS,
+  TRAINING_RUNS,
+  FEATURE_PROVENANCE,
+  ML_ALERTS,
+} from "@/lib/ml-mock-data"
+import type { Experiment, ModelFamily } from "@/lib/ml-types"
 
-// Mock experiments data
-const experiments = [
-  {
-    id: "exp-342",
-    name: "BTC Direction Prediction",
-    status: "running",
-    progress: 67,
-    startedAt: "2h ago",
-    metrics: { accuracy: 0.72, loss: 0.31, sharpe: 1.8 },
-    hyperparams: { lr: 0.001, layers: 4, dropout: 0.2 },
-  },
-  {
-    id: "exp-341",
-    name: "ETH Volatility Surface",
-    status: "complete",
-    progress: 100,
-    completedAt: "4h ago",
-    metrics: { accuracy: 0.68, loss: 0.42, sharpe: 1.4 },
-    hyperparams: { lr: 0.0005, layers: 6, dropout: 0.3 },
-  },
-  {
-    id: "exp-340",
-    name: "Multi-Asset Momentum",
-    status: "complete",
-    progress: 100,
-    completedAt: "1d ago",
-    metrics: { accuracy: 0.71, loss: 0.35, sharpe: 2.1 },
-    hyperparams: { lr: 0.001, layers: 3, dropout: 0.15 },
-  },
-  {
-    id: "exp-339",
-    name: "Sports Outcome Model",
-    status: "failed",
-    progress: 45,
-    error: "OOM: Insufficient GPU memory",
-    hyperparams: { lr: 0.002, layers: 8, dropout: 0.25 },
-  },
-]
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-// Mock models registry
-const models = [
-  {
-    id: "model-btc-dir-v3",
-    name: "BTC Direction v3",
-    version: "3.2.1",
-    status: "deployed",
-    accuracy: 0.72,
-    deployedAt: "12h ago",
-    predictions: 1842,
-    avgLatency: 4.2,
-  },
-  {
-    id: "model-eth-vol-v2",
-    name: "ETH Volatility v2",
-    version: "2.1.0",
-    status: "deployed",
-    accuracy: 0.68,
-    deployedAt: "2d ago",
-    predictions: 3201,
-    avgLatency: 3.8,
-  },
-  {
-    id: "model-momentum-v1",
-    name: "Multi-Asset Momentum",
-    version: "1.0.0",
-    status: "staging",
-    accuracy: 0.71,
-    deployedAt: "3h ago",
-    predictions: 0,
-    avgLatency: null,
-  },
-  {
-    id: "model-sports-v1",
-    name: "Sports Outcome",
-    version: "0.9.2",
-    status: "training",
-    accuracy: null,
-    deployedAt: null,
-    predictions: 0,
-    avgLatency: null,
-  },
-]
+function archetypeColor(archetype: string) {
+  switch (archetype) {
+    case "DIRECTIONAL":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "MARKET_MAKING":
+      return "bg-purple-500/15 text-purple-400 border-purple-500/30"
+    case "ARBITRAGE":
+      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+    case "YIELD":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "SPORTS_ML":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "PREDICTION_MARKET_ML":
+      return "bg-pink-500/15 text-pink-400 border-pink-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
+}
 
-// Feature store - using real feature services from reference data
-const features = [
-  { name: "delta_one_features", service: FEATURE_SERVICES.find(s => s.id === "features-delta-one-service")?.name, freshness: "2s", sla: "5s", status: "healthy" as const, coveragePct: 71 },
-  { name: "volatility_features", service: FEATURE_SERVICES.find(s => s.id === "features-volatility-service")?.name, freshness: "8s", sla: "10s", status: "healthy" as const, coveragePct: 35 },
-  { name: "onchain_features", service: FEATURE_SERVICES.find(s => s.id === "features-onchain-service")?.name, freshness: "4s", sla: "5s", status: "healthy" as const, coveragePct: 39 },
-  { name: "cross_instrument", service: FEATURE_SERVICES.find(s => s.id === "features-cross-instrument-service")?.name, freshness: "0.5s", sla: "1s", status: "healthy" as const, coveragePct: 65 },
-  { name: "multi_timeframe", service: FEATURE_SERVICES.find(s => s.id === "features-multi-timeframe-service")?.name, freshness: "45s", sla: "30s", status: "degraded" as const, coveragePct: 57 },
-  { name: "calendar_features", service: FEATURE_SERVICES.find(s => s.id === "features-calendar-service")?.name, freshness: "1m", sla: "2m", status: "healthy" as const, coveragePct: 72 },
-]
+function statusColor(status: string) {
+  switch (status) {
+    case "running":
+    case "training":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    case "completed":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+    case "failed":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    case "queued":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
+}
 
-// Grid comparison mock (hyperparameter sweep)
-const gridResults = [
-  { lr: 0.001, layers: 3, dropout: 0.1, sharpe: 2.1, accuracy: 0.71, selected: true },
-  { lr: 0.001, layers: 4, dropout: 0.2, sharpe: 1.8, accuracy: 0.72, selected: false },
-  { lr: 0.0005, layers: 4, dropout: 0.2, sharpe: 1.6, accuracy: 0.69, selected: false },
-  { lr: 0.0005, layers: 6, dropout: 0.3, sharpe: 1.4, accuracy: 0.68, selected: false },
-  { lr: 0.002, layers: 3, dropout: 0.15, sharpe: 1.2, accuracy: 0.65, selected: false },
-]
+function freshnessColor(status: string) {
+  switch (status) {
+    case "healthy":
+      return "text-emerald-400"
+    case "degraded":
+      return "text-amber-400"
+    case "stale":
+      return "text-red-400"
+    case "unavailable":
+      return "text-red-500"
+    default:
+      return "text-muted-foreground"
+  }
+}
 
-export default function MLPage() {
+function alertSeverityColor(severity: string) {
+  switch (severity) {
+    case "critical":
+      return "bg-red-500/15 text-red-400 border-red-500/30"
+    case "warning":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+    case "info":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+    default:
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Train Model Form
+// ---------------------------------------------------------------------------
+
+interface TrainFormState {
+  familyId: string
+  name: string
+  epochs: string
+  batchSize: string
+  learningRate: string
+  optimizer: string
+  gpuType: string
+}
+
+const INITIAL_FORM: TrainFormState = {
+  familyId: "",
+  name: "",
+  epochs: "100",
+  batchSize: "256",
+  learningRate: "0.001",
+  optimizer: "AdamW",
+  gpuType: "A100",
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
+export default function MLOverviewPage() {
+  const [experiments, setExperiments] = React.useState<Experiment[]>(EXPERIMENTS)
+  const [dialogOpen, setDialogOpen] = React.useState(false)
+  const [form, setForm] = React.useState<TrainFormState>(INITIAL_FORM)
+
+  // KPIs
+  const totalFamilies = MODEL_FAMILIES.length
+  const runningExperiments = experiments.filter((e) => e.status === "running").length
+  const completedExperiments = experiments.filter((e) => e.status === "completed").length
+  const unresolvedAlerts = ML_ALERTS.filter((a) => !a.resolvedAt).length
+
+  function handleSubmitTraining() {
+    if (!form.familyId || !form.name) return
+
+    const newExp: Experiment = {
+      id: `exp-${Date.now()}`,
+      name: form.name,
+      description: "New training experiment",
+      modelFamilyId: form.familyId,
+      status: "queued",
+      progress: 0,
+      datasetSnapshotId: "ds-auto-latest",
+      featureSetVersionId: "fs-auto-latest",
+      hyperparameters: {
+        learning_rate: parseFloat(form.learningRate),
+        batch_size: parseInt(form.batchSize),
+      },
+      trainingConfig: {
+        epochs: parseInt(form.epochs),
+        batchSize: parseInt(form.batchSize),
+        learningRate: parseFloat(form.learningRate),
+        optimizer: form.optimizer,
+        lossFunction: "CrossEntropyWithLabelSmoothing",
+        earlyStopping: true,
+        earlyStoppingPatience: 15,
+        gpuType: form.gpuType,
+        numGpus: form.gpuType === "A100" ? 4 : 2,
+      },
+      metrics: null,
+      startedAt: null,
+      completedAt: null,
+      createdBy: "current_user",
+      createdAt: new Date().toISOString(),
+    }
+
+    setExperiments((prev) => [newExp, ...prev])
+    setForm(INITIAL_FORM)
+    setDialogOpen(false)
+  }
+
   return (
-    <AppShell
-      activeSurface="ml"
-      showLifecycleRail={false}
-      breadcrumbs={[
-        { label: "ML Platform", href: "/ml" },
-        { label: "Overview" },
-      ]}
-      contextLevels={{ organization: true, client: false, strategy: true, underlying: true }}
-    >
-      <div className="max-w-[1600px] mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-7xl space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold">ML Platform</h1>
-            <p className="text-sm text-muted-foreground">
-              Model training, experiments, and deployment
+            <h1 className="text-2xl font-bold tracking-tight">ML Platform</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Model training, validation, and deployment operations
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <RefreshCw className="size-4" />
-              Refresh
-            </Button>
-            <Button size="sm" className="gap-2" style={{ backgroundColor: "var(--surface-ml)" }}>
-              <Beaker className="size-4" />
-              New Experiment
-            </Button>
+          <Button onClick={() => setDialogOpen(true)}>
+            <Play className="size-4" />
+            Train New Model
+          </Button>
+        </div>
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Model Families
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{totalFamilies}</p>
+                </div>
+                <div className="rounded-lg bg-purple-500/10 p-2.5">
+                  <Layers className="size-5 text-purple-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Training Active
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{runningExperiments}</p>
+                </div>
+                <div className="rounded-lg bg-blue-500/10 p-2.5">
+                  <Cpu className="size-5 text-blue-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Completed
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{completedExperiments}</p>
+                </div>
+                <div className="rounded-lg bg-emerald-500/10 p-2.5">
+                  <CheckCircle2 className="size-5 text-emerald-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50">
+            <CardContent className="pt-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    Active Alerts
+                  </p>
+                  <p className="text-3xl font-bold mt-1">{unresolvedAlerts}</p>
+                </div>
+                <div className="rounded-lg bg-red-500/10 p-2.5">
+                  <AlertTriangle className="size-5 text-red-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Model Families Grid */}
+        <div>
+          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+            <Brain className="size-5" />
+            Model Families
+          </h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {MODEL_FAMILIES.map((family) => {
+              const familyExps = experiments.filter((e) => e.modelFamilyId === family.id)
+              const runningCount = familyExps.filter((e) => e.status === "running").length
+
+              return (
+                <Card key={family.id} className="border-border/50">
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-semibold">{family.name}</CardTitle>
+                      <Badge variant="outline" className={archetypeColor(family.archetype)}>
+                        {family.archetype.replace(/_/g, " ")}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {family.description}
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="rounded-md bg-muted/30 p-2">
+                        <p className="text-lg font-bold">{family.totalVersions}</p>
+                        <p className="text-[10px] text-muted-foreground">Versions</p>
+                      </div>
+                      <div className="rounded-md bg-muted/30 p-2">
+                        <p className="text-lg font-bold">{family.linkedStrategies.length}</p>
+                        <p className="text-[10px] text-muted-foreground">Strategies</p>
+                      </div>
+                      <div className="rounded-md bg-muted/30 p-2">
+                        <p className="text-lg font-bold">{runningCount}</p>
+                        <p className="text-[10px] text-muted-foreground">Training</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      {family.currentChampion && (
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">Champion</span>
+                          <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 font-mono text-[10px]">
+                            {family.currentChampion.replace("mv-", "")}
+                          </Badge>
+                        </div>
+                      )}
+                      {family.currentChallenger && (
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">Challenger</span>
+                          <Badge variant="outline" className="bg-blue-500/15 text-blue-400 border-blue-500/30 font-mono text-[10px]">
+                            {family.currentChallenger.replace("mv-", "")}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--status-running)]/10">
-                  <Activity className="size-5" style={{ color: "var(--status-running)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">3</p>
-                  <p className="text-xs text-muted-foreground">Running Experiments</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--status-live)]/10">
-                  <Box className="size-5" style={{ color: "var(--status-live)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">2</p>
-                  <p className="text-xs text-muted-foreground">Deployed Models</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <TrendingUp className="size-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">5,043</p>
-                  <p className="text-xs text-muted-foreground">Predictions Today</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--surface-ml)]/10">
-                  <Cpu className="size-5" style={{ color: "var(--surface-ml)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">4.0ms</p>
-                  <p className="text-xs text-muted-foreground">Avg Inference</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Tabs */}
-        <Tabs defaultValue="experiments" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="experiments" className="gap-2">
-              <Beaker className="size-4" />
-              Experiments
-            </TabsTrigger>
-            <TabsTrigger value="models" className="gap-2">
-              <Box className="size-4" />
-              Model Registry
-            </TabsTrigger>
-            <TabsTrigger value="grid" className="gap-2">
-              <BarChart3 className="size-4" />
-              Hyperparameter Grid
-            </TabsTrigger>
-            <TabsTrigger value="features" className="gap-2">
-              <GitBranch className="size-4" />
-              Feature Store
-            </TabsTrigger>
-            <TabsTrigger value="training" className="gap-2">
-              <TrendingUp className="size-4" />
-              Training & Linkage
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Experiments Tab */}
-          <TabsContent value="experiments" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Active Experiments</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {experiments.map((exp) => (
-                  <div
-                    key={exp.id}
-                    className="p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        {exp.status === "running" && (
-                          <RefreshCw className="size-4 animate-spin text-[var(--status-running)]" />
-                        )}
-                        {exp.status === "complete" && (
-                          <CheckCircle2 className="size-4 text-[var(--status-live)]" />
-                        )}
-                        {exp.status === "failed" && (
-                          <XCircle className="size-4 text-[var(--status-critical)]" />
-                        )}
-                        <div>
-                          <EntityLink
-                            type="experiment"
-                            id={exp.id}
-                            label={exp.name}
-                            className="font-semibold"
-                          />
-                          <span className="text-xs text-muted-foreground ml-2">{exp.id}</span>
-                        </div>
-                      </div>
-                      <Badge
-                        variant={
-                          exp.status === "complete"
-                            ? "default"
-                            : exp.status === "running"
-                            ? "secondary"
-                            : "destructive"
-                        }
-                      >
-                        {exp.status}
-                      </Badge>
-                    </div>
-
-                    {exp.status === "running" && (
-                      <div className="mb-3">
-                        <Progress value={exp.progress} className="h-2" />
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {exp.progress}% complete &bull; Started {exp.startedAt}
-                        </p>
-                      </div>
-                    )}
-
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Training Status */}
+          <div className="lg:col-span-2 space-y-4">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <FlaskConical className="size-5" />
+              Training Status
+            </h2>
+            {experiments.slice(0, 6).map((exp) => {
+              const run = TRAINING_RUNS.find((r) => r.experimentId === exp.id)
+              return (
+                <Card key={exp.id} className="border-border/50">
+                  <CardContent className="pt-0">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-6 text-sm">
-                        <span className="text-muted-foreground">
-                          lr: <span className="font-mono text-foreground">{exp.hyperparams.lr}</span>
-                        </span>
-                        <span className="text-muted-foreground">
-                          layers:{" "}
-                          <span className="font-mono text-foreground">{exp.hyperparams.layers}</span>
-                        </span>
-                        <span className="text-muted-foreground">
-                          dropout:{" "}
-                          <span className="font-mono text-foreground">{exp.hyperparams.dropout}</span>
-                        </span>
-                      </div>
-                      {exp.metrics && (
-                        <div className="flex items-center gap-4 text-sm">
-                          <span>
-                            Accuracy:{" "}
-                            <span className="font-mono font-semibold">
-                              {(exp.metrics.accuracy * 100).toFixed(1)}%
-                            </span>
-                          </span>
-                          <span>
-                            Loss:{" "}
-                            <span className="font-mono font-semibold">
-                              {exp.metrics.loss.toFixed(3)}
-                            </span>
-                          </span>
-                          <span>
-                            Sharpe:{" "}
-                            <span className="font-mono font-semibold">{exp.metrics.sharpe}</span>
-                          </span>
-                        </div>
-                      )}
-                      {exp.error && (
-                        <span className="text-sm text-[var(--status-critical)]">{exp.error}</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Models Tab */}
-          <TabsContent value="models" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Model Registry</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {models.map((model) => (
-                  <div
-                    key={model.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`size-10 rounded-lg flex items-center justify-center ${
-                          model.status === "deployed"
-                            ? "bg-[var(--status-live)]/10"
-                            : model.status === "staging"
-                            ? "bg-[var(--status-warning)]/10"
-                            : "bg-muted"
-                        }`}
-                      >
-                        <Box
-                          className="size-5"
-                          style={{
-                            color:
-                              model.status === "deployed"
-                                ? "var(--status-live)"
-                                : model.status === "staging"
-                                ? "var(--status-warning)"
-                                : "var(--muted-foreground)",
-                          }}
-                        />
-                      </div>
-                      <div>
+                      <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold">{model.name}</span>
-                          <Badge variant="outline" className="font-mono text-xs">
-                            v{model.version}
+                          <span className="font-medium text-sm">{exp.name}</span>
+                          <Badge variant="outline" className={statusColor(exp.status)}>
+                            {exp.status}
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {model.deployedAt
-                            ? `Deployed ${model.deployedAt}`
-                            : "Not yet deployed"}
-                          {model.accuracy && ` • Accuracy: ${(model.accuracy * 100).toFixed(1)}%`}
+                          by {exp.createdBy} &middot;{" "}
+                          {exp.startedAt
+                            ? new Date(exp.startedAt).toLocaleDateString()
+                            : "not started"}
                         </p>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-6">
-                      {model.predictions > 0 && (
-                        <div className="text-right text-sm">
-                          <p className="font-mono">{model.predictions.toLocaleString()}</p>
-                          <p className="text-xs text-muted-foreground">predictions</p>
-                        </div>
-                      )}
-                      {model.avgLatency && (
-                        <div className="text-right text-sm">
-                          <p className="font-mono">{model.avgLatency}ms</p>
-                          <p className="text-xs text-muted-foreground">avg latency</p>
-                        </div>
-                      )}
-                      <Badge
-                        variant={model.status === "deployed" ? "default" : "secondary"}
-                        className={
-                          model.status === "deployed"
-                            ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
-                            : ""
-                        }
-                      >
-                        {model.status}
-                      </Badge>
-                      <div className="flex items-center gap-1">
-                        {model.status === "deployed" ? (
-                          <Button variant="ghost" size="sm" className="gap-1">
-                            <Pause className="size-4" />
-                            Undeploy
-                          </Button>
-                        ) : model.status === "staging" ? (
-                          <Button size="sm" className="gap-1">
-                            <Play className="size-4" />
-                            Deploy
-                          </Button>
-                        ) : null}
+                      <div className="text-right">
+                        {exp.status === "running" && run && (
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground">
+                              Epoch {run.currentEpoch}/{run.totalEpochs}
+                            </p>
+                            <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-blue-500 rounded-full transition-all"
+                                style={{ width: `${exp.progress}%` }}
+                              />
+                            </div>
+                            <p className="text-[10px] text-muted-foreground">
+                              ETA: {run.estimatedTimeRemaining}
+                            </p>
+                          </div>
+                        )}
+                        {exp.metrics && (
+                          <div className="flex items-center gap-3 text-xs">
+                            <span>
+                              Acc: <span className="font-mono font-medium">{(exp.metrics.accuracy * 100).toFixed(1)}%</span>
+                            </span>
+                            <span>
+                              Sharpe: <span className="font-mono font-medium">{exp.metrics.sharpe.toFixed(2)}</span>
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
 
-          {/* Grid Tab */}
-          <TabsContent value="grid" className="space-y-6">
-            <Card>
+          {/* Right sidebar: Feature Freshness + Alerts */}
+          <div className="space-y-6">
+            {/* Feature Freshness */}
+            <Card className="border-border/50">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Hyperparameter Grid</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">5 configurations</Badge>
-                    <Button size="sm" variant="outline">
-                      Promote Selected
-                    </Button>
-                  </div>
-                </div>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Zap className="size-4" />
+                  Feature Freshness
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Select</th>
-                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Learning Rate</th>
-                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Layers</th>
-                        <th className="text-left py-3 px-4 font-medium text-muted-foreground">Dropout</th>
-                        <th className="text-right py-3 px-4 font-medium text-muted-foreground">Sharpe</th>
-                        <th className="text-right py-3 px-4 font-medium text-muted-foreground">Accuracy</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {gridResults.map((row, i) => (
-                        <tr
-                          key={i}
-                          className={`border-b border-border hover:bg-muted/30 transition-colors ${
-                            row.selected ? "bg-primary/5" : ""
-                          }`}
-                        >
-                          <td className="py-3 px-4">
-                            <input
-                              type="checkbox"
-                              defaultChecked={row.selected}
-                              className="rounded border-border"
-                            />
-                          </td>
-                          <td className="py-3 px-4 font-mono">{row.lr}</td>
-                          <td className="py-3 px-4 font-mono">{row.layers}</td>
-                          <td className="py-3 px-4 font-mono">{row.dropout}</td>
-                          <td className="py-3 px-4 text-right font-mono font-semibold">
-                            {row.sharpe.toFixed(2)}
-                          </td>
-                          <td className="py-3 px-4 text-right font-mono">
-                            {(row.accuracy * 100).toFixed(1)}%
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Features Tab */}
-          <TabsContent value="features" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Feature Store</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {features.map((feature) => (
+              <CardContent className="space-y-2">
+                {FEATURE_PROVENANCE.map((fp) => (
                   <div
-                    key={feature.name}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border"
+                    key={fp.featureName}
+                    className="flex items-center justify-between text-sm"
                   >
-                    <div className="flex items-center gap-3">
-                      <span
+                    <div className="flex items-center gap-2">
+                      <div
                         className={`size-2 rounded-full ${
-                          feature.status === "healthy"
-                            ? "bg-[var(--status-live)]"
-                            : "bg-[var(--status-warning)]"
+                          fp.status === "healthy"
+                            ? "bg-emerald-400"
+                            : fp.status === "degraded"
+                              ? "bg-amber-400"
+                              : "bg-red-400"
                         }`}
                       />
-                      <span className="font-mono">{feature.name}</span>
+                      <span className="font-mono text-xs">{fp.featureName}</span>
                     </div>
-                    <div className="flex items-center gap-6 text-sm">
-                      <div className="text-right">
-                        <span className="text-muted-foreground">Freshness: </span>
-                        <span
-                          className={`font-mono ${
-                            feature.status === "degraded" ? "text-[var(--status-warning)]" : ""
-                          }`}
-                        >
-                          {feature.freshness}
-                        </span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-muted-foreground">SLA: </span>
-                        <span className="font-mono">{feature.sla}</span>
-                      </div>
-                      <Badge
-                        variant={feature.status === "healthy" ? "default" : "secondary"}
-                        className={
-                          feature.status === "healthy"
-                            ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
-                            : "bg-[var(--status-warning)]/10 text-[var(--status-warning)]"
-                        }
-                      >
-                        {feature.status}
-                      </Badge>
-                    </div>
+                    <span className={`text-xs font-mono ${freshnessColor(fp.status)}`}>
+                      {fp.freshness}
+                    </span>
                   </div>
                 ))}
               </CardContent>
             </Card>
-          </TabsContent>
 
-          {/* Training & Linkage Tab */}
-          <TabsContent value="training" className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
-              {/* Loss Curves */}
-              <LossCurves experimentId="exp-342" />
-              
-              {/* Model-Strategy Linkage */}
-              <ModelStrategyLinkage />
+            {/* Alerts */}
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <AlertTriangle className="size-4" />
+                  ML Alerts
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {ML_ALERTS.filter((a) => !a.resolvedAt).map((alert) => (
+                  <div
+                    key={alert.id}
+                    className="rounded-lg border border-border/50 p-3 space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className={alertSeverityColor(alert.severity)}>
+                        {alert.severity}
+                      </Badge>
+                      <span className="text-[10px] text-muted-foreground">
+                        {new Date(alert.triggeredAt).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <p className="text-xs">{alert.message}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Train New Model Dialog */}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Train New Model</DialogTitle>
+              <DialogDescription>
+                Configure and launch a new training experiment.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label>Model Family</Label>
+                <Select
+                  value={form.familyId}
+                  onValueChange={(v) => setForm((f) => ({ ...f, familyId: v }))}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select model family..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MODEL_FAMILIES.map((fam) => (
+                      <SelectItem key={fam.id} value={fam.id}>
+                        {fam.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Experiment Name</Label>
+                <Input
+                  placeholder="e.g., BTC Direction v3.4 - Wider context"
+                  value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                />
+              </div>
+
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Training Configuration
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Epochs</Label>
+                    <Input
+                      type="number"
+                      value={form.epochs}
+                      onChange={(e) => setForm((f) => ({ ...f, epochs: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Batch Size</Label>
+                    <Input
+                      type="number"
+                      value={form.batchSize}
+                      onChange={(e) => setForm((f) => ({ ...f, batchSize: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Learning Rate</Label>
+                    <Input
+                      type="number"
+                      step="0.0001"
+                      value={form.learningRate}
+                      onChange={(e) => setForm((f) => ({ ...f, learningRate: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Optimizer</Label>
+                    <Select
+                      value={form.optimizer}
+                      onValueChange={(v) => setForm((f) => ({ ...f, optimizer: v }))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AdamW">AdamW</SelectItem>
+                        <SelectItem value="Adam">Adam</SelectItem>
+                        <SelectItem value="SGD">SGD</SelectItem>
+                        <SelectItem value="RMSProp">RMSProp</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">GPU Type</Label>
+                  <Select
+                    value={form.gpuType}
+                    onValueChange={(v) => setForm((f) => ({ ...f, gpuType: v }))}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="A100">A100 (4x)</SelectItem>
+                      <SelectItem value="V100">V100 (2x)</SelectItem>
+                      <SelectItem value="T4">T4 (1x)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
-          </TabsContent>
-        </Tabs>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSubmitTraining}
+                disabled={!form.familyId || !form.name}
+              >
+                <Play className="size-4" />
+                Start Training
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-    </AppShell>
+    </div>
   )
 }
