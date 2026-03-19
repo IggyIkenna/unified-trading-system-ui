@@ -1,0 +1,68 @@
+"use client"
+
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
+
+export default function TermsPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container flex items-center justify-between h-16 px-4">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <span className="text-primary font-bold text-sm">O</span>
+            </div>
+            <span className="font-semibold">Odum Research</span>
+          </Link>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/"><ArrowLeft className="size-4 mr-2" />Back</Link>
+          </Button>
+        </div>
+      </header>
+
+      <main className="container px-4 py-16 max-w-3xl">
+        <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
+        
+        <div className="prose prose-invert max-w-none space-y-6 text-muted-foreground">
+          <p><strong className="text-foreground">Last Updated:</strong> March 2026</p>
+          
+          <section>
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">1. Services</h2>
+            <p>Odum Research Ltd provides trading infrastructure services including data provision, backtesting, execution, and investment management. Services are available to Professional Clients only as defined by FCA rules.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">2. Eligibility</h2>
+            <p>Our services are intended for professional and institutional clients only. By using our services, you represent that you qualify as a Professional Client under MiFID II.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">3. Risk Disclosure</h2>
+            <p>Trading in financial instruments carries substantial risk. Past performance is not indicative of future results. You should only trade with capital you can afford to lose.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">4. Fees</h2>
+            <p>Fees are as disclosed in your service agreement. Investment management fees are charged on a performance basis with high-water mark provisions.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">5. Intellectual Property</h2>
+            <p>All platform content, algorithms, and data remain the property of Odum Research Ltd. Client strategies developed using our tools remain client property.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">6. Limitation of Liability</h2>
+            <p>To the maximum extent permitted by law, Odum Research Ltd shall not be liable for indirect, incidental, or consequential damages arising from use of our services.</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">7. Governing Law</h2>
+            <p>These terms are governed by the laws of England and Wales. Disputes shall be resolved in the courts of London.</p>
+          </section>
+        </div>
+      </main>
+    </div>
+  )
+}

@@ -9,6 +9,7 @@ RULES (violation = wasted work):
 4. Mocking: shared/mocks/ only (same in dev & tests). No per-page mocks.
 5. Auth: useAuth() hook in shared/. One place for permission rules.
 6. Shard-aware: scope data shard→venue→instrument. Never cross-shard.
+7. If unable to follow rules, tell user immediately they will use a better agent.
 
 BEFORE CODING:
 1. ARCHITECTURE.md (vision) 2. CONFIG_REFERENCE.md (fields?)

@@ -1,0 +1,263 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* Citadel-Grade Institutional Trading Platform Design System
+   Bloomberg/Citadel-inspired dark theme with cyan accent
+   Hierarchy: #0a0a0b → #111113 → #18181b → #1c1c1f */
+
+:root {
+  /* Force dark mode as default for institutional trading platform */
+  --background: #0a0a0b;
+  --foreground: #fafafa;
+  --card: #111113;
+  --card-foreground: #fafafa;
+  --popover: #111113;
+  --popover-foreground: #fafafa;
+  --primary: #22d3ee;
+  --primary-foreground: #0a0a0b;
+  --secondary: #18181b;
+  --secondary-foreground: #fafafa;
+  --muted: #1c1c1f;
+  --muted-foreground: #a1a1aa;
+  --accent: #18181b;
+  --accent-foreground: #fafafa;
+  --destructive: #f87171;
+  --destructive-foreground: #0a0a0b;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #22d3ee;
+  
+  /* P&L semantic tokens */
+  --pnl-positive: #4ade80;
+  --pnl-negative: #f87171;
+  
+  /* Status colors */
+  --status-live: #4ade80;
+  --status-warning: #fbbf24;
+  --status-critical: #f87171;
+  --status-idle: #71717a;
+  --status-running: #60a5fa;
+  
+  /* Surface accent colors for navigation */
+  --surface-trading: #4ade80;
+  --surface-strategy: #60a5fa;
+  --surface-markets: #a78bfa;
+  --surface-ops: #fbbf24;
+  --surface-config: #22d3ee;
+  --surface-ml: #f472b6;
+  --surface-reports: #fb923c;
+  
+  /* Risk threshold colors */
+  --risk-healthy: #4ade80;
+  --risk-warning: #fbbf24;
+  --risk-critical: #f87171;
+  
+  /* Chart colors for institutional data */
+  --chart-1: #22d3ee;
+  --chart-2: #4ade80;
+  --chart-3: #60a5fa;
+  --chart-4: #a78bfa;
+  --chart-5: #fbbf24;
+  --chart-6: #f472b6;
+  
+  /* Updated radii for modern feel: 6/8/12/16px */
+  --radius: 0.5rem;
+  
+  /* Sidebar */
+  --sidebar: #0a0a0b;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #22d3ee;
+  --sidebar-primary-foreground: #0a0a0b;
+  --sidebar-accent: #18181b;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #22d3ee;
+}
+
+.dark {
+  --background: #0a0a0b;
+  --foreground: #fafafa;
+  --card: #111113;
+  --card-foreground: #fafafa;
+  --popover: #111113;
+  --popover-foreground: #fafafa;
+  --primary: #22d3ee;
+  --primary-foreground: #0a0a0b;
+  --secondary: #18181b;
+  --secondary-foreground: #fafafa;
+  --muted: #1c1c1f;
+  --muted-foreground: #a1a1aa;
+  --accent: #18181b;
+  --accent-foreground: #fafafa;
+  --destructive: #f87171;
+  --destructive-foreground: #0a0a0b;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #22d3ee;
+  --chart-1: #22d3ee;
+  --chart-2: #4ade80;
+  --chart-3: #60a5fa;
+  --chart-4: #a78bfa;
+  --chart-5: #fbbf24;
+  --sidebar: #0a0a0b;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #22d3ee;
+  --sidebar-primary-foreground: #0a0a0b;
+  --sidebar-accent: #18181b;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #22d3ee;
+}
+
+@theme inline {
+  /* IBM Plex Sans for UI, JetBrains Mono for data/values - institutional standard */
+  --font-sans: 'IBM Plex Sans', 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
+  
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  /* P&L Colors */
+  --color-pnl-positive: var(--pnl-positive);
+  --color-pnl-negative: var(--pnl-negative);
+  
+  /* Status Colors */
+  --color-status-live: var(--status-live);
+  --color-status-warning: var(--status-warning);
+  --color-status-critical: var(--status-critical);
+  --color-status-idle: var(--status-idle);
+  --color-status-running: var(--status-running);
+  
+  /* Surface Colors */
+  --color-surface-trading: var(--surface-trading);
+  --color-surface-strategy: var(--surface-strategy);
+  --color-surface-markets: var(--surface-markets);
+  --color-surface-ops: var(--surface-ops);
+  --color-surface-config: var(--surface-config);
+  --color-surface-ml: var(--surface-ml);
+  --color-surface-reports: var(--surface-reports);
+  
+  /* Risk Colors */
+  --color-risk-healthy: var(--risk-healthy);
+  --color-risk-warning: var(--risk-warning);
+  --color-risk-critical: var(--risk-critical);
+  
+  /* Chart Colors */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  
+  /* Updated radii: 6/8/12/16px for modern institutional feel */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom component styles - plain CSS for Tailwind v4 compatibility */
+
+/* P&L formatting utilities */
+.pnl-positive {
+  color: var(--pnl-positive);
+}
+.pnl-negative {
+  color: var(--pnl-negative);
+}
+
+/* Status badge utilities */
+.status-live {
+  color: var(--status-live);
+}
+.status-warning {
+  color: var(--status-warning);
+}
+.status-critical {
+  color: var(--status-critical);
+}
+.status-idle {
+  color: var(--status-idle);
+}
+.status-running {
+  color: var(--status-running);
+}
+
+/* Risk utilization backgrounds */
+.risk-healthy-bg {
+  background-color: color-mix(in srgb, var(--risk-healthy) 20%, transparent);
+}
+.risk-warning-bg {
+  background-color: color-mix(in srgb, var(--risk-warning) 20%, transparent);
+}
+.risk-critical-bg {
+  background-color: color-mix(in srgb, var(--risk-critical) 20%, transparent);
+}
+
+/* Grid surface background hierarchy */
+.surface-primary {
+  background-color: #0a0a0b;
+}
+.surface-secondary {
+  background-color: #111113;
+}
+.surface-tertiary {
+  background-color: #18181b;
+}
+.surface-quaternary {
+  background-color: #1c1c1f;
+}
+
+/* Scrolling venues animation */
+@keyframes scroll-venues {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-scroll-venues {
+  animation: scroll-venues 40s linear infinite;
+}
+.animate-scroll-venues:hover {
+  animation-play-state: paused;
+}

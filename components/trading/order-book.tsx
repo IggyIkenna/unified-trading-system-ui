@@ -1,0 +1,425 @@
+"use client"
+
+import * as React from "react"
+import { cn } from "@/lib/utils"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DollarSign, RefreshCw } from "lucide-react"
+
+interface OrderBookLevel {
+  price: number
+  size: number
+  total: number // Cumulative
+}
+
+interface OrderBookProps {
+  symbol: string
+  bids: OrderBookLevel[]
+  asks: OrderBookLevel[]
+  lastPrice: number
+  spread: number
+  spreadBps: number
+  midPrice: number
+  venue?: string
+  className?: string
+}
+
+// Generate mock order book data with realistic spreads
+// tick parameter allows for live updates - changing tick = new random values
+function generateMockOrderBook(symbol: string, midPrice: number, tick: number = 0): { bids: OrderBookLevel[]; asks: OrderBookLevel[] } {
+  const levels = 15
+  const bids: OrderBookLevel[] = []
+  const asks: OrderBookLevel[] = []
+  
+  // Realistic tick sizes and spreads by symbol
+  // BTC/USDT on Binance: ~$0.10 tick, spread ~$0.20-0.50
+  // ETH/USDT: ~$0.01 tick, spread ~$0.05-0.20
+  const tickSize = symbol.includes("BTC") ? 0.10 : symbol.includes("ETH") ? 0.01 : 0.01
+  const baseSpread = symbol.includes("BTC") ? 0.20 : symbol.includes("ETH") ? 0.05 : 0.02
+  
+  // Seed incorporates tick for variation over time
+  const baseSeed = symbol.split("").reduce((a, c) => a + c.charCodeAt(0), 0)
+  let seedState = baseSeed + tick * 7919 // Prime multiplier for good distribution
+  const rand = () => {
+    seedState = (seedState * 1103515245 + 12345) & 0x7fffffff
+    return (seedState % 1000) / 1000
+  }
+  
+  let bidCumulative = 0
+  let askCumulative = 0
+  
+  // Best bid is just below mid by half spread
+  const bestBid = midPrice - baseSpread / 2
+  const bestAsk = midPrice + baseSpread / 2
+  
+  for (let i = 0; i < levels; i++) {
+    // Bids (descending from best bid)
+    // Price steps down by tick size + small random
+    const bidPrice = bestBid - (tickSize * i) - (rand() * tickSize * 0.5)
+    // Size increases as we go deeper (more liquidity at worse prices)
+    const bidSize = (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10)
+    bidCumulative += bidSize
+    bids.push({ price: bidPrice, size: bidSize, total: bidCumulative })
+    
+    // Asks (ascending from best ask)
+    const askPrice = bestAsk + (tickSize * i) + (rand() * tickSize * 0.5)
+    const askSize = (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10)
+    askCumulative += askSize
+    asks.push({ price: askPrice, size: askSize, total: askCumulative })
+  }
+  
+  return { bids, asks }
+}
+
+export function OrderBook({
+  symbol,
+  bids,
+  asks,
+  lastPrice,
+  spread,
+  spreadBps,
+  midPrice,
+  venue = "Binance",
+  className,
+}: OrderBookProps) {
+  const [showNative, setShowNative] = React.useState(false)
+  const [decimals, setDecimals] = React.useState(2)
+  
+  // Calculate max volume for bar width scaling
+  const maxBidVolume = Math.max(...bids.map(b => b.total))
+  const maxAskVolume = Math.max(...asks.map(a => a.total))
+  const maxVolume = Math.max(maxBidVolume, maxAskVolume)
+  
+  // Format price based on symbol
+  const formatPrice = (price: number) => {
+    if (symbol.includes("BTC")) return price.toFixed(decimals)
+    if (symbol.includes("ETH")) return price.toFixed(decimals)
+    return price.toFixed(decimals)
+  }
+  
+  // Format size - show in native or USD
+  const formatSize = (size: number, price: number) => {
+    if (showNative) return size.toFixed(4)
+    return `$${(size * price).toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+  }
+  
+  return (
+    <Card className={cn("overflow-hidden", className)}>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm flex items-center gap-2">
+            Order Book
+            <Badge variant="outline" className="text-[10px] font-mono">
+              {symbol}
+            </Badge>
+            <Badge variant="secondary" className="text-[10px]">
+              {venue}
+            </Badge>
+          </CardTitle>
+          <div className="flex items-center gap-2">
+            {/* Native/USD Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={() => setShowNative(!showNative)}
+            >
+              <DollarSign className={cn("size-3 mr-1", showNative && "opacity-50")} />
+              {showNative ? "Native" : "USD"}
+            </Button>
+            {/* Decimal selector */}
+            <Select value={decimals.toString()} onValueChange={(v) => setDecimals(parseInt(v))}>
+              <SelectTrigger className="h-6 w-16 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">0</SelectItem>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="4">4</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        
+        {/* Spread indicator */}
+        <div className="flex items-center justify-center gap-4 py-2 bg-muted/30 rounded mt-2">
+          <span className="text-xs text-muted-foreground">
+            Spread: <span className="font-mono text-foreground">${spread.toFixed(2)}</span>
+            <span className="text-muted-foreground ml-1">({spreadBps.toFixed(1)} bps)</span>
+          </span>
+          <span className="text-xs text-muted-foreground">
+            Mid: <span className="font-mono text-foreground">${midPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+          </span>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="pt-0 px-0">
+        <div className="grid grid-cols-2 gap-0">
+          {/* Bids (left side - green) */}
+          <div className="border-r border-border">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground">
+              <span>Size</span>
+              <span>Bid Price</span>
+            </div>
+            <div className="max-h-[400px] overflow-y-auto">
+              {bids.map((bid, i) => {
+                const barWidth = (bid.total / maxVolume) * 100
+                return (
+                  <div
+                    key={i}
+                    className="relative flex items-center justify-between px-3 py-1 text-xs hover:bg-muted/30 cursor-pointer group"
+                  >
+                    {/* Volume bar (background) */}
+                    <div
+                      className="absolute right-0 top-0 bottom-0 bg-emerald-500/10"
+                      style={{ width: `${barWidth}%` }}
+                    />
+                    
+                    {/* Content */}
+                    <span className="relative z-10 font-mono text-muted-foreground group-hover:text-foreground">
+                      {formatSize(bid.size, bid.price)}
+                    </span>
+                    <span className="relative z-10 font-mono text-emerald-400 font-medium">
+                      {formatPrice(bid.price)}
+                    </span>
+                    
+                    {/* Hover tooltip with cumulative */}
+                    <div className="absolute left-full ml-2 hidden group-hover:block px-2 py-1 bg-popover border border-border rounded text-[10px] shadow-lg whitespace-nowrap z-20">
+                      <div>Cumulative: {formatSize(bid.total, bid.price)}</div>
+                      <div>Size: {bid.size.toFixed(4)} {symbol.split("/")[0]}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          
+          {/* Asks (right side - red) */}
+          <div>
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground">
+              <span>Ask Price</span>
+              <span>Size</span>
+            </div>
+            <div className="max-h-[400px] overflow-y-auto">
+              {asks.map((ask, i) => {
+                const barWidth = (ask.total / maxVolume) * 100
+                return (
+                  <div
+                    key={i}
+                    className="relative flex items-center justify-between px-3 py-1 text-xs hover:bg-muted/30 cursor-pointer group"
+                  >
+                    {/* Volume bar (background) */}
+                    <div
+                      className="absolute left-0 top-0 bottom-0 bg-rose-500/10"
+                      style={{ width: `${barWidth}%` }}
+                    />
+                    
+                    {/* Content */}
+                    <span className="relative z-10 font-mono text-rose-400 font-medium">
+                      {formatPrice(ask.price)}
+                    </span>
+                    <span className="relative z-10 font-mono text-muted-foreground group-hover:text-foreground">
+                      {formatSize(ask.size, ask.price)}
+                    </span>
+                    
+                    {/* Hover tooltip with cumulative */}
+                    <div className="absolute right-full mr-2 hidden group-hover:block px-2 py-1 bg-popover border border-border rounded text-[10px] shadow-lg whitespace-nowrap z-20">
+                      <div>Cumulative: {formatSize(ask.total, ask.price)}</div>
+                      <div>Size: {ask.size.toFixed(4)} {symbol.split("/")[0]}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+        
+        {/* Last price indicator */}
+        <div className="flex items-center justify-center py-2 border-t border-border">
+          <span className="text-sm font-mono font-medium">
+            Last: <span className={cn(
+              lastPrice >= midPrice ? "text-emerald-400" : "text-rose-400"
+            )}>
+              ${lastPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            </span>
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Depth chart visualization - shows cumulative volume at each price level
+interface DepthChartProps {
+  bids: OrderBookLevel[]
+  asks: OrderBookLevel[]
+  midPrice: number
+  symbol: string
+  height?: number
+  className?: string
+}
+
+export function DepthChart({
+  bids,
+  asks,
+  midPrice,
+  symbol,
+  height = 200,
+  className,
+}: DepthChartProps) {
+  // Max cumulative volume (at the deepest levels)
+  const maxBidVolume = bids[bids.length - 1]?.total || 0
+  const maxAskVolume = asks[asks.length - 1]?.total || 0
+  const maxVolume = Math.max(maxBidVolume, maxAskVolume) * 1.1 // Add 10% padding
+  
+  // Price range for x-axis (show ~0.1% on each side for BTC)
+  const priceRange = midPrice * 0.001 // 0.1% = ~$67 for BTC at $67k
+  const minPrice = bids[bids.length - 1]?.price || midPrice - priceRange
+  const maxPrice = asks[asks.length - 1]?.price || midPrice + priceRange
+  const totalPriceRange = maxPrice - minPrice
+  
+  // Convert price to x position (0-100)
+  const priceToX = (price: number) => ((price - minPrice) / totalPriceRange) * 100
+  
+  // Bids: cumulative volume grows as price decreases (going left from mid)
+  // Path starts at mid (0 volume) and steps down-left to each bid level
+  const bidPoints: string[] = []
+  // Start at the best bid with the cumulative volume at that level
+  bidPoints.push(`M ${priceToX(bids[0]?.price || midPrice)} ${100 - (bids[0]?.total / maxVolume) * 90}`)
+  
+  for (let i = 1; i < bids.length; i++) {
+    const x = priceToX(bids[i].price)
+    const y = 100 - (bids[i].total / maxVolume) * 90 // cumulative grows, y decreases (up)
+    // Step function: horizontal then vertical
+    const prevX = priceToX(bids[i - 1].price)
+    const prevY = 100 - (bids[i - 1].total / maxVolume) * 90
+    bidPoints.push(`L ${x} ${prevY}`) // horizontal to new price
+    bidPoints.push(`L ${x} ${y}`) // vertical to new cumulative
+  }
+  // Close the path to the bottom
+  const lastBidX = priceToX(bids[bids.length - 1]?.price || minPrice)
+  bidPoints.push(`L ${lastBidX} 100`)
+  bidPoints.push(`L ${priceToX(bids[0]?.price || midPrice)} 100`)
+  bidPoints.push("Z")
+  
+  // Asks: cumulative volume grows as price increases (going right from mid)
+  const askPoints: string[] = []
+  askPoints.push(`M ${priceToX(asks[0]?.price || midPrice)} ${100 - (asks[0]?.total / maxVolume) * 90}`)
+  
+  for (let i = 1; i < asks.length; i++) {
+    const x = priceToX(asks[i].price)
+    const y = 100 - (asks[i].total / maxVolume) * 90
+    const prevX = priceToX(asks[i - 1].price)
+    const prevY = 100 - (asks[i - 1].total / maxVolume) * 90
+    askPoints.push(`L ${x} ${prevY}`)
+    askPoints.push(`L ${x} ${y}`)
+  }
+  const lastAskX = priceToX(asks[asks.length - 1]?.price || maxPrice)
+  askPoints.push(`L ${lastAskX} 100`)
+  askPoints.push(`L ${priceToX(asks[0]?.price || midPrice)} 100`)
+  askPoints.push("Z")
+  
+  return (
+    <Card className={cn("overflow-hidden", className)}>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm">Market Depth</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className="w-full"
+          style={{ height }}
+        >
+          {/* Grid lines */}
+          <line x1={priceToX(midPrice)} y1="0" x2={priceToX(midPrice)} y2="100" stroke="var(--border)" strokeWidth="0.5" />
+          <line x1="0" y1="50" x2="100" y2="50" stroke="var(--border)" strokeWidth="0.25" strokeDasharray="2" />
+          <line x1="0" y1="75" x2="100" y2="75" stroke="var(--border)" strokeWidth="0.25" strokeDasharray="2" />
+          <line x1="0" y1="25" x2="100" y2="25" stroke="var(--border)" strokeWidth="0.25" strokeDasharray="2" />
+          
+          {/* Bid area (green) - cumulative volume at each price */}
+          <path
+            d={bidPoints.join(" ")}
+            fill="rgba(16, 185, 129, 0.3)"
+            stroke="rgb(16, 185, 129)"
+            strokeWidth="1.5"
+          />
+          
+          {/* Ask area (red) - cumulative volume at each price */}
+          <path
+            d={askPoints.join(" ")}
+            fill="rgba(239, 68, 68, 0.3)"
+            stroke="rgb(239, 68, 68)"
+            strokeWidth="1.5"
+          />
+        </svg>
+        
+        {/* Price labels */}
+        <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+          <span>${minPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+          <span className="font-medium text-foreground">${midPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+          <span>${maxPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// Combined order book with depth view
+interface OrderBookWithDepthProps {
+  symbol: string
+  venue?: string
+  midPrice?: number
+  className?: string
+}
+
+export function OrderBookWithDepth({
+  symbol = "BTC/USDT",
+  venue = "Binance",
+  midPrice: initialMidPrice,
+  className,
+}: OrderBookWithDepthProps) {
+  // Default mid prices by symbol
+  const defaultMidPrices: Record<string, number> = {
+    "BTC/USDT": 67234.50,
+    "ETH/USDT": 3456.78,
+    "SOL/USDT": 156.42,
+    "BTC": 67234.50,
+    "ETH": 3456.78,
+    "SOL": 156.42,
+  }
+  
+  const midPrice = initialMidPrice || defaultMidPrices[symbol] || 100
+  const { bids, asks } = React.useMemo(() => generateMockOrderBook(symbol, midPrice), [symbol, midPrice])
+  
+  const spread = asks[0]?.price - bids[0]?.price || 0
+  const spreadBps = (spread / midPrice) * 10000
+  const lastPrice = midPrice + (Math.random() - 0.5) * spread
+  
+  return (
+    <div className={cn("grid grid-cols-1 lg:grid-cols-2 gap-4", className)}>
+      <OrderBook
+        symbol={symbol}
+        bids={bids}
+        asks={asks}
+        lastPrice={lastPrice}
+        spread={spread}
+        spreadBps={spreadBps}
+        midPrice={midPrice}
+        venue={venue}
+      />
+      <DepthChart
+        bids={bids}
+        asks={asks}
+        midPrice={midPrice}
+        symbol={symbol}
+        height={400}
+      />
+    </div>
+  )
+}
+
+export { generateMockOrderBook }
