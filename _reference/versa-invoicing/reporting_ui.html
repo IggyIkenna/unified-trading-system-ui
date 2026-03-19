@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odum Research — Invoicing Suite</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --blue:#1d4ed8;--blue-soft:#e0ecff;--blue-dark:#1e3a8a;
+  --bg:#f1f5f9;--card:#fff;--border:#e2e8f0;
+  --text:#111827;--muted:#6b7280;--green:#059669;--red:#dc2626;--amber:#d97706;--purple:#7c3aed;
+  --radius:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+.topbar{background:var(--blue-dark);color:#fff;display:flex;align-items:center;padding:0 24px;height:52px;gap:32px;flex-wrap:wrap;}
+.topbar-brand{font-weight:700;font-size:16px;letter-spacing:.03em;white-space:nowrap;}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;}
+.tab-btn{background:none;border:none;color:rgba(255,255,255,.7);padding:8px 13px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;white-space:nowrap;}
+.tab-btn.active,.tab-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
+.tab-panel{display:none;padding:20px;max-width:1200px;margin:0 auto;}
+.tab-panel.active{display:block;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
+.card-title{font-weight:700;font-size:14px;margin-bottom:12px;color:var(--blue-dark);}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;}
+.form-grid-2{grid-template-columns:repeat(2,1fr);}
+.form-grid-3{grid-template-columns:repeat(3,1fr);}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+.field input,.field select,.field textarea{border:1px solid var(--border);border-radius:6px;padding:6px 9px;font-size:13px;color:var(--text);background:#fff;outline:none;transition:border .15s;}
+.field input:focus,.field select:focus{border-color:var(--blue);}
+.field textarea{resize:vertical;min-height:60px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue-dark);}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{filter:brightness(.9);}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-outline{background:#fff;color:var(--blue);border:1.5px solid var(--blue);}
+.btn-outline:hover{background:var(--blue-soft);}
+.btn-sm{padding:4px 9px;font-size:11px;}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;}
+.data-table th{background:var(--blue);color:#fff;padding:7px 9px;text-align:left;font-size:11px;font-weight:600;}
+.data-table td{padding:7px 9px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.data-table tr:hover td{background:#f8faff;}
+.data-table .num{text-align:right;font-variant-numeric:tabular-nums;}
+.badge{display:inline-block;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;white-space:nowrap;}
+.badge-green{background:#d1fae5;color:#065f46;}
+.badge-red{background:#fee2e2;color:#991b1b;}
+.badge-amber{background:#fef3c7;color:#92400e;}
+.badge-blue{background:var(--blue-soft);color:var(--blue-dark);}
+.badge-purple{background:#ede9fe;color:#5b21b6;}
+.badge-grey{background:#f3f4f6;color:#374151;}
+.inv-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.inv-summary-item{background:var(--blue-soft);border-radius:8px;padding:11px 14px;}
+.inv-summary-item .label{font-size:10px;color:var(--blue-dark);font-weight:600;text-transform:uppercase;margin-bottom:3px;}
+.inv-summary-item .value{font-size:18px;font-weight:800;color:var(--blue-dark);}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.section-label{font-size:12px;font-weight:700;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.04em;}
+.dyn-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.dyn-row input{flex:1;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;}
+.dyn-row .btn-remove{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;line-height:1;padding:2px 5px;}
+.chart-wrap{max-width:500px;margin:0 auto;}
+.upload-zone{border:2px dashed var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;color:var(--muted);transition:border .15s;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-soft);}
+.ledger-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.ledger-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+.ledger-card h3{font-size:13px;font-weight:700;margin-bottom:4px;}
+.ledger-card .meta{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.ledger-card .kv{display:flex;justify-content:space-between;font-size:11px;padding:2px 0;border-bottom:1px solid #f1f5f9;}
+.ledger-card .kv:last-child{border:none;}
+.ledger-card .kv .k{color:var(--muted);}
+.ledger-card .kv .v{font-weight:600;}
+/* txid input inside table */
+.txid-input{border:1px solid var(--border);border-radius:5px;padding:4px 7px;font-size:11px;font-family:monospace;width:220px;}
+.txid-input:focus{outline:none;border-color:var(--green);}
+/* invoice history list */
+.inv-history-row td{font-size:11px;}
+.explorer-link{color:var(--blue);text-decoration:none;font-family:monospace;font-size:10px;}
+.explorer-link:hover{text-decoration:underline;}
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:12px;padding:24px;max-width:520px;width:94%;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:14px;color:var(--blue-dark);}
+.modal-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
+@media(max-width:700px){.inv-summary{grid-template-columns:1fr 1fr;}.tabs{gap:0;}.tab-btn{padding:8px 9px;font-size:11px;}}
+/* vault / settings */
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.vault-status{font-size:11px;color:rgba(255,255,255,.5);cursor:pointer;white-space:nowrap;}
+.vault-status:hover{color:#fff;}
+.settings-btn{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.8);border-radius:6px;padding:4px 9px;cursor:pointer;font-size:12px;}
+.settings-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
+#toast{position:fixed;bottom:20px;right:20px;background:#1e3a8a;color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:2000;opacity:0;transition:opacity .3s;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-brand">ODUM RESEARCH</span>
+  <div class="tabs">
+    <button class="tab-btn active"  onclick="switchTab('invoice')">Invoice Calc</button>
+    <button class="tab-btn"         onclick="switchTab('history')">Invoice History</button>
+    <button class="tab-btn"         onclick="switchTab('btc')">BTC Report</button>
+    <button class="tab-btn"         onclick="switchTab('mr')">MR Report</button>
+    <button class="tab-btn"         onclick="switchTab('ledger')">Client Ledger</button>
+  </div>
+  <div class="topbar-right">
+    <span class="vault-status" id="vault-status" onclick="openSettings()" title="Storage settings">&#128190; browser only</span>
+    <button class="settings-btn" onclick="openSettings()">&#9881; Storage</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<!-- ============================================================
+     TAB 1: INVOICE CALCULATOR
+     ============================================================ -->
+<div id="tab-invoice" class="tab-panel active">
+  <div class="card">
+    <div class="form-grid form-grid-3">
+      <div class="field">
+        <label>Billing Period End</label>
+        <input type="date" id="inv-date" value="2026-03-31">
+      </div>
+      <div class="field">
+        <label>Period Label (for invoice)</label>
+        <input type="text" id="inv-period-label" value="March 2026">
+      </div>
+      <div class="field">
+        <label>BTC Price (USD)</label>
+        <input type="number" id="btc-price" value="85000" step="100">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="calcAll()">&#9654; Recalculate</button>
+      <button class="btn btn-outline btn-sm" onclick="exportState()">&#8659; Export JSON</button>
+      <label class="btn btn-outline btn-sm" style="cursor:pointer;">&#8657; Import JSON<input type="file" accept=".json" style="display:none" onchange="importState(this)"></label>
+    </div>
+  </div>
+
+  <div class="inv-summary">
+    <div class="inv-summary-item"><div class="label">Client Invoices</div><div class="value" id="sum-client">$0</div></div>
+    <div class="inv-summary-item"><div class="label">Trader Payment</div><div class="value" id="sum-trader">$0</div></div>
+    <div class="inv-summary-item"><div class="label">Introducer Due</div><div class="value" id="sum-intro">$0</div></div>
+    <div class="inv-summary-item"><div class="label">Open Invoices</div><div class="value" id="sum-open">0</div></div>
+  </div>
+
+  <!-- AT-HWM clients -->
+  <div class="card">
+    <div class="card-title">Active Accounts — At / Above High-Water Mark</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Client</th><th>Fee</th>
+          <th>Odum HWM</th><th>Current AUM</th>
+          <th class="num">PnL above HWM</th>
+          <th class="num">Odum Invoice</th>
+          <th class="num">Trader (10%)</th>
+          <th class="num">Introducer</th>
+          <th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="inv-body-above"></tbody>
+    </table>
+  </div>
+
+  <!-- UNDERWATER clients -->
+  <div class="card">
+    <div class="card-title">Underwater Accounts — Server Costs Only</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Client</th><th>HWM</th><th>Current AUM</th>
+          <th class="num">Gap to HWM</th>
+          <th class="num">Server Cost /mo</th>
+          <th class="num">Trader Credit O/S</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="inv-body-under"></tbody>
+    </table>
+  </div>
+
+  <!-- Trader credits -->
+  <div class="card">
+    <div class="card-title">Trader Credits Outstanding</div>
+    <table class="data-table">
+      <thead><tr><th>Account</th><th class="num">Credit</th><th>Deducted when</th></tr></thead>
+      <tbody id="trader-credits-body"></tbody>
+      <tfoot><tr><td><strong>Total</strong></td><td class="num" id="trader-credit-total" style="font-weight:700;"></td><td></td></tr></tfoot>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 2: INVOICE HISTORY
+     ============================================================ -->
+<div id="tab-history" class="tab-panel">
+  <div class="card">
+    <div class="section-header">
+      <span class="section-label">All Invoices</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="hist-filter-client" onchange="renderHistory()" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;">
+          <option value="">All clients</option>
+        </select>
+        <select id="hist-filter-status" onchange="renderHistory()" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;">
+          <option value="">All statuses</option>
+          <option value="issued">Issued (open)</option>
+          <option value="paid">Paid</option>
+        </select>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Invoice #</th><th>Client</th><th>Type</th>
+          <th>Period</th><th>Issued</th>
+          <th class="num">Amount</th>
+          <th>Status</th>
+          <th>TXID</th>
+          <th>Paid Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="history-body"></tbody>
+    </table>
+    <div id="history-empty" style="text-align:center;padding:24px;color:var(--muted);font-size:13px;display:none;">
+      No invoices yet. Issue invoices from the Invoice Calculator tab.
+    </div>
+  </div>
+
+  <!-- Trader payments -->
+  <div class="card">
+    <div class="card-title">Trader Payments</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Ref #</th><th>Period</th><th>Issued</th>
+          <th class="num">Performance Fees</th>
+          <th class="num">Server Costs</th>
+          <th class="num">Total</th>
+          <th>Status</th><th>TXID</th><th>Paid Date</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="trader-payments-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 3: BTC CLIENT REPORT
+     ============================================================ -->
+<div id="tab-btc" class="tab-panel">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div>
+      <div class="card">
+        <div class="card-title">Client &amp; Report Details</div>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label>Client Name</label><input id="btc-client-name" value="Yoav"></div>
+          <div class="field"><label>Report Month</label>
+            <select id="btc-month">
+              <option>January</option><option>February</option><option>March</option>
+              <option>April</option><option>May</option><option>June</option>
+              <option>July</option><option>August</option><option>September</option>
+              <option>October</option><option>November</option><option>December</option>
+            </select>
+          </div>
+          <div class="field"><label>Year</label><input id="btc-year" value="2026"></div>
+          <div class="field"><label>Inception Date</label><input id="btc-inception" value="21 November 2025"></div>
+          <div class="field"><label>Strategy Label</label><input id="btc-strategy" value="MARKET-NEUTRAL DEFI YIELD"></div>
+          <div class="field"><label>Mandate</label><input id="btc-mandate" value="BTC Conservative Investment Mandate"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Performance Figures</div>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label>Month Return (%)</label><input id="btc-month-ret" type="number" step="0.01" value="0.48"></div>
+          <div class="field"><label>Since Inception (%)</label><input id="btc-since-ret" type="number" step="0.01" value="0.78"></div>
+          <div class="field"><label>Start BTC</label><input id="btc-start" type="number" step="0.001" value="13.934"></div>
+          <div class="field"><label>End BTC</label><input id="btc-end" type="number" step="0.001" value="14.001"></div>
+        </div>
+        <div class="field" style="margin-top:8px;"><label>Commentary</label>
+          <textarea id="btc-commentary" rows="3">The account maintained its capital-preservation profile with diversified exposure across basis trading, yield farming, and liquidity provision strategies.</textarea>
+        </div>
+        <div class="field" style="margin-top:8px;"><label>Footer note</label><textarea id="btc-notes" rows="2"></textarea></div>
+      </div>
+      <div class="card">
+        <div class="section-header">
+          <span class="card-title" style="margin:0;">Monthly Returns</span>
+          <button class="btn btn-outline btn-sm" onclick="addBtcMonthRow()">+ Month</button>
+        </div>
+        <div id="btc-months-rows"></div>
+      </div>
+      <div class="card">
+        <div class="section-header">
+          <span class="card-title" style="margin:0;">Strategy Allocation</span>
+          <button class="btn btn-outline btn-sm" onclick="addAllocRow()">+ Row</button>
+        </div>
+        <div id="btc-alloc-rows"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Preview</div>
+        <div class="btn-row" style="margin-bottom:10px;margin-top:0;">
+          <button class="btn btn-primary" onclick="generateBtcReport()">Generate</button>
+          <button class="btn btn-outline" onclick="printBtcReport()">Print / PDF</button>
+        </div>
+        <iframe id="btc-preview" style="width:100%;height:660px;border:1px solid var(--border);border-radius:8px;background:#fff;"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 4: MR STRATEGY REPORT
+     ============================================================ -->
+<div id="tab-mr" class="tab-panel">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+    <div>
+      <div class="card">
+        <div class="card-title">Import Data</div>
+        <div class="upload-zone" id="mr-drop" onclick="document.getElementById('mr-file-input').click()">
+          Drop CSV/Excel or click to browse
+        </div>
+        <input type="file" id="mr-file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="parseMrFile(this)">
+      </div>
+      <div class="card">
+        <div class="card-title">Report Settings</div>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label>Month</label>
+            <select id="mr-month">
+              <option>January</option><option>February</option><option>March</option>
+              <option>April</option><option>May</option><option>June</option>
+              <option>July</option><option>August</option><option selected>September</option>
+              <option>October</option><option>November</option><option>December</option>
+            </select>
+          </div>
+          <div class="field"><label>Year</label><input id="mr-year" value="2025"></div>
+          <div class="field"><label>Company AUM Start ($m)</label><input id="mr-aum-start" type="number" step="0.01" value="9.5"></div>
+          <div class="field"><label>Company AUM End ($m)</label><input id="mr-aum-end" type="number" step="0.01" value="15.85"></div>
+          <div class="field"><label>Strategy AUM End ($m)</label><input id="mr-strat-aum" type="number" step="0.01" value="8.85"></div>
+          <div class="field"><label>Max DD Intraday (%)</label><input id="mr-max-dd" type="number" step="0.01" value="2.25"></div>
+          <div class="field"><label>Client Low Return (%)</label><input id="mr-ret-low" type="number" step="0.01" value="2.88"></div>
+          <div class="field"><label>Client Top Return (%)</label><input id="mr-ret-top" type="number" step="0.01" value="7.32"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-header">
+          <span class="card-title" style="margin:0;">Monthly Returns</span>
+          <button class="btn btn-outline btn-sm" onclick="addMrMonthRow()">+ Month</button>
+        </div>
+        <div id="mr-months-rows"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Cross-Exchange Performance</div>
+        <table class="data-table" style="font-size:11px;">
+          <thead><tr><th>Series</th><th>Return (%)</th><th>Ratio vs Backtest</th></tr></thead>
+          <tbody id="mr-xex-body"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Market Commentary</div>
+        <div class="form-grid form-grid-2">
+          <div class="field"><label>Source</label><input id="mr-comm-source" value="Jamie Farquhar (New Cambrian, $7m AUM)"></div>
+          <div class="field"><label>Prev Month Ref</label><input id="mr-prev-month" value="August"></div>
+        </div>
+        <div class="field" style="margin-top:8px;"><label>Bullet points (one per line)</label>
+          <textarea id="mr-bullets" rows="5">BTC +8.0% in July; alts mixed with partial mean-reversion.
+DATs expanding (MicroStrategy ~632k BTC; BitMine ~1.7m ETH).
+DATs trade at convenience premiums; leverage/reflexivity strong.
+2011 whale wallet (~$9bn BTC) absorbed with minimal disruption.</textarea>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="card-title">Preview &amp; Charts</div>
+        <div class="btn-row" style="margin-bottom:10px;margin-top:0;">
+          <button class="btn btn-primary" onclick="generateMrReport()">Generate</button>
+          <button class="btn btn-outline" onclick="printMrReport()">Print / PDF</button>
+        </div>
+        <canvas id="mr-chart-returns" style="max-height:180px;"></canvas>
+        <canvas id="mr-chart-cross" style="max-height:180px;margin-top:10px;"></canvas>
+        <iframe id="mr-preview" style="width:100%;height:460px;border:1px solid var(--border);border-radius:8px;background:#fff;margin-top:10px;"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 5: CLIENT LEDGER
+     ============================================================ -->
+<div id="tab-ledger" class="tab-panel">
+  <div class="card">
+    <div class="card-title">Client Master — 9 Accounts</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Code</th><th>Name</th><th>Type</th><th>Exchange</th>
+          <th>Status</th><th>Net Deposits</th><th>Odum HWM</th><th>Trader HWM</th>
+          <th>Odum Fee</th><th>Trader Fee</th><th>Introducer</th><th>Trader Credit</th>
+        </tr>
+      </thead>
+      <tbody id="ledger-body"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">Fee Structures</div>
+    <div class="ledger-grid" id="ledger-cards"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Global Fee Rules</div>
+    <div style="font-size:12px;line-height:1.7;color:#374151;">
+      <p><strong>Two separate HWMs:</strong> Odum HWM (client invoice history) and Trader HWM (trader payouts). Never merge.</p>
+      <p><strong>Fees only above HWM.</strong> Losses never generate fees. HWM never reduces except on net withdrawals.</p>
+      <p><strong>Trader fee:</strong> 10% of gross strategy PnL. Accrued independently of client billing.</p>
+      <p><strong>Odum fee:</strong> Charged only when AUM &gt; Odum HWM. On invoice issuance, Odum HWM advances to current AUM.</p>
+      <p><strong>Introducer fee:</strong> % of fees actually collected (not accrued). Only after client payment.</p>
+      <p><strong>Underwater:</strong> $50/month server cost to trader. No performance fees until HWM recovery.</p>
+      <p><strong>Trader credits:</strong> If trader was paid but client fees refunded → credit deducted at next recovery.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MARK PAID MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="modal-paid">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-paid')">×</button>
+    <div class="modal-title">Mark Invoice as Paid</div>
+    <input type="hidden" id="modal-inv-id">
+    <div style="margin-bottom:12px;font-size:13px;" id="modal-inv-summary"></div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>Transaction ID (blockchain hash)</label>
+      <input type="text" id="modal-txid" placeholder="0x... or txid..." style="font-family:monospace;font-size:12px;">
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label>Payment Date</label>
+      <input type="date" id="modal-paid-date">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="confirmMarkPaid()">&#10003; Confirm Payment Received</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-paid')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ISSUE INVOICE MODAL -->
+<div class="modal-overlay" id="modal-issue">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-issue')">×</button>
+    <div class="modal-title" id="modal-issue-title">Issue Invoice</div>
+    <div class="form-grid form-grid-2" style="margin-bottom:12px;">
+      <div class="field">
+        <label>Invoice #</label>
+        <input type="text" id="modal-inv-num" placeholder="INV-2026-001">
+      </div>
+      <div class="field">
+        <label>Issue Date</label>
+        <input type="date" id="modal-issue-date">
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Bill To (name / address)</label>
+        <textarea id="modal-bill-to" rows="2"></textarea>
+      </div>
+      <div class="field" style="grid-column:1/-1;">
+        <label>Description</label>
+        <input type="text" id="modal-desc" placeholder="Performance fee for period...">
+      </div>
+      <div class="field">
+        <label>Amount (USD)</label>
+        <input type="number" id="modal-amount" step="0.01">
+      </div>
+      <div class="field">
+        <label>Type</label>
+        <select id="modal-inv-type">
+          <option value="odum">Odum client invoice</option>
+          <option value="trader">Trader payment</option>
+          <option value="introducer">Introducer payment</option>
+        </select>
+      </div>
+    </div>
+    <input type="hidden" id="modal-issue-client">
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="confirmIssueInvoice()">Issue &amp; Generate PDF</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-issue')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal-box" style="max-width:440px;">
+    <button class="modal-close" onclick="closeModal('modal-settings')">×</button>
+    <div class="modal-title">Storage Settings</div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--blue-dark);margin-bottom:8px;">Local Vault (recommended)</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+        Pick a local folder on your Mac. Invoice state (<code>odum-state.json</code>) and
+        generated invoice HTML files auto-save there on every change — no manual export needed.
+        Works offline, no cloud required.
+      </p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="pickVaultFolder()">&#128193; Choose Folder</button>
+        <button class="btn btn-outline btn-sm" onclick="clearVault()" id="btn-clear-vault" style="display:none;">&#10006; Clear Vault</button>
+      </div>
+      <div id="vault-folder-name" style="margin-top:8px;font-size:12px;color:var(--green);font-weight:600;"></div>
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--blue-dark);margin-bottom:6px;">Cloud API <span style="font-weight:400;color:var(--muted);">(future)</span></div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">
+        When ready to point at a backend, add your API URL here. Zero code changes needed.
+      </p>
+      <div class="field">
+        <label>API Endpoint</label>
+        <input type="text" id="cloud-api-url" placeholder="https://api.odumresearch.com" style="font-size:12px;" oninput="saveCloudConfig()">
+      </div>
+      <div class="field" style="margin-top:8px;">
+        <label>API Key (stored locally only)</label>
+        <input type="password" id="cloud-api-key" placeholder="sk-..." style="font-size:12px;" oninput="saveCloudConfig()">
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:14px;">
+      <div style="font-size:12px;font-weight:700;color:var(--blue-dark);margin-bottom:6px;">Browser Storage</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">All state is always saved to <code>localStorage</code> as a fallback. Use Export JSON as manual backup.</p>
+      <div class="btn-row" style="margin-top:0;">
+        <button class="btn btn-outline btn-sm" onclick="exportState()">&#8659; Export JSON</button>
+        <label class="btn btn-outline btn-sm" style="cursor:pointer;">&#8657; Import JSON<input type="file" accept=".json" style="display:none" onchange="importState(this)"></label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CLIENT MASTER DATA
+// ============================================================
+const CLIENTS = [
+  {code:"PR", name:"Prism Capital",          billTo:"Prismatic Multi-Strategy Master Fund",
+   accountType:"USDT", exchange:"OKX",       odumFee:0.40, traderFee:0.10,
+   introducer:"Max", introducerFee:0.15,
+   netDeposits:280000, odumHWM:306836.98, traderHWM:316494,
+   status:"above", traderCredits:0, serverCost:0, isBtc:false, currentAUM:326380,
+   notes:"Invoice #20 (Nov 2025) open: $10,734.79. Feb invoice: $7,817.21."},
+  {code:"NN", name:"Namnar",                  billTo:"Namnar",
+   accountType:"USDT", exchange:"OKX",       odumFee:0.30, traderFee:0.10,
+   introducer:null, introducerFee:0,
+   netDeposits:100000, odumHWM:100000, traderHWM:105070,
+   status:"above", traderCredits:0, serverCost:0, isBtc:false, currentAUM:108400, notes:""},
+  {code:"ET", name:"Eqvilent",                billTo:"Eqvilent",
+   accountType:"USDT", exchange:"Binance",   odumFee:0.30, traderFee:0.10,
+   introducer:"Blue Coast", introducerFee:0.05,
+   netDeposits:500000, odumHWM:500000, traderHWM:503400,
+   status:"above", traderCredits:0, serverCost:0, isBtc:false, currentAUM:519000, notes:"Only Binance account. Blue Coast introducer owes $285."},
+  {code:"STD", name:"Steady Hash",            billTo:"Steady Hash",
+   accountType:"USDT", exchange:"OKX",       odumFee:0.35, traderFee:0.10,
+   introducer:null, introducerFee:0,
+   netDeposits:500000, odumHWM:500000, traderHWM:503400,
+   status:"above", traderCredits:0, serverCost:0, isBtc:false, currentAUM:514800, notes:""},
+  {code:"GP", name:"GPD Capital",             billTo:"GPD Capital",
+   accountType:"BTC", exchange:"OKX",        odumFee:null, traderFee:0.10,
+   introducer:null, introducerFee:0,
+   netDeposits:5, odumHWM:5, traderHWM:5,
+   status:"under", traderCredits:1501.70, serverCost:50, isBtc:true, currentAUM:4.06, notes:"Reset to 5 BTC."},
+  {code:"SL", name:"Shaun Lim",               billTo:"Shaun Lim",
+   accountType:"USDT", exchange:"OKX",       odumFee:null, traderFee:0.10,
+   introducer:null, introducerFee:0,
+   netDeposits:null, odumHWM:null, traderHWM:null,
+   status:"under", traderCredits:3949.93, serverCost:50, isBtc:false, currentAUM:228000, notes:"HWM TBD."},
+  {code:"SL2", name:"Shaun Lim 2",            billTo:"Shaun Lim",
+   accountType:"BTC", exchange:"OKX",        odumFee:null, traderFee:0.10,
+   introducer:null, introducerFee:0,
+   netDeposits:null, odumHWM:3.28, traderHWM:3.28,
+   status:"under", traderCredits:1660.70, serverCost:50, isBtc:true, currentAUM:1.7, notes:"HWM 3.28 BTC."},
+  {code:"ANU", name:"Gulati Ventures",        billTo:"Gulati Ventures",
+   accountType:"BTC", exchange:"OKX",        odumFee:null, traderFee:0.10,
+   introducer:null, introducerFee:0,
+   netDeposits:null, odumHWM:null, traderHWM:null,
+   status:"under", traderCredits:0, serverCost:50, isBtc:true, currentAUM:null, notes:"HWM TBD."},
+  {code:"IK", name:"Investment Club (Pooled)",billTo:"IkeNova Investment Club",
+   accountType:"USDT", exchange:"OKX",       odumFee:0.35, traderFee:0.10,
+   introducer:null, introducerFee:0,
+   netDeposits:50000, odumHWM:69000, traderHWM:69000,
+   status:"under", traderCredits:1241.18, serverCost:50, isBtc:false, currentAUM:35000,
+   notes:"3 investors: Jihane 25.3%, Amaka 21.6%, IK 53.1%."},
+];
+
+// ============================================================
+// PERSISTENT STATE (localStorage)
+// ============================================================
+function loadState() {
+  try { return JSON.parse(localStorage.getItem('odum-inv-state') || '{}'); }
+  catch { return {}; }
+}
+function saveState() { localStorage.setItem('odum-inv-state', JSON.stringify(state)); vaultSave(); }
+
+let state = loadState();
+// Defaults
+if (!state.aum)       state.aum = {};
+if (!state.invoices)  state.invoices = [];
+if (!state.traderPmts) state.traderPmts = [];
+if (!state.invCounter) state.invCounter = 25; // Feb invoices were #21-24
+
+// Sync AUM from CLIENTS defaults if not yet set
+CLIENTS.forEach(c => { if (state.aum[c.code] == null) state.aum[c.code] = c.currentAUM; });
+
+// Pre-seed February 2026 invoices (issued but not yet marked paid) on first load
+if (state.invoices.length === 0) {
+  const febInvoices = [
+    {id:'feb26_PR',  num:'INV-21', client:'PR',  billTo:'Prismatic Multi-Strategy Master Fund',
+     desc:'Performance fee: Nov 1, 2025 – Feb 17, 2026 (40% × $19,543.02 above HWM)',
+     amount:7817.21, type:'odum', issued:'2026-02-17', period:'November 2025 – February 2026',
+     status:'issued', txid:'', paidDate:''},
+    {id:'feb26_NN',  num:'INV-22', client:'NN',  billTo:'Namnar',
+     desc:'Performance fee: Inception – Feb 17, 2026 (30% × $8,400 above HWM)',
+     amount:2520.00, type:'odum', issued:'2026-02-17', period:'Inception – February 2026',
+     status:'issued', txid:'', paidDate:''},
+    {id:'feb26_ET',  num:'INV-23', client:'ET',  billTo:'Eqvilent',
+     desc:'Performance fee: Inception – Feb 17, 2026 (30% × $19,000 above HWM)',
+     amount:5700.00, type:'odum', issued:'2026-02-17', period:'Inception – February 2026',
+     status:'issued', txid:'', paidDate:''},
+    {id:'feb26_STD', num:'INV-24', client:'STD', billTo:'Steady Hash',
+     desc:'Performance fee: Inception – Feb 17, 2026 (35% × $14,800 above HWM)',
+     amount:5180.00, type:'odum', issued:'2026-02-17', period:'Inception – February 2026',
+     status:'issued', txid:'', paidDate:''},
+  ];
+  state.invoices = febInvoices;
+  saveState();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+const fmt    = (n,dp=2) => n==null?'—':Number(n).toLocaleString('en-GB',{minimumFractionDigits:dp,maximumFractionDigits:dp});
+const fmtUSD = n => n==null?'—':'$'+fmt(n);
+const fmtPct = n => n==null?'—':(n*100).toFixed(1)+'%';
+const el     = id => document.getElementById(id);
+const today  = () => new Date().toISOString().slice(0,10);
+const clientByCode = code => CLIENTS.find(c=>c.code===code);
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el('tab-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name==='history') renderHistory();
+}
+
+function openModal(id)  { el(id).classList.add('open'); }
+function closeModal(id) { el(id).classList.remove('open'); }
+
+function nextInvNum() {
+  const n = state.invCounter || 1;
+  state.invCounter = n + 1;
+  saveState();
+  return 'INV-'+new Date().getFullYear()+'-'+String(n).padStart(3,'0');
+}
+
+// ============================================================
+// INVOICE CALCULATOR
+// ============================================================
+function calcAll() {
+  const btcPrice = parseFloat(el('btc-price').value)||85000;
+  const period   = el('inv-period-label').value || '—';
+  let totalClient=0, totalTrader=0, totalIntro=0, openCount=0;
+
+  const aboveBody = el('inv-body-above');
+  const underBody = el('inv-body-under');
+  aboveBody.innerHTML='';
+  underBody.innerHTML='';
+
+  // Count open client invoices
+  openCount = state.invoices.filter(i=>i.status==='issued' && i.type==='odum').length;
+
+  // Server costs
+  const underClients = CLIENTS.filter(c=>c.status==='under');
+  const serverTotal  = underClients.reduce((s,c)=>s+(c.serverCost||0),0);
+  totalTrader += serverTotal;
+
+  CLIENTS.forEach(c=>{
+    const aum = state.aum[c.code];
+    if (c.status==='above') {
+      const pnlOdum    = (aum!=null && c.odumHWM!=null) ? Math.max(0,aum-c.odumHWM) : 0;
+      const pnlTrader  = c.traderHWM!=null ? Math.max(0,(aum||0)-c.traderHWM) : 0;
+      const odumInv    = c.odumFee ? pnlOdum*c.odumFee : 0;
+      const traderFee  = pnlTrader*c.traderFee;
+      const introFee   = c.introducerFee ? odumInv*c.introducerFee : 0;
+      totalClient += odumInv;
+      totalTrader += traderFee;
+      totalIntro  += introFee;
+      const introLabel = c.introducer
+        ? `${c.introducer} (${(c.introducerFee*100).toFixed(0)}%): ${fmtUSD(introFee)}`
+        : '—';
+      const statusBadge = pnlOdum>0
+        ? '<span class="badge badge-green">Above HWM</span>'
+        : '<span class="badge badge-amber">At HWM</span>';
+
+      aboveBody.innerHTML += `
+        <tr>
+          <td><strong>${c.code}</strong> — ${c.name}</td>
+          <td>${c.odumFee?(c.odumFee*100).toFixed(0)+'%':'—'}</td>
+          <td>${c.isBtc?c.odumHWM+' BTC':fmtUSD(c.odumHWM)}</td>
+          <td>
+            <input type="number" value="${aum!=null?aum:''}" step="${c.isBtc?'0.001':'1'}"
+              style="width:100px;border:1px solid #d1d5db;border-radius:5px;padding:3px 6px;font-size:11px;"
+              onchange="state.aum['${c.code}']=parseFloat(this.value)||0;saveState();calcAll();">
+            ${c.isBtc?' BTC':' USD'}
+          </td>
+          <td class="num" style="color:var(--green);font-weight:600;">${c.isBtc?fmt(pnlOdum,3)+' BTC':fmtUSD(pnlOdum)}</td>
+          <td class="num" style="font-weight:700;">${fmtUSD(odumInv)}</td>
+          <td class="num">${fmtUSD(traderFee)}</td>
+          <td class="num" style="font-size:11px;color:var(--blue-dark);">${introLabel}</td>
+          <td>${statusBadge}</td>
+          <td>
+            <button class="btn btn-primary btn-sm" onclick="openIssueModal('${c.code}','odum',${odumInv.toFixed(2)},'${period}')">
+              Issue Invoice
+            </button>
+          </td>
+        </tr>`;
+    } else {
+      const hwm = c.odumHWM;
+      const gap = (hwm!=null && aum!=null) ? Math.max(0,hwm-aum) : null;
+      underBody.innerHTML += `
+        <tr>
+          <td><strong>${c.code}</strong> — ${c.name}</td>
+          <td>${hwm!=null?(c.isBtc?hwm+' BTC':fmtUSD(hwm)):'?'}</td>
+          <td>
+            <input type="number" value="${aum!=null?aum:''}" step="${c.isBtc?'0.001':'1'}"
+              style="width:90px;border:1px solid #d1d5db;border-radius:5px;padding:3px 6px;font-size:11px;"
+              onchange="state.aum['${c.code}']=parseFloat(this.value)||0;saveState();calcAll();">
+            ${c.isBtc?' BTC':' USD'}
+          </td>
+          <td class="num" style="color:var(--red);">${gap!=null?(c.isBtc?fmt(gap,3)+' BTC':fmtUSD(gap)):'?'}</td>
+          <td class="num">$${fmt(c.serverCost||0)}/mo</td>
+          <td class="num" style="color:var(--amber);font-weight:600;">${fmtUSD(c.traderCredits||0)}</td>
+          <td><span class="badge badge-red">Underwater</span></td>
+        </tr>`;
+    }
+  });
+
+  // Trader credits
+  const credBody = el('trader-credits-body');
+  credBody.innerHTML='';
+  let totalCredits=0;
+  CLIENTS.filter(c=>c.traderCredits>0).forEach(c=>{
+    credBody.innerHTML+=`<tr><td>${c.code} — ${c.name}</td><td class="num" style="color:var(--amber);font-weight:600;">${fmtUSD(c.traderCredits)}</td><td>Upon recovery to HWM</td></tr>`;
+    totalCredits+=c.traderCredits;
+  });
+  el('trader-credit-total').textContent = fmtUSD(totalCredits);
+  el('sum-client').textContent = fmtUSD(totalClient);
+  el('sum-trader').textContent = fmtUSD(totalTrader);
+  el('sum-intro').textContent  = fmtUSD(totalIntro);
+  el('sum-open').textContent   = openCount;
+}
+
+// ============================================================
+// ISSUE INVOICE MODAL
+// ============================================================
+function openIssueModal(clientCode, type, amount, period) {
+  const c = clientByCode(clientCode);
+  el('modal-issue-client').value = clientCode;
+  el('modal-inv-num').value      = nextInvNum();
+  el('modal-issue-date').value   = today();
+  el('modal-bill-to').value      = c ? c.billTo : '';
+  el('modal-amount').value       = amount.toFixed(2);
+  el('modal-inv-type').value     = type;
+  el('modal-desc').value         = `Performance fee — ${period}`;
+  el('modal-issue-title').textContent = `Issue Invoice — ${c ? c.name : clientCode}`;
+  openModal('modal-issue');
+}
+
+function confirmIssueInvoice() {
+  const clientCode = el('modal-issue-client').value;
+  const inv = {
+    id:       Date.now()+'_'+Math.random().toString(36).slice(2,6),
+    num:      el('modal-inv-num').value,
+    client:   clientCode,
+    billTo:   el('modal-bill-to').value,
+    desc:     el('modal-desc').value,
+    amount:   parseFloat(el('modal-amount').value)||0,
+    type:     el('modal-inv-type').value,
+    issued:   el('modal-issue-date').value,
+    period:   el('inv-period-label').value,
+    status:   'issued',
+    txid:     '',
+    paidDate: '',
+  };
+  state.invoices.push(inv);
+  saveState();
+  closeModal('modal-issue');
+  // Open printable invoice
+  printInvoice(inv);
+  calcAll();
+  renderHistory();
+}
+
+// ============================================================
+// MARK PAID MODAL
+// ============================================================
+function openMarkPaidModal(invId) {
+  const inv = state.invoices.find(i=>i.id===invId) || state.traderPmts.find(i=>i.id===invId);
+  if (!inv) return;
+  el('modal-inv-id').value   = invId;
+  el('modal-txid').value     = inv.txid || '';
+  el('modal-paid-date').value= today();
+  el('modal-inv-summary').innerHTML =
+    `<strong>${inv.num}</strong> &mdash; ${inv.billTo||inv.client}<br>`+
+    `Amount: <strong>${fmtUSD(inv.amount)}</strong> &mdash; Period: ${inv.period}`;
+  openModal('modal-paid');
+}
+
+function confirmMarkPaid() {
+  const id   = el('modal-inv-id').value;
+  const txid = el('modal-txid').value.trim();
+  const date = el('modal-paid-date').value;
+  if (!txid) { alert('Please enter the transaction ID / blockchain hash.'); return; }
+
+  let inv = state.invoices.find(i=>i.id===id);
+  if (!inv) inv = state.traderPmts.find(i=>i.id===id);
+  if (!inv) return;
+
+  inv.status   = 'paid';
+  inv.txid     = txid;
+  inv.paidDate = date;
+
+  // If Odum client invoice paid → advance Odum HWM to current AUM
+  if (inv.type==='odum') {
+    const c = clientByCode(inv.client);
+    const aum = state.aum[inv.client];
+    if (c && aum!=null) {
+      c.odumHWM = aum;  // advance HWM
+      console.log(`HWM for ${inv.client} updated to ${aum}`);
+    }
+  }
+
+  saveState();
+  closeModal('modal-paid');
+  calcAll();
+  renderHistory();
+}
+
+// ============================================================
+// PRINT INVOICE
+// ============================================================
+function printInvoice(inv) {
+  const c = clientByCode(inv.client);
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>${inv.num}</title>
+<style>
+body{font-family:Helvetica Neue,Arial,sans-serif;margin:0;padding:30px 40px;color:#111;font-size:12px;}
+.header{display:flex;justify-content:space-between;margin-bottom:28px;border-bottom:2px solid #1e3a8a;padding-bottom:16px;}
+.brand{font-size:22px;font-weight:800;color:#1e3a8a;}
+.inv-meta{text-align:right;font-size:11px;color:#555;}
+.inv-meta strong{font-size:13px;color:#111;}
+.section{margin:18px 0;}
+.section-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#6b7280;margin-bottom:4px;}
+.bill-to{background:#f8faff;border-left:3px solid #1d4ed8;padding:8px 12px;border-radius:0 4px 4px 0;font-size:12px;}
+table{width:100%;border-collapse:collapse;margin:18px 0;}
+thead th{background:#1e3a8a;color:#fff;padding:7px 10px;font-size:11px;text-align:left;}
+tbody td{padding:7px 10px;border-bottom:1px solid #e2e8f0;}
+.total-row td{font-weight:700;font-size:14px;border-top:2px solid #1e3a8a;padding-top:10px;}
+.total-row td:last-child{color:#1d4ed8;}
+.footer{margin-top:32px;padding-top:14px;border-top:1px solid #e2e8f0;font-size:9px;color:#9ca3af;line-height:1.5;}
+.status{display:inline-block;padding:4px 12px;border-radius:999px;background:#fef3c7;color:#92400e;font-weight:700;font-size:11px;}
+@media print{body{padding:10px 16px;}}
+</style></head><body>
+<div class="header">
+  <div>
+    <div class="brand">ODUM RESEARCH</div>
+    <div style="font-size:11px;color:#6b7280;margin-top:3px;">FCA Registration No. 975797<br>9 Appold Street, London EC2A 2AP</div>
+  </div>
+  <div class="inv-meta">
+    <strong>${inv.num}</strong><br>
+    Issued: ${inv.issued}<br>
+    <span class="status">AWAITING PAYMENT</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Bill To</div>
+  <div class="bill-to">${(inv.billTo||'').replace(/\n/g,'<br>')}</div>
+</div>
+
+<table>
+  <thead><tr><th>Description</th><th>Period</th><th style="text-align:right;">Amount (USD)</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>${inv.desc}</td>
+      <td>${inv.period}</td>
+      <td style="text-align:right;">${fmtUSD(inv.amount)}</td>
+    </tr>
+    ${c && c.odumFee ? `<tr style="color:#6b7280;font-size:11px;"><td colspan="2">Performance fee rate: ${(c.odumFee*100).toFixed(0)}% of returns above high-water mark</td><td></td></tr>` : ''}
+  </tbody>
+  <tfoot>
+    <tr class="total-row"><td colspan="2"><strong>Total Due</strong></td><td style="text-align:right;">${fmtUSD(inv.amount)}</td></tr>
+  </tfoot>
+</table>
+
+<div class="section">
+  <div class="section-label">Payment Instructions</div>
+  <div style="background:#f0fdf4;border:1px solid #d1fae5;border-radius:6px;padding:10px 14px;font-size:12px;">
+    Payment accepted in USDT (TRC-20 or ERC-20) or BTC.<br>
+    Please include invoice number <strong>${inv.num}</strong> as payment reference.<br>
+    Send payment confirmation and transaction hash to: <strong>accounts@odumresearch.com</strong>
+  </div>
+</div>
+
+<div class="footer">
+  This invoice is issued by Odum Research. FCA Registration No. 975797.
+  Performance fees are calculated in accordance with the Investment Management Agreement (IMA) signed between Odum Research and the client.
+  Past performance is not a reliable indicator of future results.
+  This document does not constitute investment advice.
+</div>
+
+<script>window.onload=()=>window.print();<\/script>
+</body></html>`;
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  // Also save to vault if set
+  vaultSaveInvoiceFile(inv, html).then(saved => {
+    if (saved) showToast(inv.num + ' saved to vault/invoices/');
+  });
+}
+
+// ============================================================
+// INVOICE HISTORY
+// ============================================================
+function renderHistory() {
+  // Populate client filter
+  const cf = el('hist-filter-client');
+  if (cf.options.length === 1) {
+    CLIENTS.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c.code; o.textContent = `${c.code} — ${c.name}`;
+      cf.appendChild(o);
+    });
+  }
+  const filterClient = cf.value;
+  const filterStatus = el('hist-filter-status').value;
+
+  let invs = [...state.invoices];
+  if (filterClient) invs = invs.filter(i=>i.client===filterClient);
+  if (filterStatus) invs = invs.filter(i=>i.status===filterStatus);
+  invs.sort((a,b)=>b.issued.localeCompare(a.issued));
+
+  const body = el('history-body');
+  body.innerHTML = '';
+  el('history-empty').style.display = invs.length===0?'block':'none';
+
+  invs.forEach(inv => {
+    const c = clientByCode(inv.client);
+    const statusBadge = inv.status==='paid'
+      ? '<span class="badge badge-green">Paid</span>'
+      : '<span class="badge badge-amber">Issued — Open</span>';
+    const typeBadge = inv.type==='odum'
+      ? '<span class="badge badge-blue">Client Invoice</span>'
+      : inv.type==='trader'
+        ? '<span class="badge badge-purple">Trader</span>'
+        : '<span class="badge badge-grey">Introducer</span>';
+    const txidCell = inv.txid
+      ? `<a class="explorer-link" href="https://etherscan.io/tx/${inv.txid}" target="_blank" title="${inv.txid}">${inv.txid.slice(0,10)}…</a>`
+      : '<span style="color:var(--muted);">—</span>';
+    const actions = inv.status==='issued'
+      ? `<button class="btn btn-green btn-sm" onclick="openMarkPaidModal('${inv.id}')">Mark Paid</button>
+         <button class="btn btn-outline btn-sm" onclick="printInvoice(state.invoices.find(i=>i.id==='${inv.id}'))">PDF</button>`
+      : `<button class="btn btn-outline btn-sm" onclick="printInvoice(state.invoices.find(i=>i.id==='${inv.id}'))">PDF</button>`;
+    body.innerHTML += `
+      <tr class="inv-history-row">
+        <td><strong>${inv.num}</strong></td>
+        <td>${c?c.name:inv.client}</td>
+        <td>${typeBadge}</td>
+        <td>${inv.period}</td>
+        <td>${inv.issued}</td>
+        <td class="num" style="font-weight:600;">${fmtUSD(inv.amount)}</td>
+        <td>${statusBadge}</td>
+        <td>${txidCell}</td>
+        <td>${inv.paidDate||'—'}</td>
+        <td>${actions}</td>
+      </tr>`;
+  });
+
+  // Trader payments
+  const tBody = el('trader-payments-body');
+  tBody.innerHTML = '';
+  state.traderPmts.forEach(tp => {
+    const statusBadge = tp.status==='paid'
+      ? '<span class="badge badge-green">Paid</span>'
+      : '<span class="badge badge-amber">Open</span>';
+    const txidCell = tp.txid
+      ? `<a class="explorer-link" href="https://etherscan.io/tx/${tp.txid}" target="_blank">${tp.txid.slice(0,10)}…</a>`
+      : '—';
+    const actions = tp.status==='issued'
+      ? `<button class="btn btn-green btn-sm" onclick="openMarkPaidModal('${tp.id}')">Mark Paid</button>`
+      : '';
+    tBody.innerHTML += `
+      <tr class="inv-history-row">
+        <td><strong>${tp.num}</strong></td>
+        <td>${tp.period}</td><td>${tp.issued}</td>
+        <td class="num">${fmtUSD(tp.perfFees)}</td>
+        <td class="num">${fmtUSD(tp.serverCosts)}</td>
+        <td class="num" style="font-weight:700;">${fmtUSD(tp.amount)}</td>
+        <td>${statusBadge}</td>
+        <td>${txidCell}</td>
+        <td>${tp.paidDate||'—'}</td>
+        <td>${actions}</td>
+      </tr>`;
+  });
+}
+
+// ============================================================
+// EXPORT / IMPORT STATE
+// ============================================================
+// ============================================================
+// LOCAL VAULT  (File System Access API + IndexedDB handle persistence)
+// ============================================================
+let vaultHandle = null; // FileSystemDirectoryHandle
+
+function openVaultDb() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('odum-vault', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('kv');
+    req.onsuccess = e => res(e.target.result);
+    req.onerror = () => rej(req.error);
+  });
+}
+async function vaultDbGet(key) {
+  const db = await openVaultDb();
+  return new Promise((res,rej) => { const r=db.transaction('kv','readonly').objectStore('kv').get(key); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); });
+}
+async function vaultDbPut(key,val) {
+  const db = await openVaultDb();
+  return new Promise((res,rej) => { const r=db.transaction('kv','readwrite').objectStore('kv').put(val,key); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); });
+}
+
+async function initVault() {
+  try {
+    const handle = await vaultDbGet('dirHandle');
+    if (!handle) return;
+    const perm = await handle.queryPermission({ mode:'readwrite' });
+    vaultHandle = handle;
+    if (perm === 'granted') { updateVaultUI(); await vaultLoad(); }
+    else { updateVaultUI(); } // will request permission on next user action
+  } catch(e) { console.warn('vault init:', e); }
+}
+
+async function pickVaultFolder() {
+  if (!window.showDirectoryPicker) { showToast('File System Access API not supported in this browser. Use Chrome/Edge.'); return; }
+  try {
+    const handle = await window.showDirectoryPicker({ mode:'readwrite', startIn:'documents' });
+    vaultHandle = handle;
+    await vaultDbPut('dirHandle', handle);
+    updateVaultUI();
+    await vaultSave();
+    showToast('Vault set — ' + handle.name + '. State auto-saves here.');
+  } catch(e) { if (e.name !== 'AbortError') { console.error(e); showToast('Could not set vault: ' + e.message); } }
+}
+
+async function clearVault() {
+  vaultHandle = null;
+  try { const db = await openVaultDb(); db.transaction('kv','readwrite').objectStore('kv').delete('dirHandle'); } catch(e){}
+  updateVaultUI();
+  showToast('Vault cleared — using browser storage only.');
+}
+
+async function vaultSave() {
+  if (!vaultHandle) return;
+  try {
+    const perm = await vaultHandle.requestPermission({ mode:'readwrite' });
+    if (perm !== 'granted') return;
+    const fh = await vaultHandle.getFileHandle('odum-state.json', { create:true });
+    const w = await fh.createWritable();
+    await w.write(JSON.stringify(state, null, 2));
+    await w.close();
+  } catch(e) { console.warn('vault save:', e); }
+}
+
+async function vaultLoad() {
+  if (!vaultHandle) return;
+  try {
+    const perm = await vaultHandle.requestPermission({ mode:'readwrite' });
+    if (perm !== 'granted') return;
+    const fh = await vaultHandle.getFileHandle('odum-state.json');
+    const text = await (await fh.getFile()).text();
+    const loaded = JSON.parse(text);
+    Object.assign(state, loaded);
+    localStorage.setItem('odum-inv-state', text);
+    CLIENTS.forEach(c=>{ if(state.aum[c.code]==null) state.aum[c.code]=c.currentAUM; });
+    calcAll(); renderHistory();
+    showToast('State loaded from vault: ' + vaultHandle.name);
+  } catch(e) { if (e.name !== 'NotFoundError') console.warn('vault load:', e); }
+}
+
+async function vaultSaveInvoiceFile(inv, htmlContent) {
+  if (!vaultHandle) return false;
+  try {
+    const perm = await vaultHandle.requestPermission({ mode:'readwrite' });
+    if (perm !== 'granted') return false;
+    const invoicesDir = await vaultHandle.getDirectoryHandle('invoices', { create:true });
+    const safeName = (inv.num + '-' + inv.client + '-' + (inv.period||'').replace(/[^a-z0-9]/gi,'-')).slice(0,60) + '.html';
+    const fh = await invoicesDir.getFileHandle(safeName, { create:true });
+    const w = await fh.createWritable();
+    await w.write(htmlContent);
+    await w.close();
+    return true;
+  } catch(e) { console.warn('vault save invoice:', e); return false; }
+}
+
+function updateVaultUI() {
+  const status = el('vault-status');
+  const folderName = el('vault-folder-name');
+  const clearBtn = el('btn-clear-vault');
+  if (vaultHandle) {
+    if (status) { status.textContent = '💾 ' + vaultHandle.name; status.title = 'Vault: ' + vaultHandle.name; status.style.color = '#86efac'; }
+    if (folderName) { folderName.textContent = '✓ Vault: ' + vaultHandle.name; }
+    if (clearBtn) clearBtn.style.display = '';
+  } else {
+    if (status) { status.textContent = '💾 browser only'; status.title = 'No vault — click to set local folder'; status.style.color = 'rgba(255,255,255,.5)'; }
+    if (folderName) { folderName.textContent = ''; }
+    if (clearBtn) clearBtn.style.display = 'none';
+  }
+}
+
+function saveCloudConfig() {
+  const cfg = { apiUrl: el('cloud-api-url')?.value||'', apiKey: el('cloud-api-key')?.value||'' };
+  localStorage.setItem('odum-cloud-cfg', JSON.stringify(cfg));
+}
+function loadCloudConfig() {
+  try {
+    const cfg = JSON.parse(localStorage.getItem('odum-cloud-cfg')||'{}');
+    if (el('cloud-api-url')) el('cloud-api-url').value = cfg.apiUrl||'';
+    if (el('cloud-api-key')) el('cloud-api-key').value = cfg.apiKey||'';
+  } catch(e){}
+}
+
+function openSettings() { loadCloudConfig(); updateVaultUI(); openModal('modal-settings'); }
+
+function showToast(msg) {
+  const t = el('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.opacity = '0', 3500);
+}
+
+// ============================================================
+// EXPORT / IMPORT
+// ============================================================
+function exportState() {
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'odum-invoices-'+today()+'.json';
+  a.click();
+}
+function importState(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      Object.assign(state, imported);
+      CLIENTS.forEach(c=>{ if(state.aum[c.code]==null) state.aum[c.code]=c.currentAUM; });
+      saveState();
+      calcAll();
+      renderHistory();
+      alert('State imported.');
+    } catch(err) { alert('Invalid JSON: '+err.message); }
+  };
+  r.readAsText(file);
+}
+
+// ============================================================
+// BTC REPORT
+// ============================================================
+const defaultBtcMonths = [
+  {month:'November 2025',ret:'+0.065%',note:'Partial month (from 21 Nov)'},
+  {month:'December 2025',ret:'+0.237%',note:'Full month'},
+  {month:'January 2026', ret:'+0.48%', note:'Full month'},
+];
+const defaultAlloc = [
+  {strategy:'Basis Trading (Cash & Carry)',desc:'Market-neutral BTC futures vs spot arbitrage capturing funding spreads.',alloc:'60%'},
+  {strategy:'Yield & Funding Arbitrage',   desc:'Capturing stable, market-neutral yields in CeFi and DeFi lending markets.',alloc:'20%'},
+  {strategy:'Liquidity Provision',         desc:'Institutional LP positions on tier-1 protocols.',alloc:'15%'},
+  {strategy:'Opportunistic Yield Farming', desc:'Hedged token incentive programmes with full directional neutrality.',alloc:'5%'},
+];
+let btcMonths = defaultBtcMonths.map(r=>({...r}));
+let btcAlloc  = defaultAlloc.map(r=>({...r}));
+
+function renderBtcMonthRows() {
+  el('btc-months-rows').innerHTML = btcMonths.map((r,i)=>`
+    <div class="dyn-row">
+      <input value="${r.month}" placeholder="Month Year" oninput="btcMonths[${i}].month=this.value">
+      <input value="${r.ret}" placeholder="+0.48%" style="max-width:75px;" oninput="btcMonths[${i}].ret=this.value">
+      <input value="${r.note}" placeholder="Notes" oninput="btcMonths[${i}].note=this.value">
+      <button class="btn-remove" onclick="btcMonths.splice(${i},1);renderBtcMonthRows()">✕</button>
+    </div>`).join('');
+}
+function addBtcMonthRow() { btcMonths.push({month:'',ret:'',note:''}); renderBtcMonthRows(); }
+
+function renderAllocRows() {
+  el('btc-alloc-rows').innerHTML = btcAlloc.map((r,i)=>`
+    <div class="dyn-row" style="align-items:flex-start;gap:6px;margin-bottom:6px;">
+      <input value="${r.strategy}" placeholder="Strategy" style="min-width:130px;" oninput="btcAlloc[${i}].strategy=this.value">
+      <input value="${r.desc}" placeholder="Description" style="flex:2;" oninput="btcAlloc[${i}].desc=this.value">
+      <input value="${r.alloc}" placeholder="60%" style="max-width:52px;" oninput="btcAlloc[${i}].alloc=this.value">
+      <button class="btn-remove" onclick="btcAlloc.splice(${i},1);renderAllocRows()">✕</button>
+    </div>`).join('');
+}
+function addAllocRow() { btcAlloc.push({strategy:'',desc:'',alloc:''}); renderAllocRows(); }
+
+function getBtcReportHtml() {
+  const name=el('btc-client-name').value, month=el('btc-month').value, year=el('btc-year').value;
+  const inc=el('btc-inception').value, strat=el('btc-strategy').value, mandate=el('btc-mandate').value;
+  const mRet=el('btc-month-ret').value, sRet=el('btc-since-ret').value;
+  const startB=el('btc-start').value, endB=el('btc-end').value;
+  const comm=el('btc-commentary').value.replace(/\n/g,'<br>');
+  const notes=el('btc-notes').value;
+  const monthRows=btcMonths.map(r=>`<tr><td><strong>${r.month}</strong></td><td><strong>${r.ret}</strong></td><td class="text-right">${r.note}</td></tr>`).join('');
+  const allocRows=btcAlloc.map(r=>`<tr><td><strong>${r.strategy}</strong></td><td style="color:#374151;">${r.desc}</td><td class="text-right"><strong>${r.alloc}</strong></td></tr>`).join('');
+  const notesHtml=notes?`<p style="font-size:9px;color:#6b7280;margin-top:4px;"><strong>Note:</strong> ${notes}</p>`:'';
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${name} – BTC | ${month} ${year}</title>
+<style>:root{--gold:#1d4ed8;--gold-soft:#e0ecff;--bg:#f5f7ff;--card:#fff;--text:#111827;--muted:#6b7280;--border:#e5e7eb;}
+*{box-sizing:border-box;}body{margin:0;padding:8px 0;font-family:-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.4;}
+.page{max-width:900px;margin:0 auto;background:var(--card);border-radius:18px;padding:12px 20px 16px;box-shadow:0 18px 40px rgba(15,23,42,.08);}
+.header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:8px;}
+.logo-text{font-size:20px;font-weight:700;color:var(--gold);}.header-text{text-align:right;}
+.header-title{font-size:17px;font-weight:650;margin:0 0 2px;}.header-sub{font-size:11px;color:var(--muted);margin:0;}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--gold-soft);color:#1e3a8a;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:6px;}
+.pill-dot{width:7px;height:7px;border-radius:999px;background:var(--gold);}
+.panel{border-radius:16px;border:1px solid var(--border);padding:10px 12px 12px;background:linear-gradient(135deg,#fff,#f7f8ff);margin-bottom:8px;}
+.panel-title{font-size:12px;font-weight:650;margin:0 0 6px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+.stat{background:#fff;border-radius:12px;border:1px solid var(--border);padding:6px;text-align:center;}
+.stat-label{font-size:10px;color:var(--muted);margin-bottom:3px;}.stat-value{font-size:14px;font-weight:700;}.positive{color:#059669;}
+table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;}
+thead th{background:var(--gold);color:#fff;padding:6px 8px;text-align:left;font-weight:600;font-size:10px;}
+th.text-right,td.text-right{text-align:right;}
+tbody td{padding:6px 8px;border-bottom:1px solid var(--border);}tbody tr:nth-child(even){background:#f9fafb;}
+p{font-size:11px;line-height:1.4;margin:6px 0;}
+.footer{display:flex;justify-content:space-between;gap:12px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);font-size:9px;color:var(--muted);}
+@media print{body{background:#fff;}.page{box-shadow:none;border-radius:0;}}</style></head><body>
+<div class="page">
+  <div class="header">
+    <div class="logo-text">ODUM</div>
+    <div class="header-text">
+      <p class="header-title">${name} &ndash; BTC Investment | Odum Monthly Snapshot</p>
+      <p class="header-sub">${month} ${year} &middot; Inception: ${inc}</p>
+      <div class="pill"><span class="pill-dot"></span><span>${strat}</span></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">${month} ${year} Performance Snapshot</div>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Month Return</div><div class="stat-value positive">+${mRet}%</div></div>
+      <div class="stat"><div class="stat-label">Since Inception</div><div class="stat-value positive">+${sRet}%</div></div>
+      <div class="stat"><div class="stat-label">Start BTC</div><div class="stat-value">${startB}</div></div>
+      <div class="stat"><div class="stat-label">End BTC</div><div class="stat-value">${endB}</div></div>
+    </div>
+    <p style="font-size:10px;color:var(--muted);margin-top:4px;">${comm}</p>
+  </div>
+  <div class="panel"><div class="panel-title">Monthly Returns Breakdown</div>
+    <table><thead><tr><th>Month</th><th>Return (BTC)</th><th class="text-right">Notes</th></tr></thead>
+    <tbody>${monthRows}</tbody></table>
+  </div>
+  <div class="panel"><div class="panel-title">Strategy Allocation &amp; Positioning</div>
+    <table><thead><tr><th>Strategy</th><th>Description</th><th class="text-right">Allocation</th></tr></thead>
+    <tbody>${allocRows}</tbody></table>
+    ${notesHtml}
+  </div>
+  <div class="footer">
+    <div>Prepared for: <strong>${name}</strong><br>Prepared by: <strong>Odum Research</strong> &mdash; ${mandate}</div>
+    <div style="text-align:right;">Information for general purposes only. Not investment advice. Past performance not a reliable indicator. Figures subject to reconciliation.</div>
+  </div>
+</div></body></html>`;
+}
+function generateBtcReport() { el('btc-preview').srcdoc = getBtcReportHtml(); }
+function printBtcReport() { const w=window.open('','_blank'); w.document.write(getBtcReportHtml()); w.document.close(); w.onload=()=>w.print(); }
+
+// ============================================================
+// MR REPORT
+// ============================================================
+const XEX=[
+  {key:'btc_all',label:'BTC All'},{key:'usdt_all',label:'USDT All'},
+  {key:'binance_btc',label:'Binance BTC'},{key:'binance_usdt',label:'Binance USDT'},
+  {key:'okx_btc',label:'OKX BTC'},{key:'okx_usdt',label:'OKX USDT'},
+  {key:'bybit_btc',label:'Bybit BTC'},{key:'bybit_usdt',label:'Bybit USDT'},
+];
+const defXex={btc_all:2.76,usdt_all:3.17,binance_btc:2.87,binance_usdt:2.88,okx_btc:2.93,okx_usdt:3.17,bybit_btc:2.5,bybit_usdt:3.19,
+  r_btc_all:0.96,r_usdt_all:1.10,r_binance_btc:1.00,r_binance_usdt:1.00,r_okx_btc:1.02,r_okx_usdt:1.10,r_bybit_btc:0.87,r_bybit_usdt:1.11};
+let mrMonths=[{month:'March',ret:6.3},{month:'April',ret:11.2},{month:'May',ret:4.2},{month:'June',ret:1.0},{month:'July',ret:1.9},{month:'August',ret:3.2}];
+
+function renderMrXexTable() {
+  el('mr-xex-body').innerHTML=XEX.map(x=>`<tr><td>${x.label}</td>
+    <td><input type="number" step="0.01" id="xex_${x.key}" value="${defXex[x.key]}" style="width:68px;border:1px solid #d1d5db;border-radius:5px;padding:3px 6px;font-size:11px;"></td>
+    <td><input type="number" step="0.01" id="xex_r_${x.key}" value="${defXex['r_'+x.key]}" style="width:68px;border:1px solid #d1d5db;border-radius:5px;padding:3px 6px;font-size:11px;"></td>
+    </tr>`).join('');
+}
+function renderMrMonthRows() {
+  el('mr-months-rows').innerHTML=mrMonths.map((r,i)=>`
+    <div class="dyn-row">
+      <input value="${r.month}" placeholder="Month" oninput="mrMonths[${i}].month=this.value;updateMrCharts();">
+      <input type="number" value="${r.ret}" step="0.01" placeholder="%" style="max-width:75px;" oninput="mrMonths[${i}].ret=parseFloat(this.value)||0;updateMrCharts();">
+      <button class="btn-remove" onclick="mrMonths.splice(${i},1);renderMrMonthRows();updateMrCharts();">✕</button>
+    </div>`).join('');
+}
+function addMrMonthRow() { mrMonths.push({month:'',ret:0}); renderMrMonthRows(); }
+
+let mrChart1=null,mrChart2=null;
+function updateMrCharts() {
+  const labels=mrMonths.map(r=>r.month), vals=mrMonths.map(r=>r.ret);
+  if(mrChart1){mrChart1.data.labels=labels;mrChart1.data.datasets[0].data=vals;mrChart1.update();}
+  else mrChart1=new Chart(el('mr-chart-returns'),{type:'bar',data:{labels,datasets:[{label:'Monthly Return %',data:vals,backgroundColor:'#1d4ed8',borderRadius:4}]},options:{plugins:{legend:{display:false}},responsive:true}});
+  const xl=XEX.map(x=>x.label);
+  const xv=XEX.map(x=>parseFloat(el('xex_'+x.key)?.value||0));
+  const xr=XEX.map(x=>parseFloat(el('xex_r_'+x.key)?.value||0));
+  if(mrChart2){mrChart2.data.datasets[0].data=xv;mrChart2.data.datasets[1].data=xr;mrChart2.update();}
+  else mrChart2=new Chart(el('mr-chart-cross'),{type:'bar',data:{labels:xl,datasets:[{label:'Return %',data:xv,backgroundColor:'#1d4ed8',borderRadius:3,yAxisID:'y'},{label:'Ratio vs Backtest',data:xr,type:'line',borderColor:'#111',backgroundColor:'white',pointBackgroundColor:'white',pointBorderColor:'#111',borderWidth:2,pointRadius:4,yAxisID:'y2'}]},options:{scales:{y:{title:{display:true,text:'Returns (%)'}},y2:{position:'right',grid:{display:false},title:{display:true,text:'Ratio'}},x:{ticks:{maxRotation:45}}},responsive:true}});
+}
+
+function getMrReportHtml(uri1,uri2) {
+  const month=el('mr-month').value,year=el('mr-year').value,aumS=el('mr-aum-start').value,aumE=el('mr-aum-end').value;
+  const stratE=el('mr-strat-aum').value,maxDD=el('mr-max-dd').value,retTop=el('mr-ret-top').value;
+  const commSrc=el('mr-comm-source').value,prevMo=el('mr-prev-month').value;
+  const bullets=el('mr-bullets').value.split('\n').filter(l=>l.trim()).map(l=>`<li>${l.trim()}</li>`).join('');
+  const monthRows=mrMonths.map(r=>`<tr><td>${r.month}</td><td>${Number(r.ret).toFixed(2)}%</td></tr>`).join('');
+  const xexRet=XEX.map(x=>`<td>${parseFloat(el('xex_'+x.key)?.value||0).toFixed(2)}%</td>`).join('');
+  const xexRat=XEX.map(x=>`<td>${parseFloat(el('xex_r_'+x.key)?.value||0).toFixed(4)}</td>`).join('');
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Odum Research | ${month} ${year} MR Executive Summary</title>
+<style>:root{--blue:#2563EB;--black:#0A0A0A;--ink:#1A1A1A;--muted:#6B7280;--bg:#fff;--card:#F8FAFF;--rule:#E1E7FF;}
+body{font-family:Calibri,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:7pt;line-height:1.2;margin:0;padding:0;}
+.container{max-width:900px;margin:0 auto;padding:10px 18px;}.brand-logo{font-size:18pt;font-weight:700;color:var(--blue);}
+.report-title{font-size:14pt;font-weight:700;margin:5px 0 2px;color:var(--black);}.subtitle{color:var(--muted);font-size:6pt;}
+.divider{height:1px;background:linear-gradient(90deg,var(--blue),transparent);margin:5px 0 2px;}
+.section{margin:7px 0 4px;}.banner{background:var(--blue);color:#fff;padding:5px 9px;border-radius:5px;font-weight:700;font-size:7pt;}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:5px 8px;margin-top:3px;}
+.bullets{margin:0;padding-left:10px;font-size:6pt;}.bullets li{margin:1px 0;}
+table{width:100%;border-collapse:collapse;font-size:6pt;margin-top:4px;}
+thead th{background:var(--blue);color:#fff;padding:3px;border:1px solid var(--rule);}
+tbody td{padding:3px;border:1px solid var(--rule);text-align:center;}
+tbody tr:nth-child(odd){background:#FBFCFF;}p{margin:4px 0;font-size:6pt;}
+@media print{.container{padding:6px 10px;}}</style></head><body>
+<main class="container">
+  <header><div class="brand-logo">ODUM</div>
+    <h1 class="report-title">${month} Executive Summary | Mean Reversion with Trend Alt Strategy</h1>
+    <div class="subtitle">${month} ${year} &bull; Odum Research</div><div class="divider"></div>
+  </header>
+  <section class="section"><span class="banner">Strategy Highlights</span><div class="card">
+    The Mean Reversion with Trend Alt strategy extended its record of no down months since inception,
+    delivering ${month} returns up to <b>${retTop}%</b> (client-specific, 2&times; leverage average).
+    AUM company-wide from <b>$${aumS}m</b> to <b>$${aumE}m</b>, strategy unleveraged equivalent <b>$${stratE}m</b>.
+    Max intraday drawdown <b>${maxDD}%</b>.
+  </div></section>
+  <section class="section"><span class="banner">Monthly Returns Since Inception</span><div class="card">
+    <table><thead><tr><th>Month</th><th>Return (2&times; leverage, USDT)</th></tr></thead><tbody>${monthRows}</tbody></table>
+  </div></section>
+  <section class="section"><span class="banner">Cross-Exchange &amp; Collateral Performance</span><div class="card">
+    <table><thead><tr><th></th>${XEX.map(x=>`<th>${x.label}</th>`).join('')}</tr></thead>
+    <tbody><tr><td>% returns (2&times; live)</td>${xexRet}</tr><tr><td>Ratio vs backtest</td>${xexRat}</tr></tbody></table>
+  </div></section>
+  ${uri1||uri2?`<section class="section"><span class="banner">Visualizations</span>
+    <div class="card" style="text-align:center;">${uri1?`<img src="${uri1}" style="max-width:100%;border-radius:4px;">`:''}</div>
+    <div class="card" style="text-align:center;margin-top:4px;">${uri2?`<img src="${uri2}" style="max-width:100%;border-radius:4px;">`:''}</div>
+  </section>`:''}
+  <section class="section"><span class="banner">Market Highlights (${commSrc} — ${prevMo} ${year})</span>
+    <div class="card"><ul class="bullets">${bullets}</ul></div></section>
+  <section class="section"><span class="banner">Important Information</span><div class="card">
+    <p>Information for general purposes only. Not investment advice. Past performance does not indicate future results.</p>
+    <p>Odum Research. FCA Registration No. 975797. Registered office: 9 Appold Street, London EC2A 2AP.</p>
+  </div></section>
+</main></body></html>`;
+}
+function generateMrReport() { updateMrCharts(); setTimeout(()=>{ const c1=el('mr-chart-returns'),c2=el('mr-chart-cross'); el('mr-preview').srcdoc=getMrReportHtml(c1?c1.toDataURL():'',(c2?c2.toDataURL():'')); },300); }
+function printMrReport() { updateMrCharts(); setTimeout(()=>{ const c1=el('mr-chart-returns'),c2=el('mr-chart-cross'); const w=window.open('','_blank'); w.document.write(getMrReportHtml(c1?c1.toDataURL():'',c2?c2.toDataURL():'')); w.document.close(); w.onload=()=>w.print(); },300); }
+function parseMrFile(input) {
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const wb=XLSX.read(e.target.result,{type:'array'}), ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1}), data={};
+      rows.forEach(r=>{ if(r[0]&&r[1]!==undefined) data[String(r[0]).trim()]=String(r[1]).trim(); });
+      const map={company_aum_start:'mr-aum-start',company_aum_end:'mr-aum-end',strategy_aum_end:'mr-strat-aum',max_dd_intraday:'mr-max-dd',client_low_return:'mr-ret-low',client_top_return:'mr-ret-top'};
+      Object.entries(map).forEach(([k,id])=>{ if(data[k]&&el(id)) el(id).value=data[k]; });
+      const mos=['march','april','may','june','july','august','september','october','november','december','january','february'];
+      const found=mos.filter(m=>data[m]!==undefined);
+      if(found.length>0){ mrMonths=found.map(m=>({month:m.charAt(0).toUpperCase()+m.slice(1),ret:parseFloat(data[m])||0})); renderMrMonthRows(); }
+      XEX.forEach(x=>{ if(data[x.key]&&el('xex_'+x.key)) el('xex_'+x.key).value=data[x.key]; if(data['r_'+x.key]&&el('xex_r_'+x.key)) el('xex_r_'+x.key).value=data['r_'+x.key]; });
+      updateMrCharts(); alert('Imported. Click Generate.');
+    } catch(err) { alert('Parse error: '+err.message); }
+  };
+  reader.readAsArrayBuffer(file);
+}
+const dropZone=el('mr-drop');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');const f=e.dataTransfer.files[0];if(f){const inp=el('mr-file-input');const dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;parseMrFile(inp);}});
+
+// ============================================================
+// CLIENT LEDGER
+// ============================================================
+function renderLedger() {
+  el('ledger-body').innerHTML=CLIENTS.map(c=>`
+    <tr>
+      <td><strong>${c.code}</strong></td><td>${c.name}</td>
+      <td>${c.accountType}</td><td>${c.exchange}</td>
+      <td>${c.status==='above'?'<span class="badge badge-green">Active</span>':'<span class="badge badge-red">Underwater</span>'}</td>
+      <td>${c.netDeposits!=null?(c.isBtc?c.netDeposits+' BTC':fmtUSD(c.netDeposits)):'?'}</td>
+      <td>${c.odumHWM!=null?(c.isBtc?c.odumHWM+' BTC':fmtUSD(c.odumHWM)):'?'}</td>
+      <td>${c.traderHWM!=null?(c.isBtc?c.traderHWM+' BTC':fmtUSD(c.traderHWM)):'?'}</td>
+      <td>${c.odumFee!=null?fmtPct(c.odumFee):'—'}</td>
+      <td>${fmtPct(c.traderFee)}</td>
+      <td>${c.introducer?c.introducer+' ('+fmtPct(c.introducerFee)+')':'—'}</td>
+      <td style="color:var(--amber);font-weight:600;">${c.traderCredits>0?fmtUSD(c.traderCredits):'—'}</td>
+    </tr>`).join('');
+  el('ledger-cards').innerHTML=CLIENTS.map(c=>`
+    <div class="ledger-card">
+      <h3>${c.code} — ${c.name}</h3>
+      <div class="meta">${c.accountType} · ${c.exchange} · ${c.status==='above'?'<span style="color:var(--green)">Active</span>':'<span style="color:var(--red)">Underwater</span>'}</div>
+      <div class="kv"><span class="k">Net Deposits</span><span class="v">${c.netDeposits!=null?(c.isBtc?c.netDeposits+' BTC':fmtUSD(c.netDeposits)):'?'}</span></div>
+      <div class="kv"><span class="k">Odum HWM</span><span class="v">${c.odumHWM!=null?(c.isBtc?c.odumHWM+' BTC':fmtUSD(c.odumHWM)):'?'}</span></div>
+      <div class="kv"><span class="k">Odum Fee</span><span class="v">${c.odumFee!=null?fmtPct(c.odumFee):'—'}</span></div>
+      <div class="kv"><span class="k">Trader Fee</span><span class="v">${fmtPct(c.traderFee)}</span></div>
+      ${c.introducer?`<div class="kv"><span class="k">Introducer</span><span class="v">${c.introducer} @ ${fmtPct(c.introducerFee)}</span></div>`:''}
+      ${c.traderCredits>0?`<div class="kv"><span class="k">Trader Credit O/S</span><span class="v" style="color:var(--amber);">${fmtUSD(c.traderCredits)}</span></div>`:''}
+      ${c.serverCost?`<div class="kv"><span class="k">Server Cost</span><span class="v">$${c.serverCost}/mo</span></div>`:''}
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;">${c.notes}</div>
+    </div>`).join('');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+initVault(); // restore vault handle from IndexedDB, load state if vault set
+calcAll();
+renderBtcMonthRows();
+renderAllocRows();
+generateBtcReport();
+renderMrXexTable();
+renderMrMonthRows();
+updateMrCharts();
+renderLedger();
+</script>
+</body>
+</html>

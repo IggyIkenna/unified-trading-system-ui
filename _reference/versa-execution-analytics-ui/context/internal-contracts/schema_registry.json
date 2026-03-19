@@ -1,0 +1,169 @@
+{
+  "registry_version": "1.0.0",
+  "last_updated": "2026-03-06",
+  "description": "Canonical registry of Pydantic BaseModel classes with schema_version in unified-internal-contracts. AC internal modules removed; validated by scripts/validate_schema_registry.py.",
+  "schemas": {
+    "ErrorContext": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.schemas.errors",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "EnhancedError": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.schemas.errors",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "DeadLetterRecord": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.schemas.errors",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "DeFiLendingPosition": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.positions.defi_lending",
+      "current_version": "v1",
+      "min_compatible": "v1",
+      "version_type": "literal"
+    },
+    "DeFiStakingPosition": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.positions.defi_staking",
+      "current_version": "v1",
+      "min_compatible": "v1",
+      "version_type": "literal"
+    },
+    "DeFiLPPosition": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.positions.defi_lp",
+      "current_version": "v1",
+      "min_compatible": "v1",
+      "version_type": "literal"
+    },
+    "CeFiPosition": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.positions.cefi",
+      "current_version": "v1",
+      "min_compatible": "v1",
+      "version_type": "literal"
+    },
+    "PubSubMessageEnvelope": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.pubsub",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default"
+    },
+    "CanonicalOHLCV": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.market_data.ohlcv",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default"
+    },
+    "CanonicalOrderBook": {
+      "repo": "unified-api-contracts",
+      "module": "unified_api_contracts.unified_normalised_contracts.domain",
+      "re_export_via": "unified_internal_contracts.market_data",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default",
+      "note": "Defined in UAC; re-exported via UIC market_data/__init__.py for convenience"
+    },
+    "CanonicalTrade": {
+      "repo": "unified-api-contracts",
+      "module": "unified_api_contracts.unified_normalised_contracts.domain",
+      "re_export_via": "unified_internal_contracts.market_data",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default",
+      "note": "Defined in UAC; re-exported via UIC market_data/__init__.py for convenience"
+    },
+    "CanonicalOptionQuote": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.market_data.option_quote",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default"
+    },
+    "CanonicalLiquidation": {
+      "repo": "unified-api-contracts",
+      "module": "unified_api_contracts.unified_normalised_contracts.domain",
+      "re_export_via": "unified_internal_contracts.market_data",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default",
+      "note": "Defined in UAC; re-exported via UIC market_data/__init__.py for convenience"
+    },
+    "CanonicalBookUpdate": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.market_data.book_update",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default"
+    },
+    "CanonicalDerivativeTicker": {
+      "repo": "unified-api-contracts",
+      "module": "unified_api_contracts.unified_normalised_contracts.domain",
+      "re_export_via": "unified_internal_contracts.market_data",
+      "current_version": "1.0",
+      "min_compatible": "1.0",
+      "version_type": "default",
+      "note": "Defined in UAC; re-exported via UIC market_data/__init__.py for convenience"
+    },
+    "WebSocketConnectEvent": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.connectivity.websocket_lifecycle",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "WebSocketDisconnectEvent": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.connectivity.websocket_lifecycle",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "WebSocketReconnectEvent": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.connectivity.websocket_lifecycle",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "WebSocketErrorEvent": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.connectivity.websocket_lifecycle",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "WebSocketPingEvent": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.connectivity.websocket_lifecycle",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "WebSocketPongEvent": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.connectivity.websocket_lifecycle",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    },
+    "WebSocketSubscribeAckEvent": {
+      "repo": "unified-internal-contracts",
+      "module": "unified_internal_contracts.connectivity.websocket_lifecycle",
+      "current_version": "1.0.0",
+      "min_compatible": "1.0.0",
+      "version_type": "default"
+    }
+  }
+}

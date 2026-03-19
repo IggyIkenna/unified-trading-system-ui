@@ -1,0 +1,45 @@
+{
+  "name": "presentations-portal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:mock": "bash scripts/start-mock.sh",
+    "dev:cloud": "next dev --env-file .env.cloud.local",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "predeploy": "npm run type-check && npm run lint && npm run build"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.18.0",
+    "firebase": "^12.8.0",
+    "firebase-admin": "^13.6.0",
+    "next": "^15.5.10",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^20",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.5.10",
+    "jsdom": "^29.0.0",
+    "tailwindcss": "^4",
+    "typescript": "^5.3.0",
+    "typescript-eslint": "^8.57.0",
+    "vitest": "^4.1.0"
+  }
+}

@@ -1,0 +1,60 @@
+name: Staging Lock Check
+
+# Runs on PRs targeting staging to check if SIT is running.
+# PM dispatches 'staging-locked' / 'staging-unlocked' to re-run this check
+# when staging lock state changes.
+#
+# Required status check name: "Staging Lock Check / check-staging-lock"
+# Register on the staging branch protection ruleset.
+#
+# SSOT: unified-trading-pm/scripts/workflow-templates/staging-lock-check.yml
+# Rollout: bash unified-trading-pm/scripts/workflow-templates/rollout-workflow-templates.sh
+
+on:
+  pull_request:
+    branches: [staging]
+    types: [opened, reopened, synchronize]
+  repository_dispatch:
+    types: [staging-locked, staging-unlocked]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-staging-lock:
+    name: check-staging-lock
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PM staging lock status
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_ORG: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+
+          # Fetch workspace-manifest.json from PM repo via API (no clone needed)
+          MANIFEST=$(curl -sL \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github.raw" \
+            "https://api.github.com/repos/${GH_ORG}/unified-trading-pm/contents/workspace-manifest.json")
+
+          if [ -z "$MANIFEST" ]; then
+            echo "WARNING: Could not fetch PM manifest -- assuming unlocked"
+            exit 0
+          fi
+
+          LOCKED=$(echo "$MANIFEST" | python3 -c "import json,sys; m=json.load(sys.stdin); print(str(m.get('staging_status',{}).get('locked',False)).lower())" 2>/dev/null || echo "false")
+
+          if [ "$LOCKED" = "true" ]; then
+            REASON=$(echo "$MANIFEST" | python3 -c "import json,sys; m=json.load(sys.stdin); print(m.get('staging_status',{}).get('locked_reason','SIT running'))" 2>/dev/null || echo "SIT running")
+            echo "Staging is LOCKED: $REASON"
+            echo "This PR will auto-merge once SIT completes and staging is unlocked."
+            echo "No action needed -- the check will re-run automatically when staging unlocks."
+            exit 1
+          fi
+
+          echo "Staging is unlocked -- will auto-merge when all checks pass"

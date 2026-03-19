@@ -1,0 +1,247 @@
+/* SSOT: theme tokens + base styles from ui-kit */
+@import "@unified-trading/ui-kit/globals.css";
+
+/* Deployment-UI specific overrides */
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Semantic status colors with alpha (for borders/bg in components) */
+:root {
+  --color-status-error-bg-subtle: color-mix(
+    in srgb,
+    var(--color-accent-red) 5%,
+    transparent
+  );
+  --color-status-warning-bg-subtle: color-mix(
+    in srgb,
+    var(--color-accent-amber) 5%,
+    transparent
+  );
+  --color-status-error-bg: color-mix(
+    in srgb,
+    var(--color-accent-red) 10%,
+    transparent
+  );
+  --color-status-error-bg-alt: color-mix(
+    in srgb,
+    var(--color-accent-red) 15%,
+    transparent
+  );
+  --color-status-error-border: color-mix(
+    in srgb,
+    var(--color-accent-red) 20%,
+    transparent
+  );
+  --color-status-error-border-strong: color-mix(
+    in srgb,
+    var(--color-accent-red) 30%,
+    transparent
+  );
+  --color-status-success-bg-subtle: color-mix(
+    in srgb,
+    var(--color-accent-green) 5%,
+    transparent
+  );
+  --color-status-success-bg: color-mix(
+    in srgb,
+    var(--color-accent-green) 10%,
+    transparent
+  );
+  --color-status-success-border: color-mix(
+    in srgb,
+    var(--color-accent-green) 20%,
+    transparent
+  );
+  --color-status-success-border-strong: color-mix(
+    in srgb,
+    var(--color-accent-green) 30%,
+    transparent
+  );
+  --color-status-running-bg: color-mix(
+    in srgb,
+    var(--color-accent-cyan) 10%,
+    transparent
+  );
+  --color-status-running-border: color-mix(
+    in srgb,
+    var(--color-accent-cyan) 30%,
+    transparent
+  );
+  --color-status-warning-bg: color-mix(
+    in srgb,
+    var(--color-accent-amber) 10%,
+    transparent
+  );
+  --color-status-warning-bg-alt: color-mix(
+    in srgb,
+    var(--color-accent-amber) 15%,
+    transparent
+  );
+  --color-status-warning-border: color-mix(
+    in srgb,
+    var(--color-accent-amber) 30%,
+    transparent
+  );
+  --color-status-warning-border-alt: color-mix(
+    in srgb,
+    var(--color-accent-amber) 40%,
+    transparent
+  );
+  --color-status-success-bg-alt: color-mix(
+    in srgb,
+    var(--color-accent-green) 15%,
+    transparent
+  );
+  --color-status-success-border-alt: color-mix(
+    in srgb,
+    var(--color-accent-green) 40%,
+    transparent
+  );
+  --color-status-pending-bg: color-mix(
+    in srgb,
+    var(--color-text-secondary) 10%,
+    transparent
+  );
+  --color-status-pending-border: color-mix(
+    in srgb,
+    var(--color-text-secondary) 30%,
+    transparent
+  );
+  --color-status-info-bg: color-mix(
+    in srgb,
+    var(--color-accent-blue) 10%,
+    transparent
+  );
+  --color-status-info-border: color-mix(
+    in srgb,
+    var(--color-accent-blue) 30%,
+    transparent
+  );
+  --color-status-tradfi-bg: color-mix(
+    in srgb,
+    var(--color-accent-purple) 10%,
+    transparent
+  );
+  --color-status-tradfi-border: color-mix(
+    in srgb,
+    var(--color-accent-purple) 30%,
+    transparent
+  );
+  /* Tag/chip backgrounds (20% opacity) */
+  --color-status-success-bg-tag: color-mix(
+    in srgb,
+    var(--color-accent-green) 20%,
+    transparent
+  );
+  --color-status-error-bg-tag: color-mix(
+    in srgb,
+    var(--color-accent-red) 20%,
+    transparent
+  );
+  --color-status-warning-bg-tag: color-mix(
+    in srgb,
+    var(--color-accent-amber) 20%,
+    transparent
+  );
+  --color-status-running-bg-tag: color-mix(
+    in srgb,
+    var(--color-accent-cyan) 20%,
+    transparent
+  );
+  --color-status-muted-bg-tag: color-mix(
+    in srgb,
+    var(--color-text-muted) 20%,
+    transparent
+  );
+  --color-status-purple-bg-tag: color-mix(
+    in srgb,
+    var(--color-accent-purple) 20%,
+    transparent
+  );
+  --color-status-running-bg-alt: color-mix(
+    in srgb,
+    var(--color-accent-cyan) 15%,
+    transparent
+  );
+  /* VM event badge (orange/amber/red/gray) */
+  --color-event-amber-bg: color-mix(
+    in srgb,
+    var(--color-accent-amber) 20%,
+    transparent
+  );
+  --color-event-red-bg: color-mix(
+    in srgb,
+    var(--color-accent-red) 20%,
+    transparent
+  );
+  --color-event-gray-bg: color-mix(
+    in srgb,
+    var(--color-text-muted) 20%,
+    transparent
+  );
+  /* Classification badge colors */
+  --color-class-verified: var(--color-accent-green);
+  --color-class-verified-bg: var(--color-status-success-bg-tag);
+  --color-class-expected-skip: var(--color-accent-cyan);
+  --color-class-expected-skip-bg: var(--color-status-running-bg-tag);
+  --color-class-data-stale: var(--color-accent-amber);
+  --color-class-data-stale-bg: var(--color-status-warning-bg-tag);
+  --color-class-data-missing: var(--color-accent-red);
+  --color-class-data-missing-bg: var(--color-status-error-bg-tag);
+  --color-class-unverified: var(--color-text-muted);
+  --color-class-unverified-bg: var(--color-status-muted-bg-tag);
+  --color-class-error: var(--color-accent-red);
+  --color-class-error-bg: var(--color-status-error-bg-tag);
+  --color-class-warning: var(--color-accent-amber);
+  --color-class-warning-bg: var(--color-status-warning-bg-tag);
+}
+
+/* Status badge colors (deployment-specific legacy classes) */
+.status-running {
+  color: var(--color-accent-cyan);
+  background-color: rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.3);
+}
+
+.status-success {
+  color: var(--color-accent-green);
+  background-color: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.status-warning {
+  color: var(--color-accent-amber);
+  background-color: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.status-error {
+  color: var(--color-accent-red);
+  background-color: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.status-pending {
+  color: var(--color-text-secondary);
+  background-color: rgba(161, 161, 170, 0.1);
+  border-color: rgba(161, 161, 170, 0.3);
+}
+
+/* Animations */
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.2s ease-out;
+}
+
+/* Selection */
+::selection {
+  background-color: rgba(34, 211, 238, 0.3);
+  color: var(--color-text-primary);
+}

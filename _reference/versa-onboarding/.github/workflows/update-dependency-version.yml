@@ -1,0 +1,186 @@
+name: update-dependency-version
+
+# Receives repository_dispatch from unified-trading-pm after a dependency's version-bump.
+# Updates pyproject.toml to pin the new minimum version for the changed dependency.
+#
+# Routing logic (based on bump_type in payload):
+#   MAJOR bump -> create branch + PR targeting staging (quality gates required -- breaking change)
+#   MINOR/PATCH -> direct commit to staging with [skip ci] (compatible update, no QG needed)
+#
+# Dispatch payload:
+#   {dep_name, dep_version, constraint, bump_type, is_breaking, chain_depth}
+#
+# Constraint capping (Phase 2): if this repo has a dependency_caps entry in the PM manifest
+# for the incoming dep, the constraint update is SKIPPED and a warning is logged. The repo
+# stays pinned to the old version until the cap is manually removed. This mirrors external
+# dep pinning (e.g., "pandas>=1.5,<2.0") -- the downstream repo can keep working with the
+# last stable version while fixing code against the new breaking version.
+#
+# SSOT: unified-trading-pm/scripts/workflow-templates/update-dependency-version.yml
+# Rollout: bash unified-trading-pm/scripts/workflow-templates/rollout-workflow-templates.sh
+
+on:
+  repository_dispatch:
+    types: [dependency-update]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update-dep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+          ref: staging
+
+      - name: Update pyproject.toml dependency constraint
+        id: update
+        run: |
+          set -euo pipefail
+
+          DEP_NAME="${{ github.event.client_payload.dep_name }}"
+          DEP_VERSION="${{ github.event.client_payload.dep_version }}"
+          CONSTRAINT="${{ github.event.client_payload.constraint }}"
+          BUMP_TYPE="${{ github.event.client_payload.bump_type }}"
+          BUMP_TYPE="${BUMP_TYPE:-patch}"  # default to patch if not provided
+          IS_BREAKING="${{ github.event.client_payload.is_breaking }}"
+          IS_BREAKING="${IS_BREAKING:-false}"
+
+          if [ -z "$DEP_NAME" ] || [ -z "$CONSTRAINT" ]; then
+            echo "Missing dep_name or constraint. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if ! grep -q "\"${DEP_NAME}" pyproject.toml; then
+            echo "$DEP_NAME not found in pyproject.toml -- skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # -- Constraint cap check (Phase 2) --
+          # If PM manifest has a dependency_caps entry for this repo+dep, skip the constraint update.
+          # The repo stays on the old version until the cap is manually removed.
+          REPO_NAME="${{ github.event.repository.name }}"
+          MANIFEST_URL="https://raw.githubusercontent.com/${{ github.repository_owner }}/unified-trading-pm/main/workspace-manifest.json"
+          CAP=$(curl -sf "$MANIFEST_URL" 2>/dev/null | python3 -c "
+          import json, sys
+          try:
+              m = json.load(sys.stdin)
+              caps = m.get('repositories', {}).get('${REPO_NAME}', {}).get('dependency_caps', {})
+              cap = caps.get('${DEP_NAME}', '')
+              print(cap)
+          except Exception:
+              print('')
+          " 2>/dev/null || echo "")
+
+          if [ -n "$CAP" ]; then
+            echo "Dependency cap active: $REPO_NAME pins $DEP_NAME to $CAP -- skipping constraint update to $CONSTRAINT"
+            echo "Remove dependency_caps.$DEP_NAME from $REPO_NAME in workspace-manifest.json to unpin."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "capped=true" >> "$GITHUB_OUTPUT"
+            echo "cap_constraint=$CAP" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Replace the version constraint for this dependency
+          # Matches: "dep-name>=X.Y.Z,<A.B.C" or "dep-name>=X.Y.Z"
+          python3 - <<PYEOF
+          import re, sys
+          with open("pyproject.toml") as f:
+              content = f.read()
+          dep = "${DEP_NAME}"
+          constraint = "${CONSTRAINT}"
+          # Match quoted dep spec with any version suffix
+          pattern = r'"' + re.escape(dep) + r'[^"]*"'
+          replacement = '"' + dep + constraint + '"'
+          new_content, count = re.subn(pattern, replacement, content)
+          if count == 0:
+              print(f"No match found for {dep} in pyproject.toml", file=sys.stderr)
+              sys.exit(1)
+          with open("pyproject.toml", "w") as f:
+              f.write(new_content)
+          print(f"Updated {dep} -> {constraint} ({count} occurrence(s))")
+          PYEOF
+
+          echo "dep_name=$DEP_NAME" >> "$GITHUB_OUTPUT"
+          echo "dep_version=$DEP_VERSION" >> "$GITHUB_OUTPUT"
+          echo "bump_type=$BUMP_TYPE" >> "$GITHUB_OUTPUT"
+          echo "is_breaking=$IS_BREAKING" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Commit (MINOR/PATCH non-breaking -- direct commit to staging)
+        if:
+          steps.update.outputs.skip != 'true' && steps.update.outputs.bump_type != 'major' &&
+          steps.update.outputs.is_breaking != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet pyproject.toml; then
+            echo "No changes to pyproject.toml. Skipping commit."
+            exit 0
+          fi
+
+          git add pyproject.toml
+          git commit -m "chore(deps): pin ${{ steps.update.outputs.dep_name }} to ${{ steps.update.outputs.dep_version }} [skip ci]"
+          git push origin staging
+
+      - name: Create PR to staging (MAJOR or breaking -- requires quality gates)
+        if:
+          steps.update.outputs.skip != 'true' && (steps.update.outputs.bump_type == 'major' ||
+          steps.update.outputs.is_breaking == 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          PR_BODY:
+            "Breaking dependency update dispatched by unified-trading-pm.\n\n**Dependency:** `${{
+            steps.update.outputs.dep_name }}`\n**New version:** `${{ steps.update.outputs.dep_version
+            }}`\n**Constraint:** `${{ github.event.client_payload.constraint }}`\n\nQuality gates must pass before
+            merging to staging."
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet pyproject.toml; then
+            echo "No changes to pyproject.toml. Skipping."
+            exit 0
+          fi
+
+          # Create a branch for the breaking dep update, PR targets staging
+          BRANCH="dep-update/${{ steps.update.outputs.dep_name }}-${{ steps.update.outputs.dep_version }}"
+          git checkout -b "$BRANCH"
+          git add pyproject.toml
+          git commit -m "feat!: update ${{ steps.update.outputs.dep_name }} to ${{ steps.update.outputs.dep_version }} (breaking)"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "feat!: update ${{ steps.update.outputs.dep_name }} to ${{ steps.update.outputs.dep_version }}" \
+            --body "$PR_BODY" \
+            --base staging \
+            --head "$BRANCH"
+
+  notify-failure:
+    name: Telegram — Dep Update Failure
+    needs: [update-dep]
+    if: always() && needs.update-dep.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram failure alert
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ vars.TELEGRAM_CHAT_ID || secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          [ -z "$TELEGRAM_BOT_TOKEN" ] && echo "No bot token — skipping Telegram notify" && exit 0
+          [ -z "$TELEGRAM_CHAT_ID" ] && echo "No chat ID — skipping Telegram notify" && exit 0
+          MSG="❌ Dep update FAILED — ${{ github.event.repository.name }} (${{ github.event.client_payload.dep_name }}). View: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" -d "text=${MSG}" -d "disable_web_page_preview=true" || true

@@ -1,0 +1,62 @@
+# CodeBuild buildspec template — Unified Trading System UI Repos
+#
+# UI variant: Node.js 20, npm ci, typecheck, lint, test in pre_build; docker build, push in build/post_build.
+#
+# Placeholders: unified-admin-ui, unified-trading-system.
+# Registry image: {{REGISTRY_URI}}/unified-trading-system/unified-admin-ui
+
+version: 0.2
+
+env:
+  variables:
+    SERVICE_NAME: "unified-admin-ui"
+    REGISTRY_REPO: "unified-trading-system"
+    IMAGE_TAG: "latest"
+  # AWS_ACCOUNT_ID, AWS_DEFAULT_REGION available in CodeBuild
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: "20"
+    commands:
+      - echo "Installing Docker..."
+      - yum install -y docker || true
+      - service docker start || true
+
+  pre_build:
+    commands:
+      - echo "Installing dependencies..."
+      - npm ci --prefer-offline 2>/dev/null || npm ci
+      - echo "--- Typecheck ---"
+      - npm run typecheck 2>/dev/null || npm run type-check
+      - echo "--- Lint ---"
+      - npm run lint
+      - echo "--- Unit tests ---"
+      - npm test
+      - echo "Quality gates passed"
+      - echo "Logging in to ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin
+        $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - aws ecr describe-repositories --repository-names $REGISTRY_REPO --region $AWS_DEFAULT_REGION 2>/dev/null || aws
+        ecr create-repository --repository-name $REGISTRY_REPO --region $AWS_DEFAULT_REGION
+      - IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$REGISTRY_REPO/$SERVICE_NAME"
+
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -f Dockerfile -t $IMAGE_URI:$IMAGE_TAG -t $IMAGE_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+
+  post_build:
+    commands:
+      - echo "Pushing image..."
+      - docker push $IMAGE_URI:$IMAGE_TAG
+      - docker push $IMAGE_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo "Build complete"
+
+artifacts:
+  files:
+    - "**/*"
+
+cache:
+  paths:
+    - "node_modules/**/*"

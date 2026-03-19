@@ -1,0 +1,200 @@
+{
+  "audit_date": "2026-03-02",
+  "auditor": "claude-opus-4-6",
+  "overall_grade": "FAIL",
+  "total_issues": 58,
+  "issues": [
+    {
+      "id": "ISS-001",
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "section": "S4",
+      "criterion": "4.11",
+      "title": "Corrupted doubled package names in 37/45 repos",
+      "time_hours": 4,
+      "difficulty": "medium",
+      "category": "dependency",
+      "files": ["*/pyproject.toml (37 repos)"],
+      "fix_steps": [
+        "Write script to detect doubled package names via regex ([a-z0-9][-a-z0-9]*)\\1",
+        "Replace each doubled name with single correct name",
+        "Run uv lock in each affected repo",
+        "Fix root cause in unified-trading-pm/scripts/propagation/propagate-canonical-versions.py"
+      ]
+    },
+    {
+      "id": "ISS-002",
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "section": "S10",
+      "criterion": "10.12",
+      "title": "DISABLE_AUTH bypasses all API authentication with no production guard",
+      "time_hours": 2,
+      "difficulty": "medium",
+      "category": "security",
+      "files": [
+        "execution-results-api/execution_results_api/auth.py:23",
+        "alerting-service/alerting_service/auth.py:23",
+        "client-reporting-api/client_reporting_api/auth.py:37",
+        "market-data-api/market_data_api/auth.py:23",
+        "deployment-api/deployment_api/auth.py:23"
+      ],
+      "fix_steps": [
+        "Add production guard: if disable_auth and os.getenv('ENVIRONMENT') == 'production': raise RuntimeError",
+        "Better: remove DISABLE_AUTH entirely, use DI to inject NoOpAuthVerifier in dev"
+      ]
+    },
+    {
+      "id": "ISS-003",
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "section": "S11",
+      "criterion": "11.7",
+      "title": "ErrorRecoveryStrategy.DEAD_LETTER and ErrorCategory.VALIDATION_ERROR enum members missing",
+      "time_hours": 0.25,
+      "difficulty": "trivial",
+      "category": "error-handling",
+      "files": [
+        "unified-market-interface/unified_market_interface/base_adapter.py:81-83",
+        "unified-internal-contracts/unified_internal_contracts/schemas/errors.py",
+        "unified-api-contracts/unified_api_contracts/internal/health.py"
+      ],
+      "fix_steps": [
+        "Add DEAD_LETTER = 'dead_letter' to ErrorRecoveryStrategy enum in both contracts repos",
+        "Change ErrorCategory.VALIDATION_ERROR to ErrorCategory.VALIDATION in base_adapter.py OR add VALIDATION_ERROR alias"
+      ]
+    },
+    {
+      "id": "ISS-004",
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "section": "S2",
+      "criterion": "2.5",
+      "title": "market-tick-data-service imports instruments-service as Python package",
+      "time_hours": 6,
+      "difficulty": "medium-high",
+      "category": "architecture",
+      "files": ["market-tick-data-service/pyproject.toml:98", "market-tick-data-service/pyproject.toml:167"],
+      "fix_steps": [
+        "Identify which symbols MTDS imports from instruments-service",
+        "Extract shared types into unified-reference-data-interface",
+        "Remove instruments-service from MTDS pyproject.toml",
+        "Update MTDS imports to use unified-reference-data-interface"
+      ]
+    },
+    {
+      "id": "ISS-005",
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "section": "S10",
+      "criterion": "10.14",
+      "title": "74 instances of exception details leaked to HTTP clients",
+      "time_hours": 4,
+      "difficulty": "medium",
+      "category": "security",
+      "files": [
+        "deployment-api/deployment_api/routes/deployments.py (11)",
+        "deployment-api/deployment_api/routes/data_status.py (13)",
+        "position-balance-monitor-service/position_balance_monitor_service/api/main.py:87"
+      ],
+      "fix_steps": [
+        "Create safe_error_detail(e, status_code) utility in unified-trading-library",
+        "For 500s return 'Internal server error. Check server logs.'",
+        "Replace all detail=str(e) in 500-level handlers",
+        "Keep str(e) only for 4xx validation errors"
+      ]
+    },
+    {
+      "id": "ISS-006",
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "section": "S10",
+      "criterion": "10.7",
+      "title": ".env files tracked in git with real infrastructure details (13 repos)",
+      "time_hours": 2,
+      "difficulty": "low",
+      "category": "security",
+      "files": ["13 repos: see audit report for full list"],
+      "fix_steps": [
+        "For each repo: git rm --cached .env",
+        "Add .env to .gitignore",
+        "Ensure .env.example exists with placeholder values",
+        "Commit .gitignore change"
+      ]
+    },
+    {
+      "id": "ISS-007",
+      "priority": "P0",
+      "severity": "CRITICAL",
+      "section": "S10",
+      "criterion": "10.4",
+      "title": "Hardcoded GCP project ID central-element-323112 in 30+ locations",
+      "time_hours": 4,
+      "difficulty": "low",
+      "category": "security",
+      "files": [
+        "execution-service/scripts/runners/run_phasee_fullpath_matrix.py:33-40",
+        "execution-service/execution_service/cli/backtest.py:171,177,183",
+        "features-sports-service/features_sports_service/live_runner.py:8",
+        "features-volatility-service/tests/conftest.py:58-64"
+      ],
+      "fix_steps": [
+        "In prod code: replace with config.gcp_project_id",
+        "In scripts: accept --project-id CLI arg",
+        "In tests: define TEST_PROJECT_ID = 'test-project-000000' in conftest.py",
+        "Search: rg 'central-element' --type py --glob '!.venv*' --glob '!archive/*'"
+      ]
+    },
+    {
+      "id": "ISS-008",
+      "priority": "P0",
+      "severity": "HIGH",
+      "section": "S10",
+      "criterion": "10.10",
+      "title": "SQL injection via f-string table names",
+      "time_hours": 1,
+      "difficulty": "low",
+      "category": "security",
+      "files": [
+        "features-sports-service/features_sports_service/scripts/validation.py:127,171,184",
+        "ml-inference-service/ml_inference_service/app/core/prediction_publisher.py:224"
+      ],
+      "fix_steps": ["Validate table names against regex ^[a-zA-Z0-9_.-]+$", "Remove # noqa: S608 suppressions"]
+    },
+    {
+      "id": "ISS-009",
+      "priority": "P0",
+      "severity": "HIGH",
+      "section": "S10",
+      "criterion": "10.13",
+      "title": "Swagger/OpenAPI docs enabled in all production FastAPI apps",
+      "time_hours": 1,
+      "difficulty": "low",
+      "category": "security",
+      "files": ["All 10 FastAPI app constructors"],
+      "fix_steps": [
+        "In each FastAPI() constructor add: docs_url=None if settings.environment == 'production' else '/docs'",
+        "Same for redoc_url and openapi_url"
+      ]
+    },
+    {
+      "id": "ISS-040",
+      "priority": "P0",
+      "severity": "LOW",
+      "section": "S1",
+      "criterion": "1.2",
+      "title": "Orphan directory execution_service/ (stale leftover)",
+      "time_hours": 0.1,
+      "difficulty": "trivial",
+      "category": "cleanup",
+      "files": ["execution_service/"],
+      "fix_steps": ["rm -rf execution_service/"]
+    }
+  ],
+  "summary_by_priority": {
+    "P0_critical": { "count": 11, "total_hours": 25 },
+    "P1_architecture": { "count": 15, "total_hours": 35 },
+    "P2_quality": { "count": 18, "total_hours": 50 },
+    "P3_polish": { "count": 14, "total_hours": 120 }
+  }
+}

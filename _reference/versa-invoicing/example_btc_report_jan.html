@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yoav – BTC Investment | Monthly Snapshot</title>
+  <style>
+    :root {
+      /* Blue theme */
+      --gold: #1d4ed8;
+      --gold-soft: #e0ecff;
+      --bg: #f5f7ff;
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --border-soft: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 8px 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        system-ui, -system-ui, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      line-height: 1.4;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 18px;
+      padding: 12px 20px 16px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-soft);
+      padding-bottom: 8px;
+    }
+
+    .logo-wrap img {
+      height: 48px;
+    }
+
+    .header-text {
+      text-align: right;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 650;
+      margin: 0 0 2px;
+      line-height: 1.3;
+    }
+
+    .header-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--gold-soft);
+      color: #1e3a8a;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 6px;
+    }
+
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+
+    .panel {
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+      padding: 10px 12px 12px;
+      background: linear-gradient(135deg, #ffffff, #f7f8ff);
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      font-weight: 650;
+      margin: 0 0 6px;
+      color: var(--text-main);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .stat {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      padding: 6px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stat-value.positive {
+      color: #059669;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    thead th {
+      background: var(--gold);
+      color: white;
+      padding: 6px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 10px;
+    }
+
+    thead th.text-right {
+      text-align: right;
+    }
+
+    tbody td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    tbody td.text-right {
+      text-align: right;
+    }
+
+    tbody td.text-muted {
+      color: var(--text-muted);
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    p {
+      font-size: 11px;
+      line-height: 1.4;
+      margin: 6px 0;
+      color: var(--text-main);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 9px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .footer-left {
+      flex: 0 0 auto;
+    }
+
+    .footer-right {
+      flex: 1;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-wrap">
+        <!-- Logo placeholder - replace with actual logo path if needed -->
+        <div style="font-size: 20px; font-weight: 700; color: var(--gold);">ODUM</div>
+      </div>
+      <div class="header-text">
+        <p class="header-title">Yoav &ndash; BTC Investment | Odum Monthly Snapshot</p>
+        <p class="header-sub">January 2026 &middot; Inception: 21 November 2025</p>
+        <div class="pill">
+          <span class="pill-dot"></span>
+          <span>MARKET-NEUTRAL DEFI YIELD</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERFORMANCE SNAPSHOT -->
+    <div class="panel">
+      <div class="panel-title">January 2026 Performance Snapshot</div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Month Return</div>
+          <div class="stat-value positive">+0.48%</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Since Inception</div>
+          <div class="stat-value positive">+0.78%</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Start BTC</div>
+          <div class="stat-value">13.934</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">End BTC</div>
+          <div class="stat-value">14.001</div>
+        </div>
+      </div>
+
+      <p style="font-size: 10px; color: var(--text-muted); margin-top: 4px; line-height: 1.25;">
+        January delivered +0.48% net return, bringing cumulative performance to +0.78% since 
+        inception. The account maintained its capital-preservation profile with diversified 
+        exposure across basis trading, yield farming, and liquidity provision strategies.
+      </p>
+    </div>
+
+    <!-- MONTHLY BREAKDOWN -->
+    <div class="panel">
+      <div class="panel-title">Monthly Returns Breakdown</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Return (BTC)</th>
+            <th class="text-right">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>November 2025</strong></td>
+            <td><strong>+0.065%</strong></td>
+            <td class="text-right">Partial month (from 21 Nov)</td>
+          </tr>
+          <tr>
+            <td><strong>December 2025</strong></td>
+            <td><strong>+0.237%</strong></td>
+            <td class="text-right">Full month</td>
+          </tr>
+          <tr>
+            <td><strong>January 2026</strong></td>
+            <td><strong>+0.48%</strong></td>
+            <td class="text-right">Full month</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- STRATEGY ALLOCATION -->
+    <div class="panel">
+      <div class="panel-title">Strategy Allocation &amp; Positioning</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>Description</th>
+            <th class="text-right">Allocation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- CURRENT STRATEGIES -->
+          <tr>
+            <td><strong>Basis Trading (Cash &amp; Carry)</strong></td>
+            <td style="color:#374151;">
+              Market-neutral BTC futures vs spot arbitrage capturing funding spreads.
+              Executed on Deribit with conservative margining.
+            </td>
+            <td class="text-right"><strong>60%</strong></td>
+          </tr>
+
+          <tr>
+            <td><strong>Yield &amp; Funding Arbitrage</strong></td>
+            <td style="color:#374151;">
+              Capturing stable, market-neutral yields in CeFi and DeFi lending markets.
+            </td>
+            <td class="text-right"><strong>20%</strong></td>
+          </tr>
+
+          <tr>
+            <td><strong>Liquidity Provision</strong></td>
+            <td style="color:#374151;">
+              Institutional LP positions on tier-1 protocols.
+            </td>
+            <td class="text-right"><strong>15%</strong></td>
+          </tr>
+
+          <tr>
+            <td><strong>Opportunistic Yield Farming</strong></td>
+            <td style="color:#374151;">
+              Hedged token incentive programmes with full directional neutrality.
+            </td>
+            <td class="text-right"><strong>5%</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="font-size:10px; margin-top:6px; color:#6b7280; line-height: 1.3;">
+        January saw continued diversification across strategies, with basis trading remaining
+        the core allocation while opportunistic yields in DeFi contributed positive returns.
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Base Currency</div>
+          <div class="stat-value">BTC</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Strategy Style</div>
+          <div class="stat-value">Market-Neutral Defi Yield Arbitrage</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Total Assets</div>
+          <div class="stat-value">14.001 BTC</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Risk Focus</div>
+          <div class="stat-value">Capital Preservation</div>
+        </div>
+      </div>
+
+      <p style="font-size: 9px; color: var(--text-muted); margin-top: 4px; line-height: 1.25;">
+        <strong>Note:</strong> Your deposits sent end of January will be reflected in February's 
+        report and will start generating returns from February 1st. An additional deposit 
+        this month will be retrospectively added to February performance. The account continues 
+        to be positioned conservatively with focus on preserving capital while capturing steady yields.
+      </p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <div class="footer-left">
+        Prepared for: <strong>Yoav</strong><br />
+        Prepared by: <strong>Odum Research</strong> &mdash; BTC Conservative Investment Mandate
+      </div>
+      <div class="footer-right">
+        Information is provided for general information only and does not constitute
+        investment advice or a recommendation to invest. Past performance is not a
+        reliable indicator of future results. Figures are indicative and subject to
+        reconciliation.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
