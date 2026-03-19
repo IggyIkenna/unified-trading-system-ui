@@ -1,0 +1,1036 @@
+# Unified Trading System UI — Cursor Rules
+
+These rules ensure architectural coherence, maintainability, and consistency across the UI codebase.
+
+**Read before any implementation work.**
+
+---
+
+## 1. Architecture-First Organization
+
+### Rule 1.1: Structure by Service Domain, Not by Feature
+
+**DO:**
+```
+src/
+├── services/                          ← Domain-first organization
+│   ├── data/                          ← Data service domain
+│   │   ├── components/                ← Data-specific components
+│   │   ├── pages/                     ← Data service pages
+│   │   ├── hooks/                     ← Data-specific hooks
+│   │   └── types/                     ← Data-specific types
+│   ├── execution/                     ← Execution service domain
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── ...
+│   ├── research/                      ← Research service domain
+│   │   └── ...
+│   └── admin/                         ← Admin-only domain
+│       └── ...
+│
+├── shared/                            ← Shared across domains
+│   ├── components/                    ← Shared component library
+│   │   ├── filters/
+│   │   ├── headers/
+│   │   ├── cards/
+│   │   └── ...
+│   ├── hooks/
+│   ├── types/
+│   ├── config/
+│   └── mocks/                         ← Central mock API definitions
+│
+└── layout/                            ← Global shell & routing
+    ├── PublicShell.tsx
+    ├── AuthenticatedShell.tsx
+    └── router.tsx
+```
+
+**DON'T:**
+```
+src/
+├── pages/
+│   ├── DataPage/
+│   ├── ExecutionPage/
+│   ├── ExecutionPageV2/               ❌ Two versions of truth
+│   ├── AdminPageRefactored/           ❌ Confusing versioning
+│   └── ...
+├── components/
+│   ├── DataFilter.tsx                 ❌ Scattered filters
+│   ├── ExecutionFilter.tsx            ❌ Duplicated instead of shared
+│   └── ...
+```
+
+**Why:** Service domains map directly to backend shards (CEFI, DeFi, Sports, etc.). This structure:
+- Aligns with backend architecture
+- Makes permission-based hiding easy (don't load admin/ if not admin)
+- Prevents "two versions of truth" (one source per page)
+- Makes routing and navigation predictable
+
+---
+
+### Rule 1.2: Never Leave Old Code Alongside New
+
+**DO:**
+```
+When refactoring PositionsTable:
+1. Update PositionsTable.tsx in place
+2. Update all imports (routes should not change)
+3. Delete old implementation when done
+4. Commit with message: "refactor: improve PositionsTable layout and performance"
+```
+
+**DON'T:**
+```
+❌ Create PositionsTableV2.tsx
+❌ Create PositionsTableRefactored.tsx
+❌ Update routes to point to new component
+❌ Leave old component in place
+→ Result: Two versions in production, confused routing, split traffic
+```
+
+**Why:** Multiple versions create:
+- Routing ambiguity (which page is the "real" one?)
+- Duplicated state management
+- Inconsistent user experience
+- Maintenance burden (fix both? or just new?)
+
+**Exception:** Only use versioning if:
+- Both versions run simultaneously (A/B testing)
+- Old version explicitly deprecated and scheduled for removal
+- Clear feature flags separate traffic
+- Document the deprecation plan in code
+
+---
+
+## 2. Centralized Components & Reuse
+
+### Rule 2.1: Shared Patterns Go to `shared/components/`
+
+**Common patterns that MUST be centralized:**
+
+| Pattern | Location | What to centralize |
+|---------|----------|-------------------|
+| **Filters** | `shared/components/filters/` | Structure, styling, behavior |
+| **Headers** | `shared/components/headers/` | Logo, title, org selector |
+| **Cards** | `shared/components/cards/` | Layout, spacing, shadows |
+| **Tables** | `shared/components/tables/` | Sorting, pagination, filtering |
+| **Forms** | `shared/components/forms/` | Input styles, validation, labels |
+| **Modals** | `shared/components/modals/` | Backdrop, sizing, animations |
+| **Badges/Status** | `shared/components/badges/` | Color mapping, icons, text |
+
+**Example: Centralized Filter Component**
+
+```typescript
+// ✅ shared/components/filters/FilterBar.tsx
+export interface FilterBarProps {
+  filters: FilterSpec[];      // Config-driven
+  onApply: (filters: FilterMap) => void;
+  onClear: () => void;
+}
+
+export const FilterBar: React.FC<FilterBarProps> = ({ filters, onApply, onClear }) => {
+  // One implementation, used everywhere
+  return (...)
+}
+
+// Exported from shared/index.ts
+export { FilterBar } from './components/filters/FilterBar';
+```
+
+```typescript
+// ✅ services/execution/pages/PositionsPage.tsx
+import { FilterBar } from '@/shared/components';
+
+const PositionsPage = () => {
+  return (
+    <FilterBar
+      filters={POSITION_FILTERS}  // Config, not hardcoded
+      onApply={handleFilter}
+      onClear={handleClear}
+    />
+  )
+}
+```
+
+**DON'T:**
+```typescript
+// ❌ services/execution/components/ExecutionFilter.tsx
+// ❌ services/data/components/DataFilter.tsx
+// ❌ services/research/components/ResearchFilter.tsx
+// Each implements filters differently = inconsistent UX
+```
+
+**Why:**
+- Change filter styling once → updates everywhere
+- Consistent UX across domains
+- Smaller codebase, easier to test
+- New developers know where to look
+
+---
+
+### Rule 2.2: Branding & Theme in One Place
+
+**All brand/theme values go to `shared/config/branding.ts`:**
+
+```typescript
+// ✅ shared/config/branding.ts
+export const BRANDING = {
+  company: {
+    name: "Unified Trading System",
+    shortName: "UTS",
+    logo: "/images/logo.svg",          // URL, not hardcoded
+    favicon: "/images/favicon.ico",
+  },
+  colors: {
+    primary: "#1a1a1a",                // Dark institutional
+    accent: "#00d9ff",
+    success: "#00cc88",
+    warning: "#ffaa00",
+    danger: "#ff4444",
+    border: "#333333",
+  },
+  spacing: {
+    xs: "4px",
+    sm: "8px",
+    md: "16px",
+    lg: "24px",
+    xl: "32px",
+  },
+  typography: {
+    fontFamily: "Inter, system-ui, sans-serif",
+    fontSize: {
+      xs: "11px",
+      sm: "12px",
+      md: "14px",
+      lg: "16px",
+    },
+  },
+};
+
+export const getColorForStatus = (status: string) => {
+  const statusColorMap: Record<string, string> = {
+    OPEN: BRANDING.colors.warning,
+    FILLED: BRANDING.colors.success,
+    CANCELLED: BRANDING.colors.danger,
+  };
+  return statusColorMap[status] || BRANDING.colors.primary;
+};
+```
+
+**Usage:**
+```typescript
+// ✅ Any component
+import { BRANDING } from '@/shared/config/branding';
+
+const Header = () => (
+  <header style={{ backgroundColor: BRANDING.colors.primary }}>
+    <img src={BRANDING.company.logo} alt={BRANDING.company.name} />
+  </header>
+);
+```
+
+**DON'T:**
+```typescript
+// ❌ Hardcoded in components
+const Header = () => (
+  <header style={{ backgroundColor: "#1a1a1a" }}>
+    <img src="/images/logo.svg" alt="UTS" />
+  </header>
+);
+
+// ❌ Different values in different places
+// services/execution/Header.tsx: "#1a1a1a"
+// services/data/Header.tsx: "#1a2a2a"
+// → Inconsistent branding
+```
+
+**Why:**
+- Change brand color? Update one place → all pages update
+- Easy to support dark/light themes (swap entire config)
+- No scattered magic strings
+- A/B testing themes is trivial
+
+---
+
+### Rule 2.3: Auth-Driven Visibility in Shared Components
+
+**Shared components must support permission-driven rendering:**
+
+```typescript
+// ✅ shared/components/headers/MainHeader.tsx
+import { useAuth } from '@/shared/hooks/useAuth';
+
+export const MainHeader = () => {
+  const { role, org } = useAuth();
+
+  return (
+    <header>
+      <Logo />
+
+      {/* Show for all authenticated users */}
+      <OrgSelector org={org} />
+
+      {/* Only show for internal users */}
+      {role === 'internal' && <AdminLink />}
+
+      {/* Only show for traders */}
+      {role === 'trader' && <RiskAlertBell />}
+
+      <UserMenu />
+    </header>
+  );
+};
+```
+
+**DON'T:**
+```typescript
+// ❌ Duplicate logic per domain
+// services/execution/components/ExecutionHeader.tsx
+// services/admin/components/AdminHeader.tsx
+// Each has its own permission checks
+
+// ❌ Permission-hidden code still loaded
+// Code for admin features loads even if not admin
+// (wastes bandwidth, exposes features)
+```
+
+**Why:**
+- One permission source → consistent access control
+- New roles/permissions? Update once in shared component
+- No duplicate auth logic
+- Easier to audit what users can see
+
+---
+
+## 3. Configuration & Abstraction
+
+### Rule 3.1: No Hardcoded API Endpoints
+
+**DO:**
+```typescript
+// ✅ shared/config/api.ts
+export const API_CONFIG = {
+  baseUrl: process.env.REACT_APP_API_BASE_URL || 'http://localhost:8004',
+
+  services: {
+    execution: {
+      baseUrl: '/api/execution',
+      endpoints: {
+        positions: '/positions',
+        orders: '/orders',
+        executions: '/executions',
+      },
+    },
+    risk: {
+      baseUrl: '/api/risk',
+      endpoints: {
+        limits: '/limits',
+        exposure: '/exposure',
+        alerts: '/alerts',
+      },
+    },
+    data: {
+      baseUrl: '/api/data',
+      endpoints: {
+        catalog: '/catalog',
+        subscribe: '/subscribe',
+        quotes: '/quotes',
+      },
+    },
+  },
+
+  timeouts: {
+    short: 5000,
+    medium: 15000,
+    long: 60000,
+  },
+};
+
+// Build URLs
+export const getExecutionUrl = (endpoint: string) =>
+  `${API_CONFIG.baseUrl}${API_CONFIG.services.execution.baseUrl}${API_CONFIG.services.execution.endpoints[endpoint]}`;
+```
+
+```typescript
+// ✅ services/execution/hooks/usePositions.ts
+import { API_CONFIG } from '@/shared/config/api';
+
+export const usePositions = () => {
+  const url = `${API_CONFIG.baseUrl}${API_CONFIG.services.execution.baseUrl}${API_CONFIG.services.execution.endpoints.positions}`;
+  return fetch(url).then(r => r.json());
+};
+```
+
+**DON'T:**
+```typescript
+// ❌ Hardcoded everywhere
+fetch('http://localhost:8004/api/execution/positions')
+fetch('http://localhost:8004/api/execution/orders')
+fetch('http://localhost:8004/api/execution/executions')
+
+// Change base URL? Must update 100s of places
+// Want to add /v2 to API paths? Global search-and-replace nightmare
+```
+
+**Why:**
+- Single source of truth for API structure
+- Easy to switch between local/staging/prod
+- Mock API uses same config (see Rule 3.3)
+- CI/CD can inject endpoints without code changes
+
+---
+
+### Rule 3.2: Service-Specific Config in Service Folder
+
+**Each service domain can have config, but must be exported through shared:**
+
+```
+services/execution/
+├── config/
+│   ├── positions.config.ts         ← Positions table columns
+│   ├── orders.config.ts            ← Order statuses, colors
+│   └── index.ts                    ← Re-export to shared
+└── ...
+
+shared/
+├── config/
+│   ├── api.ts                      ← API endpoints
+│   ├── branding.ts                 ← Brand/theme
+│   ├── auth.ts                     ← Roles, permissions
+│   ├── services/
+│   │   ├── execution.config.ts     ← Re-exported from services/execution/config
+│   │   ├── data.config.ts          ← Re-exported from services/data/config
+│   │   └── ...
+│   └── index.ts                    ← Single export point
+```
+
+```typescript
+// ✅ services/execution/config/positions.config.ts
+export const POSITION_COLUMNS = [
+  { key: 'symbol', label: 'Symbol', width: '100px' },
+  { key: 'quantity', label: 'Qty', width: '80px', align: 'right' },
+  { key: 'entry_price', label: 'Entry', width: '100px', align: 'right' },
+  { key: 'current_price', label: 'Current', width: '100px', align: 'right' },
+  { key: 'pnl', label: 'P&L', width: '100px', align: 'right' },
+];
+
+export const ORDER_STATUSES = {
+  OPEN: { label: 'Open', color: 'warning', icon: 'clock' },
+  FILLED: { label: 'Filled', color: 'success', icon: 'check' },
+  CANCELLED: { label: 'Cancelled', color: 'danger', icon: 'x' },
+};
+```
+
+```typescript
+// ✅ shared/config/index.ts
+export { API_CONFIG } from './api';
+export { BRANDING } from './branding';
+export { AUTH_ROLES } from './auth';
+export { POSITION_COLUMNS, ORDER_STATUSES } from '../services/execution/config';
+```
+
+```typescript
+// ✅ Any component
+import { POSITION_COLUMNS, ORDER_STATUSES } from '@/shared/config';
+
+const PositionsTable = ({ data }) => {
+  return (
+    <table>
+      <thead>
+        <tr>
+          {POSITION_COLUMNS.map(col => <th key={col.key}>{col.label}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {data.map(row => (
+          <tr key={row.id}>
+            {POSITION_COLUMNS.map(col => <td key={col.key}>{row[col.key]}</td>)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+```
+
+**Why:**
+- Service-specific config lives near the feature
+- But accessed through unified `shared/config`
+- Easy to find both global and service-specific settings
+- No imports from deep paths like `../../services/execution/config`
+
+---
+
+### Rule 3.3: Centralized Mock API (Not Per-Page)
+
+**All mocks go to `shared/mocks/`, organized by service:**
+
+```
+shared/mocks/
+├── api.ts                         ← Mock API setup
+├── handlers/
+│   ├── execution.ts               ← Execution service mocks
+│   ├── data.ts                    ← Data service mocks
+│   ├── risk.ts                    ← Risk service mocks
+│   └── ...
+├── fixtures/
+│   ├── positions.json
+│   ├── orders.json
+│   ├── executions.json
+│   └── ...
+└── index.ts
+```
+
+```typescript
+// ✅ shared/mocks/api.ts
+import { setupServer } from 'msw/node';  // Mock Service Worker
+import { executionHandlers } from './handlers/execution';
+import { dataHandlers } from './handlers/data';
+import { riskHandlers } from './handlers/risk';
+
+export const mockServer = setupServer(
+  ...executionHandlers,
+  ...dataHandlers,
+  ...riskHandlers,
+);
+
+// In test setup / dev environment
+if (process.env.REACT_APP_MOCK_API === 'true') {
+  mockServer.listen();
+}
+```
+
+```typescript
+// ✅ shared/mocks/handlers/execution.ts
+import { http, HttpResponse } from 'msw';
+import { API_CONFIG } from '@/shared/config/api';
+import { POSITIONS_FIXTURE } from '../fixtures/positions.json';
+
+export const executionHandlers = [
+  http.get(`${API_CONFIG.baseUrl}/api/execution/positions`, () => {
+    return HttpResponse.json({
+      data: POSITIONS_FIXTURE,
+      timestamp: new Date().toISOString(),
+    });
+  }),
+
+  http.post(`${API_CONFIG.baseUrl}/api/execution/orders`, async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({
+      order_id: `ORD-${Date.now()}`,
+      status: 'OPEN',
+      ...body,
+    });
+  }),
+];
+```
+
+```typescript
+// ✅ services/execution/hooks/usePositions.ts
+import { useQuery } from '@tanstack/react-query';
+import { API_CONFIG } from '@/shared/config/api';
+
+export const usePositions = () => {
+  return useQuery({
+    queryKey: ['positions'],
+    queryFn: async () => {
+      const url = `${API_CONFIG.baseUrl}/api/execution/positions`;
+      const response = await fetch(url);
+      return response.json();
+    },
+  });
+};
+
+// Works with:
+// ✅ Real API (production)
+// ✅ Real API (staging, with different baseUrl)
+// ✅ Mock API (local dev, same endpoint structure)
+// ✅ Mock API (testing, with MSW)
+```
+
+**DON'T:**
+```typescript
+// ❌ Mock per component
+// services/execution/mocks/usePositionsMock.ts
+// services/data/mocks/useDataMock.ts
+// → Each implements mocking differently
+// → Inconsistent mock behavior
+// → Tests pass but prod fails (different code paths)
+
+// ❌ Hardcoded mock data
+const MOCK_POSITIONS = [
+  { symbol: 'BTC/USD', qty: 1.5, ... },
+  { symbol: 'ETH/USD', qty: 10, ... },
+];
+// → Changes to mock data scattered
+// → Easy to forget to update all places
+```
+
+**Why:**
+- One mock API implementation used everywhere
+- Same endpoint structure as real API
+- Mock data centralized and versioned
+- Tests use same code paths as production
+- Easy to toggle mock/real via config
+
+---
+
+## 4. Routing & Navigation
+
+### Rule 4.1: Routes Must Align with Service Domains
+
+**DO:**
+```typescript
+// ✅ layout/router.tsx
+import { PublicRoutes } from './routes/PublicRoutes';
+import { AuthenticatedRoutes } from './routes/AuthenticatedRoutes';
+
+export const Router = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<PublicRoutes />} />
+
+        {/* Authenticated routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Service domains */}
+          <Route path="/data/*" element={<DataRoutes />} />
+          <Route path="/execution/*" element={<ExecutionRoutes />} />
+          <Route path="/research/*" element={<ResearchRoutes />} />
+          <Route path="/reporting/*" element={<ReportingRoutes />} />
+
+          {/* Admin-only routes */}
+          <Route element={<AdminOnlyRoute />}>
+            <Route path="/admin/*" element={<AdminRoutes />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+};
+```
+
+```typescript
+// ✅ services/execution/routes.tsx
+export const ExecutionRoutes = () => (
+  <Routes>
+    <Route path="/" element={<ExecutionDashboard />} />
+    <Route path="/positions" element={<PositionsPage />} />
+    <Route path="/orders" element={<OrdersPage />} />
+    <Route path="/analytics" element={<AnalyticsPage />} />
+  </Routes>
+);
+```
+
+**DON'T:**
+```typescript
+// ❌ Routes not aligned with services
+/positions      ← Which service? Execution? Risk?
+/orders
+/data
+/analytics      ← Could be multiple services
+/page-v2        ← Versioning in routes (old code still reachable)
+
+// ❌ Deep nesting
+/dashboard/execution/positions/analytics/detail/settings
+→ Hard to reason about, hard to navigate, hard to organize code
+```
+
+**Why:**
+- Routes map to service domains (better mental model)
+- Easy to organize code by path
+- Lazy-load entire service domain when navigating there
+- Old pages not reachable (no V2, V3 clutter)
+
+---
+
+### Rule 4.2: Never Nest Old & New Routes
+
+**When refactoring a page:**
+
+```typescript
+// ✅ Before refactor
+<Route path="/positions" element={<PositionsPage />} />
+
+// ✅ During refactor: Update in place
+<Route path="/positions" element={<PositionsPageRefactored />} />  // Same route
+
+// ✅ After refactor: Delete old file
+// PositionsPage.tsx is deleted
+// File renamed to PositionsPage.tsx (was PositionsPageRefactored.tsx)
+<Route path="/positions" element={<PositionsPage />} />
+```
+
+**DON'T:**
+```typescript
+// ❌ Create multiple routes
+<Route path="/positions" element={<PositionsPage />} />
+<Route path="/positions-v2" element={<PositionsPageV2 />} />
+<Route path="/positions-new" element={<PositionsPageRefactored />} />
+→ Which is the real one? Traffic split? Confusion!
+```
+
+---
+
+## 5. Data & State Management
+
+### Rule 5.1: API Calls Through Centralized Hooks
+
+**All API calls go through hooks in `shared/hooks/api/`:**
+
+```
+shared/hooks/api/
+├── useExecutionAPI.ts
+├── useDataAPI.ts
+├── useRiskAPI.ts
+├── useAuthAPI.ts
+└── index.ts
+```
+
+```typescript
+// ✅ shared/hooks/api/useExecutionAPI.ts
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { API_CONFIG } from '@/shared/config/api';
+
+export const usePositions = (shard?: string, venue?: string) => {
+  return useQuery({
+    queryKey: ['positions', shard, venue],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (shard) params.append('shard', shard);
+      if (venue) params.append('venue', venue);
+
+      const url = `${API_CONFIG.baseUrl}${API_CONFIG.services.execution.baseUrl}${API_CONFIG.services.execution.endpoints.positions}?${params}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch positions');
+      return response.json();
+    },
+  });
+};
+
+export const usePlaceOrder = () => {
+  return useMutation({
+    mutationFn: async (orderData) => {
+      const url = `${API_CONFIG.baseUrl}${API_CONFIG.services.execution.baseUrl}${API_CONFIG.services.execution.endpoints.orders}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData),
+      });
+      if (!response.ok) throw new Error('Failed to place order');
+      return response.json();
+    },
+  });
+};
+```
+
+```typescript
+// ✅ services/execution/pages/PositionsPage.tsx
+import { usePositions } from '@/shared/hooks/api';
+import { useAuth } from '@/shared/hooks/useAuth';
+
+const PositionsPage = () => {
+  const { org } = useAuth();
+  const { data, isLoading, error } = usePositions(org.shard);
+
+  if (isLoading) return <Skeleton />;
+  if (error) return <ErrorState error={error} />;
+
+  return <PositionsTable data={data} />;
+};
+```
+
+**DON'T:**
+```typescript
+// ❌ Direct fetch in components
+const PositionsPage = () => {
+  const [positions, setPositions] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8004/api/execution/positions')
+      .then(r => r.json())
+      .then(setPositions);
+  }, []);
+
+  return <PositionsTable data={positions} />;
+};
+
+// Problems:
+// • No caching
+// • No error handling
+// • Repeated in multiple components
+// • Can't mock easily
+// • Can't change API endpoint globally
+```
+
+**Why:**
+- Centralized error handling
+- Built-in caching & revalidation
+- Easy to mock (hooks use same API config)
+- Consistent loading/error states
+- Easy to change API structure globally
+
+---
+
+## 6. Refactoring Protocol
+
+### Rule 6.1: Refactor One Thing at a Time
+
+When refactoring a feature:
+
+```
+1. Identify scope: "Refactor PositionsTable component"
+2. Create plan: "Update styling + add sorting + fix pagination"
+3. Do refactor in place
+4. Update imports (no route changes)
+5. Test thoroughly
+6. Delete old code completely
+7. Commit with clear message
+```
+
+**DON'T:**
+```
+1. Refactor PositionsTable
+2. While refactoring, also update execution API hooks
+3. While updating hooks, also reorganize the entire execution domain
+4. While reorganizing, also add new features
+→ Result: Massive PR, hard to review, easy to break
+```
+
+**Why:**
+- Small, focused refactors are easier to review
+- Easy to revert if something breaks
+- Changes are auditable and traceable
+- Fewer merge conflicts
+
+---
+
+### Rule 6.2: Before Deleting Old Code, Verify No References
+
+```bash
+# ✅ Before deleting PositionsPage.tsx:
+grep -r "PositionsPage" src/  # Check for imports
+grep -r "/positions" src/     # Check for route references
+
+# If found:
+# 1. Update all imports/routes
+# 2. Verify tests pass
+# 3. Then delete
+
+# DON'T delete a file and hope no one was using it
+```
+
+---
+
+## 7. Testing & Mocking Strategy
+
+### Rule 7.1: Tests Use Same Mock API as Dev Environment
+
+```typescript
+// ✅ setupTests.ts
+import { mockServer } from '@/shared/mocks/api';
+
+beforeAll(() => mockServer.listen());
+afterEach(() => mockServer.resetHandlers());
+afterAll(() => mockServer.close());
+
+// Now all tests use the centralized mock API
+```
+
+```typescript
+// ✅ services/execution/__tests__/PositionsPage.test.ts
+import { render, screen, waitFor } from '@testing-library/react';
+import { PositionsPage } from '../pages/PositionsPage';
+
+describe('PositionsPage', () => {
+  it('loads and displays positions', async () => {
+    render(<PositionsPage />);
+
+    // Uses mockServer (same as dev environment)
+    await waitFor(() => {
+      expect(screen.getByText('BTC/USD')).toBeInTheDocument();
+    });
+  });
+});
+
+// No need for custom mocks per test
+// No need for test doubles per component
+// Real API structure tested, so tests catch schema changes
+```
+
+**DON'T:**
+```typescript
+// ❌ Custom mocks per test
+const mockFetch = jest.fn(() => Promise.resolve(...));
+
+// ❌ Mocking API calls in components
+jest.mock('@/shared/hooks/api', () => ({
+  usePositions: jest.fn(() => ({ data: MOCK_DATA })),
+}));
+
+// Both create fake testing environments that differ from production
+```
+
+**Why:**
+- Tests exercise same code paths as production
+- Mocks are consistent between dev/test
+- Schema changes caught by tests
+- Easier to test error scenarios (just update mock handlers)
+
+---
+
+## 8. Code Quality Rules
+
+### Rule 8.1: No Hardcoded Strings or Magic Numbers
+
+**DO:**
+```typescript
+// ✅ shared/config/constants.ts
+export const PAGINATION = {
+  DEFAULT_PAGE_SIZE: 20,
+  MAX_PAGE_SIZE: 100,
+};
+
+export const TIMEOUTS = {
+  API_SHORT: 5000,
+  API_MEDIUM: 15000,
+  API_LONG: 60000,
+};
+
+export const ERROR_MESSAGES = {
+  FETCH_FAILED: 'Failed to fetch data. Please try again.',
+  INVALID_INPUT: 'Please check your input and try again.',
+  UNAUTHORIZED: 'You do not have permission to perform this action.',
+};
+```
+
+```typescript
+// ✅ In components
+const PositionsTable = ({ data }) => {
+  const [pageSize, setPageSize] = useState(PAGINATION.DEFAULT_PAGE_SIZE);
+  // ...
+};
+```
+
+**DON'T:**
+```typescript
+// ❌ Magic numbers scattered
+const [pageSize, setPageSize] = useState(20);
+const timeout = 5000;
+return alert('Failed to fetch data. Please try again.');
+
+// Change a magic number? Search entire codebase
+```
+
+---
+
+### Rule 8.2: Types Should Be Centralized
+
+**For shared types (API responses, common props):**
+
+```
+shared/types/
+├── api.ts
+├── auth.ts
+├── common.ts
+└── index.ts
+```
+
+```typescript
+// ✅ shared/types/api.ts
+export interface Position {
+  id: string;
+  shard: string;
+  venue: string;
+  symbol: string;
+  quantity: number;
+  entry_price: number;
+  current_price: number;
+  unrealized_pnl: number;
+}
+
+export interface Order {
+  order_id: string;
+  symbol: string;
+  side: 'BUY' | 'SELL';
+  quantity: number;
+  price: number;
+  status: 'OPEN' | 'FILLED' | 'CANCELLED';
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  timestamp: string;
+  status: 'success' | 'error';
+}
+```
+
+**For service-specific types:**
+
+```
+services/execution/types/
+├── execution.ts
+└── index.ts
+```
+
+**Both exported through `shared/types/index.ts`:**
+
+```typescript
+// ✅ shared/types/index.ts
+export * from './api';
+export * from './auth';
+export * from './common';
+export * from '../services/execution/types';  // Also shared
+```
+
+---
+
+## 9. Summary: Before You Start Coding
+
+**Every time you start a new feature or refactor:**
+
+1. ✅ **Architecture First**
+   - Where does this belong in the service domain structure?
+   - Is this a new page? Update `services/<domain>/routes.tsx`
+   - Is this a new component? Shared or service-specific?
+
+2. ✅ **Check for Existing Components**
+   - Already have a filter? Use `shared/components/filters/FilterBar`
+   - Already have a table? Use `shared/components/tables/DataTable`
+   - Don't duplicate
+
+3. ✅ **Use Centralized Config**
+   - API endpoints? From `shared/config/api`
+   - Branding? From `shared/config/branding`
+   - Service-specific config? From `shared/config/services/<name>`
+   - Never hardcode
+
+4. ✅ **Use Centralized Hooks**
+   - API calls? Through `shared/hooks/api/<domain>`
+   - Authentication? Through `shared/hooks/useAuth`
+   - Theme/branding? Through `shared/hooks/useBranding`
+
+5. ✅ **Use Centralized Mocks**
+   - Dev environment uses `shared/mocks/api`
+   - Tests use same mocks
+   - No per-component mocking
+
+6. ✅ **Refactor in Place**
+   - Don't create V2, Refactored, New versions
+   - Update and delete old code
+   - Keep one source of truth
+
+---
+
+**Remember:** The goal is a maintainable, coherent codebase where:
+- Changes to branding/config happen in one place
+- API structure changes don't break 100 files
+- Mocking works the same everywhere
+- Navigation/routing is predictable
+- New developers know where to look
+
+**Consistency > Perfect First Draft**
+
