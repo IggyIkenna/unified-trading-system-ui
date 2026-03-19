@@ -3,15 +3,18 @@
  */
 
 import { dataHandlers } from "./data"
+import { executionHandlers } from "./execution"
+import { strategyHandlers } from "./strategy"
+import { mlHandlers } from "./ml"
 
 export const handlers = [
   ...dataHandlers,
-  // Future handlers will be added here in PLANS_2:
+  ...executionHandlers,
+  ...strategyHandlers,
+  ...mlHandlers,
+  // Future handlers (PLANS_2):
   // ...authHandlers,
-  // ...executionHandlers,
   // ...positionsHandlers,
-  // ...strategyHandlers,
-  // ...mlHandlers,
   // ...riskHandlers,
   // ...tradingHandlers,
   // ...marketDataHandlers,

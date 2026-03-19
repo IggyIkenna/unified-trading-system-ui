@@ -28,8 +28,7 @@ function OpsShellInner({ children }: { children: React.ReactNode }) {
 
   const isAuthorized =
     user?.role === "internal" ||
-    user?.role === "admin" ||
-    user?.role === "Internal Trader"
+    user?.role === "admin"
 
   React.useEffect(() => {
     if (user && !isAuthorized) {
