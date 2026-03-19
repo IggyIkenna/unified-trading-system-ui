@@ -9,8 +9,8 @@
   },
 
   "current_structure": {
-    "status": "phase-2-complete",
-    "description": "Route groups established, MSW infrastructure in place, Zustand stores created, SWR hooks ready. Pages still use inline mock data (migration in PLANS_2).",
+    "status": "post-phase-2",
+    "description": "Phase 2 complete. Route groups (public)/(platform)/(ops) created. MSW mock infrastructure in lib/mocks/. Zustand stores in lib/stores/. React Query wired with proof-of-concept. Centralized config in lib/config/. Auth personas with entitlements. Type generation script ready.",
     "framework": "Next.js 16 App Router",
     "app_structure": "ROUTE GROUPS — app/(public)/ for marketing, app/(platform)/ for authenticated product, app/(ops)/ for internal-only",
     "mock_data": "HYBRID — lib/*.ts still has inline data, lib/mocks/handlers/ has MSW handlers ready for migration",

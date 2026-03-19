@@ -174,4 +174,55 @@ Phase 2 structural refactoring is complete:
 - SWR hooks for data fetching
 - Dependencies added for state management
 
-**Next:** PLANS_2.md for wiring pages to React Query hooks, full mock migration, and comprehensive testing.
+---
+
+# Phase 3-4: Build Out Platform Features (PLANS_2.md)
+
+## 3A: Create React Query Hooks
+**Status:** DONE
+
+### Hooks Created:
+- `hooks/api/use-positions.ts` - Positions, summary, risk groups, margin, history
+- `hooks/api/use-risk.ts` - Risk summary, limits, exposure, VaR, Greeks, stress scenarios
+- `hooks/api/use-ml-models.ts` - Models, experiments, features, training, validation, governance
+- `hooks/api/use-trading.ts` - P&L summary, time series, attribution, performance, activity
+- `hooks/api/use-alerts.ts` - Alerts, stats, rules, acknowledge/resolve/snooze mutations
+- `hooks/api/use-reports.ts` - Reports, settlement, reconciliation, invoices
+- `hooks/api/use-market-data.ts` - OHLCV, order book, trades, market stats, tickers
+- `hooks/api/use-deployments.ts` - Services, deployments, shards, cloud builds (internal)
+- `hooks/api/use-service-status.ts` - System overview, health, freshness, incidents
+- `hooks/api/use-audit.ts` - Compliance checks, audit events, data health (internal)
+- `hooks/api/use-organizations.ts` - Organizations, users, activity
+
+---
+
+## 3B: Create MSW Handlers
+**Status:** DONE
+
+### Handlers Created:
+- `handlers/positions.ts` - Client-scoped position data
+- `handlers/risk.ts` - Risk limits, exposure, VaR, stress scenarios
+- `handlers/ml.ts` - Subscription-filtered ML models and experiments
+- `handlers/trading.ts` - P&L data, performance metrics
+- `handlers/alerts.ts` - Alert CRUD with severity filtering
+
+### Previously Created (Phase 2):
+- `handlers/auth.ts` - Login, logout, persona switch
+- `handlers/data.ts` - Catalogue, instruments, freshness
+- `handlers/execution.ts` - Venues, algos, orders, TCA
+- `handlers/strategy.ts` - Strategies, backtests
+
+---
+
+## 3C: Wire Flagship Pages to React Query
+**Status:** IN PROGRESS
+
+---
+
+## 3D: Wire Auth-Driven Scoping
+**Status:** TODO
+
+---
+
+## Phase 4: Build New Platform Surfaces
+**Status:** TODO
