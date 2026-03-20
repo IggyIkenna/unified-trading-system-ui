@@ -16,7 +16,6 @@ import {
   Database, ArrowLeft, Sparkles, Globe, Zap, Download,
   CheckCircle2, ArrowRight, Cloud, Clock, Lock, FlaskConical,
 } from "lucide-react"
-import { SiteHeader } from "@/components/shell/site-header"
 import { ShardCatalogue } from "@/components/data/shard-catalogue"
 import { FreshnessHeatmap } from "@/components/data/freshness-heatmap"
 import { DATA_PLANS } from "@/lib/data-service-types"
@@ -32,8 +31,6 @@ const HERO_METRICS = [
 export default function DataServicePublicPage() {
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
-
       {/* Hero */}
       <section className="relative border-b border-border overflow-hidden">
         {/* Sky-tinted grid background */}
