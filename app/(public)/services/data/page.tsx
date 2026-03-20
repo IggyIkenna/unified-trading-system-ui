@@ -247,37 +247,38 @@ export default function DataServicePublicPage() {
               {/* What the platform looks like — preview cards */}
               <div className="space-y-4">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Data Freshness Monitoring</h3>
-                <Card className="border-sky-500/20">
-                  <CardContent className="pt-5">
-                    <div className="grid md:grid-cols-3 gap-6">
-                      {MOCK_SHARD_AVAILABILITY.map(shard => (
-                        <div key={`${shard.venue}-${shard.dataType}`} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium capitalize">{shard.venue}</span>
-                            <Badge variant="outline" className="text-[10px]">{shard.folder}</Badge>
+                <div className="space-y-4">
+                  {MOCK_SHARD_AVAILABILITY.map(shard => (
+                    <Card key={`${shard.venue}-${shard.dataType}`} className="border-sky-500/20">
+                      <CardContent className="pt-5">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <span className="text-base font-semibold capitalize">{shard.venue}</span>
+                            <Badge variant="outline" className="text-xs">{shard.folder}</Badge>
+                            <Badge variant="outline" className="text-xs text-blue-400 border-blue-400/30">GCP</Badge>
                           </div>
-                          <FreshnessHeatmap
-                            dateMap={shard.byDate ?? {}}
-                            label={`${shard.dataType}`}
-                            cloud={shard.gcpCompletionPct > 0 ? "gcp" : "aws"}
-                            weeksToShow={13}
-                          />
-                          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                            <span>{shard.datesChecked} days checked</span>
-                            <span>{shard.datesMissing} gaps</span>
+                          <div className="flex items-center gap-4 text-sm">
+                            <span className="text-muted-foreground">{shard.datesChecked} days</span>
+                            <span className="text-muted-foreground">{shard.datesMissing} gaps</span>
                             <span className={cn(
-                              "font-mono font-medium",
-                              shard.completionPct >= 99 ? "text-emerald-400" :
-                              shard.completionPct >= 95 ? "text-yellow-400" : "text-red-400"
+                              "font-mono font-bold",
+                              shard.completionPct >= 96 ? "text-emerald-400" :
+                              shard.completionPct >= 90 ? "text-yellow-400" : "text-red-400"
                             )}>
                               {shard.completionPct}%
                             </span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                        <FreshnessHeatmap
+                          dateMap={shard.byDate ?? {}}
+                          label={`${shard.dataType}`}
+                          cloud={shard.gcpCompletionPct > 0 ? "gcp" : "aws"}
+                          weeksToShow={13}
+                        />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-4">
