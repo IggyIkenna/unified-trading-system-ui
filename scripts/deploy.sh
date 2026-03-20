@@ -62,7 +62,7 @@ if [ "$SKIP_BUILD" = false ]; then
     gcloud builds submit . \
       --config=cloudbuild.yaml \
       --substitutions=SHORT_SHA="${TAG}" \
-      --timeout=600s \
+      --timeout=1800s \
       --quiet
   fi
   log "Build complete: ${IMAGE}:${TAG}"
