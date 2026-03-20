@@ -256,8 +256,8 @@ export default function PlatformOrgSelectionPage() {
               <div>
                 <h4 className="font-medium">Organisation Access</h4>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Each organisation has its own isolated environment with customised strategies, 
-                  branding, and access controls. White-label clients see only their allocated 
+                  Each organisation has its own isolated environment with customised strategies,
+                  branding, and access controls. White-label clients see only their allocated
                   strategies and data. Internal users can switch between organisations.
                 </p>
               </div>
@@ -265,6 +265,121 @@ export default function PlatformOrgSelectionPage() {
           </div>
         </div>
       </main>
+
+      {/* See It In Action */}
+      <section className="border-t border-border">
+        <div className="container px-4 py-16 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold">See It In Action</h2>
+              <p className="mt-2 text-muted-foreground">
+                Preview the full platform pipeline from strategy design through ML model deployment to live execution.
+              </p>
+            </div>
+
+            {/* Strategy Pipeline Preview */}
+            <Card className="mb-6 border-amber-500/20">
+              <CardHeader>
+                <CardTitle className="text-base">Strategy Pipeline</CardTitle>
+                <CardDescription>End-to-end workflow from research to live trading</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 md:grid-cols-4">
+                  {[
+                    { stage: "Research", count: "12 strategies", status: "Backtest" },
+                    { stage: "Paper Trading", count: "5 strategies", status: "Validating" },
+                    { stage: "Staged Rollout", count: "3 strategies", status: "10% capital" },
+                    { stage: "Live Production", count: "17 strategies", status: "Full capital" },
+                  ].map((item) => (
+                    <div key={item.stage} className="rounded-lg border border-border/50 bg-muted/30 p-3 text-center">
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider">{item.stage}</div>
+                      <div className="text-sm font-medium mt-1">{item.count}</div>
+                      <Badge variant="outline" className="text-[10px] mt-1">{item.status}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ML Models + Execution Preview */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card className="border-amber-500/20">
+                <CardHeader>
+                  <CardTitle className="text-base">ML Models</CardTitle>
+                  <CardDescription>Deployed model performance</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {[
+                      { model: "Alpha Signal v3.2", accuracy: "68.4%", status: "Live" },
+                      { model: "Vol Forecast v2.1", accuracy: "72.1%", status: "Live" },
+                      { model: "Regime Detector v1.8", accuracy: "81.3%", status: "Shadow" },
+                    ].map((m) => (
+                      <div key={m.model} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                        <div>
+                          <div className="text-sm font-medium">{m.model}</div>
+                          <div className="text-[10px] text-muted-foreground">{m.accuracy} accuracy</div>
+                        </div>
+                        <Badge variant="outline" className={`text-[10px] ${m.status === "Live" ? "border-emerald-500/30 text-emerald-400" : "border-amber-500/30 text-amber-400"}`}>
+                          {m.status}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-amber-500/20">
+                <CardHeader>
+                  <CardTitle className="text-base">Execution Summary</CardTitle>
+                  <CardDescription>Today&apos;s trading activity</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {[
+                      { label: "Orders Executed", value: "2,847" },
+                      { label: "Notional Volume", value: "$18.4M" },
+                      { label: "Avg Alpha", value: "+2.8bps" },
+                      { label: "Active Venues", value: "28 / 33" },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                        <span className="text-sm text-muted-foreground">{item.label}</span>
+                        <span className="text-sm font-medium font-mono">{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTAs */}
+      <section className="border-t border-border">
+        <div className="container px-4 py-16 md:px-6">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 text-center max-w-2xl mx-auto">
+            <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Book a live demo to see the platform, or create your account to start exploring.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button size="lg" asChild>
+                <Link href="/contact?service=platform&action=demo">
+                  Book a Live Demo
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/contact">Contact Sales</Link>
+              </Button>
+              <Button size="lg" variant="ghost" asChild>
+                <Link href="/signup">Create Account</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

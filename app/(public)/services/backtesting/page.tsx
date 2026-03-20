@@ -157,6 +157,112 @@ export default function BacktestingServicePage() {
           </div>
         </div>
       </main>
+
+      {/* See It In Action */}
+      <section className="border-t border-border">
+        <div className="container px-4 py-16 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold">See It In Action</h2>
+              <p className="mt-2 text-muted-foreground">
+                Preview what your backtesting workflow looks like inside the platform.
+              </p>
+            </div>
+
+            {/* Strategy Config Preview */}
+            <Card className="mb-6 border-violet-500/20">
+              <CardHeader>
+                <CardTitle className="text-base">Strategy Configuration</CardTitle>
+                <CardDescription>Define parameters, asset classes, and execution rules</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {[
+                    { label: "Strategy", value: "Mean Reversion — BTC Perps" },
+                    { label: "Asset Class", value: "Crypto CeFi" },
+                    { label: "Lookback", value: "6 months" },
+                    { label: "Venues", value: "Binance, OKX, Bybit" },
+                    { label: "Slippage Model", value: "Empirical (tick-level)" },
+                    { label: "GPU Workers", value: "4x A100" },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{item.label}</div>
+                      <div className="text-sm font-medium mt-0.5">{item.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Backtest Results Table Preview */}
+            <Card className="border-violet-500/20">
+              <CardHeader>
+                <CardTitle className="text-base">Backtest Results</CardTitle>
+                <CardDescription>Compare parameter sweeps side by side</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                        <th className="pb-2 pr-4">Run</th>
+                        <th className="pb-2 pr-4">Sharpe</th>
+                        <th className="pb-2 pr-4">Return</th>
+                        <th className="pb-2 pr-4">Max DD</th>
+                        <th className="pb-2 pr-4">Win Rate</th>
+                        <th className="pb-2">Trades</th>
+                      </tr>
+                    </thead>
+                    <tbody className="font-mono">
+                      {[
+                        { run: "MR-001", sharpe: "2.41", ret: "+38.7%", dd: "-4.2%", wr: "62%", trades: "1,847" },
+                        { run: "MR-002", sharpe: "1.98", ret: "+29.1%", dd: "-6.8%", wr: "58%", trades: "2,103" },
+                        { run: "MR-003", sharpe: "2.87", ret: "+44.3%", dd: "-3.1%", wr: "65%", trades: "1,592" },
+                        { run: "MR-004", sharpe: "1.54", ret: "+18.6%", dd: "-9.4%", wr: "53%", trades: "2,890" },
+                      ].map((row) => (
+                        <tr key={row.run} className="border-b border-border/50">
+                          <td className="py-2 pr-4 font-medium">{row.run}</td>
+                          <td className="py-2 pr-4 text-sky-400">{row.sharpe}</td>
+                          <td className="py-2 pr-4 text-emerald-400">{row.ret}</td>
+                          <td className="py-2 pr-4 text-rose-400">{row.dd}</td>
+                          <td className="py-2 pr-4">{row.wr}</td>
+                          <td className="py-2">{row.trades}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTAs */}
+      <section className="border-t border-border">
+        <div className="container px-4 py-16 md:px-6">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 text-center max-w-2xl mx-auto">
+            <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Book a live demo to see the platform, or create your account to start exploring.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button size="lg" asChild>
+                <Link href="/contact?service=backtesting&action=demo">
+                  Book a Live Demo
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/contact">Contact Sales</Link>
+              </Button>
+              <Button size="lg" variant="ghost" asChild>
+                <Link href="/signup">Create Account</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

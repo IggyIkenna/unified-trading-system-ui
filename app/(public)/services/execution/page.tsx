@@ -142,6 +142,116 @@ export default function ExecutionServicePage() {
           </div>
         </div>
       </main>
+
+      {/* See It In Action */}
+      <section className="border-t border-border">
+        <div className="container px-4 py-16 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold">See It In Action</h2>
+              <p className="mt-2 text-muted-foreground">
+                Preview execution analytics, venue connectivity, and algo performance inside the platform.
+              </p>
+            </div>
+
+            {/* Venue Connectivity Preview */}
+            <Card className="mb-6 border-emerald-500/20">
+              <CardHeader>
+                <CardTitle className="text-base">Venue Connectivity</CardTitle>
+                <CardDescription>Real-time connection status across all 33 venues</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-2 md:grid-cols-3">
+                  {[
+                    { venue: "Binance", latency: "2.1ms", status: "Connected", fills: "99.7%" },
+                    { venue: "OKX", latency: "3.4ms", status: "Connected", fills: "99.2%" },
+                    { venue: "CME", latency: "1.8ms", status: "Connected", fills: "99.9%" },
+                    { venue: "Uniswap V3", latency: "12.3ms", status: "Connected", fills: "98.1%" },
+                    { venue: "Bybit", latency: "2.8ms", status: "Connected", fills: "99.4%" },
+                    { venue: "Deribit", latency: "4.1ms", status: "Connected", fills: "99.6%" },
+                  ].map((v) => (
+                    <div key={v.venue} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                      <div>
+                        <div className="text-sm font-medium">{v.venue}</div>
+                        <div className="text-[10px] text-muted-foreground">{v.latency} avg</div>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-400">{v.status}</Badge>
+                        <div className="text-[10px] text-muted-foreground mt-0.5">{v.fills} fill rate</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Algo Performance Preview */}
+            <Card className="border-emerald-500/20">
+              <CardHeader>
+                <CardTitle className="text-base">Algorithm Performance</CardTitle>
+                <CardDescription>Alpha generation and slippage reduction by algo type</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border text-left text-xs text-muted-foreground">
+                        <th className="pb-2 pr-4">Algorithm</th>
+                        <th className="pb-2 pr-4">Orders</th>
+                        <th className="pb-2 pr-4">Avg Alpha</th>
+                        <th className="pb-2 pr-4">Slippage</th>
+                        <th className="pb-2">Fill Rate</th>
+                      </tr>
+                    </thead>
+                    <tbody className="font-mono">
+                      {[
+                        { algo: "TWAP", orders: "4,218", alpha: "+1.8bps", slip: "0.3bps", fill: "99.8%" },
+                        { algo: "VWAP", orders: "3,102", alpha: "+2.4bps", slip: "0.5bps", fill: "99.6%" },
+                        { algo: "SOR", orders: "6,847", alpha: "+3.1bps", slip: "0.2bps", fill: "99.9%" },
+                        { algo: "IS", orders: "1,956", alpha: "+4.7bps", slip: "0.8bps", fill: "99.1%" },
+                      ].map((row) => (
+                        <tr key={row.algo} className="border-b border-border/50">
+                          <td className="py-2 pr-4 font-medium">{row.algo}</td>
+                          <td className="py-2 pr-4">{row.orders}</td>
+                          <td className="py-2 pr-4 text-emerald-400">{row.alpha}</td>
+                          <td className="py-2 pr-4 text-amber-400">{row.slip}</td>
+                          <td className="py-2">{row.fill}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTAs */}
+      <section className="border-t border-border">
+        <div className="container px-4 py-16 md:px-6">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 text-center max-w-2xl mx-auto">
+            <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Book a live demo to see the platform, or create your account to start exploring.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button size="lg" asChild>
+                <Link href="/contact?service=execution&action=demo">
+                  Book a Live Demo
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/contact">Contact Sales</Link>
+              </Button>
+              <Button size="lg" variant="ghost" asChild>
+                <Link href="/signup">Create Account</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
