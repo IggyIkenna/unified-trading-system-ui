@@ -37,7 +37,7 @@ const services = [
     metrics: [
       { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
       { label: "Asset Classes", value: String(PLATFORM_STATS.assetClassCount) },
-      { label: "Data Types", value: `${PLATFORM_STATS.instrumentTypeCount}+` },
+      { label: "Setup", value: "Minutes" },
     ],
     features: ["Raw Tick Data", "Processed OHLCV", "Liquidation Data", "ML Signal Feed", "Sports Probability API"],
     pricing: "From £250/mo",
@@ -55,7 +55,7 @@ const services = [
     metrics: [
       { label: "Asset Classes", value: "5" },
       { label: "Strategy Types", value: "17+" },
-      { label: "Interface", value: "NL Agent" },
+      { label: "Setup", value: "Minutes" },
     ],
     features: ["No-Code Web UI", "Autonomous Agent Interface", "Cross-Asset Simulation", "Full Trade Records"],
     pricing: "Contact us",
@@ -72,8 +72,8 @@ const services = [
     lifecycle: ["Build", "Promote", "Run", "Observe"],
     metrics: [
       { label: "Strategies", value: "17+" },
-      { label: "Asset Classes", value: "5" },
       { label: "Deployment", value: "Turnkey" },
+      { label: "Setup", value: "Hours" },
     ],
     features: ["Full Platform Access", "Strategy Source Code", "Deployment Support", "Ongoing Updates"],
     pricing: "Contact us",
@@ -91,7 +91,7 @@ const services = [
     metrics: [
       { label: "Algo Types", value: "8+" },
       { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
-      { label: "Compliance", value: "MiFID II" },
+      { label: "Setup", value: "Minutes" },
     ],
     features: ["TWAP/VWAP Algos", "Smart Order Routing", "DeFi MEV Protection", "Best Execution Reports"],
     pricing: "Contact us",
@@ -109,7 +109,7 @@ const services = [
     metrics: [
       { label: "Regulation", value: "FCA" },
       { label: "Structures", value: "SMA / Fund" },
-      { label: "Reporting", value: "Monthly" },
+      { label: "Setup", value: "Hours" },
     ],
     features: ["Separately Managed Accounts", "Fund Access", "Cross-Asset Mandates", "Full Transparency"],
     pricing: "Contact us",
@@ -390,9 +390,17 @@ export default function ServicesLandingPage() {
                     <div className={cn("flex size-12 items-center justify-center rounded-lg", service.bgColor)}>
                       <Icon className={cn("size-6", service.color)} />
                     </div>
-                    <Badge variant="outline" className="text-xs">
-                      {service.pricing}
-                    </Badge>
+                    {service.pricing.startsWith("From") ? (
+                      <Badge variant="outline" className="text-xs">
+                        {service.pricing}
+                      </Badge>
+                    ) : (
+                      <Link href="/contact">
+                        <Badge variant="outline" className="text-xs hover:bg-accent cursor-pointer">
+                          {service.pricing} →
+                        </Badge>
+                      </Link>
+                    )}
                   </div>
                   <CardTitle className="mt-4">{service.name}</CardTitle>
                   <CardDescription className="line-clamp-2">{service.description}</CardDescription>
@@ -440,26 +448,7 @@ export default function ServicesLandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-background">
-        <div className="container px-4 py-12 md:px-6">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex items-center gap-2">
-              <img src="/images/odum-logo.png" alt="Odum Research" className="size-5" />
-              <span className="font-semibold">Odum Research Ltd</span>
-              <Badge variant="outline" className="text-xs">FCA 975797</Badge>
-            </div>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
-              <Link href="/terms" className="hover:text-foreground">Terms</Link>
-              <Link href="/compliance" className="hover:text-foreground">Compliance</Link>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Professional & Eligible Counterparty clients only
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer handled by (public)/layout.tsx */}
     </div>
   )
 }

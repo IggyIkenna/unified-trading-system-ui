@@ -140,7 +140,6 @@ export function ShardCatalogue({
         .filter(cat => filterCategory === "all" || cat === filterCategory)
         .map(cat => {
           const catEntries = filteredCatalogue.filter(e => e.instrument.category === cat)
-          if (catEntries.length === 0 && venueList.length === 0 && search !== "") return null
 
           const allVenues = VENUES_BY_CATEGORY[cat]
           // Filter venues by search — only show venues matching the search term
@@ -151,6 +150,8 @@ export function ShardCatalogue({
                 (VENUE_DISPLAY[v]?.label ?? "").toLowerCase().includes(search.toLowerCase()) ||
                 catEntries.some(e => e.instrument.venue === v)
               )
+
+          if (catEntries.length === 0 && venueList.length === 0 && search !== "") return null
           const catAvgCompleteness = catEntries.length > 0
             ? Math.round(catEntries.reduce((sum, e) => sum + e.freshnessPct, 0) / catEntries.length)
             : 0

@@ -249,26 +249,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-background mt-16">
-        <div className="container px-4 py-12 md:px-6">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex items-center gap-2">
-              <img src="/images/odum-logo.png" alt="Odum Research" className="size-5" />
-              <span className="font-semibold">Odum Research Ltd</span>
-              <Badge variant="outline" className="text-xs">FCA 975797</Badge>
-            </div>
-            <div className="flex gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
-              <Link href="/terms" className="hover:text-foreground">Terms</Link>
-              <Link href="/compliance" className="hover:text-foreground">Compliance</Link>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Professional & Eligible Counterparty clients only
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer handled by (public)/layout.tsx */}
     </div>
   )
 }
