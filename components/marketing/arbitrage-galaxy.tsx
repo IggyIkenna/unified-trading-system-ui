@@ -232,8 +232,13 @@ export function ArbitrageGalaxy() {
       }
     }
 
+    let lastFrame = 0
+    const FRAME_INTERVAL = 1000 / 24 // 24fps — smooth enough, half the CPU
     function loop(ts: number) {
-      renderFrame(ts)
+      if (ts - lastFrame >= FRAME_INTERVAL) {
+        renderFrame(ts)
+        lastFrame = ts
+      }
       rafRef.current = requestAnimationFrame(loop)
     }
     rafRef.current = requestAnimationFrame(loop)
