@@ -129,23 +129,56 @@ const JOURNEY_STEPS = [
   { step: "6", label: "Monitor & Report", description: "P&L attribution, risk oversight, settlement, compliance", icon: FileText, color: "text-emerald-400" },
 ]
 
-const COMPARISON = [
-  { feature: "Market Data (128 venues)", data: true, research: true, execution: true, full: true },
-  { feature: "Historical Data (6+ years)", data: true, research: true, execution: true, full: true },
-  { feature: "API Access", data: true, research: true, execution: true, full: true },
-  { feature: "ML Model Training", data: false, research: true, execution: true, full: true },
-  { feature: "Signal Configuration", data: false, research: true, execution: true, full: true },
-  { feature: "Algo Selection (simple included)", data: false, research: true, execution: true, full: true },
-  { feature: "Advanced Algos (bolt-on)", data: false, research: false, execution: true, full: true },
-  { feature: "Strategy Backtesting", data: false, research: true, execution: true, full: true },
-  { feature: "Paper Trading", data: false, research: true, execution: true, full: true },
-  { feature: "Live Execution", data: false, research: false, execution: true, full: true },
-  { feature: "Position Monitoring", data: false, research: false, execution: true, full: true },
-  { feature: "Risk Management", data: false, research: false, execution: true, full: true },
-  { feature: "Execution Analytics", data: false, research: false, execution: true, full: true },
-  { feature: "Investment Management", data: false, research: false, execution: false, full: true },
-  { feature: "Compliance & Reporting", data: false, research: false, execution: false, full: true },
-  { feature: "Dedicated Account Manager", data: false, research: false, execution: false, full: true },
+// Capability × Control Level matrix — each capability is independent, pick what you need
+const CAPABILITY_MATRIX = [
+  {
+    capability: "Market Data",
+    icon: Database,
+    color: "text-sky-400",
+    selfService: "API + web UI access to 128 venues",
+    managed: "We curate feeds for your asset classes",
+    byoOption: "Bring your own data sources via API",
+  },
+  {
+    capability: "ML Training",
+    icon: Brain,
+    color: "text-purple-400",
+    selfService: "Train models on our GPU infrastructure",
+    managed: "We train and optimise models for you",
+    byoOption: "Bring your own models, use our inference",
+  },
+  {
+    capability: "Signal Config",
+    icon: FlaskConical,
+    color: "text-violet-400",
+    selfService: "Configure signal-to-trade rules in our builder",
+    managed: "Pre-built signals from our strategy library",
+    byoOption: "Bring your own signals via API",
+  },
+  {
+    capability: "Execution Algos",
+    icon: Zap,
+    color: "text-orange-400",
+    selfService: "Select from TWAP, VWAP, IS, SOR, Sniper",
+    managed: "We optimise algo selection per strategy",
+    byoOption: "Bring your own algos, use our routing",
+  },
+  {
+    capability: "Risk Management",
+    icon: Shield,
+    color: "text-red-400",
+    selfService: "Set limits, circuit breakers, kill switches",
+    managed: "We manage risk limits on your behalf",
+    byoOption: "Your risk rules enforced by our engine",
+  },
+  {
+    capability: "Reporting",
+    icon: FileText,
+    color: "text-emerald-400",
+    selfService: "Generate P&L, settlement, compliance reports",
+    managed: "We deliver monthly reports to your inbox",
+    byoOption: "Your report templates, our data pipeline",
+  },
 ]
 
 export default function EngagementModelsPage() {
@@ -257,54 +290,63 @@ export default function EngagementModelsPage() {
         </div>
       </section>
 
-      {/* Comparison Table */}
+      {/* Capability × Control Level Matrix */}
       <section className="py-16 bg-muted/30">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">What&apos;s Included</h2>
-            <p className="text-muted-foreground">Each tier builds on the previous — start small, scale up</p>
+            <h2 className="text-3xl font-bold mb-4">Pick What You Need</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Every capability is independent. You don&apos;t have to buy a &ldquo;tier&rdquo; — pick the
+              capabilities you need and choose your level of control for each. Mix self-service,
+              managed, and bring-your-own however you like.
+            </p>
           </div>
 
-          <div className="max-w-5xl mx-auto overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium">Capability</th>
-                  <th className="text-center py-3 px-4 font-medium">
-                    <Database className="size-4 mx-auto mb-1 text-blue-400" />
-                    Data
-                  </th>
-                  <th className="text-center py-3 px-4 font-medium">
-                    <Brain className="size-4 mx-auto mb-1 text-purple-400" />
-                    Research
-                  </th>
-                  <th className="text-center py-3 px-4 font-medium">
-                    <Zap className="size-4 mx-auto mb-1 text-orange-400" />
-                    Execution
-                  </th>
-                  <th className="text-center py-3 px-4 font-medium">
-                    <Shield className="size-4 mx-auto mb-1 text-emerald-400" />
-                    Full
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {COMPARISON.map((row) => (
-                  <tr key={row.feature} className="border-b border-border/50">
-                    <td className="py-2.5 px-4 text-xs">{row.feature}</td>
-                    {(["data", "research", "execution", "full"] as const).map((tier) => (
-                      <td key={tier} className="py-2.5 px-4 text-center">
-                        {row[tier] ? (
-                          <Check className="size-4 text-primary mx-auto" />
-                        ) : (
-                          <span className="text-muted-foreground/40">—</span>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="max-w-5xl mx-auto">
+            {/* Column headers */}
+            <div className="grid grid-cols-4 gap-4 mb-4 px-2">
+              <div />
+              <div className="text-center">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Self-Service</div>
+                <div className="text-[10px] text-muted-foreground/60 mt-0.5">You drive, our infrastructure</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Managed by Us</div>
+                <div className="text-[10px] text-muted-foreground/60 mt-0.5">We handle it for you</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Bring Your Own</div>
+                <div className="text-[10px] text-muted-foreground/60 mt-0.5">Your tools, our platform</div>
+              </div>
+            </div>
+
+            {/* Capability rows */}
+            <div className="space-y-3">
+              {CAPABILITY_MATRIX.map((cap) => {
+                const Icon = cap.icon
+                return (
+                  <div key={cap.capability} className="grid grid-cols-4 gap-4 items-stretch">
+                    <div className="flex items-center gap-2 px-2">
+                      <Icon className={`size-4 ${cap.color} shrink-0`} />
+                      <span className="text-sm font-semibold">{cap.capability}</span>
+                    </div>
+                    <div className="rounded-lg border border-border/50 bg-card p-3">
+                      <p className="text-xs text-muted-foreground">{cap.selfService}</p>
+                    </div>
+                    <div className="rounded-lg border border-border/50 bg-card p-3">
+                      <p className="text-xs text-muted-foreground">{cap.managed}</p>
+                    </div>
+                    <div className="rounded-lg border border-border/50 bg-card p-3">
+                      <p className="text-xs text-muted-foreground">{cap.byoOption}</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            <p className="text-center text-xs text-muted-foreground mt-8">
+              Pricing is based on what you pick — not which &ldquo;tier&rdquo; you&apos;re on. <Link href="/contact" className="text-primary hover:underline">Contact us</Link> to build your configuration.
+            </p>
           </div>
         </div>
       </section>
