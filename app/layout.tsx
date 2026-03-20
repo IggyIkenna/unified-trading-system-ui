@@ -5,6 +5,7 @@ import { ExecutionModeProvider } from '@/lib/execution-mode-context'
 import { Providers } from '@/lib/providers'
 import { Toaster } from '@/components/ui/sonner'
 import { StagingGate } from '@/components/staging-gate'
+import { PreviewBanner } from '@/components/preview-banner'
 import './globals.css'
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -56,6 +57,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${ibmPlexSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}>
         <StagingGate>
+          <PreviewBanner />
           <Providers>
             <ExecutionModeProvider>
               {children}
