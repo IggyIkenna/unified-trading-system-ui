@@ -25,6 +25,7 @@ const ENGAGEMENT_TIERS = [
     icon: Database,
     pricing: "From £250/mo",
     color: "border-blue-500/30",
+    serviceUrl: "/services/data",
     journey: [
       "Browse the full instrument catalogue",
       "Stream real-time market data across all venues",
