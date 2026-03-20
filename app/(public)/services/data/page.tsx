@@ -255,7 +255,12 @@ export default function DataServicePublicPage() {
                           <div className="flex items-center gap-3">
                             <span className="text-base font-semibold capitalize">{shard.venue}</span>
                             <Badge variant="outline" className="text-xs">{shard.folder}</Badge>
-                            <Badge variant="outline" className="text-xs text-blue-400 border-blue-400/30">GCP</Badge>
+                            {shard.gcpCompletionPct > 0 && (
+                              <Badge variant="outline" className="text-xs text-blue-400 border-blue-400/30">GCP</Badge>
+                            )}
+                            {shard.awsCompletionPct > 0 && (
+                              <Badge variant="outline" className="text-xs text-orange-400 border-orange-400/30">AWS</Badge>
+                            )}
                           </div>
                           <div className="flex items-center gap-4 text-sm">
                             <span className="text-muted-foreground">{shard.datesChecked} days</span>

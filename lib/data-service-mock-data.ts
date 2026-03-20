@@ -403,9 +403,9 @@ function makeShardAvailability(
 }
 
 export const MOCK_SHARD_AVAILABILITY: ShardAvailability[] = [
-  makeShardAvailability("cefi", "binance", "perpetuals", "ohlcv", 96, { gcp: 96, aws: 94 }),
-  makeShardAvailability("tradfi", "databento", "futures", "ohlcv", 93, { gcp: 93, aws: 0 }),
-  makeShardAvailability("defi", "uniswap_v3", "pool_state", "pool_state", 91, { gcp: 91, aws: 88 }),
+  makeShardAvailability("cefi", "binance", "perpetuals", "ohlcv", 96, { gcp: 96, aws: 0 }),
+  makeShardAvailability("tradfi", "databento", "futures", "trades", 93, { gcp: 0, aws: 93 }),
+  makeShardAvailability("defi", "aave_v3", "lending", "pool_state", 91, { gcp: 91, aws: 88 }),
 ]
 
 // ─── Admin summary stats ──────────────────────────────────────────────────────

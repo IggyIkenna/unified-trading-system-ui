@@ -57,7 +57,7 @@ const services = [
       { label: "Strategy Types", value: "17+" },
       { label: "Setup", value: "Minutes" },
     ],
-    features: ["No-Code Web UI", "Autonomous Agent Interface", "Cross-Asset Simulation", "Full Trade Records"],
+    features: ["No-Code Web UI + Full API", "Autonomous Agent Interface", "Cross-Asset Simulation", "Full Trade Records"],
     pricing: "Contact us",
     href: "/services/backtesting",
   },
