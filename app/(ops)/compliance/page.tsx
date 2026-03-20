@@ -143,7 +143,7 @@ export default function CompliancePage() {
         </Card>
 
         <div className="mt-12 text-center text-sm text-muted-foreground">
-          <p>For regulatory inquiries, contact: compliance@odum-research.co.uk</p>
+          <p>For regulatory inquiries, contact: <a href="mailto:compliance@odum-research.com" className="text-primary hover:underline">compliance@odum-research.com</a></p>
           <p className="mt-2">
             Verify our registration at{" "}
             <a href="https://register.fca.org.uk" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">

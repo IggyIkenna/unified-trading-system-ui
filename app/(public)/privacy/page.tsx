@@ -17,7 +17,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">2. How We Use Information</h2>
-            <p>We use collected information to provide our services, process transactions, communicate with you, and improve our platform. We do not sell personal data to third parties.</p>
+            <p>We use collected information to provide and facilitate access to our services, manage your account and service entitlements, process transactions, and communicate with you. Your account identity determines which platform services, data tiers, and features are available to you — access permissions are associated with your registered email and organisation. We also use information to improve our platform and ensure compliance with regulatory obligations. We do not sell personal data to third parties.</p>
           </section>
 
           <section>
@@ -32,12 +32,12 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">5. Your Rights</h2>
-            <p>Under GDPR, you have rights to access, correct, delete, and port your data. Contact privacy@odum-research.com to exercise these rights.</p>
+            <p>Under GDPR, you have rights to access, correct, delete, and port your data. Contact <a href="mailto:privacy@odum-research.com" className="text-primary hover:underline">privacy@odum-research.com</a> to exercise these rights.</p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">6. Contact</h2>
-            <p>For privacy inquiries: privacy@odum-research.co.uk</p>
+            <p>For privacy inquiries: <a href="mailto:privacy@odum-research.com" className="text-primary hover:underline">privacy@odum-research.com</a></p>
             <p>Data Protection Officer: Odum Research Ltd, London, UK</p>
           </section>
         </div>
