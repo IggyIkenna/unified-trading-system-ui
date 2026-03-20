@@ -32,7 +32,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">5. Intellectual Property</h2>
-            <p>All platform content, algorithms, and data remain the property of Odum Research Ltd. Client strategies developed using our tools remain client property.</p>
+            <p>All platform content, algorithms, and data developed by Odum remain the property of Odum Research Ltd. Client strategies developed using our tools remain client property.</p>
           </section>
 
           <section>
