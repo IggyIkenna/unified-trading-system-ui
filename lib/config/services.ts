@@ -49,6 +49,28 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     internalOnly: false,
   },
 
+  // --- Analytics (research before execution) ---
+  {
+    key: "strategy-platform",
+    label: "Strategy Platform",
+    description: "Strategy research, backtesting, and live deployment.",
+    href: "/strategy-platform",
+    requiredEntitlements: ["strategy-full"],
+    category: "analytics",
+    icon: "FlaskConical",
+    internalOnly: false,
+  },
+  {
+    key: "reports",
+    label: "Reports",
+    description: "P&L attribution, settlement, reconciliation, and invoicing.",
+    href: "/reports",
+    requiredEntitlements: ["reporting"],
+    category: "analytics",
+    icon: "FileText",
+    internalOnly: false,
+  },
+
   // --- Trading ---
   {
     key: "trading",
@@ -98,28 +120,6 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     requiredEntitlements: ["execution-basic"],
     category: "trading",
     icon: "Bell",
-    internalOnly: false,
-  },
-
-  // --- Analytics ---
-  {
-    key: "strategy-platform",
-    label: "Strategy Platform",
-    description: "Strategy research, backtesting, and live deployment.",
-    href: "/strategy-platform",
-    requiredEntitlements: ["strategy-full"],
-    category: "analytics",
-    icon: "FlaskConical",
-    internalOnly: false,
-  },
-  {
-    key: "reports",
-    label: "Reports",
-    description: "P&L attribution, settlement, reconciliation, and invoicing.",
-    href: "/reports",
-    requiredEntitlements: ["reporting"],
-    category: "analytics",
-    icon: "FileText",
     internalOnly: false,
   },
 
