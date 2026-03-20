@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,7 +26,50 @@ import {
   MessageSquare,
 } from "lucide-react"
 
-export default function ContactPage() {
+/**
+ * Service labels and pre-fill message templates
+ * Maps URL param values to form inquiry values and contextual messages
+ */
+const SERVICE_CONFIG: Record<string, { inquiryValue: string; label: string; demoMessage: string }> = {
+  data: {
+    inquiryValue: "data",
+    label: "Data API Access",
+    demoMessage: "I'd like to schedule a demo of the Data Provision service to explore instrument coverage, data freshness monitoring, and query/download pricing.",
+  },
+  backtesting: {
+    inquiryValue: "backtesting",
+    label: "Backtesting Services",
+    demoMessage: "I'd like to schedule a demo of the Research & Backtesting platform to explore strategy backtesting, ML signal evaluation, and promotion pipelines.",
+  },
+  execution: {
+    inquiryValue: "execution",
+    label: "Execution Services",
+    demoMessage: "I'd like to schedule a demo of the Execution Services to explore order management, venue connectivity, and execution analytics.",
+  },
+  platform: {
+    inquiryValue: "platform",
+    label: "Platform Licensing",
+    demoMessage: "I'm interested in licensing the full platform for my organisation. I'd like to discuss deployment options and pricing.",
+  },
+  investment: {
+    inquiryValue: "investment",
+    label: "Investment Management",
+    demoMessage: "I'd like to discuss investment management services and explore how Odum Research can help with portfolio management.",
+  },
+  regulatory: {
+    inquiryValue: "regulatory",
+    label: "Regulatory Services (AR)",
+    demoMessage: "I'd like to learn more about becoming an Appointed Representative and the regulatory services offered.",
+  },
+}
+
+const ACTION_CONFIG: Record<string, { suffix: string }> = {
+  demo: { suffix: "" }, // demo message is already in SERVICE_CONFIG
+  "smart-alpha": { suffix: "\n\nI'm particularly interested in the Smart Alpha execution algorithms." },
+}
+
+function ContactPageContent() {
+  const searchParams = useSearchParams()
   const [submitted, setSubmitted] = React.useState(false)
   const [formData, setFormData] = React.useState({
     name: "",
@@ -34,6 +78,49 @@ export default function ContactPage() {
     inquiry: "",
     message: "",
   })
+  const [prefillApplied, setPrefillApplied] = React.useState(false)
+
+  // Pre-fill form based on URL params (only once on mount)
+  React.useEffect(() => {
+    if (prefillApplied) return
+
+    const serviceParam = searchParams.get("service")
+    const actionParam = searchParams.get("action")
+
+    if (!serviceParam) return
+
+    // Handle multiple services (comma-separated from signup page)
+    const services = serviceParam.split(",").filter(Boolean)
+    const primaryService = services[0]
+    const serviceConfig = SERVICE_CONFIG[primaryService]
+
+    if (!serviceConfig) return
+
+    let inquiry = serviceConfig.inquiryValue
+    let message = ""
+
+    // Build message based on action
+    if (actionParam === "demo") {
+      message = serviceConfig.demoMessage
+    } else if (actionParam && ACTION_CONFIG[actionParam]) {
+      message = serviceConfig.demoMessage + ACTION_CONFIG[actionParam].suffix
+    }
+
+    // If multiple services selected, mention them
+    if (services.length > 1) {
+      const additionalServices = services.slice(1).map(s => SERVICE_CONFIG[s]?.label).filter(Boolean)
+      if (additionalServices.length > 0) {
+        message += `\n\nI'm also interested in: ${additionalServices.join(", ")}.`
+      }
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      inquiry,
+      message,
+    }))
+    setPrefillApplied(true)
+  }, [searchParams, prefillApplied])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -249,7 +336,19 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Footer handled by (public)/layout.tsx */}
+{/* Footer handled by (public)/layout.tsx */}
     </div>
+  )
+}
+
+export default function ContactPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    }>
+      <ContactPageContent />
+    </React.Suspense>
   )
 }
