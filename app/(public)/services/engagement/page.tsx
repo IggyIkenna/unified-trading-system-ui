@@ -25,6 +25,7 @@ const ENGAGEMENT_TIERS = [
     icon: Database,
     pricing: "From £250/mo",
     color: "border-blue-500/30",
+    serviceUrl: "/services/data",
     journey: [
       "Browse the full instrument catalogue",
       "Stream real-time market data across all venues",
@@ -45,6 +46,7 @@ const ENGAGEMENT_TIERS = [
     icon: Brain,
     pricing: "Contact us",
     color: "border-purple-500/30",
+    serviceUrl: "/services/backtesting",
     popular: true,
     journey: [
       "Train ML models (direction, volatility, regime, momentum)",
@@ -66,6 +68,7 @@ const ENGAGEMENT_TIERS = [
     icon: Zap,
     pricing: "Contact us",
     color: "border-orange-500/30",
+    serviceUrl: "/services/execution",
     journey: [
       "Deploy from our research pipeline or bring your own strategy via API",
       "Same code runs backtest and live — zero divergence by design",
@@ -86,6 +89,7 @@ const ENGAGEMENT_TIERS = [
     icon: Shield,
     pricing: "Contact us",
     color: "border-emerald-500/30",
+    serviceUrl: "/services/investment",
     journey: [
       "Allocate capital across strategy portfolios",
       "Review daily P&L and performance attribution",
@@ -106,6 +110,7 @@ const ENGAGEMENT_TIERS = [
     icon: Sparkles,
     pricing: "Let's talk",
     color: "border-primary/30",
+    serviceUrl: "/services/platform",
     journey: [
       "Mix and match any combination of platform services",
       "Custom data sources, venues, or instrument types",
@@ -275,12 +280,21 @@ export default function EngagementModelsPage() {
                       <p className="text-[10px] text-muted-foreground mb-3">
                         <strong>Best for:</strong> {tier.bestFor}
                       </p>
-                      <Button className="w-full" size="sm" variant={tier.popular ? "default" : "outline"} asChild>
-                        <Link href="/contact">
-                          {tier.cta}
-                          <ArrowRight className="ml-2 size-3" />
-                        </Link>
-                      </Button>
+                      <div className="flex gap-2">
+                        {tier.serviceUrl && (
+                          <Button className="flex-1" size="sm" variant="ghost" asChild>
+                            <Link href={tier.serviceUrl}>
+                              Learn More
+                            </Link>
+                          </Button>
+                        )}
+                        <Button className="flex-1" size="sm" variant={tier.popular ? "default" : "outline"} asChild>
+                          <Link href={`/contact?service=${tier.id}&action=demo`}>
+                            {tier.cta}
+                            <ArrowRight className="ml-2 size-3" />
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
