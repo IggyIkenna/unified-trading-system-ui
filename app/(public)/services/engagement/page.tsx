@@ -1,152 +1,234 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Check, Building2, Users, Zap, Shield, BarChart3, Clock } from "lucide-react"
+import { ArrowRight, Check, Database, Brain, FlaskConical, Zap, BarChart3, Shield, FileText, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { SiteHeader } from "@/components/shell/site-header"
 
-const ENGAGEMENT_MODELS = [
+/*
+ * Engagement models — describes the user journey through our services
+ * without internal jargon. Each tier adds depth:
+ *
+ * Data Access: you get the data
+ * Research & Backtesting: you train models, build signals, test strategies
+ * Execution as a Service: we run your strategies live
+ * Full Platform: end-to-end, we manage everything
+ */
+
+const ENGAGEMENT_TIERS = [
   {
-    id: "saas",
-    name: "SaaS Platform",
-    description: "Full access to our cloud-hosted trading platform with dedicated support.",
+    id: "data",
+    name: "Data Access",
+    tagline: "See every market, every venue, every asset class.",
+    description: "Access our unified data layer — covering 33 venues across crypto, traditional finance, DeFi, sports betting, and prediction markets. One schema, one API, all the data you need to build your own models and strategies.",
+    icon: Database,
+    pricing: "From £2,500/mo",
+    color: "border-blue-500/30",
+    journey: [
+      "Browse the instrument catalogue (2,400+ instruments)",
+      "Stream real-time market data across all venues",
+      "Download historical data for offline analysis",
+      "Monitor data freshness and coverage in real time",
+    ],
+    services: ["Data Catalogue", "Market Data API", "Historical Downloads"],
+    bestFor: "Quant teams and data scientists who build their own models and execution",
+    cta: "Start with Data",
+  },
+  {
+    id: "research",
+    name: "Research & Backtesting",
+    tagline: "Train models. Build signals. Test strategies. Find what works.",
+    description: "Go beyond raw data. Train machine learning models on our infrastructure, configure trading signals, backtest strategies across historical data, and iterate until you find the right approach — all without writing infrastructure code.",
+    icon: Brain,
+    pricing: "From £8,000/mo",
+    color: "border-purple-500/30",
+    popular: true,
+    journey: [
+      "Train ML models (direction prediction, volatility, regime detection)",
+      "Configure signal-to-trade optimisation parameters",
+      "Find the right algorithm for each strategy and market",
+      "Backtest across 6+ years of historical data",
+      "Compare strategy variants side-by-side",
+      "Promote winning strategies to paper trading",
+    ],
+    services: ["ML Model Training", "Signal Configuration", "Strategy Backtesting", "Paper Trading"],
+    bestFor: "Quant funds building systematic strategies who want infrastructure handled",
+    cta: "Start Researching",
+  },
+  {
+    id: "execution",
+    name: "Execution as a Service",
+    tagline: "Your strategies, our execution. Live across 33 venues.",
+    description: "Bring your tested strategies to market. We handle the execution infrastructure — multi-venue routing, smart order routing, position management, risk limits, and real-time monitoring. You focus on the alpha.",
     icon: Zap,
-    pricing: "From $5,000/mo",
-    features: [
-      "Cloud-hosted infrastructure",
-      "Real-time market data feeds",
-      "Strategy backtesting engine",
-      "Execution management system",
-      "Risk monitoring dashboard",
-      "API access for custom integrations",
-      "24/7 technical support",
-      "Regular platform updates",
+    pricing: "From £15,000/mo + performance",
+    color: "border-orange-500/30",
+    journey: [
+      "Deploy strategies from backtest to live in minutes",
+      "Execute across CeFi, DeFi, TradFi, and Sports venues simultaneously",
+      "Monitor positions, P&L, and risk in real time",
+      "Set risk limits and circuit breakers per strategy",
+      "Track execution quality (slippage, fill rates, latency)",
+      "Receive alerts on limit breaches and anomalies",
     ],
-    bestFor: "Hedge funds, family offices, and trading desks seeking turnkey solutions",
-    cta: "Start Free Trial",
+    services: ["Live Execution", "Position Monitoring", "Risk Management", "Execution Analytics"],
+    bestFor: "Funds with proven strategies who need institutional-grade execution",
+    cta: "Start Executing",
   },
   {
-    id: "whitelabel",
-    name: "White-Label",
-    description: "Deploy our platform under your brand with full customization options.",
-    icon: Building2,
-    pricing: "Custom pricing",
-    features: [
-      "Your branding and domain",
-      "Custom UI/UX design",
-      "Dedicated infrastructure",
-      "Private cloud or on-premise",
-      "Custom feature development",
-      "Integration with existing systems",
-      "Dedicated account manager",
-      "SLA guarantees",
+    id: "full",
+    name: "Full Platform",
+    tagline: "End-to-end. From data to returns. We run it all.",
+    description: "The complete package. We provide the data, train the models, run the strategies, manage the risk, generate the reports, and handle the compliance. You allocate capital and review performance.",
+    icon: Shield,
+    pricing: "2/20 or custom",
+    color: "border-emerald-500/30",
+    journey: [
+      "Allocate capital across strategy portfolios",
+      "Review daily P&L and performance attribution",
+      "Access detailed risk reports and stress test results",
+      "Track settlements and fee transparency",
+      "Full regulatory compliance (FCA authorised, MiFID II)",
+      "Dedicated account management and quarterly reviews",
     ],
-    bestFor: "Banks, brokers, and fintechs building client-facing platforms",
-    cta: "Contact Sales",
-  },
-  {
-    id: "managed",
-    name: "Managed Services",
-    description: "We operate and optimize your trading infrastructure end-to-end.",
-    icon: Users,
-    pricing: "Performance-based",
-    features: [
-      "Full operational management",
-      "Strategy optimization",
-      "Risk management oversight",
-      "Regulatory compliance support",
-      "Performance reporting",
-      "Infrastructure scaling",
-      "Disaster recovery",
-      "Audit trail management",
-    ],
-    bestFor: "Asset managers and allocators seeking operational efficiency",
-    cta: "Schedule Call",
+    services: ["Everything above", "Investment Management", "Compliance & Reporting", "Dedicated Support"],
+    bestFor: "Allocators, family offices, and institutions seeking managed alpha",
+    cta: "Schedule Consultation",
   },
 ]
 
-const COMPARISON_FEATURES = [
-  { feature: "Platform Access", saas: true, whitelabel: true, managed: true },
-  { feature: "Custom Branding", saas: false, whitelabel: true, managed: false },
-  { feature: "Dedicated Infrastructure", saas: false, whitelabel: true, managed: true },
-  { feature: "API Access", saas: true, whitelabel: true, managed: true },
-  { feature: "24/7 Support", saas: true, whitelabel: true, managed: true },
-  { feature: "Custom Development", saas: false, whitelabel: true, managed: false },
-  { feature: "Operational Management", saas: false, whitelabel: false, managed: true },
-  { feature: "Performance Optimization", saas: false, whitelabel: false, managed: true },
-  { feature: "Compliance Support", saas: "Basic", whitelabel: "Full", managed: "Full" },
-  { feature: "SLA Guarantee", saas: "99.5%", whitelabel: "99.9%", managed: "99.9%" },
+const JOURNEY_STEPS = [
+  { step: "1", label: "Access Data", description: "Connect to 33 venues, 5 asset classes, real-time and historical", icon: Database, color: "text-blue-400" },
+  { step: "2", label: "Train Models", description: "ML model training — predict direction, volatility, regime, momentum", icon: Brain, color: "text-purple-400" },
+  { step: "3", label: "Build Signals", description: "Configure signal-to-trade parameters, find the right algorithm", icon: FlaskConical, color: "text-violet-400" },
+  { step: "4", label: "Test Strategies", description: "Backtest across years of data, compare variants, validate edge", icon: BarChart3, color: "text-cyan-400" },
+  { step: "5", label: "Execute Live", description: "Deploy to production, multi-venue execution, real-time monitoring", icon: Zap, color: "text-orange-400" },
+  { step: "6", label: "Monitor & Report", description: "P&L attribution, risk oversight, settlement, compliance", icon: FileText, color: "text-emerald-400" },
+]
+
+const COMPARISON = [
+  { feature: "Market Data (33 venues)", data: true, research: true, execution: true, full: true },
+  { feature: "Historical Data (6+ years)", data: true, research: true, execution: true, full: true },
+  { feature: "API Access", data: true, research: true, execution: true, full: true },
+  { feature: "ML Model Training", data: false, research: true, execution: true, full: true },
+  { feature: "Signal Configuration", data: false, research: true, execution: true, full: true },
+  { feature: "Strategy Backtesting", data: false, research: true, execution: true, full: true },
+  { feature: "Paper Trading", data: false, research: true, execution: true, full: true },
+  { feature: "Live Execution", data: false, research: false, execution: true, full: true },
+  { feature: "Position Monitoring", data: false, research: false, execution: true, full: true },
+  { feature: "Risk Management", data: false, research: false, execution: true, full: true },
+  { feature: "Execution Analytics", data: false, research: false, execution: true, full: true },
+  { feature: "Investment Management", data: false, research: false, execution: false, full: true },
+  { feature: "Compliance & Reporting", data: false, research: false, execution: false, full: true },
+  { feature: "Dedicated Account Manager", data: false, research: false, execution: false, full: true },
 ]
 
 export default function EngagementModelsPage() {
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
-      
       {/* Hero */}
       <section className="py-16 md:py-24 bg-gradient-to-b from-primary/5 to-background">
         <div className="container px-4 md:px-6">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge variant="outline" className="mb-4">Flexible Partnership Options</Badge>
+            <Badge variant="outline" className="mb-4">How We Work With You</Badge>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-              Engagement Models
+              From Data to Returns
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Choose the partnership model that best fits your business needs. 
-              From self-service SaaS to fully managed solutions.
+              Start with data access. Add research and backtesting. Scale to live execution.
+              Or let us manage everything. You choose the depth.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Models Grid */}
+      {/* Journey Steps */}
+      <section className="py-12 border-b border-border">
+        <div className="container px-4 md:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {JOURNEY_STEPS.map((step) => {
+              const Icon = step.icon
+              return (
+                <div key={step.step} className="text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <div className="flex size-10 items-center justify-center rounded-full bg-card border border-border">
+                      <Icon className={`size-5 ${step.color}`} />
+                    </div>
+                  </div>
+                  <p className="text-sm font-semibold">{step.label}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1 leading-tight">{step.description}</p>
+                </div>
+              )
+            })}
+          </div>
+          <div className="mt-6 text-center">
+            <p className="text-xs text-muted-foreground">
+              Each tier includes everything before it. Start anywhere, expand when ready.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Tier Cards */}
       <section className="py-16">
         <div className="container px-4 md:px-6">
-          <div className="grid md:grid-cols-3 gap-8">
-            {ENGAGEMENT_MODELS.map((model) => (
-              <Card key={model.id} className="relative flex flex-col">
-                {model.id === "whitelabel" && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-primary">Most Popular</Badge>
-                  </div>
-                )}
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <model.icon className="size-5 text-primary" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {ENGAGEMENT_TIERS.map((tier) => {
+              const Icon = tier.icon
+              return (
+                <Card key={tier.id} className={`relative flex flex-col ${tier.color}`}>
+                  {tier.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <Badge className="bg-primary">Most Popular</Badge>
                     </div>
-                    <CardTitle>{model.name}</CardTitle>
-                  </div>
-                  <CardDescription>{model.description}</CardDescription>
-                  <div className="pt-2">
-                    <span className="text-2xl font-bold">{model.pricing}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
-                  <ul className="space-y-2 mb-6 flex-1">
-                    {model.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-sm">
-                        <Check className="size-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="pt-4 border-t">
-                    <p className="text-xs text-muted-foreground mb-4">
-                      <strong>Best for:</strong> {model.bestFor}
-                    </p>
-                    <Button className="w-full" variant={model.id === "whitelabel" ? "default" : "outline"} asChild>
-                      <Link href="/contact">
-                        {model.cta}
-                        <ArrowRight className="ml-2 size-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  )}
+                  <CardHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Icon className="size-5 text-primary" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">{tier.name}</CardTitle>
+                      </div>
+                    </div>
+                    <CardDescription className="text-sm font-medium text-foreground/80">
+                      {tier.tagline}
+                    </CardDescription>
+                    <p className="text-xs text-muted-foreground mt-2">{tier.description}</p>
+                    <div className="pt-3">
+                      <span className="text-xl font-bold">{tier.pricing}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col">
+                    <div className="mb-4">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                        What you can do
+                      </p>
+                      <ul className="space-y-1.5">
+                        {tier.journey.map((item) => (
+                          <li key={item} className="flex items-start gap-2 text-xs">
+                            <Check className="size-3 text-primary mt-0.5 flex-shrink-0" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="mt-auto pt-4 border-t border-border/50">
+                      <p className="text-[10px] text-muted-foreground mb-3">
+                        <strong>Best for:</strong> {tier.bestFor}
+                      </p>
+                      <Button className="w-full" size="sm" variant={tier.popular ? "default" : "outline"} asChild>
+                        <Link href="/contact">
+                          {tier.cta}
+                          <ArrowRight className="ml-2 size-3" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -155,57 +237,46 @@ export default function EngagementModelsPage() {
       <section className="py-16 bg-muted/30">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Feature Comparison</h2>
-            <p className="text-muted-foreground">See what's included in each engagement model</p>
+            <h2 className="text-3xl font-bold mb-4">What&apos;s Included</h2>
+            <p className="text-muted-foreground">Each tier builds on the previous — start small, scale up</p>
           </div>
-          
-          <div className="max-w-4xl mx-auto overflow-x-auto">
-            <table className="w-full">
+
+          <div className="max-w-5xl mx-auto overflow-x-auto">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-4 px-4 font-medium">Feature</th>
-                  <th className="text-center py-4 px-4 font-medium">SaaS</th>
-                  <th className="text-center py-4 px-4 font-medium">White-Label</th>
-                  <th className="text-center py-4 px-4 font-medium">Managed</th>
+                  <th className="text-left py-3 px-4 font-medium">Capability</th>
+                  <th className="text-center py-3 px-4 font-medium">
+                    <Database className="size-4 mx-auto mb-1 text-blue-400" />
+                    Data
+                  </th>
+                  <th className="text-center py-3 px-4 font-medium">
+                    <Brain className="size-4 mx-auto mb-1 text-purple-400" />
+                    Research
+                  </th>
+                  <th className="text-center py-3 px-4 font-medium">
+                    <Zap className="size-4 mx-auto mb-1 text-orange-400" />
+                    Execution
+                  </th>
+                  <th className="text-center py-3 px-4 font-medium">
+                    <Shield className="size-4 mx-auto mb-1 text-emerald-400" />
+                    Full
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {COMPARISON_FEATURES.map((row) => (
-                  <tr key={row.feature} className="border-b">
-                    <td className="py-3 px-4 text-sm">{row.feature}</td>
-                    <td className="py-3 px-4 text-center">
-                      {typeof row.saas === "boolean" ? (
-                        row.saas ? (
+                {COMPARISON.map((row) => (
+                  <tr key={row.feature} className="border-b border-border/50">
+                    <td className="py-2.5 px-4 text-xs">{row.feature}</td>
+                    {(["data", "research", "execution", "full"] as const).map((tier) => (
+                      <td key={tier} className="py-2.5 px-4 text-center">
+                        {row[tier] ? (
                           <Check className="size-4 text-primary mx-auto" />
                         ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )
-                      ) : (
-                        <span className="text-sm">{row.saas}</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      {typeof row.whitelabel === "boolean" ? (
-                        row.whitelabel ? (
-                          <Check className="size-4 text-primary mx-auto" />
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )
-                      ) : (
-                        <span className="text-sm">{row.whitelabel}</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      {typeof row.managed === "boolean" ? (
-                        row.managed ? (
-                          <Check className="size-4 text-primary mx-auto" />
-                        ) : (
-                          <span className="text-muted-foreground">-</span>
-                        )
-                      ) : (
-                        <span className="text-sm">{row.managed}</span>
-                      )}
-                    </td>
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
@@ -219,29 +290,23 @@ export default function EngagementModelsPage() {
         <div className="container px-4 md:px-6">
           <Card className="bg-primary text-primary-foreground">
             <CardContent className="py-12 text-center">
-              <h2 className="text-3xl font-bold mb-4">Not sure which model is right for you?</h2>
+              <h2 className="text-3xl font-bold mb-4">Not sure where to start?</h2>
               <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
-                Our team can help you evaluate your requirements and recommend the best engagement model for your business.
+                Most clients start with Data Access, add Research within 3 months, and
+                move to Execution within 6. We&apos;ll help you find the right path.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="secondary" asChild>
-                  <Link href="/contact">Schedule Consultation</Link>
+                  <Link href="/contact">Talk to Our Team</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="bg-transparent border-primary-foreground/20 hover:bg-primary-foreground/10" asChild>
-                  <Link href="/demo">View Platform Demo</Link>
+                  <Link href="/login">Try the Demo</Link>
                 </Button>
               </div>
             </CardContent>
           </Card>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container px-4 md:px-6 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Odum Research Ltd. All rights reserved. FCA Registered (975797)</p>
-        </div>
-      </footer>
     </div>
   )
 }
