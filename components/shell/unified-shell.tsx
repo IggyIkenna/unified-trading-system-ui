@@ -14,9 +14,8 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
-import { LifecycleNav, LaneIndicator } from "./lifecycle-nav"
+import { LifecycleNav } from "./lifecycle-nav"
 import { GlobalNavBar } from "@/components/trading/global-nav-bar"
-import { getRouteMapping } from "@/lib/lifecycle-mapping"
 import { cn } from "@/lib/utils"
 
 interface UnifiedShellProps {
@@ -39,10 +38,7 @@ export function UnifiedShell({
   className,
 }: UnifiedShellProps) {
   const pathname = usePathname() || ""
-  
-  // Get current route mapping for lane indicator
-  const routeMapping = getRouteMapping(pathname)
-  
+
   // Public routes don't get the shell
   const publicRoutes = ["/", "/login", "/signup", "/services", "/pricing", "/docs", "/contact", "/presentation", "/demo", "/privacy", "/terms"]
   const isPublicRoute = publicRoutes.some(r => pathname === r || pathname.startsWith(r + "/"))
@@ -64,22 +60,7 @@ export function UnifiedShell({
           userRole={userRole}
         />
       )}
-      
-      {/* Context bar with lane indicators */}
-      {routeMapping && routeMapping.lanes.length > 0 && !useLegacyNav && (
-        <div className="flex items-center justify-between px-4 py-1.5 bg-muted/30 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{routeMapping.label}</span>
-            <LaneIndicator lanes={routeMapping.lanes} />
-          </div>
-          {routeMapping.secondaryStage && (
-            <span className="text-[10px] text-muted-foreground">
-              Also relates to: {routeMapping.secondaryStage}
-            </span>
-          )}
-        </div>
-      )}
-      
+
       {/* Main content */}
       <main>
         {children}

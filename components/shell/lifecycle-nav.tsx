@@ -44,7 +44,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
   type LifecycleStage,
-  type DomainLane,
   lifecycleStages,
   domainLanes,
   buildLifecycleNav,
@@ -386,28 +385,6 @@ export function LifecycleNav({
         </DropdownMenu>
       </div>
     </nav>
-  )
-}
-
-// Lane indicator badge - shows which domain lanes current page belongs to
-export function LaneIndicator({ lanes, className }: { lanes: DomainLane[]; className?: string }) {
-  if (!lanes || lanes.length === 0) return null
-  
-  return (
-    <div className={cn("flex items-center gap-1", className)}>
-      {lanes.map(lane => {
-        const info = domainLanes[lane]
-        return (
-          <Badge
-            key={lane}
-            variant="outline"
-            className={cn("text-[10px] px-1.5 py-0 h-5", info.color, "border-current/30 bg-current/5")}
-          >
-            {info.label}
-          </Badge>
-        )
-      })}
-    </div>
   )
 }
 

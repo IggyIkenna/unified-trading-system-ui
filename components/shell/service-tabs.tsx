@@ -18,19 +18,17 @@ export interface ServiceTab {
 }
 
 interface ServiceTabsProps {
-  serviceName: string
   tabs: ServiceTab[]
   className?: string
 }
 
-export function ServiceTabs({ serviceName, tabs, className }: ServiceTabsProps) {
+export function ServiceTabs({ tabs, className }: ServiceTabsProps) {
   const pathname = usePathname() || ""
 
   return (
     <div className={cn("border-b border-border bg-card/50", className)}>
-      <div className="px-6 pt-4 pb-0">
-        <h2 className="text-lg font-semibold tracking-tight mb-3">{serviceName}</h2>
-        <nav className="flex gap-1 -mb-px">
+      <div className="px-6 pt-3 pb-0">
+        <nav className="flex gap-1 -mb-px" aria-label="Service sections">
           {tabs.map((tab) => {
             const matchPath = tab.matchPrefix || tab.href
             const isActive = pathname === tab.href || pathname.startsWith(matchPath + "/")
