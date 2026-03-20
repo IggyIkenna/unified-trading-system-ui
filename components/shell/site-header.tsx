@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 
 const NAV_ITEMS = [
   { href: "/", label: "Platform" },
-  { href: "/engagement", label: "Engagement Models" },
+  { href: "/services/engagement", label: "Engagement Models" },
   { href: "/docs", label: "Documentation" },
   { href: "/investor-relations", label: "Investor Relations" },
   { href: "/contact", label: "Contact" },

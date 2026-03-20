@@ -7,9 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Shield,
-  ArrowLeft,
   ArrowRight,
-  Sparkles,
   FileText,
   Users,
   Clock,
@@ -22,28 +20,6 @@ import {
 export default function RegulatoryServicePage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg bg-primary">
-                <Sparkles className="size-5 text-primary-foreground" />
-              </div>
-              <span className="text-lg font-semibold">Odum Research</span>
-            </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="text-sm font-medium">Regulatory Umbrella</span>
-          </div>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/">
-              <ArrowLeft className="mr-2 size-4" />
-              Back
-            </Link>
-          </Button>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container px-4 py-12 md:px-6">
         <div className="mx-auto max-w-4xl">

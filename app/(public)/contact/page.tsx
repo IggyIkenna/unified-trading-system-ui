@@ -24,7 +24,6 @@ import {
   Building2,
   MessageSquare,
 } from "lucide-react"
-import { SiteHeader } from "@/components/shell/site-header"
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = React.useState(false)
@@ -44,7 +43,6 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
 
       <div className="container px-4 py-16 md:px-6">
         <div className="mx-auto max-w-4xl">

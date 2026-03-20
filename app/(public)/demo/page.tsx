@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Calendar, CheckCircle2, Shield, Clock, Video } from "lucide-react"
+import { Calendar, CheckCircle2, Shield, Clock, Video } from "lucide-react"
 
 export default function DemoPage() {
   const [submitted, setSubmitted] = React.useState(false)
@@ -21,22 +21,6 @@ export default function DemoPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container flex items-center justify-between h-16 px-4">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-bold text-sm">O</span>
-            </div>
-            <span className="font-semibold">Odum Research</span>
-          </Link>
-          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-2">
-            <ArrowLeft className="size-4" />
-            Back to Home
-          </Link>
-        </div>
-      </header>
-
       <main className="container px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">

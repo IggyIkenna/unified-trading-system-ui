@@ -21,7 +21,6 @@ import {
   Check,
   ExternalLink,
 } from "lucide-react"
-import { SiteHeader } from "@/components/shell/site-header"
 
 // API Endpoints organized by service
 const apiEndpoints = {
@@ -560,7 +559,6 @@ export default function DocsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
 
       <div className="container px-4 py-8 md:px-6">
         <div className="flex flex-col lg:flex-row gap-8">

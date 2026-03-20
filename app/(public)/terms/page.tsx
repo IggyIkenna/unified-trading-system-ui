@@ -1,26 +1,9 @@
 "use client"
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
 
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container flex items-center justify-between h-16 px-4">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <span className="text-primary font-bold text-sm">O</span>
-            </div>
-            <span className="font-semibold">Odum Research</span>
-          </Link>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/"><ArrowLeft className="size-4 mr-2" />Back</Link>
-          </Button>
-        </div>
-      </header>
-
       <main className="container px-4 py-16 max-w-3xl">
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
         
