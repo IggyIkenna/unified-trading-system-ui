@@ -1,44 +1,51 @@
 {
   "_meta": {
     "description": "Single source of truth for UI structure. Documents current layout, target structure during refactors, and history. Agents MUST read this before any structural changes.",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "last_updated": "2026-03-19",
     "locked": false,
     "refactor_in_progress": false,
-    "refactor_branch": null
+    "refactor_branch": "refactor/phase2-structure"
   },
 
   "current_structure": {
-    "status": "pre-phase-2",
-    "description": "V0-generated prototype. Flat app/ directory, inline mock data, no route groups, no state management, no API layer.",
+    "status": "post-phase-2",
+    "description": "Phase 2 complete. Route groups (public)/(platform)/(ops) created. MSW mock infrastructure in lib/mocks/. Zustand stores in lib/stores/. React Query wired with proof-of-concept. Centralized config in lib/config/. Auth personas with entitlements. Type generation script ready.",
     "framework": "Next.js 16 App Router",
-    "app_structure": "FLAT — 30+ route directories directly under app/, no (public)/(platform)/(ops) route groups yet",
-    "mock_data": "INLINE — ~9,100 lines of hardcoded objects in lib/*.ts files (strategy-registry.ts, reference-data.ts, ml-mock-data.ts, trading-data.ts, etc.)",
-    "state_management": "NONE — no Zustand stores, no React Query, no centralized state",
-    "api_layer": "NONE — no fetch calls, no hooks/api/, pages render static data directly",
-    "auth": "MINIMAL — hooks/use-auth.ts reads localStorage, no personas, no entitlements, no role-based scoping",
-    "shells": "PARTIAL — components/shell/ has unified-shell.tsx, lifecycle-nav.tsx, require-auth.tsx, role-layout.tsx but NOT wired as App Router layout.tsx files",
+    "app_structure": "ROUTE GROUPS — app/(public)/ for marketing, app/(platform)/ for authenticated product, app/(ops)/ for internal-only",
+    "mock_data": "HYBRID — lib/*.ts still has inline data, lib/mocks/handlers/ has MSW handlers ready for migration",
+    "state_management": "READY — lib/stores/ has auth-store, filters-store, ui-store with Zustand",
+    "api_layer": "READY — hooks/api/ has useCatalogue, useStrategies, useExecution with SWR",
+    "auth": "PERSONAS — lib/mocks/fixtures/personas.ts has 3 demo personas, lib/config/auth.ts has types, lib/stores/auth-store.ts manages state",
+    "shells": "WIRED — app/(public)/layout.tsx, app/(platform)/layout.tsx, app/(ops)/layout.tsx all created with proper auth gates",
     "components": "GOOD — 59 Radix UI primitives in components/ui/, 34 trading components in components/trading/, 6 dashboards",
     "design_system": "GOOD — globals.css with semantic tokens, IBM Plex Sans + JetBrains Mono, dark institutional theme",
     "registry_data": "FRESH — lib/registry/ has latest openapi.json (298 endpoints), config-registry.json (46 configs), sharding_config.yaml, system-topology.json, ui-reference-data.json",
     "tests": "MINIMAL — 4 unit tests, 2 E2E specs, coverage threshold set to 50% (target: 70%)",
     "routes": [
-      { "path": "/", "component": "app/page.tsx", "status": "exists", "notes": "Marketing landing page (712 lines)" },
-      { "path": "/login", "component": "app/login/page.tsx", "status": "exists" },
-      { "path": "/trader", "component": "app/trader/page.tsx", "status": "exists", "notes": "Trader dashboard" },
-      { "path": "/positions", "component": "app/positions/page.tsx", "status": "exists" },
-      { "path": "/risk", "component": "app/risk/page.tsx", "status": "exists" },
-      { "path": "/execution/*", "component": "app/execution/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
-      { "path": "/strategy-platform/*", "component": "app/strategy-platform/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
-      { "path": "/ml/*", "component": "app/ml/", "status": "exists", "notes": "Has layout.tsx + sub-routes" },
-      { "path": "/trading", "component": "app/trading/page.tsx", "status": "exists" },
-      { "path": "/markets", "component": "app/markets/page.tsx", "status": "exists" },
-      { "path": "/reports", "component": "app/reports/page.tsx", "status": "exists" },
-      { "path": "/admin", "component": "app/admin/page.tsx", "status": "exists" },
-      { "path": "/ops", "component": "app/ops/page.tsx", "status": "exists" },
-      { "path": "/devops", "component": "app/devops/page.tsx", "status": "exists" },
-      { "path": "/manage/*", "component": "app/manage/", "status": "exists", "notes": "Has layout.tsx + sub-routes" }
-    ]
+      { "path": "/", "component": "app/(public)/page.tsx", "status": "migrated", "notes": "Marketing landing page" },
+      { "path": "/login", "component": "app/(public)/login/page.tsx", "status": "migrated" },
+      { "path": "/trading", "component": "app/(platform)/trading/page.tsx", "status": "migrated" },
+      { "path": "/positions", "component": "app/(platform)/positions/page.tsx", "status": "migrated" },
+      { "path": "/risk", "component": "app/(platform)/risk/page.tsx", "status": "migrated" },
+      { "path": "/execution/*", "component": "app/(platform)/execution/", "status": "migrated", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/strategy-platform/*", "component": "app/(platform)/strategy-platform/", "status": "migrated", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/ml/*", "component": "app/(platform)/ml/", "status": "migrated", "notes": "Has layout.tsx + sub-routes" },
+      { "path": "/markets", "component": "app/(platform)/markets/page.tsx", "status": "migrated" },
+      { "path": "/reports", "component": "app/(platform)/reports/page.tsx", "status": "migrated" },
+      { "path": "/admin/*", "component": "app/(ops)/admin/", "status": "migrated" },
+      { "path": "/ops/*", "component": "app/(ops)/ops/", "status": "migrated" },
+      { "path": "/devops", "component": "app/(ops)/devops/page.tsx", "status": "migrated" },
+      { "path": "/manage/*", "component": "app/(ops)/manage/", "status": "migrated", "notes": "Has layout.tsx + sub-routes" }
+    ],
+    "new_infrastructure": {
+      "lib/config/": ["api.ts", "branding.ts", "auth.ts", "services.ts", "index.ts"],
+      "lib/mocks/": ["browser.ts", "utils.ts", "handlers.ts", "index.ts"],
+      "lib/mocks/handlers/": ["auth.ts", "data.ts", "execution.ts", "strategy.ts", "positions.ts", "risk.ts", "ml.ts", "trading.ts", "alerts.ts", "index.ts"],
+      "lib/mocks/fixtures/": ["personas.ts"],
+      "lib/stores/": ["auth-store.ts", "filters-store.ts", "ui-store.ts", "index.ts"],
+      "hooks/api/": ["use-data.ts", "use-execution.ts", "use-strategies.ts", "use-positions.ts", "use-risk.ts", "use-ml-models.ts", "use-trading.ts", "use-alerts.ts", "use-reports.ts", "use-market-data.ts", "use-deployments.ts", "use-service-status.ts", "use-audit.ts", "use-organizations.ts", "index.ts"]
+    }
   },
 
   "target_structure": {
@@ -107,6 +114,28 @@
   },
 
   "refactor_history": [
+    {
+      "id": "phase2-structure",
+      "date": "2026-03-19",
+      "title": "Phase 2 Structural Refactor - Route Groups + MSW + State Management",
+      "type": "refactor",
+      "from_state": "pre-phase-2",
+      "to_state": "phase-2-complete",
+      "description": "Moved 79 pages into 3 route groups (public/platform/ops), created MSW mock infrastructure with 4 service handlers, added Zustand stores for auth/filters/ui, created SWR hooks for data fetching.",
+      "status": "completed",
+      "approved_by": "Iggy Ikenna",
+      "changes": [
+        "Created app/(public)/, app/(platform)/, app/(ops)/ route groups with layouts",
+        "Moved all pages from flat app/ to appropriate route groups",
+        "Created lib/config/ with api.ts, branding.ts, auth.ts, services.ts",
+        "Created lib/mocks/ with MSW browser setup and 4 handlers (auth, data, execution, strategy)",
+        "Created lib/mocks/fixtures/personas.ts with 3 demo personas",
+        "Created lib/stores/ with auth-store, filters-store, ui-store using Zustand",
+        "Created hooks/api/ with useCatalogue, useStrategies, useExecution using SWR",
+        "Added zustand, @tanstack/react-query, swr, msw dependencies",
+        "Fixed ops layout role check from 'Internal Trader' to 'internal'"
+      ]
+    },
     {
       "id": "initial-setup",
       "date": "2026-03-19",

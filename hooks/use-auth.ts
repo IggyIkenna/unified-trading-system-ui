@@ -8,6 +8,7 @@ export interface AuthUser {
   org: string
   role?: string
   services?: string[]
+  entitlements?: string[]
 }
 
 export function useAuth() {

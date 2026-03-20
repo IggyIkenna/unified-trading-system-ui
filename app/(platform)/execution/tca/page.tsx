@@ -64,9 +64,14 @@ const SLIPPAGE_DISTRIBUTION = [
 ]
 
 export default function ExecutionTCAPage() {
-  const [selectedOrder, setSelectedOrder] = React.useState(MOCK_RECENT_ORDERS[0])
-  const [timeRange, setTimeRange] = React.useState("1d")
-
+  const [selectedOrder, setSelectedOrder] = React.useState<string | null>(null)
+  const [timeRange, setTimeRange] = React.useState("1w")
+  const [mounted, setMounted] = React.useState(false)
+  
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+  
   const totalCost = TCA_BREAKDOWN.reduce((sum, item) => sum + item.value, 0)
 
   return (
@@ -176,54 +181,59 @@ export default function ExecutionTCAPage() {
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={EXECUTION_TIMELINE}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis 
-                      dataKey="time" 
-                      tick={{ fontSize: 11 }}
-                      tickFormatter={(v) => `${v}s`}
-                    />
-                    <YAxis 
-                      domain={['auto', 'auto']}
-                      tick={{ fontSize: 11 }}
-                      tickFormatter={(v) => `$${v}`}
-                    />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '6px'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="price" 
-                      stroke="#3b82f6" 
-                      strokeWidth={2}
-                      dot={false}
-                      name="Exec Price"
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="vwap" 
-                      stroke="#8b5cf6" 
-                      strokeWidth={1}
-                      strokeDasharray="4 4"
-                      dot={false}
-                      name="VWAP"
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="twap" 
-                      stroke="#f59e0b" 
-                      strokeWidth={1}
-                      strokeDasharray="4 4"
-                      dot={false}
-                      name="TWAP"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                {mounted && (
+                  <ResponsiveContainer key="timeline-chart" width="100%" height="100%">
+                    <LineChart data={EXECUTION_TIMELINE}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis 
+                        dataKey="time" 
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v) => `${v}s`}
+                      />
+                      <YAxis 
+                        domain={['auto', 'auto']}
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v) => `$${v}`}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--background))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '6px'
+                        }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="price" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2}
+                        dot={false}
+                        name="Exec Price"
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="vwap" 
+                        stroke="#8b5cf6" 
+                        strokeWidth={1}
+                        strokeDasharray="4 4"
+                        dot={false}
+                        name="VWAP"
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="twap" 
+                        stroke="#f59e0b" 
+                        strokeWidth={1}
+                        strokeDasharray="4 4"
+                        dot={false}
+                        name="TWAP"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
+                {!mounted && (
+                  <div className="h-full flex items-center justify-center text-muted-foreground">Loading chart...</div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -318,25 +328,30 @@ export default function ExecutionTCAPage() {
           </CardHeader>
           <CardContent>
             <div className="h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={SLIPPAGE_DISTRIBUTION}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="range" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--background))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '6px'
-                    }}
-                  />
-                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-                    {SLIPPAGE_DISTRIBUTION.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              {mounted && (
+                <ResponsiveContainer key="slippage-chart" width="100%" height="100%">
+                  <BarChart data={SLIPPAGE_DISTRIBUTION}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                    <XAxis dataKey="range" tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '6px'
+                      }}
+                    />
+                    <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                      {SLIPPAGE_DISTRIBUTION.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+              {!mounted && (
+                <div className="h-full flex items-center justify-center text-muted-foreground">Loading chart...</div>
+              )}
             </div>
           </CardContent>
         </Card>

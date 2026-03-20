@@ -232,71 +232,48 @@ export default function ServicesLandingPage() {
 
           {/* Lifecycle Flow - Premium horizontal swim lanes */}
           <div className="relative">
-            {/* Connection line */}
-            <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2 hidden md:block" />
-
-            <div className="grid grid-cols-7 gap-2 md:gap-3">
+            <div className="grid grid-cols-7 gap-4 md:gap-6">
               {/* Acquire */}
-              <div className="relative group">
-                <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-sky-400/30 bg-sky-400/5 hover:border-sky-400/50 transition-all">
-                  <div className="text-sky-400 text-lg md:text-xl font-bold">1</div>
-                  <div className="text-xs md:text-sm font-semibold mt-1">Acquire</div>
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Ingest, normalise, validate</div>
-                </div>
-                <ArrowRight className="absolute -right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground/50 hidden md:block" />
+              <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-sky-400/30 bg-sky-400/5 hover:border-sky-400/50 transition-all">
+                <div className="text-sky-400 text-lg md:text-xl font-bold">1</div>
+                <div className="text-xs md:text-sm font-semibold mt-1">Acquire</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Ingest, normalise, validate</div>
               </div>
               {/* Build */}
-              <div className="relative group">
-                <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-violet-400/30 bg-violet-400/5 hover:border-violet-400/50 transition-all">
-                  <div className="text-violet-400 text-lg md:text-xl font-bold">2</div>
-                  <div className="text-xs md:text-sm font-semibold mt-1">Build</div>
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Research, train, simulate</div>
-                </div>
-                <ArrowRight className="absolute -right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground/50 hidden md:block" />
+              <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-violet-400/30 bg-violet-400/5 hover:border-violet-400/50 transition-all">
+                <div className="text-violet-400 text-lg md:text-xl font-bold">2</div>
+                <div className="text-xs md:text-sm font-semibold mt-1">Build</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Research, train, simulate</div>
               </div>
               {/* Promote */}
-              <div className="relative group">
-                <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-amber-400/30 bg-amber-400/5 hover:border-amber-400/50 transition-all">
-                  <div className="text-amber-400 text-lg md:text-xl font-bold">3</div>
-                  <div className="text-xs md:text-sm font-semibold mt-1">Promote</div>
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Review, approve, deploy</div>
-                </div>
-                <ArrowRight className="absolute -right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground/50 hidden md:block" />
+              <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-amber-400/30 bg-amber-400/5 hover:border-amber-400/50 transition-all">
+                <div className="text-amber-400 text-lg md:text-xl font-bold">3</div>
+                <div className="text-xs md:text-sm font-semibold mt-1">Promote</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Review, approve, deploy</div>
               </div>
               {/* Run */}
-              <div className="relative group">
-                <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-emerald-400/30 bg-emerald-400/5 hover:border-emerald-400/50 transition-all">
-                  <div className="text-emerald-400 text-lg md:text-xl font-bold">4</div>
-                  <div className="text-xs md:text-sm font-semibold mt-1">Run</div>
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Execute, route, fill</div>
-                </div>
-                <ArrowRight className="absolute -right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground/50 hidden md:block" />
+              <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-emerald-400/30 bg-emerald-400/5 hover:border-emerald-400/50 transition-all">
+                <div className="text-emerald-400 text-lg md:text-xl font-bold">4</div>
+                <div className="text-xs md:text-sm font-semibold mt-1">Run</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Execute, route, fill</div>
               </div>
               {/* Observe */}
-              <div className="relative group">
-                <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-cyan-400/30 bg-cyan-400/5 hover:border-cyan-400/50 transition-all">
-                  <div className="text-cyan-400 text-lg md:text-xl font-bold">5</div>
-                  <div className="text-xs md:text-sm font-semibold mt-1">Observe</div>
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Monitor, alert, reconcile</div>
-                </div>
-                <ArrowRight className="absolute -right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground/50 hidden md:block" />
+              <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-cyan-400/30 bg-cyan-400/5 hover:border-cyan-400/50 transition-all">
+                <div className="text-cyan-400 text-lg md:text-xl font-bold">5</div>
+                <div className="text-xs md:text-sm font-semibold mt-1">Observe</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Monitor, alert, reconcile</div>
               </div>
               {/* Manage */}
-              <div className="relative group">
-                <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-rose-400/30 bg-rose-400/5 hover:border-rose-400/50 transition-all">
-                  <div className="text-rose-400 text-lg md:text-xl font-bold">6</div>
-                  <div className="text-xs md:text-sm font-semibold mt-1">Manage</div>
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Allocate, govern, control</div>
-                </div>
-                <ArrowRight className="absolute -right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground/50 hidden md:block" />
+              <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-rose-400/30 bg-rose-400/5 hover:border-rose-400/50 transition-all">
+                <div className="text-rose-400 text-lg md:text-xl font-bold">6</div>
+                <div className="text-xs md:text-sm font-semibold mt-1">Manage</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Allocate, govern, control</div>
               </div>
               {/* Report */}
-              <div className="relative group">
-                <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-slate-400/30 bg-slate-400/5 hover:border-slate-400/50 transition-all">
-                  <div className="text-slate-400 text-lg md:text-xl font-bold">7</div>
-                  <div className="text-xs md:text-sm font-semibold mt-1">Report</div>
-                  <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Attribute, audit, disclose</div>
-                </div>
+              <div className="flex flex-col items-center p-3 md:p-4 rounded-lg border border-slate-400/30 bg-slate-400/5 hover:border-slate-400/50 transition-all">
+                <div className="text-slate-400 text-lg md:text-xl font-bold">7</div>
+                <div className="text-xs md:text-sm font-semibold mt-1">Report</div>
+                <div className="text-[10px] md:text-xs text-muted-foreground mt-1 text-center leading-tight hidden sm:block">Attribute, audit, disclose</div>
               </div>
             </div>
           </div>
