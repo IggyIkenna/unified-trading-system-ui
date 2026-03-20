@@ -29,9 +29,9 @@ const SERVICE_SECTIONS: Record<string, Array<{
   label: string; href: string; description: string; requiresEntitlement?: string
 }>> = {
   "data-catalogue": [
-    { label: "Instrument Catalogue", href: "/portal/data", description: "Browse the full instrument catalogue across 128 venues" },
-    { label: "Market Data", href: "/markets", description: "OHLCV candles, order book snapshots, trade streams" },
-    { label: "Data Status", href: "/health", description: "Pipeline freshness, coverage, and SLA monitoring" },
+    { label: "Data Status", href: "/data", description: "Pipeline status, venue coverage, freshness monitoring" },
+    { label: "Market Data", href: "/trading/markets", description: "OHLCV candles, order book snapshots, trade streams" },
+    { label: "Service Health", href: "/health", description: "Pipeline freshness and SLA monitoring" },
   ],
   markets: [
     { label: "Market Overview", href: "/markets", description: "Real-time prices and market movers" },
@@ -60,30 +60,30 @@ const SERVICE_SECTIONS: Record<string, Array<{
     { label: "Alert Dashboard", href: "/alerts", description: "All alerts by severity and status" },
   ],
   "research-backtesting": [
-    { label: "Strategy Research", href: "/strategy-platform/overview", description: "Strategy design, configuration, backtest results, candidate pipeline" },
-    { label: "ML Models & Training", href: "/ml", description: "Model training, experiments, feature engineering, model registry" },
-    { label: "Execution Research", href: "/execution/algos", description: "Algo backtesting, venue benchmarking, TCA analysis" },
-    { label: "Backtests", href: "/strategy-platform/backtests", description: "Run, compare, and evaluate backtests across all strategies" },
-    { label: "Candidate Pipeline", href: "/strategy-platform/candidates", description: "Promote from backtest → paper → live" },
-    { label: "Heatmaps", href: "/strategy-platform/heatmap", description: "Parameter sensitivity and correlation analysis" },
+    { label: "Strategy Research", href: "/research/strategy/overview", description: "Strategy design, configuration, backtest results, candidate pipeline" },
+    { label: "ML Models & Training", href: "/research/ml", description: "Model training, experiments, feature engineering, model registry" },
+    { label: "Execution Research", href: "/research/execution/algos", description: "Algo backtesting, venue benchmarking, TCA analysis" },
+    { label: "Backtests", href: "/research/strategy/backtests", description: "Run, compare, and evaluate backtests across all strategies" },
+    { label: "Candidate Pipeline", href: "/research/strategy/candidates", description: "Promote from backtest → paper → live" },
+    { label: "Heatmaps", href: "/research/strategy/heatmap", description: "Parameter sensitivity and correlation analysis" },
   ],
   "live-trading-platform": [
     { label: "Trading Dashboard", href: "/trading", description: "Live P&L, order entry, charts, order book" },
-    { label: "Positions", href: "/positions", description: "Real-time positions, balances, margin across all venues" },
-    { label: "Risk", href: "/risk", description: "Exposure, VaR, Greeks, risk limits, circuit breakers" },
-    { label: "Alerts", href: "/alerts", description: "Active alerts, severity filtering, acknowledgment" },
-    { label: "Promotions", href: "/strategy-platform/candidates", description: "Accept or reject model promotions from research pipeline" },
+    { label: "Positions", href: "/trading/positions", description: "Real-time positions, balances, margin across all venues" },
+    { label: "Risk", href: "/trading/risk", description: "Exposure, VaR, Greeks, risk limits, circuit breakers" },
+    { label: "Alerts", href: "/trading/alerts", description: "Active alerts, severity filtering, acknowledgment" },
+    { label: "Promotions", href: "/research/strategy/candidates", description: "Accept or reject model promotions from research pipeline" },
   ],
   reports: [
     { label: "Portfolio Reports", href: "/reports", description: "P&L, performance, risk-adjusted returns" },
     { label: "Settlements", href: "/reports", description: "Settlement tracking and reconciliation" },
     { label: "Invoices", href: "/reports", description: "Invoice generation and payment status" },
-    { label: "Executive View", href: "/executive", description: "C-level portfolio summary" },
+    { label: "Executive View", href: "/reports/executive", description: "C-level portfolio summary" },
   ],
   ml: [
-    { label: "ML Overview", href: "/ml", description: "Model families, training status, features" },
-    { label: "Experiments", href: "/ml/experiments", description: "Train, compare, and evaluate models" },
-    { label: "Model Registry", href: "/ml/registry", description: "Version management, deploy, champion/challenger" },
+    { label: "ML Overview", href: "/research/ml", description: "Model families, training status, features" },
+    { label: "Experiments", href: "/research/ml/experiments", description: "Train, compare, and evaluate models" },
+    { label: "Model Registry", href: "/research/ml/registry", description: "Version management, deploy, champion/challenger" },
     { label: "Feature Lab", href: "/quant", description: "Feature engineering and signal analysis" },
   ],
   admin: [

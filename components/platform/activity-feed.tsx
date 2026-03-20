@@ -25,7 +25,7 @@ const MOCK_ACTIVITY: ActivityEvent[] = [
     id: "act-1", stage: "Monitor", stageColor: "text-red-400",
     icon: Bell, title: "Risk limit 80% utilization",
     description: "Cross-margin utilization on Binance approaching threshold",
-    timestamp: "2 min ago", href: "/alerts",
+    timestamp: "2 min ago", href: "/trading/alerts",
   },
   {
     id: "act-2", stage: "Run", stageColor: "text-orange-400",
@@ -37,19 +37,19 @@ const MOCK_ACTIVITY: ActivityEvent[] = [
     id: "act-3", stage: "Simulate", stageColor: "text-blue-400",
     icon: FlaskConical, title: "Backtest completed: ETH Basis v3.2",
     description: "Sharpe 2.1, Max DD -4.2%, 1,842 trades over 180 days",
-    timestamp: "1h ago", href: "/strategy-platform/backtests",
+    timestamp: "1h ago", href: "/research/strategy/backtests",
   },
   {
     id: "act-4", stage: "Promote", stageColor: "text-green-400",
     icon: Play, title: "BTC Momentum promoted to paper trading",
     description: "Awaiting 7-day paper validation before live deployment",
-    timestamp: "3h ago", href: "/strategy-platform/candidates",
+    timestamp: "3h ago", href: "/research/strategy/candidates",
   },
   {
     id: "act-5", stage: "Design", stageColor: "text-purple-400",
     icon: Brain, title: "Model retrained: BTC Direction v3.2.1",
     description: "Accuracy improved 0.68 → 0.72, champion/challenger swap pending",
-    timestamp: "4h ago", href: "/ml/registry",
+    timestamp: "4h ago", href: "/research/ml/registry",
   },
   {
     id: "act-6", stage: "Explain", stageColor: "text-cyan-400",
@@ -67,7 +67,7 @@ const MOCK_ACTIVITY: ActivityEvent[] = [
     id: "act-8", stage: "Design", stageColor: "text-purple-400",
     icon: Database, title: "DeFi data backfill complete",
     description: "Aave V3 lending rates — 180 days of historical data available",
-    timestamp: "1d ago", href: "/portal/data",
+    timestamp: "1d ago", href: "/data",
   },
 ]
 

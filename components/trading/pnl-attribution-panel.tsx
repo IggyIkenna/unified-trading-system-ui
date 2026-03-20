@@ -118,7 +118,7 @@ export function PnLAttributionPanel({
             <ChevronRight className="size-3" />
           </Button>
         </Link>
-        <Link href="/risk" passHref>
+        <Link href="/trading/risk" passHref>
           <Button
             variant="ghost"
             size="sm"
