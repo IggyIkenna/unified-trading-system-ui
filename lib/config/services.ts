@@ -101,15 +101,25 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     internalOnly: false,
   },
 
-  // --- Analytics ---
+  // --- Research & Analytics ---
+  {
+    key: "research-backtesting",
+    label: "Research & Backtesting",
+    description: "ML model training, signal configuration, strategy backtesting, and promotion pipeline.",
+    href: "/strategy-platform",
+    requiredEntitlements: ["strategy-full"],
+    category: "analytics",
+    icon: "FlaskConical",
+    internalOnly: false,
+  },
   {
     key: "live-trading-platform",
     label: "Live Trading Platform",
     description: "Live P&L attribution, position monitoring, risk analytics, and T+1 backtest-vs-live alignment.",
     href: "/trading",
     requiredEntitlements: ["strategy-full"],
-    category: "analytics",
-    icon: "FlaskConical",
+    category: "trading",
+    icon: "TrendingUp",
     internalOnly: false,
   },
   {

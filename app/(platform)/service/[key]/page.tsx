@@ -59,6 +59,12 @@ const SERVICE_SECTIONS: Record<string, Array<{
   alerts: [
     { label: "Alert Dashboard", href: "/alerts", description: "All alerts by severity and status" },
   ],
+  "research-backtesting": [
+    { label: "Strategy Overview", href: "/strategy-platform/overview", description: "Active strategies, recent backtests, candidate pipeline" },
+    { label: "Backtesting", href: "/strategy-platform/backtests", description: "Run, compare, and evaluate backtests" },
+    { label: "ML Models", href: "/ml", description: "Model training, experiments, feature engineering" },
+    { label: "Candidate Pipeline", href: "/strategy-platform/candidates", description: "Promotion from backtest to paper to live" },
+  ],
   "live-trading-platform": [
     { label: "Live Positions", href: "/trading/positions", description: "Real-time positions, P&L, and margin across all venues" },
     { label: "P&L Attribution", href: "/trading/pnl", description: "Factor-level P&L breakdown and performance attribution" },
