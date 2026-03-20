@@ -29,7 +29,7 @@ const SERVICE_SECTIONS: Record<string, Array<{
   label: string; href: string; description: string; requiresEntitlement?: string
 }>> = {
   "data-catalogue": [
-    { label: "Instrument Catalogue", href: "/portal/data", description: "Browse 2,400+ instruments across 33 venues" },
+    { label: "Instrument Catalogue", href: "/portal/data", description: "Browse the full instrument catalogue across 128 venues" },
     { label: "Market Data", href: "/markets", description: "OHLCV candles, order book snapshots, trade streams" },
     { label: "Data Status", href: "/health", description: "Pipeline freshness, coverage, and SLA monitoring" },
   ],
@@ -194,7 +194,7 @@ export default function ServiceSubscriptionPage() {
                   </p>
                   <div className="mt-4 flex gap-3">
                     <Button size="sm">Contact Sales</Button>
-                    <Button size="sm" variant="outline">Request Trial</Button>
+                    <Button size="sm" variant="outline">Request Access</Button>
                   </div>
                 </div>
               </div>

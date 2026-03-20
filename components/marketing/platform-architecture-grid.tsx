@@ -28,7 +28,7 @@ const INTENSITY: Record<Lane, number[]> = {
 
 // Descriptions for each intersection
 const DESCRIPTIONS: Record<string, string> = {
-  "data-Acquire":    "Ingest market data from 33 venues across crypto, TradFi, DeFi, sports, and prediction markets.",
+  "data-Acquire":    "Ingest market data from 128 venues across crypto, TradFi, DeFi, sports, and prediction markets.",
   "data-Build":      "Normalise and store data in a unified schema. Build historical datasets for backtesting.",
   "data-Promote":    "Validate data quality and freshness before strategies go live.",
   "data-Run":        "Stream real-time data feeds to execution and monitoring systems.",

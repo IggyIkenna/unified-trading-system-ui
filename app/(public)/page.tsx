@@ -18,6 +18,7 @@ import {
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy"
 import { PlatformArchitectureGrid } from "@/components/marketing/platform-architecture-grid"
 import { OperatingModelStages } from "@/components/marketing/operating-model-stages"
+import { PLATFORM_STATS } from "@/lib/config/platform-stats"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Briefcase, CheckCircle2 } from "lucide-react"
@@ -34,9 +35,9 @@ const services = [
     borderColor: "border-sky-400/30",
     lifecycle: ["Acquire"],
     metrics: [
-      { label: "Venues", value: "33" },
-      { label: "Asset Classes", value: "5" },
-      { label: "Data Types", value: "18+" },
+      { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
+      { label: "Asset Classes", value: String(PLATFORM_STATS.assetClassCount) },
+      { label: "Data Types", value: `${PLATFORM_STATS.instrumentTypeCount}+` },
     ],
     features: ["Raw Data API", "Normalised Schema Feed", "ML Signal Feed", "Sports Probability API"],
     pricing: "From £250/mo",
@@ -89,7 +90,7 @@ const services = [
     lifecycle: ["Promote", "Run", "Observe"],
     metrics: [
       { label: "Algo Types", value: "8+" },
-      { label: "Venues", value: "100+" },
+      { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
       { label: "Compliance", value: "MiFID II" },
     ],
     features: ["TWAP/VWAP Algos", "Smart Order Routing", "DeFi MEV Protection", "Best Execution Reports"],
@@ -262,7 +263,7 @@ export default function ServicesLandingPage() {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold tracking-tight">One Platform. One Unified Approach.</h2>
             <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
-              5 asset classes. 128 venues. 20+ strategies. Trading 24/7/365.
+              {PLATFORM_STATS.assetClassCount} asset classes. {PLATFORM_STATS.totalVenues} venues. 20+ strategies. Trading 24/7/365.
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
               All normalised to a single schema for cross-market execution and arbitrage.

@@ -22,7 +22,7 @@ import { DATA_PLANS } from "@/lib/data-service-types"
 import { ADMIN_SUMMARY, MOCK_SHARD_AVAILABILITY, DEMO_ORG, MOCK_SUBSCRIPTIONS } from "@/lib/data-service-mock-data"
 
 const HERO_METRICS = [
-  { label: "Venues", value: "33+" },
+  { label: "Venues", value: "128" },
   { label: "Asset Classes", value: "5" },
   { label: "Years History", value: "6+" },
   { label: "Data Types", value: "18+" },
@@ -47,14 +47,14 @@ export default function DataServicePublicPage() {
               <span className="text-sky-400">One schema.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Normalised tick, OHLCV, orderbook, DeFi, and sports data from 33 venues —
+              Normalised tick, OHLCV, orderbook, DeFi, and sports data from 128 venues —
               queried in-system or exported to your cloud. Cloud-agnostic. Paywall-free for
               what you subscribe to.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>
                 <Link href="/signup">
-                  Start Free Trial
+                  Get Started
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>

@@ -21,12 +21,12 @@ const ENGAGEMENT_TIERS = [
     id: "data",
     name: "Data Access",
     tagline: "See every market, every venue, every asset class.",
-    description: "Access our unified data layer — covering 33 venues across crypto, traditional finance, DeFi, sports betting, and prediction markets. One schema, one API, all the data you need. Pricing scales with the venues, instrument types, and depth of history you need. Platform-only access is the cheapest tier — downloading data for offline use is available as an add-on. Because your data lives on the same infrastructure as our research and execution platform, upgrading to model training, backtesting, or live execution is instant — no data migration, no egress.",
+    description: "Access our unified data layer — covering 128 venues across crypto, traditional finance, DeFi, sports betting, and prediction markets. One schema, one API, all the data you need. Pricing scales with the venues, instrument types, and depth of history you need. Platform-only access is the cheapest tier — downloading data for offline use is available as an add-on. Because your data lives on the same infrastructure as our research and execution platform, upgrading to model training, backtesting, or live execution is instant — no data migration, no egress.",
     icon: Database,
     pricing: "From £250/mo",
     color: "border-blue-500/30",
     journey: [
-      "Browse the instrument catalogue (2,400+ instruments)",
+      "Browse the full instrument catalogue",
       "Stream real-time market data across all venues",
       "Pricing by venue count, instrument types, and history depth",
       "Platform access included — data download available as add-on",
@@ -61,7 +61,7 @@ const ENGAGEMENT_TIERS = [
   {
     id: "execution",
     name: "Execution as a Service",
-    tagline: "Your strategies, our execution. Live across 33 venues.",
+    tagline: "Your strategies, our execution. Live across 128 venues.",
     description: "Bring your tested strategies to market. We handle the execution infrastructure — multi-venue routing, smart order routing, position management, risk limits, and real-time monitoring. You focus on the alpha.",
     icon: Zap,
     pricing: "Contact us",
@@ -101,7 +101,7 @@ const ENGAGEMENT_TIERS = [
 ]
 
 const JOURNEY_STEPS = [
-  { step: "1", label: "Access Data", description: "Connect to 33 venues, 5 asset classes, real-time and historical", icon: Database, color: "text-blue-400" },
+  { step: "1", label: "Access Data", description: "Connect to 128 venues across all asset classes, real-time and historical", icon: Database, color: "text-blue-400" },
   { step: "2", label: "Train Models", description: "ML model training — predict direction, volatility, regime, momentum", icon: Brain, color: "text-purple-400" },
   { step: "3", label: "Build Signals", description: "Configure signal-to-trade parameters, find the right algorithm", icon: FlaskConical, color: "text-violet-400" },
   { step: "4", label: "Test Strategies", description: "Backtest across years of data, compare variants, validate edge", icon: BarChart3, color: "text-cyan-400" },
@@ -110,7 +110,7 @@ const JOURNEY_STEPS = [
 ]
 
 const COMPARISON = [
-  { feature: "Market Data (33 venues)", data: true, research: true, execution: true, full: true },
+  { feature: "Market Data (128 venues)", data: true, research: true, execution: true, full: true },
   { feature: "Historical Data (6+ years)", data: true, research: true, execution: true, full: true },
   { feature: "API Access", data: true, research: true, execution: true, full: true },
   { feature: "ML Model Training", data: false, research: true, execution: true, full: true },

@@ -9,7 +9,7 @@ const STAGES = [
     num: "1", name: "Acquire", short: "Ingest, normalise, validate",
     color: "sky", borderClass: "border-sky-400/30", bgClass: "bg-sky-400/5",
     hoverBorder: "border-sky-400/70", textClass: "text-sky-400",
-    detail: "Connect to 33 venues across crypto, TradFi, DeFi, sports, and prediction markets. Raw data is normalised into a single schema — one API, every asset class. This is where your journey starts.",
+    detail: "Connect to 128 venues across crypto, TradFi, DeFi, sports, and prediction markets. Raw data is normalised into a single schema — one API, every asset class. This is where your journey starts.",
     services: ["Data Catalogue", "Market Data API", "Historical Downloads"],
     example: "A quant team connects to our API and starts pulling normalised BTC/USD data from Binance, CME, and Hyperliquid simultaneously.",
   },

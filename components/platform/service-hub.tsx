@@ -46,8 +46,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 // Mock quick stats per service
 const SERVICE_STATS: Record<string, string> = {
-  "data-catalogue": "2,400 instruments",
-  markets: "33 venues live",
+  "data-catalogue": "Full instrument catalogue",
+  markets: "Live across all venues",
   trading: "12 active strategies",
   positions: "$4.8M notional",
   execution: "1,842 fills today",

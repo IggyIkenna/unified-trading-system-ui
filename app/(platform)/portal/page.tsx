@@ -186,7 +186,7 @@ export default function ClientPortalLanding() {
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" asChild>
                 <Link href="/portal/signup">
-                  Start Free Trial
+                  Get Started
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
@@ -205,7 +205,7 @@ export default function ClientPortalLanding() {
               </div>
               <div className="flex items-center gap-2">
                 <BarChart3 className="size-4 text-emerald-500" />
-                <span>14-day free trial</span>
+                <span>Contact us for access</span>
               </div>
             </div>
           </div>

@@ -128,7 +128,7 @@ export function DataServicesShowcase() {
             Institutional Market Data
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            33+ venues across 5 asset classes, normalised to a single schema. 
+            128 venues across 5 asset classes, normalised to a single schema.
             Query in our cloud or export to yours.
           </p>
         </div>
@@ -136,7 +136,7 @@ export function DataServicesShowcase() {
         {/* Key metrics row */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 max-w-4xl mx-auto mb-12">
           <div className="text-center p-4 rounded-lg border border-border bg-card/50">
-            <div className="text-2xl md:text-3xl font-bold text-sky-400">33</div>
+            <div className="text-2xl md:text-3xl font-bold text-sky-400">128</div>
             <div className="text-xs text-muted-foreground mt-1">Venues</div>
           </div>
           <div className="text-center p-4 rounded-lg border border-border bg-card/50">

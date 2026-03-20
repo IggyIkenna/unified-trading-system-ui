@@ -39,7 +39,7 @@ export const USP = [
   {
     title: "Breadth",
     description:
-      "CeFi, TradFi, DeFi, and Sports in one platform. 33 venues, 2400+ instruments, unified data pipeline.",
+      "CeFi, TradFi, DeFi, and Sports in one platform. 128 venues across 5 asset classes, unified data pipeline.",
   },
   {
     title: "Seamless Internal/External",

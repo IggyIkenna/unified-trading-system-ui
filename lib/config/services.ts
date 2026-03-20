@@ -31,7 +31,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
   {
     key: "data-catalogue",
     label: "Data Catalogue",
-    description: "Instrument registry, download status, and data coverage across 33 venues.",
+    description: "Instrument registry, download status, and data coverage across all venues.",
     href: "/portal/data",
     requiredEntitlements: ["data-basic"],
     category: "data",
