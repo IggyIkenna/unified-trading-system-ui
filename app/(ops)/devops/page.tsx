@@ -2,15 +2,22 @@
 
 /**
  * /devops — Deployment control center.
- * Overview tab: existing DevOpsDashboard (779 lines)
- * Sub-routes: /devops/deployments, /devops/data-status, /devops/builds, /devops/services, /devops/readiness
- * These will be wired to the ported deployment-ui components.
+ * Tabbed interface with components ported from unified-trading-deployment-ui.
+ * Overview: existing DevOpsDashboard (779 lines)
+ * Deployments: DeploymentHistory + DeployForm
+ * Data Status: DataStatusTab (4013 lines — heatmap calendar, drill-down)
+ * Cloud Builds: CloudBuildsTab
+ * Services: ServicesOverviewTab + ServiceStatusTab
+ * Readiness: ReadinessTab + EpicReadinessView
  */
 
 import * as React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { DevOpsDashboard } from "@/components/dashboards/devops-dashboard"
+import { DeploymentHistory } from "@/components/ops/deployment/DeploymentHistory"
+import { DataStatusTab } from "@/components/ops/deployment/DataStatusTab"
+import { CloudBuildsTab } from "@/components/ops/deployment/CloudBuildsTab"
+import { ServicesOverviewTab } from "@/components/ops/deployment/ServicesOverviewTab"
+import { ReadinessTab } from "@/components/ops/deployment/ReadinessTab"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -66,58 +73,33 @@ export default function DevOpsPage() {
           </TabsContent>
 
           <TabsContent value="deployments">
-            <div className="text-center py-12 text-muted-foreground">
-              <Rocket className="size-12 mx-auto mb-4 opacity-30" />
-              <h3 className="text-lg font-semibold mb-2">Deployment History & Management</h3>
-              <p className="text-sm">
-                Create deployments, track shard progress, retry failed shards, rollback.
-              </p>
-              <Badge variant="outline" className="mt-4">Ported from unified-trading-deployment-ui</Badge>
-            </div>
+            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading deployments...</div>}>
+              <DeploymentHistory />
+            </React.Suspense>
           </TabsContent>
 
           <TabsContent value="data-status">
-            <div className="text-center py-12 text-muted-foreground">
-              <Database className="size-12 mx-auto mb-4 opacity-30" />
-              <h3 className="text-lg font-semibold mb-2">Data Completeness & Freshness</h3>
-              <p className="text-sm">
-                Heatmap calendar, venue drill-down, coverage percentage, deploy missing shards.
-              </p>
-              <Badge variant="outline" className="mt-4">Ported from unified-trading-deployment-ui</Badge>
-            </div>
+            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading data status...</div>}>
+              <DataStatusTab serviceName="market-tick-data-service" />
+            </React.Suspense>
           </TabsContent>
 
           <TabsContent value="builds">
-            <div className="text-center py-12 text-muted-foreground">
-              <Cloud className="size-12 mx-auto mb-4 opacity-30" />
-              <h3 className="text-lg font-semibold mb-2">Cloud Build Triggers & History</h3>
-              <p className="text-sm">
-                Trigger builds, view build logs, monitor CI/CD pipeline status.
-              </p>
-              <Badge variant="outline" className="mt-4">Ported from unified-trading-deployment-ui</Badge>
-            </div>
+            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading builds...</div>}>
+              <CloudBuildsTab />
+            </React.Suspense>
           </TabsContent>
 
           <TabsContent value="services">
-            <div className="text-center py-12 text-muted-foreground">
-              <CheckCircle2 className="size-12 mx-auto mb-4 opacity-30" />
-              <h3 className="text-lg font-semibold mb-2">Service Inventory & Health</h3>
-              <p className="text-sm">
-                All services with version, status, sharding config, last deployment.
-              </p>
-              <Badge variant="outline" className="mt-4">Ported from unified-trading-deployment-ui</Badge>
-            </div>
+            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading services...</div>}>
+              <ServicesOverviewTab />
+            </React.Suspense>
           </TabsContent>
 
           <TabsContent value="readiness">
-            <div className="text-center py-12 text-muted-foreground">
-              <History className="size-12 mx-auto mb-4 opacity-30" />
-              <h3 className="text-lg font-semibold mb-2">Epic Readiness & Feature Tracking</h3>
-              <p className="text-sm">
-                Service readiness scorecard, repo-level tier tracking, feature dependencies.
-              </p>
-              <Badge variant="outline" className="mt-4">Ported from unified-trading-deployment-ui</Badge>
-            </div>
+            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading readiness...</div>}>
+              <ReadinessTab />
+            </React.Suspense>
           </TabsContent>
         </Tabs>
       </div>
