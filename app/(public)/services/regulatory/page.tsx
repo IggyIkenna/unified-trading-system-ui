@@ -335,6 +335,54 @@ export default function RegulatoryServicePage() {
         </div>
       </section>
 
+      {/* Control Levels */}
+      <section className="py-12 border-t border-border">
+        <div className="container px-4 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
+            <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Self-Service</CardTitle>
+                  <CardDescription className="text-xs">Our tools and templates, you manage</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Compliance dashboard and reporting templates</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> MiFID II transaction reporting tools</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Best execution monitoring and audit trail</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> KYC/AML workflow management</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Managed</CardTitle>
+                  <CardDescription className="text-xs">We handle all compliance for you</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Dedicated compliance officer and MLRO</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Full FCA regulatory reporting handled by us</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Ongoing supervision and annual reviews</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Staff training and compliance manual maintenance</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">BYO Processes</CardTitle>
+                  <CardDescription className="text-xs">Your compliance processes, our regulatory umbrella</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Operate under our FCA authorisation as AR</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Use your own compliance processes and team</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Our oversight ensures regulatory compliance</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Faster onboarding than direct FCA authorisation</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTAs */}
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">

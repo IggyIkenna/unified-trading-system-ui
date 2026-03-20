@@ -100,6 +100,50 @@ export default function ExecutionServicePage() {
             </CardContent>
           </Card>
 
+          {/* Smart Execution Alpha */}
+          <section className="mt-8">
+            <Card className="border-emerald-500/50 bg-gradient-to-r from-emerald-500/5 to-emerald-500/10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <CardContent className="pt-6 relative">
+                <div className="flex items-start gap-4">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-emerald-500/10">
+                    <Zap className="size-6 text-emerald-400" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="text-lg font-bold">Smart Execution Alpha</h3>
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Alpha-Aligned Pricing</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      A custom-optimised execution algorithm tailored to your specific instrument, market structure,
+                      and liquidity profile. We believe in it so much that our pricing is aligned with your alpha --
+                      we only earn when your execution beats the benchmark.
+                    </p>
+                    <div className="grid md:grid-cols-3 gap-4 mb-4">
+                      <div className="rounded-lg border border-border/50 bg-card p-3">
+                        <p className="text-xs font-semibold text-emerald-400">Custom-Built</p>
+                        <p className="text-[11px] text-muted-foreground mt-1">Tailored to your instrument and market dynamics</p>
+                      </div>
+                      <div className="rounded-lg border border-border/50 bg-card p-3">
+                        <p className="text-xs font-semibold text-emerald-400">Alpha-Aligned</p>
+                        <p className="text-[11px] text-muted-foreground mt-1">We only earn when you beat the execution benchmark</p>
+                      </div>
+                      <div className="rounded-lg border border-border/50 bg-card p-3">
+                        <p className="text-xs font-semibold text-emerald-400">IP-Protected</p>
+                        <p className="text-[11px] text-muted-foreground mt-1">Implementation details are proprietary and confidential</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm" className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10" asChild>
+                      <Link href="/contact?service=execution&action=smart-alpha">
+                        Discuss with Our Execution Team <ArrowRight className="ml-1 size-3" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+
           {/* Pricing */}
           <Card className="mb-8">
             <CardHeader>
@@ -223,6 +267,54 @@ export default function ExecutionServicePage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Control Levels */}
+      <section className="py-12 border-t border-border">
+        <div className="container px-4 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
+            <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Self-Service</CardTitle>
+                  <CardDescription className="text-xs">Choose algos, configure params</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Select from standard algo library (TWAP, VWAP, SOR, IS)</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Configure participation rates and time slices</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Real-time alpha and slippage monitoring</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> API access for programmatic order submission</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Managed</CardTitle>
+                  <CardDescription className="text-xs">We optimise algo selection for you</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Odum execution team selects optimal algo per order</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Dynamic parameter tuning based on market conditions</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Venue routing optimisation across 33 venues</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Monthly TCA reports and execution quality review</div>
+                </CardContent>
+              </Card>
+              <Card className="border-emerald-500/30">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Smart Alpha</CardTitle>
+                  <CardDescription className="text-xs">Custom algo, alpha-aligned pricing</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Custom-built algo for your instrument and market</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Alpha-aligned pricing -- we earn only when you beat benchmark</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Proprietary and confidential implementation</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Dedicated execution team engagement</div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>

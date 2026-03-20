@@ -301,6 +301,55 @@ export default function InvestmentServicePage() {
         </div>
       </section>
 
+      {/* Control Levels */}
+      <section className="py-12 border-t border-border">
+        <div className="container px-4 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
+            <p className="text-sm text-muted-foreground mb-6">Choose your level of involvement. All options are FCA-regulated.</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card className="border-muted">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">Self-Service</CardTitle>
+                  <CardDescription className="text-xs">Not available (regulated activity)</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <p>
+                    Investment management is a regulated activity under FCA authorisation.
+                    Self-directed trading is not offered -- all portfolios are managed by our
+                    licensed investment team.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-rose-500/30">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Managed</CardTitle>
+                  <CardDescription className="text-xs">Full discretionary management</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Fully discretionary portfolio management</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Co-invest at same terms as house principals</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> SMA or fund structure via affiliate</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Monthly NAV reporting and performance attribution</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">BYO Thesis</CardTitle>
+                  <CardDescription className="text-xs">Your investment thesis, we build and execute</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Bring your investment thesis or strategy ideas</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> We backtest, build, and deploy the strategy</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Managed execution on our infrastructure</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Custom risk parameters and allocation constraints</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTAs */}
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">

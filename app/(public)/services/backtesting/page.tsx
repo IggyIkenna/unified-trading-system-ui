@@ -251,6 +251,54 @@ export default function BacktestingServicePage() {
         </div>
       </section>
 
+      {/* Control Levels */}
+      <section className="py-12 border-t border-border">
+        <div className="container px-4 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
+            <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Self-Service</CardTitle>
+                  <CardDescription className="text-xs">Our tools, your research</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Web interface for visual strategy building</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Full API access for programmatic backtesting</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> GPU-accelerated parameter sweeps</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Pre-built feature sets and model families</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Managed</CardTitle>
+                  <CardDescription className="text-xs">We research for you</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Odum quant team designs and tests strategies</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Custom model training and feature engineering</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Regular strategy review and optimisation</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Champion/challenger testing before live deployment</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">BYO</CardTitle>
+                  <CardDescription className="text-xs">Your models and signals, our infrastructure</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Bring your own models, signals, and logic</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Run on our data and compute infrastructure</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Same backtesting engine and realistic fills</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Seamless promotion to live trading</div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTAs */}
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">

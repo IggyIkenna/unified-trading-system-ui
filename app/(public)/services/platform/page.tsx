@@ -2,327 +2,200 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import {
   Layers,
-  Building2,
   ArrowRight,
-  Search,
   CheckCircle2,
   TrendingUp,
   Shield,
-  Globe,
-  Users,
-  Briefcase,
-  Plus,
+  Activity,
+  BarChart3,
+  Eye,
+  Zap,
+  GitCompareArrows,
 } from "lucide-react"
 
-// Mock organizations that have Live Trading Platform
-const organizations = [
+const HERO_METRICS = [
+  { label: "P&L Factors", value: "10" },
+  { label: "Connected Venues", value: "33" },
+  { label: "Risk Dimensions", value: "6" },
+  { label: "Latency", value: "<50ms" },
+]
+
+const CATALOGUE_ITEMS = [
   {
-    id: "odum-internal",
-    name: "Odum Research (Internal)",
-    type: "Principal",
-    strategies: 17,
-    aum: "$24.5M",
-    status: "active",
-    color: "text-emerald-400",
-    description: "Internal proprietary trading across all asset classes",
-    features: ["Full Access", "All Strategies", "Admin Rights"],
+    icon: TrendingUp,
+    title: "Live P&L Attribution",
+    description: "Real-time P&L decomposed by factor: funding, carry, basis, delta, gamma, vega, theta, slippage, fees, and rebates.",
   },
   {
-    id: "alpha-capital",
-    name: "Alpha Capital Partners",
-    type: "White-Label",
-    strategies: 5,
-    aum: "$12.8M",
-    status: "active",
-    color: "text-sky-400",
-    description: "Crypto and DeFi focused fund using our infrastructure",
-    features: ["Crypto Strategies", "DeFi Yield", "Custom Branding"],
+    icon: Eye,
+    title: "Position Monitoring",
+    description: "Cross-venue position grid with live mark-to-market, notional exposure, and margin utilisation across all connected venues.",
   },
   {
-    id: "meridian-quant",
-    name: "Meridian Quantitative",
-    type: "White-Label",
-    strategies: 8,
-    aum: "$45.2M",
-    status: "active",
-    color: "text-violet-400",
-    description: "TradFi futures and options systematic trading",
-    features: ["Futures Strategies", "Options Vol", "Full Platform"],
+    icon: Shield,
+    title: "Risk Analytics",
+    description: "Exposure heatmaps, VaR (parametric + historical), Greeks, position limits, and circuit breaker status in a single view.",
   },
   {
-    id: "nexus-trading",
-    name: "Nexus Trading Group",
-    type: "White-Label",
-    strategies: 3,
-    aum: "$8.1M",
-    status: "active",
-    color: "text-amber-400",
-    description: "Sports betting arbitrage and market making",
-    features: ["Sports Strategies", "Arb Detection", "Live Odds"],
+    icon: GitCompareArrows,
+    title: "T+1 Backtest-vs-Live Diff",
+    description: "Same-code execution in backtest and live. T+1 diff monitoring flags divergence in fills, slippage, and signal timing.",
   },
   {
-    id: "vertex-asset",
-    name: "Vertex Asset Management",
-    type: "Sub-Fund",
-    strategies: 4,
-    aum: "$18.9M",
-    status: "active",
-    color: "text-rose-400",
-    description: "Multi-asset systematic fund as Odum sub-fund",
-    features: ["Multi-Asset", "Sub-Fund", "Managed Service"],
+    icon: Zap,
+    title: "Model Acceptance",
+    description: "Accept promoted models from the batch pipeline. Light-touch approval: review champion/challenger metrics, then deploy to live.",
   },
   {
-    id: "demo-org",
-    name: "Demo Organisation",
-    type: "Demo",
-    strategies: 17,
-    aum: "$0",
-    status: "demo",
-    color: "text-slate-400",
-    description: "Full platform demo with mock data",
-    features: ["Full Demo", "Mock Data", "All Features"],
+    icon: Activity,
+    title: "Recent Fills & Trade History",
+    description: "Full order audit trail with fill prices, venue, algo used, slippage vs. arrival, and MiFID II best-execution fields.",
   },
 ]
 
-const orgTypeConfig = {
-  Principal: { icon: Building2, color: "bg-emerald-400/10 text-emerald-400" },
-  "White-Label": { icon: Layers, color: "bg-sky-400/10 text-sky-400" },
-  "Sub-Fund": { icon: Briefcase, color: "bg-rose-400/10 text-rose-400" },
-  Demo: { icon: Globe, color: "bg-slate-400/10 text-slate-400" },
-}
-
-export default function PlatformOrgSelectionPage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [selectedOrg, setSelectedOrg] = React.useState<string | null>(null)
-
-  const filteredOrgs = organizations.filter(
-    (org) =>
-      org.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      org.type.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const handleSelectOrg = (orgId: string) => {
-    setSelectedOrg(orgId)
-  }
-
-  const handleContinue = () => {
-    if (selectedOrg) {
-      // Navigate to the Unified Trading Platform with org context
-      router.push(`/platform/${selectedOrg}`)
-    }
-  }
-
+export default function PlatformServicePage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Main Content */}
-      <main className="container px-4 py-12 md:px-6">
-        <div className="mx-auto max-w-5xl">
-          {/* Title */}
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-amber-400/10">
-              <Layers className="size-8 text-amber-400" />
-            </div>
-            <h1 className="text-3xl font-bold">Live Trading Platform</h1>
-            <p className="mt-2 text-muted-foreground">
-              Live analytics, P&L attribution, risk monitoring, and T+1 backtest-vs-live diff tracking
+
+      {/* Hero */}
+      <section className="relative border-b border-border overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-950/40 via-background to-background" />
+        <div className="container relative px-4 py-20 md:px-6 md:py-28">
+          <div className="mx-auto max-w-3xl text-center">
+            <Badge variant="outline" className="mb-4 border-amber-500/30 text-amber-400 text-xs">
+              <Layers className="mr-1.5 size-3" />
+              Live Trading Platform
+            </Badge>
+            <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+              Live analytics.{" "}
+              <span className="text-amber-400">Real-time control.</span>
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+              P&L attribution by factor, position monitoring across all venues, risk analytics,
+              and same-code backtest-vs-live diff tracking -- everything you need to operate a
+              live systematic trading book.
             </p>
-          </div>
-
-          {/* Search */}
-          <div className="mb-6 flex items-center gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="Search organisations..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Button size="lg" asChild>
+                <Link href="/contact?service=platform&action=demo">
+                  Book a Live Demo
+                  <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/contact">Contact Sales</Link>
+              </Button>
             </div>
-            <Button variant="outline" size="sm">
-              <Plus className="mr-2 size-4" />
-              Request New Org
-            </Button>
+            <div className="mt-12 grid grid-cols-4 gap-4">
+              {HERO_METRICS.map(m => (
+                <div key={m.label} className="rounded-lg border border-border bg-card/60 px-4 py-3">
+                  <div className="text-2xl font-bold font-mono text-amber-400">{m.value}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{m.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+      </section>
 
-          {/* Organization Grid */}
+      {/* Block 1: Catalogue */}
+      <section className="container px-4 py-16 md:px-6">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-2xl font-bold mb-2">What the Live Trading Platform Includes</h2>
+          <p className="text-sm text-muted-foreground mb-8">
+            Six core capabilities for operating a live systematic trading book.
+          </p>
           <div className="grid gap-4 md:grid-cols-2">
-            {filteredOrgs.map((org) => {
-              const TypeIcon = orgTypeConfig[org.type as keyof typeof orgTypeConfig]?.icon || Building2
-              const typeColor = orgTypeConfig[org.type as keyof typeof orgTypeConfig]?.color || ""
-              const isSelected = selectedOrg === org.id
-
+            {CATALOGUE_ITEMS.map((item) => {
+              const Icon = item.icon
               return (
-                <Card
-                  key={org.id}
-                  className={cn(
-                    "cursor-pointer transition-all duration-200",
-                    isSelected
-                      ? "border-primary ring-2 ring-primary/20"
-                      : "hover:border-primary/50"
-                  )}
-                  onClick={() => handleSelectOrg(org.id)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={cn("flex size-10 items-center justify-center rounded-lg", typeColor)}>
-                          <TypeIcon className="size-5" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-base">{org.name}</CardTitle>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs">
-                              {org.type}
-                            </Badge>
-                            <Badge 
-                              variant={org.status === "active" ? "default" : "secondary"} 
-                              className="text-xs"
-                            >
-                              {org.status}
-                            </Badge>
-                          </div>
-                        </div>
+                <Card key={item.title}>
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-10 items-center justify-center rounded-lg bg-amber-400/10">
+                        <Icon className="size-5 text-amber-400" />
                       </div>
-                      {isSelected && (
-                        <CheckCircle2 className="size-5 text-primary" />
-                      )}
+                      <CardTitle className="text-base">{item.title}</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="mb-3">{org.description}</CardDescription>
-                    
-                    {/* Metrics */}
-                    <div className="flex gap-4 border-t border-border pt-3">
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className={cn("size-4", org.color)} />
-                        <span className="text-sm">
-                          <span className="font-medium">{org.strategies}</span>
-                          <span className="text-muted-foreground"> strategies</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Shield className={cn("size-4", org.color)} />
-                        <span className="text-sm">
-                          <span className="font-medium">{org.aum}</span>
-                          <span className="text-muted-foreground"> AUM</span>
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Features */}
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {org.features.map((feature) => (
-                        <span
-                          key={feature}
-                          className="px-2 py-0.5 text-xs rounded-md bg-secondary text-secondary-foreground"
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
+                    <CardDescription>{item.description}</CardDescription>
                   </CardContent>
                 </Card>
               )
             })}
           </div>
-
-          {/* Continue Button */}
-          <div className="mt-8 flex justify-center">
-            <Button
-              size="lg"
-              disabled={!selectedOrg}
-              onClick={handleContinue}
-              className="min-w-[200px]"
-            >
-              Continue to Platform
-              <ArrowRight className="ml-2 size-4" />
-            </Button>
-          </div>
-
-          {/* Info */}
-          <div className="mt-8 rounded-lg border border-border bg-muted/50 p-4">
-            <div className="flex items-start gap-3">
-              <Users className="size-5 text-muted-foreground mt-0.5" />
-              <div>
-                <h4 className="font-medium">Organisation Access</h4>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Each organisation has its own isolated environment with customised strategies,
-                  branding, and access controls. White-label clients see only their allocated
-                  strategies and data. Internal users can switch between organisations.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
-      </main>
+      </section>
 
-      {/* See It In Action */}
+      {/* Block 2: Demo Preview */}
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
           <div className="mx-auto max-w-4xl">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Preview the full platform pipeline from strategy design through ML model deployment to live execution.
+                Preview the trading dashboard, P&L waterfall, and position grid.
               </p>
             </div>
 
-            {/* Strategy Pipeline Preview */}
+            {/* P&L Waterfall Preview */}
             <Card className="mb-6 border-amber-500/20">
               <CardHeader>
-                <CardTitle className="text-base">Strategy Pipeline</CardTitle>
-                <CardDescription>End-to-end workflow from research to live trading</CardDescription>
+                <CardTitle className="text-base">P&L Attribution Waterfall</CardTitle>
+                <CardDescription>Today&apos;s P&L decomposed by factor</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-3 md:grid-cols-4">
+                <div className="grid gap-2 md:grid-cols-5">
                   {[
-                    { stage: "Research", count: "12 strategies", status: "Backtest" },
-                    { stage: "Paper Trading", count: "5 strategies", status: "Validating" },
-                    { stage: "Staged Rollout", count: "3 strategies", status: "10% capital" },
-                    { stage: "Live Production", count: "17 strategies", status: "Full capital" },
-                  ].map((item) => (
-                    <div key={item.stage} className="rounded-lg border border-border/50 bg-muted/30 p-3 text-center">
-                      <div className="text-xs text-muted-foreground uppercase tracking-wider">{item.stage}</div>
-                      <div className="text-sm font-medium mt-1">{item.count}</div>
-                      <Badge variant="outline" className="text-[10px] mt-1">{item.status}</Badge>
+                    { factor: "Delta", value: "+$18,420", color: "text-emerald-400" },
+                    { factor: "Funding", value: "+$4,210", color: "text-emerald-400" },
+                    { factor: "Carry", value: "+$2,890", color: "text-emerald-400" },
+                    { factor: "Fees", value: "-$3,140", color: "text-rose-400" },
+                    { factor: "Slippage", value: "-$1,280", color: "text-rose-400" },
+                  ].map((f) => (
+                    <div key={f.factor} className="rounded-lg border border-border/50 bg-muted/30 p-3 text-center">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{f.factor}</div>
+                      <div className={`text-sm font-bold font-mono mt-1 ${f.color}`}>{f.value}</div>
                     </div>
                   ))}
+                </div>
+                <div className="mt-4 flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
+                  <span className="text-sm font-medium">Net P&L</span>
+                  <span className="text-lg font-bold font-mono text-emerald-400">+$21,100</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* ML Models + Execution Preview */}
+            {/* Position Grid + Risk Summary */}
             <div className="grid gap-4 md:grid-cols-2">
               <Card className="border-amber-500/20">
                 <CardHeader>
-                  <CardTitle className="text-base">ML Models</CardTitle>
-                  <CardDescription>Deployed model performance</CardDescription>
+                  <CardTitle className="text-base">Position Grid</CardTitle>
+                  <CardDescription>Live positions across venues</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {[
-                      { model: "Alpha Signal v3.2", accuracy: "68.4%", status: "Live" },
-                      { model: "Vol Forecast v2.1", accuracy: "72.1%", status: "Live" },
-                      { model: "Regime Detector v1.8", accuracy: "81.3%", status: "Shadow" },
-                    ].map((m) => (
-                      <div key={m.model} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                      { instrument: "BTC-PERP", venue: "Binance", size: "+2.5", pnl: "+$8,420", color: "text-emerald-400" },
+                      { instrument: "ETH-PERP", venue: "OKX", size: "-1.8", pnl: "-$1,240", color: "text-rose-400" },
+                      { instrument: "ES H6", venue: "CME", size: "+4", pnl: "+$6,100", color: "text-emerald-400" },
+                      { instrument: "AAVE/USDC", venue: "Uniswap", size: "+850", pnl: "+$2,180", color: "text-emerald-400" },
+                    ].map((p) => (
+                      <div key={`${p.instrument}-${p.venue}`} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
                         <div>
-                          <div className="text-sm font-medium">{m.model}</div>
-                          <div className="text-[10px] text-muted-foreground">{m.accuracy} accuracy</div>
+                          <div className="text-sm font-medium font-mono">{p.instrument}</div>
+                          <div className="text-[10px] text-muted-foreground">{p.venue}</div>
                         </div>
-                        <Badge variant="outline" className={`text-[10px] ${m.status === "Live" ? "border-emerald-500/30 text-emerald-400" : "border-amber-500/30 text-amber-400"}`}>
-                          {m.status}
-                        </Badge>
+                        <div className="text-right">
+                          <div className="text-xs text-muted-foreground">{p.size}</div>
+                          <div className={`text-sm font-mono font-medium ${p.color}`}>{p.pnl}</div>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -331,16 +204,18 @@ export default function PlatformOrgSelectionPage() {
 
               <Card className="border-amber-500/20">
                 <CardHeader>
-                  <CardTitle className="text-base">Execution Summary</CardTitle>
-                  <CardDescription>Today&apos;s trading activity</CardDescription>
+                  <CardTitle className="text-base">Risk Summary</CardTitle>
+                  <CardDescription>Real-time risk metrics</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {[
-                      { label: "Orders Executed", value: "2,847" },
-                      { label: "Notional Volume", value: "$18.4M" },
-                      { label: "Avg Alpha", value: "+2.8bps" },
-                      { label: "Active Venues", value: "28 / 33" },
+                      { label: "Gross Exposure", value: "$4.2M" },
+                      { label: "Net Exposure", value: "$1.8M" },
+                      { label: "VaR (95%, 1d)", value: "$42,100" },
+                      { label: "Portfolio Delta", value: "0.34" },
+                      { label: "Margin Utilisation", value: "62%" },
+                      { label: "Circuit Breakers", value: "0 / 12 triggered" },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
                         <span className="text-sm text-muted-foreground">{item.label}</span>
@@ -348,6 +223,54 @@ export default function PlatformOrgSelectionPage() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Block 3: Control Matrix */}
+      <section className="py-12 border-t border-border">
+        <div className="container px-4 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
+            <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Self-Service</CardTitle>
+                  <CardDescription className="text-xs">You deploy, we provide the infrastructure</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Deploy and configure your own strategies</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Full access to monitoring dashboards</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Self-managed risk limits and circuit breakers</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> API access for custom integrations</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Managed</CardTitle>
+                  <CardDescription className="text-xs">We operate the platform for you</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Odum team monitors and manages live trading</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> 24/7 operational support</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Proactive risk intervention</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Monthly performance reviews</div>
+                </CardContent>
+              </Card>
+              <Card className="border-muted">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm text-muted-foreground">BYO Infrastructure</CardTitle>
+                  <CardDescription className="text-xs">Not available</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <p>
+                    The live trading platform requires our integrated infrastructure for real-time
+                    risk controls, venue connectivity, and regulatory compliance. BYO is not supported.
+                  </p>
                 </CardContent>
               </Card>
             </div>
