@@ -39,12 +39,12 @@ const SERVICE_SECTIONS: Record<string, Array<{
   ],
   trading: [
     { label: "Trading Terminal", href: "/trading", description: "Order entry, candlesticks, order book" },
-    { label: "Positions", href: "/positions", description: "Live positions across all venues" },
+    { label: "Positions", href: "/trading/positions", description: "Live positions across all venues" },
     { label: "P&L Overview", href: "/markets", description: "Real-time P&L and attribution" },
   ],
   positions: [
-    { label: "Position Monitor", href: "/positions", description: "Real-time positions with protocol details" },
-    { label: "Risk Dashboard", href: "/risk", description: "Exposure, VaR, Greeks, stress scenarios" },
+    { label: "Position Monitor", href: "/trading/positions", description: "Real-time positions with protocol details" },
+    { label: "Risk Dashboard", href: "/trading/risk", description: "Exposure, VaR, Greeks, stress scenarios" },
   ],
   execution: [
     { label: "Execution Overview", href: "/execution/overview", description: "Order flow, fills, execution quality" },
@@ -53,11 +53,11 @@ const SERVICE_SECTIONS: Record<string, Array<{
     { label: "TCA", href: "/execution/tca", description: "Transaction cost analysis and slippage" },
   ],
   risk: [
-    { label: "Risk Limits", href: "/risk", description: "Limit monitoring, utilization, breach alerts" },
-    { label: "Alerts", href: "/alerts", description: "Active alerts, acknowledgment, history" },
+    { label: "Risk Limits", href: "/trading/risk", description: "Limit monitoring, utilization, breach alerts" },
+    { label: "Alerts", href: "/trading/alerts", description: "Active alerts, acknowledgment, history" },
   ],
   alerts: [
-    { label: "Alert Dashboard", href: "/alerts", description: "All alerts by severity and status" },
+    { label: "Alert Dashboard", href: "/trading/alerts", description: "All alerts by severity and status" },
   ],
   "research-backtesting": [
     { label: "Strategy Research", href: "/research/strategy/overview", description: "Strategy design, configuration, backtest results, candidate pipeline" },
