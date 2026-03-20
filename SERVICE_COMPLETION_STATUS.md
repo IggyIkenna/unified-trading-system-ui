@@ -1,35 +1,40 @@
 # Service Completion Status
 
-Last updated: 2026-03-19
+Last updated: 2026-03-20
 
 ## Service Layer Completion Matrix
 
-| Service Area | Public Marketing | Product Surface | Admin | Internal Ops | Overall |
-|-------------|-----------------|----------------|-------|-------------|---------|
-| **Data** | ✅ `/services/data` | ✅ `/portal/data`, instrument views | 🟡 `/admin/data` (basic) | 🟡 `/internal/data-etl` (basic) | 🟡 MOSTLY DONE |
-| **Research / Simulate** | 🟡 `/services/backtesting` (basic) | 🟡 Routes exist, some components wired | ❌ N/A | ❌ N/A | 🟡 PARTIAL |
-| **Trading / Run / Monitor** | 🟡 `/services/execution` (basic) | 🟡 Trading page has order entry + charts; positions, risk, execution have content | ❌ N/A | ❌ Not started | 🟡 PARTIAL |
-| **Reporting / Explain / Reconcile** | 🟡 `/services/investment` (basic) | 🟡 `/reports` has 5-tab layout (700+ lines) | 🟡 `/manage/fees` exists | ❌ Not started | 🟡 PARTIAL |
-| **Admin / Onboarding** | ❌ Hidden | ❌ Hidden | 🔴 `/admin` delegates to AuditDashboard stub | ❌ N/A | 🔴 STUB |
-| **Deployment / DevOps** | ❌ Hidden | ❌ Hidden | ❌ N/A | 🔴 `/devops` delegates to DevOpsDashboard stub | 🔴 STUB |
-| **Audit / Compliance** | 🟡 `/services/regulatory` (basic) | 🔴 `/compliance` minimal stub | ❌ N/A | 🔴 No internal audit surface | 🔴 STUB |
+| Service Area | Route(s) | Product Surface | Admin/Ops | Overall |
+|-------------|----------|----------------|-----------|---------|
+| **Data** | `/data` (was `/portal/data`) | ✅ Data status dashboard, instrument views, subscriptions | 🟡 `/admin/data` (basic), `/internal/data-etl` (basic) | ✅ COMPLETE |
+| **Research** | `/research`, `/research/strategy/*`, `/research/ml/*`, `/research/execution/*` | ✅ Strategy platform, ML models/experiments, execution research (algos, TCA) | ❌ N/A | ✅ COMPLETE |
+| **Trading** | `/trading`, `/trading/positions`, `/trading/risk`, `/trading/alerts`, `/trading/markets` | ✅ Trading terminal, positions, risk, alerts, markets — all nested under `/trading` | ❌ N/A | ✅ COMPLETE |
+| **Reporting** | `/reports`, `/reports/executive` | ✅ Reports + executive dashboard | 🟡 `/manage/fees` exists | ✅ COMPLETE |
+| **Execution** | `/execution` | ✅ Execution analytics (live) | ❌ N/A | ✅ COMPLETE |
+| **Admin** | `/admin` | ❌ Hidden | ✅ Admin dashboard, user/client/fee management | ✅ COMPLETE |
+| **DevOps** | `/devops` | ❌ Hidden | ✅ Ported (17K lines from deployment-ui, 6-tab layout) | ✅ PORTED |
+| **Compliance** | `/compliance` | 🟡 FCA info page (basic) | ❌ N/A | 🟡 BASIC |
+| **Service Hub** | `/overview` | ✅ Service grid, activity feed, quick actions, health bar | ❌ N/A | ✅ COMPLETE |
+| **Health** | `/health` | ✅ Service health dashboard | ❌ N/A | ✅ COMPLETE |
 
-## Post-Login Hub Status
+## Post-Login Hub Status (Service Hub — `/overview`)
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| Service grid with entitlement states | 🔴 Not implemented | `getVisibleServices()` exists in `lib/config/services.ts` but no hub UI |
-| Activity feed | 🔴 Not implemented | |
-| Quick actions | 🔴 Not implemented | |
-| System health bar | 🔴 Not implemented | `useServiceOverview()` hook exists |
-| Locked service upgrade modals | 🔴 Not implemented | |
-| Current `/overview` page | 🟡 Exists | Data wall with ~15 widgets — needs rebuild as service hub |
+| Service grid with entitlement states | ✅ Complete | `getVisibleServices()` in `lib/config/services.ts` + hub UI |
+| Activity feed | ✅ Complete | |
+| Quick actions | ✅ Complete | |
+| System health bar | ✅ Complete | `useServiceOverview()` hook wired |
+| Locked service upgrade modals | ✅ Complete | |
+| Subscription page (`/service/[key]`) | ✅ Complete | Per-service subscription detail page |
 
 ## Infrastructure Status (PLANS_1 + PLANS_2 Complete)
 
 | Component | Status | Files |
 |-----------|--------|-------|
 | Route groups | ✅ Done | `app/(public)/`, `app/(platform)/`, `app/(ops)/` |
+| Nested service routes | ✅ Done | `/trading/*`, `/research/*`, `/reports/*` nested under `(platform)/` |
+| Old path redirects | ✅ Done | `/positions` -> `/trading/positions`, `/risk` -> `/trading/risk`, etc. |
 | Shell layouts | ✅ Done | 3 layout.tsx files with auth gates |
 | MSW handlers | ✅ 16 handlers | `lib/mocks/handlers/` |
 | React Query hooks | ✅ 14 hooks | `hooks/api/` |

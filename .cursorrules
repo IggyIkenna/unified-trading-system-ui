@@ -52,33 +52,40 @@ app/
 │   ├── services/[domain]/page.tsx     ← Service detail pages (what they get if they subscribe)
 │   ├── contact/page.tsx
 │   ├── login/page.tsx
+│   ├── signup/page.tsx
 │   └── layout.tsx                     ← PublicShell (header, CTA, footer — no sidebar)
 │
 ├── (platform)/                        ← Route group: THE platform (same for internal AND client)
-│   ├── dashboard/page.tsx             ← Post-login service hub (shows entitled services)
-│   ├── data/                          ← Data service
-│   │   ├── page.tsx                   ← Data catalogue + subscription status
-│   │   ├── catalogue/page.tsx         ← Instrument registry (full for internal, subscription subset for client)
-│   │   └── status/page.tsx            ← Download progress (same page, different registry scope)
-│   ├── execution/                     ← Execution service
-│   │   ├── page.tsx
-│   │   ├── positions/page.tsx         ← Same page — internal sees all orgs, client sees their org
-│   │   └── orders/page.tsx
-│   ├── strategy-platform/             ← Research/Build service (backtesting, ML, strategy)
-│   │   ├── page.tsx
-│   │   ├── backtests/page.tsx
-│   │   └── candidates/page.tsx
-│   ├── ml/                            ← ML models, features, experiments
-│   ├── trading/                       ← Live trading dashboard
-│   ├── reports/                       ← P&L, settlement, attribution
-│   ├── risk/                          ← Risk dashboard
+│   ├── overview/page.tsx              ← Service hub (grid, activity feed, quick actions, health bar)
+│   ├── service/[key]/page.tsx         ← Per-service subscription page
+│   ├── data/page.tsx                  ← Data service dashboard (subscriptions, instruments)
+│   ├── trading/                       ← Live Trading Platform (nested routes)
+│   │   ├── page.tsx                   ← Trading terminal (order entry, charts)
+│   │   ├── positions/page.tsx         ← Positions management
+│   │   ├── risk/page.tsx              ← Risk dashboard
+│   │   ├── alerts/page.tsx            ← Alert management
+│   │   └── markets/page.tsx           ← Market overview
+│   ├── research/                      ← Research & Backtesting (nested routes)
+│   │   ├── page.tsx                   ← Research hub
+│   │   ├── strategy/                  ← Strategy platform (backtests, candidates)
+│   │   ├── ml/                        ← ML models, features, experiments
+│   │   └── execution/                 ← Execution research (algos, TCA)
+│   ├── execution/page.tsx             ← Live execution analytics
+│   ├── reports/                       ← Reporting (nested routes)
+│   │   ├── page.tsx                   ← Reports hub (P&L, settlement, attribution)
+│   │   └── executive/page.tsx         ← Executive dashboard
+│   ├── health/page.tsx                ← Service health dashboard
 │   └── layout.tsx                     ← PlatformShell (auth required, entitlement-driven nav)
 │
 ├── (ops)/                             ← Route group: internal-only operational surfaces
-│   ├── admin/page.tsx                 ← Organisation management, user management
+│   ├── admin/page.tsx                 ← Admin dashboard (user, client, fee management)
 │   ├── ops/page.tsx                   ← Service health, job monitoring
-│   ├── devops/page.tsx                ← Deployment versions, rollbacks, infra
+│   ├── devops/page.tsx                ← DevOps (6-tab layout, 17K lines from deployment-ui)
 │   ├── manage/                        ← Client/mandate/fee management
+│   ├── compliance/page.tsx            ← FCA info page
+│   ├── config/page.tsx                ← System configuration
+│   ├── engagement/page.tsx            ← Internal engagement admin
+│   ├── internal/data-etl/page.tsx     ← ETL pipeline management
 │   └── layout.tsx                     ← OpsShell (auth + role=internal required)
 │
 ├── layout.tsx                         ← Root layout (fonts, providers, analytics)
@@ -102,6 +109,9 @@ lib/                                   ← Utilities, config, types, mocks
 │
 hooks/                                 ← Custom React hooks (useAuth, useMobile, useToast, api/)
 ```
+
+**NOTE:** Old flat paths (`/positions`, `/risk`, `/alerts`, `/markets`, `/strategy-platform/*`, `/ml/*`, `/executive`)
+redirect to their new nested locations under `/trading/*`, `/research/*`, and `/reports/*` respectively.
 
 **DON'T:**
 ```

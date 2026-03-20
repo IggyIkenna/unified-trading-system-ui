@@ -18,9 +18,19 @@ RULES:
 7. State: Zustand (lib/stores/, every store has reset()). React Query (hooks/api/). URL params for filters.
 8. Can't follow rules? Tell user immediately.
 
-TARGET STRUCTURE (not built yet — see manifest):
-app/(public)/      marketing, login    app/(platform)/    THE product (internal+client)
-app/(ops)/         admin/devops only   components/        ui/, trading/, shell/, dashboards/
+TARGET STRUCTURE (now implemented):
+app/(public)/      marketing, login, signup, services/[domain]
+app/(platform)/    THE product (internal+client):
+  /overview          Service hub (grid, activity, quick actions, health)
+  /service/[key]     Per-service subscription page
+  /data              Data service (was /portal/data)
+  /trading/          Live trading: positions, risk, alerts, markets (nested)
+  /research/         Research: strategy/*, ml/*, execution/* (nested)
+  /execution         Live execution analytics
+  /reports/          Reports + executive (nested)
+  /health            Service health
+app/(ops)/         admin, devops, ops, manage/*, compliance, config, engagement, internal
+components/        ui/, trading/, shell/, dashboards/
 lib/config/        API, branding       lib/mocks/         MSW handlers + fixtures
 lib/stores/        Zustand stores      lib/types/         Generated from openapi.json
 lib/registry/      OpenAPI, configs    hooks/api/         React Query per-service
