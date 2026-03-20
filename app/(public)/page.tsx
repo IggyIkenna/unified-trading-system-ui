@@ -39,7 +39,7 @@ const services = [
       { label: "Asset Classes", value: String(PLATFORM_STATS.assetClassCount) },
       { label: "Data Types", value: `${PLATFORM_STATS.instrumentTypeCount}+` },
     ],
-    features: ["Raw Data API", "Normalised Schema Feed", "ML Signal Feed", "Sports Probability API"],
+    features: ["Raw Tick Data", "Processed OHLCV", "Liquidation Data", "ML Signal Feed", "Sports Probability API"],
     pricing: "From £250/mo",
     href: "/services/data",
   },
@@ -363,6 +363,9 @@ export default function ServicesLandingPage() {
           <h2 className="text-3xl font-bold tracking-tight">Commercial Offerings</h2>
           <p className="mt-4 text-muted-foreground">
             From data feeds to FCA-authorised investment management. Each maps to specific lifecycle stages.
+          </p>
+          <p className="mt-3 text-sm text-primary/80">
+            Every service has a no-code web interface — and is also fully accessible via our backend APIs for seamless integration with your development tools, around the clock.
           </p>
         </div>
 
