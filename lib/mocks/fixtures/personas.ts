@@ -1,7 +1,7 @@
 import type { AuthPersona } from "@/lib/config/auth"
 
 /**
- * 4 demo personas covering all access tiers.
+ * 5 demo personas covering all access tiers.
  *
  * SECURITY NOTE: Passwords are plaintext because this is a demo/mock-only
  * fixture. These credentials are intentionally visible in the client bundle
@@ -63,6 +63,21 @@ export const PERSONAS: readonly AuthPersona[] = [
     entitlements: ["data-basic"],
     description:
       "External client with basic data tier. 180 instruments, CEFI only.",
+  },
+  {
+    id: "client-premium",
+    email: "cio@vertex.com",
+    password: "demo",
+    displayName: "CIO",
+    role: "client",
+    org: { id: "vertex", name: "Vertex Partners" },
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "strategy-full",
+    ],
+    description:
+      "Premium execution client. Data + strategy + Smart Alpha execution, no ML.",
   },
 ] as const
 

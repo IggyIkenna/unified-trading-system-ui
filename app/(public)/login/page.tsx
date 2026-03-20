@@ -104,23 +104,25 @@ export default function LoginPage() {
               <div className="flex items-center justify-center gap-1 mt-4 p-1 rounded-lg bg-muted/50">
                 <button
                   onClick={() => setLoginType("internal")}
-                  className={`flex-1 px-4 py-2 rounded-md text-xs font-medium transition-all ${
+                  className={`flex-1 px-4 py-2.5 rounded-md text-xs font-medium transition-all ${
                     loginType === "internal"
                       ? "bg-card shadow text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  Internal
+                  <div>Internal</div>
+                  <div className="text-[9px] font-normal text-muted-foreground mt-0.5">Odum team · full platform + admin</div>
                 </button>
                 <button
                   onClick={() => setLoginType("external")}
-                  className={`flex-1 px-4 py-2 rounded-md text-xs font-medium transition-all ${
+                  className={`flex-1 px-4 py-2.5 rounded-md text-xs font-medium transition-all ${
                     loginType === "external"
                       ? "bg-card shadow text-foreground"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  External Client
+                  <div>External Client</div>
+                  <div className="text-[9px] font-normal text-muted-foreground mt-0.5">Subscribed services · your org</div>
                 </button>
               </div>
             </CardHeader>

@@ -50,6 +50,30 @@ export default function OverviewPage() {
       </div>
 
       <div className="container px-6 py-6 space-y-8">
+        {/* Subscription banner — external clients only */}
+        {!isInternal() && user && (
+          <div className="flex items-center justify-between rounded-lg border border-blue-500/20 bg-blue-500/5 px-5 py-3">
+            <div className="flex items-center gap-3">
+              <Sparkles className="size-4 text-blue-400" />
+              <div>
+                <span className="text-sm font-semibold">{user.org.name}</span>
+                <span className="text-xs text-muted-foreground ml-2">
+                  — {user.entitlements.length > 4 ? "Full Suite" :
+                     user.entitlements.length > 2 ? "Professional" :
+                     user.entitlements.includes("data-basic" as never) ? "Data Basic" : "Custom"}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link href="/service/data-catalogue">
+                <Badge variant="outline" className="text-[10px] cursor-pointer hover:bg-accent">
+                  Manage Subscription
+                </Badge>
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <section>
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
