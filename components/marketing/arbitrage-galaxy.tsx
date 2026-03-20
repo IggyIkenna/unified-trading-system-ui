@@ -250,7 +250,7 @@ export function ArbitrageGalaxy() {
       ref={canvasRef}
       suppressHydrationWarning
       className="block w-full rounded-lg"
-      style={{ aspectRatio: "1.6 / 1", maxHeight: 320, background: "transparent" }}
+      style={{ aspectRatio: "2.2 / 1", maxHeight: 450, background: "transparent" }}
     />
   )
 }

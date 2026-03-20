@@ -270,7 +270,7 @@ export default function ServicesLandingPage() {
             </p>
           </div>
           <div className="flex justify-center" suppressHydrationWarning>
-            <div className="w-full max-w-2xl">
+            <div className="w-full max-w-4xl">
               <ArbitrageGalaxy />
             </div>
           </div>
