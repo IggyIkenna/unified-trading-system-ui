@@ -234,68 +234,115 @@ export default function DataServicePublicPage() {
 
           {/* ─── Demo tab ───────────────────────────────────────────────────── */}
           <TabsContent value="demo">
-            <div className="space-y-6">
-              {/* Demo banner */}
-              <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-2.5 text-sm text-amber-400">
-                <FlaskConical className="size-4 shrink-0" />
-                Demo Mode — all data is illustrative. Sign in to see real freshness and query real data.
-                <Button size="sm" variant="outline" className="ml-auto border-amber-500/30 text-amber-400 hover:bg-amber-500/10" asChild>
-                  <Link href="/portal/login">Sign in</Link>
-                </Button>
+            <div className="space-y-8">
+              <div className="text-center max-w-2xl mx-auto">
+                <h2 className="text-xl font-semibold mb-2">See the Platform in Action</h2>
+                <p className="text-sm text-muted-foreground">
+                  Here&apos;s what you get when you subscribe. Real-time data freshness tracking,
+                  venue-level coverage monitoring, and instant access to historical data
+                  across every asset class.
+                </p>
               </div>
 
-              {/* Mock freshness heatmaps */}
-              <div className="grid md:grid-cols-2 gap-4">
-                {MOCK_SHARD_AVAILABILITY.slice(0, 4).map(shard => (
-                  <Card key={`${shard.venue}-${shard.dataType}`}>
-                    <CardContent className="pt-4">
-                      <FreshnessHeatmap
-                        dateMap={shard.byDate ?? {}}
-                        label={`${shard.venue} · ${shard.dataType}`}
-                        cloud={shard.gcpCompletionPct > 0 ? "gcp" : "aws"}
-                        weeksToShow={13}
-                      />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Demo subscriptions preview */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Sample Active Subscriptions</CardTitle>
-                  <CardDescription>This is what your portal looks like when you sign in.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {MOCK_SUBSCRIPTIONS.slice(0, 2).map(sub => (
-                      <div key={sub.id} className="flex items-center justify-between rounded-md bg-accent/30 px-3 py-2 text-sm">
-                        <span className="font-medium">{sub.label}</span>
-                        <div className="flex items-center gap-2">
-                          {sub.shardFilters.categories.map(c => (
-                            <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
-                          ))}
-                          <Badge variant="outline" className={cn("text-[10px]",
-                            sub.accessMode === "in_system"
-                              ? "border-emerald-500/30 text-emerald-500"
-                              : "border-amber-500/30 text-amber-500"
-                          )}>
-                            {sub.accessMode === "in_system" ? "In-System" : "Download"}
-                          </Badge>
+              {/* What the platform looks like — preview cards */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Data Freshness Monitoring</h3>
+                <Card className="border-sky-500/20">
+                  <CardContent className="pt-5">
+                    <div className="grid md:grid-cols-3 gap-6">
+                      {MOCK_SHARD_AVAILABILITY.map(shard => (
+                        <div key={`${shard.venue}-${shard.dataType}`} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium capitalize">{shard.venue}</span>
+                            <Badge variant="outline" className="text-[10px]">{shard.folder}</Badge>
+                          </div>
+                          <FreshnessHeatmap
+                            dateMap={shard.byDate ?? {}}
+                            label={`${shard.dataType}`}
+                            cloud={shard.gcpCompletionPct > 0 ? "gcp" : "aws"}
+                            weeksToShow={13}
+                          />
+                          <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                            <span>{shard.datesChecked} days checked</span>
+                            <span>{shard.datesMissing} gaps</span>
+                            <span className={cn(
+                              "font-mono font-medium",
+                              shard.completionPct >= 99 ? "text-emerald-400" :
+                              shard.completionPct >= 95 ? "text-yellow-400" : "text-red-400"
+                            )}>
+                              {shard.completionPct}%
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-              <div className="text-center">
-                <Button size="lg" asChild>
-                  <Link href="/signup">
-                    Create your account
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Subscription Management</h3>
+                <Card className="border-sky-500/20">
+                  <CardContent className="pt-5">
+                    <p className="text-xs text-muted-foreground mb-4">
+                      Once subscribed, your portal shows active data feeds, coverage status, and access controls per venue.
+                    </p>
+                    <div className="space-y-2">
+                      {[
+                        { label: "CeFi Perpetuals — All Venues", categories: ["cefi"], venues: "Binance, OKX, Bybit, Deribit", mode: "in_system", status: "active" },
+                        { label: "TradFi Futures — CME + Databento", categories: ["tradfi"], venues: "CME, CBOT, NYMEX", mode: "in_system", status: "active" },
+                        { label: "DeFi Pool State — Uniswap V3", categories: ["defi"], venues: "Uniswap V3", mode: "download", status: "active" },
+                        { label: "Sports Odds — Premier League", categories: ["sports"], venues: "Betfair, Pinnacle", mode: "in_system", status: "pending" },
+                      ].map(sub => (
+                        <div key={sub.label} className="flex items-center justify-between rounded-lg border border-border/50 bg-card px-4 py-3">
+                          <div>
+                            <div className="text-sm font-medium">{sub.label}</div>
+                            <div className="text-[10px] text-muted-foreground mt-0.5">{sub.venues}</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {sub.categories.map(c => (
+                              <Badge key={c} variant="secondary" className="text-[10px]">{c}</Badge>
+                            ))}
+                            <Badge variant="outline" className={cn("text-[10px]",
+                              sub.mode === "in_system"
+                                ? "border-emerald-500/30 text-emerald-400"
+                                : "border-amber-500/30 text-amber-400"
+                            )}>
+                              {sub.mode === "in_system" ? "In-System" : "Download"}
+                            </Badge>
+                            <Badge variant="outline" className={cn("text-[10px]",
+                              sub.status === "active"
+                                ? "border-emerald-500/30 text-emerald-400"
+                                : "border-yellow-500/30 text-yellow-400"
+                            )}>
+                              {sub.status === "active" ? "● Active" : "◌ Pending"}
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* CTAs */}
+              <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-8 text-center">
+                <h3 className="text-lg font-semibold mb-2">Ready to explore the data?</h3>
+                <p className="text-sm text-muted-foreground mb-6 max-w-lg mx-auto">
+                  Book a live demo to see real data freshness, query instruments, and explore
+                  pricing for your specific venue and instrument requirements.
+                </p>
+                <div className="flex justify-center gap-3">
+                  <Button size="lg" asChild>
+                    <Link href="/contact?service=data&action=demo">
+                      Book a Live Demo
+                      <ArrowRight className="ml-2 size-4" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href="/contact">Contact Sales</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </TabsContent>
