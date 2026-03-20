@@ -66,7 +66,7 @@ export default function RegulatoryServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Dedicated compliance officer, MLRO services, and ongoing regulatory supervision
+                  MLRO services and ongoing regulatory supervision
                 </CardDescription>
               </CardContent>
             </Card>
@@ -209,7 +209,7 @@ export default function RegulatoryServicePage() {
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <CheckCircle2 className="size-4 text-emerald-400" />
-                    Dedicated compliance officer
+                    Ongoing regulatory supervision
                   </div>
                 </div>
               </div>
@@ -287,7 +287,7 @@ export default function RegulatoryServicePage() {
                   <CardDescription className="text-xs">We handle all compliance for you</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Dedicated compliance officer and MLRO</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> MLRO services and ongoing regulatory supervision</div>
                   <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Full FCA regulatory reporting handled by us</div>
                   <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Ongoing supervision and annual reviews</div>
                   <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Staff training and compliance manual maintenance</div>
