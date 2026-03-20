@@ -41,6 +41,7 @@ export default function LoginPage() {
     ? new URLSearchParams(window.location.search) : null
   const redirectTo = searchParams?.get("redirect") || null
 
+  const [loginType, setLoginType] = React.useState<"internal" | "external">("external")
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
@@ -99,6 +100,29 @@ export default function LoginPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome back</CardTitle>
               <CardDescription>Sign in to access your dashboard</CardDescription>
+              {/* Internal / External toggle */}
+              <div className="flex items-center justify-center gap-1 mt-4 p-1 rounded-lg bg-muted/50">
+                <button
+                  onClick={() => setLoginType("internal")}
+                  className={`flex-1 px-4 py-2 rounded-md text-xs font-medium transition-all ${
+                    loginType === "internal"
+                      ? "bg-card shadow text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Internal
+                </button>
+                <button
+                  onClick={() => setLoginType("external")}
+                  className={`flex-1 px-4 py-2 rounded-md text-xs font-medium transition-all ${
+                    loginType === "external"
+                      ? "bg-card shadow text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  External Client
+                </button>
+              </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
@@ -147,7 +171,11 @@ export default function LoginPage() {
                   Or try a demo account <span className="text-xs">(password: demo)</span>
                 </p>
                 <div className="space-y-2">
-                  {PERSONAS.map((persona) => {
+                  {PERSONAS.filter((p) =>
+                    loginType === "internal"
+                      ? p.role === "internal" || p.role === "admin"
+                      : p.role === "client"
+                  ).map((persona) => {
                     const Icon = ROLE_ICONS[persona.role] || Users
                     const colorClass = ROLE_COLORS[persona.role] || "text-muted-foreground"
                     return (
