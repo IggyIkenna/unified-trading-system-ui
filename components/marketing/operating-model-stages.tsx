@@ -70,7 +70,7 @@ export function OperatingModelStages() {
   return (
     <div className="relative">
       {/* Connection line */}
-      <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent -translate-y-1/2 hidden md:block" />
+      {/* Connection line removed for cleaner look */}
 
       {/* Stage cards */}
       <div className="grid grid-cols-7 gap-2 md:gap-3">
@@ -96,9 +96,7 @@ export function OperatingModelStages() {
                 {stage.short}
               </div>
             </div>
-            {i < 6 && (
-              <ArrowRight className="absolute -right-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground/50 hidden md:block" />
-            )}
+            {/* Arrows removed for cleaner look */}
           </div>
         ))}
       </div>
