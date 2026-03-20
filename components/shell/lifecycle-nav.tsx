@@ -341,6 +341,7 @@ export function LifecycleNav({
                   { id: "admin", label: "Admin", desc: "Full system access", role: "admin" },
                   { id: "internal-trader", label: "Internal Trader", desc: "Platform + wildcard", role: "internal" },
                   { id: "client-full", label: "Client (Full)", desc: "Alpha Capital — all services", role: "client" },
+                  { id: "client-premium", label: "Client (Premium)", desc: "Vertex Partners — data + execution + strategy", role: "client" },
                   { id: "client-data-only", label: "Client (Basic)", desc: "Beta Fund — data only", role: "client" },
                 ] : []).map((p) => (
                   <DropdownMenuItem
