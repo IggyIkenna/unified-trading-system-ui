@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { useAuth } from "@/hooks/use-auth"
 import { ServiceHub } from "@/components/platform/service-hub"
 import { ActivityFeed } from "@/components/platform/activity-feed"
