@@ -16,3 +16,12 @@ node_modules/
 .next/
 .DS_Store
 .vercel
+
+# Build artifacts
+coverage/
+next-env.d.ts
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Claude Code worktrees
+.claude/
