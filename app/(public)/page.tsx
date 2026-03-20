@@ -16,7 +16,7 @@ import {
   Lock,
 } from "lucide-react"
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy"
-import { SiteHeader } from "@/components/shell/site-header"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Briefcase, CheckCircle2 } from "lucide-react"
 
@@ -137,7 +137,6 @@ export default function ServicesLandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border">

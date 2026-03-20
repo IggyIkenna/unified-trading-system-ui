@@ -15,6 +15,7 @@ interface KPICardProps {
   status?: "healthy" | "warning" | "critical" | "neutral"
   className?: string
   onClick?: () => void
+  accentColor?: string
 }
 
 export function KPICard({

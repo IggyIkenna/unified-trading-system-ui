@@ -66,11 +66,13 @@ const roleViews = [
   { label: "Exec", value: "exec", icon: BarChart3 },
 ]
 
-interface GlobalNavBarProps {
+export interface GlobalNavBarProps {
   activeView?: string
   onViewChange?: (view: string) => void
   userName?: string
   className?: string
+  activeSurface?: string
+  currentRole?: string
 }
 
 export function GlobalNavBar({
