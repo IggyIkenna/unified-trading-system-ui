@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Check, Database, Brain, FlaskConical, Zap, BarChart3, Shield, FileText, TrendingUp } from "lucide-react"
+import { ArrowRight, Check, Database, Brain, FlaskConical, Zap, BarChart3, Shield, FileText, TrendingUp, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -97,6 +97,26 @@ const ENGAGEMENT_TIERS = [
     services: ["Everything above", "Investment Management", "Compliance & Reporting", "Dedicated Support"],
     bestFor: "Allocators, family offices, and institutions seeking managed alpha",
     cta: "Schedule Consultation",
+  },
+  {
+    id: "custom",
+    name: "Custom Solution",
+    tagline: "Flexible infrastructure, tailored to your needs.",
+    description: "Our platform is built to be modular. If the standard tiers don't fit your requirements, we'll work with you to design a bespoke solution — whether that's a unique combination of services, custom data sources, specific execution venues, or a hybrid of managed and self-service. Especially relevant for early-stage partnerships and institutional clients with specific operational needs.",
+    icon: Sparkles,
+    pricing: "Let's talk",
+    color: "border-primary/30",
+    journey: [
+      "Mix and match any combination of platform services",
+      "Custom data sources, venues, or instrument types",
+      "Hybrid self-service and managed operation",
+      "Bespoke pricing aligned to your usage and scale",
+      "Dedicated onboarding and integration support",
+      "Flexible terms for early-stage partnerships",
+    ],
+    services: ["Bespoke Configuration", "Custom Integration", "Flexible Pricing", "Dedicated Support"],
+    bestFor: "Institutions with specific operational requirements, or anyone whose needs don't fit neatly into a standard tier",
+    cta: "Get in Touch",
   },
 ]
 

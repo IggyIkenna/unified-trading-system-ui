@@ -351,8 +351,11 @@ export default function ServicesLandingPage() {
           ))}
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-8">
-          <Link href="/services/engagement" className="text-primary hover:underline">View engagement models</Link> or <Link href="/contact" className="text-primary hover:underline">contact us</Link> to discuss your requirements.
+        <p className="text-center text-sm text-muted-foreground mt-8">
+          Don&apos;t see exactly what you need? Our infrastructure is modular — we design <Link href="/contact" className="text-primary hover:underline">custom solutions</Link> tailored to your requirements.
+        </p>
+        <p className="text-center text-xs text-muted-foreground mt-2">
+          <Link href="/services/engagement" className="text-primary hover:underline">View engagement models</Link> or <Link href="/contact" className="text-primary hover:underline">contact us</Link> to discuss.
         </p>
       </section>
 
