@@ -60,11 +60,11 @@ export default function BacktestingServicePage() {
             <Card>
               <CardHeader className="pb-2">
                 <Play className="size-8 text-emerald-400 mb-2" />
-                <CardTitle className="text-base">No-Code Interface</CardTitle>
+                <CardTitle className="text-base">No-Code + Full API</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Natural language agent interface or visual strategy builder - no coding required
+                  No-code web interface for visual strategy building, or full backend API for programmatic integration with your own tools. Your choice.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -75,7 +75,7 @@ export default function BacktestingServicePage() {
             <Card className="border-border">
               <CardHeader>
                 <CardTitle>Starter</CardTitle>
-                <div className="text-2xl font-bold">£8,000<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+                <div className="text-lg font-bold text-primary">Contact Sales</div>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -96,7 +96,7 @@ export default function BacktestingServicePage() {
               <CardHeader>
                 <Badge className="w-fit mb-2">Popular</Badge>
                 <CardTitle>Professional</CardTitle>
-                <div className="text-2xl font-bold">£15,000<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+                <div className="text-lg font-bold text-primary">Contact Sales</div>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
