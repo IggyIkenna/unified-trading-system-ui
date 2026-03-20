@@ -20,6 +20,9 @@ import type {
   DataGap,
   ETLStage,
   ETLStatus,
+  DataCategory,
+  DataFolder,
+  DataType,
 } from "./data-service-types"
 
 // ─── Organisations ────────────────────────────────────────────────────────────
@@ -103,21 +106,21 @@ function seededRandom(seed: number): number {
   return x - Math.floor(x)
 }
 
-function makeFreshnessMap(from: string, dayCount: number, completeness: number): DateFreshnessMap {
+function makeFreshnessMap(dayCount: number, completeness: number): DateFreshnessMap {
   const map: DateFreshnessMap = {}
-  const start = new Date(from)
-  // Use a seed based on the from date for consistency
-  const baseSeed = start.getTime()
+  // Generate from today backwards so dates match the heatmap grid
+  const today = new Date()
+  const baseSeed = 42 + completeness // deterministic seed
   for (let i = 0; i < dayCount; i++) {
-    const d = new Date(start)
-    d.setDate(d.getDate() + i)
+    const d = new Date(today)
+    d.setDate(d.getDate() - (dayCount - 1 - i))
     const key = d.toISOString().split("T")[0]
     // Deterministic random based on day index
     const rand = seededRandom(baseSeed + i)
     let status: FreshnessStatus
     if (rand < completeness / 100) {
       status = "complete"
-    } else if (rand < (completeness + 5) / 100) {
+    } else if (rand < (completeness + 3) / 100) {
       status = "partial"
     } else {
       status = "missing"
@@ -374,52 +377,35 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
 
 // ─── Shard availability (mock response for DataStatusTab equivalent) ──────────
 
+// Generate shard availability with stats matching the 90-day heatmap
+function makeShardAvailability(
+  category: DataCategory, venue: string, folder: DataFolder, dataType: DataType,
+  completeness: number, cloud: { gcp: number; aws: number }
+): ShardAvailability {
+  const byDate = makeFreshnessMap(90, completeness)
+  const dates = Object.values(byDate)
+  const complete = dates.filter(s => s === "complete").length
+  const partial = dates.filter(s => s === "partial").length
+  const missing = dates.filter(s => s === "missing").length
+  const total = complete + partial + missing
+  return {
+    category, venue, folder, dataType,
+    dateRange: { start: "last 90 days", end: "today" },
+    datesChecked: total,
+    datesFound: complete + partial,
+    datesMissing: missing,
+    completionPct: total > 0 ? Math.round((complete / total) * 100 * 10) / 10 : 0,
+    lastFreshnessDate: new Date().toISOString().split("T")[0],
+    gcpCompletionPct: cloud.gcp,
+    awsCompletionPct: cloud.aws,
+    byDate,
+  }
+}
+
 export const MOCK_SHARD_AVAILABILITY: ShardAvailability[] = [
-  {
-    category: "cefi",
-    venue: "binance",
-    folder: "perpetuals",
-    dataType: "ohlcv",
-    dateRange: { start: "2024-01-01", end: "2024-12-31" },
-    datesChecked: 366,
-    datesFound: 363,
-    datesMissing: 3,
-    completionPct: 99.2,
-    lastFreshnessDate: "2024-12-31",
-    gcpCompletionPct: 99.2,
-    awsCompletionPct: 97.5,
-    byDate: makeFreshnessMap("2024-01-01", 90, 99), // 90-day window for heatmap
-  },
-  {
-    category: "tradfi",
-    venue: "databento",
-    folder: "futures",
-    dataType: "ohlcv",
-    dateRange: { start: "2024-01-01", end: "2024-12-31" },
-    datesChecked: 252, // trading days only
-    datesFound: 248,
-    datesMissing: 4,
-    completionPct: 98.4,
-    lastFreshnessDate: "2024-12-31",
-    gcpCompletionPct: 98.4,
-    awsCompletionPct: 0,
-    byDate: makeFreshnessMap("2024-01-01", 90, 97),
-  },
-  {
-    category: "defi",
-    venue: "uniswap_v3",
-    folder: "pool_state",
-    dataType: "pool_state",
-    dateRange: { start: "2024-01-01", end: "2024-12-31" },
-    datesChecked: 366,
-    datesFound: 358,
-    datesMissing: 8,
-    completionPct: 97.8,
-    lastFreshnessDate: "2024-12-30",
-    gcpCompletionPct: 97.8,
-    awsCompletionPct: 92.1,
-    byDate: makeFreshnessMap("2024-01-01", 90, 97),
-  },
+  makeShardAvailability("cefi", "binance", "perpetuals", "ohlcv", 96, { gcp: 96, aws: 94 }),
+  makeShardAvailability("tradfi", "databento", "futures", "ohlcv", 93, { gcp: 93, aws: 0 }),
+  makeShardAvailability("defi", "uniswap_v3", "pool_state", "pool_state", 91, { gcp: 91, aws: 88 }),
 ]
 
 // ─── Admin summary stats ──────────────────────────────────────────────────────

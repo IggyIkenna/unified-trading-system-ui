@@ -136,7 +136,7 @@ export const DATA_PLANS: DataPlan[] = [
   {
     tier: "starter",
     name: "Starter",
-    monthlyPrice: 499,
+    monthlyPrice: 250,
     queryLimitGb: 100,
     categories: ["cefi"],
     historyYears: 2,
