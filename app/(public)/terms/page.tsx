@@ -17,7 +17,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">2. Eligibility</h2>
-            <p>Our services are intended for professional and institutional clients only. By using our services, you represent that you qualify as a Professional Client under MiFID II.</p>
+            <p>Our services are designed for professional and institutional participants. Client categorisation is determined during the onboarding process in accordance with FCA rules and MiFID II classifications. Access to certain services may be subject to eligibility assessment.</p>
           </section>
 
           <section>
