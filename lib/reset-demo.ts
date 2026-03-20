@@ -19,6 +19,7 @@ export function resetDemo() {
 
   // Clear localStorage
   localStorage.removeItem("portal_user")
+  localStorage.removeItem("portal_token")
   localStorage.removeItem("odum_user")
   localStorage.removeItem("nav-preference")
 

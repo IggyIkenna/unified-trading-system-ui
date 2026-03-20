@@ -37,7 +37,7 @@ const ROLE_COLORS: Record<string, string> = {
 
 export default function LoginPage() {
   const router = useRouter()
-  const { loginByEmail, login } = useAuth()
+  const { user, loading, loginByEmail, login } = useAuth()
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search) : null
   const redirectTo = searchParams?.get("redirect") || null
@@ -47,6 +47,12 @@ export default function LoginPage() {
   const [password, setPassword] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
+
+  React.useEffect(() => {
+    if (!loading && user) {
+      router.replace(redirectTo || "/service/overview")
+    }
+  }, [loading, user, router, redirectTo])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

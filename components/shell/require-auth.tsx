@@ -38,16 +38,13 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
 
   if (user) return <>{children}</>
 
-  // Inline login gate
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
     setError("")
     await new Promise((r) => setTimeout(r, 400))
     const ok = loginByEmail(email, password)
-    if (ok) {
-      window.location.reload()
-    } else {
+    if (!ok) {
       setError("Invalid credentials. Try one of the demo accounts below.")
     }
     setSubmitting(false)
@@ -55,7 +52,6 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="border-b border-border">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-3">
@@ -72,7 +68,6 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md space-y-5">
-          {/* Lock badge */}
           <div className="text-center">
             <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
               <Lock className="size-5 text-primary" />
@@ -83,7 +78,6 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
             </p>
           </div>
 
-          {/* Login form */}
           <Card>
             <CardContent className="pt-6 space-y-4">
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -132,7 +126,6 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
             </CardContent>
           </Card>
 
-          {/* Demo quick-login */}
           <Card className="border-dashed">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm">Demo Accounts</CardTitle>

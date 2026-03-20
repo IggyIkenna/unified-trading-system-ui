@@ -4,6 +4,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/use-auth"
 import {
   Activity,
   BarChart3,
@@ -83,6 +84,7 @@ export function GlobalNavBar({
 }: GlobalNavBarProps) {
   const [open, setOpen] = React.useState(false)
   const [currentPath, setCurrentPath] = React.useState("")
+  const { logout } = useAuth()
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
@@ -236,7 +238,13 @@ export function GlobalNavBar({
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => {
+                  logout()
+                  window.location.href = "/login"
+                }}
+              >
                 <LogOutIcon className="mr-2 h-4 w-4" />
                 Log out
               </DropdownMenuItem>
