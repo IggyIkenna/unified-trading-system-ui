@@ -118,7 +118,7 @@ export default function RegulatoryServicePage() {
                 <Badge variant="outline" className="w-fit mb-2">Appointed Representative</Badge>
                 <CardTitle>AR Setup</CardTitle>
                 <div className="text-2xl font-bold">GBP 10,000</div>
-                <CardDescription>One-time onboarding fee + GBP 4k/mo supervision</CardDescription>
+                <CardDescription>One-time onboarding fee + GBP 5k/mo supervision</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -147,8 +147,8 @@ export default function RegulatoryServicePage() {
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">Strategic Advisor</Badge>
                 <CardTitle>Advisory Engagement</CardTitle>
-                <div className="text-2xl font-bold">Custom</div>
-                <CardDescription>Work within our regulated entity structure</CardDescription>
+                <div className="text-2xl font-bold">GBP 5,000</div>
+                <CardDescription>One-time setup fee + GBP 4k/mo subscription</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
