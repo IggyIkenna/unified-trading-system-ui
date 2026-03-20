@@ -83,7 +83,7 @@ gcloud run deploy "${SERVICE_NAME}" \
   --cpu=1 \
   --min-instances=0 \
   --max-instances=3 \
-  --set-env-vars="NODE_ENV=production,STAGING_AUTH_ENABLED=true,NEXT_PUBLIC_MOCK_API=true" \
+  --set-env-vars="NODE_ENV=production,NEXT_PUBLIC_STAGING_AUTH=true,NEXT_PUBLIC_MOCK_API=true" \
   --quiet
 
 CLOUD_RUN_URL=$(gcloud run services describe "${SERVICE_NAME}" --region="${REGION}" --format="value(status.url)" 2>/dev/null)

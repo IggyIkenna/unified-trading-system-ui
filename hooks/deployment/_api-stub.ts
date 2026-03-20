@@ -611,3 +611,15 @@ export async function getInstrumentAvailability(
   // TODO: wire to MSW handler
   return { instrument_id: "", available_dates: [], coverage_pct: 0 };
 }
+
+// Missing stub — added for build
+export async function getServiceCategories(_service: string): Promise<{ categories: string[] }> {
+  // TODO: wire to MSW handler
+  return { categories: ["CEFI", "DEFI", "TRADFI"] }
+}
+
+export async function getVenueFilters(_params: Record<string, string>): Promise<{ folders: string[]; data_types: string[] }> {
+  // TODO: wire to MSW handler
+  return { folders: ["spot", "perpetuals", "futures"], data_types: ["ohlcv", "trades", "book_snapshot_5"] }
+}
+
