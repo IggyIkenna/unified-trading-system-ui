@@ -3,7 +3,7 @@
 // /services/data — Public marketing page for Data Provision service
 // Three sections: Hero → Tabs (Catalogue | Pricing | Demo) → Social proof
 // Uses orgMode="demo" for the catalogue preview — no auth required
-// This page is the sales entry point. All CTAs lead to /signup or /portal/login
+// This page is the sales entry point. All CTAs lead to /signup or /login
 
 import * as React from "react"
 import Link from "next/link"
@@ -115,7 +115,7 @@ export default function DataServicePublicPage() {
                 </span>
               </div>
               <Button size="sm" asChild>
-                <Link href="/signup">Get Access <ArrowRight className="ml-1.5 size-3" /></Link>
+                <Link href="/login">Sign In <ArrowRight className="ml-1.5 size-3" /></Link>
               </Button>
             </div>
           </TabsContent>
@@ -242,7 +242,7 @@ export default function DataServicePublicPage() {
                 <FlaskConical className="size-4 shrink-0" />
                 Demo Mode — all data is illustrative. Sign in to see real freshness and query real data.
                 <Button size="sm" variant="outline" className="ml-auto border-amber-500/30 text-amber-400 hover:bg-amber-500/10" asChild>
-                  <Link href="/portal/login">Sign in</Link>
+                  <Link href="/login">Sign in</Link>
                 </Button>
               </div>
 
@@ -291,14 +291,6 @@ export default function DataServicePublicPage() {
                 </CardContent>
               </Card>
 
-              <div className="text-center">
-                <Button size="lg" asChild>
-                  <Link href="/signup">
-                    Create your account
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-              </div>
             </div>
           </TabsContent>
         </Tabs>

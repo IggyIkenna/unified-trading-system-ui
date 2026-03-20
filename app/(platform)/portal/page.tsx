@@ -158,10 +158,10 @@ export default function ClientPortalLanding() {
           </nav>
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/portal/login">Sign In</Link>
+              <Link href="/login">Sign In</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link href="/portal/signup">Get Started</Link>
+              <Link href="/signup">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -185,7 +185,7 @@ export default function ClientPortalLanding() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" asChild>
-                <Link href="/portal/signup">
+                <Link href="/signup">
                   Get Started
                   <ArrowRight className="ml-2 size-4" />
                 </Link>

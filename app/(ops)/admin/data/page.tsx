@@ -3,7 +3,7 @@
 // /services/data — Public marketing page for Data Provision service
 // Three sections: Hero → Tabs (Catalogue | Pricing | Demo) → Social proof
 // Uses orgMode="demo" for the catalogue preview — no auth required
-// This page is the sales entry point. All CTAs lead to /signup or /portal/login
+// Admin data catalogue page — no signup CTAs needed (user is already authenticated)
 
 import * as React from "react"
 import Link from "next/link"
@@ -54,12 +54,6 @@ export default function DataServicePublicPage() {
               what you subscribe to.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button size="lg" asChild>
-                <Link href="/signup">
-                  Get Started
-                  <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link href="/contact">Book a Demo</Link>
               </Button>
@@ -109,14 +103,8 @@ export default function DataServicePublicPage() {
             <div className="mt-6 flex items-center gap-3 rounded-lg border border-sky-500/30 bg-sky-500/5 p-4">
               <Lock className="size-5 text-sky-400 shrink-0" />
               <div className="flex-1 text-sm">
-                <span className="font-medium">Sign in to query.</span>{" "}
-                <span className="text-muted-foreground">
-                  Select a date range and data types, then query in-system or download to your cloud.
-                </span>
+                <span className="font-medium">Select a date range and data types, then query in-system or download to your cloud.</span>
               </div>
-              <Button size="sm" asChild>
-                <Link href="/signup">Get Access <ArrowRight className="ml-1.5 size-3" /></Link>
-              </Button>
             </div>
           </TabsContent>
 
@@ -216,16 +204,16 @@ export default function DataServicePublicPage() {
                             </li>
                           ))}
                         </ul>
-                        <Button
-                          size="sm"
-                          className="w-full mt-3"
-                          variant={plan.tier === "institutional" ? "default" : "outline"}
-                          asChild
-                        >
-                          <Link href={plan.tier === "enterprise" ? "/contact" : "/signup"}>
-                            {plan.tier === "enterprise" ? "Talk to us" : "Get started"}
-                          </Link>
-                        </Button>
+                        {plan.tier === "enterprise" && (
+                          <Button
+                            size="sm"
+                            className="w-full mt-3"
+                            variant="outline"
+                            asChild
+                          >
+                            <Link href="/contact">Talk to us</Link>
+                          </Button>
+                        )}
                       </CardContent>
                     </Card>
                   ))}
@@ -241,9 +229,6 @@ export default function DataServicePublicPage() {
               <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-2.5 text-sm text-amber-400">
                 <FlaskConical className="size-4 shrink-0" />
                 Demo Mode — all data is illustrative. Sign in to see real freshness and query real data.
-                <Button size="sm" variant="outline" className="ml-auto border-amber-500/30 text-amber-400 hover:bg-amber-500/10" asChild>
-                  <Link href="/portal/login">Sign in</Link>
-                </Button>
               </div>
 
               {/* Mock freshness heatmaps */}
@@ -291,14 +276,6 @@ export default function DataServicePublicPage() {
                 </CardContent>
               </Card>
 
-              <div className="text-center">
-                <Button size="lg" asChild>
-                  <Link href="/signup">
-                    Create your account
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-              </div>
             </div>
           </TabsContent>
         </Tabs>

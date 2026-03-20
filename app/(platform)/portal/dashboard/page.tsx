@@ -79,7 +79,7 @@ export default function ClientDashboard() {
     if (stored) {
       setUser(JSON.parse(stored))
     } else {
-      router.push("/portal/login")
+      router.push("/login")
     }
   }, [router])
 

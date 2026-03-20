@@ -65,7 +65,7 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
             <span className="text-lg font-semibold">Odum Research</span>
           </Link>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/signup">Get Access</Link>
+            <Link href="/contact">Get Access</Link>
           </Button>
         </div>
       </header>
