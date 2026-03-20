@@ -255,20 +255,54 @@ export function LifecycleNav({
               <ChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Organisation</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuLabel>Switch Organisation</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex items-center justify-between">
-              <span>Odum Internal</span>
-              {orgId === "odum-internal" && <Check className="size-4 text-primary" />}
+            {isInternal() && (
+              <>
+                <DropdownMenuItem
+                  className="flex items-center justify-between"
+                  onClick={() => doSwitchPersona("admin")}
+                >
+                  <div>
+                    <div className="text-sm">Odum Research</div>
+                    <div className="text-[10px] text-muted-foreground">Internal · All services</div>
+                  </div>
+                  {user?.org?.id === "odum-internal" && <Check className="size-4 text-primary" />}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-[10px] text-muted-foreground">View as Client</DropdownMenuLabel>
+              </>
+            )}
+            <DropdownMenuItem
+              className="flex items-center justify-between"
+              onClick={() => doSwitchPersona("client-full")}
+            >
+              <div>
+                <div className="text-sm">Alpha Capital</div>
+                <div className="text-[10px] text-muted-foreground">Full Suite · 12 strategies</div>
+              </div>
+              {user?.org?.id === "acme" && <Check className="size-4 text-primary" />}
             </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center justify-between">
-              <span>Demo Client</span>
-              {orgId === "demo-client" && <Check className="size-4 text-primary" />}
+            <DropdownMenuItem
+              className="flex items-center justify-between"
+              onClick={() => doSwitchPersona("client-premium")}
+            >
+              <div>
+                <div className="text-sm">Vertex Partners</div>
+                <div className="text-[10px] text-muted-foreground">Data + Execution + Strategy</div>
+              </div>
+              {user?.org?.id === "vertex" && <Check className="size-4 text-primary" />}
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-muted-foreground">
-              <span>Manage organisations...</span>
+            <DropdownMenuItem
+              className="flex items-center justify-between"
+              onClick={() => doSwitchPersona("client-data-only")}
+            >
+              <div>
+                <div className="text-sm">Beta Fund</div>
+                <div className="text-[10px] text-muted-foreground">Data Basic · CEFI only</div>
+              </div>
+              {user?.org?.id === "beta" && <Check className="size-4 text-primary" />}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
