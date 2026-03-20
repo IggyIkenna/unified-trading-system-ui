@@ -32,7 +32,7 @@ const services = [
     bgColor: "bg-sky-400/10",
     borderColor: "border-sky-400/30",
     metrics: [
-      { label: "Venues", value: "100+" },
+      { label: "Venues", value: "128" },
       { label: "Asset Classes", value: "5" },
       { label: "Data Types", value: "18+" },
     ],
@@ -61,8 +61,8 @@ const services = [
   },
   {
     id: "whitelabel",
-    name: "Strategy White-Labelling",
-    description: "License our proven strategies to run on your infrastructure. Full source, full control, our alpha.",
+    name: "Live Trading Platform",
+    description: "Live analytics, P&L attribution, risk monitoring, and T+1 backtest-vs-live diff tracking. Same code runs backtest and live.",
     icon: Layers,
     color: "text-amber-400",
     bgColor: "bg-amber-400/10",
@@ -87,7 +87,7 @@ const services = [
     borderColor: "border-emerald-400/30",
     metrics: [
       { label: "Algo Types", value: "8+" },
-      { label: "Venues", value: "100+" },
+      { label: "Venues", value: "128" },
       { label: "Compliance", value: "MiFID II" },
     ],
     features: ["TWAP/VWAP Algos", "Smart Order Routing", "DeFi MEV Protection", "Best Execution Reports"],
@@ -217,7 +217,7 @@ export default function ClientPortalLanding() {
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight">Choose Your Service</h2>
           <p className="mt-4 text-muted-foreground">
-            Select the services that match your needs. Mix and match, or get the full platform with Strategy White-Labelling.
+            Select the services that match your needs. Mix and match, or get the full platform with the Live Trading Platform.
           </p>
         </div>
 

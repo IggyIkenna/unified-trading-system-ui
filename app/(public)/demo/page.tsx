@@ -153,7 +153,7 @@ export default function DemoPage() {
                           <SelectItem value="execution">Execution as a Service</SelectItem>
                           <SelectItem value="investment">Investment Management</SelectItem>
                           <SelectItem value="regulatory">Regulatory Umbrella</SelectItem>
-                          <SelectItem value="platform">Strategy as a Service</SelectItem>
+                          <SelectItem value="platform">Live Trading Platform</SelectItem>
                           <SelectItem value="multiple">Multiple Services</SelectItem>
                         </SelectContent>
                       </Select>

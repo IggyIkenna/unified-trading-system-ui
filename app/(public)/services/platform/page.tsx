@@ -22,7 +22,7 @@ import {
   Plus,
 } from "lucide-react"
 
-// Mock organizations that have Strategy as a Service
+// Mock organizations that have Live Trading Platform
 const organizations = [
   {
     id: "odum-internal",
@@ -131,9 +131,9 @@ export default function PlatformOrgSelectionPage() {
             <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-amber-400/10">
               <Layers className="size-8 text-amber-400" />
             </div>
-            <h1 className="text-3xl font-bold">Strategy as a Service</h1>
+            <h1 className="text-3xl font-bold">Live Trading Platform</h1>
             <p className="mt-2 text-muted-foreground">
-              Select your organisation to access the Unified Trading Platform
+              Live analytics, P&L attribution, risk monitoring, and T+1 backtest-vs-live diff tracking
             </p>
           </div>
 

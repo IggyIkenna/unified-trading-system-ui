@@ -62,6 +62,12 @@ export const PLATFORM_STATS = {
   /** Number of backend services in the endpoint registry */
   serviceCount: Object.keys(endpointRegistry).length,
 
+  /** Approximate total data volume across all venues and asset classes */
+  dataVolumeTB: "100+",
+
+  /** Years of historical data available */
+  historyYears: "6+",
+
   /** UAC enum count (canonical external schemas) */
   uacEnumCount: Object.keys(registryData.uac_enums || {}).length,
 

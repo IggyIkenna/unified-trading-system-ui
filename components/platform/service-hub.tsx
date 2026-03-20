@@ -53,7 +53,7 @@ const SERVICE_STATS: Record<string, string> = {
   execution: "1,842 fills today",
   risk: "78% margin utilization",
   alerts: "3 active alerts",
-  "strategy-platform": "5 backtests running",
+  "live-trading-platform": "12 active strategies",
   reports: "2 pending settlements",
   ml: "6 models deployed",
   admin: "4 orgs, 12 users",

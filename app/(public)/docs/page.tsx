@@ -204,7 +204,7 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \\
 - **read:data** - Access market data endpoints
 - **write:backtest** - Submit backtest jobs
 - **write:orders** - Execute orders
-- **admin** - Full access (for Strategy as a Service clients)
+- **admin** - Full access (for Live Trading Platform clients)
 
 ### Rate Limits
 | Tier | Requests/min | WebSocket Connections |

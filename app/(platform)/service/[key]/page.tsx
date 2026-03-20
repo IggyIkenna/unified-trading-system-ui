@@ -59,11 +59,11 @@ const SERVICE_SECTIONS: Record<string, Array<{
   alerts: [
     { label: "Alert Dashboard", href: "/alerts", description: "All alerts by severity and status" },
   ],
-  "strategy-platform": [
-    { label: "Strategy Overview", href: "/strategy-platform/overview", description: "Active strategies and recent backtests" },
-    { label: "Backtesting", href: "/strategy-platform/backtests", description: "Run, compare, and evaluate backtests" },
-    { label: "Candidate Pipeline", href: "/strategy-platform/candidates", description: "Promotion from backtest to live" },
-    { label: "Strategy Browser", href: "/strategies", description: "Browse all strategies with filters" },
+  "live-trading-platform": [
+    { label: "Live Positions", href: "/trading/positions", description: "Real-time positions, P&L, and margin across all venues" },
+    { label: "P&L Attribution", href: "/trading/pnl", description: "Factor-level P&L breakdown and performance attribution" },
+    { label: "Risk Monitor", href: "/trading/risk", description: "Exposure, VaR, Greeks, and risk limit monitoring" },
+    { label: "T+1 Alignment", href: "/trading/alignment", description: "Backtest-vs-live diff tracking and reconciliation" },
   ],
   reports: [
     { label: "Portfolio Reports", href: "/reports", description: "P&L, performance, risk-adjusted returns" },

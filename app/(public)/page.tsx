@@ -62,9 +62,9 @@ const services = [
     href: "/services/backtesting",
   },
   {
-    id: "whitelabel",
-    name: "Strategy as a Service",
-    description: "Get the full Unified Trading Platform white-labelled for your organisation. Our strategies, your brand.",
+    id: "live-trading-platform",
+    name: "Live Trading Platform",
+    description: "Live analytics, P&L attribution, risk monitoring, and T+1 backtest-vs-live diff tracking. Same code runs backtest and live.",
     icon: Layers,
     color: "text-amber-400",
     bgColor: "bg-amber-400/10",
@@ -194,8 +194,8 @@ export default function ServicesLandingPage() {
                 <div className="text-xs text-muted-foreground">Trading</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-primary">6+</div>
-                <div className="text-xs text-muted-foreground">Years Data</div>
+                <div className="text-2xl font-bold text-primary">{PLATFORM_STATS.dataVolumeTB} TB</div>
+                <div className="text-xs text-muted-foreground">Market Data</div>
               </div>
               <div>
                 <div className="text-2xl font-bold text-primary">6</div>

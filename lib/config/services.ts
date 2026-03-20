@@ -103,10 +103,10 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
 
   // --- Analytics ---
   {
-    key: "strategy-platform",
-    label: "Strategy Platform",
-    description: "Strategy research, backtesting, and live deployment.",
-    href: "/strategy-platform",
+    key: "live-trading-platform",
+    label: "Live Trading Platform",
+    description: "Live P&L attribution, position monitoring, risk analytics, and T+1 backtest-vs-live alignment.",
+    href: "/trading",
     requiredEntitlements: ["strategy-full"],
     category: "analytics",
     icon: "FlaskConical",
