@@ -135,7 +135,7 @@ export default function MLOverviewPage() {
               <RefreshCw className="size-4" />
               Refresh
             </Button>
-            <Link href="/ml/experiments/new">
+            <Link href="/service/research/ml/experiments/new">
               <Button size="sm" className="gap-2" style={{ backgroundColor: "var(--surface-ml)" }}>
                 <Beaker className="size-4" />
                 New Experiment
@@ -210,7 +210,7 @@ export default function MLOverviewPage() {
                   <Shield className="size-4" />
                   Live Model Health
                 </CardTitle>
-                <Link href="/ml/monitoring">
+                <Link href="/service/research/ml/monitoring">
                   <Button variant="ghost" size="sm" className="gap-1 text-xs">
                     View All <ArrowRight className="size-3" />
                   </Button>
@@ -367,7 +367,7 @@ export default function MLOverviewPage() {
                   <Cpu className="size-4" />
                   Training Jobs
                 </CardTitle>
-                <Link href="/ml/training">
+                <Link href="/service/research/ml/training">
                   <Button variant="ghost" size="sm" className="gap-1 text-xs">
                     View All <ArrowRight className="size-3" />
                   </Button>
@@ -412,7 +412,7 @@ export default function MLOverviewPage() {
                   <Beaker className="size-4" />
                   Top Candidates
                 </CardTitle>
-                <Link href="/ml/experiments">
+                <Link href="/service/research/ml/experiments">
                   <Button variant="ghost" size="sm" className="gap-1 text-xs">
                     View All <ArrowRight className="size-3" />
                   </Button>
@@ -460,7 +460,7 @@ export default function MLOverviewPage() {
                   <GitBranch className="size-4" />
                   Feature Freshness
                 </CardTitle>
-                <Link href="/ml/features">
+                <Link href="/service/research/ml/features">
                   <Button variant="ghost" size="sm" className="gap-1 text-xs">
                     View All <ArrowRight className="size-3" />
                   </Button>
@@ -542,7 +542,7 @@ export default function MLOverviewPage() {
                   <Play className="size-4" />
                   Pending Promotions
                 </CardTitle>
-                <Link href="/ml/deploy">
+                <Link href="/service/research/ml/deploy">
                   <Button variant="ghost" size="sm" className="gap-1 text-xs">
                     View All <ArrowRight className="size-3" />
                   </Button>

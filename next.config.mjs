@@ -8,6 +8,43 @@ const nextConfig = {
   },
   // Note: standalone output not supported with Next.js 16 Turbopack
   // Using `next start` in Dockerfile instead
+
+  async redirects() {
+    return [
+      // Service hub
+      { source: "/overview", destination: "/service/overview", permanent: true },
+      // Data service
+      { source: "/data", destination: "/service/data/overview", permanent: true },
+      { source: "/trading/markets", destination: "/service/data/markets", permanent: true },
+      { source: "/trading/markets/:path*", destination: "/service/data/markets/:path*", permanent: true },
+      // Trading service
+      { source: "/trading", destination: "/service/trading/overview", permanent: true },
+      { source: "/trading/positions", destination: "/service/trading/positions", permanent: true },
+      { source: "/trading/risk", destination: "/service/trading/risk", permanent: true },
+      { source: "/trading/alerts", destination: "/service/trading/alerts", permanent: true },
+      // Research service
+      { source: "/research", destination: "/service/research/overview", permanent: true },
+      { source: "/research/strategy/:path*", destination: "/service/research/strategy/:path*", permanent: true },
+      { source: "/research/ml/:path*", destination: "/service/research/ml/:path*", permanent: true },
+      { source: "/research/ml", destination: "/service/research/ml", permanent: true },
+      { source: "/research/execution/:path*", destination: "/service/research/execution/:path*", permanent: true },
+      // Legacy flat ML routes
+      { source: "/ml", destination: "/service/research/ml", permanent: true },
+      { source: "/ml/:path*", destination: "/service/research/ml/:path*", permanent: true },
+      // Legacy flat routes
+      { source: "/positions", destination: "/service/trading/positions", permanent: true },
+      { source: "/risk", destination: "/service/trading/risk", permanent: true },
+      { source: "/alerts", destination: "/service/trading/alerts", permanent: true },
+      { source: "/markets", destination: "/service/data/markets", permanent: true },
+      { source: "/strategy-platform/:path*", destination: "/service/research/strategy/:path*", permanent: true },
+      // Execution service
+      { source: "/execution", destination: "/service/execution/overview", permanent: true },
+      { source: "/execution/:path*", destination: "/service/execution/:path*", permanent: true },
+      // Reports service
+      { source: "/reports", destination: "/service/reports/overview", permanent: true },
+      { source: "/reports/executive", destination: "/service/reports/executive", permanent: true },
+    ]
+  },
 }
 
 export default nextConfig

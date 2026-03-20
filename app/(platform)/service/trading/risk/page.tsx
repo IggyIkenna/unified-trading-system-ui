@@ -1,0 +1,1443 @@
+"use client"
+
+import * as React from "react"
+import { RoleLayout } from "@/components/shell/role-layout"
+import { LimitBar } from "@/components/trading/limit-bar"
+import { PnLValue } from "@/components/trading/pnl-value"
+import { StatusBadge } from "@/components/trading/status-badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import { Slider } from "@/components/ui/slider"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Shield,
+  TrendingUp,
+  Wallet,
+  AlertTriangle,
+  BarChart3,
+  LineChart,
+  Activity,
+  Clock,
+  Zap,
+  ChevronDown,
+  ChevronRight,
+  Info,
+  Target,
+  X,
+} from "lucide-react"
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  LineChart as RechartsLineChart,
+  Line,
+  Area,
+  AreaChart,
+  Cell,
+  ReferenceLine,
+} from "recharts"
+import { cn } from "@/lib/utils"
+
+// =============================================================================
+// TYPES & INTERFACES
+// =============================================================================
+
+interface RiskLimit {
+  id: string
+  name: string
+  value: number
+  limit: number
+  unit: string
+  category: "exposure" | "margin" | "ltv" | "concentration"
+  entity: string
+  entityType: "company" | "client" | "account" | "strategy" | "underlying" | "instrument"
+  level: number // 0-5 for tree depth
+  parentId?: string
+  var95?: number
+}
+
+// =============================================================================
+// MOCK DATA - Strategy Risk Heatmap
+// =============================================================================
+
+const strategyRiskHeatmap = [
+  { strategy: "DEFI_ETH_BASIS_SCE_1H", delta: "0.3%", funding: "0.012%", hf: "1.42", status: "ok" as const },
+  { strategy: "CEFI_BTC_MM_EVT_TICK", delta: "1.2%", inventory: "18%", spread: "4.2bps", status: "ok" as const },
+  { strategy: "CEFI_ETH_OPT_MM_EVT_TICK", delta: "-0.8", gamma: "0.04", vega: "$12K", status: "warning" as const },
+  { strategy: "TRADFI_SPY_MOM_HUF_1D", delta: "2.1%", drawdown: "3.8%", var: "$410K", status: "ok" as const },
+  { strategy: "SPORTS_FOOTBALL_ARB_EVT", edge: "2.1%", exposure: "$45K", clv: "+1.2%", status: "ok" as const },
+]
+
+// =============================================================================
+// MOCK DATA - VaR Component Data
+// =============================================================================
+
+const componentVarData = [
+  { instrument: "ETH-PERP", venue: "Hyperliquid", var95: 1200000, pct: 28, assetClass: "defi" },
+  { instrument: "BTC-PERP", venue: "Binance", var95: 980000, pct: 23, assetClass: "cefi" },
+  { instrument: "aweETH", venue: "Aave V3", var95: 720000, pct: 17, assetClass: "defi" },
+  { instrument: "SPY Put Spread", venue: "IBKR", var95: 510000, pct: 12, assetClass: "tradfi" },
+  { instrument: "ETH/USDC LP", venue: "Uniswap V3", var95: 340000, pct: 8, assetClass: "defi" },
+  { instrument: "BTC Call 70K", venue: "Deribit", var95: 220000, pct: 5, assetClass: "cefi" },
+  { instrument: "NFL Arb Basket", venue: "Pinnacle", var95: 150000, pct: 4, assetClass: "sports" },
+  { instrument: "MATIC-PERP", venue: "Hyperliquid", var95: 130000, pct: 3, assetClass: "defi" },
+]
+
+// =============================================================================
+// MOCK DATA - Stress Scenarios
+// =============================================================================
+
+const stressScenarios = [
+  { name: "GFC 2008", multiplier: 3.5, pnlImpact: -7200000, varImpact: 4100000, positionsBreaching: 8, largestLoss: "BTC-PERP (-$2.1M)" },
+  { name: "COVID March 2020", multiplier: 2.5, pnlImpact: -4800000, varImpact: 2700000, positionsBreaching: 5, largestLoss: "ETH-PERP (-$1.4M)" },
+  { name: "Crypto Black Thursday", multiplier: 5.0, pnlImpact: -11300000, varImpact: 6900000, positionsBreaching: 12, largestLoss: "aweETH (-$3.8M)" },
+]
+
+// =============================================================================
+// MOCK DATA - Greeks
+// =============================================================================
+
+const portfolioGreeks = {
+  delta: -0.80,
+  gamma: 0.044,
+  vega: 12400,
+  theta: -3200,
+  rho: 890,
+}
+
+const positionGreeks = [
+  { instrument: "BTC Call 70K Jun", venue: "Deribit", qty: 10, delta: 0.42, gamma: 0.008, vega: 4200, theta: -890, rho: 120 },
+  { instrument: "ETH Put 1800 Jun", venue: "Deribit", qty: -25, delta: -0.35, gamma: 0.012, vega: 6800, theta: -1400, rho: 340 },
+  { instrument: "SPY Put 450 Jul", venue: "IBKR", qty: 50, delta: -0.87, gamma: 0.024, vega: 1400, theta: -910, rho: 430 },
+]
+
+const greeksTimeSeries = Array.from({ length: 30 }, (_, i) => ({
+  day: i + 1,
+  delta: -0.8 + Math.sin(i / 5) * 0.3,
+  gamma: 0.044 + Math.sin(i / 4) * 0.01,
+  vega: 12400 - i * 200 + Math.sin(i / 3) * 1000,
+}))
+
+const secondOrderRisks = {
+  volga: 2100,
+  vanna: -1800,
+  slide: -450,
+}
+
+// =============================================================================
+// MOCK DATA - Term Structure
+// =============================================================================
+
+const termStructureData = [
+  { bucket: "O/N", notional: 2100000, pct: 42, defi: 1500000, cefi: 600000, tradfi: 0, sports: 0 },
+  { bucket: "1W", notional: 1200000, pct: 24, defi: 0, cefi: 800000, tradfi: 400000, sports: 0 },
+  { bucket: "1M", notional: 800000, pct: 16, defi: 500000, cefi: 300000, tradfi: 0, sports: 0 },
+  { bucket: "3M", notional: 450000, pct: 9, defi: 0, cefi: 0, tradfi: 450000, sports: 0 },
+  { bucket: "6M", notional: 250000, pct: 5, defi: 0, cefi: 0, tradfi: 250000, sports: 0 },
+  { bucket: "1Y", notional: 150000, pct: 3, defi: 0, cefi: 0, tradfi: 150000, sports: 0 },
+  { bucket: "2Y+", notional: 50000, pct: 1, defi: 0, cefi: 0, tradfi: 50000, sports: 0 },
+]
+
+// =============================================================================
+// MOCK DATA - Health Factor Time Series
+// =============================================================================
+
+const hfTimeSeries = [
+  { day: 1, hf: 1.82 },
+  { day: 2, hf: 1.72 },
+  { day: 3, hf: 1.58 },
+  { day: 4, hf: 1.38 },
+  { day: 5, hf: 1.68, event: "Rebalance" },
+  { day: 6, hf: 1.62 },
+  { day: 7, hf: 1.55 },
+]
+
+// =============================================================================
+// MOCK DATA - Margin & Distance to Liquidation
+// =============================================================================
+
+const distanceToLiquidation = [
+  { venue: "Aave V3", metric: "HF: 1.42", distToLiq: 29.6, status: "ok" as const },
+  { venue: "Binance", metric: "Margin: 78%", distToLiq: 22.0, status: "ok" as const },
+  { venue: "Hyperliquid", metric: "Margin: 45%", distToLiq: 55.0, status: "ok" as const },
+  { venue: "Deribit", metric: "Margin: 62%", distToLiq: 38.0, status: "ok" as const },
+]
+
+// =============================================================================
+// MOCK DATA - Limits Hierarchy (6 levels)
+// =============================================================================
+
+const mockLimitsHierarchy: RiskLimit[] = [
+  { id: "1", name: "Total Exposure", value: 5200000, limit: 10000000, unit: "$", category: "exposure", entity: "Odum Research", entityType: "company", level: 0, var95: 2100000 },
+  { id: "2", name: "Exposure", value: 2800000, limit: 5000000, unit: "$", category: "exposure", entity: "Apex Capital", entityType: "client", level: 1, parentId: "1", var95: 1200000 },
+  { id: "3", name: "Exposure", value: 2000000, limit: 3500000, unit: "$", category: "exposure", entity: "Main Account", entityType: "account", level: 2, parentId: "2", var95: 850000 },
+  { id: "4", name: "Delta Exposure", value: 1200000, limit: 1800000, unit: "$", category: "exposure", entity: "DEFI_ETH_BASIS", entityType: "strategy", level: 3, parentId: "3", var95: 520000 },
+  { id: "5", name: "Exposure", value: 900000, limit: 1250000, unit: "$", category: "exposure", entity: "ETH", entityType: "underlying", level: 4, parentId: "4", var95: 410000 },
+  { id: "6", name: "Position", value: 450000, limit: 600000, unit: "$", category: "exposure", entity: "ETH-PERP", entityType: "instrument", level: 5, parentId: "5", var95: 210000 },
+  // Additional hierarchy branches
+  { id: "7", name: "Net Delta Exposure", value: 4200000, limit: 15000000, unit: "$", category: "exposure", entity: "Firm", entityType: "company", level: 0, var95: 1800000 },
+  { id: "8", name: "Gross Leverage", value: 1.2, limit: 3.0, unit: "x", category: "exposure", entity: "Firm", entityType: "company", level: 0 },
+  { id: "9", name: "Total Margin Used", value: 68, limit: 70, unit: "%", category: "margin", entity: "Firm", entityType: "company", level: 0 },
+  { id: "10", name: "Margin Utilization", value: 78, limit: 80, unit: "%", category: "margin", entity: "Binance", entityType: "instrument", level: 5 },
+  { id: "11", name: "Margin Utilization", value: 65, limit: 80, unit: "%", category: "margin", entity: "OKX", entityType: "instrument", level: 5 },
+  { id: "12", name: "Margin Utilization", value: 45, limit: 80, unit: "%", category: "margin", entity: "Hyperliquid", entityType: "instrument", level: 5 },
+  { id: "13", name: "LTV", value: 0.72, limit: 0.75, unit: "", category: "ltv", entity: "Aave v3 (ETH)", entityType: "instrument", level: 5 },
+  { id: "14", name: "LTV", value: 0.68, limit: 0.75, unit: "", category: "ltv", entity: "Aave v3 (WBTC)", entityType: "instrument", level: 5 },
+  { id: "15", name: "Health Factor", value: 1.35, limit: 1.25, unit: "", category: "ltv", entity: "Aave v3", entityType: "instrument", level: 5 },
+]
+
+// =============================================================================
+// MOCK DATA - Exposure Attribution
+// =============================================================================
+
+interface ExposureRow {
+  component: string
+  category: "first_order" | "second_order" | "structural" | "operational" | "domain_specific"
+  pnl: number
+  exposure: number | string
+  limit: number | string
+  utilization: number
+}
+
+const allExposureRows: ExposureRow[] = [
+  // First Order
+  { component: "Delta", category: "first_order", pnl: 61000, exposure: 2400000, limit: 5000000, utilization: 48 },
+  { component: "Vega", category: "first_order", pnl: -8000, exposure: 12400, limit: 50000, utilization: 24.8 },
+  { component: "Theta", category: "first_order", pnl: -3200, exposure: -3200, limit: 10000, utilization: 32 },
+  { component: "Rho", category: "first_order", pnl: 890, exposure: 890, limit: 5000, utilization: 17.8 },
+  { component: "Funding", category: "first_order", pnl: 412000, exposure: 8200000, limit: 15000000, utilization: 54.6 },
+  { component: "Basis", category: "first_order", pnl: 355000, exposure: 14, limit: 30, utilization: 46.6 },
+  // Second Order
+  { component: "Gamma", category: "second_order", pnl: 2100, exposure: 0.044, limit: 0.1, utilization: 44 },
+  { component: "Volga", category: "second_order", pnl: 1200, exposure: 2100, limit: 5000, utilization: 42 },
+  { component: "Vanna", category: "second_order", pnl: -800, exposure: -1800, limit: 4000, utilization: 45 },
+  { component: "Slide", category: "second_order", pnl: -450, exposure: -450, limit: 1000, utilization: 45 },
+  // Structural
+  { component: "Duration", category: "structural", pnl: 22000, exposure: 1.2, limit: 3.0, utilization: 40 },
+  { component: "Convexity", category: "structural", pnl: 5000, exposure: 0.05, limit: 0.15, utilization: 33.3 },
+  { component: "Liquidity", category: "structural", pnl: -12000, exposure: 0.72, limit: 0.75, utilization: 96 },
+  { component: "Concentration", category: "structural", pnl: 0, exposure: 28, limit: 35, utilization: 80 },
+  // Operational
+  { component: "Venue/Protocol", category: "operational", pnl: 0, exposure: 3, limit: 5, utilization: 60 },
+  { component: "Correlation", category: "operational", pnl: -2000, exposure: 0.72, limit: 0.85, utilization: 84.7 },
+  // Domain-Specific
+  { component: "Staking/LTV", category: "domain_specific", pnl: 145000, exposure: 0.72, limit: 0.75, utilization: 96 },
+  { component: "Protocol Risk", category: "domain_specific", pnl: 0, exposure: 2, limit: 3, utilization: 66.7 },
+  { component: "Impermanent Loss", category: "domain_specific", pnl: -3200, exposure: 2.1, limit: 5, utilization: 42 },
+  { component: "Edge Decay", category: "domain_specific", pnl: -1500, exposure: 0.8, limit: 2, utilization: 40 },
+  { component: "Market Suspension", category: "domain_specific", pnl: 0, exposure: 1, limit: 2, utilization: 50 },
+  { component: "Interest Rate", category: "domain_specific", pnl: 22000, exposure: 1200000, limit: 3000000, utilization: 40 },
+  { component: "Spread", category: "domain_specific", pnl: 8500, exposure: 4.2, limit: 10, utilization: 42 },
+]
+
+// Strategy-specific risk type mapping
+const STRATEGY_RISK_MAP: Record<string, string[]> = {
+  "BASIS_TRADE": ["delta", "funding", "basis", "protocol_risk"],
+  "YIELD": ["protocol_risk", "liquidity", "concentration"],
+  "MARKET_MAKING": ["delta", "liquidity", "venue_protocol", "concentration"],
+  "OPTIONS": ["delta", "gamma", "vega", "theta", "rho", "volga", "vanna", "slide"],
+  "DIRECTIONAL": ["delta", "concentration", "duration"],
+  "MOMENTUM": ["delta", "concentration"],
+  "MEAN_REVERSION": ["delta", "basis", "concentration"],
+  "STATISTICAL_ARB": ["delta", "correlation", "concentration", "edge_decay"],
+  "ARBITRAGE": ["delta", "edge_decay", "market_suspension", "concentration"],
+}
+
+// Exposure time series data
+const exposureTimeSeries = Array.from({ length: 30 }, (_, i) => ({
+  day: i + 1,
+  delta: 2400000 + Math.sin(i / 4) * 400000,
+  funding: 8200000 + Math.sin(i / 3) * 1000000,
+  basis: 14 + Math.sin(i / 5) * 3,
+}))
+
+// =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+function getUtilization(value: number, limit: number): number {
+  if (limit === 0) return 0
+  return Math.min((value / limit) * 100, 100)
+}
+
+function getStatusFromUtil(util: number): "live" | "warning" | "critical" {
+  if (util < 70) return "live"
+  if (util < 90) return "warning"
+  return "critical"
+}
+
+function formatCurrency(value: number): string {
+  if (Math.abs(value) >= 1000000) return `$${(value / 1000000).toFixed(1)}M`
+  if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}K`
+  return `$${value.toFixed(0)}`
+}
+
+function getAssetClassColor(assetClass: string): string {
+  switch (assetClass) {
+    case "defi": return "var(--surface-config)"
+    case "cefi": return "var(--surface-trading)"
+    case "tradfi": return "var(--surface-markets)"
+    case "sports": return "var(--surface-strategy)"
+    default: return "var(--muted-foreground)"
+  }
+}
+
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
+
+// Mock strategy list for the filter
+const MOCK_STRATEGIES = [
+  { id: "s1", name: "ETH Basis Trade", archetype: "BASIS_TRADE", strategyIdPattern: "DEFI_ETH_BASIS_SCE_1H" },
+  { id: "s2", name: "BTC Market Making", archetype: "MARKET_MAKING", strategyIdPattern: "CEFI_BTC_MM_EVT_TICK" },
+  { id: "s3", name: "ETH Options MM", archetype: "OPTIONS", strategyIdPattern: "CEFI_ETH_OPT_MM_EVT_TICK" },
+  { id: "s4", name: "SPY Momentum", archetype: "DIRECTIONAL", strategyIdPattern: "TRADFI_SPY_MOM_HUF_1D" },
+  { id: "s5", name: "Football Arb", archetype: "ARBITRAGE", strategyIdPattern: "SPORTS_FOOTBALL_ARB_EVT" },
+  { id: "s6", name: "Aave Yield", archetype: "YIELD", strategyIdPattern: "DEFI_AAVE_YIELD_SCE_1H" },
+  { id: "s7", name: "Statistical Arb", archetype: "STATISTICAL_ARB", strategyIdPattern: "CEFI_STAT_ARB_HUF_5M" },
+]
+
+// Map exposure row component names to risk type keys
+const COMPONENT_TO_RISK_TYPE: Record<string, string> = {
+  "Delta": "delta",
+  "Gamma": "gamma",
+  "Vega": "vega",
+  "Theta": "theta",
+  "Rho": "rho",
+  "Volga": "volga",
+  "Vanna": "vanna",
+  "Slide": "slide",
+  "Funding": "funding",
+  "Basis": "basis",
+  "Duration": "duration",
+  "Convexity": "convexity",
+  "Liquidity": "liquidity",
+  "Concentration": "concentration",
+  "Venue/Protocol": "venue_protocol",
+  "Correlation": "correlation",
+  "Staking/LTV": "staking_ltv",
+  "Protocol Risk": "protocol_risk",
+  "Impermanent Loss": "impermanent_loss",
+  "Edge Decay": "edge_decay",
+  "Market Suspension": "market_suspension",
+  "Interest Rate": "interest_rate",
+  "Spread": "spread",
+}
+
+export default function RiskPage() {
+  const [varMethod, setVarMethod] = React.useState<"historical" | "parametric" | "monte_carlo" | "filtered_historical">("historical")
+  const [regimeMultiplier, setRegimeMultiplier] = React.useState(1.0)
+  const [exposurePeriod, setExposurePeriod] = React.useState<"1W" | "1M" | "3M">("1M")
+  const [expandedCategories, setExpandedCategories] = React.useState<string[]>(["first_order", "domain_specific"])
+  
+  // Item 1: Strategy risk filter state
+  const [riskFilterStrategy, setRiskFilterStrategy] = React.useState<string>("all")
+  
+  // Item 2: Hierarchy node selection state
+  const [selectedNode, setSelectedNode] = React.useState<string | null>(null)
+
+  // VaR method multipliers for visual variation
+  const varMethodMultipliers: Record<string, number> = {
+    historical: 1.0,
+    parametric: 0.92,
+    monte_carlo: 1.08,
+    filtered_historical: 1.05,
+  }
+
+  const adjustedVarData = componentVarData.map(d => ({
+    ...d,
+    var95: Math.round(d.var95 * varMethodMultipliers[varMethod] * regimeMultiplier),
+  }))
+
+  // KPI calculations
+  const totalVar95 = 2100000 * regimeMultiplier
+  const totalVar99 = 4800000 * regimeMultiplier
+  const totalES95 = 3200000 * regimeMultiplier
+  const totalES99 = 6700000 * regimeMultiplier
+
+  // Sorted limits for display
+  const sortedLimits = React.useMemo(() => {
+    return [...mockLimitsHierarchy].sort((a, b) => {
+      const utilA = getUtilization(a.value, a.limit)
+      const utilB = getUtilization(b.value, b.limit)
+      return utilB - utilA
+    })
+  }, [])
+
+  const criticalCount = sortedLimits.filter((l) => getUtilization(l.value, l.limit) >= 90).length
+  const warningCount = sortedLimits.filter((l) => {
+    const util = getUtilization(l.value, l.limit)
+    return util >= 70 && util < 90
+  }).length
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(category) 
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    )
+  }
+
+  // Item 1: Filter exposure rows by strategy archetype
+  const selectedStrategy = MOCK_STRATEGIES.find(s => s.archetype === riskFilterStrategy)
+  const relevantRiskTypes = riskFilterStrategy === "all" 
+    ? null 
+    : STRATEGY_RISK_MAP[riskFilterStrategy] || []
+  
+  const filteredExposureRows = React.useMemo(() => {
+    if (!relevantRiskTypes) return allExposureRows
+    return allExposureRows.filter(row => {
+      const riskType = COMPONENT_TO_RISK_TYPE[row.component]
+      return riskType && relevantRiskTypes.includes(riskType)
+    })
+  }, [relevantRiskTypes])
+
+  // Item 2: Get selected hierarchy node info
+  const selectedHierarchyNode = selectedNode 
+    ? mockLimitsHierarchy.find(l => l.entity === selectedNode) 
+    : null
+
+  const groupedExposure = React.useMemo(() => {
+    const groups: Record<string, ExposureRow[]> = {
+      first_order: [],
+      second_order: [],
+      structural: [],
+      operational: [],
+      domain_specific: [],
+    }
+    filteredExposureRows.forEach(row => {
+      groups[row.category].push(row)
+    })
+    return groups
+  }, [filteredExposureRows])
+
+  return (
+    <RoleLayout currentRole="risk" activeSurface="trading" showLifecycleRail={false}>
+      <div className="max-w-[1600px] mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold flex items-center gap-2">
+              <Shield className="size-6 text-rose-400" />
+              Risk Dashboard
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Comprehensive risk analytics for CRO morning briefing
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            {criticalCount > 0 && <StatusBadge status="critical" label={`${criticalCount} Critical`} />}
+            {warningCount > 0 && <StatusBadge status="warning" label={`${warningCount} Warning`} />}
+            <Badge variant="outline" className="font-mono">Kill Switches: 1</Badge>
+          </div>
+        </div>
+
+        {/* Tabs - 7 tabs as specified */}
+        <Tabs defaultValue="summary" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:grid-cols-none lg:flex">
+            <TabsTrigger value="summary" className="gap-1.5 text-xs">
+              <Shield className="size-3.5" />
+              Risk Summary
+            </TabsTrigger>
+            <TabsTrigger value="var" className="gap-1.5 text-xs">
+              <BarChart3 className="size-3.5" />
+              VaR & Stress
+            </TabsTrigger>
+            <TabsTrigger value="exposure" className="gap-1.5 text-xs">
+              <TrendingUp className="size-3.5" />
+              Exposure
+            </TabsTrigger>
+            <TabsTrigger value="greeks" className="gap-1.5 text-xs">
+              <Activity className="size-3.5" />
+              Greeks
+            </TabsTrigger>
+            <TabsTrigger value="margin" className="gap-1.5 text-xs">
+              <Wallet className="size-3.5" />
+              Margin
+            </TabsTrigger>
+            <TabsTrigger value="term" className="gap-1.5 text-xs">
+              <Clock className="size-3.5" />
+              Term Structure
+            </TabsTrigger>
+            <TabsTrigger value="limits" className="gap-1.5 text-xs">
+              <AlertTriangle className="size-3.5" />
+              Limits
+            </TabsTrigger>
+          </TabsList>
+
+          {/* ============================================================= */}
+          {/* TAB 1: RISK SUMMARY */}
+          {/* ============================================================= */}
+          <TabsContent value="summary" className="space-y-6">
+            {/* KPI Cards - 9 metrics in 3x3 grid */}
+            <div className="grid grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Firm P&L</div>
+                  <div className="text-2xl font-bold text-[var(--pnl-positive)]">+$1.04M</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Net Exposure</div>
+                  <div className="text-2xl font-bold">$5.2M</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Margin Used</div>
+                  <div className="text-2xl font-bold">47%</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm text-muted-foreground">VaR 95%</span>
+                    {regimeMultiplier !== 1 && (
+                      <Badge variant="secondary" className="text-[10px] h-4">×{regimeMultiplier.toFixed(1)}</Badge>
+                    )}
+                  </div>
+                  <div className="text-2xl font-bold text-amber-400">{formatCurrency(-totalVar95)}</div>
+                </CardContent>
+              </Card>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Card className="cursor-help">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm text-muted-foreground">ES 95%</span>
+                          <Info className="size-3 text-muted-foreground" />
+                          {regimeMultiplier !== 1 && (
+                            <Badge variant="secondary" className="text-[10px] h-4">×{regimeMultiplier.toFixed(1)}</Badge>
+                          )}
+                        </div>
+                        <div className="text-2xl font-bold text-amber-400">{formatCurrency(-totalES95)}</div>
+                      </CardContent>
+                    </Card>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[300px]">
+                    <p><strong>Expected Shortfall:</strong> Average loss in the worst 5% of scenarios. Also called CVaR (Conditional VaR).</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Active Alerts</div>
+                  <div className="text-2xl font-bold text-amber-400">3</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm text-muted-foreground">VaR 99%</span>
+                    {regimeMultiplier !== 1 && (
+                      <Badge variant="secondary" className="text-[10px] h-4">×{regimeMultiplier.toFixed(1)}</Badge>
+                    )}
+                  </div>
+                  <div className="text-2xl font-bold text-rose-400">{formatCurrency(-totalVar99)}</div>
+                </CardContent>
+              </Card>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Card className="cursor-help">
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm text-muted-foreground">ES 99%</span>
+                          <Info className="size-3 text-muted-foreground" />
+                          {regimeMultiplier !== 1 && (
+                            <Badge variant="secondary" className="text-[10px] h-4">×{regimeMultiplier.toFixed(1)}</Badge>
+                          )}
+                        </div>
+                        <div className="text-2xl font-bold text-rose-400">{formatCurrency(-totalES99)}</div>
+                      </CardContent>
+                    </Card>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[300px]">
+                    <p><strong>Expected Shortfall:</strong> Average loss in the worst 1% of scenarios. Also called CVaR (Conditional VaR).</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Kill Switches</div>
+                  <div className="text-2xl font-bold text-rose-400">1</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Strategy Risk Heatmap */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Strategy Risk Heatmap</CardTitle>
+                <CardDescription>Key risk metrics by strategy, color-coded by status</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {strategyRiskHeatmap.map((row) => (
+                    <div
+                      key={row.strategy}
+                      className={cn(
+                        "flex items-center justify-between p-3 rounded-lg border",
+                        row.status === "ok" && "border-border bg-muted/30",
+                        row.status === "warning" && "border-amber-500/50 bg-amber-500/10",
+                        row.status === "critical" && "border-rose-500/50 bg-rose-500/10"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={cn(
+                            "size-2 rounded-full",
+                            row.status === "ok" && "bg-emerald-500",
+                            row.status === "warning" && "bg-amber-500",
+                            row.status === "critical" && "bg-rose-500"
+                          )}
+                        />
+                        <span className="font-mono text-sm font-medium">{row.strategy}</span>
+                      </div>
+                      <div className="flex items-center gap-6 text-sm font-mono">
+                        {row.delta && <span>Delta: <strong>{row.delta}</strong></span>}
+                        {row.funding && <span>Funding: <strong>{row.funding}</strong></span>}
+                        {row.hf && <span>HF: <strong>{row.hf}</strong></span>}
+                        {row.inventory && <span>Inv: <strong>{row.inventory}</strong></span>}
+                        {row.spread && <span>Spread: <strong>{row.spread}</strong></span>}
+                        {row.gamma && <span>Gamma: <strong>{row.gamma}</strong></span>}
+                        {row.vega && <span>Vega: <strong>{row.vega}</strong></span>}
+                        {row.drawdown && <span>DD: <strong>{row.drawdown}</strong></span>}
+                        {row.var && <span>VaR: <strong>{row.var}</strong></span>}
+                        {row.edge && <span>Edge: <strong>{row.edge}</strong></span>}
+                        {row.exposure && <span>Exp: <strong>{row.exposure}</strong></span>}
+                        {row.clv && <span>CLV: <strong>{row.clv}</strong></span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Highest Utilization */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Highest Utilization First</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {sortedLimits.slice(0, 6).map((limit) => (
+                  <LimitBar
+                    key={limit.id}
+                    label={`${limit.name} (${limit.entity})`}
+                    value={limit.value}
+                    limit={limit.limit}
+                    unit={limit.unit}
+                    showStatus={false}
+                  />
+                ))}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ============================================================= */}
+          {/* TAB 2: VAR & STRESS TESTING */}
+          {/* ============================================================= */}
+          <TabsContent value="var" className="space-y-6">
+            {/* Section A: VaR Dashboard */}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-base">Component VaR — Marginal Contribution (95%)</CardTitle>
+                    <CardDescription>Top 8 positions ranked by marginal VaR contribution</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {["historical", "parametric", "monte_carlo", "filtered_historical"].map((method) => (
+                      <Button
+                        key={method}
+                        variant={varMethod === method ? "secondary" : "ghost"}
+                        size="sm"
+                        onClick={() => setVarMethod(method as typeof varMethod)}
+                        className="text-xs capitalize"
+                      >
+                        {method.replace("_", " ")}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[350px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={adjustedVarData}
+                      layout="vertical"
+                      margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis
+                        type="number"
+                        tickFormatter={(v) => formatCurrency(v)}
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                      />
+                      <YAxis
+                        type="category"
+                        dataKey="instrument"
+                        stroke="var(--muted-foreground)"
+                        fontSize={11}
+                        width={95}
+                      />
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "8px",
+                        }}
+                        formatter={(value: number, name: string, props: { payload: typeof adjustedVarData[0] }) => [
+                          `${formatCurrency(value)} (${props.payload.pct}%)`,
+                          `VaR 95% - ${props.payload.venue}`,
+                        ]}
+                      />
+                      <Bar dataKey="var95" radius={[0, 4, 4, 0]}>
+                        {adjustedVarData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={getAssetClassColor(entry.assetClass)} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex items-center gap-6 mt-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <span className="size-3 rounded" style={{ backgroundColor: "var(--surface-config)" }} />
+                    <span>DeFi</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="size-3 rounded" style={{ backgroundColor: "var(--surface-trading)" }} />
+                    <span>CeFi</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="size-3 rounded" style={{ backgroundColor: "var(--surface-markets)" }} />
+                    <span>TradFi</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="size-3 rounded" style={{ backgroundColor: "var(--surface-strategy)" }} />
+                    <span>Sports</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Section B: Stress Testing */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Stress Testing Scenarios</CardTitle>
+                <CardDescription>Historical stress scenarios applied to current portfolio</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Scenario</TableHead>
+                      <TableHead className="text-right">Multiplier</TableHead>
+                      <TableHead className="text-right">P&L Impact</TableHead>
+                      <TableHead className="text-right">VaR Impact</TableHead>
+                      <TableHead className="text-right">Positions Breaching</TableHead>
+                      <TableHead>Largest Single Loss</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stressScenarios.map((scenario) => (
+                      <TableRow key={scenario.name}>
+                        <TableCell className="font-medium">{scenario.name}</TableCell>
+                        <TableCell className="text-right font-mono">{scenario.multiplier}x</TableCell>
+                        <TableCell className="text-right">
+                          <span className="text-lg font-bold text-rose-400">
+                            {formatCurrency(scenario.pnlImpact)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right font-mono">{formatCurrency(scenario.varImpact)}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={scenario.positionsBreaching > 10 ? "destructive" : scenario.positionsBreaching > 5 ? "secondary" : "outline"}>
+                            {scenario.positionsBreaching}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-sm text-muted-foreground">{scenario.largestLoss}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* Section C: Regime Multiplier */}
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Regime Stress Factor</span>
+                      <span className="font-mono font-bold">{regimeMultiplier.toFixed(1)}x</span>
+                    </div>
+                    <Slider
+                      value={[regimeMultiplier]}
+                      onValueChange={([v]) => setRegimeMultiplier(v)}
+                      min={0.5}
+                      max={3.0}
+                      step={0.1}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                      <span>0.5x</span>
+                      <span>3.0x</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-[300px]">
+                    All VaR figures are multiplied by this factor. Increase during stress periods.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ============================================================= */}
+          {/* TAB 3: EXPOSURE ATTRIBUTION */}
+          {/* ============================================================= */}
+          <TabsContent value="exposure" className="space-y-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-base">
+                      Exposure Attribution ({filteredExposureRows.length} of 23 Risk Types)
+                    </CardTitle>
+                    <CardDescription>Grouped by First Order, Second Order, Structural, Operational, Domain-Specific</CardDescription>
+                  </div>
+                  {/* Item 1: Strategy Risk Filter */}
+                  <div className="flex flex-col items-end gap-1">
+                    <Select value={riskFilterStrategy} onValueChange={setRiskFilterStrategy}>
+                      <SelectTrigger className="w-[280px]">
+                        <SelectValue placeholder="All strategies (23 risk types)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All strategies (23 risk types)</SelectItem>
+                        {MOCK_STRATEGIES.map(s => (
+                          <SelectItem key={s.id} value={s.archetype}>
+                            {s.name} ({s.strategyIdPattern})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {riskFilterStrategy !== "all" && selectedStrategy && (
+                      <p className="text-xs text-muted-foreground">
+                        Showing {filteredExposureRows.length} of 23 risk types relevant to {selectedStrategy.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {Object.entries(groupedExposure).map(([category, rows]) => (
+                  <Collapsible
+                    key={category}
+                    open={expandedCategories.includes(category)}
+                    onOpenChange={() => toggleCategory(category)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-between p-3 h-auto hover:bg-muted/50">
+                        <span className="font-medium capitalize">{category.replace("_", " ")} ({rows.length})</span>
+                        {expandedCategories.includes(category) ? (
+                          <ChevronDown className="size-4" />
+                        ) : (
+                          <ChevronRight className="size-4" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-muted/30">
+                            <TableHead>Component</TableHead>
+                            <TableHead className="text-right">P&L</TableHead>
+                            <TableHead className="text-right">Exposure</TableHead>
+                            <TableHead className="text-right">Limit</TableHead>
+                            <TableHead className="text-right">Utilization</TableHead>
+                            <TableHead>Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {rows.map((row) => {
+                            const status = getStatusFromUtil(row.utilization)
+                            return (
+                              <TableRow key={row.component}>
+                                <TableCell className="font-medium">{row.component}</TableCell>
+                                <TableCell className="text-right"><PnLValue value={row.pnl} size="sm" /></TableCell>
+                                <TableCell className="text-right font-mono tabular-nums">
+                                  {typeof row.exposure === "number"
+                                    ? row.exposure >= 1000000 ? `$${(row.exposure / 1000000).toFixed(1)}m`
+                                    : row.exposure >= 1000 ? `$${(row.exposure / 1000).toFixed(0)}k`
+                                    : row.exposure.toFixed(2)
+                                    : row.exposure}
+                                </TableCell>
+                                <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
+                                  {typeof row.limit === "number"
+                                    ? row.limit >= 1000000 ? `$${(row.limit / 1000000).toFixed(0)}m`
+                                    : row.limit >= 1000 ? `$${(row.limit / 1000).toFixed(0)}k`
+                                    : row.limit.toFixed(2)
+                                    : row.limit}
+                                </TableCell>
+                                <TableCell className="text-right font-mono tabular-nums">{row.utilization.toFixed(0)}%</TableCell>
+                                <TableCell><StatusBadge status={status} showDot={true} /></TableCell>
+                              </TableRow>
+                            )
+                          })}
+                        </TableBody>
+                      </Table>
+                    </CollapsibleContent>
+                  </Collapsible>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Exposure Time Series */}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Exposure Time Series (Top 3)</CardTitle>
+                  <div className="flex items-center gap-1">
+                    {(["1W", "1M", "3M"] as const).map((period) => (
+                      <Button
+                        key={period}
+                        variant={exposurePeriod === period ? "secondary" : "ghost"}
+                        size="sm"
+                        onClick={() => setExposurePeriod(period)}
+                        className="text-xs"
+                      >
+                        {period}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsLineChart data={exposureTimeSeries.slice(exposurePeriod === "1W" ? -7 : exposurePeriod === "1M" ? -30 : -90)}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={11} />
+                      <YAxis stroke="var(--muted-foreground)" fontSize={11} tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Legend />
+                      <Line type="monotone" dataKey="delta" stroke="#3b82f6" name="Delta" strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="funding" stroke="#22c55e" name="Funding" strokeWidth={2} dot={false} />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ============================================================= */}
+          {/* TAB 4: GREEKS DECOMPOSITION */}
+          {/* ============================================================= */}
+          <TabsContent value="greeks" className="space-y-6">
+            {/* Portfolio Greeks Summary */}
+            <div className="grid grid-cols-5 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-sm text-muted-foreground">Portfolio Delta</div>
+                  <div className="text-2xl font-bold font-mono">{portfolioGreeks.delta.toFixed(2)}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-sm text-muted-foreground">Gamma</div>
+                  <div className="text-2xl font-bold font-mono">{portfolioGreeks.gamma.toFixed(3)}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-sm text-muted-foreground">Vega</div>
+                  <div className="text-2xl font-bold font-mono">${portfolioGreeks.vega.toLocaleString()}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-sm text-muted-foreground">Theta</div>
+                  <div className="text-2xl font-bold font-mono text-rose-400">${portfolioGreeks.theta.toLocaleString()}/day</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-sm text-muted-foreground">Rho</div>
+                  <div className="text-2xl font-bold font-mono">${portfolioGreeks.rho.toLocaleString()}</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Per-Position Greeks Table */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Per-Position Greeks</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Instrument</TableHead>
+                      <TableHead>Venue</TableHead>
+                      <TableHead className="text-right">Qty</TableHead>
+                      <TableHead className="text-right">Delta</TableHead>
+                      <TableHead className="text-right">Gamma</TableHead>
+                      <TableHead className="text-right">Vega</TableHead>
+                      <TableHead className="text-right">Theta</TableHead>
+                      <TableHead className="text-right">Rho</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {positionGreeks.map((pos) => (
+                      <TableRow key={pos.instrument}>
+                        <TableCell className="font-medium">{pos.instrument}</TableCell>
+                        <TableCell className="text-muted-foreground">{pos.venue}</TableCell>
+                        <TableCell className="text-right font-mono">{pos.qty}</TableCell>
+                        <TableCell className="text-right font-mono">{pos.delta.toFixed(2)}</TableCell>
+                        <TableCell className="text-right font-mono">{pos.gamma.toFixed(3)}</TableCell>
+                        <TableCell className="text-right font-mono">${pos.vega.toLocaleString()}</TableCell>
+                        <TableCell className="text-right font-mono text-rose-400">${pos.theta.toLocaleString()}</TableCell>
+                        <TableCell className="text-right font-mono">${pos.rho}</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow className="bg-muted/30 font-bold">
+                      <TableCell>Portfolio Total</TableCell>
+                      <TableCell></TableCell>
+                      <TableCell></TableCell>
+                      <TableCell className="text-right font-mono">{portfolioGreeks.delta.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-mono">{portfolioGreeks.gamma.toFixed(3)}</TableCell>
+                      <TableCell className="text-right font-mono">${portfolioGreeks.vega.toLocaleString()}</TableCell>
+                      <TableCell className="text-right font-mono text-rose-400">${portfolioGreeks.theta.toLocaleString()}</TableCell>
+                      <TableCell className="text-right font-mono">${portfolioGreeks.rho}</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* Greeks Time Series */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Greeks Time Series (30 days)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[250px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RechartsLineChart data={greeksTimeSeries}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={11} />
+                      <YAxis yAxisId="left" stroke="var(--muted-foreground)" fontSize={11} />
+                      <YAxis yAxisId="right" orientation="right" stroke="var(--muted-foreground)" fontSize={11} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "8px",
+                        }}
+                      />
+                      <Legend />
+                      <Line yAxisId="left" type="monotone" dataKey="delta" stroke="#3b82f6" name="Delta" strokeWidth={2} dot={false} />
+                      <Line yAxisId="left" type="monotone" dataKey="gamma" stroke="#f59e0b" name="Gamma" strokeWidth={2} dot={false} />
+                      <Line yAxisId="right" type="monotone" dataKey="vega" stroke="#22c55e" name="Vega ($)" strokeWidth={2} dot={false} />
+                    </RechartsLineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Second-Order Risks */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Second-Order Risks (Options MM)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-4 rounded-lg bg-muted/30 text-center">
+                    <div className="text-sm text-muted-foreground">Volga (d²V/dσ²)</div>
+                    <div className="text-xl font-bold font-mono">${secondOrderRisks.volga.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">per 1% vol move</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/30 text-center">
+                    <div className="text-sm text-muted-foreground">Vanna (d²V/dS·dσ)</div>
+                    <div className="text-xl font-bold font-mono text-rose-400">${secondOrderRisks.vanna.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">per 1% spot × 1% vol</div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/30 text-center">
+                    <div className="text-sm text-muted-foreground">Slide (vol decay)</div>
+                    <div className="text-xl font-bold font-mono text-rose-400">${secondOrderRisks.slide.toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">per day</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ============================================================= */}
+          {/* TAB 5: MARGIN */}
+          {/* ============================================================= */}
+          <TabsContent value="margin" className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              {/* CeFi Margin */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">CeFi Margin by Venue</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {sortedLimits.filter((l) => l.category === "margin").map((limit) => (
+                    <LimitBar key={limit.id} label={limit.entity} value={limit.value} limit={limit.limit} unit={limit.unit} />
+                  ))}
+                </CardContent>
+              </Card>
+
+              {/* TradFi SPAN Margin */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">SPAN Margin Summary — IBKR</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Initial Margin</span>
+                    <span className="font-mono font-medium">$180,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Maintenance Margin</span>
+                    <span className="font-mono font-medium">$135,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Cross-Margin Offset</span>
+                    <span className="font-mono font-medium text-emerald-400">-$22,000</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2">
+                    <span className="font-medium">Net Margin Required</span>
+                    <span className="font-mono font-bold">$158,000</span>
+                  </div>
+                  <div className="mt-2">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm text-muted-foreground">Margin Utilization</span>
+                      <span className="text-sm font-mono">79%</span>
+                    </div>
+                    <Progress value={79} className="h-2" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* DeFi Health Factor */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">DeFi Health Factor (Aave v3)</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {sortedLimits.filter((l) => l.category === "ltv").map((limit) => (
+                  <LimitBar key={limit.id} label={`${limit.name} (${limit.entity})`} value={limit.value} limit={limit.limit} unit={limit.unit} />
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Health Factor Time Series */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Health Factor Time Series (7 days)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[180px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={hfTimeSeries}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="day" stroke="var(--muted-foreground)" fontSize={11} tickFormatter={(v) => `Day ${v}`} />
+                      <YAxis stroke="var(--muted-foreground)" fontSize={11} domain={[1, 2]} />
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "8px",
+                        }}
+                        formatter={(value: number) => [value.toFixed(2), "Health Factor"]}
+                      />
+                      <ReferenceLine y={1.0} stroke="var(--destructive)" strokeDasharray="5 5" label={{ value: "Liquidation", fill: "var(--destructive)", fontSize: 10 }} />
+                      <ReferenceLine y={1.5} stroke="var(--warning)" strokeDasharray="5 5" label={{ value: "Deleverage", fill: "var(--warning)", fontSize: 10 }} />
+                      <Area type="monotone" dataKey="hf" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} strokeWidth={2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Distance to Liquidation */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Distance to Liquidation</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Venue</TableHead>
+                      <TableHead>HF / Margin</TableHead>
+                      <TableHead className="text-right">Dist. to Liq.</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {distanceToLiquidation.map((row) => (
+                      <TableRow key={row.venue}>
+                        <TableCell className="font-medium">{row.venue}</TableCell>
+                        <TableCell className="font-mono">{row.metric}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge
+                            variant={row.distToLiq > 20 ? "default" : row.distToLiq > 10 ? "secondary" : "destructive"}
+                            className={cn(
+                              "font-mono",
+                              row.distToLiq > 20 && "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30",
+                              row.distToLiq <= 20 && row.distToLiq > 10 && "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30"
+                            )}
+                          >
+                            {row.distToLiq.toFixed(1)}%
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={cn(
+                              "size-2 rounded-full inline-block",
+                              row.distToLiq > 20 && "bg-emerald-500",
+                              row.distToLiq <= 20 && row.distToLiq > 10 && "bg-amber-500",
+                              row.distToLiq <= 10 && "bg-rose-500"
+                            )}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ============================================================= */}
+          {/* TAB 6: TERM STRUCTURE */}
+          {/* ============================================================= */}
+          <TabsContent value="term" className="space-y-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Exposure by Maturity Bucket</CardTitle>
+                <CardDescription>DeFi/CeFi perpetuals classified as Overnight (8h funding settlement)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[350px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={termStructureData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="bucket" stroke="var(--muted-foreground)" fontSize={11} />
+                      <YAxis stroke="var(--muted-foreground)" fontSize={11} tickFormatter={(v) => `$${(v / 1000000).toFixed(1)}M`} />
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "8px",
+                        }}
+                        formatter={(value: number) => [formatCurrency(value)]}
+                      />
+                      <Legend />
+                      <Bar dataKey="defi" stackId="a" fill="var(--surface-config)" name="DeFi" />
+                      <Bar dataKey="cefi" stackId="a" fill="var(--surface-trading)" name="CeFi" />
+                      <Bar dataKey="tradfi" stackId="a" fill="var(--surface-markets)" name="TradFi" />
+                      <Bar dataKey="sports" stackId="a" fill="var(--surface-strategy)" name="Sports" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="mt-4 p-3 rounded-lg bg-muted/30 text-sm text-muted-foreground">
+                  <strong>Note:</strong> DeFi/CeFi perpetuals classified as Overnight (8h funding settlement).
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ============================================================= */}
+          {/* TAB 7: LIMITS */}
+          {/* ============================================================= */}
+          <TabsContent value="limits" className="space-y-6">
+            {/* Item 2: Breadcrumb for selected hierarchy node */}
+            {selectedNode && selectedHierarchyNode && (
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <span className="text-sm font-medium">Scope:</span>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  {mockLimitsHierarchy
+                    .filter(l => l.level < selectedHierarchyNode.level)
+                    .slice(0, selectedHierarchyNode.level)
+                    .map((parent, i) => (
+                      <React.Fragment key={parent.id}>
+                        <span>{parent.entity}</span>
+                        <ChevronRight className="size-3" />
+                      </React.Fragment>
+                    ))}
+                  <span className="font-medium text-foreground">{selectedNode}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="ml-auto h-6 px-2 text-xs"
+                  onClick={() => setSelectedNode(null)}
+                >
+                  <X className="size-3 mr-1" />
+                  Clear filter
+                </Button>
+              </div>
+            )}
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Full Limit Hierarchy (6 Levels)</CardTitle>
+                <CardDescription>Click a row to filter the entire risk page to that scope</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Entity</TableHead>
+                      <TableHead>Level</TableHead>
+                      <TableHead className="text-right">Exposure</TableHead>
+                      <TableHead className="text-right">VaR 95%</TableHead>
+                      <TableHead className="text-right">Utilization</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockLimitsHierarchy.slice(0, 6).map((limit) => {
+                      const util = getUtilization(limit.value, limit.limit)
+                      const status = getStatusFromUtil(util)
+                      const indent = limit.level * 16
+                      const isLeaf = limit.level === 5
+                      const isSelected = selectedNode === limit.entity
+                      
+                      return (
+                        <TableRow 
+                          key={limit.id} 
+                          className={cn(
+                            "cursor-pointer hover:bg-muted/50",
+                            isSelected && "bg-primary/5 border-l-2 border-primary"
+                          )}
+                          onClick={() => setSelectedNode(isSelected ? null : limit.entity)}
+                        >
+                          <TableCell>
+                            <div className="flex items-center" style={{ paddingLeft: `${indent}px` }}>
+                              {limit.level > 0 && (
+                                <span className="text-muted-foreground mr-2">└</span>
+                              )}
+                              <span className={cn("font-medium", isLeaf && "text-muted-foreground")}>{limit.entity}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="capitalize text-muted-foreground text-sm">{limit.entityType}</TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">
+                            {formatCurrency(limit.value)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
+                            {limit.var95 ? formatCurrency(limit.var95) : "—"}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">{util.toFixed(0)}%</TableCell>
+                          <TableCell><StatusBadge status={status} showDot={true} /></TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* All Limits Detail */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">All Limits Detail</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Level</TableHead>
+                      <TableHead>Entity</TableHead>
+                      <TableHead>Limit Type</TableHead>
+                      <TableHead className="text-right">Value</TableHead>
+                      <TableHead className="text-right">Limit</TableHead>
+                      <TableHead className="text-right">Utilization</TableHead>
+                      <TableHead>Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedLimits.map((limit) => {
+                      const util = getUtilization(limit.value, limit.limit)
+                      const status = getStatusFromUtil(util)
+                      return (
+                        <TableRow key={limit.id}>
+                          <TableCell className="capitalize text-muted-foreground">{limit.entityType}</TableCell>
+                          <TableCell className="font-medium">{limit.entity}</TableCell>
+                          <TableCell>{limit.name}</TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">
+                            {limit.unit === "$" ? `$${(limit.value / 1000000).toFixed(2)}m`
+                              : limit.unit === "%" ? `${limit.value}%`
+                              : limit.unit === "x" ? `${limit.value}x`
+                              : limit.value.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
+                            {limit.unit === "$" ? `$${(limit.limit / 1000000).toFixed(0)}m`
+                              : limit.unit === "%" ? `${limit.limit}%`
+                              : limit.unit === "x" ? `${limit.limit}x`
+                              : limit.limit.toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">{util.toFixed(0)}%</TableCell>
+                          <TableCell><StatusBadge status={status} showDot={true} /></TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </RoleLayout>
+  )
+}

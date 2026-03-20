@@ -168,7 +168,7 @@ export default function ServiceSubscriptionPage() {
                 <p className="text-xs text-red-400/80 mt-1">Internal operations — not visible to clients</p>
               )}
             </div>
-            <Link href="/overview">
+            <Link href="/service/overview">
               <Button variant="outline" size="sm">Back to Hub</Button>
             </Link>
           </div>
@@ -184,7 +184,7 @@ export default function ServiceSubscriptionPage() {
                 <p className="text-xs text-muted-foreground">
                   Access tier includes {service.label.toLowerCase()} with org-scoped data.
                   {" "}
-                  <Link href="/overview" className="text-primary hover:underline">Manage subscription</Link>
+                  <Link href="/service/overview" className="text-primary hover:underline">Manage subscription</Link>
                 </p>
               </div>
             </div>

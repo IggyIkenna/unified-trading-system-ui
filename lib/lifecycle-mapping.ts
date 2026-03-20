@@ -1,9 +1,9 @@
 /**
  * Lifecycle Mapping Model
- * 
+ *
  * Maps routes to lifecycle stages and domain lanes.
  * This is the foundation for the unified navigation shell.
- * 
+ *
  * Three conceptual layers (not collapsible):
  * 1. Lifecycle: How the platform operates (horizontal flow)
  * 2. Domain Lanes: What moves through the system (vertical swim lanes)
@@ -11,7 +11,7 @@
  */
 
 // Lifecycle stages - the horizontal flow through the platform
-export type LifecycleStage = 
+export type LifecycleStage =
   | "acquire"   // Data acquisition, coverage, instruments
   | "build"     // Research, ML, strategy development, backtesting
   | "promote"   // Candidate review, config diff, approval queue
@@ -21,7 +21,7 @@ export type LifecycleStage =
   | "report"    // Client reports, invoices, regulatory, analytics
 
 // Domain lanes - vertical swim lanes moving through lifecycle
-export type DomainLane = 
+export type DomainLane =
   | "data"       // Data coverage, quality, instruments
   | "ml"         // Machine learning models, features, signals
   | "strategy"   // Strategy development, backtesting, simulation
@@ -129,74 +129,69 @@ export const domainLanes: Record<DomainLane, {
   },
 }
 
-// Route to lifecycle mapping
-// Primary stage is the main lifecycle context
-// Secondary stage captures dual-purpose routes
+// Route to lifecycle mapping — all platform routes use /service/{service}/... prefix
 export const routeMappings: RouteMapping[] = [
-  // ACQUIRE stage routes
-  { path: "/markets", label: "Markets", primaryStage: "acquire", lanes: ["data"], requiresAuth: true },
-  { path: "/markets/pnl", label: "P&L Analysis", primaryStage: "observe", secondaryStage: "acquire", lanes: ["data", "capital"], requiresAuth: true },
-  { path: "/strategies/instruments", label: "Instruments", primaryStage: "acquire", lanes: ["data"], requiresAuth: true },
-  
-  // BUILD stage routes - ML Lab
-  { path: "/ml", label: "ML Overview", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/overview", label: "ML Dashboard", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/experiments", label: "Experiments", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/training", label: "Training", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/features", label: "Features", primaryStage: "build", lanes: ["ml", "data"], requiresAuth: true },
-  { path: "/ml/validation", label: "Validation", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/registry", label: "Model Registry", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/monitoring", label: "Model Monitoring", primaryStage: "observe", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/deploy", label: "Model Deploy", primaryStage: "promote", lanes: ["ml"], requiresAuth: true },
-  { path: "/ml/governance", label: "ML Governance", primaryStage: "manage", lanes: ["ml", "compliance"], requiresAuth: true },
-  
-  // BUILD stage routes - Strategy Lab
-  { path: "/strategy-platform/overview", label: "Strategy Lab", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/strategy-platform/backtests", label: "Backtests", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/strategy-platform/compare", label: "Compare", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/strategy-platform/results", label: "Results", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/strategy-platform/heatmap", label: "Heatmap", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/strategy-platform/candidates", label: "Strategy Candidates", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
-  { path: "/strategy-platform/handoff", label: "Strategy Handoff", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
-  
-  // BUILD stage routes - Execution Lab
-  { path: "/execution/overview", label: "Execution Lab", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
-  { path: "/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
-  { path: "/execution/venues", label: "Venues", primaryStage: "build", secondaryStage: "acquire", lanes: ["execution", "data"], requiresAuth: true },
-  { path: "/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
-  { path: "/execution/benchmarks", label: "Benchmarks", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
-  { path: "/execution/candidates", label: "Execution Candidates", primaryStage: "promote", lanes: ["execution"], requiresAuth: true },
-  { path: "/execution/handoff", label: "Execution Handoff", primaryStage: "promote", lanes: ["execution"], requiresAuth: true },
-  
-  // PROMOTE stage routes
+  // ACQUIRE stage — Data Service
+  { path: "/service/data/overview", label: "Data", primaryStage: "acquire", lanes: ["data"], description: "Pipeline status, venue coverage, freshness", requiresAuth: true },
+  { path: "/service/data/markets", label: "Markets", primaryStage: "acquire", lanes: ["data"], requiresAuth: true },
+
+  // BUILD stage — Research & Backtesting Service
+  { path: "/service/research/overview", label: "Research & Backtesting", primaryStage: "build", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research", requiresAuth: true },
+  { path: "/service/research/ml", label: "ML Models & Training", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/overview", label: "ML Dashboard", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/experiments", label: "Experiments", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/training", label: "Training", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/features", label: "Features", primaryStage: "build", lanes: ["ml", "data"], requiresAuth: true },
+  { path: "/service/research/ml/validation", label: "Validation", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/registry", label: "Model Registry", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/monitoring", label: "Model Monitoring", primaryStage: "observe", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/deploy", label: "Model Deploy", primaryStage: "promote", lanes: ["ml"], requiresAuth: true },
+  { path: "/service/research/ml/governance", label: "ML Governance", primaryStage: "manage", lanes: ["ml", "compliance"], requiresAuth: true },
+  { path: "/service/research/strategy/backtests", label: "Backtests", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/service/research/strategy/compare", label: "Compare", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/service/research/strategy/results", label: "Results", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/service/research/strategy/heatmap", label: "Heatmap", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/service/research/strategy/candidates", label: "Strategy Candidates", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
+  { path: "/service/research/strategy/handoff", label: "Strategy Handoff", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
+  { path: "/service/research/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+  { path: "/service/research/execution/venues", label: "Venues", primaryStage: "build", secondaryStage: "acquire", lanes: ["execution", "data"], requiresAuth: true },
+  { path: "/service/research/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
+  { path: "/service/research/execution/benchmarks", label: "Benchmarks", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+
+  // PROMOTE stage
   { path: "/config", label: "Config", primaryStage: "promote", secondaryStage: "manage", lanes: ["strategy", "execution"], requiresAuth: true },
-  
-  // RUN stage routes
-  { path: "/overview", label: "Overview", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
-  { path: "/trading", label: "Trading", primaryStage: "run", lanes: ["execution"], requiresAuth: true },
-  { path: "/positions", label: "Positions", primaryStage: "run", secondaryStage: "observe", lanes: ["execution", "capital"], requiresAuth: true },
-  { path: "/strategies", label: "Strategies", primaryStage: "run", secondaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  
-  // OBSERVE stage routes
-  { path: "/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
-  { path: "/alerts", label: "Alerts", primaryStage: "observe", lanes: ["strategy", "execution", "ml"], requiresAuth: true },
-  { path: "/ops", label: "Operations", primaryStage: "observe", secondaryStage: "manage", lanes: ["execution", "data"], requiresAuth: true },
-  { path: "/ops/jobs", label: "Jobs", primaryStage: "observe", lanes: ["data", "ml"], requiresAuth: true },
-  { path: "/ops/services", label: "Services", primaryStage: "observe", lanes: ["data", "execution"], requiresAuth: true },
+
+  // RUN stage — Trading Service
+  { path: "/service/trading/overview", label: "Trading", primaryStage: "run", lanes: ["execution"], description: "Live P&L, order entry, charts", requiresAuth: true },
+  { path: "/service/trading/positions", label: "Positions", primaryStage: "run", secondaryStage: "observe", lanes: ["execution", "capital"], requiresAuth: true },
+  { path: "/service/trading/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
+  { path: "/service/trading/alerts", label: "Alerts", primaryStage: "observe", lanes: ["strategy", "execution", "ml"], requiresAuth: true },
+
+  // Execution Service
+  { path: "/service/execution/overview", label: "Execution Analytics", primaryStage: "run", lanes: ["execution"], description: "Live execution analytics", requiresAuth: true },
+  { path: "/service/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+  { path: "/service/execution/venues", label: "Venues", primaryStage: "build", lanes: ["execution", "data"], requiresAuth: true },
+  { path: "/service/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
+
+  // Service Hub
+  { path: "/service/overview", label: "Service Hub", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
+
+  // OBSERVE stage
   { path: "/health", label: "Health", primaryStage: "observe", lanes: ["data", "execution"], requiresAuth: true },
-  
-  // MANAGE stage routes
+  { path: "/ops", label: "Operations", primaryStage: "observe", secondaryStage: "manage", lanes: ["execution", "data"], requiresAuth: true },
+
+  // MANAGE stage
   { path: "/manage/clients", label: "Clients", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
   { path: "/manage/mandates", label: "Mandates", primaryStage: "manage", lanes: ["capital", "compliance"], requiresAuth: true },
   { path: "/manage/fees", label: "Fees", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
   { path: "/manage/users", label: "Users", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
   { path: "/admin", label: "Admin", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
   { path: "/compliance", label: "Compliance", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
-  
-  // REPORT stage routes
-  { path: "/reports", label: "Reports", primaryStage: "report", lanes: ["capital", "compliance"], requiresAuth: true },
-  { path: "/executive", label: "Executive", primaryStage: "report", secondaryStage: "observe", lanes: ["capital", "strategy"], requiresAuth: true },
-  
+
+  // REPORT stage — Reports Service
+  { path: "/service/reports/overview", label: "Reports", primaryStage: "report", lanes: ["capital", "compliance"], requiresAuth: true },
+  { path: "/service/reports/executive", label: "Executive", primaryStage: "report", secondaryStage: "observe", lanes: ["capital", "strategy"], requiresAuth: true },
+
   // Public/commercial routes (no auth required)
   { path: "/", label: "Home", primaryStage: "acquire", lanes: ["data"], requiresAuth: false },
   { path: "/services/data", label: "Data Service", primaryStage: "acquire", lanes: ["data"], requiresAuth: false },
@@ -212,18 +207,18 @@ export function getRouteMapping(path: string): RouteMapping | undefined {
   // First try exact match
   const exactMatch = routeMappings.find(m => m.path === path)
   if (exactMatch) return exactMatch
-  
-  // Try prefix match (for dynamic routes like /strategies/[id])
+
+  // Try prefix match (for dynamic routes like /service/research/ml/experiments/[id])
   const prefixMatch = routeMappings
     .filter(m => path.startsWith(m.path + "/"))
     .sort((a, b) => b.path.length - a.path.length)[0]
-  
+
   return prefixMatch
 }
 
 // Get all routes for a lifecycle stage
 export function getRoutesForStage(stage: LifecycleStage): RouteMapping[] {
-  return routeMappings.filter(m => 
+  return routeMappings.filter(m =>
     m.primaryStage === stage || m.secondaryStage === stage
   )
 }
@@ -243,30 +238,56 @@ export interface LifecycleNavItem {
     path: string
     label: string
     lanes: DomainLane[]
+    description?: string
   }[]
 }
 
-// Build navigation structure from mappings
+// Build navigation structure — simplified: one primary service link per stage
 export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavItem[] {
   const stages: LifecycleStage[] = ["acquire", "build", "promote", "run", "observe", "manage", "report"]
-  
+
+  // Service-centric nav: each stage shows its primary service entry point
+  const stageServiceMap: Record<LifecycleStage, { path: string; label: string; lanes: DomainLane[]; description?: string }[]> = {
+    acquire: [
+      { path: "/service/data/overview", label: "Data", lanes: ["data"], description: "Pipeline status, venue coverage, freshness" },
+      { path: "/service/data/markets", label: "Markets", lanes: ["data"], description: "OHLCV candles, order book snapshots" },
+    ],
+    build: [
+      { path: "/service/research/overview", label: "Research & Backtesting", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research" },
+    ],
+    promote: [
+      { path: "/service/research/strategy/candidates", label: "Strategy Candidates", lanes: ["strategy"], description: "Review and promote winning strategies" },
+    ],
+    run: [
+      { path: "/service/trading/overview", label: "Trading", lanes: ["execution"], description: "Live P&L, order entry, position management" },
+      { path: "/service/execution/overview", label: "Execution Analytics", lanes: ["execution"], description: "Live execution analytics and venue status" },
+    ],
+    observe: [
+      { path: "/service/trading/risk", label: "Risk", lanes: ["strategy", "execution", "capital"], description: "Exposure, VaR, Greeks, risk limits" },
+      { path: "/service/trading/alerts", label: "Alerts", lanes: ["strategy", "execution", "ml"], description: "Alert management and notifications" },
+      { path: "/health", label: "Health", lanes: ["data", "execution"], description: "Service health dashboard" },
+    ],
+    manage: [
+      { path: "/admin", label: "Admin", lanes: ["compliance"] },
+      { path: "/manage/clients", label: "Clients", lanes: ["capital"] },
+      { path: "/compliance", label: "Compliance", lanes: ["compliance"] },
+    ],
+    report: [
+      { path: "/service/reports/overview", label: "Reports", lanes: ["capital", "compliance"], description: "P&L attribution, settlement, reconciliation" },
+      { path: "/service/reports/executive", label: "Executive Dashboard", lanes: ["capital", "strategy"] },
+    ],
+  }
+
   return stages.map(stage => {
     const stageInfo = lifecycleStages[stage]
-    const routes = routeMappings.filter(m => 
-      m.primaryStage === stage && 
-      (authRequired ? m.requiresAuth : !m.requiresAuth || m.requiresAuth === undefined)
-    )
-    
+    const items = stageServiceMap[stage] || []
+
     return {
       stage,
       label: stageInfo.label,
       icon: stageInfo.icon,
       color: stageInfo.color,
-      items: routes.map(r => ({
-        path: r.path,
-        label: r.label,
-        lanes: r.lanes,
-      })),
+      items: authRequired ? items : [],
     }
   }).filter(nav => nav.items.length > 0)
 }

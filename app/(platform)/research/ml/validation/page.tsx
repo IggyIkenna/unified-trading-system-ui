@@ -179,7 +179,7 @@ export default function ValidationPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/ml/overview">
+              <Link href="/service/research/ml/overview">
                 <Button variant="ghost" size="icon">
                   <ArrowLeft className="size-4" />
                 </Button>

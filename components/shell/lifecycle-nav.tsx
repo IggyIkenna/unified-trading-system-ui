@@ -85,34 +85,27 @@ export function LifecycleNav({
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true)
 
-  // Internal-only routes (ops pages)
-  const opsRoutes = ["/admin", "/ops", "/devops", "/manage", "/compliance", "/config", "/engagement", "/internal"]
-  // Routes requiring specific entitlements
-  const mlRoutes = ["/ml"]
-  const executionRoutes = ["/execution"]
-  const strategyRoutes = ["/strategy-platform", "/strategies"]
+  // Internal-only routes (ops pages) — hide completely from non-internal
+  const opsRoutes = ["/admin", "/ops", "/devops", "/manage", "/compliance", "/config"]
 
+  // Check if an item is accessible (unlocked) for the current user
+  const isItemAccessible = (path: string): boolean => {
+    if (opsRoutes.some(r => path === r || path.startsWith(r + "/"))) return isInternal()
+    if (path.startsWith("/service/research")) return hasEntitlement("strategy-full") || hasEntitlement("ml-full")
+    if (path.startsWith("/service/trading") || path.startsWith("/service/execution")) return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
+    if (path.startsWith("/service/reports")) return hasEntitlement("reporting")
+    return true
+  }
+
+  // Build nav items — keep locked items visible (except ops), mark them as locked
   const navItems = allNavItems.map(nav => ({
     ...nav,
-    items: nav.items.filter(item => {
-      // Hide ops routes from non-internal users
-      if (opsRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return isInternal()
-      }
-      // Hide ML routes if no ml-full entitlement
-      if (mlRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return hasEntitlement("ml-full")
-      }
-      // Hide execution routes if no execution entitlement
-      if (executionRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
-      }
-      // Hide strategy routes if no strategy entitlement
-      if (strategyRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return hasEntitlement("strategy-full")
-      }
-      return true
-    }),
+    items: nav.items
+      .filter(item => !opsRoutes.some(r => item.path === r || item.path.startsWith(r + "/")) || isInternal())
+      .map(item => ({
+        ...item,
+        locked: !isItemAccessible(item.path),
+      })),
   })).filter(nav => nav.items.length > 0)
   
   // Get current route mapping
@@ -180,6 +173,26 @@ export function LifecycleNav({
                     <DropdownMenuSeparator />
                     {nav.items.map((item) => {
                       const itemActive = pathname === item.path || pathname.startsWith(item.path + "/")
+                      if (item.locked) {
+                        // Locked item — visible but not clickable, with upgrade hint
+                        return (
+                          <DropdownMenuItem
+                            key={item.path}
+                            asChild
+                          >
+                            <Link
+                              href={`/service/${item.path.split("/service/")[1]?.split("/")[0] || "overview"}`}
+                              className="flex items-center justify-between opacity-50 cursor-not-allowed"
+                              title="Not part of your subscription — upgrade to access"
+                            >
+                              <span>{item.label}</span>
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
+                                Upgrade
+                              </Badge>
+                            </Link>
+                          </DropdownMenuItem>
+                        )
+                      }
                       return (
                         <DropdownMenuItem key={item.path} asChild>
                           <Link

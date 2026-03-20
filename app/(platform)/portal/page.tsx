@@ -158,7 +158,7 @@ export default function ClientPortalLanding() {
           </nav>
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" asChild>
-              <Link href="/overview">Service Hub</Link>
+              <Link href="/service/overview">Service Hub</Link>
             </Button>
           </div>
         </div>
@@ -182,7 +182,7 @@ export default function ClientPortalLanding() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" asChild>
-                <Link href="/overview">
+                <Link href="/service/overview">
                   Go to Service Hub
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
