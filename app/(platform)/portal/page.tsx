@@ -157,11 +157,8 @@ export default function ClientPortalLanding() {
             <Link href="/portal/contact" className="text-sm text-muted-foreground hover:text-foreground">Contact</Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/signup">Get Started</Link>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/overview">Service Hub</Link>
             </Button>
           </div>
         </div>
@@ -185,8 +182,8 @@ export default function ClientPortalLanding() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" asChild>
-                <Link href="/signup">
-                  Get Started
+                <Link href="/overview">
+                  Go to Service Hub
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
