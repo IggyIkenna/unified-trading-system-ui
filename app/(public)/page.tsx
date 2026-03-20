@@ -57,7 +57,7 @@ const services = [
       { label: "Interface", value: "NL Agent" },
     ],
     features: ["No-Code Web UI", "Autonomous Agent Interface", "Cross-Asset Simulation", "Full Trade Records"],
-    pricing: "From £8,000/mo",
+    pricing: "Contact us",
     href: "/services/backtesting",
   },
   {
@@ -75,7 +75,7 @@ const services = [
       { label: "Deployment", value: "Turnkey" },
     ],
     features: ["Full Platform Access", "Strategy Source Code", "Deployment Support", "Ongoing Updates"],
-    pricing: "From £15,000/mo",
+    pricing: "Contact us",
     href: "/services/platform",
   },
   {
@@ -93,7 +93,7 @@ const services = [
       { label: "Compliance", value: "MiFID II" },
     ],
     features: ["TWAP/VWAP Algos", "Smart Order Routing", "DeFi MEV Protection", "Best Execution Reports"],
-    pricing: "From £15,000/mo + performance",
+    pricing: "Contact us",
     href: "/services/execution",
   },
   {
@@ -111,7 +111,7 @@ const services = [
       { label: "Reporting", value: "Monthly" },
     ],
     features: ["Separately Managed Accounts", "Fund Access", "Cross-Asset Mandates", "Full Transparency"],
-    pricing: "2/20 or custom",
+    pricing: "Contact us",
     href: "/services/investment",
   },
   {
@@ -129,7 +129,7 @@ const services = [
       { label: "Setup Time", value: "Days" },
     ],
     features: ["FCA AR Coverage", "Compliance Supervision", "MiFID II Reporting", "MLRO Services"],
-    pricing: "Included with Full Platform",
+    pricing: "Contact us",
     href: "/services/regulatory",
   },
 ]
