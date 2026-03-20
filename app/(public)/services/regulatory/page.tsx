@@ -249,87 +249,14 @@ export default function RegulatoryServicePage() {
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
           <div className="mx-auto max-w-4xl">
-            <div className="text-center mb-8">
+            <div className="text-center">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Preview the compliance dashboard with FCA reporting, audit trail, and best execution monitoring.
+                Coming soon: Preview the compliance dashboard with FCA reporting, audit trail, and best execution monitoring.
               </p>
-            </div>
-
-            {/* Compliance Dashboard Preview */}
-            <Card className="mb-6 border-slate-500/20">
-              <CardHeader>
-                <CardTitle className="text-base">FCA Reporting Status</CardTitle>
-                <CardDescription>Regulatory filing status and upcoming deadlines</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {[
-                    { report: "MiFID II Transaction Report", period: "Daily", lastFiled: "20 Mar 2026", status: "Current" },
-                    { report: "Best Execution Review", period: "Quarterly", lastFiled: "15 Mar 2026", status: "Current" },
-                    { report: "CASS Reconciliation", period: "Monthly", lastFiled: "01 Mar 2026", status: "Current" },
-                    { report: "REP-CRIM Annual Return", period: "Annual", lastFiled: "15 Jan 2026", status: "Current" },
-                    { report: "Capital Adequacy (ICARA)", period: "Annual", lastFiled: "10 Feb 2026", status: "Due Apr" },
-                  ].map((row) => (
-                    <div key={row.report} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-sm">
-                      <div>
-                        <div className="font-medium">{row.report}</div>
-                        <div className="text-[10px] text-muted-foreground">{row.period} &middot; Last filed {row.lastFiled}</div>
-                      </div>
-                      <Badge variant="outline" className={`text-[10px] ${row.status === "Current" ? "border-emerald-500/30 text-emerald-400" : "border-amber-500/30 text-amber-400"}`}>
-                        {row.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Audit Trail + Best Execution Preview */}
-            <div className="grid gap-4 md:grid-cols-2">
-              <Card className="border-slate-500/20">
-                <CardHeader>
-                  <CardTitle className="text-base">Audit Trail</CardTitle>
-                  <CardDescription>Recent compliance events</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {[
-                      { event: "Order placed — BTC-PERP", time: "14:32:01", user: "algo-engine" },
-                      { event: "KYC refresh — Alpha Capital", time: "13:15:22", user: "compliance" },
-                      { event: "Limit breach alert cleared", time: "11:48:09", user: "risk-mgr" },
-                      { event: "New AR onboarded", time: "09:30:00", user: "admin" },
-                    ].map((e) => (
-                      <div key={`${e.event}-${e.time}`} className="rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
-                        <div className="text-sm font-medium">{e.event}</div>
-                        <div className="text-[10px] text-muted-foreground">{e.time} &middot; {e.user}</div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-slate-500/20">
-                <CardHeader>
-                  <CardTitle className="text-base">Best Execution</CardTitle>
-                  <CardDescription>MiFID II execution quality metrics</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {[
-                      { label: "Price Improvement", value: "+1.4bps" },
-                      { label: "Venue Selection Score", value: "98.2%" },
-                      { label: "Order Execution Speed", value: "2.3ms avg" },
-                      { label: "Client Order Priority", value: "100%" },
-                    ].map((item) => (
-                      <div key={item.label} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
-                        <span className="text-sm text-muted-foreground">{item.label}</span>
-                        <span className="text-sm font-medium font-mono">{item.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <Badge variant="outline" className="mt-4 border-primary/30 text-primary">
+                Coming Soon
+              </Badge>
             </div>
           </div>
         </div>
