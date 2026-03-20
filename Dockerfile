@@ -1,4 +1,6 @@
-# Multi-stage build for Next.js on Cloud Run (pnpm)
+# Multi-stage build for Next.js 16 on Cloud Run (pnpm)
+# Note: Next.js 16 Turbopack doesn't support standalone output,
+# so we install deps in the production image and use `next start`
 FROM node:20-alpine AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -20,7 +22,7 @@ ENV NODE_ENV=production
 
 RUN pnpm build
 
-# Production
+# Production — full install + next start (standalone not supported in Next.js 16 Turbopack)
 FROM base AS runner
 WORKDIR /app
 
@@ -30,9 +32,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Copy built app + node_modules + package files
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/next.config.mjs ./next.config.mjs
 
 RUN chown -R nextjs:nodejs /app
 
@@ -43,4 +49,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["npx", "next", "start", "-p", "3000"]

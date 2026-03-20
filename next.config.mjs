@@ -6,8 +6,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Enable standalone output for Cloud Run deployment
-  output: "standalone",
+  // Note: standalone output not supported with Next.js 16 Turbopack
+  // Using `next start` in Dockerfile instead
 }
 
 export default nextConfig
