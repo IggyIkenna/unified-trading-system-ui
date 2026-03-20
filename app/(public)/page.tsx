@@ -365,7 +365,7 @@ export default function ServicesLandingPage() {
             From data feeds to FCA-authorised investment management. Each maps to specific lifecycle stages.
           </p>
           <p className="mt-3 text-sm text-primary/80">
-            Every service has a no-code web interface — and is also fully accessible via our backend APIs for seamless integration with your development tools, around the clock.
+            Every service has a no-code web interface — and is also fully accessible via our <Link href="/docs" className="underline hover:text-primary">backend APIs</Link> for seamless integration with your development tools, around the clock.
           </p>
         </div>
 
