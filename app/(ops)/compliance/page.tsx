@@ -68,9 +68,11 @@ export default function CompliancePage() {
             </CardHeader>
             <CardContent className="space-y-2 text-muted-foreground">
               <p>Odum Research Ltd</p>
-              <p>London, United Kingdom</p>
+              <p>9 Appold Street</p>
+              <p>London EC2A 2AP</p>
+              <p>United Kingdom</p>
               <p className="pt-2">
-                <span className="text-foreground font-medium">Company Number:</span> Registered in England
+                <span className="text-foreground font-medium">Registered in England and Wales</span>
               </p>
             </CardContent>
           </Card>

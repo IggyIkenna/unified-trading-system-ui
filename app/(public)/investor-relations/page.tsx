@@ -203,8 +203,8 @@ const slides = [
     type: "revenue",
     title: "Revenue Streams",
     services: [
-      { name: "Data Provision", model: "From $499/mo subscription", status: "live", note: "we use the data" },
-      { name: "Backtesting as a Service", model: "From $199/mo compute credits", status: "live", note: "we use the backtest" },
+      { name: "Data Provision", model: "From £250/mo", status: "live", note: "we use the data" },
+      { name: "Backtesting as a Service", model: "From £8,000/mo", status: "live", note: "we use the backtest" },
       { name: "Execution as a Service", model: "30% of alpha · 20% at $10M+ volume", status: "live", note: "we use the execution" },
       { name: "Regulatory Umbrella (AR)", model: "GBP 10k setup + GBP 4k/mo", status: "active", note: "first client onboarded" },
       { name: "Investment Management", model: "0% management + 35% performance", status: "live", note: "+34.2% since Feb 2026" },

@@ -75,7 +75,7 @@ export default function BacktestingServicePage() {
             <Card className="border-border">
               <CardHeader>
                 <CardTitle>Starter</CardTitle>
-                <div className="text-2xl font-bold">$199<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+                <div className="text-2xl font-bold">£8,000<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -96,7 +96,7 @@ export default function BacktestingServicePage() {
               <CardHeader>
                 <Badge className="w-fit mb-2">Popular</Badge>
                 <CardTitle>Professional</CardTitle>
-                <div className="text-2xl font-bold">$499<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+                <div className="text-2xl font-bold">£15,000<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">

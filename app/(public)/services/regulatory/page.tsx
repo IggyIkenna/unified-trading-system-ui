@@ -179,7 +179,7 @@ export default function RegulatoryServicePage() {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>AR Monthly Supervision</CardTitle>
-              <div className="text-2xl font-bold">From GBP 4,000<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+              <div className="text-2xl font-bold">Included with Full Platform</div>
               <CardDescription>Ongoing compliance services for Appointed Representatives</CardDescription>
             </CardHeader>
             <CardContent>

@@ -344,7 +344,7 @@ export function DataServicesShowcase() {
               
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
-                  Plans from <span className="text-foreground font-semibold">$499/mo</span> (Starter) to <span className="text-foreground font-semibold">Enterprise</span> (custom)
+                  Plans from <span className="text-foreground font-semibold">£250/mo</span> (Starter) to <span className="text-foreground font-semibold">Enterprise</span> (custom)
                 </div>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/services/data?tab=pricing">
