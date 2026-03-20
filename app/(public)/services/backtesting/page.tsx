@@ -70,25 +70,38 @@ export default function BacktestingServicePage() {
             </Card>
           </div>
 
-          {/* Pricing Tiers */}
+          {/* What's Included */}
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-2">What Research & Backtesting Covers</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Three layers working together: train ML models to generate signals, configure strategies
+              to act on those signals, and define execution rules for how orders hit the market.
+              Your subscription tier determines the depth of each layer.
+            </p>
+          </div>
+
+          {/* Subscription Tiers */}
           <div className="grid gap-4 md:grid-cols-3 mb-8">
             <Card className="border-border">
               <CardHeader>
                 <CardTitle>Starter</CardTitle>
                 <div className="text-lg font-bold text-primary">Contact Sales</div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  100 backtest hours/mo
+              <CardContent className="space-y-3">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">ML & Features</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Pre-built feature sets</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> 2 model families (direction, volatility)</div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  2 asset classes
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">Strategy & Signals</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Standard signal templates</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> 2 asset classes</div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  Basic reporting
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">Execution & Algos</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Default algos (TWAP, VWAP)</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> 100 backtest hours/mo</div>
                 </div>
               </CardContent>
             </Card>
@@ -98,46 +111,46 @@ export default function BacktestingServicePage() {
                 <CardTitle>Professional</CardTitle>
                 <div className="text-lg font-bold text-primary">Contact Sales</div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  500 backtest hours/mo
+              <CardContent className="space-y-3">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">ML & Features</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Custom feature engineering</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> All model families + custom training</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Champion/challenger model testing</div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  All 5 asset classes
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">Strategy & Signals</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Full signal configuration</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> All 5 asset classes</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Cross-asset strategies</div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  Advanced analytics
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  API access
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">Execution & Algos</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Advanced algos (IS, SOR, Sniper)</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> 500 backtest hours/mo + API access</div>
                 </div>
               </CardContent>
             </Card>
             <Card className="border-border">
               <CardHeader>
                 <CardTitle>Enterprise</CardTitle>
-                <div className="text-2xl font-bold">Custom</div>
+                <div className="text-lg font-bold text-primary">Contact Sales</div>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  Unlimited hours
+              <CardContent className="space-y-3">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">ML & Features</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Dedicated GPU training clusters</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Custom model architectures</div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  Dedicated GPUs
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">Strategy & Signals</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Unlimited strategies + bespoke signals</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Custom venue/instrument combinations</div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  Custom integrations
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="size-4 text-emerald-400" />
-                  SLA support
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">Execution & Algos</div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Custom algo development + backtested deployment</div>
+                  <div className="flex items-center gap-2 text-sm"><CheckCircle2 className="size-4 text-emerald-400" /> Unlimited hours + SLA support</div>
                 </div>
               </CardContent>
             </Card>
