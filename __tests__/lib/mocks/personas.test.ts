@@ -2,7 +2,7 @@ import { PERSONAS, getPersonaById, getPersonaByEmail } from "@/lib/mocks/fixture
 
 describe("PERSONAS", () => {
   it("has 4 demo personas", () => {
-    expect(PERSONAS).toHaveLength(4)
+    expect(PERSONAS).toHaveLength(5)
   })
 
   it("every persona has required fields", () => {
