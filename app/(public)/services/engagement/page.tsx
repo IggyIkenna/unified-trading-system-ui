@@ -61,21 +61,21 @@ const ENGAGEMENT_TIERS = [
   {
     id: "execution",
     name: "Execution as a Service",
-    tagline: "Your strategies, our execution. Live across 128 venues.",
-    description: "Bring your tested strategies to market. We handle the execution infrastructure — multi-venue routing, smart order routing, position management, risk limits, and real-time monitoring. You focus on the alpha.",
+    tagline: "Your strategies, our execution. Same code, backtest to live.",
+    description: "Deploy strategies built in our research environment or bring your own via API — you choose the control level. The same decision-making code and microservice interactions run in both backtesting and live, so every backtest result is directly comparable to live performance. Monitor yesterday's trading for T+1 diffs between simulation and reality.",
     icon: Zap,
     pricing: "Contact us",
     color: "border-orange-500/30",
     journey: [
-      "Deploy strategies from backtest to live in minutes",
+      "Deploy from our research pipeline or bring your own strategy via API",
+      "Same code runs backtest and live — zero divergence by design",
       "Execute across CeFi, DeFi, TradFi, and Sports venues simultaneously",
-      "Monitor positions, P&L, and risk in real time",
+      "Monitor T+1 diffs: compare yesterday's live trading to backtest expectations",
       "Set risk limits and circuit breakers per strategy",
       "Track execution quality (slippage, fill rates, latency)",
-      "Receive alerts on limit breaches and anomalies",
     ],
-    services: ["Live Execution", "Position Monitoring", "Risk Management", "Execution Analytics"],
-    bestFor: "Funds with proven strategies who need institutional-grade execution",
+    services: ["Live Execution", "T+1 Diff Monitoring", "Position Monitoring", "Risk Management", "Execution Analytics"],
+    bestFor: "Funds who want institutional-grade execution with provable alignment between backtest and live performance",
     cta: "Start Executing",
   },
   {
@@ -105,7 +105,7 @@ const JOURNEY_STEPS = [
   { step: "2", label: "Train Models", description: "ML model training — predict direction, volatility, regime, momentum", icon: Brain, color: "text-purple-400" },
   { step: "3", label: "Build Signals & Algos", description: "Configure signal-to-trade rules and select execution algorithms — simple algos included, complex ones as a bolt-on", icon: FlaskConical, color: "text-violet-400" },
   { step: "4", label: "Test Strategies", description: "Backtest across years of data, compare variants, validate edge before going live", icon: BarChart3, color: "text-cyan-400" },
-  { step: "5", label: "Execute Live", description: "Deploy to production with your chosen algo — multi-venue routing, position management, real-time monitoring", icon: Zap, color: "text-orange-400" },
+  { step: "5", label: "Execute Live", description: "Deploy from research or via API — same code runs backtest and live, so you can monitor T+1 diffs between simulation and reality", icon: Zap, color: "text-orange-400" },
   { step: "6", label: "Monitor & Report", description: "P&L attribution, risk oversight, settlement, compliance", icon: FileText, color: "text-emerald-400" },
 ]
 

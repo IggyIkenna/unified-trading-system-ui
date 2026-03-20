@@ -266,7 +266,7 @@ export default function ServicesLandingPage() {
               {PLATFORM_STATS.assetClassCount} asset classes. {PLATFORM_STATS.totalVenues} venues. 20+ strategies. Trading 24/7/365.
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
-              All normalised to a single schema for cross-market execution and arbitrage.
+              The same code runs your backtests and your live strategies. That means every backtest result is directly comparable to live performance — and you can monitor yesterday&apos;s trading for any divergence, achieving beyond institutional-grade alignment between simulation and reality.
             </p>
           </div>
           <div className="flex justify-center" suppressHydrationWarning>

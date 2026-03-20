@@ -33,9 +33,9 @@ const STAGES = [
     num: "4", name: "Run", short: "Execute, route, fill",
     color: "emerald", borderClass: "border-emerald-400/30", bgClass: "bg-emerald-400/5",
     hoverBorder: "border-emerald-400/70", textClass: "text-emerald-400",
-    detail: "Execute live across venues with institutional algorithms — TWAP, VWAP, smart order routing, DeFi-native execution. Real-time position management and P&L tracking.",
-    services: ["Live Execution", "Smart Order Routing", "Position Management"],
-    example: "Your strategy executes simultaneously on Binance (perps), Hyperliquid (DeFi), and Deribit (options) with automated position balancing.",
+    detail: "The same code that ran your backtest now runs live — zero divergence by design. Deploy from our research pipeline or bring your own via API. Multi-venue execution with institutional algorithms, real-time position management, and T+1 monitoring to catch any drift between simulation and reality.",
+    services: ["Live Execution", "Smart Order Routing", "T+1 Diff Monitoring", "Position Management"],
+    example: "Your strategy executes simultaneously on Binance, Hyperliquid, and Deribit. Next morning, the T+1 report shows 0.02% divergence from backtest — within tolerance.",
   },
   {
     num: "5", name: "Observe", short: "Monitor, alert, reconcile",

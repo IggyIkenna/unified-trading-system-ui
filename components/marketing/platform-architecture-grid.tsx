@@ -55,7 +55,7 @@ const DESCRIPTIONS: Record<string, string> = {
   "execution-Acquire": "Connect to venue APIs and establish trading connectivity.",
   "execution-Build":   "Configure execution algorithms (TWAP, VWAP, IS, SOR).",
   "execution-Promote": "Test execution quality in paper mode before live deployment.",
-  "execution-Run":     "Route orders to venues, manage fills, track slippage in real-time.",
+  "execution-Run":     "Same code runs backtest and live. Route orders, manage fills, track slippage. Monitor T+1 diffs between simulation and reality.",
   "execution-Observe": "Monitor fill rates, latency, venue health, and circuit breakers.",
   "execution-Manage":  "Manage venue credentials, execution limits, and algorithm parameters.",
   "execution-Report":  "Generate TCA reports, execution quality analytics, and cost attribution.",
