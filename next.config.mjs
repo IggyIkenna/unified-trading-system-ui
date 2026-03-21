@@ -9,6 +9,15 @@ const nextConfig = {
   // Note: standalone output not supported with Next.js 16 Turbopack
   // Using `next start` in Dockerfile instead
 
+  async rewrites() {
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8100'
+    const authBase = process.env.NEXT_PUBLIC_AUTH_URL || 'http://localhost:8200'
+    return [
+      { source: '/api/auth/:path*', destination: `${authBase}/:path*` },
+      { source: '/api/:path*', destination: `${apiBase}/:path*` },
+    ]
+  },
+
   async redirects() {
     return [
       // Service hub
