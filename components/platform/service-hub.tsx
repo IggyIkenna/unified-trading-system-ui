@@ -46,22 +46,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 // Mock quick stats per service
 const SERVICE_STATS: Record<string, string> = {
-  "data-catalogue": "Full instrument catalogue",
-  markets: "Live across all venues",
-  trading: "12 active strategies",
-  positions: "$4.8M notional",
+  data: "128 venues, 2,400+ instruments",
+  research: "5 backtests running, 6 models",
   execution: "1,842 fills today",
-  risk: "78% margin utilization",
-  alerts: "3 active alerts",
-  "research-backtesting": "5 backtests running",
-  "live-trading-platform": "12 active strategies",
+  trading: "12 active strategies, $4.8M notional",
   reports: "2 pending settlements",
-  ml: "6 models deployed",
-  admin: "4 orgs, 12 users",
-  ops: "10 services healthy",
-  deployment: "1 deployment running",
-  compliance: "All checks passing",
   manage: "3 client orgs",
+  admin: "4 orgs, 12 users",
+  devops: "10 services healthy",
 }
 
 interface ServiceCardProps {
@@ -197,35 +189,18 @@ export function ServiceHub() {
     return true
   })
 
-  // Group by category
-  const categories = [...new Set(allServices.map((s) => s.category))]
-
   return (
     <>
-      <div className="space-y-8">
-        {categories.map((cat) => {
-          const catServices = allServices.filter((s) => s.category === cat)
-          if (catServices.length === 0) return null
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {allServices.map((service) => {
+          const isAvailable = visibleServices.some((v) => v.key === service.key)
           return (
-            <div key={cat}>
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-                {CATEGORY_LABELS[cat] || cat}
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {catServices.map((service) => {
-                  const isAvailable = visibleServices.some((v) => v.key === service.key)
-                  return (
-                    <ServiceCard
-                      key={service.key}
-                      service={service}
-                      state={isAvailable ? "available" : "locked"}
-                      onUpgradeClick={setUpgradeService}
-                    />
-                  )
-                })}
-              </div>
-            </div>
+            <ServiceCard
+              key={service.key}
+              service={service}
+              state={isAvailable ? "available" : "locked"}
+              onUpgradeClick={setUpgradeService}
+            />
           )
         })}
       </div>
