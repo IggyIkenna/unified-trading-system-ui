@@ -141,6 +141,43 @@ Internal users (by role) can access:
 
 ---
 
+## 5.1 Universal Service Funnel — Same Destination, Different Entry Points
+
+Every service area follows the SAME funnel. Users arrive from different doors but always converge on the SAME service detail page with data-driven filtering.
+
+### The Three Doors
+
+| Door | Who | Entry Point | Journey |
+|------|-----|------------|---------|
+| **Prospect** | Unauthenticated visitor | Landing page → `/services/{domain}` | Sees marketing page → "Subscribe" CTA → Register → Login → Subscription overview → Service detail |
+| **Client** | Authenticated, subscribed | Login → `/service/overview` | Sees subscription overview (entitled vs locked) → Click entitled service → Service detail (org-scoped data) |
+| **Internal** | Authenticated, internal role | Login → `/service/overview` | Sees all services available → Click any service → Service detail (all data, plus admin/ops surfaces) |
+
+### The Subscription Overview (Hub)
+
+After authentication, ALL users land on `/service/overview` — the subscription-aware hub.
+
+**What clients see:**
+- Services they're subscribed to: full-color cards with quick stats → click for detail
+- Services they're NOT subscribed to: locked cards with "Upgrade" → click shows what they'd get
+- Link to the same detailed page internal users see, but with org-scoped data
+
+**What internal users see:**
+- All services available (wildcard entitlements)
+- Per-client view option (select a client org to see what they see)
+- Admin/ops links visible that clients never see
+
+### The Service Detail (Same Page, Different Data)
+
+Every service detail page handles three states:
+- **Subscribed:** Full functionality, org-scoped data
+- **Not subscribed:** Locked overlay with "Upgrade" CTA showing what they'd get
+- **Internal:** Full data, no restrictions, plus admin/ops links
+
+**Key rule:** ONE page per service area. The API scopes the data based on `org_id` + `entitlements` from the auth token. Never build separate client vs internal versions of the same page.
+
+---
+
 ## 6. Service / Product Areas
 
 ### Public-Facing Services

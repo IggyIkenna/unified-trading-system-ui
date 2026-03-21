@@ -16,10 +16,11 @@ import { PERSONAS } from "@/lib/mocks/fixtures/personas"
 // ALL personas land on the service hub — the hub shows different services
 // based on role/entitlements. Admin sees ops services; clients see their subscriptions.
 const PERSONA_REDIRECTS: Record<string, string> = {
-  admin: "/overview",
-  "internal-trader": "/overview",
-  "client-full": "/overview",
-  "client-data-only": "/overview",
+  admin: "/service/overview",
+  "internal-trader": "/service/overview",
+  "client-full": "/service/overview",
+  "client-premium": "/service/overview",
+  "client-data-only": "/service/overview",
 }
 
 const ROLE_ICONS: Record<string, typeof Shield> = {
@@ -36,7 +37,7 @@ const ROLE_COLORS: Record<string, string> = {
 
 export default function LoginPage() {
   const router = useRouter()
-  const { loginByEmail, login } = useAuth()
+  const { user, loading, loginByEmail, login } = useAuth()
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search) : null
   const redirectTo = searchParams?.get("redirect") || null
@@ -46,6 +47,12 @@ export default function LoginPage() {
   const [password, setPassword] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
+
+  React.useEffect(() => {
+    if (!loading && user) {
+      router.replace(redirectTo || "/service/overview")
+    }
+  }, [loading, user, router, redirectTo])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,7 +64,7 @@ export default function LoginPage() {
     if (success) {
       // Find matching persona to get redirect
       const persona = PERSONAS.find((p) => p.email === email)
-      const target = redirectTo || (persona ? PERSONA_REDIRECTS[persona.id] : "/overview") || "/overview"
+      const target = redirectTo || (persona ? PERSONA_REDIRECTS[persona.id] : "/service/overview") || "/service/overview"
       router.push(target)
     } else {
       setError("Invalid credentials. Try any demo account below with password: demo")
@@ -68,7 +75,7 @@ export default function LoginPage() {
   const handleDemoLogin = (personaId: string) => {
     const success = login(personaId)
     if (success) {
-      const target = redirectTo || PERSONA_REDIRECTS[personaId] || "/overview"
+      const target = redirectTo || PERSONA_REDIRECTS[personaId] || "/service/overview"
       router.push(target)
     }
   }

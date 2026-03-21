@@ -167,7 +167,8 @@ function ContactPageContent() {
                 <CardContent>
                   <p className="text-sm text-muted-foreground">
                     Odum Research Ltd<br />
-                    London, United Kingdom
+                    9 Appold Street<br />
+                    London, EC2A 2AP
                   </p>
                   <Badge variant="outline" className="mt-2 text-xs">FCA 975797</Badge>
                 </CardContent>

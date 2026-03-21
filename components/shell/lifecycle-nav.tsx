@@ -2,55 +2,56 @@
 
 /**
  * Lifecycle Navigation Shell
- * 
+ *
  * The strategic destination navigation - not an optional alternate mode.
  * Organizes the platform around lifecycle stages:
  * Acquire -> Build -> Promote -> Run -> Observe -> Manage -> Report
  */
 
-import * as React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import {
-  Database,
-  Wrench,
-  ArrowUpCircle,
-  Play,
-  Eye,
-  Settings2,
-  FileText,
-  ChevronDown,
-  Search,
-  Bell,
-  Zap,
-  User,
-  LogOut,
-  Building2,
-  Check,
-} from "lucide-react"
+import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import {
-  type LifecycleStage,
-  type DomainLane,
-  lifecycleStages,
-  domainLanes,
-  buildLifecycleNav,
-  getRouteMapping,
-} from "@/lib/lifecycle-mapping"
 import { useAuth } from "@/hooks/use-auth"
+import {
+  buildLifecycleNav,
+  domainLanes,
+  getRouteMapping,
+  type LifecycleStage,
+  lifecycleStages,
+} from "@/lib/lifecycle-mapping"
+import { cn } from "@/lib/utils"
+import {
+  ArrowUpCircle,
+  Bell,
+  Building2,
+  Check,
+  ChevronDown,
+  Database,
+  Eye,
+  FileText,
+  Lock,
+  LogOut,
+  Play,
+  Search,
+  Settings2,
+  User,
+  Wrench,
+  Zap,
+} from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import * as React from "react"
 
 // Icon mapping for lifecycle stages
 const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: string }>> = {
@@ -85,40 +86,33 @@ export function LifecycleNav({
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true)
 
-  // Internal-only routes (ops pages)
-  const opsRoutes = ["/admin", "/ops", "/devops", "/manage", "/compliance", "/config", "/engagement", "/internal"]
-  // Routes requiring specific entitlements
-  const mlRoutes = ["/ml"]
-  const executionRoutes = ["/execution"]
-  const strategyRoutes = ["/strategy-platform", "/strategies"]
+  // Internal-only routes (ops pages) — hide completely from non-internal
+  const opsRoutes = ["/admin", "/ops", "/devops", "/manage", "/compliance", "/config"]
 
+  // Check if an item is accessible (unlocked) for the current user
+  const isItemAccessible = (path: string): boolean => {
+    if (opsRoutes.some(r => path === r || path.startsWith(r + "/"))) return isInternal()
+    if (path.startsWith("/service/research")) return hasEntitlement("strategy-full") || hasEntitlement("ml-full")
+    if (path.startsWith("/service/trading") || path.startsWith("/service/execution")) return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
+    if (path.startsWith("/service/reports")) return hasEntitlement("reporting")
+    return true
+  }
+
+  // Build nav items — keep locked items visible (except ops), mark them as locked
   const navItems = allNavItems.map(nav => ({
     ...nav,
-    items: nav.items.filter(item => {
-      // Hide ops routes from non-internal users
-      if (opsRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return isInternal()
-      }
-      // Hide ML routes if no ml-full entitlement
-      if (mlRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return hasEntitlement("ml-full")
-      }
-      // Hide execution routes if no execution entitlement
-      if (executionRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
-      }
-      // Hide strategy routes if no strategy entitlement
-      if (strategyRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))) {
-        return hasEntitlement("strategy-full")
-      }
-      return true
-    }),
+    items: nav.items
+      .filter(item => !opsRoutes.some(r => item.path === r || item.path.startsWith(r + "/")) || isInternal())
+      .map(item => ({
+        ...item,
+        locked: !isItemAccessible(item.path),
+      })),
   })).filter(nav => nav.items.length > 0)
-  
+
   // Get current route mapping
   const currentMapping = getRouteMapping(pathname)
   const currentStage = currentMapping?.primaryStage
-  
+
   // Keyboard shortcut for search
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -132,14 +126,14 @@ export function LifecycleNav({
   }, [])
 
   return (
-    <nav className={cn("flex items-center justify-between px-4 py-2 bg-card border-b border-border", className)}>
+    <nav className={cn("flex items-center justify-between px-4 py-2 bg-card border-b border-border shadow-sm", className)}>
       {/* Left: Logo + Lifecycle stages */}
       <div className="flex items-center gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group mr-2">
-          <img 
-            src="/images/odum-logo.png" 
-            alt="Odum Research" 
+          <img
+            src="/images/odum-logo.png"
+            alt="Odum Research"
             className="size-6 transition-transform group-hover:scale-110"
           />
           <span className="font-semibold text-sm hidden xl:inline">Odum</span>
@@ -151,7 +145,8 @@ export function LifecycleNav({
             const Icon = stageIcons[nav.stage]
             const isActive = currentStage === nav.stage
             const stageInfo = lifecycleStages[nav.stage]
-            
+            const allLocked = nav.items.length > 0 && nav.items.every(item => item.locked)
+
             return (
               <React.Fragment key={nav.stage}>
                 <DropdownMenu>
@@ -159,14 +154,20 @@ export function LifecycleNav({
                     <button
                       className={cn(
                         "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        allLocked
+                          ? "text-muted-foreground/40 cursor-not-allowed"
+                          : isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       )}
                     >
                       <Icon className="size-3.5" />
                       <span className="hidden lg:inline">{nav.label}</span>
-                      <ChevronDown className="size-3 opacity-50" />
+                      {allLocked ? (
+                        <Lock className="size-3 opacity-40" />
+                      ) : (
+                        <ChevronDown className="size-3 opacity-50" />
+                      )}
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
@@ -180,6 +181,26 @@ export function LifecycleNav({
                     <DropdownMenuSeparator />
                     {nav.items.map((item) => {
                       const itemActive = pathname === item.path || pathname.startsWith(item.path + "/")
+                      if (item.locked) {
+                        // Locked item — visible but not clickable, with upgrade hint
+                        return (
+                          <DropdownMenuItem
+                            key={item.path}
+                            asChild
+                          >
+                            <Link
+                              href={`/service/${item.path.split("/service/")[1]?.split("/")[0] || "overview"}`}
+                              className="flex items-center justify-between opacity-50 cursor-not-allowed"
+                              title="Not part of your subscription — upgrade to access"
+                            >
+                              <span>{item.label}</span>
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
+                                Upgrade
+                              </Badge>
+                            </Link>
+                          </DropdownMenuItem>
+                        )
+                      }
                       return (
                         <DropdownMenuItem key={item.path} asChild>
                           <Link
@@ -211,7 +232,7 @@ export function LifecycleNav({
                     })}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
+
                 {/* Subtle connector between stages */}
                 {idx < navItems.length - 1 && (
                   <div className="w-2 h-px bg-border mx-0.5 hidden lg:block" />
@@ -220,6 +241,13 @@ export function LifecycleNav({
             )
           })}
         </div>
+      </div>
+
+      {/* Center: Global Scope Filters (Org / Client / Strategy) */}
+      <div className="hidden md:flex items-center">
+        <div className="w-px h-5 bg-border mx-2" />
+        <GlobalScopeFilters />
+        <div className="w-px h-5 bg-border mx-2" />
       </div>
 
       {/* Right: Search, Notifications, Org, User */}
@@ -373,28 +401,6 @@ export function LifecycleNav({
         </DropdownMenu>
       </div>
     </nav>
-  )
-}
-
-// Lane indicator badge - shows which domain lanes current page belongs to
-export function LaneIndicator({ lanes, className }: { lanes: DomainLane[]; className?: string }) {
-  if (!lanes || lanes.length === 0) return null
-  
-  return (
-    <div className={cn("flex items-center gap-1", className)}>
-      {lanes.map(lane => {
-        const info = domainLanes[lane]
-        return (
-          <Badge
-            key={lane}
-            variant="outline"
-            className={cn("text-[10px] px-1.5 py-0 h-5", info.color, "border-current/30 bg-current/5")}
-          >
-            {info.label}
-          </Badge>
-        )
-      })}
-    </div>
   )
 }
 

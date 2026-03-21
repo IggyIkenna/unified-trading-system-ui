@@ -1,9 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { GlobalNavBar } from "@/components/trading/global-nav-bar"
-import { ContextBar, useContextState } from "@/components/trading/context-bar"
-import { LifecycleRail, type LifecyclePhase } from "@/components/trading/lifecycle-rail"
+import { useGlobalScope } from "@/lib/stores/global-scope-store"
 import { KPICard } from "@/components/trading/kpi-card"
 import { AlertsFeed, type Alert } from "@/components/trading/alerts-feed"
 import { PnLAttributionPanel, type PnLComponent } from "@/components/trading/pnl-attribution-panel"
@@ -102,8 +100,7 @@ const allMockServices: ServiceHealth[] = [
 ]
 
 export default function OverviewPage() {
-  const { context, setContext } = useContextState()
-  const [lifecyclePhase, setLifecyclePhase] = React.useState<LifecyclePhase>("monitor")
+  const { scope: context, setOrganizationIds, setClientIds, setStrategyIds } = useGlobalScope()
   const [showTimeSeries, setShowTimeSeries] = React.useState(true)
   const [batchDate, setBatchDate] = React.useState(getYesterday())
   const { format: valueFormat, setFormat: setValueFormat, formatValue } = useValueFormat("dollar")
@@ -208,16 +205,6 @@ export default function OverviewPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Global Navigation Bar */}
-      <GlobalNavBar activeSurface="overview" currentRole="trader" />
-
-      {/* Context Bar */}
-      <ContextBar context={context} onContextChange={setContext} />
-
-      {/* Lifecycle Rail */}
-      <LifecycleRail activePhase={lifecyclePhase} onPhaseChange={setLifecyclePhase} />
-
-      {/* Main Content */}
       <main className="flex-1 p-4 space-y-4 overflow-auto">
         {/* Command Center Header */}
         <div className="flex items-center justify-between gap-4 px-3 py-2 bg-secondary/30 rounded-lg border border-border">
@@ -231,12 +218,11 @@ export default function OverviewPage() {
             totalExposure={totalExposure}
             mode={context.mode}
             asOfDatetime={context.asOfDatetime}
-            onClearScope={() => setContext({
-              ...context,
-              organizationIds: [],
-              clientIds: [],
-              strategyIds: [],
-            })}
+            onClearScope={() => {
+              setOrganizationIds([])
+              setClientIds([])
+              setStrategyIds([])
+            }}
           />
           <InterventionControls
             scope={{

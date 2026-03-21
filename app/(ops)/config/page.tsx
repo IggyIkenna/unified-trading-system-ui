@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -246,15 +245,7 @@ export default function ConfigPage() {
   }
 
   return (
-    <AppShell
-      activeSurface="config"
-      activePhase="design"
-      breadcrumbs={[
-        { label: "Config & Onboarding", href: "/config" },
-        { label: "Overview" },
-      ]}
-      contextLevels={{ organization: true, client: true, strategy: false, underlying: false }}
-    >
+    <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -772,6 +763,6 @@ export default function ConfigPage() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
-    </AppShell>
+    </div>
   )
 }

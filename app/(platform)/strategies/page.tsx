@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -145,13 +144,7 @@ export default function StrategiesPage() {
   }
 
   return (
-    <AppShell
-      activeSurface="strategies"
-      activePhase="design"
-      breadcrumbs={[
-        { label: "Strategies", href: "/strategies" },
-      ]}
-    >
+    <div className="p-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
         {/* Header with Mode Toggle */}
         <div className="flex items-start justify-between">
@@ -556,6 +549,6 @@ export default function StrategiesPage() {
           </Link>
         </div>
       </div>
-    </AppShell>
+    </div>
   )
 }

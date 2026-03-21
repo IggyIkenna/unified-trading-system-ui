@@ -7,34 +7,44 @@ import { Sparkles, Lock } from "lucide-react"
  * Staging auth gate — wraps the entire app when NEXT_PUBLIC_STAGING_AUTH=true.
  * Simple username/password check stored in localStorage.
  * Does NOT replace the app's persona/entitlement auth system.
+ *
+ * IMPORTANT: When staging auth is disabled (local dev), this component
+ * renders children immediately without blocking SSR or hydration.
  */
 
 const STAGING_USER = "odum"
 const STAGING_PASS = "QGeF2!@61"
 const STORAGE_KEY = "staging-authenticated"
 
+const IS_STAGING = process.env.NEXT_PUBLIC_STAGING_AUTH === "true"
+
+/**
+ * Outer wrapper — if staging auth is disabled, just pass through children.
+ * This avoids useState/useEffect entirely for the non-staging case,
+ * which means SSR sends full HTML and hydration works immediately.
+ */
 export function StagingGate({ children }: { children: React.ReactNode }) {
+  if (!IS_STAGING) {
+    return <>{children}</>
+  }
+  return <StagingAuthWall>{children}</StagingAuthWall>
+}
+
+/** Inner component — only mounted when staging auth is enabled */
+function StagingAuthWall({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = React.useState(false)
   const [checking, setChecking] = React.useState(true)
   const [username, setUsername] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [error, setError] = React.useState("")
 
-  // Skip if staging auth is not enabled
-  const isEnabled = process.env.NEXT_PUBLIC_STAGING_AUTH === "true"
-
   React.useEffect(() => {
-    if (!isEnabled) {
-      setAuthenticated(true)
-      setChecking(false)
-      return
-    }
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored === "true") {
       setAuthenticated(true)
     }
     setChecking(false)
-  }, [isEnabled])
+  }, [])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

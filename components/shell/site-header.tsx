@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/hooks/use-auth"
 
 const NAV_ITEMS = [
   { href: "/", label: "Platform" },
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
 
 export function SiteHeader() {
   const pathname = usePathname()
+  const { user, loading } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,12 +52,33 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground hidden sm:block">
-            Sign In
-          </Link>
-          <Button size="sm" asChild>
-            <Link href="/contact">Get Access</Link>
-          </Button>
+          {!loading && user ? (
+            <>
+              <Link
+                href="/service/overview"
+                className="text-sm text-muted-foreground hover:text-foreground hidden sm:block"
+              >
+                Dashboard
+              </Link>
+              <Button size="sm" variant="outline" asChild>
+                <Link href="/service/overview" className="flex items-center gap-2">
+                  <span className="flex size-5 items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
+                    {user.displayName.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                  </span>
+                  <span className="hidden sm:inline">{user.displayName.split(" ")[0]}</span>
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground hidden sm:block">
+                Sign In
+              </Link>
+              <Button size="sm" asChild>
+                <Link href="/contact">Get Access</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

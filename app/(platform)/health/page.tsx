@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { StatusBadge } from "@/components/trading/status-badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -130,14 +129,7 @@ export default function HealthPage() {
   const supportServices = mockServices.filter((s) => s.tier === "support")
 
   return (
-    <AppShell
-      activeSurface="trading"
-      activePhase="monitor"
-      breadcrumbs={[
-        { label: "Trading", href: "/" },
-        { label: "Health" },
-      ]}
-    >
+    <div className="p-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -427,6 +419,6 @@ export default function HealthPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppShell>
+    </div>
   )
 }

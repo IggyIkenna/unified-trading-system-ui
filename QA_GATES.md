@@ -16,8 +16,8 @@
 ### Step 1: Clean Install (Fresh Dependencies)
 
 ```bash
-rm -rf node_modules package-lock.json .next
-npm ci  # Clean install, not npm install
+rm -rf node_modules .next
+pnpm install
 ```
 
 **Why:** Hot reload caches old node_modules. Fresh install ensures all deps are correct.
@@ -27,21 +27,27 @@ npm ci  # Clean install, not npm install
 ### Step 2: Type Check (Catch TypeScript Errors)
 
 ```bash
-npm run type-check
-# or if not available:
-npx tsc --noEmit
+pnpm tsc --noEmit
 ```
 
 **Why:** TypeScript errors don't stop hot-reload, but they WILL fail at deploy. Catch them before build.
 
 ---
 
-### Step 3: Build (Full Production Build)
+### Step 3: Lint
 
 ```bash
-npm run build
-# or if not available:
-npx vite build
+pnpm lint
+```
+
+**Why:** ESLint catches unused imports, missing handlers, prop type issues.
+
+---
+
+### Step 4: Build (Full Production Build)
+
+```bash
+pnpm build
 ```
 
 **Why:** Development build is different from production. This catches:
@@ -54,29 +60,27 @@ npx vite build
 
 ---
 
-### Step 4: Unit & Integration Tests
+### Step 5: Unit & Integration Tests
 
 ```bash
-npm test -- --run
-# or for Node test runners:
-npm run test:unit
-npm run test:integration
+pnpm test
 ```
 
 **Why:** Tests run against fresh code, not hot-reload cache.
 
 ---
 
-### Step 5: Smoke Test Routes (Manual or Automated)
+### Step 6: Smoke Test Routes (Manual or Automated)
 
 If you have a smoke test suite:
 
 ```bash
-npm run test:smoke
+pnpm test:smoke
 # or check specific critical routes:
 # GET / → 200
-# GET /auth/signin → 200
+# GET /login → 200
 # GET /dashboard → 200 (with mock auth)
+# GET /service/overview → 200 (with mock auth)
 ```
 
 **Why:** Routing, navigation, and component mounting can break silently in TypeScript.
@@ -85,33 +89,10 @@ npm run test:smoke
 
 ## TL;DR: The Script
 
-Create `.scripts/verify.sh`:
+One-liner:
 
 ```bash
-#!/bin/bash
-set -e
-
-echo "🧹 Cleaning dependencies..."
-rm -rf node_modules package-lock.json .next .vite
-
-echo "📦 Fresh install..."
-npm ci
-
-echo "🔍 Type checking..."
-npm run type-check || npx tsc --noEmit
-
-echo "🔨 Building..."
-npm run build
-
-echo "✅ Running tests..."
-npm test -- --run
-
-echo "✨ All gates passed. Ready for PR/deploy."
-```
-
-Then run:
-```bash
-bash .scripts/verify.sh
+pnpm lint && pnpm tsc --noEmit && pnpm build && pnpm test
 ```
 
 ---
@@ -138,11 +119,11 @@ bash .scripts/verify.sh
 
 ### ❌ Build succeeds, but tests fail
 **Cause:** Mock setup or test isolation issue
-**Fix:** Run single failing test, check mock scope (should be in `shared/mocks/`)
+**Fix:** Run single failing test, check mock scope (should be in `lib/mocks/`)
 
 ### ❌ "Configuration not found"
 **Cause:** Config import path broken (e.g., moved config file)
-**Fix:** Re-verify `shared/config/` has the file you're importing
+**Fix:** Re-verify `lib/config/` has the file you're importing
 
 ---
 
@@ -165,7 +146,7 @@ Running QA gates before PR catches ALL of these. Saves 30 min of CI debugging.
 
 1. ✅ Code changes complete
 2. ✅ Component renders (hot reload)
-3. ✅ **Run QA gates** (`bash .scripts/verify.sh`)
+3. ✅ **Run QA gates** (`pnpm lint && pnpm tsc --noEmit && pnpm build && pnpm test`)
 4. ✅ All gates pass
 5. ✅ **THEN** create PR
 
@@ -174,11 +155,3 @@ Running QA gates before PR catches ALL of these. Saves 30 min of CI debugging.
 - Fix the issue locally
 - Re-run gates
 - Repeat until all pass
-
----
-
-## Reference in V0 Prompt
-
-Keep this one-liner in your system prompt:
-
-> **QA GATE:** Before PR/deploy, run `bash .scripts/verify.sh` (clean install → type-check → build → test). See QA_GATES.md for details.
