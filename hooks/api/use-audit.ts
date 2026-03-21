@@ -1,41 +1,33 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, { headers: { "x-demo-persona": personaId } })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
+import { apiFetch } from "@/lib/api/fetch"
 
 export function useAuditEvents() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["audit-events", personaId],
-    queryFn: () => fetchWithPersona("/api/audit/events", personaId),
+    queryKey: ["audit-events", user?.id],
+    queryFn: () => apiFetch("/api/audit/events", token),
     enabled: !!user,
   })
 }
 
 export function useComplianceStatus() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["compliance-status", personaId],
-    queryFn: () => fetchWithPersona("/api/audit/compliance", personaId),
+    queryKey: ["compliance-status", user?.id],
+    queryFn: () => apiFetch("/api/audit/compliance", token),
     enabled: !!user,
   })
 }
 
 export function useDataHealth() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["data-health", personaId],
-    queryFn: () => fetchWithPersona("/api/audit/data-health", personaId),
+    queryKey: ["data-health", user?.id],
+    queryFn: () => apiFetch("/api/audit/data-health", token),
     enabled: !!user,
   })
 }

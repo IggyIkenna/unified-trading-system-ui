@@ -1,52 +1,43 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, { headers: { "x-demo-persona": personaId } })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
+import { apiFetch } from "@/lib/api/fetch"
 
 export function useRiskLimits() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["risk-limits", personaId],
-    queryFn: () => fetchWithPersona("/api/risk/limits", personaId),
+    queryKey: ["risk-limits", user?.id],
+    queryFn: () => apiFetch("/api/risk/limits", token),
     enabled: !!user,
   })
 }
 
 export function useVaR() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["var", personaId],
-    queryFn: () => fetchWithPersona("/api/risk/var", personaId),
+    queryKey: ["var", user?.id],
+    queryFn: () => apiFetch("/api/risk/var", token),
     enabled: !!user,
   })
 }
 
 export function useGreeks() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["greeks", personaId],
-    queryFn: () => fetchWithPersona("/api/risk/greeks", personaId),
+    queryKey: ["greeks", user?.id],
+    queryFn: () => apiFetch("/api/risk/greeks", token),
     enabled: !!user,
   })
 }
 
 export function useStressScenarios() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["stress-scenarios", personaId],
-    queryFn: () => fetchWithPersona("/api/risk/stress", personaId),
+    queryKey: ["stress-scenarios", user?.id],
+    queryFn: () => apiFetch("/api/risk/stress", token),
     enabled: !!user,
   })
 }

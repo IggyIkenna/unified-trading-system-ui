@@ -1,41 +1,33 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, { headers: { "x-demo-persona": personaId } })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
+import { apiFetch } from "@/lib/api/fetch"
 
 export function useDeploymentServices() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["deployment-services", personaId],
-    queryFn: () => fetchWithPersona("/api/deployment/services", personaId),
+    queryKey: ["deployment-services", user?.id],
+    queryFn: () => apiFetch("/api/deployment/services", token),
     enabled: !!user,
   })
 }
 
 export function useDeployments() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["deployments", personaId],
-    queryFn: () => fetchWithPersona("/api/deployment/deployments", personaId),
+    queryKey: ["deployments", user?.id],
+    queryFn: () => apiFetch("/api/deployment/deployments", token),
     enabled: !!user,
   })
 }
 
 export function useBuildTriggers() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["build-triggers", personaId],
-    queryFn: () => fetchWithPersona("/api/deployment/builds", personaId),
+    queryKey: ["build-triggers", user?.id],
+    queryFn: () => apiFetch("/api/deployment/builds", token),
     enabled: !!user,
   })
 }

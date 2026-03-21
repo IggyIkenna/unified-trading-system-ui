@@ -1,41 +1,33 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, { headers: { "x-demo-persona": personaId } })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
+import { apiFetch } from "@/lib/api/fetch"
 
 export function usePositions() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["positions", personaId],
-    queryFn: () => fetchWithPersona("/api/positions", personaId),
+    queryKey: ["positions", user?.id],
+    queryFn: () => apiFetch("/api/positions", token),
     enabled: !!user,
   })
 }
 
 export function usePositionsSummary() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["positions-summary", personaId],
-    queryFn: () => fetchWithPersona("/api/positions/summary", personaId),
+    queryKey: ["positions-summary", user?.id],
+    queryFn: () => apiFetch("/api/positions/summary", token),
     enabled: !!user,
   })
 }
 
 export function useBalances() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["balances", personaId],
-    queryFn: () => fetchWithPersona("/api/positions/balances", personaId),
+    queryKey: ["balances", user?.id],
+    queryFn: () => apiFetch("/api/positions/balances", token),
     enabled: !!user,
   })
 }

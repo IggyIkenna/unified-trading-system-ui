@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
+import { apiFetch } from "@/lib/api/fetch"
 
 interface InstrumentEntry {
   instrumentKey: string
@@ -37,32 +38,22 @@ interface CatalogueResponse {
   total: number
 }
 
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, {
-    headers: { "x-demo-persona": personaId },
-  })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
-
 export function useInstruments() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery<InstrumentsResponse>({
-    queryKey: ["instruments", personaId],
-    queryFn: () => fetchWithPersona("/api/data/instruments", personaId),
+    queryKey: ["instruments", user?.id],
+    queryFn: () => apiFetch("/api/data/instruments", token) as Promise<InstrumentsResponse>,
     enabled: !!user,
   })
 }
 
 export function useCatalogue() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery<CatalogueResponse>({
-    queryKey: ["catalogue", personaId],
-    queryFn: () => fetchWithPersona("/api/data/catalogue", personaId),
+    queryKey: ["catalogue", user?.id],
+    queryFn: () => apiFetch("/api/data/catalogue", token) as Promise<CatalogueResponse>,
     enabled: !!user,
   })
 }

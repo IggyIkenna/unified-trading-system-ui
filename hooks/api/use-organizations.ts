@@ -1,41 +1,33 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, { headers: { "x-demo-persona": personaId } })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
+import { apiFetch } from "@/lib/api/fetch"
 
 export function useOrganizationsList() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["user-organizations", personaId],
-    queryFn: () => fetchWithPersona("/api/users/organizations", personaId),
+    queryKey: ["user-organizations", user?.id],
+    queryFn: () => apiFetch("/api/users/organizations", token),
     enabled: !!user,
   })
 }
 
 export function useOrgMembers(orgId: string) {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["org-members", orgId, personaId],
-    queryFn: () => fetchWithPersona(`/api/users/organizations/${orgId}/members`, personaId),
+    queryKey: ["org-members", orgId, user?.id],
+    queryFn: () => apiFetch(`/api/users/organizations/${orgId}/members`, token),
     enabled: !!user && !!orgId,
   })
 }
 
 export function useSubscriptions() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["user-subscriptions", personaId],
-    queryFn: () => fetchWithPersona("/api/users/subscriptions", personaId),
+    queryKey: ["user-subscriptions", user?.id],
+    queryFn: () => apiFetch("/api/users/subscriptions", token),
     enabled: !!user,
   })
 }

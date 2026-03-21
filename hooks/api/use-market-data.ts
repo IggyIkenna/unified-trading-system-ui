@@ -1,60 +1,51 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, { headers: { "x-demo-persona": personaId } })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
+import { apiFetch } from "@/lib/api/fetch"
 
 export function useCandles(symbol: string, timeframe = "1H", count = 100) {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["candles", symbol, timeframe, count, personaId],
+    queryKey: ["candles", symbol, timeframe, count, user?.id],
     queryFn: () =>
-      fetchWithPersona(
+      apiFetch(
         `/api/market-data/candles?symbol=${encodeURIComponent(symbol)}&timeframe=${timeframe}&count=${count}`,
-        personaId
+        token
       ),
     enabled: !!user && !!symbol,
   })
 }
 
 export function useOrderBook(symbol: string) {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["orderbook", symbol, personaId],
+    queryKey: ["orderbook", symbol, user?.id],
     queryFn: () =>
-      fetchWithPersona(`/api/market-data/orderbook?symbol=${encodeURIComponent(symbol)}`, personaId),
+      apiFetch(`/api/market-data/orderbook?symbol=${encodeURIComponent(symbol)}`, token),
     enabled: !!user && !!symbol,
     refetchInterval: 5000, // refresh every 5s for semi-live feel
   })
 }
 
 export function useTrades(symbol: string) {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["trades", symbol, personaId],
+    queryKey: ["trades", symbol, user?.id],
     queryFn: () =>
-      fetchWithPersona(`/api/market-data/trades?symbol=${encodeURIComponent(symbol)}`, personaId),
+      apiFetch(`/api/market-data/trades?symbol=${encodeURIComponent(symbol)}`, token),
     enabled: !!user && !!symbol,
     refetchInterval: 3000,
   })
 }
 
 export function useTickers() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["tickers", personaId],
-    queryFn: () => fetchWithPersona("/api/market-data/tickers", personaId),
+    queryKey: ["tickers", user?.id],
+    queryFn: () => apiFetch("/api/market-data/tickers", token),
     enabled: !!user,
     refetchInterval: 10000,
   })

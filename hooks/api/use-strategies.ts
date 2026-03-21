@@ -1,63 +1,53 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-
-async function fetchWithPersona(url: string, personaId: string) {
-  const res = await fetch(url, { headers: { "x-demo-persona": personaId } })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
-  return res.json()
-}
+import { apiFetch } from "@/lib/api/fetch"
 
 export function useStrategyTemplates() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["strategy-templates", personaId],
-    queryFn: () => fetchWithPersona("/api/strategy/templates", personaId),
+    queryKey: ["strategy-templates", user?.id],
+    queryFn: () => apiFetch("/api/strategy/templates", token),
     enabled: !!user,
   })
 }
 
 export function useStrategyConfigs() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["strategy-configs", personaId],
-    queryFn: () => fetchWithPersona("/api/strategy/configs", personaId),
+    queryKey: ["strategy-configs", user?.id],
+    queryFn: () => apiFetch("/api/strategy/configs", token),
     enabled: !!user,
   })
 }
 
 export function useBacktests() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["backtests", personaId],
-    queryFn: () => fetchWithPersona("/api/strategy/backtests", personaId),
+    queryKey: ["backtests", user?.id],
+    queryFn: () => apiFetch("/api/strategy/backtests", token),
     enabled: !!user,
   })
 }
 
 export function useStrategyCandidates() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["strategy-candidates", personaId],
-    queryFn: () => fetchWithPersona("/api/strategy/candidates", personaId),
+    queryKey: ["strategy-candidates", user?.id],
+    queryFn: () => apiFetch("/api/strategy/candidates", token),
     enabled: !!user,
   })
 }
 
 export function useStrategyAlerts() {
-  const { user } = useAuth()
-  const personaId = user?.id ?? "internal-trader"
+  const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["strategy-alerts", personaId],
-    queryFn: () => fetchWithPersona("/api/strategy/alerts", personaId),
+    queryKey: ["strategy-alerts", user?.id],
+    queryFn: () => apiFetch("/api/strategy/alerts", token),
     enabled: !!user,
   })
 }
