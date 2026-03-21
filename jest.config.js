@@ -17,15 +17,23 @@ const customJestConfig = {
     "<rootDir>/node_modules/",
     "<rootDir>/.next/",
     "<rootDir>/_reference/",
+    "<rootDir>/.claude/",
   ],
+  // Force exit after tests complete to prevent zombie node processes
+  forceExit: true,
+  // Cap worker memory to prevent OOM in CI
+  workerIdleMemoryLimit: "512MB",
   testMatch: [
     "<rootDir>/__tests__/**/*.test.{ts,tsx}",
   ],
   collectCoverageFrom: [
+    "components/ui/**/*.{ts,tsx}",
     "lib/mocks/utils.ts",
     "lib/mocks/fixtures/**/*.{ts,tsx}",
     "lib/config/**/*.{ts,tsx}",
     "lib/stores/**/*.{ts,tsx}",
+    "lib/auth/**/*.{ts,tsx}",
+    "hooks/use-auth.tsx",
     "!lib/config/index.ts",
     "!**/*.d.ts",
     "!**/node_modules/**",
