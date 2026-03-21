@@ -202,6 +202,8 @@ export interface FeatureSetVersion {
   services: string[]
   createdAt: string
   createdBy: string
+  featureCount?: number
+  coveragePct?: number
 }
 
 export interface FeatureDefinition {

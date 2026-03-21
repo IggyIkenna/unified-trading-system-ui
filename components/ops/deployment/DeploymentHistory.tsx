@@ -50,12 +50,12 @@ interface DeploymentSummary {
 }
 
 interface DeploymentHistoryProps {
-  serviceName: string;
+  serviceName?: string;
   onViewDetails?: (deploymentId: string) => void;
 }
 
 export function DeploymentHistory({
-  serviceName,
+  serviceName = "all",
   onViewDetails,
 }: DeploymentHistoryProps) {
   const [deployments, setDeployments] = useState<DeploymentSummary[]>([]);

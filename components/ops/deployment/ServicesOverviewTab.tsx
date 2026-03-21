@@ -25,7 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import type { ServicesOverview } from "@/lib/types/deployment";
 
 interface ServicesOverviewTabProps {
-  onSelectService: (service: string) => void;
+  onSelectService?: (service: string) => void;
 }
 
 export function ServicesOverviewTab({
@@ -286,7 +286,7 @@ export function ServicesOverviewTab({
                       <tr
                         key={service.service}
                         className="border-b border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-secondary)] cursor-pointer transition-colors"
-                        onClick={() => onSelectService(service.service)}
+                        onClick={() => onSelectService?.(service.service)}
                       >
                         <td className="py-3 px-4">
                           <span className="font-mono font-medium text-[var(--color-text-primary)]">

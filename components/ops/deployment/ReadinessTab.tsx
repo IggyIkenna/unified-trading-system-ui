@@ -29,10 +29,10 @@ import { cn } from "@/lib/utils";
 import type { ChecklistItem, ChecklistCategory } from "@/lib/types/deployment";
 
 interface ReadinessTabProps {
-  serviceName: string;
+  serviceName?: string;
 }
 
-export function ReadinessTab({ serviceName }: ReadinessTabProps) {
+export function ReadinessTab({ serviceName = "all" }: ReadinessTabProps) {
   const { checklist, loading, error, refetch } =
     useServiceChecklist(serviceName);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(

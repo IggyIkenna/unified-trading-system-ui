@@ -38,6 +38,7 @@ import {
   FEATURE_SET_VERSIONS,
   MODEL_VERSIONS,
 } from "@/lib/ml-mock-data"
+import type { ExperimentMetrics } from "@/lib/ml-types"
 import {
   LineChart,
   Line,
@@ -141,7 +142,7 @@ function generateRegimePerformance(): { regime: string; sharpe: number; accuracy
 }
 
 // Radar chart data for metrics
-function generateRadarData(metrics: Record<string, number> | null) {
+function generateRadarData(metrics: ExperimentMetrics | null) {
   if (!metrics) return []
   return [
     { metric: "Sharpe", value: (metrics.sharpe / 3) * 100, fullMark: 100 },

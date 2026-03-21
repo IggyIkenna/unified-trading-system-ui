@@ -36,6 +36,10 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "_reference",
+    "__tests__",
+    "coverage",
+    "e2e"
   ]
 }

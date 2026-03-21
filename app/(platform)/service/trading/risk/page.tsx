@@ -93,12 +93,14 @@ interface RiskLimit {
 // MOCK DATA - Strategy Risk Heatmap
 // =============================================================================
 
-const strategyRiskHeatmap = [
-  { strategy: "DEFI_ETH_BASIS_SCE_1H", delta: "0.3%", funding: "0.012%", hf: "1.42", status: "ok" as const },
-  { strategy: "CEFI_BTC_MM_EVT_TICK", delta: "1.2%", inventory: "18%", spread: "4.2bps", status: "ok" as const },
-  { strategy: "CEFI_ETH_OPT_MM_EVT_TICK", delta: "-0.8", gamma: "0.04", vega: "$12K", status: "warning" as const },
-  { strategy: "TRADFI_SPY_MOM_HUF_1D", delta: "2.1%", drawdown: "3.8%", var: "$410K", status: "ok" as const },
-  { strategy: "SPORTS_FOOTBALL_ARB_EVT", edge: "2.1%", exposure: "$45K", clv: "+1.2%", status: "ok" as const },
+type RiskStatus = "ok" | "warning" | "critical";
+
+const strategyRiskHeatmap: Array<{ strategy: string; status: RiskStatus; [key: string]: string }> = [
+  { strategy: "DEFI_ETH_BASIS_SCE_1H", delta: "0.3%", funding: "0.012%", hf: "1.42", status: "ok" },
+  { strategy: "CEFI_BTC_MM_EVT_TICK", delta: "1.2%", inventory: "18%", spread: "4.2bps", status: "ok" },
+  { strategy: "CEFI_ETH_OPT_MM_EVT_TICK", delta: "-0.8", gamma: "0.04", vega: "$12K", status: "warning" },
+  { strategy: "TRADFI_SPY_MOM_HUF_1D", delta: "2.1%", drawdown: "3.8%", var: "$410K", status: "ok" },
+  { strategy: "SPORTS_FOOTBALL_ARB_EVT", edge: "2.1%", exposure: "$45K", clv: "+1.2%", status: "ok" },
 ]
 
 // =============================================================================
@@ -189,11 +191,11 @@ const hfTimeSeries = [
 // MOCK DATA - Margin & Distance to Liquidation
 // =============================================================================
 
-const distanceToLiquidation = [
-  { venue: "Aave V3", metric: "HF: 1.42", distToLiq: 29.6, status: "ok" as const },
-  { venue: "Binance", metric: "Margin: 78%", distToLiq: 22.0, status: "ok" as const },
-  { venue: "Hyperliquid", metric: "Margin: 45%", distToLiq: 55.0, status: "ok" as const },
-  { venue: "Deribit", metric: "Margin: 62%", distToLiq: 38.0, status: "ok" as const },
+const distanceToLiquidation: Array<{ venue: string; metric: string; distToLiq: number; status: RiskStatus }> = [
+  { venue: "Aave V3", metric: "HF: 1.42", distToLiq: 29.6, status: "ok" },
+  { venue: "Binance", metric: "Margin: 78%", distToLiq: 22.0, status: "ok" },
+  { venue: "Hyperliquid", metric: "Margin: 45%", distToLiq: 55.0, status: "ok" },
+  { venue: "Deribit", metric: "Margin: 62%", distToLiq: 38.0, status: "ok" },
 ]
 
 // =============================================================================
@@ -724,9 +726,9 @@ export default function RiskPage() {
                           border: "1px solid var(--border)",
                           borderRadius: "8px",
                         }}
-                        formatter={(value: number, name: string, props: { payload: typeof adjustedVarData[0] }) => [
-                          `${formatCurrency(value)} (${props.payload.pct}%)`,
-                          `VaR 95% - ${props.payload.venue}`,
+                        formatter={(value: number, _name: string, props: { payload?: typeof adjustedVarData[0] }) => [
+                          `${formatCurrency(value)} (${props.payload?.pct ?? 0}%)`,
+                          `VaR 95% - ${props.payload?.venue ?? ""}`,
                         ]}
                       />
                       <Bar dataKey="var95" radius={[0, 4, 4, 0]}>

@@ -71,18 +71,28 @@ export function PnLValue({
 // P&L Change percentage
 export function PnLChange({
   value,
+  size = "md",
   className,
 }: {
   value: number
+  size?: "sm" | "md" | "lg" | "xl"
   className?: string
 }) {
   const isPositive = value >= 0
   const colorClass = isPositive ? "pnl-positive" : "pnl-negative"
 
+  const sizeClasses = {
+    sm: "text-xs",
+    md: "text-xs",
+    lg: "text-sm",
+    xl: "text-base",
+  }
+
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-0.5 text-xs font-medium tabular-nums",
+        "inline-flex items-center gap-0.5 font-medium tabular-nums",
+        sizeClasses[size],
         colorClass,
         className
       )}

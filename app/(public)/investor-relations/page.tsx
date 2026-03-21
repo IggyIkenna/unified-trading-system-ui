@@ -416,7 +416,10 @@ export default function PresentationPage() {
     }
   }
 
-  const slide = slides[currentSlide]
+  // Each slide has a different shape based on `type`. Cast to a permissive record
+  // to allow type-specific property access in render branches.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const slide = slides[currentSlide] as Record<string, any>
 
   return (
     <div 

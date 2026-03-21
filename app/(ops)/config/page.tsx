@@ -613,9 +613,12 @@ export default function ConfigPage() {
                       <Label htmlFor={param.key} className="text-sm font-medium">{param.label}</Label>
                       {param.type === "slider" && (
                         <span className="text-sm font-mono text-muted-foreground">
-                          {typeof editedParams[param.key] === "number" 
-                            ? editedParams[param.key].toFixed(param.step && param.step < 0.01 ? 4 : 2) 
-                            : editedParams[param.key]}
+                          {(() => {
+                            const val = editedParams[param.key];
+                            return typeof val === "number"
+                              ? val.toFixed(param.step && param.step < 0.01 ? 4 : 2)
+                              : val;
+                          })()}
                         </span>
                       )}
                     </div>
@@ -628,7 +631,7 @@ export default function ConfigPage() {
                           min={param.min}
                           max={param.max}
                           step={param.step}
-                          value={[typeof editedParams[param.key] === "number" ? editedParams[param.key] : 0]}
+                          value={[(() => { const v = editedParams[param.key]; return typeof v === "number" ? v : 0; })()]}
                           onValueChange={(v) => setEditedParams(prev => ({ ...prev, [param.key]: v[0] }))}
                           className="flex-1"
                         />

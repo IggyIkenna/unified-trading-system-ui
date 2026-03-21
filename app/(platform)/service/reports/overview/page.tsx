@@ -203,12 +203,14 @@ const accountBalances = [
   { venue: "Wallet (ETH)", free: 95000, locked: 0, total: 95000 },
 ]
 
-const recentTransfers = [
-  { time: "14:20", from: "Binance", to: "Hyperliquid", amount: "$100K USDT", status: "confirming" as const, confirmations: "2/12" },
-  { time: "13:45", from: "Fiat", to: "IBKR", amount: "$50K USD", status: "settled" as const },
-  { time: "09:00", from: "Aave V3", to: "Wallet", amount: "$25K WETH", status: "confirmed" as const, txHash: "0xab3f..." },
-  { time: "Yesterday", from: "Wallet", to: "Binance", amount: "$200K USDT", status: "confirmed" as const },
-  { time: "2 days ago", from: "Betfair", to: "Bank", amount: "£15K GBP", status: "settled" as const },
+type TransferStatus = "confirming" | "settled" | "confirmed" | "pending" | "failed";
+
+const recentTransfers: Array<{ time: string; from: string; to: string; amount: string; status: TransferStatus; confirmations?: string; txHash?: string }> = [
+  { time: "14:20", from: "Binance", to: "Hyperliquid", amount: "$100K USDT", status: "confirming", confirmations: "2/12" },
+  { time: "13:45", from: "Fiat", to: "IBKR", amount: "$50K USD", status: "settled" },
+  { time: "09:00", from: "Aave V3", to: "Wallet", amount: "$25K WETH", status: "confirmed", txHash: "0xab3f..." },
+  { time: "Yesterday", from: "Wallet", to: "Binance", amount: "$200K USDT", status: "confirmed" },
+  { time: "2 days ago", from: "Betfair", to: "Bank", amount: "£15K GBP", status: "settled" },
 ]
 
 export default function ReportsPage() {
