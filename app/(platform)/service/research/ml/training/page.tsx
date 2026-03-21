@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -162,15 +161,7 @@ export default function TrainingRunsPage() {
   const runningJobs = TRAINING_RUNS.filter(r => r.status === "training" || r.status === "validating")
   
   return (
-    <AppShell
-      activeSurface="ml"
-      showLifecycleRail={false}
-      breadcrumbs={[
-        { label: "ML Platform", href: "/ml" },
-        { label: "Training Runs" },
-      ]}
-      contextLevels={{ organization: true, client: false, strategy: false, underlying: false }}
-    >
+    <div className="p-6">
       <div className="max-w-[1800px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -581,6 +572,6 @@ export default function TrainingRunsPage() {
           </Card>
         </div>
       </div>
-    </AppShell>
+    </div>
   )
 }

@@ -35,14 +35,23 @@ const nextConfig = {
       { source: "/positions", destination: "/service/trading/positions", permanent: true },
       { source: "/risk", destination: "/service/trading/risk", permanent: true },
       { source: "/alerts", destination: "/service/trading/alerts", permanent: true },
-      { source: "/markets", destination: "/service/data/markets", permanent: true },
+      // Strategy platform — root + specific overview override (must come before wildcard)
+      { source: "/strategy-platform", destination: "/service/research/strategy/backtests", permanent: true },
+      { source: "/strategy-platform/overview", destination: "/service/research/strategy/overview", permanent: true },
       { source: "/strategy-platform/:path*", destination: "/service/research/strategy/:path*", permanent: true },
       // Execution service
       { source: "/execution", destination: "/service/execution/overview", permanent: true },
       { source: "/execution/:path*", destination: "/service/execution/:path*", permanent: true },
       // Reports service
       { source: "/reports", destination: "/service/reports/overview", permanent: true },
-      { source: "/reports/executive", destination: "/service/reports/executive", permanent: true },
+      { source: "/reports/:path*", destination: "/service/reports/:path*", permanent: true },
+      // /markets flat routes (specific paths before catch-all)
+      { source: "/markets/pnl", destination: "/service/data/markets/pnl", permanent: true },
+      { source: "/markets/:path*", destination: "/service/data/markets/:path*", permanent: true },
+      { source: "/markets", destination: "/service/data/markets", permanent: true },
+      // Misc legacy flat routes (direct, no double-hop)
+      { source: "/executive", destination: "/service/reports/executive", permanent: true },
+      { source: "/quant", destination: "/service/research/quant", permanent: true },
     ]
   },
 }

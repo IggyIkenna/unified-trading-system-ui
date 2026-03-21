@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-import { AppShell } from "@/components/trading"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -452,15 +451,7 @@ function PositionsPageContent() {
   }
 
   return (
-    <AppShell
-      title="Positions"
-      subtitle={selectedStrategy 
-        ? `Positions for ${selectedStrategy.name}` 
-        : "Live positions across all strategies and venues"
-      }
-      activeNav="trading"
-      lifecyclePhase="run"
-    >
+    <div className="p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -844,14 +835,14 @@ function PositionsPageContent() {
           </Table>
         </CardContent>
       </Card>
-    </AppShell>
+    </div>
   )
 }
 
 // Wrap with Suspense for useSearchParams (required for static generation)
 export default function PositionsPage() {
   return (
-    <Suspense fallback={<AppShell title="Positions" subtitle="Loading..."><div className="flex items-center justify-center h-64">Loading positions...</div></AppShell>}>
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64">Loading positions...</div>}>
       <PositionsPageContent />
     </Suspense>
   )

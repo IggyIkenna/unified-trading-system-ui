@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -109,15 +108,7 @@ export default function MLOverviewPage() {
   const avgLatency = LIVE_DEPLOYMENTS.reduce((sum, d) => sum + d.metrics.latencyP50, 0) / LIVE_DEPLOYMENTS.length
 
   return (
-    <AppShell
-      activeSurface="ml"
-      showLifecycleRail={false}
-      breadcrumbs={[
-        { label: "ML Platform", href: "/ml" },
-        { label: "Overview" },
-      ]}
-      contextLevels={{ organization: true, client: false, strategy: false, underlying: false }}
-    >
+    <div className="p-6">
       <div className="max-w-[1800px] mx-auto space-y-6">
         {/* ML Navigation */}
         <MLNav className="border-b pb-3" />
@@ -628,6 +619,6 @@ export default function MLOverviewPage() {
           </Card>
         </div>
       </div>
-    </AppShell>
+    </div>
   )
 }

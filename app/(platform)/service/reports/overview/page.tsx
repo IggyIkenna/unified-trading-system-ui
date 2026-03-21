@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -270,17 +269,7 @@ export default function ReportsPage() {
   const reportsThisMonth = reports.length
 
   return (
-    <AppShell
-      activeSurface="reports"
-      activePhase="reconcile"
-      breadcrumbs={[
-        { label: "Reporting & Settlement", href: "/reports" },
-        { label: "Overview" },
-      ]}
-      contextLevels={{ organization: true, client: true, strategy: false, underlying: false }}
-      initialContext={context}
-      onContextChange={setContext}
-    >
+    <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -768,6 +757,6 @@ export default function ReportsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppShell>
+    </div>
   )
 }

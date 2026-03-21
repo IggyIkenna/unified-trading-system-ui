@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { use } from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { StatusBadge } from "@/components/trading/status-badge"
 import { PnLValue } from "@/components/trading/pnl-value"
 import { SparklineCell } from "@/components/trading/kpi-card"
@@ -94,14 +93,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
   }, [strategy])
 
   return (
-    <AppShell
-      activeSurface="strategies"
-      activePhase="run"
-      breadcrumbs={[
-        { label: "Strategies", href: "/strategies" },
-        { label: strategy.name },
-      ]}
-    >
+    <div className="p-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
@@ -759,6 +751,6 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
           </TabsContent>
         </Tabs>
       </div>
-    </AppShell>
+    </div>
   )
 }

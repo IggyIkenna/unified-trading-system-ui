@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { AppShell } from "@/components/trading/app-shell"
 import { DimensionalGrid, type DimensionDef, type MetricDef } from "@/components/trading/dimensional-grid"
 import { PromoteFlowModal } from "@/components/trading/promote-flow-modal"
 import { Button } from "@/components/ui/button"
@@ -176,14 +175,7 @@ export default function StrategyGridPage() {
   }
 
   return (
-    <AppShell
-      activeSurface="strategies"
-      activePhase="promote"
-      breadcrumbs={[
-        { label: "Strategies", href: "/strategies" },
-        { label: "Grid Analysis" },
-      ]}
-    >
+    <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -280,6 +272,6 @@ export default function StrategyGridPage() {
           />
         )}
       </div>
-    </AppShell>
+    </div>
   )
 }

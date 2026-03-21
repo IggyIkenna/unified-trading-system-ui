@@ -1,6 +1,5 @@
 "use client"
 
-import { AppShell } from "@/components/trading/app-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -144,7 +143,7 @@ export default function ServicesPage() {
   }
 
   return (
-    <AppShell activePhase="monitor" activeSurface="ops">
+    <div className="p-6">
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -233,7 +232,7 @@ export default function ServicesPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppShell>
+    </div>
   )
 }
 

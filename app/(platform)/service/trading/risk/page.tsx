@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { RoleLayout } from "@/components/shell/role-layout"
 import { LimitBar } from "@/components/trading/limit-bar"
 import { PnLValue } from "@/components/trading/pnl-value"
 import { StatusBadge } from "@/components/trading/status-badge"
@@ -446,7 +445,7 @@ export default function RiskPage() {
   }, [filteredExposureRows])
 
   return (
-    <RoleLayout currentRole="risk" activeSurface="trading" showLifecycleRail={false}>
+    <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -1438,6 +1437,6 @@ export default function RiskPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </RoleLayout>
+    </div>
   )
 }

@@ -10,7 +10,6 @@
  * TODO: Build out full functionality
  */
 
-import { GlobalNavBar } from "@/components/trading/global-nav-bar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { FileText, Target, Shield, DollarSign } from "lucide-react"
@@ -18,8 +17,6 @@ import { FileText, Target, Shield, DollarSign } from "lucide-react"
 export default function ManageMandatesPage() {
   return (
     <div className="min-h-screen bg-background">
-      <GlobalNavBar />
-      
       <div className="p-6 space-y-6">
         <div>
           <div className="flex items-center gap-2">

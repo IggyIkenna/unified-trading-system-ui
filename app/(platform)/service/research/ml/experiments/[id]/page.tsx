@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useParams } from "next/navigation"
-import { AppShell } from "@/components/trading/app-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -173,15 +172,7 @@ export default function ExperimentDetailPage() {
   
   if (!experiment) {
     return (
-      <AppShell
-        activeSurface="ml"
-        showLifecycleRail={false}
-        breadcrumbs={[
-          { label: "ML Platform", href: "/ml" },
-          { label: "Experiments", href: "/ml/experiments" },
-          { label: "Not Found" },
-        ]}
-      >
+      <div className="p-6">
         <div className="flex items-center justify-center h-[60vh]">
           <div className="text-center">
             <AlertTriangle className="size-12 mx-auto mb-4 text-muted-foreground" />
@@ -192,21 +183,12 @@ export default function ExperimentDetailPage() {
             </Link>
           </div>
         </div>
-      </AppShell>
+      </div>
     )
   }
 
   return (
-    <AppShell
-      activeSurface="ml"
-      showLifecycleRail={false}
-      breadcrumbs={[
-        { label: "ML Platform", href: "/ml" },
-        { label: "Experiments", href: "/ml/experiments" },
-        { label: experiment.name },
-      ]}
-      contextLevels={{ organization: true, client: false, strategy: false, underlying: false }}
-    >
+    <div className="p-6">
       <div className="max-w-[1800px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -667,6 +649,6 @@ export default function ExperimentDetailPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppShell>
+    </div>
   )
 }
