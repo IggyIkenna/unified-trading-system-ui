@@ -1,23 +1,14 @@
 "use client"
 
 import * as React from "react"
-import type { UserRole, Entitlement, EntitlementOrWildcard, Org } from "@/lib/config/auth"
-import { ALL_ENTITLEMENTS } from "@/lib/config/auth"
-import {
-  PERSONAS,
-  getPersonaByEmail,
-  getPersonaById,
-} from "@/lib/mocks/fixtures/personas"
+import type { Entitlement } from "@/lib/config/auth"
+import { PERSONAS } from "@/lib/mocks/fixtures/personas"
 import { useAuthStore } from "@/lib/stores/auth-store"
+import { getAuthProvider } from "@/lib/auth/get-provider"
+import type { AuthUser } from "@/lib/auth/types"
 
-export interface AuthUser {
-  id: string
-  email: string
-  displayName: string
-  role: UserRole
-  org: Org
-  entitlements: readonly EntitlementOrWildcard[]
-}
+// Re-export AuthUser so existing consumers keep working
+export type { AuthUser } from "@/lib/auth/types"
 
 export interface AuthState {
   user: AuthUser | null
@@ -32,83 +23,47 @@ export interface AuthState {
   personas: typeof PERSONAS
 }
 
-const STORAGE_KEY = "portal_user"
-const TOKEN_KEY = "portal_token"
-
-function loadUser(): { user: AuthUser | null; token: string | null } {
-  if (typeof window === "undefined") return { user: null, token: null }
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    const token = localStorage.getItem(TOKEN_KEY)
-    if (!raw) return { user: null, token: null }
-    const stored = JSON.parse(raw)
-    const persona =
-      getPersonaById(stored.id) ?? getPersonaByEmail(stored.email)
-    if (persona) {
-      return {
-        user: {
-          id: persona.id,
-          email: persona.email,
-          displayName: persona.displayName,
-          role: persona.role,
-          org: persona.org,
-          entitlements: persona.entitlements,
-        },
-        token: token ?? `demo-token-${persona.id}`,
-      }
-    }
-    return { user: null, token: null }
-  } catch {
-    return { user: null, token: null }
-  }
-}
-
 const AuthContext = React.createContext<AuthState | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const provider = React.useMemo(() => getAuthProvider(), [])
   const [user, setUser] = React.useState<AuthUser | null>(null)
   const [token, setToken] = React.useState<string | null>(null)
   const [loading, setLoading] = React.useState(true)
   const syncZustand = useAuthStore((s) => s.setPersonaId)
 
+  // Restore session from provider on mount
   React.useEffect(() => {
-    const loaded = loadUser()
-    setUser(loaded.user)
-    setToken(loaded.token)
-    syncZustand(loaded.user?.id ?? null)
+    const restored = provider.getUser()
+    const restoredToken = provider.getToken()
+    setUser(restored)
+    setToken(restoredToken)
+    syncZustand(restored?.id ?? null)
     setLoading(false)
-  }, [syncZustand])
+  }, [provider, syncZustand])
 
   const login = React.useCallback(
     (personaId: string): boolean => {
-      const persona = getPersonaById(personaId)
-      if (!persona) return false
-      const authUser: AuthUser = {
-        id: persona.id,
-        email: persona.email,
-        displayName: persona.displayName,
-        role: persona.role,
-        org: persona.org,
-        entitlements: persona.entitlements,
-      }
-      const demoToken = `demo-token-${persona.id}`
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(authUser))
-      localStorage.setItem(TOKEN_KEY, demoToken)
-      setUser(authUser)
-      setToken(demoToken)
-      syncZustand(persona.id)
+      const result = provider.login(personaId)
+      if (!result) return false
+      setUser(result)
+      setToken(provider.getToken())
+      syncZustand(result.id)
       return true
     },
-    [syncZustand],
+    [provider, syncZustand],
   )
 
   const loginByEmail = React.useCallback(
     (email: string, password: string): boolean => {
-      const persona = getPersonaByEmail(email)
-      if (!persona || persona.password !== password) return false
-      return login(persona.id)
+      const result = provider.login(email, password)
+      if (!result) return false
+      setUser(result)
+      setToken(provider.getToken())
+      syncZustand(result.id)
+      return true
     },
-    [login],
+    [provider, syncZustand],
   )
 
   const switchPersona = React.useCallback(
@@ -119,21 +74,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 
   const logout = React.useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY)
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem("odum_user")
+    provider.logout()
     setUser(null)
     setToken(null)
     syncZustand(null)
-  }, [syncZustand])
+  }, [provider, syncZustand])
 
   const hasEntitlement = React.useCallback(
     (entitlement: Entitlement): boolean => {
-      if (!user) return false
-      if (user.entitlements.includes(ALL_ENTITLEMENTS)) return true
-      return user.entitlements.includes(entitlement)
+      return provider.hasEntitlement(entitlement)
     },
-    [user],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [provider, user],
   )
 
   const isInternal = React.useCallback((): boolean => {
