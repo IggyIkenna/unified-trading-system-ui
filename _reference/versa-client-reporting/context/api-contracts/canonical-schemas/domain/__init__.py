@@ -145,7 +145,6 @@ from .market.tradfi import (
 )
 from .onchain import (
     CanonicalOnChainMetric,
-    CanonicalOraclePriceFeed,
 )
 from .position import (
     AggregatedPosition,
@@ -389,7 +388,6 @@ __all__ = [
     "CanonicalOhlcvBar",
     "CanonicalOnChainMetric",
     "CanonicalOptionsChainEntry",
-    "CanonicalOraclePriceFeed",
     "CanonicalOrder",
     "CanonicalOrderAmendment",
     "CanonicalOrderBook",

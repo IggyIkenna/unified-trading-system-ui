@@ -22,12 +22,3 @@ class CanonicalOnChainMetric(CanonicalBase):
     schema_version: str = "1.0"
 
 
-class CanonicalOraclePriceFeed(CanonicalBase):
-    """Normalized oracle price feed tick (Pyth Network)."""
-
-    timestamp: AwareDatetime
-    venue: str = "pyth"
-    feed_id: str = Field(description="Pyth price feed ID (hex)")
-    price: Decimal = Field(description="Actual price after fixed-point conversion")
-    confidence: Decimal | None = Field(default=None, description="Confidence interval (same units as price)")
-    schema_version: str = "1.0"
