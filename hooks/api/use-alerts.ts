@@ -4,7 +4,7 @@ import type { ApiResponse } from "@/lib/api/typed-fetch"
 import { typedFetch } from "@/lib/api/typed-fetch"
 
 /** Typed response: array of alert objects from client-reporting-api. */
-type AlertsResponse = ApiResponse<"/client-reporting-api/alerts">
+type AlertsResponse = ApiResponse<"/alerts/list">
 
 export function useAlerts() {
   const { user, token } = useAuth()

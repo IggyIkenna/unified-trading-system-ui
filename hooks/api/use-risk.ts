@@ -4,10 +4,9 @@ import type { ApiResponse } from "@/lib/api/typed-fetch"
 import { typedFetch } from "@/lib/api/typed-fetch"
 
 /** Typed response: map of client_id -> string[] from risk-and-exposure-service. */
-type RiskLimitsResponse = ApiResponse<"/risk-and-exposure-service/risk-limits">
+type RiskLimitsResponse = ApiResponse<"/risk/limits">
 
-/** Typed response: VaRResponse from risk-and-exposure-service. */
-type VaRResponse = ApiResponse<"/risk-and-exposure-service/risk/var">
+type VaRResponse = ApiResponse<"/risk/var">
 
 export function useRiskLimits() {
   const { user, token } = useAuth()

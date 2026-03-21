@@ -4,10 +4,9 @@ import type { ApiResponse } from "@/lib/api/typed-fetch"
 import { typedFetch } from "@/lib/api/typed-fetch"
 
 /** Typed response: array of PositionResponse from position-balance-monitor-service. */
-type PositionsResponse = ApiResponse<"/position-balance-monitor-service/positions">
+type PositionsResponse = ApiResponse<"/positions/active">
 
-/** Typed response: array of AggregatedPosition from position-balance-monitor-service. */
-type PositionsSummaryResponse = ApiResponse<"/position-balance-monitor-service/aggregated-positions">
+type PositionsSummaryResponse = ApiResponse<"/positions/summary">
 
 export function usePositions() {
   const { user, token } = useAuth()
