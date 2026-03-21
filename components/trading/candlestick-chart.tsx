@@ -2,7 +2,7 @@
 
 // CandlestickChart v3.0 - only accepts Unix timestamps (numbers), not date strings
 import * as React from "react"
-import { createChart, CandlestickSeries, HistogramSeries } from "lightweight-charts"
+import { createChart, CandlestickSeries, HistogramSeries, ColorType } from "lightweight-charts"
 import type { IChartApi, ISeriesApi, CandlestickData, Time } from "lightweight-charts"
 
 interface CandlestickChartProps {
@@ -30,7 +30,7 @@ export function CandlestickChart({ data, height = 300, className }: CandlestickC
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: "solid" as const, color: "transparent" },
+        background: { type: ColorType.Solid, color: "transparent" },
         textColor: "rgba(255, 255, 255, 0.5)",
       },
       grid: {

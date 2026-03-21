@@ -94,7 +94,7 @@ export function DeploymentHistory({
           (response.deployments || []).map((d) => ({
             deployment_id: d.id,
             service: d.service,
-            compute_type: d.parameters?.compute ?? "cloud_run",
+            compute_type: (d.parameters?.compute as string) ?? "cloud_run",
             status: d.status,
             created_at: d.created_at,
             total_shards: d.total_shards,

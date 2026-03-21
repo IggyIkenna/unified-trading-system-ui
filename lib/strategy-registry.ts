@@ -141,7 +141,7 @@ export type TestingStage = TaxonomyTestingStage
 
 export interface TestingStageStatus {
   stage: TestingStage
-  status: "done" | "pending" | "blocked"
+  status: "done" | "pending" | "blocked" | "in_progress"
   notes?: string
 }
 
@@ -168,7 +168,7 @@ export interface Strategy {
   // Classification
   assetClass: "DeFi" | "CeFi" | "TradFi" | "Sports" | "Prediction"
   strategyType: string
-  archetype: "BASIS_TRADE" | "MARKET_MAKING" | "ARBITRAGE" | "YIELD" | "DIRECTIONAL" | "MOMENTUM" | "MEAN_REVERSION" | "STATISTICAL_ARB" | "OPTIONS"
+  archetype: "BASIS_TRADE" | "MARKET_MAKING" | "ARBITRAGE" | "YIELD" | "DIRECTIONAL" | "MOMENTUM" | "MEAN_REVERSION" | "STATISTICAL_ARB" | "OPTIONS" | "PREDICTION_ARB"
   executionMode: "SCE" | "HUF" | "EVT" // Strategy execution mode
   
   // Status
@@ -215,6 +215,13 @@ export interface Strategy {
   // Config Parameters
   configParams: StrategyConfig[]
   
+  // Cross-asset link (for multi-asset-class strategies)
+  crossAssetLink?: {
+    from: string
+    to: string
+    instruments: string[]
+  }
+
   // Venues
   venues: string[]
   
@@ -1727,7 +1734,7 @@ export function generatePositionsForStrategy(strategy: Strategy): Position[] {
     // Skip initial capital instruments
     if (inst.role.toLowerCase().includes("initial capital")) return
     
-    const entryPrice = inst.type === "Perp" || inst.type === "Spot" ? (inst.key.includes("BTC") ? 67245 : inst.key.includes("ETH") ? 3245 : 1) : 1
+    const entryPrice = inst.type === "Perp" || inst.type === "SPOT_ASSET" ? (inst.key.includes("BTC") ? 67245 : inst.key.includes("ETH") ? 3245 : 1) : 1
     const priceChange = Math.random() * 0.04 - 0.02 // -2% to +2%
     const currentPrice = entryPrice * (1 + priceChange)
     const size = Math.abs(baseSize / entryPrice)

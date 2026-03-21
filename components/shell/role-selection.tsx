@@ -14,7 +14,7 @@ import {
   ArrowRight,
   Command,
 } from "lucide-react"
-type UserRole = "trader" | "quant" | "risk" | "executive" | "ops" | "compliance"
+type UserRole = "trader" | "quant" | "risk" | "executive" | "ops" | "compliance" | "devops" | "audit"
 
 interface RoleSelectionProps {
   onSelectRole: (role: UserRole) => void

@@ -329,7 +329,7 @@ export function DeploymentDetails({
       setActionLoading("resume");
       setActionError(null);
       const result = await resumeDeployment(deploymentId);
-      setActionSuccess(result.message);
+      setActionSuccess(result.message ?? null);
       fetchStatus();
     } catch (err) {
       setActionError(
@@ -363,7 +363,7 @@ export function DeploymentDetails({
       setActionLoading("retry");
       setActionError(null);
       const result = await retryFailedShards(deploymentId);
-      setActionSuccess(result.message);
+      setActionSuccess(result.message ?? null);
       fetchStatus();
     } catch (err) {
       setActionError(
@@ -379,7 +379,7 @@ export function DeploymentDetails({
       setActionLoading(`shard-${shardId}`);
       setActionError(null);
       const result = await cancelShard(deploymentId, shardId);
-      setActionSuccess(result.message);
+      setActionSuccess(result.message ?? null);
       fetchStatus();
     } catch (err) {
       setActionError(
@@ -433,7 +433,7 @@ export function DeploymentDetails({
       const result = await updateDeploymentTag(deploymentId, tagValue || null);
       setStatus((prev) => (prev ? { ...prev, tag: tagValue || null } : null));
       setEditingTag(false);
-      setActionSuccess(result.message);
+      setActionSuccess(result.message ?? null);
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "Failed to update tag",
@@ -2031,7 +2031,7 @@ export function DeploymentDetails({
 
         {/* Tabs for Shards and Logs */}
         <Tabs defaultValue="shards" className="w-full">
-          <TabsList variant="pill" className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="shards">
               Shards ({status.total_shards})
             </TabsTrigger>
@@ -2985,7 +2985,7 @@ export function DeploymentDetails({
                   </div>
                   <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)] text-center">
                     <div className="text-xl font-mono font-bold text-[var(--color-accent-purple)]">
-                      {report.retry_stats.total_zone_switches}
+                      {report.retry_stats?.total_zone_switches}
                     </div>
                     <div className="text-xs text-[var(--color-text-muted)]">
                       Zone Switches
@@ -2993,7 +2993,7 @@ export function DeploymentDetails({
                   </div>
                   <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)] text-center">
                     <div className="text-xl font-mono font-bold text-[var(--color-accent-cyan)]">
-                      {report.retry_stats.total_region_switches}
+                      {report.retry_stats?.total_region_switches}
                     </div>
                     <div className="text-xs text-[var(--color-text-muted)]">
                       Region Switches
@@ -3002,13 +3002,13 @@ export function DeploymentDetails({
                 </div>
 
                 {/* Failure Breakdown */}
-                {Object.keys(report.failure_breakdown).length > 0 && (
+                {Object.keys(report.failure_breakdown ?? {}).length > 0 && (
                   <div className="p-3 rounded-lg bg-[var(--color-status-error-bg)] border border-[var(--color-status-error-border-strong)]">
                     <h4 className="text-sm font-medium text-[var(--color-accent-red)] mb-2">
                       Failure Breakdown
                     </h4>
                     <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(report.failure_breakdown).map(
+                      {Object.entries(report.failure_breakdown ?? {}).map(
                         ([category, count]) => (
                           <div
                             key={category}
@@ -3028,13 +3028,13 @@ export function DeploymentDetails({
                 )}
 
                 {/* Zone Usage */}
-                {Object.keys(report.zone_usage).length > 0 && (
+                {Object.keys(report.zone_usage ?? {}).length > 0 && (
                   <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
                     <h4 className="text-sm font-medium text-[var(--color-text-primary)] mb-2">
                       Zone Usage
                     </h4>
                     <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(report.zone_usage).map(
+                      {Object.entries(report.zone_usage ?? {}).map(
                         ([zone, count]) => (
                           <div
                             key={zone}
@@ -3054,16 +3054,16 @@ export function DeploymentDetails({
                 )}
 
                 {/* Infrastructure Issues */}
-                {report.infrastructure_issues.length > 0 && (
+                {(report.infrastructure_issues?.length ?? 0) > 0 && (
                   <div className="p-3 rounded-lg bg-[var(--color-status-warning-bg)] border border-[var(--color-status-warning-border)]">
                     <h4 className="text-sm font-medium text-[var(--color-accent-amber)] mb-2">
                       Infrastructure Issues (
-                      {report.infrastructure_issues.length})
+                      {report.infrastructure_issues?.length})
                     </h4>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
-                      {report.infrastructure_issues
+                      {(report.infrastructure_issues ?? [])
                         .slice(0, 10)
-                        .map((issue, idx) => (
+                        .map((issue: { shard_id?: string; zone?: string; category?: string }, idx: number) => (
                           <div key={idx} className="text-xs">
                             <span className="text-[var(--color-accent-purple)]">
                               [{issue.shard_id}]
@@ -3082,7 +3082,7 @@ export function DeploymentDetails({
                 )}
 
                 {/* Rerun Commands */}
-                {rerunCommands && rerunCommands.total_commands > 0 && (
+                {rerunCommands && (rerunCommands.total_commands ?? 0) > 0 && (
                   <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
                     <h4 className="text-sm font-medium text-[var(--color-text-primary)] mb-2">
                       Rerun Commands ({rerunCommands.total_commands} failed)
@@ -3252,13 +3252,14 @@ export function DeploymentDetails({
       </CardContent>
 
       {/* Shard Logs Modal */}
-      <Dialog open={!!selectedShardForLogs} onClose={closeShardLogs}>
-        <DialogHeader onClose={closeShardLogs}>
+      <Dialog open={!!selectedShardForLogs} onOpenChange={(open) => { if (!open) closeShardLogs(); }}>
+        <DialogContent>
+        <DialogHeader>
           <DialogTitle className="font-mono">
             {selectedShardForLogs?.shard_id} - Logs
           </DialogTitle>
         </DialogHeader>
-        <DialogContent>
+        <div>
           {shardLogsLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-[var(--color-accent-cyan)]" />
@@ -3343,6 +3344,7 @@ export function DeploymentDetails({
               </Button>
             </div>
           )}
+        </div>
         </DialogContent>
       </Dialog>
     </Card>

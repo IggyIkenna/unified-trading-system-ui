@@ -165,6 +165,7 @@ function mapArchetype(archetype: RegistryStrategy["archetype"]): StrategyArchety
     "MEAN_REVERSION": "mean-reversion",
     "STATISTICAL_ARB": "statistical-arb",
     "OPTIONS": "market-making-options",
+    "PREDICTION_ARB": "prediction-arb",
   }
   return archetypeMap[archetype] || archetype.toLowerCase()
 }

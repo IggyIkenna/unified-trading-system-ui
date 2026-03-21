@@ -1463,11 +1463,12 @@ export function DeployForm({
         </div>
 
         {/* Quota info modal */}
-        <Dialog open={quotaOpen} onClose={() => setQuotaOpen(false)}>
-          <DialogHeader onClose={() => setQuotaOpen(false)}>
+        <Dialog open={quotaOpen} onOpenChange={(open) => { if (!open) setQuotaOpen(false); }}>
+          <DialogContent>
+          <DialogHeader>
             <DialogTitle>Quota requirements</DialogTitle>
           </DialogHeader>
-          <DialogContent>
+          <div>
             {quotaLoading && (
               <div className="flex items-center gap-2 text-[var(--color-text-muted)]">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -1485,10 +1486,10 @@ export function DeployForm({
               !quotaError &&
               quotaInfo &&
               (() => {
-                const rq = quotaInfo.required_quota as Record<
+                const rq = (quotaInfo.required_quota as unknown) as Record<
                   string,
                   Record<string, unknown>
-                >;
+                > | undefined;
                 const worst = (rq?.worst_case || {}) as Record<
                   string,
                   Record<string, number>
@@ -1513,7 +1514,7 @@ export function DeployForm({
                   | Record<string, Record<string, unknown>>
                   | null
                   | undefined;
-                const liveRegion = lq?.regions?.[quotaInfo.region] as
+                const liveRegion = lq?.regions?.[quotaInfo.region ?? ""] as
                   | Record<string, unknown>
                   | undefined;
                 const liveMetrics = (liveRegion?.metrics || {}) as Record<
@@ -1549,13 +1550,13 @@ export function DeployForm({
                           <span className="text-[var(--color-text-muted)]">
                             Total shards:
                           </span>{" "}
-                          {quotaInfo.total_shards.toLocaleString()}
+                          {quotaInfo.total_shards?.toLocaleString()}
                         </div>
                         <div>
                           <span className="text-[var(--color-text-muted)]">
                             Effective max_concurrent:
                           </span>{" "}
-                          {quotaInfo.effective_settings.max_concurrent.toLocaleString()}
+                          {(quotaInfo.effective_settings as Record<string, number> | undefined)?.max_concurrent?.toLocaleString()}
                         </div>
                         {recommended !== null && recommended !== undefined && (
                           <div className="mt-2 flex items-center justify-between gap-2">
@@ -1656,6 +1657,7 @@ export function DeployForm({
                   </div>
                 );
               })()}
+          </div>
           </DialogContent>
         </Dialog>
       </CardContent>

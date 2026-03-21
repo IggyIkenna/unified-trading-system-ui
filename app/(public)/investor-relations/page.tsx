@@ -507,7 +507,7 @@ export default function PresentationPage() {
                   transition={{ delay: 0.5 }}
                   className="mt-12 grid grid-cols-5 gap-6"
                 >
-                  {slide.stats?.map((stat, i) => (
+                  {slide.stats?.map((stat: { value: string; label: string }, i: number) => (
                     <div key={i} className="text-center">
                       <div className="text-4xl font-bold text-primary">{stat.value}</div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">{stat.label}</div>
@@ -775,7 +775,7 @@ export default function PresentationPage() {
                 <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
                 <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
                 <div className="grid grid-cols-4 gap-4 mb-6">
-                  {slide.costs?.map((cost, i) => (
+                  {slide.costs?.map((cost: { label?: string; value?: string; icon?: string; asset?: string; vendor?: string; cost?: string; period?: string }, i: number) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 20 }}
@@ -794,7 +794,7 @@ export default function PresentationPage() {
                   <div className="p-4 rounded-lg border border-border bg-card">
                     <h3 className="text-sm font-semibold text-destructive uppercase tracking-wider mb-3">The Pain</h3>
                     <ul className="space-y-2">
-                      {slide.pain?.map((item, i) => (
+                      {slide.pain?.map((item: string, i: number) => (
                         <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
                           <span className="text-destructive">✕</span>
                           {item}
@@ -816,7 +816,7 @@ export default function PresentationPage() {
                 <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
                 <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  {slide.gaps?.map((gap, i) => {
+                  {slide.gaps?.map((gap: { title: string; desc: string; color?: string; competitor?: string; users?: string; gap?: string }, i: number) => {
                     const colors = {
                       cyan: "border-cyan-400/30 bg-cyan-400/5",
                       violet: "border-violet-400/30 bg-violet-400/5",
@@ -909,7 +909,7 @@ export default function PresentationPage() {
               <div>
                 <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-8">{slide.title}</h2>
                 <div className="flex items-center gap-2 mb-8">
-                  {slide.steps?.map((step, i) => (
+                  {slide.steps?.map((step: string, i: number) => (
                     <React.Fragment key={i}>
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -979,7 +979,7 @@ export default function PresentationPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {slide.services?.map((service, i) => (
+                      {slide.services?.map((service: { name: string; model: string; status: string; note?: string }, i: number) => (
                         <motion.tr
                           key={i}
                           initial={{ opacity: 0, x: -20 }}
@@ -1010,7 +1010,7 @@ export default function PresentationPage() {
                 <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-4">{slide.title}</h2>
                 <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
                 <div className="flex items-center gap-2 mb-4">
-                  {slide.funnel?.map((step, i) => (
+                  {slide.funnel?.map((step: { name: string; sub: string; active?: boolean }, i: number) => (
                     <React.Fragment key={i}>
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -1045,7 +1045,7 @@ export default function PresentationPage() {
                   <div className="p-4 rounded-lg border border-border bg-card">
                     <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">Cross-Sell Examples</h3>
                     <ul className="space-y-2">
-                      {slide.examples?.map((ex, i) => (
+                      {slide.examples?.map((ex: string, i: number) => (
                         <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
                           <ArrowRight className="size-4 text-primary flex-shrink-0 mt-0.5" />
                           {ex}
@@ -1063,7 +1063,7 @@ export default function PresentationPage() {
                 <div className="flex items-start justify-between mb-4">
                   <h2 className="text-3xl font-bold text-primary border-b border-border pb-2">{slide.title}</h2>
                   <div className="flex gap-4 flex-shrink-0">
-                    {slide.metrics?.map((m, i) => (
+                    {slide.metrics?.map((m: { value: string; label: string }, i: number) => (
                       <div key={i} className="text-center">
                         <div className="text-xl font-bold text-primary">{m.value}</div>
                         <div className="text-[10px] text-muted-foreground">{m.label}</div>
@@ -1072,7 +1072,7 @@ export default function PresentationPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 mb-4">
-                  {slide.columns?.map((col, i) => (
+                  {slide.columns?.map((col: { title: string; items: string[] }, i: number) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 20 }}
@@ -1082,7 +1082,7 @@ export default function PresentationPage() {
                     >
                       <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">{col.title}</h3>
                       <ul className="space-y-2">
-                        {col.items.map((item, j) => (
+                        {col.items.map((item: string, j: number) => (
                           <li key={j} className="text-xs text-muted-foreground flex items-start gap-2">
                             <ArrowRight className="size-3 text-primary flex-shrink-0 mt-0.5" />
                             {item}
@@ -1094,7 +1094,7 @@ export default function PresentationPage() {
                 </div>
                 <div className="p-4 rounded-lg border border-primary/30 bg-primary/5 text-center">
                   <p className="text-sm text-muted-foreground">
-                    {slide.callout?.split("15–20 people").map((part, i) => 
+                    {slide.callout?.split("15–20 people").map((part: string, i: number) => 
                       i === 0 ? part : <React.Fragment key={i}><span className="text-primary font-semibold">15–20 people</span>{part}</React.Fragment>
                     )}
                   </p>
@@ -1110,7 +1110,7 @@ export default function PresentationPage() {
                   <div>
                     <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">Achieved</h3>
                     <div className="space-y-3">
-                      {slide.achieved?.map((item, i) => (
+                      {slide.achieved?.map((item: { text: string; detail: string }, i: number) => (
                         <motion.div
                           key={i}
                           initial={{ opacity: 0, x: -20 }}
@@ -1130,7 +1130,7 @@ export default function PresentationPage() {
                   <div>
                     <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider mb-4">In Progress</h3>
                     <div className="space-y-3">
-                      {slide.inProgress?.map((item, i) => (
+                      {slide.inProgress?.map((item: { text: string; detail: string }, i: number) => (
                         <motion.div
                           key={i}
                           initial={{ opacity: 0, x: 20 }}
@@ -1176,7 +1176,7 @@ export default function PresentationPage() {
                 </motion.p>
                 <div className="mt-2 h-1 w-20 mx-auto bg-gradient-to-r from-primary to-violet-500 rounded" />
                 <div className="grid grid-cols-3 gap-6 mt-10">
-                  {slide.asks?.map((ask, i) => (
+                  {slide.asks?.map((ask: { title: string; items: string[] }, i: number) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 20 }}
@@ -1186,7 +1186,7 @@ export default function PresentationPage() {
                     >
                       <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">{ask.title}</h3>
                       <ul className="space-y-2">
-                        {ask.items.map((item, j) => (
+                        {ask.items.map((item: string, j: number) => (
                           <li key={j} className="text-sm text-muted-foreground flex items-start gap-2">
                             <ArrowRight className="size-4 text-primary flex-shrink-0 mt-0.5" />
                             {item}

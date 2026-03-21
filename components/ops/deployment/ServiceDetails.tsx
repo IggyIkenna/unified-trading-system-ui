@@ -23,7 +23,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import type { DependenciesResponse, DagData } from "@/lib/types/deployment";
@@ -123,7 +123,6 @@ export function ServiceDetails({ serviceName }: ServiceDetailsProps) {
       {/* Tabs */}
       <Tabs defaultValue="dependencies" className="w-full">
         <TabsList
-          variant="pill"
           className={`grid w-full ${isInfrastructure ? "grid-cols-1" : "grid-cols-2"}`}
         >
           {!isInfrastructure && (
@@ -172,14 +171,14 @@ function DimensionsPanel({
     }
   };
 
-  const getDimensionBadgeVariant = (type: string): BadgeProps["variant"] => {
+  const getDimensionBadgeVariant = (type: string): "default" | "secondary" | "destructive" | "outline" | "success" | "error" | "warning" | "running" | "pending" => {
     switch (type) {
       case "fixed":
-        return "cefi";
+        return "secondary";
       case "hierarchical":
-        return "tradfi";
+        return "outline";
       case "date_range":
-        return "defi";
+        return "success";
       case "gcs_dynamic":
         return "warning";
       default:

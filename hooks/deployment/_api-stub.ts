@@ -17,6 +17,9 @@ import type {
   HealthResponse,
   EpicSummary,
   EpicDetail,
+  ShardEvent,
+  LiveHealthStatus,
+  ServiceStatus,
 } from "@/lib/types/deployment";
 
 // ---------------------------------------------------------------------------
@@ -56,6 +59,17 @@ export interface QuotaInfoResponse {
   quota_remaining: number;
   quota_limit: number;
   reset_at: string;
+  required_quota?: number;
+  live_quota?: {
+    remaining: number;
+    limit: number;
+  };
+  region?: string;
+  recommended_max_concurrent?: number;
+  compute?: string;
+  total_shards?: number;
+  effective_settings?: Record<string, unknown>;
+  live_quota_error?: string;
 }
 
 export interface ExecutionMissingShardsResponse {
@@ -63,8 +77,20 @@ export interface ExecutionMissingShardsResponse {
   missing_shards: Array<{
     shard_id: string;
     dimensions: Record<string, string>;
+    config_path?: string;
+    config_gcs?: string;
+    date?: string;
   }>;
   total_missing: number;
+  total_configs?: number;
+  total_dates?: number;
+  breakdown?: {
+    by_strategy: Record<string, number>;
+    by_mode: Record<string, number>;
+    by_timeframe: Record<string, number>;
+    by_algo: Record<string, number>;
+    by_date: Record<string, number>;
+  };
 }
 
 export interface DeploymentReport {
@@ -74,12 +100,35 @@ export interface DeploymentReport {
   total_shards: number;
   completed_shards: number;
   failed_shards: number;
-  summary: string;
+  summary: {
+    success_rate?: number;
+    total_retries?: number;
+    text?: string;
+  };
+  retry_stats?: {
+    success_rate?: number;
+    total_retries?: number;
+    total_zone_switches?: number;
+    total_region_switches?: number;
+    by_attempt?: Record<string, number>;
+  };
+  failure_breakdown?: Record<string, number>;
+  zone_usage?: Record<string, number>;
+  infrastructure_issues?: Array<{
+    type?: string;
+    message?: string;
+    count?: number;
+    shard_id?: string;
+    zone?: string;
+    category?: string;
+  }>;
 }
 
 export interface RerunCommands {
   deployment_id: string;
-  commands: string[];
+  commands: Array<{ shard_id: string; command: string }>;
+  total_commands?: number;
+  combined_retry_command?: string;
 }
 
 export interface VenueCheckResponse {
@@ -88,12 +137,41 @@ export interface VenueCheckResponse {
   missing: string[];
   start_date?: string;
   end_date?: string;
+  categories?: {
+    [category: string]: {
+      dates_with_missing_venues: Array<{
+        date: string;
+        missing: string[];
+        file_exists: boolean;
+      }>;
+      total_dates: number;
+    };
+  };
 }
 
 export interface DataTypeCheckResponse {
   service: string;
   data_types: string[];
   missing: string[];
+  start_date?: string;
+  end_date?: string;
+  overall_completion?: number;
+  overall_complete?: number;
+  overall_total?: number;
+  venues?: {
+    [venue: string]: {
+      completion_percent: number;
+      complete: number;
+      total: number;
+      data_types: {
+        [dataType: string]: {
+          found: number;
+          expected: number;
+          completion_percent: number;
+        };
+      };
+    };
+  };
 }
 
 export interface TurboVenueData {
@@ -103,17 +181,31 @@ export interface TurboVenueData {
   _dim_weighted_expected?: number;
   _dim_weighted_found?: number;
   completion_percent?: number;
+  completion_pct?: number;
   complete?: number;
   total?: number;
   missing_dates?: string[];
+  status?: string;
+  venue_start_date?: string;
+  dates_found_count?: number;
+  dates_found_list?: string[];
+  dates_found_list_tail?: string[];
+  dates_found_truncated?: boolean;
+  dates_missing_count?: number;
+  dates_missing_list?: string[];
+  dates_missing_list_tail?: string[];
+  dates_missing_truncated?: boolean;
   data_types?: Record<string, { dates_found?: number; dates_expected?: number; completion_pct?: number; status?: string }>;
 }
 
 export interface TurboCategoryVenueSummary {
   expected_but_missing?: string[];
+  unexpected_but_found?: string[];
   bonus?: string[];
   total_expected?: number;
   total_found?: number;
+  expected_count?: number;
+  expected_coverage_pct?: number;
 }
 
 export interface TurboCategoryData {
@@ -137,7 +229,7 @@ export interface TurboCategoryData {
   venue_weighted?: boolean;
   venue_summary?: TurboCategoryVenueSummary;
   venues?: Record<string, TurboVenueData>;
-  folders?: string[];
+  folders?: Record<string, { completion_pct?: number; dates_found?: number; dates_expected?: number }>;
   data_types?: string[];
   feature_groups?: string[];
   bulk_service?: boolean;
@@ -146,25 +238,80 @@ export interface TurboCategoryData {
 
 export interface TurboDataStatusResponse {
   service: string;
-  status: string;
+  status?: string;
   start_date?: string;
   end_date?: string;
-  date_range?: { start: string; end: string };
+  date_range?: { start: string; end: string; days?: number };
+  mode?: "turbo";
+  first_day_of_month_only?: boolean;
+  sub_dimension?: string | null;
+  overall_completion_pct?: number;
+  overall_dates_found?: number;
+  overall_dates_expected?: number;
+  overall_dates_found_category?: number;
+  overall_dates_expected_category?: number;
+  total_missing?: number;
+  unexpected_missing?: number;
+  expected_missing?: number;
   categories: Record<string, TurboCategoryData>;
+}
+
+export interface FileInfo {
+  name: string;
+  full_path: string;
+  size_bytes: number;
+  updated: string | null;
+}
+
+export interface DateFileResult {
+  date: string;
+  prefix: string;
+  file_count: number;
+  total_size_bytes: number;
+  last_modified?: string | null;
+  files: FileInfo[];
+  error?: string;
 }
 
 export interface ListFilesResponse {
   files: string[];
   total: number;
   error?: string;
+  service?: string;
+  bucket?: string;
+  category?: string;
+  venue?: string;
+  folder?: string;
+  data_type?: string;
+  timeframe?: string | null;
+  date_range?: {
+    start: string;
+    end: string;
+    total_days: number;
+  };
+  summary?: {
+    total_files: number;
+    total_size_bytes: number;
+    total_size_formatted: string;
+    dates_with_data: number;
+    dates_empty: number;
+    completion_pct: number;
+  };
+  by_date?: DateFileResult[];
+  suggestion?: string;
 }
 
 export interface InstrumentSearchResult {
-  instrument_id: string;
+  instrument_id?: string;
   instrument_key?: string;
-  name: string;
-  category: string;
-  venue: string;
+  instrument_type?: string;
+  name?: string;
+  category?: string;
+  venue?: string;
+  symbol?: string;
+  base_currency?: string;
+  quote_currency?: string;
+  data_types?: string[] | string;
   available_from_datetime?: string;
   available_to_datetime?: string;
 }
@@ -175,9 +322,50 @@ export interface InstrumentSearchResponse {
 }
 
 export interface InstrumentAvailabilityResponse {
-  instrument_id: string;
-  available_dates: string[];
-  coverage_pct: number;
+  instrument_id?: string;
+  instrument_key?: string;
+  parsed?: {
+    venue: string;
+    instrument_type: string;
+    symbol: string;
+    category: string;
+    folder: string;
+  };
+  service?: string;
+  bucket?: string;
+  available_dates?: string[];
+  coverage_pct?: number;
+  date_range?: {
+    start: string;
+    end: string;
+    total_dates: number;
+    first_day_of_month_only?: boolean;
+  };
+  availability_window?: {
+    instrument_from?: string;
+    instrument_to?: string;
+    effective_start: string;
+    effective_end: string;
+    dates_in_window: number;
+  };
+  data_types_checked?: string[];
+  overall?: {
+    expected: number;
+    found: number;
+    missing: number;
+    completion_pct: number;
+  };
+  by_data_type?: Record<
+    string,
+    {
+      dates_found: number;
+      dates_missing: number;
+      completion_pct: number;
+      dates_found_list: string[];
+      dates_missing_list: string[];
+    }
+  >;
+  timeframe?: string;
   error?: string;
 }
 
@@ -263,11 +451,11 @@ export async function getConfigBuckets(
 }
 
 export async function getDeploymentQuotaInfo(
-  _service: string,
+  _params: unknown,
 ): Promise<QuotaInfoResponse> {
   // TODO: wire to MSW handler
   return {
-    service: _service,
+    service: "",
     quota_remaining: 100,
     quota_limit: 100,
     reset_at: new Date().toISOString(),
@@ -275,28 +463,29 @@ export async function getDeploymentQuotaInfo(
 }
 
 export async function getExecutionMissingShards(
-  _service: string,
+  _params: Record<string, string>,
 ): Promise<ExecutionMissingShardsResponse> {
   // TODO: wire to MSW handler
-  return { service: _service, missing_shards: [], total_missing: 0 };
+  return { service: "", missing_shards: [], total_missing: 0 };
 }
 
 export async function cancelDeployment(
   _deploymentId: string,
-): Promise<{ success: boolean }> {
+): Promise<{ success: boolean; cancelled_shards?: number; message?: string }> {
   // TODO: wire to MSW handler
   return { success: false };
 }
 
 export async function resumeDeployment(
   _deploymentId: string,
-): Promise<{ success: boolean }> {
+): Promise<{ success: boolean; message?: string }> {
   // TODO: wire to MSW handler
   return { success: false };
 }
 
 export async function verifyDeploymentCompletion(
   _deploymentId: string,
+  _options?: { force?: boolean },
 ): Promise<{ verified: boolean }> {
   // TODO: wire to MSW handler
   return { verified: false };
@@ -304,7 +493,7 @@ export async function verifyDeploymentCompletion(
 
 export async function retryFailedShards(
   _deploymentId: string,
-): Promise<{ retried: number }> {
+): Promise<{ retried: number; message?: string }> {
   // TODO: wire to MSW handler
   return { retried: 0 };
 }
@@ -312,7 +501,7 @@ export async function retryFailedShards(
 export async function cancelShard(
   _deploymentId: string,
   _shardId?: string,
-): Promise<{ success: boolean }> {
+): Promise<{ success: boolean; message?: string }> {
   // TODO: wire to MSW handler
   return { success: false };
 }
@@ -320,7 +509,7 @@ export async function cancelShard(
 export async function updateDeploymentTag(
   _deploymentId: string,
   _tag: string | null,
-): Promise<{ success: boolean }> {
+): Promise<{ success: boolean; message?: string }> {
   // TODO: wire to MSW handler
   return { success: false };
 }
@@ -336,12 +525,13 @@ export async function getDeploymentReport(
     total_shards: 0,
     completed_shards: 0,
     failed_shards: 0,
-    summary: "",
+    summary: {},
   };
 }
 
 export async function getRerunCommands(
   _deploymentId: string,
+  _options?: { failedOnly?: boolean },
 ): Promise<RerunCommands> {
   // TODO: wire to MSW handler
   return { deployment_id: _deploymentId, commands: [] };
@@ -349,13 +539,14 @@ export async function getRerunCommands(
 
 export async function getDeploymentEvents(
   _deploymentId: string,
-): Promise<{ events: unknown[] }> {
+): Promise<{ events: ShardEvent[] }> {
   // TODO: wire to MSW handler
   return { events: [] };
 }
 
 export async function rollbackLiveDeployment(
   _deploymentId: string,
+  _options?: { service: string; region: string },
 ): Promise<{ success: boolean }> {
   // TODO: wire to MSW handler
   return { success: false };
@@ -363,7 +554,9 @@ export async function rollbackLiveDeployment(
 
 export async function getLiveDeploymentHealth(
   _deploymentId: string,
-): Promise<{ healthy: boolean; status_code?: number; checked_at?: string } | null> {
+  _service?: string,
+  _region?: string,
+): Promise<LiveHealthStatus | null> {
   // TODO: wire to MSW handler
   return null;
 }
@@ -501,40 +694,11 @@ export async function getStartDates(_service: string): Promise<StartDatesRespons
   return { service: _service, start_dates: {} };
 }
 
-export async function getServiceStatus(_service: string): Promise<{
-  health: string;
-  last_data_update: string | null;
-  last_deployment: string | null;
-  last_build: string | null;
-  last_code_push: string | null;
-  anomalies: Array<{ type: string; severity: string; message: string }>;
-  details?: {
-    data?: { by_category?: Record<string, { timestamp?: string }> };
-    deployment?: {
-      deployment_id?: string;
-      status?: string;
-      compute_type?: string;
-      used_force?: boolean;
-      total_shards?: number;
-      completed_shards?: number;
-      failed_shards?: number;
-      tag?: string;
-    };
-    build?: {
-      status?: string;
-      commit_sha?: string;
-      duration_seconds?: number;
-      error?: boolean;
-    };
-    code?: { commit_sha?: string; message?: string; author?: string; error?: boolean };
-  };
-  api?: { gcs_fuse?: { active: boolean } };
-  checklist_status?: { percent: number; completed: number; total: number };
-  data_coverage?: { percent: number; gaps: number };
-}> {
+export async function getServiceStatus(_service: string): Promise<ServiceStatus> {
   // TODO: wire to MSW handler
   return {
-    health: "unknown",
+    service: _service,
+    health: "healthy",
     last_data_update: null,
     last_deployment: null,
     last_build: null,

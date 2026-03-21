@@ -51,7 +51,7 @@ export interface Strategy {
   clientId: string
   assetClass: string
   strategyType: string
-  status: "live" | "paused" | "warning" | "stopped"
+  status: "live" | "paused" | "warning" | "stopped" | "error"
 }
 
 export interface Underlying {

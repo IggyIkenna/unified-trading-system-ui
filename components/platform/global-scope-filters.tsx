@@ -37,7 +37,7 @@ import {
 
 interface Organization { id: string; name: string }
 interface Client { id: string; name: string; orgId: string; status: "active" | "onboarding" | "inactive" }
-interface Strategy { id: string; name: string; clientId: string; assetClass: string; strategyType: string; status: "live" | "paused" | "warning" | "stopped" }
+interface Strategy { id: string; name: string; clientId: string; assetClass: string; strategyType: string; status: "live" | "paused" | "warning" | "stopped" | "error" }
 
 const organizations: Organization[] = TRADING_ORGS.map(o => ({ id: o.id, name: o.name }))
 const clients: Client[] = TRADING_CLIENTS.map(c => ({ id: c.id, name: c.name, orgId: c.orgId, status: c.status }))

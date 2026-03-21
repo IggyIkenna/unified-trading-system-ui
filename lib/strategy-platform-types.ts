@@ -51,6 +51,7 @@ export const TESTING_STAGES = [
   "UNIT_TEST",
   "INTEGRATION",
   "BACKTEST",
+  "VALIDATION",
   "PAPER",
   "SHADOW",
   "CANARY",

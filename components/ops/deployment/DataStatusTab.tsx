@@ -27,6 +27,7 @@ import type {
   VenueCheckResponse,
   DataTypeCheckResponse,
   TurboDataStatusResponse,
+  TurboVenueData,
 } from "@/hooks/deployment/_api-stub";
 import type { CategoryVenuesResponse } from "@/lib/types/deployment";
 import { UPSTREAM_CHECK_SERVICES } from "@/hooks/deployment/_api-stub";
@@ -291,7 +292,7 @@ function DataStatusTabInternal({
               selectedCategories.length > 0 ? selectedCategories : undefined,
             check_venues: true,
             force_refresh: false, // Use cache for speed
-          })) as VenueCheckResponse;
+          })) as unknown as VenueCheckResponse;
 
           // Skip if a newer request has started
           if (thisRequestId !== requestIdRef.current) return;
@@ -318,7 +319,7 @@ function DataStatusTabInternal({
               selectedCategories.length > 0 ? selectedCategories : ["TRADFI"], // Default to TRADFI for data type check
             check_data_types: true,
             force_refresh: false, // Use cache for speed
-          })) as DataTypeCheckResponse;
+          })) as unknown as DataTypeCheckResponse;
 
           // Skip if a newer request has started
           if (thisRequestId !== requestIdRef.current) return;
@@ -362,11 +363,11 @@ function DataStatusTabInternal({
 
           // Validate response matches requested dates (detect stale data/bugs)
           if (
-            result.date_range.start !== fetchStart ||
-            result.date_range.end !== fetchEnd
+            result.date_range?.start !== fetchStart ||
+            result.date_range?.end !== fetchEnd
           ) {
             setError(
-              `Date mismatch: requested ${fetchStart} to ${fetchEnd}, but received ${result.date_range.start} to ${result.date_range.end}. This may indicate a bug - please report this.`,
+              `Date mismatch: requested ${fetchStart} to ${fetchEnd}, but received ${result.date_range?.start} to ${result.date_range?.end}. This may indicate a bug - please report this.`,
             );
             return;
           }
@@ -718,7 +719,7 @@ function DataStatusTabInternal({
     setVenueFiltersLoading(true);
 
     api
-      .getVenueFilters(category, venue)
+      .getVenueFilters({ category, venue })
       .then((response) => {
         setVenueAvailableFolders(response.folders || []);
         setVenueAvailableDataTypes(response.data_types || []);
@@ -975,7 +976,7 @@ function DataStatusTabInternal({
 
     // Get data types that have missing data
     const dataTypesWithMissing = Object.entries(
-      instrumentAvailability.by_data_type,
+      instrumentAvailability.by_data_type ?? {},
     )
       .filter(([, stats]) => stats.dates_missing > 0)
       .map(([dataType]) => dataType);
@@ -983,8 +984,8 @@ function DataStatusTabInternal({
     if (dataTypesWithMissing.length === 0) return;
 
     // Parse instrument key to get venue and folder/instrument_type
-    const venue = selectedInstrument.venue;
-    const folder = selectedInstrument.instrument_type;
+    const venue = selectedInstrument.venue ?? "";
+    const folder = selectedInstrument.instrument_type ?? "";
 
     // Use the effective date range from availability window if available
     const effectiveStart =
@@ -1048,7 +1049,7 @@ function DataStatusTabInternal({
         const datesWithIssues = new Set<string>();
         const dateDetails = new Map<string, string[]>(); // date -> [category: X venues missing]
 
-        Object.entries(venueCheckData.categories).forEach(
+        Object.entries(venueCheckData.categories ?? {}).forEach(
           ([catName, catData]) => {
             if (!catData.dates_with_missing_venues) return;
 
@@ -1694,7 +1695,7 @@ function DataStatusTabInternal({
                                   }
                                   setSelectedInstrument(instrument);
                                   setInstrumentSearchQuery(
-                                    instrument.instrument_key,
+                                    instrument.instrument_key ?? "",
                                   );
                                   setShowInstrumentDropdown(false);
                                   setInstrumentSearchResults([]); // Clear results to prevent dropdown flash
@@ -1806,10 +1807,10 @@ function DataStatusTabInternal({
                             </span>
                             <Badge
                               className={getCompletionBadgeClass(
-                                instrumentAvailability.overall.completion_pct,
+                                instrumentAvailability.overall?.completion_pct ?? 0,
                               )}
                             >
-                              {instrumentAvailability.overall.completion_pct.toFixed(
+                              {(instrumentAvailability.overall?.completion_pct ?? 0).toFixed(
                                 1,
                               )}
                               %
@@ -1819,9 +1820,9 @@ function DataStatusTabInternal({
                             <div
                               className="h-2 rounded-full transition-all duration-300"
                               style={{
-                                width: `${Math.min(instrumentAvailability.overall.completion_pct, 100)}%`,
+                                width: `${Math.min(instrumentAvailability.overall?.completion_pct ?? 0, 100)}%`,
                                 backgroundColor: getCompletionColor(
-                                  instrumentAvailability.overall.completion_pct,
+                                  instrumentAvailability.overall?.completion_pct ?? 0,
                                 ),
                               }}
                             />
@@ -1830,18 +1831,18 @@ function DataStatusTabInternal({
                             <span>
                               Found:{" "}
                               <span className="text-[var(--color-accent-green)]">
-                                {instrumentAvailability.overall.found}
+                                {instrumentAvailability.overall?.found}
                               </span>
                             </span>
                             <span>
                               Missing:{" "}
                               <span className="text-[var(--color-accent-red)]">
-                                {instrumentAvailability.overall.missing}
+                                {instrumentAvailability.overall?.missing}
                               </span>
                             </span>
                             <span>
                               Expected:{" "}
-                              {instrumentAvailability.overall.expected}
+                              {instrumentAvailability.overall?.expected}
                             </span>
                           </div>
                           <div className="text-xs text-[var(--color-text-muted)] mt-2">
@@ -1889,17 +1890,17 @@ function DataStatusTabInternal({
                               </>
                             ) : (
                               <>
-                                {instrumentAvailability.date_range.start} to{" "}
-                                {instrumentAvailability.date_range.end}
+                                {instrumentAvailability.date_range?.start} to{" "}
+                                {instrumentAvailability.date_range?.end}
                                 {" • "}
                                 {
-                                  instrumentAvailability.date_range.total_dates
+                                  instrumentAvailability.date_range?.total_dates
                                 }{" "}
                                 dates
                               </>
                             )}
                             {instrumentAvailability.date_range
-                              .first_day_of_month_only && (
+                              ?.first_day_of_month_only && (
                               <span className="text-[var(--color-accent-cyan)]">
                                 {" "}
                                 (first day of month only)
@@ -1909,17 +1910,17 @@ function DataStatusTabInternal({
                         </div>
 
                         {/* Deploy Missing for Instrument */}
-                        {instrumentAvailability.overall.missing > 0 &&
+                        {(instrumentAvailability.overall?.missing ?? 0) > 0 &&
                           onDeployMissing && (
                             <div className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-status-error-bg)] border border-[var(--color-status-error-border)]">
                               <div className="flex items-center gap-2">
                                 <AlertCircle className="h-4 w-4 text-[var(--color-accent-red)]" />
                                 <span className="text-sm">
-                                  {instrumentAvailability.overall.missing}{" "}
+                                  {instrumentAvailability.overall?.missing}{" "}
                                   missing across{" "}
                                   {
                                     Object.entries(
-                                      instrumentAvailability.by_data_type,
+                                      instrumentAvailability.by_data_type ?? {},
                                     ).filter(([, s]) => s.dates_missing > 0)
                                       .length
                                   }{" "}
@@ -1943,7 +1944,7 @@ function DataStatusTabInternal({
                             By Data Type
                           </div>
                           {Object.entries(
-                            instrumentAvailability.by_data_type,
+                            instrumentAvailability.by_data_type ?? {},
                           ).map(([dataType, stats]) => (
                             <div
                               key={dataType}
@@ -2036,10 +2037,10 @@ function DataStatusTabInternal({
 
                         {/* Parsed Instrument Info */}
                         <div className="text-xs text-[var(--color-text-muted)]">
-                          Parsed: {instrumentAvailability.parsed.category} /{" "}
-                          {instrumentAvailability.parsed.venue} /
-                          {instrumentAvailability.parsed.folder} /{" "}
-                          {instrumentAvailability.parsed.instrument_type}
+                          Parsed: {instrumentAvailability.parsed?.category} /{" "}
+                          {instrumentAvailability.parsed?.venue} /
+                          {instrumentAvailability.parsed?.folder} /{" "}
+                          {instrumentAvailability.parsed?.instrument_type}
                         </div>
                       </div>
                     )}
@@ -2194,10 +2195,10 @@ function DataStatusTabInternal({
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(venueCheckData.categories).map(
+                  {Object.entries(venueCheckData.categories ?? {}).map(
                     ([catName, catData]) => {
                       const datesWithIssues =
-                        catData.dates_with_missing_venues.length;
+                        catData.dates_with_missing_venues?.length ?? 0;
                       const totalDates = catData.total_dates;
                       const isClean = datesWithIssues === 0;
                       const isExpanded = expandedCategories.has(catName);
@@ -2322,8 +2323,8 @@ function DataStatusTabInternal({
                 </div>
 
                 {/* Deploy Missing from Venue Check */}
-                {Object.values(venueCheckData.categories).some(
-                  (c) => c.dates_with_missing_venues.length > 0,
+                {Object.values(venueCheckData.categories ?? {}).some(
+                  (c) => (c.dates_with_missing_venues?.length ?? 0) > 0,
                 ) &&
                   onDeployMissing && (
                     <div className="mt-4 flex items-center justify-between p-3 rounded-lg bg-[var(--color-status-error-bg)] border border-[var(--color-status-error-border)]">
@@ -2432,11 +2433,11 @@ function DataStatusTabInternal({
                       className="text-3xl font-mono font-bold"
                       style={{
                         color: getCompletionColor(
-                          dataTypeCheckData.overall_completion,
+                          dataTypeCheckData.overall_completion ?? 0,
                         ),
                       }}
                     >
-                      {dataTypeCheckData.overall_completion.toFixed(1)}%
+                      {(dataTypeCheckData.overall_completion ?? 0).toFixed(1)}%
                     </div>
                     <div className="text-xs text-[var(--color-text-muted)]">
                       {dataTypeCheckData.overall_complete} /{" "}
@@ -2452,9 +2453,9 @@ function DataStatusTabInternal({
                   <div
                     className="h-full transition-all duration-500"
                     style={{
-                      width: `${dataTypeCheckData.overall_completion}%`,
+                      width: `${dataTypeCheckData.overall_completion ?? 0}%`,
                       backgroundColor: getCompletionColor(
-                        dataTypeCheckData.overall_completion,
+                        dataTypeCheckData.overall_completion ?? 0,
                       ),
                     }}
                   />
@@ -2609,8 +2610,8 @@ function DataStatusTabInternal({
                     </Badge>
                   </CardTitle>
                   <CardDescription className="mt-1">
-                    {turboData.date_range.start} to {turboData.date_range.end} (
-                    {turboData.date_range.days} days)
+                    {turboData.date_range?.start} to {turboData.date_range?.end} (
+                    {turboData.date_range?.days} days)
                   </CardDescription>
                 </div>
                 <div className="text-right">
@@ -2618,11 +2619,11 @@ function DataStatusTabInternal({
                     className="text-3xl font-mono font-bold"
                     style={{
                       color: getCompletionColor(
-                        turboData.overall_completion_pct,
+                        turboData.overall_completion_pct ?? 0,
                       ),
                     }}
                   >
-                    {turboData.overall_completion_pct.toFixed(1)}%
+                    {(turboData.overall_completion_pct ?? 0).toFixed(1)}%
                   </div>
                   <div className="text-xs text-[var(--color-text-muted)]">
                     {turboData.overall_dates_found} /{" "}
@@ -2643,9 +2644,9 @@ function DataStatusTabInternal({
                 <div
                   className="h-full transition-all duration-500"
                   style={{
-                    width: `${turboData.overall_completion_pct}%`,
+                    width: `${turboData.overall_completion_pct ?? 0}%`,
                     backgroundColor: getCompletionColor(
-                      turboData.overall_completion_pct,
+                      turboData.overall_completion_pct ?? 0,
                     ),
                   }}
                 />
@@ -2692,7 +2693,7 @@ function DataStatusTabInternal({
               <div className="space-y-4">
                 {Object.entries(turboData.categories).map(
                   ([catName, catData]) => {
-                    const isComplete = catData.completion_pct >= 100;
+                    const isComplete = (catData.completion_pct ?? 0) >= 100;
 
                     return (
                       <div key={catName} className="space-y-2">
@@ -2728,11 +2729,11 @@ function DataStatusTabInternal({
                                   className="text-sm font-mono font-medium"
                                   style={{
                                     color: getCompletionColor(
-                                      catData.completion_pct,
+                                      catData.completion_pct ?? 0,
                                     ),
                                   }}
                                 >
-                                  {catData.completion_pct.toFixed(1)}%
+                                  {(catData.completion_pct ?? 0).toFixed(1)}%
                                 </span>
                               </>
                             )}
@@ -2743,15 +2744,15 @@ function DataStatusTabInternal({
                             <div
                               className="h-full transition-all duration-500"
                               style={{
-                                width: `${catData.completion_pct}%`,
+                                width: `${catData.completion_pct ?? 0}%`,
                                 backgroundColor: getCompletionColor(
-                                  catData.completion_pct,
+                                  catData.completion_pct ?? 0,
                                 ),
                               }}
                             />
                           </div>
                         )}
-                        {catData.dates_missing > 0 &&
+                        {(catData.dates_missing ?? 0) > 0 &&
                           !catData.error &&
                           !catData.bulk_service && (
                             <p className="text-xs text-[var(--color-text-muted)]">
@@ -2776,7 +2777,7 @@ function DataStatusTabInternal({
                           <p className="text-xs text-[var(--color-text-muted)] italic">
                             Bulk download service — {catData.dates_found} of{" "}
                             {catData.dates_expected} dates have data.
-                            {catData.dates_missing > 0 &&
+                            {(catData.dates_missing ?? 0) > 0 &&
                               " Run the service to populate all dates."}
                           </p>
                         )}
@@ -2900,11 +2901,11 @@ function DataStatusTabInternal({
                                               className="text-xs font-mono font-medium ml-1"
                                               style={{
                                                 color: getCompletionColor(
-                                                  folderData.completion_pct,
+                                                  folderData.completion_pct ?? 0,
                                                 ),
                                               }}
                                             >
-                                              {folderData.completion_pct.toFixed(
+                                              {(folderData.completion_pct ?? 0).toFixed(
                                                 0,
                                               )}
                                               %
@@ -2914,10 +2915,10 @@ function DataStatusTabInternal({
                                             <div
                                               className="h-full"
                                               style={{
-                                                width: `${folderData.completion_pct}%`,
+                                                width: `${folderData.completion_pct ?? 0}%`,
                                                 backgroundColor:
                                                   getCompletionColor(
-                                                    folderData.completion_pct,
+                                                    folderData.completion_pct ?? 0,
                                                   ),
                                               }}
                                             />
@@ -2963,18 +2964,18 @@ function DataStatusTabInternal({
                                       <Badge
                                         variant="outline"
                                         className="bg-[var(--color-status-error-bg)] text-[var(--color-accent-red)] border-[var(--color-status-error-border-strong)] cursor-help"
-                                        title={`Missing: ${catData.venue_summary.expected_but_missing.join(", ")}`}
+                                        title={`Missing: ${catData.venue_summary.expected_but_missing?.join(", ")}`}
                                       >
                                         <XCircle className="h-3 w-3 mr-1" />
                                         {
                                           catData.venue_summary
-                                            .expected_but_missing.length
+                                            .expected_but_missing?.length ?? 0
                                         }{" "}
                                         expected missing
                                       </Badge>
                                     )}
-                                    {catData.venue_summary.unexpected_but_found
-                                      .length > 0 && (
+                                    {(catData.venue_summary.unexpected_but_found
+                                      ?.length ?? 0) > 0 && (
                                       <Badge
                                         variant="outline"
                                         className="bg-[var(--color-status-warning-bg)] text-[var(--color-accent-amber)] border-[var(--color-status-warning-border)]"
@@ -2982,7 +2983,7 @@ function DataStatusTabInternal({
                                         +
                                         {
                                           catData.venue_summary
-                                            .unexpected_but_found.length
+                                            .unexpected_but_found?.length ?? 0
                                         }{" "}
                                         bonus
                                       </Badge>
@@ -2992,13 +2993,13 @@ function DataStatusTabInternal({
                               </div>
                               {/* Show missing venues inline */}
                               {catData.venue_summary &&
-                                catData.venue_summary.expected_but_missing
-                                  .length > 0 && (
+                                (catData.venue_summary.expected_but_missing
+                                  ?.length ?? 0) > 0 && (
                                   <div className="flex flex-wrap items-center gap-1.5 mb-2">
                                     <span className="text-[10px] text-[var(--color-text-muted)] uppercase tracking-wide">
                                       Missing:
                                     </span>
-                                    {catData.venue_summary.expected_but_missing.map(
+                                    {(catData.venue_summary.expected_but_missing ?? []).map(
                                       (venue: string) => (
                                         <span
                                           key={venue}
@@ -3013,10 +3014,10 @@ function DataStatusTabInternal({
 
                               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                                 {Object.entries(
-                                  catData.venues ||
+                                  (catData.venues ||
                                     catData.data_types ||
                                     catData.feature_groups ||
-                                    {},
+                                    {}) as Record<string, TurboVenueData>,
                                 ).map(([name, subData]) => {
                                   // Use dimension-weighted counts when available (accounts for
                                   // multiple expected data_types/folders per venue). Falls back
@@ -3063,11 +3064,11 @@ function DataStatusTabInternal({
                                           className="text-xs font-mono font-medium ml-1"
                                           style={{
                                             color: getCompletionColor(
-                                              subData.completion_pct,
+                                              subData.completion_pct ?? 0,
                                             ),
                                           }}
                                         >
-                                          {subData.completion_pct.toFixed(0)}%
+                                          {(subData.completion_pct ?? 0).toFixed(0)}%
                                         </span>
                                       </div>
                                       {/* Progress bar with expected vs actual visualization */}
@@ -3075,9 +3076,9 @@ function DataStatusTabInternal({
                                         <div
                                           className="h-full absolute left-0 top-0"
                                           style={{
-                                            width: `${subData.completion_pct}%`,
+                                            width: `${subData.completion_pct ?? 0}%`,
                                             backgroundColor: getCompletionColor(
-                                              subData.completion_pct,
+                                              subData.completion_pct ?? 0,
                                             ),
                                           }}
                                         />
@@ -3113,8 +3114,8 @@ function DataStatusTabInternal({
                                             </summary>
                                             <div className="mt-1 space-y-0.5 pl-1 border-l border-[var(--color-border-subtle)]">
                                               {Object.entries(
-                                                subData.data_types,
-                                              ).map(([dtName, dtData]) => (
+                                                subData.data_types!,
+                                              ).map(([dtName, dtData]: [string, { dates_found?: number; dates_expected?: number; completion_pct?: number; status?: string }]) => (
                                                 <div
                                                   key={dtName}
                                                   className="flex items-center justify-between text-[9px]"
@@ -3527,13 +3528,13 @@ function DataStatusTabInternal({
       {/* Deploy Missing Modal */}
       <Dialog
         open={deployMissingModalOpen}
-        onClose={() => setDeployMissingModalOpen(false)}
-        className="max-w-lg"
+        onOpenChange={(open) => { if (!open) setDeployMissingModalOpen(false); }}
       >
-        <DialogHeader onClose={() => setDeployMissingModalOpen(false)}>
+        <DialogContent className="max-w-lg">
+        <DialogHeader>
           <DialogTitle>Deploy Missing Data</DialogTitle>
         </DialogHeader>
-        <DialogContent>
+        <div>
           <div className="space-y-4">
             {/* Summary */}
             <div className="p-3 rounded-lg bg-[var(--color-bg-secondary)] border border-[var(--color-border-subtle)]">
@@ -3792,16 +3793,17 @@ function DataStatusTabInternal({
               </Button>
             </div>
           </div>
+        </div>
         </DialogContent>
       </Dialog>
 
       {/* File Listing Modal */}
       <Dialog
         open={showFileListing}
-        onClose={() => setShowFileListing(false)}
-        className="max-w-4xl"
+        onOpenChange={(open) => { if (!open) setShowFileListing(false); }}
       >
-        <DialogHeader onClose={() => setShowFileListing(false)}>
+        <DialogContent className="max-w-4xl">
+        <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             File Listing
@@ -3813,7 +3815,7 @@ function DataStatusTabInternal({
             )}
           </DialogTitle>
         </DialogHeader>
-        <DialogContent>
+        <div>
           <div className="max-h-[60vh] overflow-auto">
             {fileListingLoading ? (
               <div className="flex items-center justify-center py-12">
@@ -3839,7 +3841,7 @@ function DataStatusTabInternal({
                         Total Files
                       </div>
                       <div className="font-semibold text-lg">
-                        {fileListingData.summary.total_files.toLocaleString()}
+                        {fileListingData.summary?.total_files.toLocaleString()}
                       </div>
                     </div>
                     <div>
@@ -3847,7 +3849,7 @@ function DataStatusTabInternal({
                         Total Size
                       </div>
                       <div className="font-semibold text-lg">
-                        {fileListingData.summary.total_size_formatted}
+                        {fileListingData.summary?.total_size_formatted}
                       </div>
                     </div>
                     <div>
@@ -3855,7 +3857,7 @@ function DataStatusTabInternal({
                         Days with Data
                       </div>
                       <div className="font-semibold text-lg text-[var(--color-accent-green)]">
-                        {fileListingData.summary.dates_with_data}
+                        {fileListingData.summary?.dates_with_data}
                       </div>
                     </div>
                     <div>
@@ -3865,12 +3867,12 @@ function DataStatusTabInternal({
                       <div
                         className={cn(
                           "font-semibold text-lg",
-                          fileListingData.summary.dates_empty > 0
+                          (fileListingData.summary?.dates_empty ?? 0) > 0
                             ? "text-[var(--color-accent-orange)]"
                             : "text-[var(--color-text-muted)]",
                         )}
                       >
-                        {fileListingData.summary.dates_empty}
+                        {fileListingData.summary?.dates_empty}
                       </div>
                     </div>
                   </div>
@@ -3879,19 +3881,19 @@ function DataStatusTabInternal({
                       <div
                         className="bg-[var(--color-accent-green)] h-full transition-all"
                         style={{
-                          width: `${fileListingData.summary.completion_pct}%`,
+                          width: `${fileListingData.summary?.completion_pct}%`,
                         }}
                       />
                     </div>
                     <span className="text-sm font-medium">
-                      {fileListingData.summary.completion_pct}%
+                      {fileListingData.summary?.completion_pct}%
                     </span>
                   </div>
                   <p className="text-xs text-[var(--color-text-muted)] mt-2">
                     Bucket: {fileListingData.bucket} |{" "}
-                    {fileListingData.date_range.start} to{" "}
-                    {fileListingData.date_range.end} (
-                    {fileListingData.date_range.total_days} days)
+                    {fileListingData.date_range?.start} to{" "}
+                    {fileListingData.date_range?.end} (
+                    {fileListingData.date_range?.total_days} days)
                   </p>
                 </div>
 
@@ -3922,7 +3924,7 @@ function DataStatusTabInternal({
                         </tr>
                       </thead>
                       <tbody>
-                        {fileListingData.by_date.map((dayResult) => (
+                        {fileListingData.by_date?.map((dayResult) => (
                           <tr
                             key={dayResult.date}
                             className={cn(
@@ -3985,6 +3987,7 @@ function DataStatusTabInternal({
               Close
             </Button>
           </div>
+        </div>
         </DialogContent>
       </Dialog>
     </div>

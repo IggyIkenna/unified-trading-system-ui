@@ -287,7 +287,7 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
           end_date: endDate,
           // Pass config paths and dates for the missing shards
           custom_shards: missingShardsData.missing_shards.map((s) => {
-            const path = s.config_path ?? s.config_gcs;
+            const path = s.config_path ?? s.config_gcs ?? "";
             const isS3 = path.startsWith("s3://");
             return {
               ...(isS3 ? { config_path: path } : { config_gcs: path }),
@@ -1362,7 +1362,7 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                 <p className="text-sm font-medium">Breakdown</p>
 
                 {/* By Strategy */}
-                {Object.keys(missingShardsData.breakdown.by_strategy).length >
+                {Object.keys(missingShardsData.breakdown?.by_strategy ?? {}).length >
                   0 && (
                   <div>
                     <p className="text-xs text-[var(--color-text-muted)] mb-1">
@@ -1370,7 +1370,7 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {Object.entries(
-                        missingShardsData.breakdown.by_strategy,
+                        missingShardsData.breakdown?.by_strategy ?? {},
                       ).map(([name, count]) => (
                         <Badge key={name} variant="outline" className="text-xs">
                           {name}: {count}
@@ -1381,14 +1381,14 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                 )}
 
                 {/* By Mode */}
-                {Object.keys(missingShardsData.breakdown.by_mode).length >
+                {Object.keys(missingShardsData.breakdown?.by_mode ?? {}).length >
                   0 && (
                   <div>
                     <p className="text-xs text-[var(--color-text-muted)] mb-1">
                       By Mode:
                     </p>
                     <div className="flex flex-wrap gap-1">
-                      {Object.entries(missingShardsData.breakdown.by_mode).map(
+                      {Object.entries(missingShardsData.breakdown?.by_mode ?? {}).map(
                         ([name, count]) => (
                           <Badge
                             key={name}
@@ -1404,7 +1404,7 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                 )}
 
                 {/* By Timeframe */}
-                {Object.keys(missingShardsData.breakdown.by_timeframe).length >
+                {Object.keys(missingShardsData.breakdown?.by_timeframe ?? {}).length >
                   0 && (
                   <div>
                     <p className="text-xs text-[var(--color-text-muted)] mb-1">
@@ -1412,7 +1412,7 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {Object.entries(
-                        missingShardsData.breakdown.by_timeframe,
+                        missingShardsData.breakdown?.by_timeframe ?? {},
                       ).map(([name, count]) => (
                         <Badge key={name} variant="outline" className="text-xs">
                           {name}: {count}
@@ -1423,14 +1423,14 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                 )}
 
                 {/* By Algorithm */}
-                {Object.keys(missingShardsData.breakdown.by_algo).length >
+                {Object.keys(missingShardsData.breakdown?.by_algo ?? {}).length >
                   0 && (
                   <div>
                     <p className="text-xs text-[var(--color-text-muted)] mb-1">
                       By Algorithm:
                     </p>
                     <div className="flex flex-wrap gap-1">
-                      {Object.entries(missingShardsData.breakdown.by_algo).map(
+                      {Object.entries(missingShardsData.breakdown?.by_algo ?? {}).map(
                         ([name, count]) => (
                           <Badge
                             key={name}
@@ -1446,16 +1446,16 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                 )}
 
                 {/* By Date (show first 10) */}
-                {Object.keys(missingShardsData.breakdown.by_date).length >
+                {Object.keys(missingShardsData.breakdown?.by_date ?? {}).length >
                   0 && (
                   <div>
                     <p className="text-xs text-[var(--color-text-muted)] mb-1">
                       By Date (
-                      {Object.keys(missingShardsData.breakdown.by_date).length}{" "}
+                      {Object.keys(missingShardsData.breakdown?.by_date ?? {}).length}{" "}
                       dates):
                     </p>
                     <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
-                      {Object.entries(missingShardsData.breakdown.by_date)
+                      {Object.entries(missingShardsData.breakdown?.by_date ?? {})
                         .slice(0, 10)
                         .map(([date, count]) => (
                           <Badge
@@ -1466,11 +1466,11 @@ export function ExecutionDataStatus({ serviceName }: ExecutionDataStatusProps) {
                             {date}: {count}
                           </Badge>
                         ))}
-                      {Object.keys(missingShardsData.breakdown.by_date).length >
+                      {Object.keys(missingShardsData.breakdown?.by_date ?? {}).length >
                         10 && (
                         <Badge variant="outline" className="text-xs">
                           +
-                          {Object.keys(missingShardsData.breakdown.by_date)
+                          {Object.keys(missingShardsData.breakdown?.by_date ?? {})
                             .length - 10}{" "}
                           more dates
                         </Badge>
