@@ -27,15 +27,15 @@ interface EntityLinkProps {
 
 // Route generators for known types
 const entityRoutes: Record<string, (id: string) => string> = {
-  strategy: (id) => `/strategies/${id}`,
+  strategy: (id) => `/service/trading/strategies/${id}`,
   client: (id) => `/markets/pnl?client=${id}`,
-  instrument: (id) => `/strategies/instruments?q=${id}`,
+  instrument: (id) => `/service/trading/strategies/instruments?q=${id}`,
   service: (id) => `/ops/services?service=${id}`,
   experiment: (id) => `/ml/experiments/${id}`,
   settlement: (id) => `/reports?settlement=${id}`,
   batch_job: (id) => `/ops/jobs?job=${id}`,
   run: (id) => `/positions?run=${id}`,
-  venue: (id) => `/strategies?venue=${id}`,
+  venue: (id) => `/service/trading/strategies?venue=${id}`,
   model: (id) => `/ml/registry?model=${id}`,
 }
 

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
 
-export default function PortalDataRedirect() {
-  redirect("/data")
+export default function Page() {
+  redirect("/service/data/overview")
 }

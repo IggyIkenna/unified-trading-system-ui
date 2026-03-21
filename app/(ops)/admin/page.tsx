@@ -37,8 +37,8 @@ export default function AdminDashboardPage() {
   const { data: orgsData } = useOrganizationsList()
   const { data: eventsData } = useAuditEvents()
 
-  const orgs: Array<{ id: string; name: string; type: string; status: string; memberCount: number; subscriptionTier: string; monthlyFee?: number }> = orgsData?.organizations ?? []
-  const events: Array<{ id: string; type: string; entity: string; actor: string; timestamp: string; details: string }> = eventsData?.events ?? []
+  const orgs: Array<{ id: string; name: string; type: string; status: string; memberCount: number; subscriptionTier: string; monthlyFee?: number }> = (orgsData as Record<string, unknown>)?.organizations as typeof orgs ?? []
+  const events: Array<{ id: string; type: string; entity: string; actor: string; timestamp: string; details: string }> = (eventsData as Record<string, unknown>)?.events as typeof events ?? []
 
   const totalUsers = orgs.reduce((sum: number, o) => sum + (o.memberCount ?? 0), 0)
   const activeOrgs = orgs.filter((o) => o.status === "active").length
@@ -112,13 +112,13 @@ export default function AdminDashboardPage() {
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" asChild>
-            <Link href="/manage/clients">
+            <Link href="/service/manage/clients">
               <Plus className="mr-2 size-4" />
               Create Org
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/manage/fees">
+            <Link href="/service/manage/fees">
               <CreditCard className="mr-2 size-4" />
               Manage Subscriptions
             </Link>
@@ -174,7 +174,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <Button variant="ghost" size="sm" className="w-full" asChild>
-                    <Link href="/manage/clients">
+                    <Link href="/service/manage/clients">
                       Manage
                       <ArrowRight className="ml-2 size-3" />
                     </Link>

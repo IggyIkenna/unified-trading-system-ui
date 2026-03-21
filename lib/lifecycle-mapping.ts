@@ -153,10 +153,10 @@ export const routeMappings: RouteMapping[] = [
   { path: "/service/research/strategy/heatmap", label: "Heatmap", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
   { path: "/service/research/strategy/candidates", label: "Strategy Candidates", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
   { path: "/service/research/strategy/handoff", label: "Strategy Handoff", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
-  { path: "/service/research/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
-  { path: "/service/research/execution/venues", label: "Venues", primaryStage: "build", secondaryStage: "acquire", lanes: ["execution", "data"], requiresAuth: true },
-  { path: "/service/research/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
-  { path: "/service/research/execution/benchmarks", label: "Benchmarks", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+  { path: "/service/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+  { path: "/service/execution/venues", label: "Venues", primaryStage: "build", secondaryStage: "acquire", lanes: ["execution", "data"], requiresAuth: true },
+  { path: "/service/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
+  { path: "/service/execution/benchmarks", label: "Benchmarks", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
 
   // PROMOTE stage
   { path: "/config", label: "Config", primaryStage: "promote", secondaryStage: "manage", lanes: ["strategy", "execution"], requiresAuth: true },
@@ -178,16 +178,16 @@ export const routeMappings: RouteMapping[] = [
   { path: "/service/overview", label: "Service Hub", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
 
   // OBSERVE stage
-  { path: "/health", label: "Health", primaryStage: "observe", lanes: ["data", "execution"], requiresAuth: true },
+  { path: "/service/observe/health", label: "Health", primaryStage: "observe", lanes: ["data", "execution"], requiresAuth: true },
   { path: "/ops", label: "Operations", primaryStage: "observe", secondaryStage: "manage", lanes: ["execution", "data"], requiresAuth: true },
 
   // MANAGE stage
-  { path: "/manage/clients", label: "Clients", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
-  { path: "/manage/mandates", label: "Mandates", primaryStage: "manage", lanes: ["capital", "compliance"], requiresAuth: true },
-  { path: "/manage/fees", label: "Fees", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
-  { path: "/manage/users", label: "Users", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
+  { path: "/service/manage/clients", label: "Clients", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
+  { path: "/service/manage/mandates", label: "Mandates", primaryStage: "manage", lanes: ["capital", "compliance"], requiresAuth: true },
+  { path: "/service/manage/fees", label: "Fees", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
+  { path: "/service/manage/users", label: "Users", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
   { path: "/admin", label: "Admin", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
-  { path: "/compliance", label: "Compliance", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
+  { path: "/service/manage/compliance", label: "Compliance", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
 
   // REPORT stage — Reports Service
   { path: "/service/reports/overview", label: "Reports", primaryStage: "report", lanes: ["capital", "compliance"], requiresAuth: true },
@@ -267,12 +267,12 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
     observe: [
       { path: "/service/trading/risk", label: "Risk", lanes: ["strategy", "execution", "capital"], description: "Exposure, VaR, Greeks, risk limits" },
       { path: "/service/trading/alerts", label: "Alerts", lanes: ["strategy", "execution", "ml"], description: "Alert management and notifications" },
-      { path: "/health", label: "Health", lanes: ["data", "execution"], description: "Service health dashboard" },
+      { path: "/service/observe/health", label: "Health", lanes: ["data", "execution"], description: "Service health dashboard" },
     ],
     manage: [
       { path: "/admin", label: "Admin", lanes: ["compliance"] },
-      { path: "/manage/clients", label: "Clients", lanes: ["capital"] },
-      { path: "/compliance", label: "Compliance", lanes: ["compliance"] },
+      { path: "/service/manage/clients", label: "Clients", lanes: ["capital"] },
+      { path: "/service/manage/compliance", label: "Compliance", lanes: ["compliance"] },
     ],
     report: [
       { path: "/service/reports/overview", label: "Reports", lanes: ["capital", "compliance"], description: "P&L attribution, settlement, reconciliation" },

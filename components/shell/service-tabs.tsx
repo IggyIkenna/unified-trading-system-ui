@@ -101,13 +101,13 @@ export const BUILD_TABS: ServiceTab[] = [
   { label: "Strategies", href: "/service/research/strategy/backtests", matchPrefix: "/service/research/strategy", requiredEntitlement: "strategy-full" },
   { label: "Backtests", href: "/service/research/strategy/compare", requiredEntitlement: "strategy-full" },
   { label: "Signals", href: "/service/research/ml/validation", requiredEntitlement: "ml-full" },
-  { label: "Execution Research", href: "/service/research/execution/algos", matchPrefix: "/service/research/execution", requiredEntitlement: "execution-basic" },
+  { label: "Execution Research", href: "/service/execution/algos", matchPrefix: "/service/execution", requiredEntitlement: "execution-basic" },
 ]
 
 // ── Promote (Trader + Risk Review) ───────────────────────────────────────────
 export const PROMOTE_TABS: ServiceTab[] = [
   { label: "Review Queue", href: "/service/research/strategy/candidates" },
-  { label: "Execution Analysis", href: "/service/research/execution/tca" },
+  { label: "Execution Analysis", href: "/service/execution/tca" },
   { label: "Risk Review", href: "/service/trading/risk" },
   { label: "Approval Status", href: "/service/research/strategy/handoff" },
 ]
@@ -128,16 +128,16 @@ export const OBSERVE_TABS: ServiceTab[] = [
   { label: "Alerts", href: "/service/trading/alerts" },
   { label: "News", href: "/service/observe/news" },
   { label: "Strategy Health", href: "/service/observe/strategy-health" },
-  { label: "System Health", href: "/health" },
+  { label: "System Health", href: "/service/observe/health" },
 ]
 
 // ── Manage (Back Office) ─────────────────────────────────────────────────────
 export const MANAGE_TABS: ServiceTab[] = [
-  { label: "Clients", href: "/manage/clients" },
-  { label: "Mandates", href: "/manage/mandates" },
-  { label: "Fees", href: "/manage/fees" },
-  { label: "Users", href: "/manage/users" },
-  { label: "Compliance", href: "/compliance" },
+  { label: "Clients", href: "/service/manage/clients" },
+  { label: "Mandates", href: "/service/manage/mandates" },
+  { label: "Fees", href: "/service/manage/fees" },
+  { label: "Users", href: "/service/manage/users" },
+  { label: "Compliance", href: "/service/manage/compliance" },
 ]
 
 // ── Report (Executive) ───────────────────────────────────────────────────────

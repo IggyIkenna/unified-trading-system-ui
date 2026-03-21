@@ -248,7 +248,7 @@ export default function PnLDetailPage() {
                         {row.trades}
                       </TableCell>
                       <TableCell>
-                        <Link href={`/strategies/${row.strategyId}`}>
+                        <Link href={`/service/trading/strategies/${row.strategyId}`}>
                           <Button variant="ghost" size="sm">
                             <ChevronRight className="size-4" />
                           </Button>

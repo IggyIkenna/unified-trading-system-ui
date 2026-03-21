@@ -40,10 +40,10 @@ const STRATEGY_WORKFLOWS = [
 ]
 
 const EXECUTION_WORKFLOWS = [
-  { label: "Algos", desc: "Compare execution algorithms", icon: GitBranch, href: "/service/research/execution/algos" },
-  { label: "Venues", desc: "Venue selection and routing analysis", icon: Layers, href: "/service/research/execution/venues" },
-  { label: "TCA", desc: "Transaction cost analysis", icon: TrendingUp, href: "/service/research/execution/tca" },
-  { label: "Benchmarks", desc: "Benchmark comparison across algos", icon: BarChart3, href: "/service/research/execution/benchmarks" },
+  { label: "Algos", desc: "Compare execution algorithms", icon: GitBranch, href: "/service/execution/algos" },
+  { label: "Venues", desc: "Venue selection and routing analysis", icon: Layers, href: "/service/execution/venues" },
+  { label: "TCA", desc: "Transaction cost analysis", icon: TrendingUp, href: "/service/execution/tca" },
+  { label: "Benchmarks", desc: "Benchmark comparison across algos", icon: BarChart3, href: "/service/execution/benchmarks" },
 ]
 
 function WorkflowPipeline({ steps }: { steps: typeof ML_WORKFLOWS }) {
@@ -230,12 +230,12 @@ export default function ResearchOverviewPage() {
               <WorkflowPipeline steps={EXECUTION_WORKFLOWS} />
               <div className="mt-4 flex gap-2">
                 <Button asChild size="sm">
-                  <Link href="/service/research/execution/algos">
+                  <Link href="/service/execution/algos">
                     Open Algo Comparison <ChevronRight className="size-4 ml-1" />
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="sm">
-                  <Link href="/service/research/execution/tca">View TCA</Link>
+                  <Link href="/service/execution/tca">View TCA</Link>
                 </Button>
               </div>
             </CardContent>

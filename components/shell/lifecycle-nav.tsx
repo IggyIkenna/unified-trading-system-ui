@@ -87,7 +87,7 @@ export function LifecycleNav({
   const allNavItems = buildLifecycleNav(true)
 
   // Internal-only routes (ops pages) — hide completely from non-internal
-  const opsRoutes = ["/admin", "/ops", "/devops", "/manage", "/compliance", "/config"]
+  const opsRoutes = ["/admin", "/ops", "/devops", "/service/manage", "/config"]
 
   // Check if an item is accessible (unlocked) for the current user
   const isItemAccessible = (path: string): boolean => {

@@ -513,7 +513,7 @@ export default function StrategiesPage() {
                           View Live
                         </Button>
                       </Link>
-                      <Link href={`/strategies/${strategy.id}`} className="flex-1">
+                      <Link href={`/service/trading/strategies/${strategy.id}`} className="flex-1">
                         <Button variant="outline" size="sm" className="w-full gap-2">
                           <BarChart2 className="size-3" />
                           Details
@@ -541,7 +541,7 @@ export default function StrategiesPage() {
 
         {/* Grid Link */}
         <div className="pt-4">
-          <Link href="/strategies/grid">
+          <Link href="/service/trading/strategies/grid">
             <Button variant="outline" className="w-full gap-2">
               <LineChart className="size-4" />
               Open DimensionalGrid for Batch Analysis

@@ -36,7 +36,7 @@ const nextConfig = {
       { source: "/research/strategy/:path*", destination: "/service/research/strategy/:path*", permanent: true },
       { source: "/research/ml/:path*", destination: "/service/research/ml/:path*", permanent: true },
       { source: "/research/ml", destination: "/service/research/ml", permanent: true },
-      { source: "/research/execution/:path*", destination: "/service/research/execution/:path*", permanent: true },
+      { source: "/research/execution/:path*", destination: "/service/execution/:path*", permanent: true },
       // Legacy flat ML routes
       { source: "/ml", destination: "/service/research/ml", permanent: true },
       { source: "/ml/:path*", destination: "/service/research/ml/:path*", permanent: true },

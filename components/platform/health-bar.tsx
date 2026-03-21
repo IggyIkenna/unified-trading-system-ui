@@ -50,7 +50,7 @@ export function HealthBar() {
           {MOCK_HEALTH.map((service) => (
             <Tooltip key={service.name}>
               <TooltipTrigger asChild>
-                <Link href="/health" className="block">
+                <Link href="/service/observe/health" className="block">
                   <div className={cn("size-2 rounded-full", STATUS_COLORS[service.status])} />
                 </Link>
               </TooltipTrigger>

@@ -658,7 +658,7 @@ function PositionsPageContent() {
         </Button>
         
         {strategyFilter !== "all" && selectedStrategy && (
-          <Link href={`/strategies/${strategyFilter}`}>
+          <Link href={`/service/trading/strategies/${strategyFilter}`}>
             <Button variant="outline" size="sm">
               View Strategy Details
             </Button>
@@ -704,7 +704,7 @@ function PositionsPageContent() {
                       <TableCell>
                         <div className="flex flex-col">
                           <Link 
-                            href={`/strategies/${pos.strategyId}`}
+                            href={`/service/trading/strategies/${pos.strategyId}`}
                             className="font-medium text-primary hover:underline"
                             onClick={e => e.stopPropagation()}
                           >

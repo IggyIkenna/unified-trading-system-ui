@@ -31,7 +31,7 @@ const SERVICE_SECTIONS: Record<string, Array<{
   "data-catalogue": [
     { label: "Data Status", href: "/data", description: "Pipeline status, venue coverage, freshness monitoring" },
     { label: "Market Data", href: "/trading/markets", description: "OHLCV candles, order book snapshots, trade streams" },
-    { label: "Service Health", href: "/health", description: "Pipeline freshness and SLA monitoring" },
+    { label: "Service Health", href: "/service/observe/health", description: "Pipeline freshness and SLA monitoring" },
   ],
   markets: [
     { label: "Market Overview", href: "/markets", description: "Real-time prices and market movers" },
@@ -88,25 +88,25 @@ const SERVICE_SECTIONS: Record<string, Array<{
   ],
   admin: [
     { label: "Admin Dashboard", href: "/admin", description: "System overview, org management" },
-    { label: "User Management", href: "/manage/users", description: "Invite, roles, permissions" },
-    { label: "Client Management", href: "/manage/clients", description: "Org subscriptions, API keys" },
-    { label: "Fee Management", href: "/manage/fees", description: "Fee schedules and simulation" },
+    { label: "User Management", href: "/service/manage/users", description: "Invite, roles, permissions" },
+    { label: "Client Management", href: "/service/manage/clients", description: "Org subscriptions, API keys" },
+    { label: "Fee Management", href: "/service/manage/fees", description: "Fee schedules and simulation" },
   ],
   ops: [
     { label: "Operations", href: "/ops", description: "Batch jobs, service health, event stream" },
-    { label: "System Health", href: "/health", description: "Service status and feature freshness" },
+    { label: "System Health", href: "/service/observe/health", description: "Service status and feature freshness" },
   ],
   deployment: [
     { label: "DevOps Dashboard", href: "/devops", description: "Deployments, builds, rollbacks" },
   ],
   compliance: [
-    { label: "Compliance", href: "/compliance", description: "FCA registration, regulatory info" },
+    { label: "Compliance", href: "/service/manage/compliance", description: "FCA registration, regulatory info" },
   ],
   manage: [
-    { label: "User Management", href: "/manage/users", description: "Users, roles, invitations" },
-    { label: "Client Management", href: "/manage/clients", description: "Organizations, subscriptions" },
-    { label: "Fee Management", href: "/manage/fees", description: "Fee schedules, simulation" },
-    { label: "Mandate Management", href: "/manage/mandates", description: "Investment mandates, guidelines" },
+    { label: "User Management", href: "/service/manage/users", description: "Users, roles, invitations" },
+    { label: "Client Management", href: "/service/manage/clients", description: "Organizations, subscriptions" },
+    { label: "Fee Management", href: "/service/manage/fees", description: "Fee schedules, simulation" },
+    { label: "Mandate Management", href: "/service/manage/mandates", description: "Investment mandates, guidelines" },
   ],
 }
 
