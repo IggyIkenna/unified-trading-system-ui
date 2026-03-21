@@ -8,16 +8,14 @@ This document tells you exactly what to read and in what order before you start 
 
 ## For Iggy (Product Owner)
 
-**Read these to approve the architectural vision:**
+**Read these to understand current state and plan next work:**
 
 1. **[ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md)** (15 min)
    - Platform ideology, role model, three experience modes
    - Service areas and workflow lifecycle
-   - Does this match the product vision? Approve or request changes
 
-2. **[SETUP_SUMMARY.md](./SETUP_SUMMARY.md)** (10 min)
-   - Overview of what was built and why
-   - Next steps for all teams
+2. **[CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md)** (5 min)
+   - Current code structure, folder map, state management, tech stack
 
 3. **[context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md)** (5 min)
    - Review known API gaps
@@ -25,42 +23,45 @@ This document tells you exactly what to read and in what order before you start 
 
 ---
 
-## For CosmicTrader & datadodo (UI Builders)
+## For Agents and UI Builders
 
-**Complete this onboarding before you start coding (45 min total):**
+**Complete this onboarding before you start coding (40 min total):**
 
 ### Step 1: Understand the Platform (15 min)
 
-📖 Read: **[ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md)**
+Read: **[ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md)**
 
 Learn:
-- What the platform is (not just a website, but a unified institutional system)
+- What the platform is (unified institutional system, not just a website)
 - The three experience modes (public, client, internal)
 - The six service areas (data, research, execution, reporting, admin, deployment)
 - The core workflow: Design → Simulate → Promote → Run → Monitor → Explain → Reconcile
 - Role model and organization-first architecture
 
-**Why:** Everything you build flows from this. Understand the platform first.
-
 ---
 
-### Step 2: Understand What Can Be Configured (10 min)
+### Step 2: Understand the Code Structure (5 min)
 
-📖 Read: **[context/CONFIG_REFERENCE.md](./context/CONFIG_REFERENCE.md)**
+Read: **[CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md)**
 
 Learn:
-- Where to find backend configurations (config-registry.json)
-- How configurations map to UI controls
-- What services have what configurable fields
-- How to regenerate the config registry when backend changes
+- Next.js 15 App Router with three route groups `(public)`, `(platform)`, `(ops)`
+- The canonical content tree lives at `app/(platform)/service/`
+- Where to add new pages, components, hooks, types, mock handlers
+- State management: Zustand (global) + React Query (server data)
 
-**Why:** You'll need to build configuration UIs. Don't guess—query the registry.
+Then read the deep docs for your area:
+- **[docs/STRUCTURE_APP.md](./docs/STRUCTURE_APP.md)** — Full route inventory, redirect map
+- **[docs/STRUCTURE_COMPONENTS.md](./docs/STRUCTURE_COMPONENTS.md)** — All 11 component domains
+- **[docs/STRUCTURE_LIB.md](./docs/STRUCTURE_LIB.md)** — Types, stores, mocks, config
+- **[docs/STRUCTURE_HOOKS.md](./docs/STRUCTURE_HOOKS.md)** — React Query hooks
+- **[docs/STRUCTURE_CONTEXT.md](./docs/STRUCTURE_CONTEXT.md)** — Backend reference material
 
 ---
 
 ### Step 3: Understand Data Partitioning (10 min)
 
-📖 Read: **[context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md)**
+Read: **[context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md)**
 
 Learn:
 - Five primary shards (CEFI, DeFi, Sports, TradFi, OnChain)
@@ -74,239 +75,131 @@ Learn:
 
 ### Step 4: Check API Readiness (5 min)
 
-📖 Scan: **[context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md)**
+Scan: **[context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md)**
 
-Learn:
-- Which APIs are 🔴 blocked (don't build features that depend on these)
-- Which APIs are 🟡 in progress (plan, but wait)
-- Which APIs are 🟢 ready (build now)
-
-**Why:** Avoid building features that depend on missing APIs.
+- 🔴 = API blocked — don't build features that depend on this yet
+- 🟡 = API in progress — plan it, but wait
+- 🟢 = API ready — build now
 
 ---
 
 ### Step 5: Review Coding Rules (5 min)
 
-📖 Skim: **[CODING_RULES_QUICK_START.md](./CODING_RULES_QUICK_START.md)**
+Skim: **[.cursorrules](./.cursorrules)**
 
-Or read the full version: **[.cursorrules](./.cursorrules)**
-
-Learn:
-- How to organize code (services/ folder structure)
-- What components should be shared (filters, tables, headers)
-- What should be centralized (config, mocks, types)
-- How to refactor (in place, never create V2)
-
-**Why:** These rules prevent common mistakes (multiple versions of truth, scattered components, hardcoded values).
+Key rules:
+- All new platform pages go under `app/(platform)/service/<domain>/`
+- Never create pages at old flat paths (`/trading/`, `/execution/`, etc.) — they are redirects
+- Components in `components/<domain>/` — kebab-case filenames
+- Domain types in `lib/<domain>-types.ts`, mock data in `lib/mocks/handlers/<domain>.ts`
+- No V2 files — update in place, delete originals
 
 ---
 
 ## Before You Start Coding Each Feature
 
-**Use this 15-minute checklist:**
+### 1. Check Route Location (1 min)
 
-### 1. Understand Data Partitioning (2 min)
-- [ ] Is this feature for one shard (CEFI) or multi-shard?
-- [ ] Which venues in that shard?
-- [ ] How will users select shard/venue?
+- Platform page? → `app/(platform)/service/<domain>/`
+- Public page? → `app/(public)/`
+- Ops-only page? → `app/(ops)/`
+- Never create at `/trading/`, `/execution/`, `/research/`, `/ml/` — those are permanent redirects
 
 ### 2. Find the Configuration (3 min)
-- [ ] Open `context/api-contracts/openapi/config-registry.json`
-- [ ] Search for your service (e.g., "execution-service")
-- [ ] List all configurable fields, types, defaults
-- [ ] Plan which fields to expose in the UI
+
+- Open `context/api-contracts/openapi/config-registry.json`
+- Search for your service (e.g., "execution-service")
+- List all configurable fields, types, defaults
 
 ### 3. Check API Readiness (2 min)
-- [ ] Check `context/API_FRONTEND_GAPS.md`
-- [ ] Your feature depends on which APIs?
-- [ ] Are they 🔴 blocked? 🟡 in progress? 🟢 ready?
-- [ ] If blocked, defer the feature. If in progress, plan it but wait.
+
+- Check `context/API_FRONTEND_GAPS.md`
+- Your feature depends on which APIs?
+- If blocked, defer the feature. If in progress, plan it but wait.
 
 ### 4. Find API Specs (3 min)
-- [ ] Open `context/api-contracts/openapi/<your-api>.yaml`
-- [ ] See endpoint signatures and response shapes
-- [ ] Open `context/api-contracts/canonical-schemas/` to see Pydantic models
-- [ ] Understand the data shapes you'll receive
+
+- Open `context/api-contracts/openapi/<your-api>.yaml`
+- See endpoint signatures and response shapes
+- Open `context/api-contracts/canonical-schemas/` for Pydantic models
 
 ### 5. Plan Architecture (5 min)
-- [ ] Will this be a new page? New route?
-- [ ] Which service domain folder? (services/execution/, services/data/, etc.)
-- [ ] Will you use existing shared components? (FilterBar, DataTable, etc.)
-- [ ] What configuration will you need? (API endpoints, timeouts, etc.)
-- [ ] What permission checks? (useAuth() hook)
 
-**Done?** Start coding. You have all the information you need.
+- New page → which service domain? `/service/<domain>/`
+- Reuse existing component from `components/<domain>/` or build new?
+- Which React Query hook from `hooks/api/`?
+- Which MSW handler in `lib/mocks/handlers/`?
+- What permission checks? (`useAuthStore()` from `lib/stores/auth-store.ts`)
 
 ---
 
 ## Key File Locations
 
-| What you need | Where to find it |
+| What you need           | Where to find it |
 |---|---|
-| Platform vision | [ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md) |
-| Configuration reference | [context/CONFIG_REFERENCE.md](./context/CONFIG_REFERENCE.md) |
-| Sharding model | [context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md) |
-| API readiness | [context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md) |
-| Coding rules (quick) | [CODING_RULES_QUICK_START.md](./CODING_RULES_QUICK_START.md) |
-| Coding rules (full) | [.cursorrules](./.cursorrules) |
-| Pre-build checklist | [context/CONTEXT_GUIDE.md](./context/CONTEXT_GUIDE.md) |
+| Codebase overview       | [CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md) |
+| Platform vision         | [ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md) |
+| Route inventory         | [ROUTES.md](./ROUTES.md) or [docs/STRUCTURE_APP.md](./docs/STRUCTURE_APP.md) |
+| Component inventory     | [docs/STRUCTURE_COMPONENTS.md](./docs/STRUCTURE_COMPONENTS.md) |
+| Lib layer               | [docs/STRUCTURE_LIB.md](./docs/STRUCTURE_LIB.md) |
+| API hooks               | [docs/STRUCTURE_HOOKS.md](./docs/STRUCTURE_HOOKS.md) |
+| Sharding model          | [context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md) |
+| API readiness           | [context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md) |
+| Coding rules (full)     | [.cursorrules](./.cursorrules) |
 | Config schema reference | `context/api-contracts/openapi/config-registry.json` |
-| API specs | `context/api-contracts/openapi/*.yaml` |
-| Data schemas | `context/api-contracts/canonical-schemas/` |
-| Service types | `context/internal-contracts/schemas/` |
-
----
-
-## Recommended Project Structure
-
-When you start building, use this structure:
-
-```
-src/
-├── services/
-│   ├── data/
-│   │   ├── components/     ← Data-specific components
-│   │   ├── pages/          ← Data service pages
-│   │   ├── hooks/          ← Data-specific hooks
-│   │   ├── types/          ← Data-specific types
-│   │   └── routes.tsx
-│   │
-│   ├── execution/          ← Similar structure
-│   ├── research/
-│   ├── reporting/
-│   └── admin/
-│
-├── shared/                 ← Shared across ALL services
-│   ├── components/         ← Filters, tables, headers (shared)
-│   ├── hooks/
-│   │   ├── api/            ← API hooks (centralized)
-│   │   ├── useAuth.ts      ← Auth hook (centralized)
-│   │   └── index.ts
-│   │
-│   ├── config/             ← All configuration (centralized)
-│   │   ├── api.ts          ← API endpoints
-│   │   ├── branding.ts     ← Colors, fonts, logo
-│   │   ├── constants.ts    ← Magic numbers, error messages
-│   │   └── index.ts
-│   │
-│   ├── types/              ← Shared types
-│   ├── mocks/              ← Central mock API (not per-page)
-│   └── utils/
-│
-└── layout/                 ← Global routing
-    ├── PublicShell.tsx
-    ├── AuthenticatedShell.tsx
-    ├── router.tsx
-    └── index.ts
-```
+| API specs               | `context/api-contracts/openapi/*.yaml` |
+| Data schemas            | `context/api-contracts/canonical-schemas/` |
+| Service types           | `context/internal-contracts/schemas/` |
 
 ---
 
 ## Key Rules (TL;DR)
 
-### ✅ DO
+### DO
 
-- ✅ Organize by **service domain** (services/ structure matches backend)
-- ✅ Use **shared components** (FilterBar, DataTable) for consistency
-- ✅ Get **configuration from config/** (no hardcoded values)
-- ✅ Use **shared hooks** (useAuth, useExecutionAPI) for centralization
-- ✅ Use **centralized mocks** (shared/mocks/, same everywhere)
-- ✅ **Update in place** when refactoring (no V2, Refactored versions)
-- ✅ **Check API readiness** before building (API_FRONTEND_GAPS.md)
+- Organize new platform pages under `app/(platform)/service/<domain>/`
+- Use shared components from `components/<domain>/` for consistency
+- Get configuration from `lib/config/` — no hardcoded values
+- Use React Query hooks from `hooks/api/` for data fetching
+- Use Zustand stores from `lib/stores/` for client state
+- Update in place when refactoring — no V2 files
+- Check API readiness before building (`context/API_FRONTEND_GAPS.md`)
 
-### ❌ DON'T
+### DON'T
 
-- ❌ Create `PositionsTableV2`, `PositionsTableRefactored` (one source of truth)
-- ❌ Implement filters per-domain (DataFilter, ExecutionFilter are different)
-- ❌ Hardcode API endpoints, colors, strings in components
-- ❌ Create per-page mock implementations
-- ❌ Scatter auth logic across components
-- ❌ Leave old code alongside new code
-- ❌ Build features that depend on 🔴 blocked APIs
+- Create new pages at old flat paths (`/trading/`, `/execution/`, etc.) — they are redirects
+- Create `PositionsTableV2`, `PositionsTableRefactored` — one source of truth
+- Hardcode API endpoints, colors, strings in components
+- Create per-page mock implementations — use MSW handlers in `lib/mocks/handlers/`
+- Scatter auth logic across components — use `useAuthStore()`
+- Leave old code alongside new code after refactoring
+- Build features that depend on 🔴 blocked APIs
 
 ---
 
 ## Common Questions
 
-### Q: Where do I find what the backend API returns?
-**A:** `context/api-contracts/openapi/config-registry.json` (configs) and `context/api-contracts/canonical-schemas/` (data shapes)
+**Q: Where do I add a new platform page?**
+A: `app/(platform)/service/<domain>/` — never at the old flat paths.
 
-### Q: How do I know if an API is ready?
-**A:** Check `context/API_FRONTEND_GAPS.md` — look for your service
+**Q: Where do I find what the backend API returns?**
+A: `context/api-contracts/openapi/` (specs) and `context/api-contracts/canonical-schemas/` (schemas)
 
-### Q: Should I create DataFilter and ExecutionFilter?
-**A:** No. Create one `shared/components/filters/FilterBar.tsx` and use it everywhere
+**Q: How do I know if an API is ready?**
+A: Check `context/API_FRONTEND_GAPS.md`
 
-### Q: Where should the logo URL go?
-**A:** `shared/config/branding.ts` (not in components)
+**Q: Where should I add a new component?**
+A: `components/<closest-domain>/` — see [docs/STRUCTURE_COMPONENTS.md](./docs/STRUCTURE_COMPONENTS.md)
 
-### Q: Can I create PositionsPageV2 while refactoring?
-**A:** No. Update `PositionsPage.tsx` in place, then delete old code
+**Q: Where should config values go?**
+A: `lib/config/` — see `lib/config/api.ts`, `lib/config/branding.ts`, `lib/config/services.ts`
 
-### Q: Can I hardcode `http://localhost:8004`?
-**A:** No. Use `API_CONFIG` from `shared/config/api.ts`
-
-### Q: Should I mock the API per test?
-**A:** No. Use centralized `shared/mocks/api.ts` (used in dev AND tests)
-
----
-
-## Next Steps
-
-1. **Read the three essential documents** (45 min)
-   - ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md
-   - context/CONFIG_REFERENCE.md
-   - context/SHARDING_DIMENSIONS.md
-
-2. **Skim the coding rules** (10 min)
-   - CODING_RULES_QUICK_START.md (quick reference)
-   - .cursorrules (detailed rules)
-
-3. **For each feature you build** (15 min prep)
-   - Use the pre-build checklist above
-   - Understand shard/venue scope
-   - Check API readiness
-   - Find API specs
-   - Plan architecture
-
-4. **Start coding**
-   - Follow the recommended structure
-   - Use shared components/hooks/config (don't build new ones)
-   - Update in place when refactoring
-   - No hardcoded values
-
----
-
-## Getting Help
-
-- **What's this service supposed to do?** → [ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md)
-- **What can be configured?** → [context/CONFIG_REFERENCE.md](./context/CONFIG_REFERENCE.md)
-- **How is data partitioned?** → [context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md)
-- **Is this API ready?** → [context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md)
-- **How do I structure code?** → [CODING_RULES_QUICK_START.md](./CODING_RULES_QUICK_START.md) or [.cursorrules](./.cursorrules)
-- **What does the API return?** → `context/api-contracts/openapi/` (specs) and `context/api-contracts/canonical-schemas/` (schemas)
-
----
-
-## Summary
-
-You now have:
-- ✅ Clear platform vision
-- ✅ Configuration reference (no guessing)
-- ✅ Data partitioning model (proper scoping)
-- ✅ API readiness tracking (avoid surprises)
-- ✅ Coding rules (consistent architecture)
-- ✅ Shared components/config/hooks (DRY, maintainable)
-- ✅ Recommended project structure
-
-**Everything is documented. Nothing is left to guesswork.**
-
-**Read the documents. Follow the rules. Build great UI.**
+**Q: How do I add mock data for a new endpoint?**
+A: Add an MSW handler to `lib/mocks/handlers/<domain>.ts` and register it in `lib/mocks/handlers/index.ts`
 
 ---
 
 **Ready?**
 
-→ Start with [ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md)
-
-Go build. 🚀
+→ Start with [CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md) for the technical overview.
+→ Then read [ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md) for the product vision.

@@ -1,50 +1,46 @@
 # Agent System Prompt — Unified Trading System UI
 
-ONE platform. THREE tiers (public/client/internal). SHARDS: CeFi/DeFi/Sports/TradFi. Workflow: Design→Simulate→Promote→Run→Monitor→Explain→Reconcile.
+ONE platform. THREE tiers (public/client/internal). SHARDS: CeFi/DeFi/Sports/TradFi/OnChain. Workflow: Design→Simulate→Promote→Run→Monitor→Explain→Reconcile.
 
-## CURRENT STATE (What Exists Now)
-
-The codebase is **pre-Phase 2** — a V0-generated prototype:
+## CURRENT STATE (Post-Phase 2 Cleanup, commit `8e536fc`)
 
 | What | Current State |
 |------|---------------|
-| App structure | **FLAT** — 33 route dirs directly under `app/` (no route groups yet) |
-| Mock data | **INLINE** — ~9,100 lines of hardcoded objects in `lib/*.ts` files |
-| State management | **NONE** — no Zustand, no React Query |
-| API layer | **NONE** — pages render static data, no fetch calls |
-| Auth | **MINIMAL** — `hooks/use-auth.ts` reads localStorage, returns `{ user, loading, logout }` |
-| Config | **NONE** — no `lib/config/`, values hardcoded in components |
-| Shells | **PARTIAL** — `components/shell/` has 6 components (unified-shell, lifecycle-nav, require-auth, role-layout, role-selection, site-header) but NOT wired as layout.tsx files |
-| Components | **GOOD** — 59 Radix UI primitives in `components/ui/`, domain components in `components/trading/`, `components/data/`, etc. |
-| Registry data | **FRESH** — `lib/registry/openapi.json` (298 endpoints), `config-registry.json`, `system-topology.json`, `ui-reference-data.json` |
-
-**Directories that DO NOT exist yet** (you will create them):
-`lib/config/`, `lib/mocks/`, `lib/stores/`, `lib/types/`, `hooks/api/`, `app/(public)/`, `app/(platform)/`, `app/(ops)/`
+| App structure | **ROUTE GROUPS** — `app/(public)/`, `app/(platform)/`, `app/(ops)/` |
+| Canonical routes | **ALL under `/service/`** — `app/(platform)/service/<domain>/`. Legacy flat routes are redirects in `next.config.mjs` |
+| Mock data | **MSW** — 15 domain handlers in `lib/mocks/handlers/`, persona-scoped fixtures in `lib/mocks/fixtures/` |
+| State management | **Zustand + React Query** — 4 stores in `lib/stores/`, 14 hooks in `hooks/api/` |
+| API layer | **React Query** — hooks in `hooks/api/`, MSW serves data when `NEXT_PUBLIC_MOCK_API=true` |
+| Auth | **5 demo personas** — admin, internal-trader, client-full, client-data-only, client-premium in `lib/mocks/fixtures/personas.ts` |
+| Config | **Centralized** — `lib/config/` (api.ts, branding.ts, auth.ts, services.ts, platform-stats.ts) |
+| Components | **11 domains** — 57 UI primitives, 30 trading, 19 ops/deployment, 10 platform, 6 dashboards, 6 marketing, 5 data, 2 ML, + shell/nav |
+| Navigation | **Lifecycle nav only** — `components/shell/lifecycle-nav.tsx` (no legacy nav models) |
+| Registry data | **Available** — `lib/registry/openapi.json` (298 endpoints), `config-registry.json`, `system-topology.json`, `ui-reference-data.json` |
 
 ## RULES (violation = wasted work)
 
-1. **NO V2/Refactored files.** Ask before breaking changes. Update `UI_STRUCTURE_MANIFEST.json`.
-2. **Shared components** (filters/tables/headers) in `components/`, not per-page. One impl, everywhere.
-3. **Zero hardcoding.** API endpoints, colors, strings from `lib/config/`. Change once = everywhere.
-4. **Mocking:** `lib/mocks/` only (MSW handlers + fixtures). Same in dev & tests. No per-page mocks.
-5. **Auth:** `hooks/use-auth.ts` is the single auth hook. One place for permission rules.
-6. **Shard-aware:** scope data shard→venue→instrument. Never cross-shard in one component.
-7. **Same pages, different data.** NEVER build separate client/internal page versions. One page, API scopes the data via org + entitlements.
-8. If unable to follow rules, tell user immediately — they will use a better agent.
+1. **New platform pages** go in `app/(platform)/service/<domain>/` ONLY. Never at old flat paths (`/trading/`, `/execution/`, `/ml/`, `/research/`, `/strategy-platform/`).
+2. **No V2/Refactored files.** Update in place. Delete originals.
+3. **Shared components** in `components/<domain>/` — not per-page. One impl, everywhere.
+4. **Zero hardcoding.** API endpoints, colors, strings from `lib/config/`. Change once = everywhere.
+5. **Mocking:** `lib/mocks/handlers/<domain>.ts` + register in `lib/mocks/handlers/index.ts`. Same in dev & tests.
+6. **Auth:** `lib/stores/auth-store.ts` is the auth store. One place for permission rules.
+7. **Shard-aware:** scope data shard→venue→instrument. Never cross-shard in one component.
+8. **Same pages, different data.** NEVER build separate client/internal page versions. One page, API scopes data via org + entitlements.
+9. **Deleted components — do NOT recreate:** `global-nav-bar.tsx`, `app-shell.tsx`, `lifecycle-rail.tsx`, `role-layout.tsx`, `unified-batch-shell.tsx`
 
 ## BEFORE CODING — Read These Files (All In-Repo)
 
 | Order | File | What It Tells You |
 |-------|------|-------------------|
-| 1 | `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | Platform vision, role model, 7-stage lifecycle, service areas |
-| 2 | `context/CONFIG_REFERENCE.md` | Backend configuration fields and types |
+| 1 | `CODEBASE_STRUCTURE.md` | Folder map, state management, tech stack, quick decision guide |
+| 2 | `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | Platform vision, role model, 7-stage lifecycle, service areas |
 | 3 | `context/SHARDING_DIMENSIONS.md` | 3-layer data scoping: infrastructure → client → subscription |
-| 4 | `context/API_FRONTEND_GAPS.md` | What APIs exist (🟢), need workaround (🟡), or are blocked (🔴) |
-| 5 | `UI_STRUCTURE_MANIFEST.json` | SSOT for current vs target structure. Check `current_structure.status`. |
-| 6 | `.cursorrules` | Target patterns (NOT current state). Describes what the codebase SHOULD look like after refactor. |
-| 7 | `REFACTORING_PLAN_PHASE_1-4.md` | Phase-by-phase execution plan with migration manifests |
-| 8 | `REFACTORING_GUIDE.md` | Refactor lifecycle protocol: ask → start → track → complete → rollback |
-| 9 | `QA_GATES.md` | Quality checks + `.scripts/verify.sh` specification |
+| 4 | `context/API_FRONTEND_GAPS.md` | What APIs exist (green), need workaround (yellow), or are blocked (red) |
+| 5 | `.cursorrules` | Coding patterns — describes the target state |
+| 6 | `UI_STRUCTURE_MANIFEST.json` | SSOT for codebase metadata: routes, components, personas, mock handlers |
+
+Deep docs for each folder: `docs/STRUCTURE_APP.md`, `docs/STRUCTURE_COMPONENTS.md`, `docs/STRUCTURE_LIB.md`, `docs/STRUCTURE_HOOKS.md`, `docs/STRUCTURE_CONTEXT.md`, `docs/STRUCTURE_REFERENCE.md`.
 
 Also available for reference:
 - `lib/registry/openapi.json` — 298 backend API endpoints (source for type generation + mock handlers)
@@ -54,63 +50,65 @@ Also available for reference:
 - `context/api-contracts/` — external data schemas, canonical models, domain facades
 - `context/internal-contracts/` — internal service-to-service types
 - `context/codex/` — architecture standards, domain glossary, coding rules
-- `_reference/` — prior UI implementations for migration reference
+- `_reference/` — prior UI implementations for migration reference (READ ONLY, do not modify)
 
-## REFACTOR vs NEW
-
-**Refactor existing page?**
-1. Read `UI_STRUCTURE_MANIFEST.json` — find the page.
-2. Ask: "I plan to [change]. Approve?"
-3. Update in place. Delete originals. No V2 files.
-4. Update `UI_STRUCTURE_MANIFEST.json` when done.
-
-**New page?**
-1. Create in correct route group: `app/(public)/`, `app/(platform)/`, or `app/(ops)/`.
-2. Use layout.tsx from the route group (auth + shell applied automatically).
-3. Wire to React Query hook in `hooks/api/`.
-
-## STRUCTURE (Next.js 16 App Router)
+## STRUCTURE (Next.js 15 App Router)
 
 ```
 app/
-├── (public)/              ← Unauthenticated: landing, login, signup, docs, contact
-│   └── layout.tsx         ← PublicShell: header + CTA + footer, no sidebar
-├── (platform)/            ← THE product: same pages for internal AND client users
-│   └── layout.tsx         ← PlatformShell: auth required, entitlement-driven nav
-├── (ops)/                 ← Internal-only: admin, ops, devops, compliance, manage
-│   └── layout.tsx         ← OpsShell: auth + role="internal" required
-├── layout.tsx             ← Root layout: fonts, providers, analytics
-└── globals.css            ← Design tokens
+├── (public)/              -- Unauthenticated: landing, login, signup, docs, contact, services/*
+│   └── layout.tsx         -- PublicShell: site header + footer, no sidebar
+├── (platform)/            -- THE product: same pages for internal AND client users
+│   ├── layout.tsx         -- PlatformShell: RequireAuth + UnifiedShell (lifecycle nav)
+│   ├── dashboard/         -- Post-login dashboard (role-aware)
+│   ├── health/            -- System health summary
+│   ├── settings/          -- User/org settings
+│   ├── strategies/        -- Strategy list/grid + [id] detail
+│   ├── client-portal/     -- Org-scoped client portal
+│   ├── portal/            -- Client-facing portal (8 pages)
+│   └── service/           -- THE CANONICAL CONTENT TREE
+│       ├── overview/      -- Service hub (entry after login)
+│       ├── [key]/         -- Dynamic: service detail by registry key
+│       ├── data/          -- Data service (overview, coverage, venues, markets, logs, missing)
+│       ├── trading/       -- Trading service (overview, accounts, markets, orders, positions, alerts, risk)
+│       ├── execution/     -- Execution service (overview, tca, venues, algos, benchmarks, candidates, handoff)
+│       ├── reports/       -- Reports service (overview, executive, reconciliation, regulatory, settlement)
+│       ├── research/      -- Research service (overview, quant, strategy/*, ml/*, execution/*)
+│       └── observe/       -- Observe (news, strategy-health)
+└── (ops)/                 -- Internal-only: admin, ops, devops, compliance, manage/*
+    └── layout.tsx         -- OpsShell: RequireAuth + internal/admin role gate
 
-components/                ← Shared across all route groups
-├── ui/                    ← Radix UI primitives (59 components)
-├── shell/                 ← Shell infrastructure (unified-shell, lifecycle-nav, etc.)
-├── trading/               ← Trading domain components
-├── dashboards/            ← Dashboard layouts
-├── data/                  ← Data catalogue components
-├── marketing/             ← Public page components
-└── [domain]/              ← Other domain-specific components
+components/                -- Shared across all route groups
+├── ui/                    -- shadcn/ui primitives (57 components)
+├── shell/                 -- Shell infrastructure (unified-shell, lifecycle-nav, site-header, etc.)
+├── trading/               -- Trading domain components (30 files)
+├── platform/              -- Platform-wide shared (10 files)
+├── dashboards/            -- Role-specific dashboards (6 files)
+├── ops/deployment/        -- Deployment UI (19 files, ported from deployment-ui)
+├── data/                  -- Data management (5 files)
+├── ml/                    -- ML components (2 files)
+└── marketing/             -- Landing page (6 files)
 
 lib/
-├── config/                ← Centralized config (api.ts, branding.ts, auth.ts, services.ts)
-├── mocks/                 ← MSW infrastructure
-│   ├── handlers/          ← 16 per-service mock handlers
-│   ├── fixtures/          ← Static fixture data + personas
-│   └── adapters/          ← Transform mock→component props
-├── stores/                ← Zustand stores (filter, auth, ui-prefs)
-├── types/                 ← Generated + shared TypeScript types
-├── registry/              ← OpenAPI specs, config registry, reference data
-└── utils.ts               ← Shared utilities
+├── config/                -- Centralized config (api.ts, branding.ts, auth.ts, services.ts)
+├── mocks/                 -- MSW infrastructure
+│   ├── handlers/          -- 15 per-service mock handlers
+│   └── fixtures/          -- Personas + static fixture data
+├── stores/                -- Zustand stores (auth, filter, global-scope, ui-prefs)
+├── types/                 -- TypeScript types (deployment.ts)
+├── registry/              -- OpenAPI specs, config registry, reference data
+├── *-types.ts             -- Domain type files (data-service, execution, ml, strategy)
+├── *-mock-data.ts         -- Domain mock data files (pending cleanup — will be replaced by MSW)
+├── providers.tsx           -- Root provider tree (QueryClient, Auth, Theme, Toaster)
+├── query-client.ts        -- React Query client configuration
+└── utils.ts               -- General utilities (cn(), formatters)
 
 hooks/
-├── use-auth.ts            ← Auth hook (single source for permission rules)
-├── use-mobile.ts          ← Responsive breakpoint hook
-├── use-toast.ts           ← Toast notification hook
-└── api/                   ← React Query hooks per service domain
-    ├── use-instruments.ts
-    ├── use-positions.ts
-    ├── use-orders.ts
-    └── [use-{domain}.ts]
+├── api/                   -- React Query hooks per service domain (14 hooks)
+├── deployment/            -- Deployment-specific hooks
+├── use-auth.ts            -- Auth hook
+├── use-mobile.ts          -- Responsive breakpoint hook
+└── use-toast.ts           -- Toast notification hook
 ```
 
 ## CODE PATTERNS
@@ -122,12 +120,12 @@ import { API_CONFIG } from '@/lib/config/api'
 // Branding — NEVER hardcode colors/strings
 import { COLORS, COMPANY } from '@/lib/config/branding'
 
-// Auth — ALWAYS scope data through auth context
-const { user } = useAuth()
+// Auth — ALWAYS scope data through auth store
+const { user } = useAuthStore()
 // Internal sees all orgs; client sees their org only
 
-// Shard-aware filtering — ALWAYS: shard → venue → instrument
-const { shard, venue, instrument } = useFilterStore()
+// Shard-aware filtering — ALWAYS: shard -> venue -> instrument
+const { selectedShard, selectedOrg } = useGlobalScopeStore()
 
 // Data fetching — ALWAYS React Query + MSW-compatible
 const { data, isLoading } = useInstruments({ shard, venue })
@@ -136,27 +134,24 @@ const { data, isLoading } = useInstruments({ shard, venue })
 // Same endpoint returns different data per persona
 ```
 
+## STATE MANAGEMENT
+
+| State type | Tool | Location |
+|---|---|---|
+| Server / async data | React Query | `hooks/api/use-*.ts` |
+| Global filters (org, date, shard) | Zustand | `lib/stores/global-scope-store.ts` |
+| Auth + role | Zustand | `lib/stores/auth-store.ts` |
+| UI preferences (theme, layout) | Zustand | `lib/stores/ui-prefs-store.ts` |
+| Feature filters | Zustand | `lib/stores/filter-store.ts` |
+| Batch vs live mode | React Context | `lib/execution-mode-context.tsx` |
+
 ## QA GATE (Before PR/Deploy)
 
 ```bash
-bash .scripts/verify.sh
+pnpm lint && pnpm tsc --noEmit && pnpm build && pnpm test
 ```
 
-Runs: clean → install → type-check → build → test.
-Catches broken imports, TypeScript errors, missing deps. See `QA_GATES.md`.
-
-## PROGRESS TRACKING
-
-Create/update `PROGRESS.md` at repo root. After each step:
-- Step number + name
-- Status: ✅ DONE / 🚧 IN PROGRESS / ❌ BLOCKED (reason)
-- Files created/moved/deleted
-
-Update `UI_STRUCTURE_MANIFEST.json` after each major structural change.
-
-## QUALITY STANDARD
-
-100% institutional standard or stop. No half-baked work. User escalates to better model.
+See `QA_GATES.md` for full verification steps.
 
 ## MANDATE
 

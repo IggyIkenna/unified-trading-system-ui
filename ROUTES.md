@@ -1,166 +1,209 @@
-# Route Structure — Unified Trading System UI
+# Route Reference
 
-Last updated: 2026-03-20
+**Updated 2026-03-21.** Reflects post-Phase 2 cleanup state (commit `8e536fc`).
 
-## Public Routes — `app/(public)/`
+All platform content now lives under a single canonical tree: `app/(platform)/service/`.
+All legacy flat routes are permanent redirects in `next.config.mjs` — no page files exist at those paths.
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/` | Landing page (6 Commercial Offerings grid) | Active |
-| `/login` | Authentication | Active |
-| `/signup` | New user registration | Active |
-| `/engagement` | Engagement models (how we work) | Active |
-| `/docs` | API documentation | Active |
-| `/investor-relations` | Investor/board slide deck | Active |
-| `/contact` | Contact form | Active |
-| `/services/data` | Data service marketing page (3-tab: Catalogue/Pricing/Demo) | Active |
-| `/services/[domain]` | Service detail pages (public marketing) | Active |
-| `/demo/preview` | Static demo showcase for presentations | Active |
+---
 
-## Platform Routes — `app/(platform)/`
+## Route Groups
 
-All platform routes require authentication. Data scoped by org + entitlements.
+| Group | URL prefix | Audience |
+|---|---|---|
+| `(public)/` | `/`, `/login`, `/services/*`, etc. | Unauthenticated |
+| `(platform)/` | `/dashboard`, `/service/*`, `/strategies/*` | Authenticated |
+| `(ops)/` | `/admin`, `/devops`, `/compliance`, etc. | Internal operators only |
+
+---
+
+## Public Routes (`(public)/`)
+
+| URL | Purpose |
+|---|---|
+| `/` | Landing page |
+| `/login` | Login — Internal/External toggle + 5 demo personas |
+| `/signup` | Sign-up — service interest → contact flow |
+| `/demo` | Live demo entry |
+| `/demo/preview` | Demo feature tour |
+| `/contact` | Contact form |
+| `/docs` | Public documentation |
+| `/investor-relations` | Investor relations |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
+| `/services/platform` | Platform service marketing page |
+| `/services/execution` | Execution service marketing page |
+| `/services/backtesting` | Backtesting service marketing page |
+| `/services/data` | Data service marketing page |
+| `/services/engagement` | Engagement service marketing page |
+| `/services/investment` | Investment service marketing page |
+| `/services/regulatory` | Regulatory service marketing page |
+
+---
+
+## Platform Top-Level Routes (`(platform)/`)
+
+| URL | Purpose |
+|---|---|
+| `/dashboard` | Post-login dashboard (role-aware) |
+| `/health` | System health summary |
+| `/settings` | User/org settings |
+| `/strategies` | Strategy list/grid |
+| `/strategies/grid` | Grid view |
+| `/strategies/[id]` | Individual strategy detail |
+| `/client-portal/[org]` | Org-scoped client portal |
+| `/portal` | Client-facing portal |
+
+---
+
+## Platform Service Routes — The Canonical Content Tree (`(platform)/service/`)
+
+This is where all platform content lives.
 
 ### Service Hub
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/overview` | Service hub — service grid, activity feed, quick actions, health bar | Active |
-| `/service/[key]` | Per-service subscription page | Active |
+| URL | Purpose |
+|---|---|
+| `/service/overview` | Service hub — entry after login |
+| `/service/[key]` | Dynamic: service detail by registry key |
 
 ### Data Service
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/data` | Data service dashboard (was `/portal/data`) — org-scoped subscriptions, instrument views | Active |
+| URL | Purpose |
+|---|---|
+| `/service/data/overview` | Data service home |
+| `/service/data/coverage` | Data coverage |
+| `/service/data/venues` | Venues |
+| `/service/data/markets` | Markets |
+| `/service/data/markets/pnl` | Market P&L |
+| `/service/data/logs` | Data logs |
+| `/service/data/missing` | Missing data tracker |
 
-### Trading Service (nested)
+### Trading Service
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/trading` | Live Trading Platform — order entry, charts | Active |
-| `/trading/positions` | Positions management (was `/positions`) | Active |
-| `/trading/risk` | Risk dashboard (was `/risk`) | Active |
-| `/trading/alerts` | Alert management (was `/alerts`) | Active |
-| `/trading/markets` | Market overview (was `/markets`) | Active |
-
-### Research Service (nested)
-
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/research` | Research & Backtesting hub | Active |
-| `/research/strategy/*` | Strategy platform — backtests, candidates (was `/strategy-platform/*`) | Active |
-| `/research/ml/*` | ML models, features, experiments (was `/ml/*`) | Active |
-| `/research/execution/*` | Execution research — algos, TCA | Active |
+| URL | Purpose |
+|---|---|
+| `/service/trading/overview` | Trading service home |
+| `/service/trading/accounts` | Accounts |
+| `/service/trading/markets` | Markets |
+| `/service/trading/orders` | Orders |
+| `/service/trading/positions` | Positions |
+| `/service/trading/alerts` | Alerts |
+| `/service/trading/risk` | Risk |
 
 ### Execution Service
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/execution` | Live execution analytics | Active |
+| URL | Purpose |
+|---|---|
+| `/service/execution/overview` | Execution service home |
+| `/service/execution/tca` | Transaction cost analysis |
+| `/service/execution/venues` | Execution venues |
+| `/service/execution/algos` | Execution algorithms |
+| `/service/execution/benchmarks` | Benchmarks |
+| `/service/execution/candidates` | Candidates |
+| `/service/execution/handoff` | Handoff |
 
-### Reports Service (nested)
+### Reports Service
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/reports` | Reporting hub — P&L, settlement, attribution | Active |
-| `/reports/executive` | Executive dashboard (was `/executive`) | Active |
+| URL | Purpose |
+|---|---|
+| `/service/reports/overview` | Reports service home |
+| `/service/reports/executive` | Executive report |
+| `/service/reports/reconciliation` | Reconciliation |
+| `/service/reports/regulatory` | Regulatory reports |
+| `/service/reports/settlement` | Settlement |
 
-### Health
+### Research Service
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/health` | Service health dashboard | Active |
+| URL | Purpose |
+|---|---|
+| `/service/research/overview` | Research service home |
+| `/service/research/quant` | Quant workspace |
+| `/service/research/strategy/overview` | Strategy platform home |
+| `/service/research/strategy/backtests` | Backtests |
+| `/service/research/strategy/candidates` | Candidates |
+| `/service/research/strategy/compare` | Compare strategies |
+| `/service/research/strategy/heatmap` | Heatmap |
+| `/service/research/strategy/handoff` | Handoff to trading |
+| `/service/research/strategy/results` | Results |
+| `/service/research/ml` | ML platform (redirects to overview) |
+| `/service/research/ml/overview` | ML platform home |
+| `/service/research/ml/config` | ML configuration |
+| `/service/research/ml/experiments` | Experiments list |
+| `/service/research/ml/experiments/[id]` | Experiment detail |
+| `/service/research/ml/features` | Feature store |
+| `/service/research/ml/training` | Training |
+| `/service/research/ml/deploy` | Deploy models |
+| `/service/research/ml/monitoring` | Model monitoring |
+| `/service/research/ml/governance` | Governance |
+| `/service/research/ml/registry` | Model registry |
+| `/service/research/ml/validation` | Validation |
+| `/service/research/execution/algos` | Execution analytics — algos |
+| `/service/research/execution/benchmarks` | Execution analytics — benchmarks |
+| `/service/research/execution/tca` | Execution analytics — TCA |
+| `/service/research/execution/venues` | Execution analytics — venues |
 
-## Ops Routes — `app/(ops)/`
+### Observe
 
-Internal-only operational surfaces. Require auth + internal role.
+| URL | Purpose |
+|---|---|
+| `/service/observe/news` | News feed |
+| `/service/observe/strategy-health` | Strategy health |
 
-| Route | Purpose | Status |
-|-------|---------|--------|
-| `/admin` | Admin dashboard — user, client, fee management | Active |
-| `/admin/data` | Internal data admin (Odum only) — all orgs view | Active |
-| `/devops` | DevOps dashboard — 6-tab layout (17K lines ported from deployment-ui) | Active |
-| `/ops` | Service health, job monitoring | Active |
-| `/manage/*` | Client/mandate/fee management | Active |
-| `/compliance` | FCA info page (basic) | Active |
-| `/config` | System configuration | Active |
-| `/engagement` (ops) | Internal engagement admin | Active |
-| `/internal/data-etl` | ETL pipeline management dashboard | Active |
+---
 
-## Redirects (Old Paths -> New Paths)
+## Ops Routes (`(ops)/`)
 
-| Old Path | New Path | Notes |
-|----------|----------|-------|
-| `/portal/data` | `/data` | Data service moved into platform root |
-| `/positions` | `/trading/positions` | Nested under trading |
-| `/risk` | `/trading/risk` | Nested under trading |
-| `/alerts` | `/trading/alerts` | Nested under trading |
-| `/markets` | `/trading/markets` | Nested under trading |
-| `/strategy-platform/*` | `/research/strategy/*` | Nested under research |
-| `/ml/*` | `/research/ml/*` | Nested under research |
-| `/executive` | `/reports/executive` | Nested under reports |
-| `/pricing` | `/engagement` | Renamed (completed earlier) |
-| `/presentation` | `/investor-relations` | Renamed (completed earlier) |
+| URL | Purpose |
+|---|---|
+| `/admin` | Admin console |
+| `/admin/data` | Data admin |
+| `/compliance` | Compliance |
+| `/config` | Configuration |
+| `/devops` | Deployment console |
+| `/engagement` | Engagement management |
+| `/internal` | Internal tools |
+| `/internal/data-etl` | Data ETL tools |
+| `/manage/clients` | Client management |
+| `/manage/users` | User management |
+| `/manage/fees` | Fee management |
+| `/manage/mandates` | Mandate management |
+| `/ops` | Ops overview |
+| `/ops/jobs` | Jobs |
+| `/ops/services` | Services overview |
 
-## Shared Components
+---
 
-| Component | Path | Purpose |
-|-----------|------|---------|
-| `SiteHeader` | `components/shell/site-header.tsx` | Single source of truth for navigation |
+## Permanent Redirects (do not create pages at these paths)
 
-## Data Service Components
+All old flat and parallel routes redirect permanently to `/service/*`.
 
-| Component | Path | Purpose |
-|-----------|------|---------|
-| `ShardCatalogue` | `components/data/shard-catalogue.tsx` | Browse instruments by category/venue/folder |
-| `FreshnessHeatmap` | `components/data/freshness-heatmap.tsx` | GitHub-style data availability calendar |
-| `OrgDataSelector` | `components/data/org-data-selector.tsx` | Org dropdown (admin=all, client=locked) |
-| `DataSubscriptionManager` | `components/data/data-subscription-manager.tsx` | Active subscription cards with usage |
-| `CloudPricingSelector` | `components/data/cloud-pricing-selector.tsx` | GCP/AWS toggle with pricing |
-| `DataServicesShowcase` | `components/marketing/data-services-showcase.tsx` | Now at /services/data |
-
-## Data Service Types
-
-| File | Path | Purpose |
-|------|------|---------|
-| `data-service-types.ts` | `lib/data-service-types.ts` | All TypeScript types including ETL pipeline types |
-| `data-service-mock-data.ts` | `lib/data-service-mock-data.ts` | Mock data for demo/dev including ETL pipelines |
-
-## Data Sharding Hierarchy
-
-```
-Asset Class (cefi, tradfi, defi, onchain_perps)
-  └─ Venue (binance, databento, uniswap_v3, etc.)
-      └─ Folder (perpetuals, spot, futures, pool_state, etc.)
-          └─ Instrument (BTCUSDT, ES.c.0, USDC-ETH-0.05)
-              └─ Data Type (ohlcv, trades, book_snapshot_5, etc.)
-                  └─ Date (ISO format)
-```
-
-## ETL Pipeline Stages
-
-1. **ingest** - Raw data pulled from source (exchange API, vendor, onchain)
-2. **validate** - Schema validation & quality checks
-3. **normalise** - Transform to unified schema
-4. **enrich** - Add derived fields, signals
-5. **store_gcp** - Write to GCP storage
-6. **store_aws** - Replicate to AWS storage
-7. **index** - Index for query performance
-
-## Three Access Tiers (Data Service)
-
-| Tier | Route | Who | Description |
-|------|-------|-----|-------------|
-| Demo | `/services/data` | Anyone | Mock data, no auth, sales preview |
-| Client | `/data` | Signed-in orgs | Own subscriptions, query history, catalogue |
-| Admin | `/admin/data` | Odum team | All orgs, pipeline health, billing |
-| Internal | `/internal/data-etl` | Odum ops | Full ETL pipeline management |
-
-## Navigation Links (SiteHeader)
-
-- Platform (/)
-- Engagement Models (/engagement)
-- Documentation (/docs)
-- Investor Relations (/investor-relations)
-- Contact (/contact)
+| Old URL | → Canonical URL |
+|---|---|
+| `/overview` | `/service/overview` |
+| `/data` | `/service/data/overview` |
+| `/trading` | `/service/trading/overview` |
+| `/trading/positions` | `/service/trading/positions` |
+| `/trading/risk` | `/service/trading/risk` |
+| `/trading/alerts` | `/service/trading/alerts` |
+| `/trading/markets` | `/service/data/markets` |
+| `/trading/markets/:path*` | `/service/data/markets/:path*` |
+| `/research` | `/service/research/overview` |
+| `/research/strategy/:path*` | `/service/research/strategy/:path*` |
+| `/research/ml/:path*` | `/service/research/ml/:path*` |
+| `/research/execution/:path*` | `/service/research/execution/:path*` |
+| `/ml` | `/service/research/ml` |
+| `/ml/:path*` | `/service/research/ml/:path*` |
+| `/positions` | `/service/trading/positions` |
+| `/risk` | `/service/trading/risk` |
+| `/alerts` | `/service/trading/alerts` |
+| `/strategy-platform` | `/service/research/strategy/backtests` |
+| `/strategy-platform/:path*` | `/service/research/strategy/:path*` |
+| `/execution` | `/service/execution/overview` |
+| `/execution/:path*` | `/service/execution/:path*` |
+| `/reports` | `/service/reports/overview` |
+| `/reports/:path*` | `/service/reports/:path*` |
+| `/markets` | `/service/data/markets` |
+| `/markets/pnl` | `/service/data/markets/pnl` |
+| `/executive` | `/service/reports/executive` |
+| `/quant` | `/service/research/quant` |
