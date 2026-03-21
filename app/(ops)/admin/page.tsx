@@ -112,13 +112,13 @@ export default function AdminDashboardPage() {
         {/* Quick Actions */}
         <div className="flex flex-wrap gap-3">
           <Button variant="outline" asChild>
-            <Link href="/service/manage/clients">
+            <Link href="/services/manage/clients">
               <Plus className="mr-2 size-4" />
               Create Org
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/service/manage/fees">
+            <Link href="/services/manage/fees">
               <CreditCard className="mr-2 size-4" />
               Manage Subscriptions
             </Link>
@@ -174,7 +174,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <Button variant="ghost" size="sm" className="w-full" asChild>
-                    <Link href="/service/manage/clients">
+                    <Link href="/services/manage/clients">
                       Manage
                       <ArrowRight className="ml-2 size-3" />
                     </Link>

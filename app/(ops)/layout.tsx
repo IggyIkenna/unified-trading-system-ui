@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation"
 import * as React from "react"
 
 /**
- * Ops shell — internal-only admin/operations pages.
- * Requires auth + role = "internal" or "admin". Clients get 403.
+ * Ops shell — admin-only operations pages.
+ * Requires auth + role = "admin". Internal traders and clients get 403.
  */
 export default function OpsLayout({
   children,
@@ -26,9 +26,7 @@ function OpsShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
   const router = useRouter()
 
-  const isAuthorized =
-    user?.role === "internal" ||
-    user?.role === "admin"
+  const isAuthorized = user?.role === "admin"
 
   React.useEffect(() => {
     if (user && !isAuthorized) {
@@ -42,7 +40,7 @@ function OpsShellInner({ children }: { children: React.ReactNode }) {
         <div className="text-center space-y-3">
           <h1 className="text-2xl font-bold">Access Denied</h1>
           <p className="text-muted-foreground">
-            This area is restricted to internal users.
+            This area is restricted to admin users.
           </p>
         </div>
       </div>

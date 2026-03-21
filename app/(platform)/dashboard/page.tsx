@@ -390,7 +390,7 @@ export default function OverviewPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm">Strategy Performance</CardTitle>
-                  <Link href="/service/trading/strategies">
+                  <Link href="/services/trading/strategies">
                     <Button variant="ghost" size="sm" className="h-7 text-xs">
                       View All
                     </Button>
@@ -412,7 +412,7 @@ export default function OverviewPage() {
                     {strategyPerformance.slice(0, 8).map((s) => (
                       <TableRow key={s.id} className="text-xs">
                         <TableCell>
-                          <Link href={`/service/trading/strategies/${s.id}`} className="font-medium hover:underline">
+                          <Link href={`/services/trading/strategies/${s.id}`} className="font-medium hover:underline">
                             {s.name}
                           </Link>
                           <p className="text-[10px] text-muted-foreground">{s.assetClass}</p>

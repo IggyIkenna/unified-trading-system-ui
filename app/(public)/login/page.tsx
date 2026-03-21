@@ -16,11 +16,11 @@ import { PERSONAS } from "@/lib/mocks/fixtures/personas"
 // ALL personas land on the service hub — the hub shows different services
 // based on role/entitlements. Admin sees ops services; clients see their subscriptions.
 const PERSONA_REDIRECTS: Record<string, string> = {
-  admin: "/service/overview",
-  "internal-trader": "/service/overview",
-  "client-full": "/service/overview",
-  "client-premium": "/service/overview",
-  "client-data-only": "/service/overview",
+  admin: "/services/overview",
+  "internal-trader": "/services/overview",
+  "client-full": "/services/overview",
+  "client-premium": "/services/overview",
+  "client-data-only": "/services/overview",
 }
 
 const ROLE_ICONS: Record<string, typeof Shield> = {
@@ -50,7 +50,7 @@ export default function LoginPage() {
 
   React.useEffect(() => {
     if (!loading && user) {
-      router.replace(redirectTo || "/service/overview")
+      router.replace(redirectTo || "/services/overview")
     }
   }, [loading, user, router, redirectTo])
 
@@ -64,7 +64,7 @@ export default function LoginPage() {
     if (success) {
       // Find matching persona to get redirect
       const persona = PERSONAS.find((p) => p.email === email)
-      const target = redirectTo || (persona ? PERSONA_REDIRECTS[persona.id] : "/service/overview") || "/service/overview"
+      const target = redirectTo || (persona ? PERSONA_REDIRECTS[persona.id] : "/services/overview") || "/services/overview"
       router.push(target)
     } else {
       setError("Invalid credentials. Try any demo account below with password: demo")
@@ -75,7 +75,7 @@ export default function LoginPage() {
   const handleDemoLogin = (personaId: string) => {
     const success = login(personaId)
     if (success) {
-      const target = redirectTo || PERSONA_REDIRECTS[personaId] || "/service/overview"
+      const target = redirectTo || PERSONA_REDIRECTS[personaId] || "/services/overview"
       router.push(target)
     }
   }

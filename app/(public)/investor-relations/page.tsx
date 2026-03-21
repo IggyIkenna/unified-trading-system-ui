@@ -944,7 +944,7 @@ export default function PresentationPage() {
                   <div className="p-8 text-center space-y-6">
                     <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto">{slide.demo}</p>
                     <div className="flex items-center justify-center gap-4">
-                      <Link href="/login?redirect=/service/overview" target="_blank">
+                      <Link href="/login?redirect=/services/overview" target="_blank">
                         <Button variant="outline" size="lg" className="gap-2">
                           <Play className="size-4" />
                           Trader View

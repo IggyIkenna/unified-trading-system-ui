@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
 
 export default function Page() {
-  redirect("/service/manage/compliance")
+  redirect("/services/manage/compliance")
 }

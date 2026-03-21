@@ -211,7 +211,7 @@ export function AlertsFeed({
                 )}
                 {alert.strategyId && (
                   <Link 
-                    href={`/service/trading/strategies/${alert.strategyId}`}
+                    href={`/services/trading/strategies/${alert.strategyId}`}
                     className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
                   >
                     View Strategy

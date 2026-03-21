@@ -85,78 +85,78 @@ export function ServiceTabs({ tabs, rightSlot, entitlements, className }: Servic
 
 // ── Acquire (Data Science / ETL) ─────────────────────────────────────────────
 export const DATA_TABS: ServiceTab[] = [
-  { label: "Pipeline Status", href: "/service/data/overview" },
-  { label: "Coverage Matrix", href: "/service/data/coverage" },
-  { label: "Missing Data", href: "/service/data/missing" },
-  { label: "Venue Health", href: "/service/data/venues" },
-  { label: "Markets", href: "/service/data/markets" },
-  { label: "ETL Logs", href: "/service/data/logs" },
+  { label: "Pipeline Status", href: "/services/data/overview" },
+  { label: "Coverage Matrix", href: "/services/data/coverage" },
+  { label: "Missing Data", href: "/services/data/missing" },
+  { label: "Venue Health", href: "/services/data/venues" },
+  { label: "Markets", href: "/services/data/markets" },
+  { label: "ETL Logs", href: "/services/data/logs" },
 ]
 
 // ── Build (Quant Developer) ──────────────────────────────────────────────────
 export const BUILD_TABS: ServiceTab[] = [
-  { label: "Research Hub", href: "/service/research/overview" },
-  { label: "Features", href: "/service/research/ml/features", requiredEntitlement: "ml-full" },
-  { label: "ML Models", href: "/service/research/ml", matchPrefix: "/service/research/ml", requiredEntitlement: "ml-full" },
-  { label: "Strategies", href: "/service/research/strategy/backtests", matchPrefix: "/service/research/strategy", requiredEntitlement: "strategy-full" },
-  { label: "Backtests", href: "/service/research/strategy/compare", requiredEntitlement: "strategy-full" },
-  { label: "Signals", href: "/service/research/ml/validation", requiredEntitlement: "ml-full" },
-  { label: "Execution Research", href: "/service/execution/algos", matchPrefix: "/service/execution", requiredEntitlement: "execution-basic" },
+  { label: "Research Hub", href: "/services/research/overview" },
+  { label: "Features", href: "/services/research/ml/features", requiredEntitlement: "ml-full" },
+  { label: "ML Models", href: "/services/research/ml", matchPrefix: "/services/research/ml", requiredEntitlement: "ml-full" },
+  { label: "Strategies", href: "/services/research/strategy/backtests", matchPrefix: "/services/research/strategy", requiredEntitlement: "strategy-full" },
+  { label: "Backtests", href: "/services/research/strategy/compare", requiredEntitlement: "strategy-full" },
+  { label: "Signals", href: "/services/research/ml/validation", requiredEntitlement: "ml-full" },
+  { label: "Execution Research", href: "/services/execution/algos", matchPrefix: "/services/execution", requiredEntitlement: "execution-basic" },
 ]
 
 // ── Promote (Trader + Risk Review) ───────────────────────────────────────────
 export const PROMOTE_TABS: ServiceTab[] = [
-  { label: "Review Queue", href: "/service/research/strategy/candidates" },
-  { label: "Execution Analysis", href: "/service/execution/tca" },
-  { label: "Risk Review", href: "/service/trading/risk" },
-  { label: "Approval Status", href: "/service/research/strategy/handoff" },
+  { label: "Review Queue", href: "/services/research/strategy/candidates" },
+  { label: "Execution Analysis", href: "/services/execution/tca" },
+  { label: "Risk Review", href: "/services/trading/risk" },
+  { label: "Approval Status", href: "/services/research/strategy/handoff" },
 ]
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────
 export const TRADING_TABS: ServiceTab[] = [
-  { label: "Terminal", href: "/service/trading/overview" },
-  { label: "Positions", href: "/service/trading/positions" },
-  { label: "Orders", href: "/service/trading/orders" },
-  { label: "Execution Analytics", href: "/service/execution/overview", matchPrefix: "/service/execution" },
-  { label: "Accounts", href: "/service/trading/accounts" },
-  { label: "Markets", href: "/service/trading/markets" },
+  { label: "Terminal", href: "/services/trading/overview" },
+  { label: "Positions", href: "/services/trading/positions" },
+  { label: "Orders", href: "/services/trading/orders" },
+  { label: "Execution Analytics", href: "/services/execution/overview", matchPrefix: "/services/execution" },
+  { label: "Accounts", href: "/services/trading/accounts" },
+  { label: "Markets", href: "/services/trading/markets" },
 ]
 
 // ── Observe (Risk / Ops) ─────────────────────────────────────────────────────
 export const OBSERVE_TABS: ServiceTab[] = [
-  { label: "Risk Dashboard", href: "/service/trading/risk" },
-  { label: "Alerts", href: "/service/trading/alerts" },
-  { label: "News", href: "/service/observe/news" },
-  { label: "Strategy Health", href: "/service/observe/strategy-health" },
-  { label: "System Health", href: "/service/observe/health" },
+  { label: "Risk Dashboard", href: "/services/trading/risk" },
+  { label: "Alerts", href: "/services/trading/alerts" },
+  { label: "News", href: "/services/observe/news" },
+  { label: "Strategy Health", href: "/services/observe/strategy-health" },
+  { label: "System Health", href: "/services/observe/health" },
 ]
 
 // ── Manage (Back Office) ─────────────────────────────────────────────────────
 export const MANAGE_TABS: ServiceTab[] = [
-  { label: "Clients", href: "/service/manage/clients" },
-  { label: "Mandates", href: "/service/manage/mandates" },
-  { label: "Fees", href: "/service/manage/fees" },
-  { label: "Users", href: "/service/manage/users" },
-  { label: "Compliance", href: "/service/manage/compliance" },
+  { label: "Clients", href: "/services/manage/clients" },
+  { label: "Mandates", href: "/services/manage/mandates" },
+  { label: "Fees", href: "/services/manage/fees" },
+  { label: "Users", href: "/services/manage/users" },
+  { label: "Compliance", href: "/services/manage/compliance" },
 ]
 
 // ── Report (Executive) ───────────────────────────────────────────────────────
 export const REPORTS_TABS: ServiceTab[] = [
-  { label: "P&L", href: "/service/reports/overview" },
-  { label: "Executive", href: "/service/reports/executive" },
-  { label: "Settlement", href: "/service/reports/settlement" },
-  { label: "Reconciliation", href: "/service/reports/reconciliation" },
-  { label: "Regulatory", href: "/service/reports/regulatory" },
+  { label: "P&L", href: "/services/reports/overview" },
+  { label: "Executive", href: "/services/reports/executive" },
+  { label: "Settlement", href: "/services/reports/settlement" },
+  { label: "Reconciliation", href: "/services/reports/reconciliation" },
+  { label: "Regulatory", href: "/services/reports/regulatory" },
 ]
 
 // ── Legacy aliases (for backward compatibility during transition) ─────────────
 export const RESEARCH_TABS = BUILD_TABS
 export const EXECUTION_TABS: ServiceTab[] = [
-  { label: "Analytics", href: "/service/execution/overview" },
-  { label: "Algos", href: "/service/execution/algos" },
-  { label: "Venues", href: "/service/execution/venues" },
-  { label: "TCA", href: "/service/execution/tca" },
-  { label: "Benchmarks", href: "/service/execution/benchmarks" },
+  { label: "Analytics", href: "/services/execution/overview" },
+  { label: "Algos", href: "/services/execution/algos" },
+  { label: "Venues", href: "/services/execution/venues" },
+  { label: "TCA", href: "/services/execution/tca" },
+  { label: "Benchmarks", href: "/services/execution/benchmarks" },
 ]
 
 // ── Live/As-Of visibility per service ────────────────────────────────────────

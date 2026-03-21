@@ -129,69 +129,69 @@ export const domainLanes: Record<DomainLane, {
   },
 }
 
-// Route to lifecycle mapping — all platform routes use /service/{service}/... prefix
+// Route to lifecycle mapping — all platform routes use /services/{service}/... prefix
 export const routeMappings: RouteMapping[] = [
   // ACQUIRE stage — Data Service
-  { path: "/service/data/overview", label: "Data", primaryStage: "acquire", lanes: ["data"], description: "Pipeline status, venue coverage, freshness", requiresAuth: true },
-  { path: "/service/data/markets", label: "Markets", primaryStage: "acquire", lanes: ["data"], requiresAuth: true },
+  { path: "/services/data/overview", label: "Data", primaryStage: "acquire", lanes: ["data"], description: "Pipeline status, venue coverage, freshness", requiresAuth: true },
+  { path: "/services/data/markets", label: "Markets", primaryStage: "acquire", lanes: ["data"], requiresAuth: true },
 
   // BUILD stage — Research & Backtesting Service
-  { path: "/service/research/overview", label: "Research & Backtesting", primaryStage: "build", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research", requiresAuth: true },
-  { path: "/service/research/ml", label: "ML Models & Training", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/overview", label: "ML Dashboard", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/experiments", label: "Experiments", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/training", label: "Training", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/features", label: "Features", primaryStage: "build", lanes: ["ml", "data"], requiresAuth: true },
-  { path: "/service/research/ml/validation", label: "Validation", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/registry", label: "Model Registry", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/monitoring", label: "Model Monitoring", primaryStage: "observe", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/deploy", label: "Model Deploy", primaryStage: "promote", lanes: ["ml"], requiresAuth: true },
-  { path: "/service/research/ml/governance", label: "ML Governance", primaryStage: "manage", lanes: ["ml", "compliance"], requiresAuth: true },
-  { path: "/service/research/strategy/backtests", label: "Backtests", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/service/research/strategy/compare", label: "Compare", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/service/research/strategy/results", label: "Results", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/service/research/strategy/heatmap", label: "Heatmap", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
-  { path: "/service/research/strategy/candidates", label: "Strategy Candidates", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
-  { path: "/service/research/strategy/handoff", label: "Strategy Handoff", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
-  { path: "/service/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
-  { path: "/service/execution/venues", label: "Venues", primaryStage: "build", secondaryStage: "acquire", lanes: ["execution", "data"], requiresAuth: true },
-  { path: "/service/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
-  { path: "/service/execution/benchmarks", label: "Benchmarks", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/research/overview", label: "Research & Backtesting", primaryStage: "build", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research", requiresAuth: true },
+  { path: "/services/research/ml", label: "ML Models & Training", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/overview", label: "ML Dashboard", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/experiments", label: "Experiments", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/training", label: "Training", primaryStage: "build", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/features", label: "Features", primaryStage: "build", lanes: ["ml", "data"], requiresAuth: true },
+  { path: "/services/research/ml/validation", label: "Validation", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/registry", label: "Model Registry", primaryStage: "build", secondaryStage: "promote", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/monitoring", label: "Model Monitoring", primaryStage: "observe", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/deploy", label: "Model Deploy", primaryStage: "promote", lanes: ["ml"], requiresAuth: true },
+  { path: "/services/research/ml/governance", label: "ML Governance", primaryStage: "manage", lanes: ["ml", "compliance"], requiresAuth: true },
+  { path: "/services/research/strategy/backtests", label: "Backtests", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/services/research/strategy/compare", label: "Compare", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/services/research/strategy/results", label: "Results", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/services/research/strategy/heatmap", label: "Heatmap", primaryStage: "build", lanes: ["strategy"], requiresAuth: true },
+  { path: "/services/research/strategy/candidates", label: "Strategy Candidates", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
+  { path: "/services/research/strategy/handoff", label: "Strategy Handoff", primaryStage: "promote", lanes: ["strategy"], requiresAuth: true },
+  { path: "/services/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/venues", label: "Venues", primaryStage: "build", secondaryStage: "acquire", lanes: ["execution", "data"], requiresAuth: true },
+  { path: "/services/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/benchmarks", label: "Benchmarks", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
 
   // PROMOTE stage
   { path: "/config", label: "Config", primaryStage: "promote", secondaryStage: "manage", lanes: ["strategy", "execution"], requiresAuth: true },
 
   // RUN stage — Trading Service
   { path: "/dashboard", label: "Command Center", primaryStage: "run", lanes: ["execution", "strategy", "capital"], description: "KPIs, P&L, alerts, risk limits, service health", requiresAuth: true },
-  { path: "/service/trading/overview", label: "Trading", primaryStage: "run", lanes: ["execution"], description: "Live P&L, order entry, charts", requiresAuth: true },
-  { path: "/service/trading/positions", label: "Positions", primaryStage: "run", secondaryStage: "observe", lanes: ["execution", "capital"], requiresAuth: true },
-  { path: "/service/trading/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
-  { path: "/service/trading/alerts", label: "Alerts", primaryStage: "observe", lanes: ["strategy", "execution", "ml"], requiresAuth: true },
+  { path: "/services/trading/overview", label: "Trading", primaryStage: "run", lanes: ["execution"], description: "Live P&L, order entry, charts", requiresAuth: true },
+  { path: "/services/trading/positions", label: "Positions", primaryStage: "run", secondaryStage: "observe", lanes: ["execution", "capital"], requiresAuth: true },
+  { path: "/services/trading/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
+  { path: "/services/trading/alerts", label: "Alerts", primaryStage: "observe", lanes: ["strategy", "execution", "ml"], requiresAuth: true },
 
   // Execution Service
-  { path: "/service/execution/overview", label: "Execution Analytics", primaryStage: "run", lanes: ["execution"], description: "Live execution analytics", requiresAuth: true },
-  { path: "/service/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
-  { path: "/service/execution/venues", label: "Venues", primaryStage: "build", lanes: ["execution", "data"], requiresAuth: true },
-  { path: "/service/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/overview", label: "Execution Analytics", primaryStage: "run", lanes: ["execution"], description: "Live execution analytics", requiresAuth: true },
+  { path: "/services/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/venues", label: "Venues", primaryStage: "build", lanes: ["execution", "data"], requiresAuth: true },
+  { path: "/services/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
 
   // Service Hub
-  { path: "/service/overview", label: "Service Hub", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
+  { path: "/services/overview", label: "Service Hub", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
 
   // OBSERVE stage
-  { path: "/service/observe/health", label: "Health", primaryStage: "observe", lanes: ["data", "execution"], requiresAuth: true },
+  { path: "/services/observe/health", label: "Health", primaryStage: "observe", lanes: ["data", "execution"], requiresAuth: true },
   { path: "/ops", label: "Operations", primaryStage: "observe", secondaryStage: "manage", lanes: ["execution", "data"], requiresAuth: true },
 
   // MANAGE stage
-  { path: "/service/manage/clients", label: "Clients", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
-  { path: "/service/manage/mandates", label: "Mandates", primaryStage: "manage", lanes: ["capital", "compliance"], requiresAuth: true },
-  { path: "/service/manage/fees", label: "Fees", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
-  { path: "/service/manage/users", label: "Users", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
+  { path: "/services/manage/clients", label: "Clients", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
+  { path: "/services/manage/mandates", label: "Mandates", primaryStage: "manage", lanes: ["capital", "compliance"], requiresAuth: true },
+  { path: "/services/manage/fees", label: "Fees", primaryStage: "manage", lanes: ["capital"], requiresAuth: true },
+  { path: "/services/manage/users", label: "Users", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
   { path: "/admin", label: "Admin", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
-  { path: "/service/manage/compliance", label: "Compliance", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
+  { path: "/services/manage/compliance", label: "Compliance", primaryStage: "manage", lanes: ["compliance"], requiresAuth: true },
 
   // REPORT stage — Reports Service
-  { path: "/service/reports/overview", label: "Reports", primaryStage: "report", lanes: ["capital", "compliance"], requiresAuth: true },
-  { path: "/service/reports/executive", label: "Executive", primaryStage: "report", secondaryStage: "observe", lanes: ["capital", "strategy"], requiresAuth: true },
+  { path: "/services/reports/overview", label: "Reports", primaryStage: "report", lanes: ["capital", "compliance"], requiresAuth: true },
+  { path: "/services/reports/executive", label: "Executive", primaryStage: "report", secondaryStage: "observe", lanes: ["capital", "strategy"], requiresAuth: true },
 
   // Public/commercial routes (no auth required)
   { path: "/", label: "Home", primaryStage: "acquire", lanes: ["data"], requiresAuth: false },
@@ -209,7 +209,7 @@ export function getRouteMapping(path: string): RouteMapping | undefined {
   const exactMatch = routeMappings.find(m => m.path === path)
   if (exactMatch) return exactMatch
 
-  // Try prefix match (for dynamic routes like /service/research/ml/experiments/[id])
+  // Try prefix match (for dynamic routes like /services/research/ml/experiments/[id])
   const prefixMatch = routeMappings
     .filter(m => path.startsWith(m.path + "/"))
     .sort((a, b) => b.path.length - a.path.length)[0]
@@ -250,33 +250,33 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
   // Service-centric nav: each stage shows its primary service entry point
   const stageServiceMap: Record<LifecycleStage, { path: string; label: string; lanes: DomainLane[]; description?: string }[]> = {
     acquire: [
-      { path: "/service/data/overview", label: "Data", lanes: ["data"], description: "Pipeline status, venue coverage, freshness" },
-      { path: "/service/data/markets", label: "Markets", lanes: ["data"], description: "OHLCV candles, order book snapshots" },
+      { path: "/services/data/overview", label: "Data", lanes: ["data"], description: "Pipeline status, venue coverage, freshness" },
+      { path: "/services/data/markets", label: "Markets", lanes: ["data"], description: "OHLCV candles, order book snapshots" },
     ],
     build: [
-      { path: "/service/research/overview", label: "Research & Backtesting", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research" },
+      { path: "/services/research/overview", label: "Research & Backtesting", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research" },
     ],
     promote: [
-      { path: "/service/research/strategy/candidates", label: "Strategy Candidates", lanes: ["strategy"], description: "Review and promote winning strategies" },
+      { path: "/services/research/strategy/candidates", label: "Strategy Candidates", lanes: ["strategy"], description: "Review and promote winning strategies" },
     ],
     run: [
       { path: "/dashboard", label: "Command Center", lanes: ["execution", "strategy", "capital"], description: "KPIs, P&L, alerts, risk limits, service health" },
-      { path: "/service/trading/overview", label: "Trading", lanes: ["execution"], description: "Live P&L, order entry, position management" },
-      { path: "/service/execution/overview", label: "Execution Analytics", lanes: ["execution"], description: "Live execution analytics and venue status" },
+      { path: "/services/trading/overview", label: "Trading", lanes: ["execution"], description: "Live P&L, order entry, position management" },
+      { path: "/services/execution/overview", label: "Execution Analytics", lanes: ["execution"], description: "Live execution analytics and venue status" },
     ],
     observe: [
-      { path: "/service/trading/risk", label: "Risk", lanes: ["strategy", "execution", "capital"], description: "Exposure, VaR, Greeks, risk limits" },
-      { path: "/service/trading/alerts", label: "Alerts", lanes: ["strategy", "execution", "ml"], description: "Alert management and notifications" },
-      { path: "/service/observe/health", label: "Health", lanes: ["data", "execution"], description: "Service health dashboard" },
+      { path: "/services/trading/risk", label: "Risk", lanes: ["strategy", "execution", "capital"], description: "Exposure, VaR, Greeks, risk limits" },
+      { path: "/services/trading/alerts", label: "Alerts", lanes: ["strategy", "execution", "ml"], description: "Alert management and notifications" },
+      { path: "/services/observe/health", label: "Health", lanes: ["data", "execution"], description: "Service health dashboard" },
     ],
     manage: [
       { path: "/admin", label: "Admin", lanes: ["compliance"] },
-      { path: "/service/manage/clients", label: "Clients", lanes: ["capital"] },
-      { path: "/service/manage/compliance", label: "Compliance", lanes: ["compliance"] },
+      { path: "/services/manage/clients", label: "Clients", lanes: ["capital"] },
+      { path: "/services/manage/compliance", label: "Compliance", lanes: ["compliance"] },
     ],
     report: [
-      { path: "/service/reports/overview", label: "Reports", lanes: ["capital", "compliance"], description: "P&L attribution, settlement, reconciliation" },
-      { path: "/service/reports/executive", label: "Executive Dashboard", lanes: ["capital", "strategy"] },
+      { path: "/services/reports/overview", label: "Reports", lanes: ["capital", "compliance"], description: "P&L attribution, settlement, reconciliation" },
+      { path: "/services/reports/executive", label: "Executive Dashboard", lanes: ["capital", "strategy"] },
     ],
   }
 

@@ -19,9 +19,9 @@ interface QuickAction {
 
 const ROLE_ACTIONS: Record<string, QuickAction[]> = {
   admin: [
-    { label: "Manage Users", href: "/service/manage/users", icon: Users, color: "text-red-400" },
+    { label: "Manage Users", href: "/services/manage/users", icon: Users, color: "text-red-400" },
     { label: "System Health", href: "/ops", icon: Eye, color: "text-green-400" },
-    { label: "Audit Log", href: "/service/manage/compliance", icon: ClipboardCheck, color: "text-yellow-400" },
+    { label: "Audit Log", href: "/services/manage/compliance", icon: ClipboardCheck, color: "text-yellow-400" },
     { label: "Deployments", href: "/devops", icon: Cloud, color: "text-blue-400" },
     { label: "Configuration", href: "/config", icon: Settings, color: "text-purple-400" },
     { label: "Trading", href: "/trading", icon: TrendingUp, color: "text-orange-400" },

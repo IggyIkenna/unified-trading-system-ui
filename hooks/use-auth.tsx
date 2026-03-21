@@ -19,6 +19,7 @@ export interface AuthState {
   switchPersona: (personaId: string) => void
   logout: () => void
   hasEntitlement: (entitlement: Entitlement) => boolean
+  isAdmin: () => boolean
   isInternal: () => boolean
   personas: typeof PERSONAS
 }
@@ -88,6 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [provider, user],
   )
 
+  const isAdmin = React.useCallback((): boolean => {
+    return user?.role === "admin"
+  }, [user])
+
   const isInternal = React.useCallback((): boolean => {
     return user?.role === "internal" || user?.role === "admin"
   }, [user])
@@ -102,10 +107,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       switchPersona,
       logout,
       hasEntitlement,
+      isAdmin,
       isInternal,
       personas: PERSONAS,
     }),
-    [user, token, loading, login, loginByEmail, switchPersona, logout, hasEntitlement, isInternal],
+    [user, token, loading, login, loginByEmail, switchPersona, logout, hasEntitlement, isAdmin, isInternal],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

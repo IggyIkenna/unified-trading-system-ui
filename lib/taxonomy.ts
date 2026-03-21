@@ -730,7 +730,7 @@ export const NAVIGATION_SURFACE_CONFIG: Record<NavigationSurface, {
     label: "Strategy",
     description: "Strategy catalogue and configuration",
     color: "var(--surface-strategy)",
-    href: "/service/trading/strategies",
+    href: "/services/trading/strategies",
   },
   markets: {
     label: "Markets",

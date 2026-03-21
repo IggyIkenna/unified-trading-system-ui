@@ -3,6 +3,7 @@
 import * as React from "react"
 import { usePathname } from "next/navigation"
 import { LifecycleNav } from "./lifecycle-nav"
+import { Breadcrumbs } from "./breadcrumbs"
 import { cn } from "@/lib/utils"
 
 interface UnifiedShellProps {
@@ -39,6 +40,7 @@ export function UnifiedShell({
         userName={userName}
         userRole={userRole}
       />
+      <Breadcrumbs />
       <main>
         {children}
       </main>

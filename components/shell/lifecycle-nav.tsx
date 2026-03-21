@@ -81,20 +81,23 @@ export function LifecycleNav({
 }: LifecycleNavProps) {
   const pathname = usePathname() || ""
   const [searchOpen, setSearchOpen] = React.useState(false)
-  const { user, hasEntitlement, isInternal, switchPersona: doSwitchPersona, logout: doLogout } = useAuth()
+  const { user, hasEntitlement, isAdmin, isInternal, switchPersona: doSwitchPersona, logout: doLogout } = useAuth()
 
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true)
 
-  // Internal-only routes (ops pages) — hide completely from non-internal
-  const opsRoutes = ["/admin", "/ops", "/devops", "/service/manage", "/config"]
+  // Admin-only routes — hidden from internal traders
+  const adminOnlyRoutes = ["/admin", "/ops", "/devops", "/config"]
+  // Internal-only routes — visible to internal traders AND admins, hidden from clients
+  const internalRoutes = ["/services/manage"]
 
   // Check if an item is accessible (unlocked) for the current user
   const isItemAccessible = (path: string): boolean => {
-    if (opsRoutes.some(r => path === r || path.startsWith(r + "/"))) return isInternal()
-    if (path.startsWith("/service/research")) return hasEntitlement("strategy-full") || hasEntitlement("ml-full")
-    if (path.startsWith("/service/trading") || path.startsWith("/service/execution")) return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
-    if (path.startsWith("/service/reports")) return hasEntitlement("reporting")
+    if (adminOnlyRoutes.some(r => path === r || path.startsWith(r + "/"))) return isAdmin()
+    if (internalRoutes.some(r => path === r || path.startsWith(r + "/"))) return isInternal()
+    if (path.startsWith("/services/research")) return hasEntitlement("strategy-full") || hasEntitlement("ml-full")
+    if (path.startsWith("/services/trading") || path.startsWith("/services/execution")) return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
+    if (path.startsWith("/services/reports")) return hasEntitlement("reporting")
     return true
   }
 
@@ -102,7 +105,13 @@ export function LifecycleNav({
   const navItems = allNavItems.map(nav => ({
     ...nav,
     items: nav.items
-      .filter(item => !opsRoutes.some(r => item.path === r || item.path.startsWith(r + "/")) || isInternal())
+      .filter(item => {
+        const isAdminRoute = adminOnlyRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))
+        const isInternalRoute = internalRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))
+        if (isAdminRoute) return isAdmin()
+        if (isInternalRoute) return isInternal()
+        return true
+      })
       .map(item => ({
         ...item,
         locked: !isItemAccessible(item.path),
@@ -189,7 +198,7 @@ export function LifecycleNav({
                             asChild
                           >
                             <Link
-                              href={`/service/${item.path.split("/service/")[1]?.split("/")[0] || "overview"}`}
+                              href={`/services/${item.path.split("/services/")[1]?.split("/")[0] || "overview"}`}
                               className="flex items-center justify-between opacity-50 cursor-not-allowed"
                               title="Not part of your subscription — upgrade to access"
                             >
