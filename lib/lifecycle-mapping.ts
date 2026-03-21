@@ -162,6 +162,7 @@ export const routeMappings: RouteMapping[] = [
   { path: "/config", label: "Config", primaryStage: "promote", secondaryStage: "manage", lanes: ["strategy", "execution"], requiresAuth: true },
 
   // RUN stage — Trading Service
+  { path: "/dashboard", label: "Command Center", primaryStage: "run", lanes: ["execution", "strategy", "capital"], description: "KPIs, P&L, alerts, risk limits, service health", requiresAuth: true },
   { path: "/service/trading/overview", label: "Trading", primaryStage: "run", lanes: ["execution"], description: "Live P&L, order entry, charts", requiresAuth: true },
   { path: "/service/trading/positions", label: "Positions", primaryStage: "run", secondaryStage: "observe", lanes: ["execution", "capital"], requiresAuth: true },
   { path: "/service/trading/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
@@ -259,6 +260,7 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
       { path: "/service/research/strategy/candidates", label: "Strategy Candidates", lanes: ["strategy"], description: "Review and promote winning strategies" },
     ],
     run: [
+      { path: "/dashboard", label: "Command Center", lanes: ["execution", "strategy", "capital"], description: "KPIs, P&L, alerts, risk limits, service health" },
       { path: "/service/trading/overview", label: "Trading", lanes: ["execution"], description: "Live P&L, order entry, position management" },
       { path: "/service/execution/overview", label: "Execution Analytics", lanes: ["execution"], description: "Live execution analytics and venue status" },
     ],
