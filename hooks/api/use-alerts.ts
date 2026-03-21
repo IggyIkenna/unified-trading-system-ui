@@ -1,13 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-import { apiFetch } from "@/lib/api/fetch"
+import type { ApiResponse } from "@/lib/api/typed-fetch"
+import { typedFetch } from "@/lib/api/typed-fetch"
+
+/** Typed response: array of alert objects from client-reporting-api. */
+type AlertsResponse = ApiResponse<"/client-reporting-api/alerts">
 
 export function useAlerts() {
   const { user, token } = useAuth()
 
-  return useQuery({
+  return useQuery<AlertsResponse>({
     queryKey: ["alerts", user?.id],
-    queryFn: () => apiFetch("/api/alerts", token),
+    queryFn: () => typedFetch<AlertsResponse>("/api/alerts", token),
     enabled: !!user,
   })
 }
@@ -17,7 +21,7 @@ export function useAlertsSummary() {
 
   return useQuery({
     queryKey: ["alerts-summary", user?.id],
-    queryFn: () => apiFetch("/api/alerts/summary", token),
+    queryFn: () => typedFetch<unknown>("/api/alerts/summary", token),
     enabled: !!user,
   })
 }
@@ -28,7 +32,7 @@ export function useAcknowledgeAlert() {
 
   return useMutation({
     mutationFn: (alertId: string) =>
-      apiFetch(`/api/alerts/${alertId}/acknowledge`, token, { method: "PATCH" }),
+      typedFetch<unknown>(`/api/alerts/${alertId}/acknowledge`, token, { method: "PATCH" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] })
       queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })
@@ -42,7 +46,7 @@ export function useResolveAlert() {
 
   return useMutation({
     mutationFn: (alertId: string) =>
-      apiFetch(`/api/alerts/${alertId}/resolve`, token, { method: "PATCH" }),
+      typedFetch<unknown>(`/api/alerts/${alertId}/resolve`, token, { method: "PATCH" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] })
       queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })

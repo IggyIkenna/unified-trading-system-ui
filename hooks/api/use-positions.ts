@@ -1,13 +1,20 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-import { apiFetch } from "@/lib/api/fetch"
+import type { ApiResponse } from "@/lib/api/typed-fetch"
+import { typedFetch } from "@/lib/api/typed-fetch"
+
+/** Typed response: array of PositionResponse from position-balance-monitor-service. */
+type PositionsResponse = ApiResponse<"/position-balance-monitor-service/positions">
+
+/** Typed response: array of AggregatedPosition from position-balance-monitor-service. */
+type PositionsSummaryResponse = ApiResponse<"/position-balance-monitor-service/aggregated-positions">
 
 export function usePositions() {
   const { user, token } = useAuth()
 
-  return useQuery({
+  return useQuery<PositionsResponse>({
     queryKey: ["positions", user?.id],
-    queryFn: () => apiFetch("/api/positions", token),
+    queryFn: () => typedFetch<PositionsResponse>("/api/positions/active", token),
     enabled: !!user,
   })
 }
@@ -15,9 +22,9 @@ export function usePositions() {
 export function usePositionsSummary() {
   const { user, token } = useAuth()
 
-  return useQuery({
+  return useQuery<PositionsSummaryResponse>({
     queryKey: ["positions-summary", user?.id],
-    queryFn: () => apiFetch("/api/positions/summary", token),
+    queryFn: () => typedFetch<PositionsSummaryResponse>("/api/positions/summary", token),
     enabled: !!user,
   })
 }
@@ -27,7 +34,7 @@ export function useBalances() {
 
   return useQuery({
     queryKey: ["balances", user?.id],
-    queryFn: () => apiFetch("/api/positions/balances", token),
+    queryFn: () => typedFetch<unknown>("/api/positions/balances", token),
     enabled: !!user,
   })
 }

@@ -1,13 +1,20 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-import { apiFetch } from "@/lib/api/fetch"
+import type { ApiResponse } from "@/lib/api/typed-fetch"
+import { typedFetch } from "@/lib/api/typed-fetch"
+
+/** Typed response: map of client_id -> string[] from risk-and-exposure-service. */
+type RiskLimitsResponse = ApiResponse<"/risk-and-exposure-service/risk-limits">
+
+/** Typed response: VaRResponse from risk-and-exposure-service. */
+type VaRResponse = ApiResponse<"/risk-and-exposure-service/risk/var">
 
 export function useRiskLimits() {
   const { user, token } = useAuth()
 
-  return useQuery({
+  return useQuery<RiskLimitsResponse>({
     queryKey: ["risk-limits", user?.id],
-    queryFn: () => apiFetch("/api/risk/limits", token),
+    queryFn: () => typedFetch<RiskLimitsResponse>("/api/risk/limits", token),
     enabled: !!user,
   })
 }
@@ -15,9 +22,9 @@ export function useRiskLimits() {
 export function useVaR() {
   const { user, token } = useAuth()
 
-  return useQuery({
+  return useQuery<VaRResponse>({
     queryKey: ["var", user?.id],
-    queryFn: () => apiFetch("/api/risk/var", token),
+    queryFn: () => typedFetch<VaRResponse>("/api/risk/var", token),
     enabled: !!user,
   })
 }
@@ -27,7 +34,7 @@ export function useGreeks() {
 
   return useQuery({
     queryKey: ["greeks", user?.id],
-    queryFn: () => apiFetch("/api/risk/greeks", token),
+    queryFn: () => typedFetch<unknown>("/api/risk/greeks", token),
     enabled: !!user,
   })
 }
@@ -37,7 +44,7 @@ export function useStressScenarios() {
 
   return useQuery({
     queryKey: ["stress-scenarios", user?.id],
-    queryFn: () => apiFetch("/api/risk/stress", token),
+    queryFn: () => typedFetch<unknown>("/api/risk/stress", token),
     enabled: !!user,
   })
 }
