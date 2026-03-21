@@ -1,8 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ContextBar, useContextState } from "@/components/trading/context-bar"
-import { LifecycleRail, type LifecyclePhase } from "@/components/trading/lifecycle-rail"
+import { useGlobalScope } from "@/lib/stores/global-scope-store"
 import { OrderBookWithDepth, OrderBook, DepthChart, generateMockOrderBook } from "@/components/trading/order-book"
 import { CandlestickChart } from "@/components/trading/candlestick-chart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -114,8 +113,7 @@ const generateCandleData = (basePrice: number, timeframe: string) => {
 }
 
 export default function TradingPage() {
-  const { context, setContext } = useContextState()
-  const [lifecyclePhase, setLifecyclePhase] = React.useState<LifecyclePhase>("reconcile")
+  const { scope: context } = useGlobalScope()
   const [selectedInstrument, setSelectedInstrument] = React.useState(instruments[0])
   const [selectedAccount, setSelectedAccount] = React.useState<TradingAccount | null>(null)
   const [orderType, setOrderType] = React.useState<"limit" | "market">("limit")
@@ -344,9 +342,6 @@ export default function TradingPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <ContextBar context={context} onContextChange={setContext} />
-      <LifecycleRail activePhase={lifecyclePhase} onPhaseChange={setLifecyclePhase} />
-
       <main className="flex-1 p-4 space-y-4 overflow-auto">
         {/* Instrument & Account Selector */}
         <div className="flex items-center justify-between">

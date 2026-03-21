@@ -1,11 +1,19 @@
 "use client"
 
-import { ServiceTabs, RESEARCH_TABS } from "@/components/shell/service-tabs"
+import { ServiceTabs, BUILD_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
+import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
+import { useAuth } from "@/hooks/use-auth"
 
 export default function ResearchServiceLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
+
   return (
     <>
-      <ServiceTabs tabs={RESEARCH_TABS} />
+      <ServiceTabs
+        tabs={BUILD_TABS}
+        entitlements={user?.entitlements}
+        rightSlot={LIVE_ASOF_VISIBLE.build ? <LiveAsOfToggle /> : undefined}
+      />
       {children}
     </>
   )

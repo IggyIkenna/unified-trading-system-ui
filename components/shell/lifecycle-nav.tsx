@@ -2,54 +2,56 @@
 
 /**
  * Lifecycle Navigation Shell
- * 
+ *
  * The strategic destination navigation - not an optional alternate mode.
  * Organizes the platform around lifecycle stages:
  * Acquire -> Build -> Promote -> Run -> Observe -> Manage -> Report
  */
 
-import * as React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import {
-  Database,
-  Wrench,
-  ArrowUpCircle,
-  Play,
-  Eye,
-  Settings2,
-  FileText,
-  ChevronDown,
-  Search,
-  Bell,
-  Zap,
-  User,
-  LogOut,
-  Building2,
-  Check,
-} from "lucide-react"
+import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/hooks/use-auth"
 import {
+  buildLifecycleNav,
+  domainLanes,
+  getRouteMapping,
   type LifecycleStage,
   lifecycleStages,
-  domainLanes,
-  buildLifecycleNav,
-  getRouteMapping,
 } from "@/lib/lifecycle-mapping"
-import { useAuth } from "@/hooks/use-auth"
+import { cn } from "@/lib/utils"
+import {
+  ArrowUpCircle,
+  Bell,
+  Building2,
+  Check,
+  ChevronDown,
+  Database,
+  Eye,
+  FileText,
+  Lock,
+  LogOut,
+  Play,
+  Search,
+  Settings2,
+  User,
+  Wrench,
+  Zap,
+} from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import * as React from "react"
 
 // Icon mapping for lifecycle stages
 const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: string }>> = {
@@ -106,11 +108,11 @@ export function LifecycleNav({
         locked: !isItemAccessible(item.path),
       })),
   })).filter(nav => nav.items.length > 0)
-  
+
   // Get current route mapping
   const currentMapping = getRouteMapping(pathname)
   const currentStage = currentMapping?.primaryStage
-  
+
   // Keyboard shortcut for search
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -124,14 +126,14 @@ export function LifecycleNav({
   }, [])
 
   return (
-    <nav className={cn("flex items-center justify-between px-4 py-2 bg-card border-b border-border", className)}>
+    <nav className={cn("flex items-center justify-between px-4 py-2 bg-card border-b border-border shadow-sm", className)}>
       {/* Left: Logo + Lifecycle stages */}
       <div className="flex items-center gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group mr-2">
-          <img 
-            src="/images/odum-logo.png" 
-            alt="Odum Research" 
+          <img
+            src="/images/odum-logo.png"
+            alt="Odum Research"
             className="size-6 transition-transform group-hover:scale-110"
           />
           <span className="font-semibold text-sm hidden xl:inline">Odum</span>
@@ -143,7 +145,8 @@ export function LifecycleNav({
             const Icon = stageIcons[nav.stage]
             const isActive = currentStage === nav.stage
             const stageInfo = lifecycleStages[nav.stage]
-            
+            const allLocked = nav.items.length > 0 && nav.items.every(item => item.locked)
+
             return (
               <React.Fragment key={nav.stage}>
                 <DropdownMenu>
@@ -151,14 +154,20 @@ export function LifecycleNav({
                     <button
                       className={cn(
                         "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        allLocked
+                          ? "text-muted-foreground/40 cursor-not-allowed"
+                          : isActive
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       )}
                     >
                       <Icon className="size-3.5" />
                       <span className="hidden lg:inline">{nav.label}</span>
-                      <ChevronDown className="size-3 opacity-50" />
+                      {allLocked ? (
+                        <Lock className="size-3 opacity-40" />
+                      ) : (
+                        <ChevronDown className="size-3 opacity-50" />
+                      )}
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
@@ -223,7 +232,7 @@ export function LifecycleNav({
                     })}
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
+
                 {/* Subtle connector between stages */}
                 {idx < navItems.length - 1 && (
                   <div className="w-2 h-px bg-border mx-0.5 hidden lg:block" />
@@ -232,6 +241,13 @@ export function LifecycleNav({
             )
           })}
         </div>
+      </div>
+
+      {/* Center: Global Scope Filters (Org / Client / Strategy) */}
+      <div className="hidden md:flex items-center">
+        <div className="w-px h-5 bg-border mx-2" />
+        <GlobalScopeFilters />
+        <div className="w-px h-5 bg-border mx-2" />
       </div>
 
       {/* Right: Search, Notifications, Org, User */}
