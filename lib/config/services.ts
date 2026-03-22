@@ -1,113 +1,129 @@
 /**
- * Service registry — defines platform services, their entitlements,
- * and nav categorisation.
+ * Service registry — defines the 9 platform services, their lifecycle stages,
+ * entitlements, and routing.
  *
- * Source: lib/registry/system-topology.json + SHARDING_DIMENSIONS §Layer 3
+ * SSOT: CITADEL_VISION_2026_03_22.md § Service Architecture
+ * Lifecycle: Acquire → Build → Promote → Run → Execute → Observe → Manage → Report
+ *
+ * Each service maps to exactly one lifecycle stage and has a single entry route.
+ * Navigation goes directly to the first tab of each service (no card landing pages).
  */
 
 import type { Entitlement } from "./auth"
 
+export type LifecycleStage = "acquire" | "build" | "promote" | "run" | "execute" | "observe" | "manage" | "report"
+
 export interface ServiceDefinition {
-  /** Machine key (matches SERVICE_ENDPOINTS keys where applicable) */
+  /** Machine key */
   key: string
   /** Human-readable label */
   label: string
   /** Short description for cards / tooltips */
   description: string
-  /** Route path within the platform (relative to /platform prefix) */
+  /** Route path — entry point (first tab of service) */
   href: string
+  /** Lifecycle stage this service belongs to */
+  lifecycleStage: LifecycleStage
   /** Entitlements required to access (empty = shared/public, ["*"] = internal only) */
   requiredEntitlements: readonly Entitlement[] | readonly ["*"]
-  /** Nav category for grouping */
-  category: "data" | "trading" | "analytics" | "ml" | "ops"
   /** Icon name (lucide-react) */
   icon: string
-  /** Whether this service is internal-only (ops) */
+  /** Whether this service is internal-only (admin/ops) */
   internalOnly: boolean
 }
 
 export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
-  // --- 6 External Services (matching engagement model tiers) ---
+  // --- 7 External Services (matching engagement model tiers) ---
   {
     key: "data",
     label: "Data",
     description: "Instrument catalogue, market data, venue coverage, and data freshness monitoring across all asset classes.",
     href: "/services/data/overview",
+    lifecycleStage: "acquire",
     requiredEntitlements: ["data-basic"],
-    category: "data",
     icon: "Database",
     internalOnly: false,
   },
   {
     key: "research",
     label: "Research & Backtesting",
-    description: "ML model training, signal configuration, strategy backtesting, feature engineering, and promotion pipeline.",
+    description: "ML model training, signal configuration, strategy backtesting, feature engineering, and research pipeline.",
     href: "/services/research/overview",
+    lifecycleStage: "build",
     requiredEntitlements: ["strategy-full"],
-    category: "analytics",
     icon: "FlaskConical",
     internalOnly: false,
   },
   {
-    key: "execution",
-    label: "Execution",
-    description: "Order routing, fills, execution algorithms, venue analytics, and TCA.",
-    href: "/services/execution/overview",
-    requiredEntitlements: ["execution-basic"],
-    category: "trading",
-    icon: "Zap",
+    key: "promote",
+    label: "Promote",
+    description: "Multi-day strategy review, candidate basket, risk analysis, and approval queue for production deployment.",
+    href: "/services/research/strategy/candidates",
+    lifecycleStage: "promote",
+    requiredEntitlements: ["strategy-full"],
+    icon: "ArrowUpCircle",
     internalOnly: false,
   },
   {
     key: "trading",
     label: "Trading",
-    description: "Live P&L, positions, risk monitoring, alerts, and T+1 backtest-vs-live alignment.",
+    description: "Live trading terminal, positions, orders, account balances, market overview, and strategy monitoring.",
     href: "/services/trading/overview",
+    lifecycleStage: "run",
     requiredEntitlements: ["execution-basic"],
-    category: "trading",
     icon: "TrendingUp",
     internalOnly: false,
   },
   {
-    key: "reports",
-    label: "Reports & Compliance",
-    description: "P&L attribution, settlement, reconciliation, regulatory reporting, and audit trails.",
-    href: "/services/reports/overview",
-    requiredEntitlements: ["reporting"],
-    category: "analytics",
-    icon: "FileText",
+    key: "execution",
+    label: "Execution",
+    description: "Execution analytics, algo comparison, venue connectivity, TCA, and custom execution strategies.",
+    href: "/services/execution/overview",
+    lifecycleStage: "execute",
+    requiredEntitlements: ["execution-basic"],
+    icon: "Zap",
+    internalOnly: false,
+  },
+  {
+    key: "observe",
+    label: "Observe",
+    description: "Risk dashboard, alerts, news feed, strategy health monitoring, and system health.",
+    href: "/services/trading/risk",
+    lifecycleStage: "observe",
+    requiredEntitlements: ["execution-basic"],
+    icon: "Eye",
     internalOnly: false,
   },
   {
     key: "manage",
-    label: "Account Management",
-    description: "Client onboarding, mandates, fee schedules, and subscription management.",
+    label: "Manage",
+    description: "Client onboarding, mandates, fee schedules, user management, and compliance controls.",
     href: "/services/manage/clients",
+    lifecycleStage: "manage",
     requiredEntitlements: ["reporting"],
-    category: "analytics",
     icon: "Users",
     internalOnly: false,
   },
+  {
+    key: "reports",
+    label: "Reports",
+    description: "P&L attribution, executive summary, settlement, reconciliation, and regulatory reporting.",
+    href: "/services/reports/overview",
+    lifecycleStage: "report",
+    requiredEntitlements: ["reporting"],
+    icon: "FileText",
+    internalOnly: false,
+  },
 
-  // --- 2 Internal Services (admin only) ---
+  // --- 1 Internal Service (admin only) ---
   {
     key: "admin",
-    label: "Admin",
-    description: "System administration, user management, org settings, and compliance controls.",
+    label: "Admin & Ops",
+    description: "System administration, deployments, DevOps, batch jobs, service registry, and operational monitoring.",
     href: "/admin",
+    lifecycleStage: "manage",
     requiredEntitlements: ["*"],
-    category: "ops",
     icon: "Settings",
-    internalOnly: true,
-  },
-  {
-    key: "devops",
-    label: "DevOps",
-    description: "Service health, deployments, build status, and operational monitoring.",
-    href: "/devops",
-    requiredEntitlements: ["*"],
-    category: "ops",
-    icon: "Cloud",
     internalOnly: true,
   },
 ] as const
