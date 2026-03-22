@@ -758,6 +758,96 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
             <StrategyAuditTrail strategyId={strategy.id} />
           </TabsContent>
         </Tabs>
+
+        {/* Strategy-Type Specific Panel */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">
+              {strategy.archetype === "market-making" || strategy.archetype === "MARKET_MAKING" ? "Market Making Analytics" :
+               strategy.assetClass === "DeFi" ? "DeFi Protocol Analytics" :
+               strategy.assetClass === "Sports" ? "Sports & Betting Analytics" :
+               strategy.assetClass === "Prediction" ? "Prediction Market Analytics" :
+               strategy.archetype === "basis-trade" || strategy.archetype === "BASIS_TRADE" ? "Basis/Spread Analytics" :
+               strategy.archetype === "OPTIONS" || strategy.archetype === "market-making-options" ? "Derivatives Analytics" :
+               "Strategy Analytics"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              {/* Common metrics */}
+              <div><span className="text-muted-foreground text-[10px]">Win Rate</span><div className="font-mono font-medium text-lg">62%</div></div>
+              <div><span className="text-muted-foreground text-[10px]">Avg Trade Duration</span><div className="font-mono font-medium text-lg">4.2h</div></div>
+
+              {/* Market Making specific */}
+              {(strategy.archetype === "market-making" || strategy.archetype === "MARKET_MAKING") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Avg Spread Captured</span><div className="font-mono font-medium text-lg text-emerald-400">2.4 bps</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Inventory Turnover</span><div className="font-mono font-medium text-lg">8.2x/day</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Adverse Selection</span><div className="font-mono font-medium text-lg text-amber-400">12%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Fill Rate</span><div className="font-mono font-medium text-lg">94.2%</div></div>
+                </>
+              )}
+
+              {/* DeFi specific */}
+              {strategy.assetClass === "DeFi" && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Health Factor</span><div className="font-mono font-medium text-lg text-emerald-400">1.45</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">APY (Current)</span><div className="font-mono font-medium text-lg">8.2%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Gas Cost (24h)</span><div className="font-mono font-medium text-lg">$142</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Protocol TVL</span><div className="font-mono font-medium text-lg">$12.4B</div></div>
+                </>
+              )}
+
+              {/* Sports specific */}
+              {strategy.assetClass === "Sports" && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Edge (Avg)</span><div className="font-mono font-medium text-lg text-emerald-400">3.1%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Markets Scanned</span><div className="font-mono font-medium text-lg">2,400</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Active Bets</span><div className="font-mono font-medium text-lg">18</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Yield</span><div className="font-mono font-medium text-lg">4.8%</div></div>
+                </>
+              )}
+
+              {/* Prediction specific */}
+              {strategy.assetClass === "Prediction" && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Markets Active</span><div className="font-mono font-medium text-lg">12</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Avg Mispricing</span><div className="font-mono font-medium text-lg text-emerald-400">2.8%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Resolution Rate</span><div className="font-mono font-medium text-lg">87%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Cross-Platform Arb</span><div className="font-mono font-medium text-lg">$420</div></div>
+                </>
+              )}
+
+              {/* Basis/Spread specific */}
+              {(strategy.archetype === "basis-trade" || strategy.archetype === "BASIS_TRADE") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Basis Spread</span><div className="font-mono font-medium text-lg text-emerald-400">+4.2 bps</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Funding Rate</span><div className="font-mono font-medium text-lg">0.012%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Carry P&L (24h)</span><div className="font-mono font-medium text-lg text-emerald-400">$1.2K</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Roll Cost</span><div className="font-mono font-medium text-lg text-rose-400">-$80</div></div>
+                </>
+              )}
+
+              {/* Derivatives/Options specific */}
+              {(strategy.archetype === "OPTIONS" || strategy.archetype === "market-making-options") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Net Delta</span><div className="font-mono font-medium text-lg">+2.4</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Net Gamma</span><div className="font-mono font-medium text-lg">0.15</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Theta Decay (24h)</span><div className="font-mono font-medium text-lg text-rose-400">-$850</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">IV vs RV Spread</span><div className="font-mono font-medium text-lg text-emerald-400">+3.2%</div></div>
+                </>
+              )}
+
+              {/* Momentum/Directional */}
+              {(strategy.archetype === "momentum" || strategy.archetype === "ml-directional" || strategy.archetype === "ML_DIRECTIONAL" || strategy.archetype === "MOMENTUM") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Signal Strength</span><div className="font-mono font-medium text-lg text-emerald-400">0.72</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Regime</span><div className="font-mono font-medium text-lg">Trending</div></div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
