@@ -97,7 +97,7 @@ function ServiceCard({ service, state, onUpgradeClick }: ServiceCardProps) {
       href={`/services/${service.key}`}
       className={cn(
         "block rounded-xl border bg-card p-5 transition-all hover:bg-accent/50",
-        CATEGORY_COLORS[service.category]
+        CATEGORY_COLORS[service.lifecycleStage] ?? ""
       )}
     >
       <div className="flex items-start justify-between mb-3">
