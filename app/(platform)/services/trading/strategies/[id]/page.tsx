@@ -838,11 +838,53 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 </>
               )}
 
-              {/* Momentum/Directional */}
-              {(strategy.archetype === "momentum" || strategy.archetype === "ml-directional" || strategy.archetype === "ML_DIRECTIONAL" || strategy.archetype === "MOMENTUM") && (
+              {/* Momentum/Directional/ML */}
+              {(strategy.archetype === "momentum" || strategy.archetype === "ml-directional" || strategy.archetype === "ML_DIRECTIONAL" || strategy.archetype === "MOMENTUM" || strategy.archetype === "DIRECTIONAL") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Signal Strength</span><div className="font-mono font-medium text-lg text-emerald-400">0.72</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Regime</span><div className="font-mono font-medium text-lg">Trending</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Confidence</span><div className="font-mono font-medium text-lg">84%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Signal Lag</span><div className="font-mono font-medium text-lg">2.1s</div></div>
+                </>
+              )}
+
+              {/* Mean Reversion */}
+              {(strategy.archetype === "mean-reversion" || strategy.archetype === "MEAN_REVERSION") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Z-Score</span><div className="font-mono font-medium text-lg text-amber-400">1.8σ</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Half-Life</span><div className="font-mono font-medium text-lg">4.2h</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Mean Distance</span><div className="font-mono font-medium text-lg">0.3%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Reversal Rate</span><div className="font-mono font-medium text-lg">71%</div></div>
+                </>
+              )}
+
+              {/* Arbitrage / Statistical Arb */}
+              {(strategy.archetype === "arbitrage" || strategy.archetype === "ARBITRAGE" || strategy.archetype === "statistical-arb" || strategy.archetype === "STATISTICAL_ARB") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Spread (Current)</span><div className="font-mono font-medium text-lg text-emerald-400">+1.8 bps</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Opportunities/hr</span><div className="font-mono font-medium text-lg">142</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Execution Speed</span><div className="font-mono font-medium text-lg">12ms</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Hit Rate</span><div className="font-mono font-medium text-lg">78%</div></div>
+                </>
+              )}
+
+              {/* Recursive Staked Basis (DeFi subset) */}
+              {(strategy.archetype === "recursive-staked-basis" || strategy.archetype === "RECURSIVE_STAKED_BASIS") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Leverage Loop</span><div className="font-mono font-medium text-lg">3.2x</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Net APY</span><div className="font-mono font-medium text-lg text-emerald-400">12.4%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Liquidation Distance</span><div className="font-mono font-medium text-lg">28%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Staking Yield</span><div className="font-mono font-medium text-lg">3.8%</div></div>
+                </>
+              )}
+
+              {/* AMM LP */}
+              {(strategy.archetype === "amm-lp" || strategy.archetype === "AMM_LP") && (
+                <>
+                  <div><span className="text-muted-foreground text-[10px]">Fee APR</span><div className="font-mono font-medium text-lg text-emerald-400">18.2%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">IL (Impermanent Loss)</span><div className="font-mono font-medium text-lg text-rose-400">-1.2%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Range Efficiency</span><div className="font-mono font-medium text-lg">82%</div></div>
+                  <div><span className="text-muted-foreground text-[10px]">Pool Share</span><div className="font-mono font-medium text-lg">0.04%</div></div>
                 </>
               )}
             </div>
