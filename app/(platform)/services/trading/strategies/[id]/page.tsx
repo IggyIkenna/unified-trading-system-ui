@@ -79,11 +79,22 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
 
   const [promoteModalOpen, setPromoteModalOpen] = React.useState(false)
 
-  // Get strategy from registry or fallback
-  const getStrategyById = (stratId: string) => STRATEGIES.find(s => s.id === stratId) ?? null
-  const strategy = getStrategyById(id) ?? getDefaultStrategyById(id) ?? STRATEGIES[0]
+  // Prefer registry version (has full fields: pnlAttribution, instruments, etc.)
+  // Fall back to API data if not in registry
+  const apiStrategy = perfRaw.find((s: Record<string, unknown>) => s.id === id) as Record<string, unknown> | undefined
+  const registryStrategy = getDefaultStrategyById(id)
+  // Merge: registry as base, API data for live metrics
+  const strategy = registryStrategy
+    ? { ...registryStrategy, ...(apiStrategy ? { pnl: apiStrategy.pnl, nav: apiStrategy.nav, exposure: apiStrategy.exposure, sharpe: apiStrategy.sharpe } : {}) }
+    : (apiStrategy as unknown as Strategy) ?? DEFAULT_STRATEGIES[0]
   const mlModel = MODEL_STRATEGY_MAP[strategy.strategyIdPattern]
-  const pnlBreakdown = React.useMemo(() => generatePnLBreakdown(strategy), [strategy])
+  const pnlBreakdown = React.useMemo(() => {
+    try {
+      return generatePnLBreakdown(strategy)
+    } catch {
+      return { total: strategy.performance?.pnlMTD ?? 0, components: [] }
+    }
+  }, [strategy])
   const positions = React.useMemo(() => generatePositionsForStrategy(strategy), [strategy])
   
   // Calculate risk limit utilization from strategy config
