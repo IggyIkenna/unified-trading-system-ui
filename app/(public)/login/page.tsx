@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Sparkles, ArrowRight, Mail, Lock, Building2, Shield, Users, Eye } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
-import { PERSONAS } from "@/lib/mocks/fixtures/personas"
+import { PERSONAS } from "@/lib/auth/personas"
 
 // Map persona roles to redirect targets and display info
 // ALL personas land on the service hub — the hub shows different services

@@ -7,16 +7,11 @@ import { AuthProvider } from "@/hooks/use-auth"
 
 /**
  * Client-side providers wrapper.
- * Wraps children with QueryClientProvider, AuthProvider, and initialises MSW in dev/mock mode.
+ * Wraps children with QueryClientProvider and AuthProvider.
+ * All API calls go to the real API gateway (port 8030) which handles mock/real internally.
  */
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
-
-  React.useEffect(() => {
-    if (process.env.NEXT_PUBLIC_MOCK_API === "true") {
-      import("./mocks/browser").then(({ startMockWorker }) => startMockWorker())
-    }
-  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

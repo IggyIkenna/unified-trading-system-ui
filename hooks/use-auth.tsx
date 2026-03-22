@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { Entitlement } from "@/lib/config/auth"
-import { PERSONAS } from "@/lib/mocks/fixtures/personas"
+import { PERSONAS } from "@/lib/auth/personas"
 import { useAuthStore } from "@/lib/stores/auth-store"
 import { getAuthProvider } from "@/lib/auth/get-provider"
 import type { AuthUser } from "@/lib/auth/types"

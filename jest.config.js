@@ -9,9 +9,6 @@ const customJestConfig = {
   testEnvironment: "jsdom",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
-    "^msw/node$": "<rootDir>/node_modules/msw/lib/node/index.js",
-    "^msw/browser$": "<rootDir>/node_modules/msw/lib/browser/index.js",
-    "^msw$": "<rootDir>/node_modules/msw/lib/core/index.js",
   },
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/",
@@ -28,8 +25,6 @@ const customJestConfig = {
   ],
   collectCoverageFrom: [
     "components/ui/**/*.{ts,tsx}",
-    "lib/mocks/utils.ts",
-    "lib/mocks/fixtures/**/*.{ts,tsx}",
     "lib/config/**/*.{ts,tsx}",
     "lib/stores/**/*.{ts,tsx}",
     "lib/auth/**/*.{ts,tsx}",

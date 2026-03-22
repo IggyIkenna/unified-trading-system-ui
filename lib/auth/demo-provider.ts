@@ -3,7 +3,7 @@ import type { Entitlement } from "@/lib/config/auth"
 import {
   getPersonaById,
   getPersonaByEmail,
-} from "@/lib/mocks/fixtures/personas"
+} from "@/lib/auth/personas"
 import type { AuthProvider, AuthUser } from "./types"
 
 const STORAGE_KEY = "portal_user"

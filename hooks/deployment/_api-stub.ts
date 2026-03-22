@@ -1,7 +1,7 @@
 /**
  * API stub for deployment components.
  *
- * TODO: Wire each function to MSW handlers / real API routes.
+ * TODO: Wire each function to real API routes.
  * All functions return mock data or empty responses for now.
  */
 
@@ -391,21 +391,21 @@ export const TURBO_SUB_DIMENSION_SERVICES: Record<string, string> = {
 
 // ---------------------------------------------------------------------------
 // Stub functions — all return mock / empty data
-// TODO: Wire to MSW handler
+// TODO: Wire to real API
 // ---------------------------------------------------------------------------
 
 export async function fetchBuilds(
   _service: string,
   _env: BuildEnvironment,
 ): Promise<BuildEntry[]> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return [];
 }
 
 export async function getCloudBuildTriggers(): Promise<{
   triggers: BuildTrigger[];
 }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { triggers: [] };
 }
 
@@ -413,14 +413,14 @@ export async function triggerCloudBuild(
   _service: string,
   _branch: string,
 ): Promise<{ success: boolean; message: string }> {
-  // TODO: wire to MSW handler
-  return { success: false, message: "Not implemented — wire to MSW handler" };
+  // TODO: wire to real API
+  return { success: false, message: "Not implemented — wire to real API" };
 }
 
 export async function getCloudBuildHistory(
   _service: string,
 ): Promise<{ builds: BuildInfo[] }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { builds: [] };
 }
 
@@ -428,7 +428,7 @@ export async function listDirectories(
   _service: string,
   _path: string,
 ): Promise<{ directories: string[] }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { directories: [] };
 }
 
@@ -436,7 +436,7 @@ export async function discoverConfigs(
   _service: string,
   _path: string,
 ): Promise<{ total_configs: number }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { total_configs: 0 };
 }
 
@@ -446,14 +446,14 @@ export async function getConfigBuckets(
   buckets: Array<{ name: string; path: string }>;
   default_bucket?: string;
 }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { buckets: [] };
 }
 
 export async function getDeploymentQuotaInfo(
   _params: unknown,
 ): Promise<QuotaInfoResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return {
     service: "",
     quota_remaining: 100,
@@ -465,21 +465,21 @@ export async function getDeploymentQuotaInfo(
 export async function getExecutionMissingShards(
   _params: Record<string, string>,
 ): Promise<ExecutionMissingShardsResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { service: "", missing_shards: [], total_missing: 0 };
 }
 
 export async function cancelDeployment(
   _deploymentId: string,
 ): Promise<{ success: boolean; cancelled_shards?: number; message?: string }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { success: false };
 }
 
 export async function resumeDeployment(
   _deploymentId: string,
 ): Promise<{ success: boolean; message?: string }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { success: false };
 }
 
@@ -487,14 +487,14 @@ export async function verifyDeploymentCompletion(
   _deploymentId: string,
   _options?: { force?: boolean },
 ): Promise<{ verified: boolean }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { verified: false };
 }
 
 export async function retryFailedShards(
   _deploymentId: string,
 ): Promise<{ retried: number; message?: string }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { retried: 0 };
 }
 
@@ -502,7 +502,7 @@ export async function cancelShard(
   _deploymentId: string,
   _shardId?: string,
 ): Promise<{ success: boolean; message?: string }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { success: false };
 }
 
@@ -510,14 +510,14 @@ export async function updateDeploymentTag(
   _deploymentId: string,
   _tag: string | null,
 ): Promise<{ success: boolean; message?: string }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { success: false };
 }
 
 export async function getDeploymentReport(
   _deploymentId: string,
 ): Promise<DeploymentReport> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return {
     deployment_id: _deploymentId,
     service: "",
@@ -533,14 +533,14 @@ export async function getRerunCommands(
   _deploymentId: string,
   _options?: { failedOnly?: boolean },
 ): Promise<RerunCommands> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { deployment_id: _deploymentId, commands: [] };
 }
 
 export async function getDeploymentEvents(
   _deploymentId: string,
 ): Promise<{ events: ShardEvent[] }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { events: [] };
 }
 
@@ -548,7 +548,7 @@ export async function rollbackLiveDeployment(
   _deploymentId: string,
   _options?: { service: string; region: string },
 ): Promise<{ success: boolean }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { success: false };
 }
 
@@ -557,7 +557,7 @@ export async function getLiveDeploymentHealth(
   _service?: string,
   _region?: string,
 ): Promise<LiveHealthStatus | null> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return null;
 }
 
@@ -576,14 +576,14 @@ export async function getDeployments(_params: {
     completed_shards: number;
   }>;
 }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { deployments: [] };
 }
 
 export async function bulkDeleteDeployments(
   _ids: string[],
 ): Promise<{ deleted: number; failed: number }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { deleted: 0, failed: 0 };
 }
 
@@ -592,35 +592,35 @@ export async function bulkDeleteDeployments(
 // ---------------------------------------------------------------------------
 
 export async function getHealth(): Promise<HealthResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { status: "healthy", version: "0.0.0-stub", config_dir: "" };
 }
 
 export async function clearCache(): Promise<void> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
 }
 
 export async function getServices(): Promise<{
   services: Service[];
 }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { services: [] };
 }
 
 export async function getServiceDimensions(
   _service: string,
 ): Promise<ServiceDimensionsResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { service: _service, dimensions: [], cli_args: {} };
 }
 
 export async function getDependencies(_service: string): Promise<DependenciesResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { service: _service, description: "", upstream: [], downstream_dependents: [], outputs: [], external_dependencies: [] };
 }
 
 export async function getChecklist(_service: string): Promise<ChecklistResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return {
     service: _service,
     readiness_percent: 0,
@@ -638,7 +638,7 @@ export async function getChecklist(_service: string): Promise<ChecklistResponse>
 export async function validateChecklist(
   _service: string,
 ): Promise<ChecklistValidateResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return {
     service: _service,
     ready: true,
@@ -654,17 +654,17 @@ export async function validateChecklist(
 export async function listChecklists(): Promise<{
   checklists: ChecklistSummary[];
 }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { checklists: [] };
 }
 
 export async function getEpics(): Promise<EpicSummary[]> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return [];
 }
 
 export async function getEpicDetail(_epicId: string): Promise<EpicDetail> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return {
     epic_id: _epicId,
     display_name: "",
@@ -684,18 +684,18 @@ export async function getEpicDetail(_epicId: string): Promise<EpicDetail> {
 export async function getVenuesByCategory(
   _category: string,
 ): Promise<CategoryVenuesResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { category: _category, venues: [], data_types: [] };
 }
 
 
 export async function getStartDates(_service: string): Promise<StartDatesResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { service: _service, start_dates: {} };
 }
 
 export async function getServiceStatus(_service: string): Promise<ServiceStatus> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return {
     service: _service,
     health: "healthy",
@@ -721,57 +721,57 @@ export async function getServicesOverview(): Promise<{
     anomaly_count: number;
   }>;
 }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { count: 0, healthy: 0, warnings: 0, errors: 0, services: [] };
 }
 
 export async function getDataStatus(
   _params: Record<string, unknown>,
 ): Promise<TurboDataStatusResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { service: "", status: "unknown", categories: {} };
 }
 
 export async function getDataStatusTurbo(
   _params: Record<string, unknown>,
 ): Promise<TurboDataStatusResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { service: "", status: "unknown", categories: {} };
 }
 
 export async function clearDataStatusCache(): Promise<void> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
 }
 
 export async function listFiles(
   _params: Record<string, unknown>,
 ): Promise<ListFilesResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { files: [], total: 0 };
 }
 
 export async function getInstrumentsList(
   _params: Record<string, unknown>,
 ): Promise<InstrumentSearchResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { instruments: [] };
 }
 
 export async function getInstrumentAvailability(
   _params: Record<string, unknown>,
 ): Promise<InstrumentAvailabilityResponse> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { instrument_id: "", available_dates: [], coverage_pct: 0 };
 }
 
 // Missing stub — added for build
 export async function getServiceCategories(_service: string): Promise<{ categories: string[] }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { categories: ["CEFI", "DEFI", "TRADFI"] }
 }
 
 export async function getVenueFilters(_params: Record<string, string>): Promise<{ folders: string[]; data_types: string[] }> {
-  // TODO: wire to MSW handler
+  // TODO: wire to real API
   return { folders: ["spot", "perpetuals", "futures"], data_types: ["ohlcv", "trades", "book_snapshot_5"] }
 }
 

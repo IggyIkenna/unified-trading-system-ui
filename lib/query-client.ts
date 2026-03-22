@@ -28,8 +28,7 @@ let browserQueryClient: QueryClient | undefined
  * Browser: singleton (persists across navigations).
  *
  * NOTE: For full SSR hydration (dehydrate/HydrationBoundary), this pattern
- * needs to be extended when we move from MSW (client-only) to real API calls.
- * Current demo mode is client-rendered, so hydration isn't needed yet.
+ * needs to be extended for server-side data fetching.
  * See: https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr
  */
 export function getQueryClient() {

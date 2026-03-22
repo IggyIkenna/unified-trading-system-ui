@@ -12,7 +12,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { useAuth } from "@/hooks/use-auth"
-import { PERSONAS } from "@/lib/mocks/fixtures/personas"
+import { PERSONAS } from "@/lib/auth/personas"
 
 interface RequireAuthProps {
   children: React.ReactNode

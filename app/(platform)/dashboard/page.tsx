@@ -3,24 +3,20 @@
 import * as React from "react"
 import { useGlobalScope } from "@/lib/stores/global-scope-store"
 import { KPICard } from "@/components/trading/kpi-card"
-import { AlertsFeed, type Alert } from "@/components/trading/alerts-feed"
+import { AlertsFeed } from "@/components/trading/alerts-feed"
 import { PnLAttributionPanel, type PnLComponent } from "@/components/trading/pnl-attribution-panel"
 import { HealthStatusGrid, type ServiceHealth } from "@/components/trading/health-status-grid"
-import { LimitBar } from "@/components/trading/limit-bar"
-import { LiveBatchComparison, LiveBatchDeltaIndicator } from "@/components/trading/live-batch-comparison"
-import { ValueFormatToggle, useValueFormat, FormattedValue, type ValueFormat } from "@/components/trading/value-format-toggle"
+import { LiveBatchComparison } from "@/components/trading/live-batch-comparison"
+import { ValueFormatToggle, useValueFormat } from "@/components/trading/value-format-toggle"
 import { InterventionControls } from "@/components/trading/intervention-controls"
 import { ScopeSummary } from "@/components/trading/scope-summary"
 import { MarginUtilization, type VenueMargin } from "@/components/trading/margin-utilization"
 import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel"
-import { KillSwitchPanel } from "@/components/trading/kill-switch-panel"
-import { CircuitBreakerGrid } from "@/components/trading/circuit-breaker-grid"
-import { StrategyAuditTrail } from "@/components/trading/strategy-audit-trail"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Shield, AlertTriangle, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Radio, Database, Info } from "lucide-react"
+import { ChevronDown, ChevronUp, Radio, Database, AlertTriangle, Loader2 } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -29,136 +25,163 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+
+// API hooks — data from server, not client-side generation
 import { useAlerts } from "@/hooks/api/use-alerts"
 import { usePositions } from "@/hooks/api/use-positions"
 import { useServiceHealth } from "@/hooks/api/use-service-status"
-
-// Import the trading data system
 import {
-  ORGANIZATIONS,
-  CLIENTS,
-  STRATEGIES,
-  getFilteredStrategies,
-  getAggregatedPnL,
-  getAggregatedTimeSeries,
-  getLiveBatchDelta,
-  getStrategyPerformance,
-  getToday,
-  getYesterday,
-  getFilteredServices,
-  getFilteredAlerts,
-  type FilterContext,
-  type Alert as TradingAlert,
-} from "@/lib/trading-data"
+  useTradingOrgs,
+  useTradingClients,
+  useTradingPnl,
+  useTradingTimeseries,
+  useTradingPerformance,
+  useTradingLiveBatchDelta,
+} from "@/hooks/api/use-trading"
+
+// Types only — no data or functions imported from trading-data
+import type { TradingOrganization, TradingClient, PnLBreakdown, TimeSeriesPoint } from "@/lib/trading-data"
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getToday(): string {
+  return new Date().toISOString().split("T")[0]
+}
+
+function getYesterday(): string {
+  const d = new Date()
+  d.setDate(d.getDate() - 1)
+  return d.toISOString().split("T")[0]
+}
+
+/** Loading skeleton for a full-page spinner */
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh] gap-2 text-muted-foreground">
+      <Loader2 className="size-5 animate-spin" />
+      <span>Loading dashboard...</span>
+    </div>
+  )
+}
+
+/** Error banner shown when one or more API calls fail */
+function ErrorBanner({ message }: { message: string }) {
+  return (
+    <div className="mx-4 my-8 p-4 rounded-lg border border-destructive/50 bg-destructive/10 flex items-center gap-3">
+      <AlertTriangle className="size-5 text-destructive flex-shrink-0" />
+      <div>
+        <p className="text-sm font-medium text-destructive">Failed to load dashboard data</p>
+        <p className="text-xs text-muted-foreground mt-1">{message}</p>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
 export default function OverviewPage() {
-  const { data: alertsData, isLoading: alertsLoading } = useAlerts()
-  const mockAlerts: TradingAlert[] = (alertsData as any)?.data ?? (alertsData as any)?.alerts ?? []
+  // ---- API data ----
+  const { data: orgsData, isLoading: orgsLoading, error: orgsError } = useTradingOrgs()
+  const { data: clientsData, isLoading: clientsLoading, error: clientsError } = useTradingClients()
+  const { data: pnlData, isLoading: pnlLoading, error: pnlError } = useTradingPnl()
+  const { data: timeseriesData, isLoading: timeseriesLoading, error: timeseriesError } = useTradingTimeseries()
+  const { data: performanceData, isLoading: perfLoading, error: perfError } = useTradingPerformance()
+  const { data: liveBatchData, isLoading: liveBatchLoading, error: liveBatchError } = useTradingLiveBatchDelta()
+  const { data: alertsData, isLoading: alertsLoading, error: alertsError } = useAlerts()
+  const { data: positionsData, isLoading: positionsLoading, error: positionsError } = usePositions()
+  const { data: healthData, isLoading: healthLoading, error: healthError } = useServiceHealth()
 
-  const { data: positionsData, isLoading: positionsLoading } = usePositions()
-  const positionsRaw: any[] = (positionsData as any)?.data ?? (positionsData as any)?.positions ?? []
-  const venueMargins: VenueMargin[] = positionsRaw.length > 0
-    ? positionsRaw.map((p: any) => ({
-        venue: p.venue ?? "",
-        venueLabel: p.venueLabel ?? p.venue ?? "",
-        used: p.used ?? 0,
-        available: p.available ?? 0,
-        total: p.total ?? 0,
-        utilization: p.utilization ?? 0,
-        trend: p.trend ?? "stable",
-        marginCallDistance: p.marginCallDistance ?? 0,
-        lastUpdate: p.lastUpdate ?? "",
-      }))
-    : []
+  // ---- Derived: organizations, clients, strategies ----
+  const organizations: TradingOrganization[] = orgsData?.organizations ?? []
+  const clients: TradingClient[] = clientsData?.clients ?? []
 
-  const { data: healthData, isLoading: healthLoading } = useServiceHealth()
-  const allMockServices: ServiceHealth[] = (healthData as any)?.data ?? (healthData as any)?.services ?? []
+  // Alerts
+  const alertsRaw = alertsData as Record<string, unknown> | undefined
+  const mockAlerts = (alertsRaw?.data ?? alertsRaw?.alerts ?? []) as Array<{
+    id: string
+    message: string
+    severity: "critical" | "high" | "medium" | "low"
+    timestamp: string
+    source: string
+  }>
 
-  const isLoading = alertsLoading || positionsLoading || healthLoading
+  // Positions / margin
+  const positionsRaw = positionsData as Record<string, unknown> | undefined
+  const positionsArr = (positionsRaw?.data ?? positionsRaw?.positions ?? []) as Array<Record<string, unknown>>
+  const venueMargins: VenueMargin[] = positionsArr.map((p) => ({
+    venue: (p.venue as string) ?? "",
+    venueLabel: (p.venueLabel as string) ?? (p.venue as string) ?? "",
+    used: (p.used as number) ?? 0,
+    available: (p.available as number) ?? 0,
+    total: (p.total as number) ?? 0,
+    utilization: (p.utilization as number) ?? 0,
+    trend: (p.trend as "up" | "down" | "stable") ?? "stable",
+    marginCallDistance: (p.marginCallDistance as number) ?? 0,
+    lastUpdate: (p.lastUpdate as string) ?? "",
+  }))
 
+  // Health
+  const healthRaw = healthData as Record<string, unknown> | undefined
+  const allMockServices: ServiceHealth[] = (healthRaw?.data ?? healthRaw?.services ?? []) as ServiceHealth[]
+
+  // P&L breakdown
+  const aggregatedPnL: PnLBreakdown = pnlData ?? {
+    strategyId: "AGGREGATE", clientId: "MULTIPLE", orgId: "MULTIPLE",
+    date: getToday(), mode: "live",
+    delta: 0, funding: 0, basis: 0, interest_rate: 0, greeks: 0,
+    mark_to_market: 0, carry: 0, fx: 0, fees: 0, slippage: 0, residual: 0, total: 0,
+  }
+
+  // Timeseries
+  const emptyTs: TimeSeriesPoint[] = []
+  const liveTimeSeries = timeseriesData?.timeseries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs }
+
+  // For batch comparison we re-use live-batch delta endpoint
+  // The mock returns full timeseries from the same seed so batch = live shifted
+  const batchTimeSeries = liveBatchData ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs }
+
+  // Performance table
+  const strategyPerformance = performanceData?.strategies ?? []
+
+  // ---- UI state ----
   const { scope: context, setOrganizationIds, setClientIds, setStrategyIds } = useGlobalScope()
   const [showTimeSeries, setShowTimeSeries] = React.useState(true)
   const [batchDate, setBatchDate] = React.useState(getYesterday())
-  const { format: valueFormat, setFormat: setValueFormat, formatValue } = useValueFormat("dollar")
+  const { format: valueFormat, setFormat: setValueFormat } = useValueFormat("dollar")
 
-  // Build filter context from UI state
-  const filterContext: FilterContext = React.useMemo(() => ({
-    organizationIds: context.organizationIds,
-    clientIds: context.clientIds,
-    strategyIds: context.strategyIds,
-    mode: context.mode,
-    date: context.mode === "batch" ? (context.asOfDatetime?.split("T")[0] || getYesterday()) : getToday(),
-  }), [context])
+  // ---- Loading / error ----
+  const coreLoading = orgsLoading || clientsLoading || pnlLoading || timeseriesLoading || perfLoading
+  const sidebarLoading = alertsLoading || positionsLoading || healthLoading || liveBatchLoading
+  const isLoading = coreLoading && !pnlData && !performanceData // block render until core data arrives
 
-  // Get FILTERED data based on current context
-  const filteredStrategies = React.useMemo(() => 
-    getFilteredStrategies(filterContext), 
-    [filterContext]
-  )
-  
-  const aggregatedPnL = React.useMemo(() => 
-    getAggregatedPnL(filterContext),
-    [filterContext]
-  )
-  
-  // Time series data - now using aggregation
-  const liveTimeSeries = React.useMemo(() => 
-    getAggregatedTimeSeries({ ...filterContext, mode: "live" }),
-    [filterContext]
-  )
-  
-  const batchTimeSeries = React.useMemo(() => 
-    getAggregatedTimeSeries({ ...filterContext, mode: "batch", date: batchDate }),
-    [filterContext, batchDate]
-  )
-  
-  // Strategy performance table data
-  const strategyPerformance = React.useMemo(() => 
-    getStrategyPerformance(filterContext),
-    [filterContext]
-  )
-  
-  // Get services relevant to filtered strategies
-  const relevantServices = React.useMemo(() => 
-    getFilteredServices(filterContext),
-    [filterContext]
-  )
-  
-  // Get filtered alerts based on context
-  const filteredAlerts = React.useMemo(() => 
-    getFilteredAlerts(mockAlerts, filterContext),
-    [filterContext]
-  )
-  
-  // Filter services based on what's relevant to current filter context
-  const filteredServices = React.useMemo(() => {
-    if (relevantServices.length === 0) return allMockServices
-    return allMockServices.filter(s => relevantServices.includes(s.name))
-  }, [relevantServices])
+  const firstError = orgsError ?? clientsError ?? pnlError ?? timeseriesError ?? perfError ?? alertsError ?? positionsError ?? healthError ?? liveBatchError
+  if (firstError && !pnlData && !performanceData) {
+    return <ErrorBanner message={(firstError as Error).message ?? "Unknown error"} />
+  }
 
-  // Compute aggregated KPIs from filtered data
+  if (isLoading) return <PageLoader />
+
+  // ---- Computed KPIs ----
   const totalPnl = aggregatedPnL.total
-  const totalNav = filteredStrategies.reduce((sum, s) => sum + s.baseCapital, 0)
+  const totalNav = strategyPerformance.reduce((sum, s) => sum + s.nav, 0) || 1
   const totalExposure = liveTimeSeries.exposure[liveTimeSeries.exposure.length - 1]?.value || 0
-  const liveStrategies = filteredStrategies.filter(s => s.status === "live").length
-  const warningStrategies = filteredStrategies.filter(s => s.status === "warning").length
-  const criticalAlerts = filteredAlerts.filter(a => a.severity === "critical").length
-  const highAlerts = filteredAlerts.filter(a => a.severity === "high").length
+  const liveStrategies = strategyPerformance.filter((s) => s.status === "live").length
+  const warningStrategies = strategyPerformance.filter((s) => s.status === "warning").length
+  const criticalAlerts = mockAlerts.filter((a) => a.severity === "critical").length
+  const highAlerts = mockAlerts.filter((a) => a.severity === "high").length
 
-  // P&L components for attribution panel
+  // P&L components for attribution
   const safeDivide = (num: number, denom: number): number => {
     if (!denom || denom === 0 || !isFinite(num) || !isFinite(denom)) return 0
     return (num / Math.abs(denom)) * 100
   }
-  
+
   const pnlComponents: PnLComponent[] = [
     { name: "Funding", pnl: aggregatedPnL.funding || 0, percentage: safeDivide(aggregatedPnL.funding, aggregatedPnL.total) },
     { name: "Carry", pnl: aggregatedPnL.carry || 0, percentage: safeDivide(aggregatedPnL.carry, aggregatedPnL.total) },
@@ -168,10 +191,10 @@ export default function OverviewPage() {
     { name: "Slippage", pnl: aggregatedPnL.slippage || 0, percentage: safeDivide(aggregatedPnL.slippage, aggregatedPnL.total) },
     { name: "Fees", pnl: aggregatedPnL.fees || 0, percentage: safeDivide(aggregatedPnL.fees, aggregatedPnL.total) },
     { name: "Residual", pnl: aggregatedPnL.residual || 0, percentage: safeDivide(aggregatedPnL.residual, aggregatedPnL.total) },
-  ].filter(c => Math.abs(c.pnl) > 0.01 && isFinite(c.pnl))
+  ].filter((c) => Math.abs(c.pnl) > 0.01 && isFinite(c.pnl))
 
   // Format helpers
-  const formatCurrency = React.useCallback((v: number) => {
+  const formatCurrency = (v: number) => {
     if (valueFormat === "percent") {
       const pct = totalNav > 0 ? (v / totalNav) * 100 : 0
       return `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`
@@ -179,15 +202,21 @@ export default function OverviewPage() {
     if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(2)}M`
     if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`
     return `$${v.toFixed(0)}`
-  }, [valueFormat, totalNav])
-  
+  }
+
   const formatDollar = (v: number) => {
     if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(2)}M`
     if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`
     return `$${v.toFixed(0)}`
   }
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  // Scope summary helpers: map IDs to objects from API data
+  const scopeOrgs = context.organizationIds
+    .map((id) => organizations.find((o) => o.id === id))
+    .filter((o): o is TradingOrganization => !!o)
+  const scopeClients = context.clientIds
+    .map((id) => clients.find((c) => c.id === id))
+    .filter((c): c is TradingClient => !!c)
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -195,11 +224,11 @@ export default function OverviewPage() {
         {/* Command Center Header */}
         <div className="flex items-center justify-between gap-4 px-3 py-2 bg-secondary/30 rounded-lg border border-border">
           <ScopeSummary
-            organizations={context.organizationIds.map(id => ORGANIZATIONS.find(o => o.id === id)!).filter(Boolean)}
-            clients={context.clientIds.map(id => CLIENTS.find(c => c.id === id)!).filter(Boolean)}
-            strategies={filteredStrategies.map(s => ({ id: s.id, name: s.name, status: s.status }))}
+            organizations={scopeOrgs}
+            clients={scopeClients}
+            strategies={strategyPerformance.map((s) => ({ id: s.id, name: s.name, status: s.status }))}
             selectedStrategyIds={context.strategyIds}
-            totalStrategies={STRATEGIES.length}
+            totalStrategies={strategyPerformance.length}
             totalCapital={totalNav}
             totalExposure={totalExposure}
             mode={context.mode}
@@ -212,11 +241,12 @@ export default function OverviewPage() {
           />
           <InterventionControls
             scope={{
-              strategyCount: filteredStrategies.length,
+              strategyCount: strategyPerformance.length,
               totalExposure: totalExposure,
-              scopeLabel: context.organizationIds.length > 0 || context.clientIds.length > 0
-                ? "Filtered"
-                : "All Strategies",
+              scopeLabel:
+                context.organizationIds.length > 0 || context.clientIds.length > 0
+                  ? "Filtered"
+                  : "All Strategies",
             }}
           />
         </div>
@@ -250,6 +280,9 @@ export default function OverviewPage() {
                 </span>
               )}
             </Badge>
+            {(timeseriesLoading || liveBatchLoading) && (
+              <Loader2 className="size-3.5 animate-spin text-muted-foreground ml-1" />
+            )}
           </div>
 
           {showTimeSeries && (
@@ -301,21 +334,21 @@ export default function OverviewPage() {
           {showTimeSeries && (
             <DriftAnalysisPanel
               metrics={[
-                { 
-                  label: "P&L", 
-                  liveValue: liveTimeSeries.pnl[liveTimeSeries.pnl.length - 1]?.value || 0, 
+                {
+                  label: "P&L",
+                  liveValue: liveTimeSeries.pnl[liveTimeSeries.pnl.length - 1]?.value || 0,
                   batchValue: batchTimeSeries.pnl[batchTimeSeries.pnl.length - 1]?.value || 0,
                   threshold: 2,
                 },
-                { 
-                  label: "Net Exposure", 
-                  liveValue: liveTimeSeries.exposure[liveTimeSeries.exposure.length - 1]?.value || 0, 
+                {
+                  label: "Net Exposure",
+                  liveValue: liveTimeSeries.exposure[liveTimeSeries.exposure.length - 1]?.value || 0,
                   batchValue: batchTimeSeries.exposure[batchTimeSeries.exposure.length - 1]?.value || 0,
                   threshold: 5,
                 },
-                { 
-                  label: "NAV", 
-                  liveValue: liveTimeSeries.nav[liveTimeSeries.nav.length - 1]?.value || 0, 
+                {
+                  label: "NAV",
+                  liveValue: liveTimeSeries.nav[liveTimeSeries.nav.length - 1]?.value || 0,
                   batchValue: batchTimeSeries.nav[batchTimeSeries.nav.length - 1]?.value || 0,
                   threshold: 1,
                 },
@@ -375,7 +408,10 @@ export default function OverviewPage() {
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm">Strategy Performance</CardTitle>
+                  <CardTitle className="text-sm">
+                    Strategy Performance
+                    {perfLoading && <Loader2 className="inline-block size-3.5 animate-spin ml-2" />}
+                  </CardTitle>
                   <Link href="/services/trading/strategies">
                     <Button variant="ghost" size="sm" className="h-7 text-xs">
                       View All
@@ -428,15 +464,24 @@ export default function OverviewPage() {
 
           {/* Right: Alerts Feed */}
           <div>
-            <AlertsFeed 
-              alerts={filteredAlerts.slice(0, 6).map(a => ({
-                id: a.id,
-                message: a.message,
-                severity: a.severity as "low" | "medium" | "high" | "critical",
-                timestamp: a.timestamp,
-                source: a.source,
-              }))} 
-            />
+            {alertsLoading ? (
+              <Card>
+                <CardContent className="flex items-center justify-center py-12 text-muted-foreground">
+                  <Loader2 className="size-4 animate-spin mr-2" />
+                  Loading alerts...
+                </CardContent>
+              </Card>
+            ) : (
+              <AlertsFeed
+                alerts={mockAlerts.slice(0, 6).map((a) => ({
+                  id: a.id,
+                  message: a.message,
+                  severity: a.severity,
+                  timestamp: a.timestamp,
+                  source: a.source,
+                }))}
+              />
+            )}
           </div>
         </div>
 
@@ -449,7 +494,7 @@ export default function OverviewPage() {
           />
 
           {/* Service Health */}
-          <HealthStatusGrid services={filteredServices.slice(0, 8)} />
+          <HealthStatusGrid services={allMockServices.slice(0, 8)} />
 
           {/* Margin Utilization */}
           <MarginUtilization venues={venueMargins} />

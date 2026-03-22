@@ -1,4 +1,4 @@
-import { PERSONAS, getPersonaById, getPersonaByEmail } from "@/lib/mocks/fixtures/personas"
+import { PERSONAS, getPersonaById, getPersonaByEmail } from "@/lib/auth/personas"
 
 describe("PERSONAS", () => {
   it("has 4 demo personas", () => {

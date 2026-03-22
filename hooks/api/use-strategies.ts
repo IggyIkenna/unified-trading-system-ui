@@ -17,7 +17,7 @@ export function useStrategyPerformance() {
 
   return useQuery({
     queryKey: ["strategy-performance", user?.id],
-    queryFn: () => apiFetch("/api/analytics/performance", token),
+    queryFn: () => apiFetch("/api/trading/performance", token),
     enabled: !!user,
   })
 }

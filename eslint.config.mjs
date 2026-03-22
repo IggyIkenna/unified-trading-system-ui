@@ -6,7 +6,6 @@ const eslintConfig = [
     ignores: [
       "_reference/**",
       "lib/types/api-generated.ts",
-      "public/mockServiceWorker.js",
     ],
   },
 ]
