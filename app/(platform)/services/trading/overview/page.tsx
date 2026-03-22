@@ -401,8 +401,8 @@ export default function TradingPage() {
     const apiBids = apiOb?.bids as Array<Record<string, number>> | undefined
     const apiAsks = apiOb?.asks as Array<Record<string, number>> | undefined
     if (apiBids && apiAsks && apiBids.length > 0) {
-      const mappedBids = apiBids.map((b) => ({ price: b.price, quantity: b.quantity ?? b.size ?? 0, total: b.total ?? 0 }))
-      const mappedAsks = apiAsks.map((a) => ({ price: a.price, quantity: a.quantity ?? a.size ?? 0, total: a.total ?? 0 }))
+      const mappedBids = apiBids.map((b) => ({ price: b.price, size: b.size ?? b.quantity ?? 0, total: b.total ?? 0 }))
+      const mappedAsks = apiAsks.map((a) => ({ price: a.price, size: a.size ?? a.quantity ?? 0, total: a.total ?? 0 }))
       // Overlay WebSocket bid/ask at top of book
       if (wsBid !== null && mappedBids.length > 0) mappedBids[0] = { ...mappedBids[0], price: wsBid }
       if (wsAsk !== null && mappedAsks.length > 0) mappedAsks[0] = { ...mappedAsks[0], price: wsAsk }
