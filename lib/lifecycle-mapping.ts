@@ -140,7 +140,6 @@ export const domainLanes: Record<DomainLane, {
 export const routeMappings: RouteMapping[] = [
   // ACQUIRE stage — Data Service
   { path: "/services/data/overview", label: "Data", primaryStage: "acquire", lanes: ["data"], description: "Pipeline status, venue coverage, freshness", requiresAuth: true },
-  { path: "/services/data/markets", label: "Markets", primaryStage: "acquire", lanes: ["data"], requiresAuth: true },
 
   // BUILD stage — Research & Backtesting Service
   { path: "/services/research/overview", label: "Research & Backtesting", primaryStage: "build", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research", requiresAuth: true },
@@ -264,7 +263,6 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
   const stageServiceMap: Record<LifecycleStage, { path: string; label: string; lanes: DomainLane[]; description?: string }[]> = {
     acquire: [
       { path: "/services/data/overview", label: "Data", lanes: ["data"], description: "Pipeline status, venue coverage, freshness" },
-      { path: "/services/data/markets", label: "Markets", lanes: ["data"], description: "OHLCV candles, order book snapshots" },
     ],
     build: [
       { path: "/services/research/overview", label: "Research & Backtesting", lanes: ["ml", "strategy", "execution"], description: "ML models, strategy research, execution research" },
