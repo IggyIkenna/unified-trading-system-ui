@@ -68,7 +68,7 @@ todos:
   - id: b1-venue-mapping-expansion
     content: |
       - [x] [AGENT] P0. Expand VenueMapping.all_tardis_exchanges from 10 to 19 venues
-      Added Tier 2 (bitfinex, gemini, bitstamp) and Tier 3 (huobi, gate-io, bitmex, phemex).
+      Added Tier 2 (bitfinex, gemini, bitstamp) and Tier 3 (huobi, gate-io, phemex).
       Updated tardis_to_venue, venue_to_ccxt, venue_start_dates, instrument_type mappings.
       Preserved existing canonical names (BYBIT, OKX, COINBASE) for backward compat.
     status: done

@@ -778,12 +778,6 @@
         "access_mode": "rest_polling",
         "data_types": []
       },
-      "gateio": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
       "kucoin": {
         "base_url": null,
         "ws_url": null,

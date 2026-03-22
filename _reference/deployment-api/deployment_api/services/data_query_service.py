@@ -286,7 +286,7 @@ class DataQueryService:
     def _venue_to_category(self, venue: str) -> str | None:
         """Map a venue name to its market category (CEFI/TRADFI/DEFI), or None."""
         venue_upper = venue.upper()
-        if any(k in venue_upper for k in ["BINANCE", "BYBIT", "OKX", "DERIBIT", "BITMEX"]):
+        if any(k in venue_upper for k in ["BINANCE", "BYBIT", "OKX", "DERIBIT"]):
             return "CEFI"
         if any(k in venue_upper for k in ["NYSE", "NASDAQ", "CME", "CBOE", "ICE"]):
             return "TRADFI"
