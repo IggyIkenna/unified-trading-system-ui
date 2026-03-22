@@ -138,32 +138,9 @@ export default function TradingPage() {
   const { data: instrumentsApiData } = useInstruments()
   const { data: balancesApiData } = useBalances()
 
-  // WebSocket bid/ask state for orderbook overlay
+  // WebSocket bid/ask state for orderbook overlay (hooks declared early, wired after useState below)
   const [wsBid, setWsBid] = React.useState<number | null>(null)
   const [wsAsk, setWsAsk] = React.useState<number | null>(null)
-
-  // WebSocket for real-time ticks
-  const handleWsMessage = React.useCallback((msg: Record<string, unknown>) => {
-    if (msg.instrument === selectedInstrument?.symbol && typeof msg.price === "number") {
-      setLivePrice(msg.price as number)
-      if (typeof msg.bid === "number") setWsBid(msg.bid as number)
-      if (typeof msg.ask === "number") setWsAsk(msg.ask as number)
-    }
-  }, [selectedInstrument?.symbol])
-
-  const ws = useWebSocket({
-    url: `ws://localhost:8030/ws`,
-    enabled: context.mode === "live",
-    onMessage: handleWsMessage,
-  })
-
-  // Subscribe to selected instrument on WebSocket
-  React.useEffect(() => {
-    if (ws.status === "connected" && selectedInstrument) {
-      ws.subscribe([selectedInstrument.symbol])
-      return () => { ws.unsubscribe([selectedInstrument.symbol]) }
-    }
-  }, [ws.status, selectedInstrument?.symbol, ws.subscribe, ws.unsubscribe])
 
   // Extract instruments: prefer instruments API (with categories), fallback to tickers, then defaults
   const instruments = React.useMemo(() => {
@@ -232,6 +209,29 @@ export default function TradingPage() {
     modeParam,
     asOfParam
   )
+
+  // WebSocket for real-time ticks (after useState to avoid block-scoping errors)
+  const handleWsMessage = React.useCallback((msg: Record<string, unknown>) => {
+    if (msg.instrument === selectedInstrument?.symbol && typeof msg.price === "number") {
+      setLivePrice(msg.price as number)
+      if (typeof msg.bid === "number") setWsBid(msg.bid as number)
+      if (typeof msg.ask === "number") setWsAsk(msg.ask as number)
+    }
+  }, [selectedInstrument?.symbol])
+
+  const ws = useWebSocket({
+    url: "ws://localhost:8030/ws",
+    enabled: context.mode === "live",
+    onMessage: handleWsMessage,
+  })
+
+  // Subscribe to selected instrument on WebSocket
+  React.useEffect(() => {
+    if (ws.status === "connected" && selectedInstrument) {
+      ws.subscribe([selectedInstrument.symbol])
+      return () => { ws.unsubscribe([selectedInstrument.symbol]) }
+    }
+  }, [ws.status, selectedInstrument?.symbol, ws.subscribe, ws.unsubscribe])
 
   // Own trades (user's fills)
   const [ownTrades, setOwnTrades] = React.useState<Array<{

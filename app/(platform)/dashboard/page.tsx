@@ -101,7 +101,7 @@ export default function OverviewPage() {
 
   // ---- Real-time PnL via WebSocket ----
   const [realtimePnl, setRealtimePnl] = React.useState<Record<string, number>>({})
-  const [realtimePnlPoints, setRealtimePnlPoints] = React.useState<Array<{ date: string; value: number }>>([])
+  const [realtimePnlPoints, setRealtimePnlPoints] = React.useState<TimeSeriesPoint[]>([])
   const { scope: wsScope } = useGlobalScope()
 
   const handleWsMessage = React.useCallback((msg: Record<string, unknown>) => {
@@ -120,7 +120,7 @@ export default function OverviewPage() {
         // Append to equity curve timeseries
         setRealtimePnlPoints(prev => {
           const now = new Date().toISOString()
-          const next = [...prev, { date: now, value: totalSnapshotPnl }]
+          const next: TimeSeriesPoint[] = [...prev, { timestamp: now, value: totalSnapshotPnl }]
           return next.length > 500 ? next.slice(-500) : next
         })
       }

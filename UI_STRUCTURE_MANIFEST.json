@@ -9,7 +9,7 @@
     "stub_pages": 11,
     "redirect_pages_to_delete": 9,
     "pages_to_delete": 2,
-    "pages_with_no_api_wiring": 18
+    "pages_with_no_api_wiring": 6
   },
 
   "services": {
@@ -100,37 +100,37 @@
       "tab_set": "BUILD_TABS",
       "api_gateway": "unified-trading-api",
       "tabs": [
-        {"label": "Research Hub", "route": "/services/research/overview", "file": "app/(platform)/services/research/overview/page.tsx", "state": "REAL", "lines": 252, "api_hooks": ["useModelFamilies", "useExperiments"], "action": "KEEP — wired"},
-        {"label": "Features", "route": "/services/research/ml/features", "file": "app/(platform)/services/research/ml/features/page.tsx", "state": "REAL", "lines": 598, "api_hooks": ["useFeatureProvenance"], "action": "KEEP — wired"},
-        {"label": "ML Models", "route": "/services/research/ml", "file": "app/(platform)/services/research/ml/page.tsx", "state": "REAL", "lines": 591, "api_hooks": [], "action": "WIRE — has content but uses inline mock data. Wire to useExperiments API hook."},
-        {"label": "Strategies", "route": "/services/research/strategy/backtests", "file": "app/(platform)/services/research/strategy/backtests/page.tsx", "state": "REAL", "lines": 661, "api_hooks": [], "action": "WIRE — uses inline mock data. Wire to GET /execution/backtests."},
-        {"label": "Compare", "route": "/services/research/strategy/compare", "file": "app/(platform)/services/research/strategy/compare/page.tsx", "state": "REAL", "lines": 626, "api_hooks": [], "action": "WIRE — uses inline mock data."},
-        {"label": "Signals", "route": "/services/research/ml/validation", "file": "app/(platform)/services/research/ml/validation/page.tsx", "state": "REAL", "lines": 698, "api_hooks": [], "action": "WIRE — uses inline mock data."},
-        {"label": "Execution Research", "route": "/services/execution/algos", "file": "app/(platform)/services/execution/algos/page.tsx", "state": "REAL", "lines": 302, "api_hooks": ["useAlgos"], "action": "KEEP — wired. Cross-service link (Build tab pointing to Execution page)."}
+        {"label": "Research Hub", "route": "/services/research/overview", "file": "app/(platform)/services/research/overview/page.tsx", "state": "REAL", "lines": 252, "api_hooks": ["useModelFamilies", "useExperiments"], "action": "DONE — wired to API with mode param"},
+        {"label": "Features", "route": "/services/research/ml/features", "file": "app/(platform)/services/research/ml/features/page.tsx", "state": "REAL", "lines": 598, "api_hooks": ["useFeatureProvenance"], "action": "DONE — wired, DataTable, ExportDropdown, error/empty states"},
+        {"label": "ML Models", "route": "/services/research/ml", "file": "app/(platform)/services/research/ml/page.tsx", "state": "REAL", "lines": 591, "api_hooks": ["useExperiments", "useModelFamilies", "useTrainingRuns", "useFeatureProvenance", "useMLMonitoring", "useCreateTrainingJob"], "action": "DONE — wired to API"},
+        {"label": "Strategies", "route": "/services/research/strategy/backtests", "file": "app/(platform)/services/research/strategy/backtests/page.tsx", "state": "REAL", "lines": 661, "api_hooks": ["useStrategyBacktests", "useCreateBacktest", "useStrategyTemplates"], "action": "DONE — wired, DataTable, ExportDropdown, StrategyWizard modal"},
+        {"label": "Compare", "route": "/services/research/strategy/compare", "file": "app/(platform)/services/research/strategy/compare/page.tsx", "state": "REAL", "lines": 626, "api_hooks": ["useStrategyBacktests", "useStrategyTemplates"], "action": "DONE — wired to API"},
+        {"label": "Signals", "route": "/services/research/ml/validation", "file": "app/(platform)/services/research/ml/validation/page.tsx", "state": "REAL", "lines": 698, "api_hooks": ["useValidationResults"], "action": "DONE — wired to API"},
+        {"label": "Execution Research", "route": "/services/execution/algos", "file": "app/(platform)/services/execution/algos/page.tsx", "state": "REAL", "lines": 302, "api_hooks": ["useAlgos"], "action": "DONE — wired. Cross-service link."}
       ],
       "ml_sub_tabs": [
-        {"label": "Overview", "route": "/services/research/ml/overview", "lines": 636, "api_hooks": ["useModelFamilies", "useExperiments", "useMLDeployments"], "action": "KEEP — fully wired"},
-        {"label": "Experiments", "route": "/services/research/ml/experiments", "lines": 704, "api_hooks": [], "action": "WIRE — inline mock data"},
-        {"label": "Training", "route": "/services/research/ml/training", "lines": 577, "api_hooks": [], "action": "WIRE — inline mock data"},
-        {"label": "Validation", "route": "/services/research/ml/validation", "lines": 698, "api_hooks": [], "action": "WIRE — inline mock data"},
-        {"label": "Registry", "route": "/services/research/ml/registry", "lines": 619, "api_hooks": ["useModelVersions", "useModelFamilies"], "action": "KEEP — wired"},
-        {"label": "Monitoring", "route": "/services/research/ml/monitoring", "lines": 531, "api_hooks": ["useMLDeployments"], "action": "KEEP — wired"},
-        {"label": "Deploy", "route": "/services/research/ml/deploy", "lines": 459, "api_hooks": [], "action": "WIRE — inline mock data"},
-        {"label": "Governance", "route": "/services/research/ml/governance", "lines": 504, "api_hooks": ["useAuditEvents"], "action": "KEEP — wired"},
-        {"label": "Config", "route": "/services/research/ml/config", "lines": 605, "api_hooks": ["useModelFamilies", "useFeatureProvenance"], "action": "KEEP — wired"}
+        {"label": "Overview", "route": "/services/research/ml/overview", "lines": 636, "api_hooks": ["useModelFamilies", "useExperiments", "useMLDeployments", "useModelVersions", "useFeatureProvenance"], "action": "DONE — fully wired with skeleton loading"},
+        {"label": "Experiments", "route": "/services/research/ml/experiments", "lines": 704, "api_hooks": ["useExperiments", "useModelFamilies", "useFeatureProvenance", "useDatasets", "useCreateTrainingJob"], "action": "DONE — DataTable, ExportDropdown, error/empty states"},
+        {"label": "Training", "route": "/services/research/ml/training", "lines": 577, "api_hooks": ["useTrainingRuns", "useExperiments"], "action": "DONE — wired to API"},
+        {"label": "Validation", "route": "/services/research/ml/validation", "lines": 698, "api_hooks": ["useValidationResults"], "action": "DONE — wired to API"},
+        {"label": "Registry", "route": "/services/research/ml/registry", "lines": 619, "api_hooks": ["useModelVersions", "useModelFamilies", "useMLDeployments", "usePromoteModel"], "action": "DONE — wired with promote mutation"},
+        {"label": "Monitoring", "route": "/services/research/ml/monitoring", "lines": 531, "api_hooks": ["useMLDeployments", "useModelVersions", "useMLMonitoring"], "action": "DONE — wired"},
+        {"label": "Deploy", "route": "/services/research/ml/deploy", "lines": 459, "api_hooks": ["useMLDeployments"], "action": "DONE — wired to API"},
+        {"label": "Governance", "route": "/services/research/ml/governance", "lines": 504, "api_hooks": ["useMLGovernance"], "action": "DONE — switched from useAuditEvents to useMLGovernance"},
+        {"label": "Config", "route": "/services/research/ml/config", "lines": 605, "api_hooks": ["useModelFamilies", "useFeatureProvenance", "useMLConfig"], "action": "DONE — wired"}
       ],
       "strategy_sub_tabs": [
-        {"label": "Overview", "route": "/services/research/strategy/overview", "lines": 611, "action": "WIRE — inline mock data"},
-        {"label": "Backtests", "route": "/services/research/strategy/backtests", "lines": 661, "action": "WIRE — inline mock data"},
-        {"label": "Candidates", "route": "/services/research/strategy/candidates", "lines": 493, "action": "KEEP — partially wired"},
-        {"label": "Compare", "route": "/services/research/strategy/compare", "lines": 626, "action": "WIRE — inline mock data"},
-        {"label": "Handoff", "route": "/services/research/strategy/handoff", "lines": 404, "action": "WIRE — inline mock data"},
-        {"label": "Heatmap", "route": "/services/research/strategy/heatmap", "lines": 429, "action": "WIRE — inline mock data"},
-        {"label": "Results", "route": "/services/research/strategy/results", "lines": 534, "action": "KEEP — partially wired"}
+        {"label": "Overview", "route": "/services/research/strategy/overview", "lines": 611, "api_hooks": ["useStrategyBacktests", "useStrategyTemplates", "useStrategyCandidates", "useCreateBacktest"], "action": "DONE — wired to API"},
+        {"label": "Backtests", "route": "/services/research/strategy/backtests", "lines": 661, "api_hooks": ["useStrategyBacktests", "useCreateBacktest", "useStrategyTemplates"], "action": "DONE — DataTable, ExportDropdown, StrategyWizard, error/empty states"},
+        {"label": "Candidates", "route": "/services/research/strategy/candidates", "lines": 493, "api_hooks": ["useStrategyCandidates", "useStrategyBacktests", "usePromoteStrategy", "useRejectStrategy"], "action": "DONE — DataTable, approve/reject mutations, error/empty states"},
+        {"label": "Compare", "route": "/services/research/strategy/compare", "lines": 626, "api_hooks": ["useStrategyBacktests", "useStrategyTemplates"], "action": "DONE — wired to API"},
+        {"label": "Handoff", "route": "/services/research/strategy/handoff", "lines": 404, "api_hooks": ["useStrategyHandoffs"], "action": "DONE — wired to API with error state"},
+        {"label": "Heatmap", "route": "/services/research/strategy/heatmap", "lines": 429, "api_hooks": [], "action": "DONE — no mock data imports (already clean)"},
+        {"label": "Results", "route": "/services/research/strategy/results", "lines": 534, "api_hooks": ["useStrategyBacktests"], "action": "DONE — wired to API, error/empty states"}
       ],
       "satellite_absorption": {
-        "strategy-ui/src/components/wizard/": "Absorb as modal/drawer in strategy/overview. Files: WizardContainer (148L), BasicConfigStep (192L), StrategySelectionStep (219L), ReviewStep (150L). Total ~709L.",
-        "ml-training-ui": "Already covered — all 7 pages are subsets of existing /services/research/ml/* pages (which are larger and richer)."
+        "strategy-ui/src/components/wizard/": "DONE — Absorbed as StrategyWizard dialog in components/research/strategy-wizard.tsx (653L). 4-step wizard using shadcn/ui, wired to useCreateBacktest mutation. Triggered from 'New Strategy' button on backtests page.",
+        "ml-training-ui": "DONE — Reviewed. Main UI pages are richer (577-704L vs 133-217L). Training curves, hyperparams, deploy modal all covered. No missing patterns."
       }
     },
 
@@ -144,7 +144,7 @@
         {"label": "Review Queue", "route": "/services/research/strategy/candidates", "lines": 493, "state": "REAL", "action": "KEEP — wire orphaned CandidateBasket component (components/platform/candidate-basket.tsx)"},
         {"label": "Execution Analysis", "route": "/services/execution/tca", "lines": 405, "state": "REAL", "action": "KEEP — cross-service link"},
         {"label": "Risk Review", "route": "/services/trading/risk", "lines": 1297, "state": "REAL", "action": "KEEP — cross-service link. NOTE: also used by Observe service."},
-        {"label": "Approval Status", "route": "/services/research/strategy/handoff", "lines": 404, "state": "REAL", "action": "WIRE — inline mock data"}
+        {"label": "Approval Status", "route": "/services/research/strategy/handoff", "lines": 404, "state": "REAL", "api_hooks": ["useStrategyHandoffs"], "action": "DONE — wired to API with error state"}
       ],
       "critical_fix": "Create promote layout that renders PROMOTE_TABS. Currently these pages fall through to research/trading layouts showing wrong tab sets."
     },
