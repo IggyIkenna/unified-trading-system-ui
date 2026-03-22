@@ -47,12 +47,13 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { formatCurrency } from "@/lib/reference-data"
 import {
-  STRATEGIES,
-  getStrategyById,
+  STRATEGIES as DEFAULT_STRATEGIES,
+  getStrategyById as getDefaultStrategyById,
   generatePnLBreakdown,
   generatePositionsForStrategy,
   type Strategy,
 } from "@/lib/strategy-registry"
+import { useStrategyPerformance } from "@/hooks/api/use-strategies"
 
 // Testing stage colors
 const STAGE_COLORS: Record<string, string> = {
@@ -72,10 +73,15 @@ const MODEL_STRATEGY_MAP: Record<string, { modelId: string; modelName: string; v
 export default function StrategyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const { mode, isLive, isBatch } = useExecutionMode()
+  const { data: perfData, isLoading } = useStrategyPerformance()
+  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.strategies ?? []
+  const STRATEGIES: Strategy[] = perfRaw.length > 0 ? perfRaw as Strategy[] : DEFAULT_STRATEGIES
+
   const [promoteModalOpen, setPromoteModalOpen] = React.useState(false)
-  
+
   // Get strategy from registry or fallback
-  const strategy = getStrategyById(id) ?? STRATEGIES[0]
+  const getStrategyById = (stratId: string) => STRATEGIES.find(s => s.id === stratId) ?? null
+  const strategy = getStrategyById(id) ?? getDefaultStrategyById(id) ?? STRATEGIES[0]
   const mlModel = MODEL_STRATEGY_MAP[strategy.strategyIdPattern]
   const pnlBreakdown = React.useMemo(() => generatePnLBreakdown(strategy), [strategy])
   const positions = React.useMemo(() => generatePositionsForStrategy(strategy), [strategy])
@@ -91,6 +97,8 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
       { label: "Max Drawdown", value: strategy.performance.maxDrawdown, limit: parseFloat(strategy.riskProfile.maxDrawdown) || 10, unit: "%" },
     ]
   }, [strategy])
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

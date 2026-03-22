@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { MOCK_EXECUTION_ALGOS, MOCK_ALGO_BACKTESTS } from "@/lib/execution-platform-mock-data"
+import { useAlgos, useExecutionBacktests } from "@/hooks/api/use-orders"
 import { 
   Cpu, 
   GitCompare,
@@ -22,16 +22,25 @@ import {
 } from "lucide-react"
 
 export default function ExecutionAlgosPage() {
+  const { data: algosData, isLoading: algosLoading } = useAlgos()
+  const { data: backtestsData, isLoading: btLoading } = useExecutionBacktests()
+  const MOCK_EXECUTION_ALGOS: Array<any> = (algosData as any)?.data ?? []
+  const MOCK_ALGO_BACKTESTS: Array<any> = (backtestsData as any)?.data ?? []
+
   const [selectedAlgos, setSelectedAlgos] = React.useState<string[]>([])
   const [compareMode, setCompareMode] = React.useState(false)
-  
+
+  const isLoading = algosLoading || btLoading
+
   const toggleAlgo = (id: string) => {
-    setSelectedAlgos(prev => 
+    setSelectedAlgos(prev =>
       prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]
     )
   }
-  
-  const selectedAlgoData = MOCK_EXECUTION_ALGOS.filter(a => selectedAlgos.includes(a.id))
+
+  const selectedAlgoData = MOCK_EXECUTION_ALGOS.filter((a: any) => selectedAlgos.includes(a.id))
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="min-h-screen bg-background">

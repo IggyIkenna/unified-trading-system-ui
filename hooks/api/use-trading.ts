@@ -2,62 +2,42 @@ import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
 import { apiFetch } from "@/lib/api/fetch"
 
-export function useOrganizations() {
+export function useTradingOrgs() {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["organizations", user?.id],
-    queryFn: () => apiFetch("/api/trading/organizations", token),
+    queryKey: ["trading-organizations", user?.id],
+    queryFn: () => apiFetch("/api/users/organizations", token),
     enabled: !!user,
   })
 }
 
-export function useTradingClients() {
-  const { user, token } = useAuth()
-
-  return useQuery({
-    queryKey: ["trading-clients", user?.id],
-    queryFn: () => apiFetch("/api/trading/clients", token),
-    enabled: !!user,
-  })
-}
-
-export function usePnL() {
+export function useTradingPnl() {
   const { user, token } = useAuth()
 
   return useQuery({
     queryKey: ["pnl", user?.id],
-    queryFn: () => apiFetch("/api/trading/pnl", token),
+    queryFn: () => apiFetch("/api/analytics/pnl", token),
     enabled: !!user,
   })
 }
 
-export function usePnLTimeseries() {
+export function useTradingTimeseries() {
   const { user, token } = useAuth()
 
   return useQuery({
     queryKey: ["pnl-timeseries", user?.id],
-    queryFn: () => apiFetch("/api/trading/timeseries", token),
+    queryFn: () => apiFetch("/api/analytics/timeseries", token),
     enabled: !!user,
   })
 }
 
-export function useStrategyPerformance() {
+export function useTradingPerformance() {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["strategy-performance", user?.id],
-    queryFn: () => apiFetch("/api/trading/performance", token),
-    enabled: !!user,
-  })
-}
-
-export function useLiveBatchDelta() {
-  const { user, token } = useAuth()
-
-  return useQuery({
-    queryKey: ["live-batch-delta", user?.id],
-    queryFn: () => apiFetch("/api/trading/live-batch-delta", token),
+    queryKey: ["trading-performance", user?.id],
+    queryFn: () => apiFetch("/api/analytics/performance", token),
     enabled: !!user,
   })
 }

@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { MOCK_RECENT_ORDERS } from "@/lib/execution-platform-mock-data"
+import { useOrders } from "@/hooks/api/use-orders"
 import { 
   LineChart as LineChartIcon, 
   ArrowUpRight,
@@ -36,38 +36,36 @@ import {
   Cell
 } from "recharts"
 
-// Mock TCA breakdown data
-const TCA_BREAKDOWN = [
-  { name: "Spread Cost", value: 2.4, color: "#3b82f6" },
-  { name: "Market Impact", value: 1.8, color: "#8b5cf6" },
-  { name: "Timing Cost", value: 0.9, color: "#f59e0b" },
-  { name: "Fees", value: 1.2, color: "#6b7280" },
-]
-
-// Mock execution timeline
-const EXECUTION_TIMELINE = Array.from({ length: 20 }, (_, i) => ({
-  time: i * 3,
-  price: 3244 + Math.random() * 4 - 2,
-  vwap: 3245.8 - i * 0.02,
-  twap: 3245.4 - i * 0.015,
-  fill: i < 15 ? (i + 1) * 6.67 : 100
-}))
-
-// Mock slippage distribution
-const SLIPPAGE_DISTRIBUTION = [
-  { range: "< -2", count: 12, color: "#22c55e" },
-  { range: "-2 to -1", count: 28, color: "#4ade80" },
-  { range: "-1 to 0", count: 45, color: "#86efac" },
-  { range: "0 to 1", count: 52, color: "#fcd34d" },
-  { range: "1 to 2", count: 35, color: "#fb923c" },
-  { range: "> 2", count: 18, color: "#ef4444" },
-]
-
 export default function ExecutionTCAPage() {
-  const [selectedOrder, setSelectedOrder] = React.useState(MOCK_RECENT_ORDERS[0])
+  const { data: ordersData, isLoading } = useOrders()
+  const MOCK_RECENT_ORDERS: Array<any> = (ordersData as any)?.data ?? []
+
+  // Derive TCA data from orders API response
+  const TCA_BREAKDOWN: Array<any> = (ordersData as any)?.tcaBreakdown ?? [
+    { name: "Spread Cost", value: 0, color: "#3b82f6" },
+    { name: "Market Impact", value: 0, color: "#8b5cf6" },
+    { name: "Timing Cost", value: 0, color: "#f59e0b" },
+    { name: "Fees", value: 0, color: "#6b7280" },
+  ]
+
+  const EXECUTION_TIMELINE: Array<any> = (ordersData as any)?.executionTimeline ?? []
+
+  const SLIPPAGE_DISTRIBUTION: Array<any> = (ordersData as any)?.slippageDistribution ?? []
+
+  const [selectedOrder, setSelectedOrder] = React.useState<any>(null)
+
+  // Auto-select first order when data loads
+  React.useEffect(() => {
+    if (MOCK_RECENT_ORDERS.length > 0 && !selectedOrder) {
+      setSelectedOrder(MOCK_RECENT_ORDERS[0])
+    }
+  }, [MOCK_RECENT_ORDERS.length])
   const [timeRange, setTimeRange] = React.useState("1d")
 
-  const totalCost = TCA_BREAKDOWN.reduce((sum, item) => sum + item.value, 0)
+  const totalCost = TCA_BREAKDOWN.reduce((sum: number, item: any) => sum + (item.value ?? 0), 0)
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (!selectedOrder) return <div className="p-8 text-center text-muted-foreground">No orders available</div>
 
   return (
     <div className="min-h-screen bg-background">

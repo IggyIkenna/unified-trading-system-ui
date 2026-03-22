@@ -2,40 +2,40 @@ import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
 import { apiFetch } from "@/lib/api/fetch"
 
-export function useCandles(symbol: string, timeframe = "1H", count = 100) {
+export function useCandles(venue: string, instrument: string, timeframe = "1H", count = 100) {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["candles", symbol, timeframe, count, user?.id],
+    queryKey: ["candles", venue, instrument, timeframe, count, user?.id],
     queryFn: () =>
       apiFetch(
-        `/api/market-data/candles?symbol=${encodeURIComponent(symbol)}&timeframe=${timeframe}&count=${count}`,
+        `/api/market-data/candles?venue=${encodeURIComponent(venue)}&instrument=${encodeURIComponent(instrument)}&timeframe=${timeframe}&count=${count}`,
         token
       ),
-    enabled: !!user && !!symbol,
+    enabled: !!user && !!venue && !!instrument,
   })
 }
 
-export function useOrderBook(symbol: string) {
+export function useOrderBook(venue: string, instrument: string) {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["orderbook", symbol, user?.id],
+    queryKey: ["orderbook", venue, instrument, user?.id],
     queryFn: () =>
-      apiFetch(`/api/market-data/orderbook?symbol=${encodeURIComponent(symbol)}`, token),
-    enabled: !!user && !!symbol,
+      apiFetch(`/api/market-data/orderbook?venue=${encodeURIComponent(venue)}&instrument=${encodeURIComponent(instrument)}`, token),
+    enabled: !!user && !!venue && !!instrument,
     refetchInterval: 5000, // refresh every 5s for semi-live feel
   })
 }
 
-export function useTrades(symbol: string) {
+export function useTrades(venue: string, instrument: string) {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["trades", symbol, user?.id],
+    queryKey: ["trades", venue, instrument, user?.id],
     queryFn: () =>
-      apiFetch(`/api/market-data/trades?symbol=${encodeURIComponent(symbol)}`, token),
-    enabled: !!user && !!symbol,
+      apiFetch(`/api/market-data/trades?venue=${encodeURIComponent(venue)}&instrument=${encodeURIComponent(instrument)}`, token),
+    enabled: !!user && !!venue && !!instrument,
     refetchInterval: 3000,
   })
 }

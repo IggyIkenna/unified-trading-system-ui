@@ -2,52 +2,22 @@ import { useQuery } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
 import { apiFetch } from "@/lib/api/fetch"
 
-export function useStrategyTemplates() {
+export function useStrategyBacktests() {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["strategy-templates", user?.id],
-    queryFn: () => apiFetch("/api/strategy/templates", token),
+    queryKey: ["strategy-backtests", user?.id],
+    queryFn: () => apiFetch("/api/execution/backtests", token),
     enabled: !!user,
   })
 }
 
-export function useStrategyConfigs() {
+export function useStrategyPerformance() {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["strategy-configs", user?.id],
-    queryFn: () => apiFetch("/api/strategy/configs", token),
-    enabled: !!user,
-  })
-}
-
-export function useBacktests() {
-  const { user, token } = useAuth()
-
-  return useQuery({
-    queryKey: ["backtests", user?.id],
-    queryFn: () => apiFetch("/api/strategy/backtests", token),
-    enabled: !!user,
-  })
-}
-
-export function useStrategyCandidates() {
-  const { user, token } = useAuth()
-
-  return useQuery({
-    queryKey: ["strategy-candidates", user?.id],
-    queryFn: () => apiFetch("/api/strategy/candidates", token),
-    enabled: !!user,
-  })
-}
-
-export function useStrategyAlerts() {
-  const { user, token } = useAuth()
-
-  return useQuery({
-    queryKey: ["strategy-alerts", user?.id],
-    queryFn: () => apiFetch("/api/strategy/alerts", token),
+    queryKey: ["strategy-performance", user?.id],
+    queryFn: () => apiFetch("/api/analytics/performance", token),
     enabled: !!user,
   })
 }

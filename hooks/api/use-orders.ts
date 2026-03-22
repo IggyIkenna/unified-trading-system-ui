@@ -32,12 +32,12 @@ export function useVenues() {
   })
 }
 
-export function useAlgoBacktests() {
+export function useExecutionBacktests() {
   const { user, token } = useAuth()
 
   return useQuery({
-    queryKey: ["algo-backtests", user?.id],
-    queryFn: () => apiFetch("/api/execution/algo-backtests", token),
+    queryKey: ["execution-backtests", user?.id],
+    queryFn: () => apiFetch("/api/execution/backtests", token),
     enabled: !!user,
   })
 }

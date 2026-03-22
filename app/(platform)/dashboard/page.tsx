@@ -37,6 +37,9 @@ import {
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { useAlerts } from "@/hooks/api/use-alerts"
+import { usePositions } from "@/hooks/api/use-positions"
+import { useServiceHealth } from "@/hooks/api/use-service-status"
 
 // Import the trading data system
 import {
@@ -56,50 +59,31 @@ import {
   type Alert as TradingAlert,
 } from "@/lib/trading-data"
 
-// Mock alerts with filtering metadata
-const mockAlerts: TradingAlert[] = [
-  { id: "1", message: "ETH Options MM: Delta exposure exceeded soft limit", severity: "high", timestamp: "2 min ago", source: "Risk Engine", strategyId: "CEFI_ETH_OPT_MM_EVT_TICK", assetClass: "CeFi" },
-  { id: "2", message: "Binance API latency spike: p99 > 50ms", severity: "medium", timestamp: "8 min ago", source: "Connectivity", assetClass: "CeFi" },
-  { id: "3", message: "ML model retrain completed: Sharpe +0.3", severity: "low", timestamp: "15 min ago", source: "ML Pipeline", strategyId: "CEFI_BTC_ML_DIR_HUF_4H", assetClass: "CeFi" },
-  { id: "4", message: "Position reconciliation break: $2,400 on Deribit", severity: "high", timestamp: "22 min ago", source: "Recon Engine", assetClass: "CeFi" },
-  { id: "5", message: "New strategy deployed: SOL Momentum v2", severity: "low", timestamp: "1 hr ago", source: "Deployment", strategyId: "CEFI_SOL_MOM_HUF_4H", clientId: "vertex-core" },
-  { id: "6", message: "NBA odds feed delay > 5s on Pinnacle", severity: "medium", timestamp: "5 min ago", source: "Sports Odds Feed", assetClass: "Sports" },
-  { id: "7", message: "DeFi gas price spike: 150 gwei", severity: "medium", timestamp: "12 min ago", source: "DeFi Gateway", assetClass: "DeFi" },
-  { id: "8", message: "Polymarket liquidity low on FED event", severity: "low", timestamp: "30 min ago", source: "Prediction Market Feed", assetClass: "Prediction" },
-]
-
-// Venue margin utilization data
-const venueMargins: VenueMargin[] = [
-  { venue: "binance", venueLabel: "Binance", used: 1250000, available: 350000, total: 1600000, utilization: 78, trend: "up", marginCallDistance: 22, lastUpdate: "2s ago" },
-  { venue: "deribit", venueLabel: "Deribit", used: 680000, available: 420000, total: 1100000, utilization: 62, trend: "stable", marginCallDistance: 38, lastUpdate: "5s ago" },
-  { venue: "okx", venueLabel: "OKX", used: 420000, available: 530000, total: 950000, utilization: 44, trend: "down", marginCallDistance: 56, lastUpdate: "3s ago" },
-  { venue: "hyperliquid", venueLabel: "Hyperliquid", used: 850000, available: 150000, total: 1000000, utilization: 85, trend: "up", marginCallDistance: 15, lastUpdate: "1s ago" },
-  { venue: "aave", venueLabel: "Aave", used: 180000, available: 820000, total: 1000000, utilization: 18, trend: "stable", marginCallDistance: 82, lastUpdate: "12s ago" },
-]
-
-// All available services with health data
-const allMockServices: ServiceHealth[] = [
-  { name: "Execution Service", freshness: 2, sla: 5, status: "live" },
-  { name: "Market Data", freshness: 1, sla: 3, status: "live" },
-  { name: "Risk Engine", freshness: 8, sla: 5, status: "warning" },
-  { name: "P&L Attribution", freshness: 12, sla: 30, status: "live" },
-  { name: "ML Inference", freshness: 4, sla: 10, status: "live" },
-  { name: "Alerting", freshness: 1, sla: 5, status: "live" },
-  { name: "DeFi Gateway", freshness: 3, sla: 10, status: "live" },
-  { name: "Sports Odds Feed", freshness: 15, sla: 10, status: "warning" },
-  { name: "Prediction Market Feed", freshness: 5, sla: 15, status: "live" },
-  { name: "Binance Connector", freshness: 2, sla: 5, status: "live" },
-  { name: "OKX Connector", freshness: 12, sla: 5, status: "warning" },
-  { name: "Deribit Connector", freshness: 3, sla: 5, status: "live" },
-  { name: "Hyperliquid Connector", freshness: 1, sla: 5, status: "live" },
-  { name: "Aave Connector", freshness: 2, sla: 10, status: "live" },
-  { name: "Uniswap Connector", freshness: 4, sla: 10, status: "live" },
-  { name: "IBKR Connector", freshness: 5, sla: 10, status: "live" },
-  { name: "Betfair Connector", freshness: 8, sla: 15, status: "live" },
-  { name: "Pinnacle Connector", freshness: 12, sla: 10, status: "warning" },
-]
-
 export default function OverviewPage() {
+  const { data: alertsData, isLoading: alertsLoading } = useAlerts()
+  const mockAlerts: TradingAlert[] = (alertsData as any)?.data ?? (alertsData as any)?.alerts ?? []
+
+  const { data: positionsData, isLoading: positionsLoading } = usePositions()
+  const positionsRaw: any[] = (positionsData as any)?.data ?? (positionsData as any)?.positions ?? []
+  const venueMargins: VenueMargin[] = positionsRaw.length > 0
+    ? positionsRaw.map((p: any) => ({
+        venue: p.venue ?? "",
+        venueLabel: p.venueLabel ?? p.venue ?? "",
+        used: p.used ?? 0,
+        available: p.available ?? 0,
+        total: p.total ?? 0,
+        utilization: p.utilization ?? 0,
+        trend: p.trend ?? "stable",
+        marginCallDistance: p.marginCallDistance ?? 0,
+        lastUpdate: p.lastUpdate ?? "",
+      }))
+    : []
+
+  const { data: healthData, isLoading: healthLoading } = useServiceHealth()
+  const allMockServices: ServiceHealth[] = (healthData as any)?.data ?? (healthData as any)?.services ?? []
+
+  const isLoading = alertsLoading || positionsLoading || healthLoading
+
   const { scope: context, setOrganizationIds, setClientIds, setStrategyIds } = useGlobalScope()
   const [showTimeSeries, setShowTimeSeries] = React.useState(true)
   const [batchDate, setBatchDate] = React.useState(getYesterday())
@@ -202,6 +186,8 @@ export default function OverviewPage() {
     if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`
     return `$${v.toFixed(0)}`
   }
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

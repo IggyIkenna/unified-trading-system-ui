@@ -19,7 +19,7 @@ import {
 import {
   Users, Plus, Search, Shield, Clock,
 } from "lucide-react"
-import { useOrganizationsList } from "@/hooks/api/use-organizations"
+import { useOrganizationsList, useOrgMembers } from "@/hooks/api/use-organizations"
 
 interface User {
   id: string
@@ -31,22 +31,29 @@ interface User {
   status: "active" | "suspended"
 }
 
-const INITIAL_USERS: User[] = [
-  { id: "u-001", name: "Iggy Ikenna", email: "admin@odum.io", org: "Odum Internal", role: "admin", lastLogin: "2h ago", status: "active" },
-  { id: "u-002", name: "Alex Trader", email: "trader@odum.io", org: "Odum Internal", role: "internal", lastLogin: "1h ago", status: "active" },
-  { id: "u-003", name: "Sam Quant", email: "quant@odum.io", org: "Odum Internal", role: "internal", lastLogin: "3h ago", status: "active" },
-  { id: "u-004", name: "Chris PM", email: "pm@alphacap.com", org: "Alpha Capital", role: "client", lastLogin: "5h ago", status: "active" },
-  { id: "u-005", name: "Pat Trader", email: "trader@alphacap.com", org: "Alpha Capital", role: "client", lastLogin: "1d ago", status: "active" },
-  { id: "u-006", name: "Riley Analyst", email: "analyst@betafund.com", org: "Beta Fund", role: "client", lastLogin: "2d ago", status: "active" },
-  { id: "u-007", name: "Taylor CIO", email: "cio@vertex.com", org: "Vertex Partners", role: "client", lastLogin: "6h ago", status: "active" },
-]
-
 const ROLES = ["admin", "internal", "client", "viewer"]
 
 export default function UsersManagementPage() {
-  const { data: orgsData } = useOrganizationsList()
-  const orgs: Array<{ id: string; name: string }> = (orgsData as { organizations?: Array<{ id: string; name: string }> })?.organizations ?? []
-  const [users, setUsers] = React.useState<User[]>(INITIAL_USERS)
+  const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList()
+  const orgs: Array<{ id: string; name: string }> = (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? []
+  const { data: membersData, isLoading: membersLoading } = useOrgMembers("all")
+
+  const apiUsers: User[] = ((membersData as any)?.data ?? []).map((m: any) => ({
+    id: m.id ?? "",
+    name: m.name ?? "",
+    email: m.email ?? "",
+    org: m.org ?? m.organization ?? "",
+    role: m.role ?? "viewer",
+    lastLogin: m.lastLogin ?? "Never",
+    status: (m.status ?? "active") as "active" | "suspended",
+  }))
+
+  const [users, setUsers] = React.useState<User[]>([])
+
+  // Sync API data into local state for mutation
+  React.useEffect(() => {
+    if (apiUsers.length > 0 && users.length === 0) setUsers(apiUsers)
+  }, [apiUsers.length])
   const [searchQuery, setSearchQuery] = React.useState("")
   const [orgFilter, setOrgFilter] = React.useState("all")
   const [inviteOpen, setInviteOpen] = React.useState(false)
@@ -123,6 +130,8 @@ export default function UsersManagementPage() {
       description: `${user?.name} is now ${newStatus}`,
     })
   }
+
+  if (orgsLoading || membersLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="min-h-screen bg-background">

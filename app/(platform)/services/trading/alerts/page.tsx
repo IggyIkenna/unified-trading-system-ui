@@ -44,6 +44,7 @@ import {
   Power,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAlerts } from "@/hooks/api/use-alerts"
 
 type AlertSeverity = "critical" | "high" | "medium" | "low" | "info"
 type AlertStatus = "active" | "acknowledged" | "resolved" | "muted"
@@ -62,104 +63,6 @@ interface Alert {
   threshold?: string
   recommendedAction?: string
 }
-
-const mockAlerts: Alert[] = [
-  {
-    id: "alert-001",
-    severity: "critical",
-    status: "active",
-    title: "Kill Switch Armed",
-    description: "BTC Basis v3 inventory skew exceeded threshold",
-    source: "risk-and-exposure-service",
-    entity: "BTC Basis v3",
-    entityType: "strategy",
-    timestamp: "2m ago",
-    value: "15.2%",
-    threshold: "10%",
-    recommendedAction: "Review position skew and consider rebalancing",
-  },
-  {
-    id: "alert-002",
-    severity: "high",
-    status: "active",
-    title: "Feature Freshness SLA Breach",
-    description: "features-delta-1 lagging 92s in EU region",
-    source: "alerting-service",
-    entity: "features-delta-1",
-    entityType: "service",
-    timestamp: "5m ago",
-    value: "92s",
-    threshold: "30s",
-    recommendedAction: "Check EU feature pipeline health",
-  },
-  {
-    id: "alert-003",
-    severity: "high",
-    status: "active",
-    title: "Margin Utilization Warning",
-    description: "Binance margin approaching limit",
-    source: "risk-and-exposure-service",
-    entity: "Binance",
-    entityType: "venue",
-    timestamp: "8m ago",
-    value: "78%",
-    threshold: "80%",
-    recommendedAction: "Reduce position size or add margin",
-  },
-  {
-    id: "alert-004",
-    severity: "medium",
-    status: "active",
-    title: "Reconciliation Break",
-    description: "Elysium SMA position mismatch detected",
-    source: "recon-service",
-    entity: "Elysium SMA",
-    entityType: "position",
-    timestamp: "12m ago",
-    value: "0.5 BTC",
-    threshold: "0.1 BTC",
-    recommendedAction: "Review and resolve position discrepancy",
-  },
-  {
-    id: "alert-005",
-    severity: "medium",
-    status: "acknowledged",
-    title: "LTV Near Threshold",
-    description: "Aave v3 ETH position LTV elevated",
-    source: "risk-and-exposure-service",
-    entity: "Aave v3 ETH",
-    entityType: "venue",
-    timestamp: "18m ago",
-    value: "0.72",
-    threshold: "0.75",
-    recommendedAction: "Add collateral or reduce borrow",
-  },
-  {
-    id: "alert-006",
-    severity: "low",
-    status: "resolved",
-    title: "Order Latency Spike",
-    description: "Deribit order ack latency p99 elevated",
-    source: "execution-service",
-    entity: "Deribit",
-    entityType: "venue",
-    timestamp: "45m ago",
-    value: "850ms",
-    threshold: "500ms",
-    recommendedAction: "Monitor venue connectivity",
-  },
-  {
-    id: "alert-007",
-    severity: "info",
-    status: "resolved",
-    title: "Strategy Resumed",
-    description: "ML Directional BTC resumed after feature recovery",
-    source: "strategy-service",
-    entity: "ML Directional BTC",
-    entityType: "strategy",
-    timestamp: "1h ago",
-  },
-]
 
 function getSeverityIcon(severity: AlertSeverity) {
   switch (severity) {
@@ -205,20 +108,25 @@ function getStatusColor(status: AlertStatus) {
 }
 
 export default function AlertsPage() {
+  const { data: alertsData, isLoading } = useAlerts()
+  const allAlerts: Alert[] = (alertsData as any)?.data ?? (alertsData as any)?.alerts ?? []
+
   const [filter, setFilter] = React.useState<string>("all")
   const [severityFilter, setSeverityFilter] = React.useState<string>("all")
 
   const filteredAlerts = React.useMemo(() => {
-    return mockAlerts.filter((alert) => {
+    return allAlerts.filter((alert) => {
       if (filter !== "all" && alert.status !== filter) return false
       if (severityFilter !== "all" && alert.severity !== severityFilter) return false
       return true
     })
-  }, [filter, severityFilter])
+  }, [allAlerts, filter, severityFilter])
 
-  const criticalCount = mockAlerts.filter((a) => a.severity === "critical" && a.status === "active").length
-  const highCount = mockAlerts.filter((a) => a.severity === "high" && a.status === "active").length
-  const activeCount = mockAlerts.filter((a) => a.status === "active").length
+  const criticalCount = allAlerts.filter((a) => a.severity === "critical" && a.status === "active").length
+  const highCount = allAlerts.filter((a) => a.severity === "high" && a.status === "active").length
+  const activeCount = allAlerts.filter((a) => a.status === "active").length
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

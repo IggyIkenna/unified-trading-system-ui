@@ -27,39 +27,21 @@ import { ShardCatalogue } from "@/components/data/shard-catalogue"
 import { FreshnessHeatmap } from "@/components/data/freshness-heatmap"
 import { MOCK_SHARD_AVAILABILITY, MOCK_DATA_GAPS } from "@/lib/data-service-mock-data"
 import { PLATFORM_STATS } from "@/lib/config/platform-stats"
-
-// Pipeline status (inspired by deployment-ui DataStatusTab)
-const PIPELINE_SERVICES = [
-  { name: "instruments-service", category: "ALL", status: "healthy", lastRun: "2 min ago", shardsTotal: 128, shardsComplete: 128, shardsFailed: 0, coveragePct: 100 },
-  { name: "market-tick-data-service", category: "CEFI", status: "healthy", lastRun: "5 min ago", shardsTotal: 48, shardsComplete: 47, shardsFailed: 1, coveragePct: 97.9 },
-  { name: "market-tick-data-service", category: "TRADFI", status: "healthy", lastRun: "15 min ago", shardsTotal: 24, shardsComplete: 24, shardsFailed: 0, coveragePct: 100 },
-  { name: "market-tick-data-service", category: "DEFI", status: "degraded", lastRun: "47 min ago", shardsTotal: 18, shardsComplete: 16, shardsFailed: 2, coveragePct: 88.9 },
-  { name: "market-data-processing-service", category: "CEFI", status: "healthy", lastRun: "3 min ago", shardsTotal: 336, shardsComplete: 334, shardsFailed: 2, coveragePct: 99.4 },
-  { name: "market-data-processing-service", category: "DEFI", status: "healthy", lastRun: "8 min ago", shardsTotal: 84, shardsComplete: 82, shardsFailed: 2, coveragePct: 97.6 },
-  { name: "features-delta-one-service", category: "CEFI", status: "healthy", lastRun: "12 min ago", shardsTotal: 96, shardsComplete: 95, shardsFailed: 1, coveragePct: 99.0 },
-  { name: "features-volatility-service", category: "ALL", status: "healthy", lastRun: "10 min ago", shardsTotal: 48, shardsComplete: 48, shardsFailed: 0, coveragePct: 100 },
-]
-
-const VENUE_STATUS = [
-  { venue: "Binance", category: "CEFI", instruments: 342, coverage: 99.2, lastUpdate: "2 min ago", cloud: "GCP" },
-  { venue: "OKX", category: "CEFI", instruments: 287, coverage: 98.8, lastUpdate: "3 min ago", cloud: "GCP" },
-  { venue: "Bybit", category: "CEFI", instruments: 198, coverage: 97.5, lastUpdate: "5 min ago", cloud: "GCP" },
-  { venue: "Deribit", category: "CEFI", instruments: 156, coverage: 99.0, lastUpdate: "2 min ago", cloud: "GCP" },
-  { venue: "Databento", category: "TRADFI", instruments: 524, coverage: 98.4, lastUpdate: "15 min ago", cloud: "AWS" },
-  { venue: "NYSE", category: "TRADFI", instruments: 312, coverage: 97.8, lastUpdate: "20 min ago", cloud: "AWS" },
-  { venue: "CME", category: "TRADFI", instruments: 189, coverage: 99.1, lastUpdate: "12 min ago", cloud: "AWS" },
-  { venue: "Uniswap V3", category: "DEFI", instruments: 45, coverage: 94.2, lastUpdate: "47 min ago", cloud: "GCP" },
-  { venue: "Aave V3", category: "DEFI", instruments: 28, coverage: 96.1, lastUpdate: "30 min ago", cloud: "GCP" },
-  { venue: "Hyperliquid", category: "DEFI", instruments: 67, coverage: 95.8, lastUpdate: "8 min ago", cloud: "GCP" },
-  { venue: "Betfair", category: "SPORTS", instruments: 1200, coverage: 92.5, lastUpdate: "5 min ago", cloud: "GCP" },
-  { venue: "Pinnacle", category: "SPORTS", instruments: 890, coverage: 93.1, lastUpdate: "10 min ago", cloud: "GCP" },
-]
+import { useServiceHealth } from "@/hooks/api/use-service-status"
+import { useInstruments } from "@/hooks/api/use-instruments"
 
 export default function PortalDataPage() {
   const { user, isInternal, hasEntitlement } = useAuth()
+  const { data: healthData, isLoading: healthLoading } = useServiceHealth()
+  const { data: instrumentsData, isLoading: instrumentsLoading } = useInstruments()
+
+  const PIPELINE_SERVICES: any[] = (healthData as any)?.data ?? (healthData as any)?.services ?? []
+  const VENUE_STATUS: any[] = (instrumentsData as any)?.data ?? (instrumentsData as any)?.venues ?? []
+
   const [search, setSearch] = React.useState("")
   const [categoryFilter, setCategoryFilter] = React.useState<string>("all")
 
+  if (healthLoading || instrumentsLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
   if (!user) return null
 
   const isAdmin = isInternal()

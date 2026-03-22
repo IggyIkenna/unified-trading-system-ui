@@ -41,11 +41,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import {
-  MODEL_VERSIONS,
-  MODEL_FAMILIES,
-  CHAMPION_CHALLENGER_PAIRS,
-} from "@/lib/ml-mock-data"
+import { useModelVersions, useModelFamilies, useMLDeployments } from "@/hooks/api/use-ml-models"
 import type { ModelVersion } from "@/lib/ml-types"
 
 // ---------------------------------------------------------------------------
@@ -92,7 +88,22 @@ type SortField = "accuracy" | "sharpe" | "maxDrawdown" | "latencyP50"
 // ---------------------------------------------------------------------------
 
 export default function RegistryPage() {
-  const [versions, setVersions] = React.useState<ModelVersion[]>(MODEL_VERSIONS)
+  const { data: versionsData, isLoading: verLoading } = useModelVersions()
+  const { data: familiesData, isLoading: famLoading } = useModelFamilies()
+  const { data: deploymentsData, isLoading: depLoading } = useMLDeployments()
+
+  const MODEL_VERSIONS: ModelVersion[] = (versionsData as any)?.data ?? []
+  const MODEL_FAMILIES: Array<any> = (familiesData as any)?.data ?? []
+  const CHAMPION_CHALLENGER_PAIRS: Array<any> = (deploymentsData as any)?.championChallengerPairs ?? []
+
+  const isLoading = verLoading || famLoading || depLoading
+
+  const [versions, setVersions] = React.useState<ModelVersion[]>([])
+
+  // Sync API data into local state for mutation (deploy actions)
+  React.useEffect(() => {
+    if (MODEL_VERSIONS.length > 0) setVersions(MODEL_VERSIONS)
+  }, [MODEL_VERSIONS.length])
   const [familyFilter, setFamilyFilter] = React.useState("")
   const [sortField, setSortField] = React.useState<SortField>("sharpe")
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
@@ -171,6 +182,8 @@ export default function RegistryPage() {
   }
 
   const compareVersions = versions.filter((v) => compareSet.has(v.id))
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="min-h-screen bg-background text-foreground">

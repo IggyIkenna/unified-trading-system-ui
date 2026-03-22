@@ -43,7 +43,7 @@ export function useInstruments() {
 
   return useQuery<InstrumentsResponse>({
     queryKey: ["instruments", user?.id],
-    queryFn: () => apiFetch("/api/data/instruments", token) as Promise<InstrumentsResponse>,
+    queryFn: () => apiFetch("/api/instruments/list", token) as Promise<InstrumentsResponse>,
     enabled: !!user,
   })
 }
@@ -53,7 +53,7 @@ export function useCatalogue() {
 
   return useQuery<CatalogueResponse>({
     queryKey: ["catalogue", user?.id],
-    queryFn: () => apiFetch("/api/data/catalogue", token) as Promise<CatalogueResponse>,
+    queryFn: () => apiFetch("/api/instruments/catalogue", token) as Promise<CatalogueResponse>,
     enabled: !!user,
   })
 }

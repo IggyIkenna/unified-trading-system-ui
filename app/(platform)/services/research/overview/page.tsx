@@ -21,6 +21,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
+import { useModelFamilies, useExperiments } from "@/hooks/api/use-ml-models"
 
 const ML_WORKFLOWS = [
   { label: "Select", desc: "Choose model family, instruments, asset class", icon: Target, href: "/services/research/ml/overview" },
@@ -78,6 +79,10 @@ function WorkflowPipeline({ steps }: { steps: typeof ML_WORKFLOWS }) {
 
 export default function ResearchOverviewPage() {
   const { user, hasEntitlement } = useAuth()
+  const { data: modelFamiliesData, isLoading: familiesLoading } = useModelFamilies()
+  const { data: experimentsData, isLoading: experimentsLoading } = useExperiments()
+  const modelFamilies: any[] = (modelFamiliesData as any)?.data ?? (modelFamiliesData as any)?.families ?? []
+  const experiments: any[] = (experimentsData as any)?.data ?? (experimentsData as any)?.experiments ?? []
   const hasML = hasEntitlement("ml-full")
   const hasStrategy = hasEntitlement("strategy-full")
   const hasExecution = hasEntitlement("execution-basic") || hasEntitlement("execution-full")
@@ -148,8 +153,8 @@ export default function ResearchOverviewPage() {
           {/* Quick stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: "Model Families", value: "6", desc: "BTC, ETH, Momentum, Funding, NFL, Polymarket" },
-              { label: "Active Experiments", value: "12", desc: "Across 3 asset classes" },
+              { label: "Model Families", value: String(modelFamilies.length || 6), desc: modelFamilies.length > 0 ? `${modelFamilies.length} families` : "BTC, ETH, Momentum, Funding, NFL, Polymarket" },
+              { label: "Active Experiments", value: String(experiments.length || 12), desc: experiments.length > 0 ? `${experiments.length} experiments` : "Across 3 asset classes" },
               { label: "Feature Sets", value: "8", desc: "Technical, volatility, momentum, on-chain" },
               { label: "Deployed Models", value: "4", desc: "Live inference" },
             ].map(stat => (

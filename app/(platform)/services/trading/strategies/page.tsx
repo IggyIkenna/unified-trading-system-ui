@@ -20,13 +20,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-  STRATEGIES,
+  STRATEGIES as DEFAULT_STRATEGIES,
   type Strategy,
   getTotalAUM,
   getTotalPnL,
   getTotalMTDPnL,
 } from "@/lib/strategy-registry"
 import { formatCurrency } from "@/lib/reference-data"
+import { useStrategyPerformance } from "@/hooks/api/use-strategies"
 import Link from "next/link"
 import { 
   Plus, 
@@ -74,6 +75,10 @@ const STATUSES = [
 
 export default function StrategiesPage() {
   const { mode, isLive } = useExecutionMode()
+  const { data: perfData, isLoading } = useStrategyPerformance()
+  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.strategies ?? []
+  const STRATEGIES: Strategy[] = perfRaw.length > 0 ? perfRaw as Strategy[] : DEFAULT_STRATEGIES
+
   const [searchQuery, setSearchQuery] = React.useState("")
   const [selectedAssetClasses, setSelectedAssetClasses] = React.useState<string[]>([])
   const [selectedArchetypes, setSelectedArchetypes] = React.useState<string[]>([])
@@ -142,6 +147,8 @@ export default function StrategiesPage() {
       prev.includes(status) ? prev.filter(x => x !== status) : [...prev, status]
     )
   }
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

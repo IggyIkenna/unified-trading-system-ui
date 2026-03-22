@@ -38,74 +38,62 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-// Audit log entries
-const auditLog = [
-  { id: 1, timestamp: "2026-03-17 14:32:00", action: "PROMOTION_REQUESTED", model: "funding-pred-v2.4.0-rc1", user: "alex.chen@odum.io", avatar: "AC", details: "Requested promotion from CHALLENGER to CHAMPION", status: "pending" },
-  { id: 2, timestamp: "2026-03-17 14:28:00", action: "VALIDATION_COMPLETED", model: "funding-pred-v2.4.0-rc1", user: "system", avatar: "SY", details: "Walk-forward validation completed (5/5 passed)", status: "success" },
-  { id: 3, timestamp: "2026-03-17 10:15:00", action: "TRAINING_COMPLETED", model: "funding-pred-v2.4.0-rc1", user: "system", avatar: "SY", details: "Training run TRN-2026-0142 completed successfully", status: "success" },
-  { id: 4, timestamp: "2026-03-16 16:45:00", action: "CONFIG_CHANGED", model: "vol-forecast-v1.8.2", user: "james.smith@odum.io", avatar: "JS", details: "Updated hyperparameter: learning_rate 0.001 → 0.0008", status: "success" },
-  { id: 5, timestamp: "2026-03-15 09:00:00", action: "PROMOTION_APPROVED", model: "vol-forecast-v1.8.2", user: "risk-committee", avatar: "RC", details: "Promotion to CHAMPION approved by Risk Committee", status: "success" },
-  { id: 6, timestamp: "2026-03-14 17:30:00", action: "ROLLBACK_EXECUTED", model: "liq-detect-v3.1.0", user: "ops-team", avatar: "OT", details: "Automatic rollback triggered due to latency regression", status: "warning" },
-  { id: 7, timestamp: "2026-03-12 14:30:00", action: "DEPLOYMENT_STARTED", model: "liq-detect-v3.1.0", user: "mei.wong@odum.io", avatar: "MW", details: "Canary deployment initiated (5% traffic)", status: "warning" },
-  { id: 8, timestamp: "2026-03-10 11:00:00", action: "FEATURE_REGISTERED", model: "—", user: "data-eng", avatar: "DE", details: "New feature registered: whale_flow_score_v1", status: "success" },
-  { id: 9, timestamp: "2026-03-08 09:30:00", action: "ACCESS_GRANTED", model: "all", user: "admin", avatar: "AD", details: "Granted WRITE access to new-hire@odum.io", status: "success" },
-  { id: 10, timestamp: "2026-03-05 15:00:00", action: "MODEL_RETIRED", model: "funding-pred-v2.2.0", user: "alex.chen@odum.io", avatar: "AC", details: "Model retired after 90 days of inactivity", status: "success" },
-]
-
-// Pending approvals
-const pendingApprovals = [
-  { 
-    id: 1, 
-    type: "promotion", 
-    model: "funding-pred-v2.4.0-rc1", 
-    requestedBy: "alex.chen@odum.io", 
-    requestedAt: "2026-03-17 14:32:00",
-    stage: "CHALLENGER → CHAMPION",
-    approvers: [
-      { name: "Quant Team", status: "approved", approvedBy: "j.smith", approvedAt: "2026-03-17 15:00" },
-      { name: "Risk Committee", status: "pending", approvedBy: null, approvedAt: null },
-      { name: "Ops Team", status: "pending", approvedBy: null, approvedAt: null },
-    ],
-    riskScore: "low",
-    validationScore: 92,
-  },
-  { 
-    id: 2, 
-    type: "config_change", 
-    model: "liq-detect-v3.0.1", 
-    requestedBy: "data-eng@odum.io", 
-    requestedAt: "2026-03-17 16:00:00",
-    stage: "Config Update",
-    approvers: [
-      { name: "Model Owner", status: "pending", approvedBy: null, approvedAt: null },
-    ],
-    riskScore: "medium",
-    validationScore: null,
-  },
-]
-
-// Access control
-const accessControl = [
-  { user: "alex.chen@odum.io", role: "Model Owner", models: ["funding-pred-*"], permissions: ["read", "write", "deploy"], lastActive: "2 hours ago" },
-  { user: "james.smith@odum.io", role: "Quant Lead", models: ["*"], permissions: ["read", "write", "deploy", "approve"], lastActive: "30 min ago" },
-  { user: "mei.wong@odum.io", role: "ML Engineer", models: ["liq-detect-*", "vol-forecast-*"], permissions: ["read", "write"], lastActive: "1 hour ago" },
-  { user: "ops-team@odum.io", role: "Operations", models: ["*"], permissions: ["read", "deploy", "rollback"], lastActive: "5 min ago" },
-  { user: "data-eng@odum.io", role: "Data Engineer", models: ["—"], permissions: ["read", "feature-write"], lastActive: "3 hours ago" },
-  { user: "risk-committee@odum.io", role: "Risk Committee", models: ["*"], permissions: ["read", "approve"], lastActive: "1 day ago" },
-]
-
-// Compliance reports
-const complianceReports = [
-  { id: "CR-2026-Q1", name: "Q1 2026 Model Risk Report", type: "quarterly", generatedAt: "2026-03-01", status: "published", pages: 42 },
-  { id: "CR-2026-M02", name: "February 2026 Model Inventory", type: "monthly", generatedAt: "2026-03-01", status: "published", pages: 18 },
-  { id: "CR-2026-M03", name: "March 2026 Model Inventory", type: "monthly", generatedAt: "2026-03-15", status: "draft", pages: 16 },
-  { id: "VA-2026-01", name: "Funding Predictor Validation Report", type: "validation", generatedAt: "2026-03-17", status: "pending_review", pages: 28 },
-]
+import { useAuditEvents } from "@/hooks/api/use-audit"
 
 export default function GovernancePage() {
+  const { data: auditData, isLoading } = useAuditEvents()
+  const rawEvents: Array<Record<string, unknown>> = (auditData as any)?.data ?? []
+
+  // Derive governance data from audit events
+  const auditLog = rawEvents.map((e: any, i: number) => ({
+    id: e.id ?? i + 1,
+    timestamp: e.timestamp ?? "",
+    action: e.action ?? "",
+    model: e.model ?? "—",
+    user: e.user ?? "system",
+    avatar: e.avatar ?? (e.user ? String(e.user).slice(0, 2).toUpperCase() : "SY"),
+    details: e.details ?? "",
+    status: e.status ?? "success",
+  }))
+
+  const pendingApprovals: Array<any> = rawEvents
+    .filter((e: any) => e.action === "PROMOTION_REQUESTED" || (e.type === "promotion" && e.status === "pending"))
+    .map((e: any, i: number) => ({
+      id: e.id ?? i + 1,
+      type: e.type ?? "promotion",
+      model: e.model ?? "",
+      requestedBy: e.requestedBy ?? e.user ?? "",
+      requestedAt: e.requestedAt ?? e.timestamp ?? "",
+      stage: e.stage ?? "CHALLENGER \u2192 CHAMPION",
+      approvers: e.approvers ?? [],
+      riskScore: e.riskScore ?? "low",
+      validationScore: e.validationScore ?? null,
+    }))
+
+  const accessControl: Array<any> = rawEvents
+    .filter((e: any) => e.type === "access_control" || e.action === "ACCESS_GRANTED")
+    .map((e: any) => ({
+      user: e.user ?? "",
+      role: e.role ?? "viewer",
+      models: e.models ?? ["*"],
+      permissions: e.permissions ?? ["read"],
+      lastActive: e.lastActive ?? "—",
+    }))
+
+  const complianceReports: Array<any> = rawEvents
+    .filter((e: any) => e.type === "compliance_report")
+    .map((e: any) => ({
+      id: e.id ?? "",
+      name: e.name ?? "",
+      type: e.reportType ?? "monthly",
+      generatedAt: e.generatedAt ?? "",
+      status: e.status ?? "draft",
+      pages: e.pages ?? 0,
+    }))
   const [searchTerm, setSearchTerm] = useState("")
   const [actionFilter, setActionFilter] = useState("all")
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   const filteredAuditLog = auditLog.filter(entry => {
     const matchesSearch = entry.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -264,7 +252,7 @@ export default function GovernancePage() {
                     <div className="space-y-2">
                       <p className="text-sm font-medium">Approval Chain</p>
                       <div className="flex items-center gap-4">
-                        {approval.approvers.map((approver, idx) => (
+                        {approval.approvers.map((approver: { name: string; role: string; status: string; approvedBy?: string }, idx: number) => (
                           <div key={approver.name} className="flex items-center gap-2">
                             <div className={`flex items-center gap-2 p-2 rounded-lg border ${
                               approver.status === "approved" ? "border-[var(--status-success)]/50 bg-[var(--status-success)]/10" : "border-muted"
@@ -431,7 +419,7 @@ export default function GovernancePage() {
                         <TableCell className="font-mono text-sm">{user.models.join(", ")}</TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {user.permissions.map(perm => (
+                            {user.permissions.map((perm: string) => (
                               <Badge key={perm} variant="secondary" className="text-xs">{perm}</Badge>
                             ))}
                           </div>

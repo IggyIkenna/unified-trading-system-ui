@@ -52,6 +52,8 @@ import {
   ReferenceLine,
 } from "recharts"
 
+import { useMLDeployments, useModelVersions } from "@/hooks/api/use-ml-models"
+
 // Live model metrics (simulated real-time data)
 const generateLiveMetrics = () => {
   const now = new Date()
@@ -69,99 +71,43 @@ const generateLiveMetrics = () => {
   })
 }
 
-// Active models
-const activeModels = [
-  {
-    id: "funding-pred-v2.3.1",
-    name: "Funding Rate Predictor",
-    version: "2.3.1",
-    stage: "CHAMPION",
-    status: "healthy",
-    uptime: "99.97%",
-    predictions24h: 1247832,
-    avgLatency: "28ms",
-    errorRate: "0.02%",
-    accuracy: "84.7%",
-    drift: "low",
-    alerts: 0,
-  },
-  {
-    id: "vol-forecast-v1.8.2",
-    name: "Volatility Forecaster",
-    version: "1.8.2",
-    stage: "CHAMPION",
-    status: "healthy",
-    uptime: "99.99%",
-    predictions24h: 892341,
-    avgLatency: "45ms",
-    errorRate: "0.01%",
-    accuracy: "81.2%",
-    drift: "low",
-    alerts: 0,
-  },
-  {
-    id: "liq-detect-v3.0.1",
-    name: "Liquidation Detector",
-    version: "3.0.1",
-    stage: "CHAMPION",
-    status: "warning",
-    uptime: "99.85%",
-    predictions24h: 456123,
-    avgLatency: "18ms",
-    errorRate: "0.08%",
-    accuracy: "92.1%",
-    drift: "medium",
-    alerts: 2,
-  },
-  {
-    id: "spread-pred-v2.0.0",
-    name: "Spread Predictor",
-    version: "2.0.0",
-    stage: "CHAMPION",
-    status: "healthy",
-    uptime: "99.92%",
-    predictions24h: 2341567,
-    avgLatency: "12ms",
-    errorRate: "0.03%",
-    accuracy: "78.4%",
-    drift: "low",
-    alerts: 0,
-  },
-  {
-    id: "funding-pred-v2.4.0-rc1",
-    name: "Funding Rate Predictor",
-    version: "2.4.0-rc1",
-    stage: "SHADOW",
-    status: "healthy",
-    uptime: "100%",
-    predictions24h: 124783,
-    avgLatency: "32ms",
-    errorRate: "0.01%",
-    accuracy: "86.2%",
-    drift: "low",
-    alerts: 0,
-  },
-]
-
-// Recent alerts
-const recentAlerts = [
-  { id: 1, model: "liq-detect-v3.0.1", type: "drift", severity: "warning", message: "Feature drift detected on oi_change_1h (PSI: 0.12)", time: "5 min ago", acknowledged: false },
-  { id: 2, model: "liq-detect-v3.0.1", type: "accuracy", severity: "warning", message: "Rolling accuracy dropped below 90% threshold", time: "12 min ago", acknowledged: false },
-  { id: 3, model: "vol-forecast-v1.8.2", type: "latency", severity: "info", message: "P99 latency spike to 95ms (recovered)", time: "1 hour ago", acknowledged: true },
-  { id: 4, model: "funding-pred-v2.3.1", type: "throughput", severity: "info", message: "Request rate exceeded 3000/s during funding window", time: "4 hours ago", acknowledged: true },
-]
-
-// Feature health
-const featureHealth = [
-  { feature: "funding_rate_8h", status: "healthy", freshness: "120ms", drift: 0.02, coverage: 100 },
-  { feature: "oi_change_1h", status: "warning", freshness: "850ms", drift: 0.12, coverage: 99.8 },
-  { feature: "volume_imbalance", status: "healthy", freshness: "95ms", drift: 0.03, coverage: 100 },
-  { feature: "basis_spread", status: "healthy", freshness: "110ms", drift: 0.01, coverage: 100 },
-  { feature: "liquidation_ratio", status: "healthy", freshness: "200ms", drift: 0.04, coverage: 99.9 },
-  { feature: "spot_perp_spread", status: "healthy", freshness: "85ms", drift: 0.02, coverage: 100 },
-]
-
 export default function LiveMonitoringPage() {
+  const { data: deploymentsData, isLoading: deploymentsLoading } = useMLDeployments()
+  const { data: versionsData, isLoading: versionsLoading } = useModelVersions()
+
+  const activeModels: Array<any> = ((deploymentsData as any)?.data ?? []).map((d: any) => ({
+    id: d.id ?? "",
+    name: d.name ?? "",
+    version: d.version ?? "",
+    stage: d.stage ?? "CHAMPION",
+    status: d.status ?? "healthy",
+    uptime: d.uptime ?? "99.9%",
+    predictions24h: d.predictions24h ?? 0,
+    avgLatency: d.avgLatency ?? "0ms",
+    errorRate: d.errorRate ?? "0%",
+    accuracy: d.accuracy ?? "0%",
+    drift: d.drift ?? "low",
+    alerts: d.alerts ?? 0,
+  }))
+
+  const recentAlerts: Array<any> = ((versionsData as any)?.alerts ?? []).map((a: any, i: number) => ({
+    id: a.id ?? i + 1,
+    model: a.model ?? "",
+    type: a.type ?? "info",
+    severity: a.severity ?? "info",
+    message: a.message ?? "",
+    time: a.time ?? "",
+    acknowledged: a.acknowledged ?? false,
+  }))
+
+  const featureHealth: Array<any> = ((versionsData as any)?.featureHealth ?? []).map((f: any) => ({
+    feature: f.feature ?? "",
+    status: f.status ?? "healthy",
+    freshness: f.freshness ?? "0ms",
+    drift: f.drift ?? 0,
+    coverage: f.coverage ?? 100,
+  }))
+  const isLoading = deploymentsLoading || versionsLoading
   const [liveMetrics, setLiveMetrics] = useState(generateLiveMetrics())
   const [selectedModel, setSelectedModel] = useState("all")
   const [timeRange, setTimeRange] = useState("1h")
@@ -184,6 +130,8 @@ export default function LiveMonitoringPage() {
     }, 5000)
     return () => clearInterval(interval)
   }, [])
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   const healthyModels = activeModels.filter(m => m.status === "healthy").length
   const warningModels = activeModels.filter(m => m.status === "warning").length

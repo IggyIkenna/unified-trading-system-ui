@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
 import { 
   ArrowLeft, 
@@ -49,9 +49,10 @@ import {
   AreaChart,
   Area,
 } from "recharts"
+import { useFeatureProvenance } from "@/hooks/api/use-ml-models"
 
-// Feature catalog
-const featureCatalog = [
+// Default feature catalog
+const DEFAULT_FEATURE_CATALOG = [
   {
     id: "funding_rate_8h",
     name: "Funding Rate (8h)",
@@ -222,39 +223,46 @@ const featureCatalog = [
   },
 ]
 
-// Feature history data
-const featureHistory = Array.from({ length: 30 }, (_, i) => ({
-  date: new Date(2026, 2, i + 1).toISOString().split("T")[0],
-  funding_rate_8h: 0.0001 + Math.random() * 0.0003,
-  oi_change_1h: (Math.random() - 0.5) * 0.04,
-  volume_imbalance: (Math.random() - 0.5) * 0.3,
-  basis_spread: 0.06 + Math.random() * 0.04,
-}))
-
-// Model-feature usage matrix
-const featureUsageMatrix = [
-  { model: "Funding Rate Predictor", funding_rate_8h: true, oi_change_1h: true, volume_imbalance: true, basis_spread: true, liquidation_ratio: true, whale_flow: true },
-  { model: "Volatility Forecaster", funding_rate_8h: true, oi_change_1h: true, volume_imbalance: true, basis_spread: false, liquidation_ratio: false, whale_flow: false },
-  { model: "Liquidation Detector", funding_rate_8h: false, oi_change_1h: true, volume_imbalance: true, basis_spread: false, liquidation_ratio: true, whale_flow: true },
-  { model: "Spread Predictor", funding_rate_8h: true, oi_change_1h: false, volume_imbalance: true, basis_spread: true, liquidation_ratio: false, whale_flow: false },
-]
+// Feature history and usage matrix are loaded from API inside the component
 
 export default function FeatureProvenancePage() {
+  const { data: featuresData, isLoading } = useFeatureProvenance()
+  const featuresRaw: any[] = (featuresData as any)?.data ?? (featuresData as any)?.features ?? []
+  const featureCatalog = featuresRaw.length > 0 ? featuresRaw : DEFAULT_FEATURE_CATALOG
+
+  // Generate feature history and usage matrix from API or defaults
+  const featureHistory = useMemo(() => (featuresData as any)?.history ?? Array.from({ length: 30 }, (_, i) => ({
+    date: new Date(2026, 2, i + 1).toISOString().split("T")[0],
+    funding_rate_8h: 0.0001 + Math.random() * 0.0003,
+    oi_change_1h: (Math.random() - 0.5) * 0.04,
+    volume_imbalance: (Math.random() - 0.5) * 0.3,
+    basis_spread: 0.06 + Math.random() * 0.04,
+  })), [featuresData])
+
+  const featureUsageMatrix: any[] = (featuresData as any)?.usageMatrix ?? [
+    { model: "Funding Rate Predictor", funding_rate_8h: true, oi_change_1h: true, volume_imbalance: true, basis_spread: true, liquidation_ratio: true, whale_flow: true },
+    { model: "Volatility Forecaster", funding_rate_8h: true, oi_change_1h: true, volume_imbalance: true, basis_spread: false, liquidation_ratio: false, whale_flow: false },
+    { model: "Liquidation Detector", funding_rate_8h: false, oi_change_1h: true, volume_imbalance: true, basis_spread: false, liquidation_ratio: true, whale_flow: true },
+    { model: "Spread Predictor", funding_rate_8h: true, oi_change_1h: false, volume_imbalance: true, basis_spread: true, liquidation_ratio: false, whale_flow: false },
+  ]
+
   const [searchTerm, setSearchTerm] = useState("")
   const [sourceFilter, setSourceFilter] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null)
 
-  const filteredFeatures = featureCatalog.filter(f => {
+  const filteredFeatures = featureCatalog.filter((f: any) => {
     const matchesSearch = f.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           f.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.tags.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()))
+                          f.tags.some((t: string) => t.toLowerCase().includes(searchTerm.toLowerCase()))
     const matchesSource = sourceFilter === "all" || f.source === sourceFilter
     const matchesStatus = statusFilter === "all" || f.status === statusFilter
     return matchesSearch && matchesSource && matchesStatus
   })
 
-  const selectedFeatureData = selectedFeature ? featureCatalog.find(f => f.id === selectedFeature) : null
+  const selectedFeatureData = selectedFeature ? featureCatalog.find((f: any) => f.id === selectedFeature) : null
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="min-h-screen bg-background">
@@ -470,7 +478,7 @@ export default function FeatureProvenancePage() {
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Tags</h4>
                     <div className="flex flex-wrap gap-1">
-                      {selectedFeatureData.tags.map(tag => (
+                      {selectedFeatureData.tags.map((tag: string) => (
                         <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
                       ))}
                     </div>
@@ -486,7 +494,7 @@ export default function FeatureProvenancePage() {
                       <div>
                         <span className="text-muted-foreground">Raw Sources:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {selectedFeatureData.lineage.rawSources.map(src => (
+                          {selectedFeatureData.lineage.rawSources.map((src: string) => (
                             <Badge key={src} variant="outline" className="text-xs font-mono">{src}</Badge>
                           ))}
                         </div>
@@ -494,7 +502,7 @@ export default function FeatureProvenancePage() {
                       <div>
                         <span className="text-muted-foreground">Transformations:</span>
                         <div className="flex items-center gap-1 mt-1">
-                          {selectedFeatureData.lineage.transformations.map((t, i) => (
+                          {selectedFeatureData.lineage.transformations.map((t: string, i: number) => (
                             <span key={t} className="flex items-center">
                               <Badge variant="secondary" className="text-xs">{t}</Badge>
                               {i < selectedFeatureData.lineage.transformations.length - 1 && (

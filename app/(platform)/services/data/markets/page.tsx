@@ -30,6 +30,8 @@ import {
 } from "lucide-react"
 import { PNL_FACTORS, SERVICES } from "@/lib/reference-data"
 import { ORGANIZATIONS, CLIENTS, STRATEGIES } from "@/lib/trading-data"
+import { useTickers } from "@/hooks/api/use-market-data"
+import { useTradingPnl } from "@/hooks/api/use-trading"
 import {
   AreaChart,
   Area,
@@ -50,14 +52,7 @@ interface PnLComponent {
   category?: "structural" | "factor" | "diagnostic"
 }
 
-// Structural P&L - always shown at top
-const structuralPnL: PnLComponent[] = [
-  { name: "Realized", value: 847200, percentage: 81.4, category: "structural" },
-  { name: "Unrealized", value: 193400, percentage: 18.6, category: "structural" },
-]
-
-// Residual - shown at bottom
-const residualPnL: PnLComponent = { name: "Residual", value: 7300, percentage: 0.7, category: "diagnostic" }
+// Structural P&L and residual are loaded from API inside the component
 
 // Colors for stacked chart factors
 const FACTOR_COLORS: Record<string, string> = {
@@ -477,13 +472,7 @@ function generateOrderFlowData(
   return entries.sort((a, b) => new Date(b.exchangeTime).getTime() - new Date(a.exchangeTime).getTime())
 }
 
-// Recon runs mock data
-const reconRuns = [
-  { date: "2026-03-17", status: "complete", breaks: 4, resolved: 2, totalValue: 18000 },
-  { date: "2026-03-16", status: "complete", breaks: 2, resolved: 2, totalValue: 5200 },
-  { date: "2026-03-15", status: "complete", breaks: 0, resolved: 0, totalValue: 0 },
-  { date: "2026-03-14", status: "complete", breaks: 1, resolved: 1, totalValue: 3100 },
-]
+// Recon runs and latency metrics are loaded from API inside the component
 
 // Latency metrics - using real service names from SERVICES with lifecycle breakdown
 interface LatencyMetric {
@@ -510,110 +499,18 @@ interface LatencyMetric {
   timeSeries: { time: string; p50: number; p95: number; p99: number }[]
 }
 
-const latencyMetrics: LatencyMetric[] = [
-  { 
-    service: SERVICES.find(s => s.id === "execution-service")?.name || "Execution Service",
-    serviceId: "execution-service",
-    p50: 2.1, p95: 8.4, p99: 15.2, 
-    status: "healthy",
-    lifecycle: [
-      { stage: "Order Validation", p50: 0.3, p95: 0.8, p99: 1.2 },
-      { stage: "Risk Check", p50: 0.5, p95: 1.5, p99: 2.8 },
-      { stage: "Route Selection", p50: 0.4, p95: 1.2, p99: 2.1 },
-      { stage: "Exchange Submit", p50: 0.6, p95: 3.5, p99: 6.2 },
-      { stage: "Ack Processing", p50: 0.3, p95: 1.4, p99: 2.9 },
-    ],
-    batch: { p50: 2.0, p95: 8.1, p99: 14.8 },
-    timeSeries: Array.from({ length: 24 }, (_, i) => ({
-      time: `${i}:00`,
-      p50: 2.1 + Math.sin(i / 3) * 0.5,
-      p95: 8.4 + Math.sin(i / 3) * 1.5,
-      p99: 15.2 + Math.sin(i / 3) * 3,
-    })),
-  },
-  { 
-    service: SERVICES.find(s => s.id === "market-data-processing-service")?.name || "Market Data",
-    serviceId: "market-data-processing-service",
-    p50: 0.3, p95: 1.2, p99: 2.8,
-    status: "healthy",
-    lifecycle: [
-      { stage: "Feed Ingestion", p50: 0.05, p95: 0.15, p99: 0.3 },
-      { stage: "Normalization", p50: 0.08, p95: 0.25, p99: 0.5 },
-      { stage: "Validation", p50: 0.05, p95: 0.2, p99: 0.4 },
-      { stage: "Aggregation", p50: 0.07, p95: 0.35, p99: 0.8 },
-      { stage: "Distribution", p50: 0.05, p95: 0.25, p99: 0.8 },
-    ],
-    batch: { p50: 0.35, p95: 1.5, p99: 3.2 },
-    timeSeries: Array.from({ length: 24 }, (_, i) => ({
-      time: `${i}:00`,
-      p50: 0.3 + Math.sin(i / 4) * 0.1,
-      p95: 1.2 + Math.sin(i / 4) * 0.3,
-      p99: 2.8 + Math.sin(i / 4) * 0.6,
-    })),
-  },
-  { 
-    service: SERVICES.find(s => s.id === "pnl-attribution-service")?.name || "P&L Attribution",
-    serviceId: "pnl-attribution-service",
-    p50: 8.1, p95: 22.3, p99: 45.1,
-    status: "healthy",
-    lifecycle: [
-      { stage: "Position Fetch", p50: 1.2, p95: 3.5, p99: 7.2 },
-      { stage: "Price Lookup", p50: 0.8, p95: 2.1, p99: 4.5 },
-      { stage: "Factor Calc", p50: 3.5, p95: 9.8, p99: 18.2 },
-      { stage: "Attribution", p50: 1.8, p95: 4.5, p99: 9.8 },
-      { stage: "Aggregation", p50: 0.8, p95: 2.4, p99: 5.4 },
-    ],
-    batch: { p50: 12.5, p95: 35.2, p99: 68.4 },
-    timeSeries: Array.from({ length: 24 }, (_, i) => ({
-      time: `${i}:00`,
-      p50: 8.1 + Math.sin(i / 2) * 2,
-      p95: 22.3 + Math.sin(i / 2) * 5,
-      p99: 45.1 + Math.sin(i / 2) * 10,
-    })),
-  },
-  { 
-    service: SERVICES.find(s => s.id === "ml-inference-service")?.name || "ML Inference",
-    serviceId: "ml-inference-service",
-    p50: 4.2, p95: 12.1, p99: 28.4,
-    status: "warning",
-    lifecycle: [
-      { stage: "Feature Extract", p50: 0.8, p95: 2.2, p99: 4.8 },
-      { stage: "Model Load", p50: 0.3, p95: 0.8, p99: 1.5 },
-      { stage: "Inference", p50: 2.4, p95: 7.2, p99: 16.8 },
-      { stage: "Post-process", p50: 0.5, p95: 1.4, p99: 3.2 },
-      { stage: "Response", p50: 0.2, p95: 0.5, p99: 2.1 },
-    ],
-    batch: { p50: 3.8, p95: 10.2, p99: 22.1 },
-    timeSeries: Array.from({ length: 24 }, (_, i) => ({
-      time: `${i}:00`,
-      p50: 4.2 + Math.sin(i / 3) * 1.5 + (i > 12 && i < 18 ? 2 : 0),
-      p95: 12.1 + Math.sin(i / 3) * 4 + (i > 12 && i < 18 ? 5 : 0),
-      p99: 28.4 + Math.sin(i / 3) * 8 + (i > 12 && i < 18 ? 12 : 0),
-    })),
-  },
-  { 
-    service: SERVICES.find(s => s.id === "alerting-service")?.name || "Alerting Service",
-    serviceId: "alerting-service",
-    p50: 1.2, p95: 4.8, p99: 9.2,
-    status: "healthy",
-    lifecycle: [
-      { stage: "Rule Eval", p50: 0.4, p95: 1.5, p99: 2.8 },
-      { stage: "Threshold Check", p50: 0.2, p95: 0.8, p99: 1.5 },
-      { stage: "Alert Format", p50: 0.2, p95: 0.6, p99: 1.2 },
-      { stage: "Channel Route", p50: 0.3, p95: 1.2, p99: 2.4 },
-      { stage: "Delivery", p50: 0.1, p95: 0.7, p99: 1.3 },
-    ],
-    batch: { p50: 1.5, p95: 5.8, p99: 11.2 },
-    timeSeries: Array.from({ length: 24 }, (_, i) => ({
-      time: `${i}:00`,
-      p50: 1.2 + Math.sin(i / 4) * 0.3,
-      p95: 4.8 + Math.sin(i / 4) * 1.2,
-      p99: 9.2 + Math.sin(i / 4) * 2.5,
-    })),
-  },
-]
-
 export default function MarketsPage() {
+  const { data: tickersData, isLoading: tickersLoading } = useTickers()
+  const { data: pnlData, isLoading: pnlLoading } = useTradingPnl()
+
+  // Extract API data with safe fallbacks
+  const structuralPnL: PnLComponent[] = (pnlData as any)?.structuralPnL ?? (pnlData as any)?.data?.structuralPnL ?? []
+  const residualPnL: PnLComponent = (pnlData as any)?.residualPnL ?? (pnlData as any)?.data?.residualPnL ?? { name: "Residual", value: 0, percentage: 0, category: "diagnostic" }
+  const reconRuns: any[] = (pnlData as any)?.reconRuns ?? (pnlData as any)?.data?.reconRuns ?? []
+  const latencyMetrics: LatencyMetric[] = (tickersData as any)?.latencyMetrics ?? (tickersData as any)?.data?.latencyMetrics ?? []
+
+  const isPageLoading = tickersLoading || pnlLoading
+
   const [groupBy, setGroupBy] = React.useState("all")
   const [dateRange, setDateRange] = React.useState("today")
   const [viewMode, setViewMode] = React.useState<"cross-section" | "time-series">("cross-section")
@@ -704,6 +601,8 @@ export default function MarketsPage() {
       strategyNames: timeSeries.strategies,
     }
   }, [selectedFactor, pnlComponents, dataMode, dateRange])
+
+  if (isPageLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

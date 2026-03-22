@@ -30,6 +30,9 @@ import {
   type TradingAccount,
 } from "@/lib/trading-data"
 import { CLIENTS, ORGANIZATIONS } from "@/lib/trading-data"
+import { useTickers } from "@/hooks/api/use-market-data"
+import { usePositions } from "@/hooks/api/use-positions"
+import { useAlerts } from "@/hooks/api/use-alerts"
 import {
   Area,
   AreaChart,
@@ -45,7 +48,7 @@ import {
   YAxis,
 } from "recharts"
 
-// Strategy to instrument mapping
+// Strategy to instrument mapping - loaded from API where available
 const strategyInstruments: Record<string, string> = {
   "CEFI_BTC_PERP_FUND_EVT_TICK": "BTC-PERP",
   "CEFI_ETH_PERP_FUND_EVT_TICK": "ETH-PERP",
@@ -59,8 +62,8 @@ const strategyInstruments: Record<string, string> = {
   "DEFI_UNI_LP_EVT_BLK": "ETH/USDT",
 }
 
-// Available instruments with their venues
-const instruments = [
+// Default instruments fallback
+const DEFAULT_INSTRUMENTS = [
   { symbol: "BTC/USDT", name: "Bitcoin", venue: "Binance", midPrice: 67234.50, change: 2.4 },
   { symbol: "ETH/USDT", name: "Ethereum", venue: "Binance", midPrice: 3456.78, change: 1.8 },
   { symbol: "SOL/USDT", name: "Solana", venue: "Binance", midPrice: 156.42, change: 4.2 },
@@ -114,6 +117,22 @@ const generateCandleData = (basePrice: number, timeframe: string) => {
 
 export default function TradingPage() {
   const { scope: context } = useGlobalScope()
+  const { data: tickersData } = useTickers()
+  const { data: positionsData } = usePositions()
+  const { data: alertsData } = useAlerts()
+
+  // Extract API data - instruments from tickers
+  const tickersRaw: any[] = (tickersData as any)?.data ?? (tickersData as any)?.tickers ?? []
+  const instruments = tickersRaw.length > 0
+    ? tickersRaw.map((t: any) => ({
+        symbol: t.symbol ?? "",
+        name: t.name ?? t.symbol ?? "",
+        venue: t.venue ?? "",
+        midPrice: t.midPrice ?? t.price ?? 0,
+        change: t.change ?? t.changePct ?? 0,
+      }))
+    : DEFAULT_INSTRUMENTS
+
   const [selectedInstrument, setSelectedInstrument] = React.useState(instruments[0])
   const [selectedAccount, setSelectedAccount] = React.useState<TradingAccount | null>(null)
   const [orderType, setOrderType] = React.useState<"limit" | "market">("limit")
@@ -238,7 +257,7 @@ export default function TradingPage() {
   // Brownian motion with slight upward drift (trending market)
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setLivePrice(prev => {
+      setLivePrice((prev: number) => {
         // Random component (volatility)
         const volatility = (Math.random() - 0.5) * selectedInstrument.midPrice * 0.0002
         // Drift component (slight upward trend ~0.001% per tick)

@@ -28,17 +28,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { MLNav } from "@/components/ml/ml-nav"
-import {
-  MODEL_FAMILIES,
-  EXPERIMENTS,
-  LIVE_DEPLOYMENTS,
-  CHAMPION_CHALLENGER_PAIRS,
-  ML_ALERTS,
-  FEATURE_PROVENANCE,
-  REGIME_STATES,
-  MODEL_VERSIONS,
-  DEPLOYMENT_CANDIDATES,
-} from "@/lib/ml-mock-data"
+import { useModelFamilies, useExperiments, useMLDeployments, useModelVersions, useFeatureProvenance } from "@/hooks/api/use-ml-models"
 
 // Context badge component
 function ContextBadge({ context }: { context: "BATCH" | "LIVE" }) {
@@ -97,15 +87,37 @@ function LifecycleRail({ currentStage }: { currentStage: string }) {
 }
 
 export default function MLOverviewPage() {
+  const { data: familiesData, isLoading: famLoading } = useModelFamilies()
+  const { data: experimentsData, isLoading: expLoading } = useExperiments()
+  const { data: deploymentsData, isLoading: depLoading } = useMLDeployments()
+  const { data: versionsData, isLoading: verLoading } = useModelVersions()
+  const { data: featuresData, isLoading: featLoading } = useFeatureProvenance()
+
+  const MODEL_FAMILIES: Array<any> = (familiesData as any)?.data ?? []
+  const EXPERIMENTS: Array<any> = (experimentsData as any)?.data ?? []
+  const LIVE_DEPLOYMENTS: Array<any> = (deploymentsData as any)?.data ?? []
+  const MODEL_VERSIONS: Array<any> = (versionsData as any)?.data ?? []
+  const FEATURE_PROVENANCE: Array<any> = (featuresData as any)?.data ?? []
+
+  // Derived arrays from API data
+  const CHAMPION_CHALLENGER_PAIRS: Array<any> = (deploymentsData as any)?.championChallengerPairs ?? []
+  const ML_ALERTS: Array<any> = (deploymentsData as any)?.alerts ?? []
+  const REGIME_STATES: Array<any> = (deploymentsData as any)?.regimeStates ?? []
+  const DEPLOYMENT_CANDIDATES: Array<any> = (deploymentsData as any)?.candidates ?? []
+
+  const isLoading = famLoading || expLoading || depLoading || verLoading || featLoading
+
   // Calculate summary stats
-  const liveModels = LIVE_DEPLOYMENTS.filter(d => d.status === "active").length
-  const runningExperiments = EXPERIMENTS.filter(e => e.status === "running").length
-  const pendingPromotions = DEPLOYMENT_CANDIDATES.filter(d => d.status !== "approved" && d.status !== "rejected").length
-  const activeAlerts = ML_ALERTS.filter(a => !a.resolvedAt).length
-  const degradedFeatures = FEATURE_PROVENANCE.filter(f => f.status !== "healthy").length
-  
-  const totalPredictionsToday = LIVE_DEPLOYMENTS.reduce((sum, d) => sum + d.metrics.predictionsToday, 0)
-  const avgLatency = LIVE_DEPLOYMENTS.reduce((sum, d) => sum + d.metrics.latencyP50, 0) / LIVE_DEPLOYMENTS.length
+  const liveModels = LIVE_DEPLOYMENTS.filter((d: any) => d.status === "active").length
+  const runningExperiments = EXPERIMENTS.filter((e: any) => e.status === "running").length
+  const pendingPromotions = DEPLOYMENT_CANDIDATES.filter((d: any) => d.status !== "approved" && d.status !== "rejected").length
+  const activeAlerts = ML_ALERTS.filter((a: any) => !a.resolvedAt).length
+  const degradedFeatures = FEATURE_PROVENANCE.filter((f: any) => f.status !== "healthy").length
+
+  const totalPredictionsToday = LIVE_DEPLOYMENTS.reduce((sum: number, d: any) => sum + (d.metrics?.predictionsToday ?? 0), 0)
+  const avgLatency = LIVE_DEPLOYMENTS.length > 0 ? LIVE_DEPLOYMENTS.reduce((sum: number, d: any) => sum + (d.metrics?.latencyP50 ?? 0), 0) / LIVE_DEPLOYMENTS.length : 0
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">
@@ -509,7 +521,7 @@ export default function MLOverviewPage() {
                     </Badge>
                   </div>
                   <div className="grid grid-cols-4 gap-4">
-                    {regime.indicators.map((indicator) => (
+                    {regime.indicators.map((indicator: { name: string; value: number }) => (
                       <div key={indicator.name} className="text-center">
                         <div className="text-2xl font-mono font-semibold">{indicator.value.toFixed(2)}</div>
                         <div className="text-xs text-muted-foreground">{indicator.name.replace("_", " ")}</div>
@@ -544,7 +556,7 @@ export default function MLOverviewPage() {
               {DEPLOYMENT_CANDIDATES.filter(dc => dc.status !== "approved" && dc.status !== "rejected").map((candidate) => {
                 const model = MODEL_VERSIONS.find(m => m.id === candidate.modelVersionId)
                 const family = MODEL_FAMILIES.find(f => f.id === model?.modelFamilyId)
-                const passedGates = candidate.gates.filter(g => g.status === "passed").length
+                const passedGates = candidate.gates.filter((g: { status: string }) => g.status === "passed").length
                 const totalGates = candidate.gates.length
                 
                 return (
@@ -579,7 +591,7 @@ export default function MLOverviewPage() {
                         <span>{passedGates}/{totalGates} passed</span>
                       </div>
                       <div className="flex gap-1">
-                        {candidate.gates.map((gate) => (
+                        {candidate.gates.map((gate: { id: string; name: string; status: string }) => (
                           <div
                             key={gate.id}
                             className={`flex-1 h-2 rounded ${

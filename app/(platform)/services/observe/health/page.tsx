@@ -34,6 +34,7 @@ import {
   Cpu,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useServiceHealth, useFeatureFreshness } from "@/hooks/api/use-service-status"
 
 type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "idle"
 
@@ -57,29 +58,6 @@ interface FeatureFreshness {
   region: string
   lastUpdate: string
 }
-
-const mockServices: Service[] = [
-  { name: "execution-service", tier: "critical", status: "healthy", latencyP50: 12, latencyP99: 45, errorRate: 0.01, lastHealthCheck: "2s ago", uptime: "99.99%", version: "v31.2.1" },
-  { name: "risk-and-exposure-service", tier: "critical", status: "healthy", latencyP50: 8, latencyP99: 32, errorRate: 0.02, lastHealthCheck: "2s ago", uptime: "99.98%", version: "v12.4.0" },
-  { name: "pnl-attribution-service", tier: "critical", status: "healthy", latencyP50: 15, latencyP99: 58, errorRate: 0.01, lastHealthCheck: "2s ago", uptime: "99.97%", version: "v8.1.2" },
-  { name: "strategy-service", tier: "critical", status: "healthy", latencyP50: 22, latencyP99: 78, errorRate: 0.03, lastHealthCheck: "2s ago", uptime: "99.95%", version: "v24.0.0" },
-  { name: "features-delta-1", tier: "core", status: "degraded", latencyP50: 45, latencyP99: 180, errorRate: 0.15, lastHealthCheck: "5s ago", uptime: "98.5%", version: "v17.3.1" },
-  { name: "market-tick-data-service", tier: "core", status: "healthy", latencyP50: 3, latencyP99: 12, errorRate: 0.005, lastHealthCheck: "1s ago", uptime: "99.99%", version: "v6.2.0" },
-  { name: "ml-inference-service", tier: "core", status: "idle", latencyP50: 85, latencyP99: 220, errorRate: 0, lastHealthCheck: "30s ago", uptime: "99.9%", version: "v3.1.0" },
-  { name: "alerting-service", tier: "support", status: "healthy", latencyP50: 5, latencyP99: 18, errorRate: 0.01, lastHealthCheck: "2s ago", uptime: "99.99%", version: "v5.0.2" },
-  { name: "recon-service", tier: "support", status: "healthy", latencyP50: 120, latencyP99: 450, errorRate: 0.02, lastHealthCheck: "10s ago", uptime: "99.8%", version: "v4.2.1" },
-  { name: "client-reporting-api", tier: "support", status: "healthy", latencyP50: 35, latencyP99: 125, errorRate: 0.01, lastHealthCheck: "5s ago", uptime: "99.95%", version: "v7.1.0" },
-]
-
-const mockFeatureFreshness: FeatureFreshness[] = [
-  { service: "features-delta-1", freshness: 92, sla: 30, status: "degraded", region: "EU", lastUpdate: "92s ago" },
-  { service: "features-delta-1", freshness: 8, sla: 30, status: "healthy", region: "US", lastUpdate: "8s ago" },
-  { service: "execution-service", freshness: 2, sla: 5, status: "healthy", region: "Global", lastUpdate: "2s ago" },
-  { service: "risk-and-exposure", freshness: 4, sla: 10, status: "healthy", region: "Global", lastUpdate: "4s ago" },
-  { service: "pnl-attribution", freshness: 8, sla: 15, status: "healthy", region: "Global", lastUpdate: "8s ago" },
-  { service: "market-tick-data", freshness: 0.3, sla: 1, status: "healthy", region: "Global", lastUpdate: "0.3s ago" },
-  { service: "ml-inference", freshness: 0, sla: 0, status: "idle", region: "Global", lastUpdate: "-" },
-]
 
 function getStatusIcon(status: ServiceStatus) {
   switch (status) {
@@ -120,6 +98,32 @@ function getFreshnessStatus(freshness: number, sla: number): ServiceStatus {
 }
 
 export default function HealthPage() {
+  const { data: healthData, isLoading: healthLoading } = useServiceHealth()
+  const { data: freshnessData, isLoading: freshnessLoading } = useFeatureFreshness()
+
+  const mockServices: Service[] = ((healthData as any)?.data ?? []).map((s: any) => ({
+    name: s.name ?? "",
+    tier: s.tier ?? "support",
+    status: (s.status ?? "healthy") as ServiceStatus,
+    latencyP50: s.latencyP50 ?? 0,
+    latencyP99: s.latencyP99 ?? 0,
+    errorRate: s.errorRate ?? 0,
+    lastHealthCheck: s.lastHealthCheck ?? "",
+    uptime: s.uptime ?? "0%",
+    version: s.version ?? "",
+  }))
+
+  const mockFeatureFreshness: FeatureFreshness[] = ((freshnessData as any)?.data ?? []).map((f: any) => ({
+    service: f.service ?? "",
+    freshness: f.freshness ?? 0,
+    sla: f.sla ?? 0,
+    status: (f.status ?? "healthy") as ServiceStatus,
+    region: f.region ?? "Global",
+    lastUpdate: f.lastUpdate ?? "",
+  }))
+
+  const isLoading = healthLoading || freshnessLoading
+
   const healthyCount = mockServices.filter((s) => s.status === "healthy").length
   const degradedCount = mockServices.filter((s) => s.status === "degraded").length
   const unhealthyCount = mockServices.filter((s) => s.status === "unhealthy").length
@@ -127,6 +131,8 @@ export default function HealthPage() {
   const criticalServices = mockServices.filter((s) => s.tier === "critical")
   const coreServices = mockServices.filter((s) => s.tier === "core")
   const supportServices = mockServices.filter((s) => s.tier === "support")
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

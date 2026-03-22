@@ -33,8 +33,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { STRATEGY_CANDIDATES, BACKTEST_RUNS } from "@/lib/strategy-platform-mock-data"
+import { STRATEGY_CANDIDATES as DEFAULT_CANDIDATES, BACKTEST_RUNS } from "@/lib/strategy-platform-mock-data"
 import type { StrategyCandidate } from "@/lib/strategy-platform-types"
+import { useStrategyPerformance } from "@/hooks/api/use-strategies"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -78,7 +79,10 @@ type PromotionTarget = "paper" | "live"
 // ---------------------------------------------------------------------------
 
 export default function CandidatesPage() {
-  const [candidates, setCandidates] = React.useState<StrategyCandidate[]>(STRATEGY_CANDIDATES)
+  const { data: perfData, isLoading } = useStrategyPerformance()
+  const candidatesRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.candidates ?? []
+  const initialCandidates = candidatesRaw.length > 0 ? candidatesRaw as StrategyCandidate[] : DEFAULT_CANDIDATES
+  const [candidates, setCandidates] = React.useState<StrategyCandidate[]>(initialCandidates)
   const [promotionTargets, setPromotionTargets] = React.useState<
     Record<string, PromotionTarget | null>
   >({})
@@ -165,6 +169,8 @@ export default function CandidatesPage() {
   const resolvedCandidates = candidates.filter(
     (c) => c.reviewState === "approved" || c.reviewState === "rejected"
   )
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="min-h-screen bg-background text-foreground">

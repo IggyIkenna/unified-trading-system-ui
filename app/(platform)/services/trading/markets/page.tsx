@@ -30,6 +30,7 @@ import {
 } from "lucide-react"
 import { PNL_FACTORS, SERVICES } from "@/lib/reference-data"
 import { ORGANIZATIONS, CLIENTS, STRATEGIES } from "@/lib/trading-data"
+import { useTickers } from "@/hooks/api/use-market-data"
 import {
   AreaChart,
   Area,
@@ -477,13 +478,7 @@ function generateOrderFlowData(
   return entries.sort((a, b) => new Date(b.exchangeTime).getTime() - new Date(a.exchangeTime).getTime())
 }
 
-// Recon runs mock data
-const reconRuns = [
-  { date: "2026-03-17", status: "complete", breaks: 4, resolved: 2, totalValue: 18000 },
-  { date: "2026-03-16", status: "complete", breaks: 2, resolved: 2, totalValue: 5200 },
-  { date: "2026-03-15", status: "complete", breaks: 0, resolved: 0, totalValue: 0 },
-  { date: "2026-03-14", status: "complete", breaks: 1, resolved: 1, totalValue: 3100 },
-]
+// Recon runs — sourced from API at component level, see MarketsPage
 
 // Latency metrics - using real service names from SERVICES with lifecycle breakdown
 interface LatencyMetric {
@@ -510,8 +505,9 @@ interface LatencyMetric {
   timeSeries: { time: string; p50: number; p95: number; p99: number }[]
 }
 
-const latencyMetrics: LatencyMetric[] = [
-  { 
+// latencyMetrics — sourced from API at component level, see MarketsPage
+const _latencyMetricsPlaceholder: LatencyMetric[] = [
+  {
     service: SERVICES.find(s => s.id === "execution-service")?.name || "Execution Service",
     serviceId: "execution-service",
     p50: 2.1, p95: 8.4, p99: 15.2, 
@@ -614,6 +610,14 @@ const latencyMetrics: LatencyMetric[] = [
 ]
 
 export default function MarketsPage() {
+  const { data: tickersData, isLoading: tickersLoading } = useTickers()
+
+  // API-sourced data with fallbacks for complex generated structures
+  const reconRuns: Array<any> = (tickersData as any)?.reconRuns ?? []
+  const latencyMetrics: LatencyMetric[] = (tickersData as any)?.latencyMetrics ?? _latencyMetricsPlaceholder
+  const structuralPnLApi: typeof structuralPnL = (tickersData as any)?.structuralPnL ?? structuralPnL
+  const residualPnLApi: typeof residualPnL = (tickersData as any)?.residualPnL ?? residualPnL
+
   const [groupBy, setGroupBy] = React.useState("all")
   const [dateRange, setDateRange] = React.useState("today")
   const [viewMode, setViewMode] = React.useState<"cross-section" | "time-series">("cross-section")
@@ -704,6 +708,8 @@ export default function MarketsPage() {
       strategyNames: timeSeries.strategies,
     }
   }, [selectedFactor, pnlComponents, dataMode, dateRange])
+
+  if (tickersLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

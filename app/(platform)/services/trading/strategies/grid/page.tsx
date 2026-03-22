@@ -6,9 +6,10 @@ import { PromoteFlowModal } from "@/components/trading/promote-flow-modal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Rocket, Download, Grid3X3 } from "lucide-react"
+import { useStrategyPerformance } from "@/hooks/api/use-strategies"
 
-// Mock backtest result data
-const mockBacktestResults = [
+// Default backtest result data
+const DEFAULT_BACKTEST_RESULTS = [
   {
     id: "exp-221",
     experiment: "exp-221",
@@ -123,30 +124,7 @@ const mockBacktestResults = [
   },
 ]
 
-const dimensions: DimensionDef[] = [
-  {
-    key: "strategy",
-    label: "Strategy",
-    values: [...new Set(mockBacktestResults.map((r) => r.strategy))],
-  },
-  {
-    key: "venue",
-    label: "Venue",
-    values: [...new Set(mockBacktestResults.map((r) => r.venue))],
-  },
-  {
-    key: "shard",
-    label: "Shard",
-    values: [...new Set(mockBacktestResults.map((r) => r.shard))],
-  },
-  {
-    key: "config",
-    label: "Config",
-    values: [...new Set(mockBacktestResults.map((r) => r.config))],
-  },
-]
-
-const metrics: MetricDef[] = [
+const METRICS: MetricDef[] = [
   { key: "sharpe", label: "Sharpe", format: "decimal", colorize: true },
   { key: "pnl", label: "P&L", format: "currency", colorize: true },
   { key: "maxDrawdown", label: "Max DD %", format: "percent" },
@@ -156,6 +134,19 @@ const metrics: MetricDef[] = [
 ]
 
 export default function StrategyGridPage() {
+  const { data: perfData, isLoading } = useStrategyPerformance()
+  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.backtests ?? []
+  const mockBacktestResults = perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RESULTS
+
+  const dimensions: DimensionDef[] = React.useMemo(() => [
+    { key: "strategy", label: "Strategy", values: [...new Set(mockBacktestResults.map((r: any) => r.strategy))] },
+    { key: "venue", label: "Venue", values: [...new Set(mockBacktestResults.map((r: any) => r.venue))] },
+    { key: "shard", label: "Shard", values: [...new Set(mockBacktestResults.map((r: any) => r.shard))] },
+    { key: "config", label: "Config", values: [...new Set(mockBacktestResults.map((r: any) => r.config))] },
+  ], [mockBacktestResults])
+
+  const metrics = METRICS
+
   const [pinnedDimensions, setPinnedDimensions] = React.useState<
     Record<string, string[]>
   >({})
@@ -173,6 +164,8 @@ export default function StrategyGridPage() {
     setSelectedForPromotion(selectedIds)
     setPromoteModalOpen(true)
   }
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

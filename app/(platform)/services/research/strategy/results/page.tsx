@@ -41,8 +41,9 @@ import {
   DollarSign,
   Percent,
 } from "lucide-react"
-import { BACKTEST_RUNS } from "@/lib/strategy-platform-mock-data"
+import { BACKTEST_RUNS as DEFAULT_BACKTEST_RUNS } from "@/lib/strategy-platform-mock-data"
 import { cn } from "@/lib/utils"
+import { useStrategyPerformance } from "@/hooks/api/use-strategies"
 
 // Generate mock time series data for a backtest run
 function generateTimeSeriesData(runId: string, days: number = 180) {
@@ -251,7 +252,7 @@ function AttributionWaterfall({ data }: { data: ReturnType<typeof generateAttrib
 }
 
 // KPI Summary Card
-function KPISummary({ run }: { run: typeof BACKTEST_RUNS[0] }) {
+function KPISummary({ run }: { run: typeof DEFAULT_BACKTEST_RUNS[0] }) {
   if (!run.metrics) return null
 
   const kpis = [
@@ -290,10 +291,14 @@ function KPISummary({ run }: { run: typeof BACKTEST_RUNS[0] }) {
 }
 
 export default function StrategyResultsPage() {
-  const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH")
-  const [selectedRunId, setSelectedRunId] = React.useState<string>(BACKTEST_RUNS[0].id)
+  const { data: perfData, isLoading } = useStrategyPerformance()
+  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.backtestRuns ?? []
+  const BACKTEST_RUNS = perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RUNS
 
-  const selectedRun = BACKTEST_RUNS.find((r) => r.id === selectedRunId)
+  const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH")
+  const [selectedRunId, setSelectedRunId] = React.useState<string>(BACKTEST_RUNS[0]?.id ?? "")
+
+  const selectedRun = BACKTEST_RUNS.find((r: any) => r.id === selectedRunId)
   const timeSeriesData = React.useMemo(
     () => generateTimeSeriesData(selectedRunId),
     [selectedRunId]
@@ -306,6 +311,8 @@ export default function StrategyResultsPage() {
     () => generateAttributionData(selectedRunId),
     [selectedRunId]
   )
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="flex flex-col flex-1">

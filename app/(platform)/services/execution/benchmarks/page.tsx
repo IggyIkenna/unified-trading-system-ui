@@ -9,10 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { 
-  Target, 
-  TrendingUp, 
-  TrendingDown, 
+import { useAlgos, useOrders } from "@/hooks/api/use-orders"
+import {
+  Target,
+  TrendingUp,
+  TrendingDown,
   Clock,
   BarChart3,
   Filter,
@@ -22,7 +23,7 @@ import {
   Info,
 } from "lucide-react"
 
-// Benchmark definitions
+// Benchmark definitions (static reference data, not mock)
 const BENCHMARKS = [
   { id: "arrival", name: "Arrival Price", description: "Price at order submission" },
   { id: "vwap", name: "VWAP", description: "Volume-weighted average price" },
@@ -31,35 +32,6 @@ const BENCHMARKS = [
   { id: "open", name: "Open", description: "Start of period open price" },
   { id: "midpoint", name: "Midpoint", description: "Bid-ask midpoint at arrival" },
 ]
-
-// Mock benchmark performance data
-const mockBenchmarkPerformance = [
-  { algoId: "TWAP_AGGRESSIVE", algoName: "TWAP Aggressive", arrival: -1.2, vwap: -0.8, twap: 0.1, close: -2.1, open: 0.5, midpoint: -1.0 },
-  { algoId: "TWAP_PASSIVE", algoName: "TWAP Passive", arrival: -0.4, vwap: 0.2, twap: 0.3, close: -1.2, open: 0.9, midpoint: -0.2 },
-  { algoId: "VWAP_STANDARD", algoName: "VWAP Standard", arrival: -0.9, vwap: 0.1, twap: -0.5, close: -1.8, open: 0.3, midpoint: -0.7 },
-  { algoId: "POV_10", algoName: "POV 10%", arrival: -0.6, vwap: 0.3, twap: 0.1, close: -1.5, open: 0.7, midpoint: -0.4 },
-  { algoId: "IS_ADAPTIVE", algoName: "IS Adaptive", arrival: 0.2, vwap: 0.8, twap: 0.5, close: -0.9, open: 1.1, midpoint: 0.4 },
-  { algoId: "ICEBERG", algoName: "Iceberg", arrival: -1.5, vwap: -1.0, twap: -0.7, close: -2.4, open: 0.1, midpoint: -1.3 },
-  { algoId: "SNIPER", algoName: "Sniper", arrival: 0.5, vwap: 1.1, twap: 0.8, close: -0.5, open: 1.4, midpoint: 0.7 },
-]
-
-// Mock time series data for benchmark slippage
-const generateSlippageTimeSeries = () => {
-  const days = 30
-  const data = []
-  for (let i = 0; i < days; i++) {
-    const date = new Date(2026, 2, 18 - (days - i - 1))
-    data.push({
-      date: date.toISOString().split("T")[0],
-      arrival: (Math.random() - 0.5) * 3,
-      vwap: (Math.random() - 0.5) * 2,
-      twap: (Math.random() - 0.5) * 2,
-    })
-  }
-  return data
-}
-
-const slippageTimeSeries = generateSlippageTimeSeries()
 
 // Helper to format basis points
 const formatBps = (value: number) => {
@@ -76,6 +48,22 @@ const getPerformanceColor = (value: number) => {
 }
 
 export default function ExecutionBenchmarksPage() {
+  const { data: algosData, isLoading: algosLoading } = useAlgos()
+  const { data: ordersData, isLoading: ordersLoading } = useOrders()
+
+  const mockBenchmarkPerformance: Array<any> = (algosData as any)?.benchmarkPerformance ?? (algosData as any)?.data?.map((a: any) => ({
+    algoId: a.id ?? "",
+    algoName: a.name ?? "",
+    arrival: a.benchmarks?.arrival ?? 0,
+    vwap: a.benchmarks?.vwap ?? 0,
+    twap: a.benchmarks?.twap ?? 0,
+    close: a.benchmarks?.close ?? 0,
+    open: a.benchmarks?.open ?? 0,
+    midpoint: a.benchmarks?.midpoint ?? 0,
+  })) ?? []
+
+  const isLoading = algosLoading || ordersLoading
+
   const [selectedBenchmark, setSelectedBenchmark] = React.useState("arrival")
   const [timeRange, setTimeRange] = React.useState("30d")
   const [selectedAlgo, setSelectedAlgo] = React.useState<string | null>(null)
@@ -84,6 +72,8 @@ export default function ExecutionBenchmarksPage() {
   const avgSlippage = mockBenchmarkPerformance.reduce((sum, p) => sum + p.arrival, 0) / mockBenchmarkPerformance.length
   const bestPerformer = mockBenchmarkPerformance.reduce((best, p) => p.arrival > best.arrival ? p : best)
   const worstPerformer = mockBenchmarkPerformance.reduce((worst, p) => p.arrival < worst.arrival ? p : worst)
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="min-h-screen bg-background">

@@ -21,6 +21,8 @@ import {
   Building2, Plus, ArrowLeft, Users, Key, Database, CreditCard,
   BarChart3,
 } from "lucide-react"
+import { useOrganizationsList, useSubscriptions } from "@/hooks/api/use-organizations"
+
 interface Organization {
   id: string; name: string; type: string; status: string; memberCount: number;
   subscriptionTier: string; createdAt: string; monthlyFee: number;
@@ -31,23 +33,49 @@ interface Subscription {
   managementFeePct?: number; performanceFeePct?: number; dataFeePct?: number; aumUsd?: number
 }
 
-const INITIAL_ORGS: Organization[] = [
-  { id: "odum-internal", name: "Odum Research", type: "internal", status: "active", memberCount: 12, subscriptionTier: "full-platform", createdAt: "2024-01-01", monthlyFee: 0 },
-  { id: "acme", name: "Alpha Capital", type: "client", status: "active", memberCount: 5, subscriptionTier: "execution-full", createdAt: "2025-06-15", monthlyFee: 25000 },
-  { id: "beta", name: "Beta Fund", type: "client", status: "active", memberCount: 2, subscriptionTier: "data-basic", createdAt: "2026-01-10", monthlyFee: 2500 },
-  { id: "vertex", name: "Vertex Partners", type: "client", status: "onboarding", memberCount: 1, subscriptionTier: "data-pro", createdAt: "2026-03-01", monthlyFee: 8000 },
-]
-const INITIAL_SUBS: Subscription[] = [
-  { orgId: "acme", tier: "execution-full", entitlements: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"], startDate: "2025-06-15", renewalDate: "2026-06-15", monthlyFee: 25000 },
-  { orgId: "beta", tier: "data-basic", entitlements: ["data-basic"], startDate: "2026-01-10", renewalDate: "2027-01-10", monthlyFee: 2500 },
-  { orgId: "vertex", tier: "data-pro", entitlements: ["data-pro"], startDate: "2026-03-01", renewalDate: "2027-03-01", monthlyFee: 8000 },
-]
-
 const TIERS = ["starter", "professional", "institutional", "enterprise"] as const
 
 export default function ClientsManagementPage() {
-  const [orgs, setOrgs] = React.useState<Organization[]>(INITIAL_ORGS)
-  const [subscriptions, setSubscriptions] = React.useState<Subscription[]>(INITIAL_SUBS)
+  const { data: orgsApiData, isLoading: orgsLoading } = useOrganizationsList()
+  const { data: subsApiData, isLoading: subsLoading } = useSubscriptions()
+
+  const INITIAL_ORGS: Organization[] = ((orgsApiData as any)?.data ?? []).map((o: any) => ({
+    id: o.id ?? "",
+    name: o.name ?? "",
+    type: o.type ?? "client",
+    status: o.status ?? "active",
+    memberCount: o.memberCount ?? 0,
+    subscriptionTier: o.subscriptionTier ?? "starter",
+    createdAt: o.createdAt ?? "",
+    monthlyFee: o.monthlyFee ?? 0,
+    apiKeys: o.apiKeys ?? 0,
+    usageGb: o.usageGb ?? 0,
+  }))
+  const INITIAL_SUBS: Subscription[] = ((subsApiData as any)?.data ?? []).map((s: any) => ({
+    orgId: s.orgId ?? "",
+    tier: s.tier ?? "",
+    entitlements: s.entitlements ?? [],
+    startDate: s.startDate ?? "",
+    renewalDate: s.renewalDate ?? "",
+    monthlyFee: s.monthlyFee ?? 0,
+    managementFeePct: s.managementFeePct,
+    performanceFeePct: s.performanceFeePct,
+    dataFeePct: s.dataFeePct,
+    aumUsd: s.aumUsd,
+  }))
+
+  const isApiLoading = orgsLoading || subsLoading
+
+  const [orgs, setOrgs] = React.useState<Organization[]>([])
+  const [subscriptions, setSubscriptions] = React.useState<Subscription[]>([])
+
+  // Sync API data into local state for mutation
+  React.useEffect(() => {
+    if (INITIAL_ORGS.length > 0 && orgs.length === 0) setOrgs(INITIAL_ORGS)
+  }, [INITIAL_ORGS.length])
+  React.useEffect(() => {
+    if (INITIAL_SUBS.length > 0 && subscriptions.length === 0) setSubscriptions(INITIAL_SUBS)
+  }, [INITIAL_SUBS.length])
   const addOrg = (org: Organization) => setOrgs((prev) => [...prev, org])
   const updateOrg = (id: string, updates: Partial<Organization>) => setOrgs((prev) => prev.map((o) => o.id === id ? { ...o, ...updates } : o))
   const updateSubscription = (orgId: string, updates: Partial<Subscription>) => setSubscriptions((prev) => prev.map((s) => s.orgId === orgId ? { ...s, ...updates } : s))
@@ -122,6 +150,8 @@ export default function ClientsManagementPage() {
       description: `${org?.name} moved to ${tier}`,
     })
   }
+
+  if (isApiLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   // Detail view
   if (selectedOrg) {

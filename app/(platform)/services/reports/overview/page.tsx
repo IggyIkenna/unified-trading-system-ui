@@ -43,177 +43,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-// Mock reports data - now with clientId for filtering
-const allReports = [
-  {
-    id: "rpt-2026-03-17-001",
-    name: "Daily Performance Report",
-    client: "Delta One Desk",
-    clientId: "delta-one",
-    date: "2026-03-17",
-    status: "ready",
-    format: "PDF",
-    generated: "1h ago",
-  },
-  {
-    id: "rpt-2026-03-17-002",
-    name: "Weekly P&L Summary",
-    client: "Quant Fund",
-    clientId: "quant-fund",
-    date: "2026-03-17",
-    status: "ready",
-    format: "PDF",
-    generated: "2h ago",
-  },
-  {
-    id: "rpt-2026-03-16-001",
-    name: "Monthly Performance",
-    client: "Sports Desk",
-    clientId: "sports-desk",
-    date: "2026-03-01",
-    status: "sent",
-    format: "PDF",
-    generated: "16d ago",
-  },
-  {
-    id: "rpt-2026-03-17-003",
-    name: "Risk Exposure Report",
-    client: "DeFi Desk",
-    clientId: "defi-desk",
-    date: "2026-03-17",
-    status: "generating",
-    format: "CSV",
-    generated: null,
-  },
-  {
-    id: "rpt-2026-03-17-004",
-    name: "Weekly Performance",
-    client: "Main Fund",
-    clientId: "alpha-main",
-    date: "2026-03-17",
-    status: "ready",
-    format: "PDF",
-    generated: "3h ago",
-  },
-  {
-    id: "rpt-2026-03-17-005",
-    name: "Crypto Desk Report",
-    client: "Crypto Desk",
-    clientId: "alpha-crypto",
-    date: "2026-03-17",
-    status: "ready",
-    format: "PDF",
-    generated: "4h ago",
-  },
-  {
-    id: "rpt-2026-03-17-006",
-    name: "Core Strategy Report",
-    client: "Core Strategy",
-    clientId: "vertex-core",
-    date: "2026-03-17",
-    status: "sent",
-    format: "PDF",
-    generated: "5h ago",
-  },
-]
-
-// Mock settlements data - with clientId for filtering
-const allSettlements = [
-  {
-    id: "sett-2026-03-17-001",
-    client: "Delta One Desk",
-    clientId: "delta-one",
-    date: "2026-03-17",
-    amount: 142500,
-    status: "pending",
-    type: "profit_share",
-    dueDate: "2026-03-20",
-  },
-  {
-    id: "sett-2026-03-17-002",
-    client: "Quant Fund",
-    clientId: "quant-fund",
-    date: "2026-03-17",
-    amount: 89200,
-    status: "confirmed",
-    type: "profit_share",
-    dueDate: "2026-03-20",
-  },
-  {
-    id: "sett-2026-03-15-001",
-    client: "Sports Desk",
-    clientId: "sports-desk",
-    date: "2026-03-15",
-    amount: 34800,
-    status: "settled",
-    type: "profit_share",
-    dueDate: "2026-03-18",
-  },
-  {
-    id: "sett-2026-03-10-001",
-    client: "Main Fund",
-    clientId: "alpha-main",
-    date: "2026-03-10",
-    amount: 121000,
-    status: "settled",
-    type: "profit_share",
-    dueDate: "2026-03-13",
-  },
-  {
-    id: "sett-2026-03-10-002",
-    client: "Core Strategy",
-    clientId: "vertex-core",
-    date: "2026-03-10",
-    amount: 185000,
-    status: "settled",
-    type: "profit_share",
-    dueDate: "2026-03-13",
-  },
-]
-
-// Mock portfolio summary - with clientId for filtering
-const allPortfolioSummary = [
-  { client: "Delta One Desk", clientId: "delta-one", orgId: "odum", aum: 5000000, mtdReturn: 8.2, ytdReturn: 24.5, sharpe: 2.1 },
-  { client: "Quant Fund", clientId: "quant-fund", orgId: "odum", aum: 8000000, mtdReturn: 5.1, ytdReturn: 18.3, sharpe: 1.8 },
-  { client: "Sports Desk", clientId: "sports-desk", orgId: "odum", aum: 2000000, mtdReturn: 12.4, ytdReturn: 31.2, sharpe: 1.6 },
-  { client: "DeFi Desk", clientId: "defi-desk", orgId: "odum", aum: 3000000, mtdReturn: 9.8, ytdReturn: 28.1, sharpe: 2.3 },
-  { client: "Main Fund", clientId: "alpha-main", orgId: "alpha-capital", aum: 10000000, mtdReturn: 4.2, ytdReturn: 15.6, sharpe: 1.5 },
-  { client: "Crypto Desk", clientId: "alpha-crypto", orgId: "alpha-capital", aum: 5000000, mtdReturn: 6.3, ytdReturn: 22.1, sharpe: 1.9 },
-  { client: "Core Strategy", clientId: "vertex-core", orgId: "vertex-partners", aum: 15000000, mtdReturn: 7.1, ytdReturn: 19.8, sharpe: 1.7 },
-]
-
-// Mock invoices - with clientId for filtering
-const allInvoices = [
-  { id: "inv-2026-03-001", client: "Delta One Desk", clientId: "delta-one", amount: 28500, status: "paid", date: "2026-03-01" },
-  { id: "inv-2026-03-002", client: "Quant Fund", clientId: "quant-fund", amount: 16400, status: "paid", date: "2026-03-01" },
-  { id: "inv-2026-03-003", client: "Sports Desk", clientId: "sports-desk", amount: 4200, status: "pending", date: "2026-03-01" },
-  { id: "inv-2026-03-004", client: "Main Fund", clientId: "alpha-main", amount: 45000, status: "paid", date: "2026-03-01" },
-  { id: "inv-2026-03-005", client: "Core Strategy", clientId: "vertex-core", amount: 62500, status: "paid", date: "2026-03-01" },
-]
-
-// Treasury / Capital Allocation data
-const accountBalances = [
-  { venue: "Binance", free: 1240000, locked: 810000, total: 2050000 },
-  { venue: "Hyperliquid", free: 452000, locked: 348000, total: 800000 },
-  { venue: "Aave V3", free: 0, locked: 513000, total: 513000 },
-  { venue: "IBKR", free: 320000, locked: 180000, total: 500000 },
-  { venue: "Deribit", free: 180000, locked: 120000, total: 300000 },
-  { venue: "Betfair", free: 45000, locked: 12000, total: 57000 },
-  { venue: "Wallet (ETH)", free: 95000, locked: 0, total: 95000 },
-]
+import { useReports, useSettlements } from "@/hooks/api/use-reports"
 
 type TransferStatus = "confirming" | "settled" | "confirmed" | "pending" | "failed";
 
-const recentTransfers: Array<{ time: string; from: string; to: string; amount: string; status: TransferStatus; confirmations?: string; txHash?: string }> = [
-  { time: "14:20", from: "Binance", to: "Hyperliquid", amount: "$100K USDT", status: "confirming", confirmations: "2/12" },
-  { time: "13:45", from: "Fiat", to: "IBKR", amount: "$50K USD", status: "settled" },
-  { time: "09:00", from: "Aave V3", to: "Wallet", amount: "$25K WETH", status: "confirmed", txHash: "0xab3f..." },
-  { time: "Yesterday", from: "Wallet", to: "Binance", amount: "$200K USDT", status: "confirmed" },
-  { time: "2 days ago", from: "Betfair", to: "Bank", amount: "£15K GBP", status: "settled" },
-]
-
 export default function ReportsPage() {
+  const { data: reportsApiData, isLoading: reportsLoading } = useReports()
+  const { data: settlementsApiData, isLoading: settlementsLoading } = useSettlements()
+
+  const allReports: Array<any> = (reportsApiData as any)?.data ?? []
+  const allSettlements: Array<any> = (settlementsApiData as any)?.settlements ?? (settlementsApiData as any)?.data ?? []
+  const allPortfolioSummary: Array<any> = (reportsApiData as any)?.portfolioSummary ?? []
+  const allInvoices: Array<any> = (reportsApiData as any)?.invoices ?? []
+  const accountBalances: Array<any> = (settlementsApiData as any)?.accountBalances ?? []
+  const recentTransfers: Array<{ time: string; from: string; to: string; amount: string; status: TransferStatus; confirmations?: string; txHash?: string }> = (settlementsApiData as any)?.recentTransfers ?? []
+
+  const isApiLoading = reportsLoading || settlementsLoading
   const { context, setContext } = useContextState()
   
   // Build filter context
@@ -269,6 +114,8 @@ export default function ReportsPage() {
     : 0
   const pendingSettlement = settlements.filter(s => s.status !== "settled").reduce((sum, s) => sum + s.amount, 0)
   const reportsThisMonth = reports.length
+
+  if (isApiLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="p-6">

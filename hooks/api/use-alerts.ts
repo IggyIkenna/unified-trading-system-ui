@@ -11,7 +11,7 @@ export function useAlerts() {
 
   return useQuery<AlertsResponse>({
     queryKey: ["alerts", user?.id],
-    queryFn: () => typedFetch<AlertsResponse>("/api/alerts", token),
+    queryFn: () => typedFetch<AlertsResponse>("/api/alerts/list", token),
     enabled: !!user,
   })
 }
@@ -32,7 +32,7 @@ export function useAcknowledgeAlert() {
 
   return useMutation({
     mutationFn: (alertId: string) =>
-      typedFetch<unknown>(`/api/alerts/${alertId}/acknowledge`, token, { method: "PATCH" }),
+      typedFetch<unknown>("/api/alerts/acknowledge", token, { method: "POST", body: JSON.stringify({ alertId }) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] })
       queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })
@@ -46,7 +46,7 @@ export function useResolveAlert() {
 
   return useMutation({
     mutationFn: (alertId: string) =>
-      typedFetch<unknown>(`/api/alerts/${alertId}/resolve`, token, { method: "PATCH" }),
+      typedFetch<unknown>("/api/alerts/resolve", token, { method: "POST", body: JSON.stringify({ alertId }) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] })
       queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })

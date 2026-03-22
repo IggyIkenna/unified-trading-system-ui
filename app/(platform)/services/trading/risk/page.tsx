@@ -70,6 +70,7 @@ import {
   ReferenceLine,
 } from "recharts"
 import { cn } from "@/lib/utils"
+import { useRiskLimits, useVaR, useGreeks, useStressScenarios } from "@/hooks/api/use-risk"
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -89,182 +90,6 @@ interface RiskLimit {
   var95?: number
 }
 
-// =============================================================================
-// MOCK DATA - Strategy Risk Heatmap
-// =============================================================================
-
-type RiskStatus = "ok" | "warning" | "critical";
-
-const strategyRiskHeatmap: Array<{ strategy: string; status: RiskStatus; [key: string]: string }> = [
-  { strategy: "DEFI_ETH_BASIS_SCE_1H", delta: "0.3%", funding: "0.012%", hf: "1.42", status: "ok" },
-  { strategy: "CEFI_BTC_MM_EVT_TICK", delta: "1.2%", inventory: "18%", spread: "4.2bps", status: "ok" },
-  { strategy: "CEFI_ETH_OPT_MM_EVT_TICK", delta: "-0.8", gamma: "0.04", vega: "$12K", status: "warning" },
-  { strategy: "TRADFI_SPY_MOM_HUF_1D", delta: "2.1%", drawdown: "3.8%", var: "$410K", status: "ok" },
-  { strategy: "SPORTS_FOOTBALL_ARB_EVT", edge: "2.1%", exposure: "$45K", clv: "+1.2%", status: "ok" },
-]
-
-// =============================================================================
-// MOCK DATA - VaR Component Data
-// =============================================================================
-
-const componentVarData = [
-  { instrument: "ETH-PERP", venue: "Hyperliquid", var95: 1200000, pct: 28, assetClass: "defi" },
-  { instrument: "BTC-PERP", venue: "Binance", var95: 980000, pct: 23, assetClass: "cefi" },
-  { instrument: "aweETH", venue: "Aave V3", var95: 720000, pct: 17, assetClass: "defi" },
-  { instrument: "SPY Put Spread", venue: "IBKR", var95: 510000, pct: 12, assetClass: "tradfi" },
-  { instrument: "ETH/USDC LP", venue: "Uniswap V3", var95: 340000, pct: 8, assetClass: "defi" },
-  { instrument: "BTC Call 70K", venue: "Deribit", var95: 220000, pct: 5, assetClass: "cefi" },
-  { instrument: "NFL Arb Basket", venue: "Pinnacle", var95: 150000, pct: 4, assetClass: "sports" },
-  { instrument: "MATIC-PERP", venue: "Hyperliquid", var95: 130000, pct: 3, assetClass: "defi" },
-]
-
-// =============================================================================
-// MOCK DATA - Stress Scenarios
-// =============================================================================
-
-const stressScenarios = [
-  { name: "GFC 2008", multiplier: 3.5, pnlImpact: -7200000, varImpact: 4100000, positionsBreaching: 8, largestLoss: "BTC-PERP (-$2.1M)" },
-  { name: "COVID March 2020", multiplier: 2.5, pnlImpact: -4800000, varImpact: 2700000, positionsBreaching: 5, largestLoss: "ETH-PERP (-$1.4M)" },
-  { name: "Crypto Black Thursday", multiplier: 5.0, pnlImpact: -11300000, varImpact: 6900000, positionsBreaching: 12, largestLoss: "aweETH (-$3.8M)" },
-]
-
-// =============================================================================
-// MOCK DATA - Greeks
-// =============================================================================
-
-const portfolioGreeks = {
-  delta: -0.80,
-  gamma: 0.044,
-  vega: 12400,
-  theta: -3200,
-  rho: 890,
-}
-
-const positionGreeks = [
-  { instrument: "BTC Call 70K Jun", venue: "Deribit", qty: 10, delta: 0.42, gamma: 0.008, vega: 4200, theta: -890, rho: 120 },
-  { instrument: "ETH Put 1800 Jun", venue: "Deribit", qty: -25, delta: -0.35, gamma: 0.012, vega: 6800, theta: -1400, rho: 340 },
-  { instrument: "SPY Put 450 Jul", venue: "IBKR", qty: 50, delta: -0.87, gamma: 0.024, vega: 1400, theta: -910, rho: 430 },
-]
-
-const greeksTimeSeries = Array.from({ length: 30 }, (_, i) => ({
-  day: i + 1,
-  delta: -0.8 + Math.sin(i / 5) * 0.3,
-  gamma: 0.044 + Math.sin(i / 4) * 0.01,
-  vega: 12400 - i * 200 + Math.sin(i / 3) * 1000,
-}))
-
-const secondOrderRisks = {
-  volga: 2100,
-  vanna: -1800,
-  slide: -450,
-}
-
-// =============================================================================
-// MOCK DATA - Term Structure
-// =============================================================================
-
-const termStructureData = [
-  { bucket: "O/N", notional: 2100000, pct: 42, defi: 1500000, cefi: 600000, tradfi: 0, sports: 0 },
-  { bucket: "1W", notional: 1200000, pct: 24, defi: 0, cefi: 800000, tradfi: 400000, sports: 0 },
-  { bucket: "1M", notional: 800000, pct: 16, defi: 500000, cefi: 300000, tradfi: 0, sports: 0 },
-  { bucket: "3M", notional: 450000, pct: 9, defi: 0, cefi: 0, tradfi: 450000, sports: 0 },
-  { bucket: "6M", notional: 250000, pct: 5, defi: 0, cefi: 0, tradfi: 250000, sports: 0 },
-  { bucket: "1Y", notional: 150000, pct: 3, defi: 0, cefi: 0, tradfi: 150000, sports: 0 },
-  { bucket: "2Y+", notional: 50000, pct: 1, defi: 0, cefi: 0, tradfi: 50000, sports: 0 },
-]
-
-// =============================================================================
-// MOCK DATA - Health Factor Time Series
-// =============================================================================
-
-const hfTimeSeries = [
-  { day: 1, hf: 1.82 },
-  { day: 2, hf: 1.72 },
-  { day: 3, hf: 1.58 },
-  { day: 4, hf: 1.38 },
-  { day: 5, hf: 1.68, event: "Rebalance" },
-  { day: 6, hf: 1.62 },
-  { day: 7, hf: 1.55 },
-]
-
-// =============================================================================
-// MOCK DATA - Margin & Distance to Liquidation
-// =============================================================================
-
-const distanceToLiquidation: Array<{ venue: string; metric: string; distToLiq: number; status: RiskStatus }> = [
-  { venue: "Aave V3", metric: "HF: 1.42", distToLiq: 29.6, status: "ok" },
-  { venue: "Binance", metric: "Margin: 78%", distToLiq: 22.0, status: "ok" },
-  { venue: "Hyperliquid", metric: "Margin: 45%", distToLiq: 55.0, status: "ok" },
-  { venue: "Deribit", metric: "Margin: 62%", distToLiq: 38.0, status: "ok" },
-]
-
-// =============================================================================
-// MOCK DATA - Limits Hierarchy (6 levels)
-// =============================================================================
-
-const mockLimitsHierarchy: RiskLimit[] = [
-  { id: "1", name: "Total Exposure", value: 5200000, limit: 10000000, unit: "$", category: "exposure", entity: "Odum Research", entityType: "company", level: 0, var95: 2100000 },
-  { id: "2", name: "Exposure", value: 2800000, limit: 5000000, unit: "$", category: "exposure", entity: "Apex Capital", entityType: "client", level: 1, parentId: "1", var95: 1200000 },
-  { id: "3", name: "Exposure", value: 2000000, limit: 3500000, unit: "$", category: "exposure", entity: "Main Account", entityType: "account", level: 2, parentId: "2", var95: 850000 },
-  { id: "4", name: "Delta Exposure", value: 1200000, limit: 1800000, unit: "$", category: "exposure", entity: "DEFI_ETH_BASIS", entityType: "strategy", level: 3, parentId: "3", var95: 520000 },
-  { id: "5", name: "Exposure", value: 900000, limit: 1250000, unit: "$", category: "exposure", entity: "ETH", entityType: "underlying", level: 4, parentId: "4", var95: 410000 },
-  { id: "6", name: "Position", value: 450000, limit: 600000, unit: "$", category: "exposure", entity: "ETH-PERP", entityType: "instrument", level: 5, parentId: "5", var95: 210000 },
-  // Additional hierarchy branches
-  { id: "7", name: "Net Delta Exposure", value: 4200000, limit: 15000000, unit: "$", category: "exposure", entity: "Firm", entityType: "company", level: 0, var95: 1800000 },
-  { id: "8", name: "Gross Leverage", value: 1.2, limit: 3.0, unit: "x", category: "exposure", entity: "Firm", entityType: "company", level: 0 },
-  { id: "9", name: "Total Margin Used", value: 68, limit: 70, unit: "%", category: "margin", entity: "Firm", entityType: "company", level: 0 },
-  { id: "10", name: "Margin Utilization", value: 78, limit: 80, unit: "%", category: "margin", entity: "Binance", entityType: "instrument", level: 5 },
-  { id: "11", name: "Margin Utilization", value: 65, limit: 80, unit: "%", category: "margin", entity: "OKX", entityType: "instrument", level: 5 },
-  { id: "12", name: "Margin Utilization", value: 45, limit: 80, unit: "%", category: "margin", entity: "Hyperliquid", entityType: "instrument", level: 5 },
-  { id: "13", name: "LTV", value: 0.72, limit: 0.75, unit: "", category: "ltv", entity: "Aave v3 (ETH)", entityType: "instrument", level: 5 },
-  { id: "14", name: "LTV", value: 0.68, limit: 0.75, unit: "", category: "ltv", entity: "Aave v3 (WBTC)", entityType: "instrument", level: 5 },
-  { id: "15", name: "Health Factor", value: 1.35, limit: 1.25, unit: "", category: "ltv", entity: "Aave v3", entityType: "instrument", level: 5 },
-]
-
-// =============================================================================
-// MOCK DATA - Exposure Attribution
-// =============================================================================
-
-interface ExposureRow {
-  component: string
-  category: "first_order" | "second_order" | "structural" | "operational" | "domain_specific"
-  pnl: number
-  exposure: number | string
-  limit: number | string
-  utilization: number
-}
-
-const allExposureRows: ExposureRow[] = [
-  // First Order
-  { component: "Delta", category: "first_order", pnl: 61000, exposure: 2400000, limit: 5000000, utilization: 48 },
-  { component: "Vega", category: "first_order", pnl: -8000, exposure: 12400, limit: 50000, utilization: 24.8 },
-  { component: "Theta", category: "first_order", pnl: -3200, exposure: -3200, limit: 10000, utilization: 32 },
-  { component: "Rho", category: "first_order", pnl: 890, exposure: 890, limit: 5000, utilization: 17.8 },
-  { component: "Funding", category: "first_order", pnl: 412000, exposure: 8200000, limit: 15000000, utilization: 54.6 },
-  { component: "Basis", category: "first_order", pnl: 355000, exposure: 14, limit: 30, utilization: 46.6 },
-  // Second Order
-  { component: "Gamma", category: "second_order", pnl: 2100, exposure: 0.044, limit: 0.1, utilization: 44 },
-  { component: "Volga", category: "second_order", pnl: 1200, exposure: 2100, limit: 5000, utilization: 42 },
-  { component: "Vanna", category: "second_order", pnl: -800, exposure: -1800, limit: 4000, utilization: 45 },
-  { component: "Slide", category: "second_order", pnl: -450, exposure: -450, limit: 1000, utilization: 45 },
-  // Structural
-  { component: "Duration", category: "structural", pnl: 22000, exposure: 1.2, limit: 3.0, utilization: 40 },
-  { component: "Convexity", category: "structural", pnl: 5000, exposure: 0.05, limit: 0.15, utilization: 33.3 },
-  { component: "Liquidity", category: "structural", pnl: -12000, exposure: 0.72, limit: 0.75, utilization: 96 },
-  { component: "Concentration", category: "structural", pnl: 0, exposure: 28, limit: 35, utilization: 80 },
-  // Operational
-  { component: "Venue/Protocol", category: "operational", pnl: 0, exposure: 3, limit: 5, utilization: 60 },
-  { component: "Correlation", category: "operational", pnl: -2000, exposure: 0.72, limit: 0.85, utilization: 84.7 },
-  // Domain-Specific
-  { component: "Staking/LTV", category: "domain_specific", pnl: 145000, exposure: 0.72, limit: 0.75, utilization: 96 },
-  { component: "Protocol Risk", category: "domain_specific", pnl: 0, exposure: 2, limit: 3, utilization: 66.7 },
-  { component: "Impermanent Loss", category: "domain_specific", pnl: -3200, exposure: 2.1, limit: 5, utilization: 42 },
-  { component: "Edge Decay", category: "domain_specific", pnl: -1500, exposure: 0.8, limit: 2, utilization: 40 },
-  { component: "Market Suspension", category: "domain_specific", pnl: 0, exposure: 1, limit: 2, utilization: 50 },
-  { component: "Interest Rate", category: "domain_specific", pnl: 22000, exposure: 1200000, limit: 3000000, utilization: 40 },
-  { component: "Spread", category: "domain_specific", pnl: 8500, exposure: 4.2, limit: 10, utilization: 42 },
-]
-
 // Strategy-specific risk type mapping
 const STRATEGY_RISK_MAP: Record<string, string[]> = {
   "BASIS_TRADE": ["delta", "funding", "basis", "protocol_risk"],
@@ -278,13 +103,14 @@ const STRATEGY_RISK_MAP: Record<string, string[]> = {
   "ARBITRAGE": ["delta", "edge_decay", "market_suspension", "concentration"],
 }
 
-// Exposure time series data
-const exposureTimeSeries = Array.from({ length: 30 }, (_, i) => ({
-  day: i + 1,
-  delta: 2400000 + Math.sin(i / 4) * 400000,
-  funding: 8200000 + Math.sin(i / 3) * 1000000,
-  basis: 14 + Math.sin(i / 5) * 3,
-}))
+interface ExposureRow {
+  component: string
+  category: "first_order" | "second_order" | "structural" | "operational" | "domain_specific"
+  pnl: number
+  exposure: number | string
+  limit: number | string
+  utilization: number
+}
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -360,14 +186,39 @@ const COMPONENT_TO_RISK_TYPE: Record<string, string> = {
 }
 
 export default function RiskPage() {
+  const { data: riskLimitsData, isLoading: limitsLoading } = useRiskLimits()
+  const { data: varData, isLoading: varLoading } = useVaR()
+  const { data: greeksData, isLoading: greeksLoading } = useGreeks()
+  const { data: stressScenariosData, isLoading: stressLoading } = useStressScenarios()
+
+  // Extract API data with safe fallbacks
+  const mockLimitsHierarchy: RiskLimit[] = (riskLimitsData as any)?.data ?? (riskLimitsData as any)?.limits ?? []
+  const componentVarData: any[] = (varData as any)?.data ?? (varData as any)?.components ?? []
+  const stressScenarios: any[] = (stressScenariosData as any)?.data ?? (stressScenariosData as any)?.scenarios ?? []
+  const greeksRaw = (greeksData as any)?.data ?? greeksData ?? {}
+  const portfolioGreeks = greeksRaw?.portfolio ?? { delta: 0, gamma: 0, vega: 0, theta: 0, rho: 0 }
+  const positionGreeks: any[] = greeksRaw?.positions ?? []
+  const greeksTimeSeries: any[] = greeksRaw?.timeSeries ?? []
+  const secondOrderRisks = greeksRaw?.secondOrder ?? { volga: 0, vanna: 0, slide: 0 }
+
+  // Derived data from API or computed fallbacks
+  const strategyRiskHeatmap: Array<{ strategy: string; status: string; [key: string]: string }> = (riskLimitsData as any)?.heatmap ?? []
+  const allExposureRows: ExposureRow[] = (riskLimitsData as any)?.exposureRows ?? []
+  const exposureTimeSeries: any[] = (riskLimitsData as any)?.exposureTimeSeries ?? []
+  const termStructureData: any[] = (varData as any)?.termStructure ?? []
+  const hfTimeSeries: any[] = (riskLimitsData as any)?.hfTimeSeries ?? []
+  const distanceToLiquidation: any[] = (riskLimitsData as any)?.distanceToLiquidation ?? []
+
+  const isLoading = limitsLoading || varLoading || greeksLoading || stressLoading
+
   const [varMethod, setVarMethod] = React.useState<"historical" | "parametric" | "monte_carlo" | "filtered_historical">("historical")
   const [regimeMultiplier, setRegimeMultiplier] = React.useState(1.0)
   const [exposurePeriod, setExposurePeriod] = React.useState<"1W" | "1M" | "3M">("1M")
   const [expandedCategories, setExpandedCategories] = React.useState<string[]>(["first_order", "domain_specific"])
-  
+
   // Item 1: Strategy risk filter state
   const [riskFilterStrategy, setRiskFilterStrategy] = React.useState<string>("all")
-  
+
   // Item 2: Hierarchy node selection state
   const [selectedNode, setSelectedNode] = React.useState<string | null>(null)
 
@@ -379,10 +230,12 @@ export default function RiskPage() {
     filtered_historical: 1.05,
   }
 
-  const adjustedVarData = componentVarData.map(d => ({
+  const adjustedVarData = componentVarData.map((d: any) => ({
     ...d,
-    var95: Math.round(d.var95 * varMethodMultipliers[varMethod] * regimeMultiplier),
+    var95: Math.round((d.var95 ?? 0) * varMethodMultipliers[varMethod] * regimeMultiplier),
   }))
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   // KPI calculations
   const totalVar95 = 2100000 * regimeMultiplier

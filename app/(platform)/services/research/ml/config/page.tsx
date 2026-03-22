@@ -31,7 +31,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react"
-import { MODEL_FAMILIES, FEATURE_SET_VERSIONS } from "@/lib/ml-mock-data"
+import { useModelFamilies, useFeatureProvenance } from "@/hooks/api/use-ml-models"
 
 // Workflow steps
 const STEPS = [
@@ -59,6 +59,11 @@ const LOSS_FUNCTIONS = ["mse", "cross_entropy", "huber", "focal"]
 const GPU_TYPES = ["T4", "A100", "V100", "L4"]
 
 export default function MLConfigPage() {
+  const { data: familiesData, isLoading: familiesLoading } = useModelFamilies()
+  const { data: featuresData, isLoading: featuresLoading } = useFeatureProvenance()
+  const MODEL_FAMILIES: Array<{ id: string; name: string; description: string; archetype: string; totalVersions: number; assetClasses: string[] }> = (familiesData as any)?.data ?? []
+  const FEATURE_SET_VERSIONS: Array<{ id: string; name: string; version: string; featureCount: number; coveragePct: number }> = (featuresData as any)?.data ?? []
+
   const [currentStep, setCurrentStep] = React.useState<StepId>("select")
   const [selectedFamily, setSelectedFamily] = React.useState<string>("")
   const [selectedAssetClass, setSelectedAssetClass] = React.useState<string>("CeFi")
@@ -100,6 +105,8 @@ export default function MLConfigPage() {
       setCurrentStep("results")
     }, 2000)
   }
+
+  if (familiesLoading || featuresLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
   return (
     <div className="space-y-6 p-6">
