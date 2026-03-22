@@ -3,7 +3,8 @@ import * as XLSX from 'xlsx'
 export interface ExportColumn {
   key: string
   header: string
-  format?: 'number' | 'date' | 'currency' | 'percent'
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  format?: 'number' | 'date' | 'currency' | 'percent' | ((value: any) => string)
 }
 
 function formatCellValue(
@@ -11,6 +12,8 @@ function formatCellValue(
   format: ExportColumn['format'],
 ): string | number {
   if (value == null) return ''
+
+  if (typeof format === 'function') return format(value)
 
   switch (format) {
     case 'number':
@@ -38,7 +41,7 @@ function buildRows(
 ): (string | number)[][] {
   const headerRow = columns.map((col) => col.header)
   const dataRows = data.map((row) =>
-    columns.map((col) => formatCellValue(row[col.key], col.format)),
+    columns.map((col) => formatCellValue((row as Record<string, unknown>)[col.key], col.format)),
   )
   return [headerRow, ...dataRows]
 }

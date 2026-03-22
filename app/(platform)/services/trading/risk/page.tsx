@@ -57,6 +57,7 @@ import {
   RotateCcw,
   ArrowDownToLine,
   Power,
+  RefreshCw,
 } from "lucide-react"
 import {
   ResponsiveContainer,
@@ -273,6 +274,7 @@ export default function RiskPage() {
   const distanceToLiquidation: any[] = (riskLimitsData as any)?.distanceToLiquidation ?? []
 
   const isLoading = limitsLoading || varLoading || greeksLoading || stressLoading
+  const hasError = !isLoading && !riskLimitsData && !varData
 
   const [varMethod, setVarMethod] = React.useState<"historical" | "parametric" | "monte_carlo" | "filtered_historical">("historical")
   const [regimeMultiplier, setRegimeMultiplier] = React.useState(1.0)
@@ -298,7 +300,38 @@ export default function RiskPage() {
     var95: Math.round((d.var95 ?? 0) * varMethodMultipliers[varMethod] * regimeMultiplier),
   }))
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="max-w-[1400px] mx-auto space-y-6">
+          <Skeleton className="h-8 w-48" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 w-full" />
+            ))}
+          </div>
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-48 w-full" />
+        </div>
+      </div>
+    )
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <AlertTriangle className="size-12 text-[var(--status-error)] mb-4" />
+        <h3 className="text-lg font-semibold">Failed to load risk data</h3>
+        <p className="text-sm text-muted-foreground mt-1 mb-4">
+          Risk exposure and limits data could not be fetched. The API may be unavailable.
+        </p>
+        <Button variant="outline" className="gap-2" onClick={() => window.location.reload()}>
+          <RefreshCw className="size-4" />
+          Retry
+        </Button>
+      </div>
+    )
+  }
 
   // KPI calculations
   const totalVar95 = 2100000 * regimeMultiplier

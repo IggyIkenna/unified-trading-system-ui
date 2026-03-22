@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronRight, Loader2 } from "lucide-react"
+import { Check, ChevronRight, Loader2, Upload } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -440,6 +440,46 @@ function ParametersStep({
             />
           </div>
         </div>
+      </div>
+
+      <Separator />
+
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2">
+          <Upload className="size-3.5" />
+          Upload Parameters (CSV)
+        </Label>
+        <p className="text-[10px] text-muted-foreground">
+          Upload a CSV file with columns: parameter_name, value. Overrides manual fields above.
+        </p>
+        <Input
+          type="file"
+          accept=".csv"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            const reader = new FileReader()
+            reader.onload = (evt) => {
+              const text = evt.target?.result
+              if (typeof text !== "string") return
+              const lines = text.trim().split("\n").slice(1)
+              const updates: Partial<WizardFormState> = {}
+              for (const line of lines) {
+                const [key, val] = line.split(",").map((s) => s.trim().replace(/^"|"$/g, ""))
+                if (!key || !val) continue
+                if (key === "entry_threshold") updates.entryThreshold = val
+                if (key === "exit_threshold") updates.exitThreshold = val
+                if (key === "max_leverage") updates.maxLeverage = val
+                if (key === "initial_capital") updates.initialCapital = val
+                if (key === "date_start") updates.dateStart = val
+                if (key === "date_end") updates.dateEnd = val
+              }
+              onChange(updates)
+            }
+            reader.readAsText(file)
+          }}
+          className="cursor-pointer"
+        />
       </div>
     </div>
   )

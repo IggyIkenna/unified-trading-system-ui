@@ -275,7 +275,7 @@ export default function ExecutionOverviewPage() {
               <p className="text-sm text-muted-foreground text-center py-6">No algo performance data available yet</p>
             )}
             <div className="grid grid-cols-5 gap-4">
-              {Object.entries(metrics.byAlgo)
+              {Object.entries(metrics.byAlgo as Record<string, { orders: number; volume: number; slippage: number; fillRate: number }>)
                 .filter(([, data]) => data.orders > 0)
                 .sort((a, b) => b[1].volume - a[1].volume)
                 .map(([algo, data]) => (

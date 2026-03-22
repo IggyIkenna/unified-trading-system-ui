@@ -125,7 +125,7 @@ export function ManualTradingPanel({
         price: orderType === "limit" ? effectivePrice : undefined,
         venue,
         strategy_id: strategyId === "manual" ? undefined : strategyId,
-        client_id: user?.org_id,
+        client_id: user?.org?.id,
         reason: reason || undefined,
       })
       setOrderState("success")
@@ -466,8 +466,8 @@ export function ManualTradingPanel({
           {/* Client Badge */}
           {user && (
             <div className="flex items-center gap-2 pt-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className="text-[10px]">{user.org_id ?? "unknown org"}</Badge>
-              <span>Submitted by {user.name ?? user.email ?? "unknown"}</span>
+              <Badge variant="outline" className="text-[10px]">{user.org?.id ?? "unknown org"}</Badge>
+              <span>Submitted by {user.displayName ?? user.email ?? "unknown"}</span>
             </div>
           )}
         </div>

@@ -1,0 +1,7 @@
+INFO:     Started server process [52154]
+INFO:     Waiting for application startup.
+2026-03-22 14:13:01,243 INFO MOCK mode (interactive) — JSONL persistence in .local-dev-cache/
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8030 (Press CTRL+C to quit)
+INFO:     127.0.0.1:63404 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63411 - "GET /health HTTP/1.1" 200 OK

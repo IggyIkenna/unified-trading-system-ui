@@ -68,10 +68,16 @@ export default function ExecutionBenchmarksPage() {
   const [timeRange, setTimeRange] = React.useState("30d")
   const [selectedAlgo, setSelectedAlgo] = React.useState<string | null>(null)
 
-  // Calculate aggregate stats
-  const avgSlippage = mockBenchmarkPerformance.reduce((sum, p) => sum + p.arrival, 0) / mockBenchmarkPerformance.length
-  const bestPerformer = mockBenchmarkPerformance.reduce((best, p) => p.arrival > best.arrival ? p : best)
-  const worstPerformer = mockBenchmarkPerformance.reduce((worst, p) => p.arrival < worst.arrival ? p : worst)
+  // Calculate aggregate stats (guard against empty array)
+  const avgSlippage = mockBenchmarkPerformance.length > 0
+    ? mockBenchmarkPerformance.reduce((sum, p) => sum + p.arrival, 0) / mockBenchmarkPerformance.length
+    : 0
+  const bestPerformer = mockBenchmarkPerformance.length > 0
+    ? mockBenchmarkPerformance.reduce((best, p) => p.arrival > best.arrival ? p : best)
+    : null
+  const worstPerformer = mockBenchmarkPerformance.length > 0
+    ? mockBenchmarkPerformance.reduce((worst, p) => p.arrival < worst.arrival ? p : worst)
+    : null
 
   if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
 
@@ -131,9 +137,9 @@ export default function ExecutionBenchmarksPage() {
                 Best Performer
               </div>
               <div className="text-2xl font-bold tabular-nums text-emerald-500">
-                {formatBps(bestPerformer.arrival)}
+                {bestPerformer ? formatBps(bestPerformer.arrival) : "—"}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">{bestPerformer.algoName}</p>
+              <p className="text-xs text-muted-foreground mt-1">{bestPerformer?.algoName ?? "N/A"}</p>
             </CardContent>
           </Card>
           <Card>
@@ -143,9 +149,9 @@ export default function ExecutionBenchmarksPage() {
                 Worst Performer
               </div>
               <div className="text-2xl font-bold tabular-nums text-red-500">
-                {formatBps(worstPerformer.arrival)}
+                {worstPerformer ? formatBps(worstPerformer.arrival) : "—"}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">{worstPerformer.algoName}</p>
+              <p className="text-xs text-muted-foreground mt-1">{worstPerformer?.algoName ?? "N/A"}</p>
             </CardContent>
           </Card>
           <Card>

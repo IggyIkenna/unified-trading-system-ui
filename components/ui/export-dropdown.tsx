@@ -11,7 +11,7 @@ import { Download, FileSpreadsheet, FileText } from "lucide-react"
 import { exportTableToCsv, exportTableToXlsx, type ExportColumn } from "@/lib/utils/export"
 
 interface ExportDropdownProps {
-  data: Record<string, unknown>[]
+  data: readonly object[]
   columns: ExportColumn[]
   filename: string
   className?: string

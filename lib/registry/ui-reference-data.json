@@ -2,7 +2,7 @@
   "_meta": {
     "version": "0.2.38",
     "generator": "generate_ui_reference_data.py",
-    "registry_count": 14
+    "registry_count": 15
   },
   "venue_error_map": {
     "registry_name": "venue_error_map",
@@ -7587,6 +7587,44 @@
         6,
         9,
         12
+      ]
+    }
+  },
+  "deployment_enums": {
+    "registry_name": "deployment_enums",
+    "version": "0.2.38",
+    "description": "Deployment clusters, tiers, operation modes, statuses from UIC",
+    "entries": {
+      "DeploymentCluster": [
+        "cefi",
+        "defi",
+        "full",
+        "prediction",
+        "sports",
+        "tradfi"
+      ],
+      "DeploymentTier": [
+        "t0_ui_only",
+        "t1_ui_api",
+        "t2_full_fleet",
+        "t3_ui_cloud",
+        "t4_ui_api_cloud",
+        "t5_full_cloud_mock",
+        "t6_full_cloud_real"
+      ],
+      "DeploymentOperationMode": [
+        "cluster_bootstrap",
+        "live_fleet",
+        "scheduled_batch",
+        "thermal_batch"
+      ],
+      "DeploymentStatus": [
+        "cancelled",
+        "completed",
+        "failed",
+        "pending",
+        "running",
+        "timed_out"
       ]
     }
   }

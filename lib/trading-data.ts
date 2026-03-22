@@ -157,15 +157,19 @@ export const CLIENTS: TradingClient[] = [
 function mapArchetype(archetype: RegistryStrategy["archetype"]): StrategyArchetype | string {
   const archetypeMap: Record<RegistryStrategy["archetype"], string> = {
     "BASIS_TRADE": "basis-trade",
+    "RECURSIVE_STAKED_BASIS": "recursive-staked-basis",
     "MARKET_MAKING": "market-making",
-    "ARBITRAGE": "arbitrage",
-    "YIELD": "aave-lending",
+    "AMM_LP": "amm-lp",
     "DIRECTIONAL": "ml-directional",
+    "ML_DIRECTIONAL": "ml-directional",
+    "OPTIONS": "market-making-options",
+    "ARBITRAGE": "arbitrage",
+    "SPORTS_ARB": "sports-arb",
+    "PREDICTION_ARB": "prediction-arb",
+    "YIELD": "aave-lending",
     "MOMENTUM": "momentum",
     "MEAN_REVERSION": "mean-reversion",
     "STATISTICAL_ARB": "statistical-arb",
-    "OPTIONS": "market-making-options",
-    "PREDICTION_ARB": "prediction-arb",
   }
   return archetypeMap[archetype] || archetype.toLowerCase()
 }

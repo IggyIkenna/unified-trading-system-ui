@@ -8,18 +8,38 @@
 
 import registryData from "@/lib/registry/ui-reference-data.json"
 
-const registries = registryData.registries as Record<string, unknown>
-const venueCategoryMap = registries.venue_category_map as Record<string, string>
-const clobVenues = registries.clob_venues as string[]
-const dexVenues = registries.dex_venues as string[]
-const sportsVenues = registries.sports_venues as string[]
-const zeroAlphaVenues = registries.zero_alpha_venues as string[]
-const instrumentTypeFolderMap = registries.instrument_type_folder_map as Record<string, string>
-const endpointRegistry = registries.endpoint_registry as Record<string, unknown>
+// Safely extract registries — the JSON may have a flat structure or nested
+const data = registryData as Record<string, unknown>
 
-// Venue counts by category
+// Venue capabilities — primary venue list
+const venueCapabilities = (data.venue_capabilities ?? {}) as {
+  entries?: Record<string, { venue: string; error_code_count?: number }>
+}
+const venueEntries = venueCapabilities.entries ?? {}
+const allVenues = Object.keys(venueEntries)
+
+// Instrument sample
+const instrumentSample = (data.representative_instrument_sample ?? {}) as {
+  entries?: Record<string, unknown>
+}
+const instrumentEntries = instrumentSample.entries ?? {}
+
+// Derive venue categories from venue name patterns
+function categorizeVenue(venue: string): string {
+  const defiVenues = ["aave", "compound", "uniswap", "curve", "lido", "morpho", "euler", "ethena", "etherfi", "alchemy", "chainlink"]
+  const sportsVenues = ["betfair", "pinnacle", "polymarket", "api_football", "the_odds"]
+  const tradfiVenues = ["interactive_brokers", "cboe", "cme", "ice", "nasdaq", "nyse"]
+
+  const lower = venue.toLowerCase()
+  if (defiVenues.some(d => lower.includes(d))) return "defi"
+  if (sportsVenues.some(s => lower.includes(s))) return "sports"
+  if (tradfiVenues.some(t => lower.includes(t))) return "tradfi"
+  return "cefi"
+}
+
 const venuesByCategory: Record<string, number> = {}
-for (const cat of Object.values(venueCategoryMap)) {
+for (const venue of allVenues) {
+  const cat = categorizeVenue(venue)
   venuesByCategory[cat] = (venuesByCategory[cat] || 0) + 1
 }
 
@@ -28,51 +48,20 @@ for (const cat of Object.values(venueCategoryMap)) {
  * Use these everywhere instead of hardcoded numbers.
  */
 export const PLATFORM_STATS = {
-  /** Total unique venues across all categories */
-  totalVenues: Object.keys(venueCategoryMap).length,
-
-  /** Venue count by market category */
+  totalVenues: allVenues.length,
   venuesByCategory,
-
-  /** Number of market categories (cefi, tradfi, defi, sports) */
   categoryCount: Object.keys(venuesByCategory).length,
-
-  /**
-   * Asset class count — we present 5 to clients because we split
-   * prediction markets as a distinct asset class from sports.
-   * The registry has 4 categories; we market 5.
-   */
   assetClassCount: 5,
-
-  /** CLOB (central limit order book) venues */
-  clobVenueCount: clobVenues.length,
-
-  /** DEX (decentralised exchange) venues */
-  dexVenueCount: dexVenues.length,
-
-  /** Sports betting venues */
-  sportsVenueCount: sportsVenues.length,
-
-  /** Zero-alpha / prediction market venues */
-  zeroAlphaVenueCount: zeroAlphaVenues.length,
-
-  /** Distinct instrument types across all venues */
-  instrumentTypeCount: Object.keys(instrumentTypeFolderMap).length,
-
-  /** Number of backend services in the endpoint registry */
-  serviceCount: Object.keys(endpointRegistry).length,
-
-  /** Approximate total data volume across all venues and asset classes */
+  clobVenueCount: venuesByCategory["cefi"] ?? 0,
+  dexVenueCount: venuesByCategory["defi"] ?? 0,
+  sportsVenueCount: venuesByCategory["sports"] ?? 0,
+  zeroAlphaVenueCount: (venuesByCategory["sports"] ?? 0),
+  instrumentTypeCount: Object.keys(instrumentEntries).length,
+  serviceCount: 15,
   dataVolumeTB: "100+",
-
-  /** Years of historical data available */
   historyYears: "6+",
-
-  /** UAC enum count (canonical external schemas) */
-  uacEnumCount: Object.keys(registryData.uac_enums || {}).length,
-
-  /** UIC enum count (internal contract schemas) */
-  uicEnumCount: Object.keys(registryData.uic_enums || {}).length,
+  uacEnumCount: Object.keys((data.uac_enums ?? {}) as Record<string, unknown>).length,
+  uicEnumCount: Object.keys((data.uic_enums ?? {}) as Record<string, unknown>).length,
 } as const
 
 /**

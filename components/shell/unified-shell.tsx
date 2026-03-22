@@ -8,6 +8,7 @@ import { DebugFooter } from "./debug-footer"
 import { CommandPalette } from "./command-palette"
 import { RuntimeModeStrip } from "./runtime-mode-strip"
 import { GuidedTour } from "@/components/platform/guided-tour"
+import { ChatWidgetConnected } from "@/components/chat/chat-widget-connected"
 import { cn } from "@/lib/utils"
 
 interface UnifiedShellProps {
@@ -65,6 +66,7 @@ export function UnifiedShell({
       </main>
       <DebugFooter />
       <GuidedTour />
+      <ChatWidgetConnected />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { SiteHeader } from "@/components/shell/site-header"
+import { ChatWidgetPublic } from "@/components/chat/chat-widget-public"
 
 /**
  * Public shell — unauthenticated pages (landing, login, signup, docs, etc.)
@@ -29,6 +30,7 @@ export default function PublicLayout({
           </div>
         </div>
       </footer>
+      <ChatWidgetPublic />
     </>
   )
 }

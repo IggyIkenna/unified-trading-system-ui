@@ -68,9 +68,9 @@ describe("lib/config/auth", () => {
 })
 
 describe("lib/config/services", () => {
-  it("exports SERVICE_REGISTRY with 15+ services", () => {
+  it("exports SERVICE_REGISTRY with 9 services", () => {
     expect(Array.isArray(SERVICE_REGISTRY)).toBe(true)
-    expect(SERVICE_REGISTRY.length).toBeGreaterThanOrEqual(15)
+    expect(SERVICE_REGISTRY.length).toBe(9)
   })
 
   it("each service has required fields", () => {
@@ -78,7 +78,7 @@ describe("lib/config/services", () => {
       expect(svc).toHaveProperty("key")
       expect(svc).toHaveProperty("label")
       expect(svc).toHaveProperty("href")
-      expect(svc).toHaveProperty("category")
+      expect(svc).toHaveProperty("lifecycleStage")
     }
   })
 
