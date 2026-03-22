@@ -10,7 +10,7 @@ const nextConfig = {
   // Using `next start` in Dockerfile instead
 
   async rewrites() {
-    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8100'
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8030'
     const authBase = process.env.NEXT_PUBLIC_AUTH_URL || 'http://localhost:8200'
     return [
       { source: '/api/auth/:path*', destination: `${authBase}/:path*` },
