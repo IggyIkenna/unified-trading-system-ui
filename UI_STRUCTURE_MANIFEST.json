@@ -1,469 +1,341 @@
 {
   "_meta": {
-    "description": "Single source of truth for UI structure. Documents current layout, target structure during refactors, and history. Agents MUST read this before any structural changes.",
-    "version": "2.2.0",
-    "last_updated": "2026-03-21",
-    "locked": false,
-    "refactor_in_progress": false,
-    "refactor_branch": null
+    "description": "SSOT for UI structure. 9-service architecture per CITADEL_VISION_2026_03_22. Agents MUST read this before any structural changes.",
+    "version": "3.0.0",
+    "last_updated": "2026-03-22",
+    "architecture": "9 services, 3 APIs (auth-api, client-reporting-api, unified-trading-api), direct-to-tabs routing",
+    "total_pages": 98,
+    "real_pages": 49,
+    "stub_pages": 11,
+    "redirect_pages_to_delete": 9,
+    "pages_to_delete": 2,
+    "pages_with_no_api_wiring": 18
   },
 
-  "current_structure": {
-    "status": "post-phase-2-cleanup",
-    "description": "Phase 2 complete + nav/route cleanup done (commit 8e536fc). Single canonical route tree under app/(platform)/services/. All legacy parallel routes deleted and replaced with permanent redirects in next.config.mjs. Single navigation model (lifecycle nav only). 5 deprecated components deleted. ~68 duplicate page files removed (~30K lines). Flat lib/*.ts mock-data files still exist — NOT yet deleted (see pending_work).",
-    "framework": "Next.js 15 App Router (TypeScript strict)",
-    "app_structure": "ROUTE GROUPS — app/(public)/, app/(platform)/, app/(ops)/. ALL platform content is canonical at app/(platform)/services/. Legacy flat routes are redirects only.",
-    "canonical_content_tree": "app/(platform)/services/ — contains all real page.tsx files for data, trading, execution, reports, research (strategy + ml + execution)",
-    "navigation_model": "SINGLE MODEL — lifecycle nav only (shell/lifecycle-nav.tsx). Legacy GlobalNavBar, AppShell, RoleLayout, LifecycleRail, UnifiedBatchShell all deleted.",
-    "mock_data": "MSW — lib/mocks/handlers/ (15 domain handlers + index.ts) with persona-scoped fixtures in lib/mocks/fixtures/personas.ts",
-    "state_management": "4 Zustand stores in lib/stores/ + React Query in hooks/api/ (14 hooks)",
-    "api_layer": "React Query hooks in hooks/api/ (14 hooks). MSW serves data when NEXT_PUBLIC_MOCK_API=true",
-    "auth": "5 demo personas in lib/mocks/fixtures/personas.ts: admin, internal-trader, client-full, client-data-only, client-premium (Vertex). Role/org/entitlements in auth-store.",
-    "shells": "WIRED — app/(public)/layout.tsx (SiteHeader + footer), app/(platform)/layout.tsx (RequireAuth + UnifiedShell + lifecycle nav), app/(ops)/layout.tsx (RequireAuth + role gate)",
-    "components": "57 UI primitives in components/ui/, 30 trading components in components/trading/, 10 platform components in components/platform/, 19 deployment components in components/ops/deployment/, 6 role dashboards in components/dashboards/",
-    "deleted_components": ["trading/global-nav-bar.tsx", "trading/app-shell.tsx", "trading/lifecycle-rail.tsx", "shell/role-layout.tsx", "platform/unified-batch-shell.tsx"],
-    "design_system": "globals.css with semantic tokens, IBM Plex Sans + JetBrains Mono, dark institutional theme",
-    "registry_data": "lib/registry/ — openapi.json (298 endpoints), openapi.yaml, config-registry.json (46 service configs), sharding_config.yaml, system-topology.json, runtime-topology.yaml, ui-reference-data.json",
-    "structure_docs": "CODEBASE_STRUCTURE.md (root-level agent index), docs/STRUCTURE_APP.md, docs/STRUCTURE_COMPONENTS.md, docs/STRUCTURE_LIB.md, docs/STRUCTURE_HOOKS.md, docs/STRUCTURE_CONTEXT.md, docs/STRUCTURE_REFERENCE.md",
-    "tests": "MINIMAL — 4 unit tests, 2 E2E specs, coverage threshold set to 50% (target: 70%)",
-    "routes": {
-      "_note": "Only real page.tsx files listed. All legacy flat routes (/trading/*, /execution/*, /ml/*, /research/*, /strategy-platform/*, etc.) are permanent redirects in next.config.mjs — no page files exist at those paths.",
-      "public": [
-        { "path": "/", "component": "app/(public)/page.tsx" },
-        { "path": "/login", "component": "app/(public)/login/page.tsx", "notes": "5 demo personas" },
-        { "path": "/signup", "component": "app/(public)/signup/page.tsx" },
-        { "path": "/demo", "component": "app/(public)/demo/page.tsx" },
-        { "path": "/demo/preview", "component": "app/(public)/demo/preview/page.tsx" },
-        { "path": "/contact", "component": "app/(public)/contact/page.tsx" },
-        { "path": "/docs", "component": "app/(public)/docs/page.tsx" },
-        { "path": "/investor-relations", "component": "app/(public)/investor-relations/page.tsx" },
-        { "path": "/privacy", "component": "app/(public)/privacy/page.tsx" },
-        { "path": "/terms", "component": "app/(public)/terms/page.tsx" },
-        { "path": "/services/platform", "component": "app/(public)/services/platform/page.tsx" },
-        { "path": "/services/execution", "component": "app/(public)/services/execution/page.tsx" },
-        { "path": "/services/backtesting", "component": "app/(public)/services/backtesting/page.tsx" },
-        { "path": "/services/data", "component": "app/(public)/services/data/page.tsx" },
-        { "path": "/services/engagement", "component": "app/(public)/services/engagement/page.tsx" },
-        { "path": "/services/investment", "component": "app/(public)/services/investment/page.tsx" },
-        { "path": "/services/regulatory", "component": "app/(public)/services/regulatory/page.tsx" }
+  "services": {
+    "data": {
+      "lifecycle_stage": "acquire",
+      "entry_route": "/services/data/overview",
+      "layout": "app/(platform)/services/data/layout.tsx",
+      "tab_set": "DATA_TABS",
+      "api_gateway": "unified-trading-api",
+      "tabs": [
+        {
+          "label": "Pipeline Status",
+          "route": "/services/data/overview",
+          "file": "app/(platform)/services/data/overview/page.tsx",
+          "state": "REAL",
+          "lines": 302,
+          "api_hooks": ["useServiceHealth", "useInstruments"],
+          "action": "KEEP — already wired to API"
+        },
+        {
+          "label": "Coverage Matrix",
+          "route": "/services/data/coverage",
+          "file": "app/(platform)/services/data/coverage/page.tsx",
+          "state": "STUB",
+          "lines": 24,
+          "api_hooks": [],
+          "action": "FILL — extract coverage grid from deployment-ui/src/components/DataStatusTab.tsx (4013L). Also use components/data/freshness-heatmap.tsx (192L) already in repo.",
+          "sources": [
+            "deployment-ui/src/components/DataStatusTab.tsx (4013L — extract coverage section)",
+            "components/data/freshness-heatmap.tsx (192L — reuse directly)"
+          ]
+        },
+        {
+          "label": "Missing Data",
+          "route": "/services/data/missing",
+          "file": "app/(platform)/services/data/missing/page.tsx",
+          "state": "STUB",
+          "lines": 24,
+          "api_hooks": [],
+          "action": "FILL — adapt _reference/versa-audit-ui/src/pages/DataCompletenessPage.tsx (290L) for data gap detection and staleness monitoring.",
+          "sources": [
+            "_reference/versa-audit-ui/src/pages/DataCompletenessPage.tsx (290L)"
+          ]
+        },
+        {
+          "label": "Venue Health",
+          "route": "/services/data/venues",
+          "file": "app/(platform)/services/data/venues/page.tsx",
+          "state": "STUB",
+          "lines": 24,
+          "api_hooks": [],
+          "action": "FILL — components/ops/venue-connectivity.tsx (400L) ALREADY EXISTS in this repo. Just import and render it. Also absorb patterns from onboarding-ui/src/pages/VenueConnectionPage.tsx (393L) and CredentialStatusPage.tsx (386L).",
+          "sources": [
+            "components/ops/venue-connectivity.tsx (400L — already in repo, just wire)",
+            "onboarding-ui/src/pages/VenueConnectionPage.tsx (393L)",
+            "onboarding-ui/src/pages/CredentialStatusPage.tsx (386L)"
+          ]
+        },
+        {
+          "label": "Markets",
+          "route": "/services/data/markets",
+          "file": "app/(platform)/services/data/markets/page.tsx",
+          "state": "REAL",
+          "lines": 2009,
+          "api_hooks": ["useTickers", "useTradingPnl"],
+          "action": "KEEP — fully built. NOTE: near-duplicate of /services/trading/markets (2116L). Consider deduplicating."
+        },
+        {
+          "label": "ETL Logs",
+          "route": "/services/data/logs",
+          "file": "app/(platform)/services/data/logs/page.tsx",
+          "state": "STUB",
+          "lines": 24,
+          "api_hooks": [],
+          "action": "FILL — adapt _reference/versa-audit-ui/src/pages/BatchJobsPage.tsx (325L) + JobDetailPage.tsx (180L) for ETL pipeline log viewing.",
+          "sources": [
+            "_reference/versa-audit-ui/src/pages/BatchJobsPage.tsx (325L)",
+            "_reference/versa-audit-ui/src/pages/JobDetailPage.tsx (180L)"
+          ]
+        }
+      ]
+    },
+
+    "research": {
+      "lifecycle_stage": "build",
+      "entry_route": "/services/research/overview",
+      "layout": "app/(platform)/services/research/layout.tsx",
+      "tab_set": "BUILD_TABS",
+      "api_gateway": "unified-trading-api",
+      "tabs": [
+        {"label": "Research Hub", "route": "/services/research/overview", "file": "app/(platform)/services/research/overview/page.tsx", "state": "REAL", "lines": 252, "api_hooks": ["useModelFamilies", "useExperiments"], "action": "KEEP — wired"},
+        {"label": "Features", "route": "/services/research/ml/features", "file": "app/(platform)/services/research/ml/features/page.tsx", "state": "REAL", "lines": 598, "api_hooks": ["useFeatureProvenance"], "action": "KEEP — wired"},
+        {"label": "ML Models", "route": "/services/research/ml", "file": "app/(platform)/services/research/ml/page.tsx", "state": "REAL", "lines": 591, "api_hooks": [], "action": "WIRE — has content but uses inline mock data. Wire to useExperiments API hook."},
+        {"label": "Strategies", "route": "/services/research/strategy/backtests", "file": "app/(platform)/services/research/strategy/backtests/page.tsx", "state": "REAL", "lines": 661, "api_hooks": [], "action": "WIRE — uses inline mock data. Wire to GET /execution/backtests."},
+        {"label": "Compare", "route": "/services/research/strategy/compare", "file": "app/(platform)/services/research/strategy/compare/page.tsx", "state": "REAL", "lines": 626, "api_hooks": [], "action": "WIRE — uses inline mock data."},
+        {"label": "Signals", "route": "/services/research/ml/validation", "file": "app/(platform)/services/research/ml/validation/page.tsx", "state": "REAL", "lines": 698, "api_hooks": [], "action": "WIRE — uses inline mock data."},
+        {"label": "Execution Research", "route": "/services/execution/algos", "file": "app/(platform)/services/execution/algos/page.tsx", "state": "REAL", "lines": 302, "api_hooks": ["useAlgos"], "action": "KEEP — wired. Cross-service link (Build tab pointing to Execution page)."}
       ],
-      "platform_top_level": [
-        { "path": "/dashboard", "component": "app/(platform)/dashboard/page.tsx", "notes": "Role-aware post-login dashboard" },
-        { "path": "/health", "component": "app/(platform)/health/page.tsx" },
-        { "path": "/settings", "component": "app/(platform)/settings/page.tsx", "notes": "Added to fix 404" },
-        { "path": "/strategies", "component": "app/(platform)/strategies/page.tsx" },
-        { "path": "/strategies/grid", "component": "app/(platform)/strategies/grid/page.tsx" },
-        { "path": "/strategies/:id", "component": "app/(platform)/strategies/[id]/page.tsx", "notes": "Dynamic" },
-        { "path": "/client-portal/:org", "component": "app/(platform)/client-portal/[org]/page.tsx", "notes": "Dynamic" },
-        { "path": "/portal", "component": "app/(platform)/portal/page.tsx" },
-        { "path": "/portal/login", "component": "app/(platform)/portal/login/page.tsx" },
-        { "path": "/portal/dashboard", "component": "app/(platform)/portal/dashboard/page.tsx" },
-        { "path": "/portal/backtesting", "component": "app/(platform)/portal/backtesting/page.tsx" },
-        { "path": "/portal/data", "component": "app/(platform)/portal/data/page.tsx" },
-        { "path": "/portal/execution", "component": "app/(platform)/portal/execution/page.tsx", "notes": "Added to fix 404" },
-        { "path": "/portal/investment", "component": "app/(platform)/portal/investment/page.tsx" },
-        { "path": "/portal/regulatory", "component": "app/(platform)/portal/regulatory/page.tsx" },
-        { "path": "/portal/whitelabel", "component": "app/(platform)/portal/whitelabel/page.tsx", "notes": "Added to fix 404" }
+      "ml_sub_tabs": [
+        {"label": "Overview", "route": "/services/research/ml/overview", "lines": 636, "api_hooks": ["useModelFamilies", "useExperiments", "useMLDeployments"], "action": "KEEP — fully wired"},
+        {"label": "Experiments", "route": "/services/research/ml/experiments", "lines": 704, "api_hooks": [], "action": "WIRE — inline mock data"},
+        {"label": "Training", "route": "/services/research/ml/training", "lines": 577, "api_hooks": [], "action": "WIRE — inline mock data"},
+        {"label": "Validation", "route": "/services/research/ml/validation", "lines": 698, "api_hooks": [], "action": "WIRE — inline mock data"},
+        {"label": "Registry", "route": "/services/research/ml/registry", "lines": 619, "api_hooks": ["useModelVersions", "useModelFamilies"], "action": "KEEP — wired"},
+        {"label": "Monitoring", "route": "/services/research/ml/monitoring", "lines": 531, "api_hooks": ["useMLDeployments"], "action": "KEEP — wired"},
+        {"label": "Deploy", "route": "/services/research/ml/deploy", "lines": 459, "api_hooks": [], "action": "WIRE — inline mock data"},
+        {"label": "Governance", "route": "/services/research/ml/governance", "lines": 504, "api_hooks": ["useAuditEvents"], "action": "KEEP — wired"},
+        {"label": "Config", "route": "/services/research/ml/config", "lines": 605, "api_hooks": ["useModelFamilies", "useFeatureProvenance"], "action": "KEEP — wired"}
       ],
-      "platform_service": [
-        { "path": "/services/overview", "component": "app/(platform)/services/overview/page.tsx", "notes": "Service hub entry" },
-        { "path": "/services/:key", "component": "app/(platform)/services/[key]/page.tsx", "notes": "Dynamic by registry key" },
-        { "path": "/services/observe/news", "component": "app/(platform)/services/observe/news/page.tsx" },
-        { "path": "/services/observe/strategy-health", "component": "app/(platform)/services/observe/strategy-health/page.tsx" },
-        { "path": "/services/data/overview", "component": "app/(platform)/services/data/overview/page.tsx" },
-        { "path": "/services/data/coverage", "component": "app/(platform)/services/data/coverage/page.tsx" },
-        { "path": "/services/data/venues", "component": "app/(platform)/services/data/venues/page.tsx" },
-        { "path": "/services/data/markets", "component": "app/(platform)/services/data/markets/page.tsx" },
-        { "path": "/services/data/markets/pnl", "component": "app/(platform)/services/data/markets/pnl/page.tsx", "notes": "Moved here from /trading/markets/pnl/" },
-        { "path": "/services/data/logs", "component": "app/(platform)/services/data/logs/page.tsx" },
-        { "path": "/services/data/missing", "component": "app/(platform)/services/data/missing/page.tsx" },
-        { "path": "/services/trading/overview", "component": "app/(platform)/services/trading/overview/page.tsx" },
-        { "path": "/services/trading/accounts", "component": "app/(platform)/services/trading/accounts/page.tsx" },
-        { "path": "/services/trading/markets", "component": "app/(platform)/services/trading/markets/page.tsx" },
-        { "path": "/services/trading/orders", "component": "app/(platform)/services/trading/orders/page.tsx" },
-        { "path": "/services/trading/positions", "component": "app/(platform)/services/trading/positions/page.tsx" },
-        { "path": "/services/trading/alerts", "component": "app/(platform)/services/trading/alerts/page.tsx" },
-        { "path": "/services/trading/risk", "component": "app/(platform)/services/trading/risk/page.tsx" },
-        { "path": "/services/execution/overview", "component": "app/(platform)/services/execution/overview/page.tsx" },
-        { "path": "/services/execution/tca", "component": "app/(platform)/services/execution/tca/page.tsx" },
-        { "path": "/services/execution/venues", "component": "app/(platform)/services/execution/venues/page.tsx" },
-        { "path": "/services/execution/algos", "component": "app/(platform)/services/execution/algos/page.tsx" },
-        { "path": "/services/execution/benchmarks", "component": "app/(platform)/services/execution/benchmarks/page.tsx" },
-        { "path": "/services/execution/candidates", "component": "app/(platform)/services/execution/candidates/page.tsx" },
-        { "path": "/services/execution/handoff", "component": "app/(platform)/services/execution/handoff/page.tsx" },
-        { "path": "/services/reports/overview", "component": "app/(platform)/services/reports/overview/page.tsx" },
-        { "path": "/services/reports/executive", "component": "app/(platform)/services/reports/executive/page.tsx" },
-        { "path": "/services/reports/reconciliation", "component": "app/(platform)/services/reports/reconciliation/page.tsx" },
-        { "path": "/services/reports/regulatory", "component": "app/(platform)/services/reports/regulatory/page.tsx" },
-        { "path": "/services/reports/settlement", "component": "app/(platform)/services/reports/settlement/page.tsx" },
-        { "path": "/services/research/overview", "component": "app/(platform)/services/research/overview/page.tsx" },
-        { "path": "/services/research/quant", "component": "app/(platform)/services/research/quant/page.tsx", "notes": "Copied from /quant/ before deletion" },
-        { "path": "/services/research/strategy/overview", "component": "app/(platform)/services/research/strategy/overview/page.tsx", "notes": "Copied from /strategy-platform/overview/ before deletion" },
-        { "path": "/services/research/strategy/backtests", "component": "app/(platform)/services/research/strategy/backtests/page.tsx" },
-        { "path": "/services/research/strategy/candidates", "component": "app/(platform)/services/research/strategy/candidates/page.tsx" },
-        { "path": "/services/research/strategy/compare", "component": "app/(platform)/services/research/strategy/compare/page.tsx" },
-        { "path": "/services/research/strategy/heatmap", "component": "app/(platform)/services/research/strategy/heatmap/page.tsx" },
-        { "path": "/services/research/strategy/handoff", "component": "app/(platform)/services/research/strategy/handoff/page.tsx" },
-        { "path": "/services/research/strategy/results", "component": "app/(platform)/services/research/strategy/results/page.tsx" },
-        { "path": "/services/research/ml", "component": "app/(platform)/services/research/ml/page.tsx" },
-        { "path": "/services/research/ml/overview", "component": "app/(platform)/services/research/ml/overview/page.tsx" },
-        { "path": "/services/research/ml/config", "component": "app/(platform)/services/research/ml/config/page.tsx" },
-        { "path": "/services/research/ml/experiments", "component": "app/(platform)/services/research/ml/experiments/page.tsx" },
-        { "path": "/services/research/ml/experiments/:id", "component": "app/(platform)/services/research/ml/experiments/[id]/page.tsx", "notes": "Dynamic" },
-        { "path": "/services/research/ml/features", "component": "app/(platform)/services/research/ml/features/page.tsx" },
-        { "path": "/services/research/ml/training", "component": "app/(platform)/services/research/ml/training/page.tsx" },
-        { "path": "/services/research/ml/deploy", "component": "app/(platform)/services/research/ml/deploy/page.tsx" },
-        { "path": "/services/research/ml/monitoring", "component": "app/(platform)/services/research/ml/monitoring/page.tsx" },
-        { "path": "/services/research/ml/governance", "component": "app/(platform)/services/research/ml/governance/page.tsx" },
-        { "path": "/services/research/ml/registry", "component": "app/(platform)/services/research/ml/registry/page.tsx" },
-        { "path": "/services/research/ml/validation", "component": "app/(platform)/services/research/ml/validation/page.tsx" },
-        { "path": "/services/execution/algos", "component": "app/(platform)/services/execution/algos/page.tsx" },
-        { "path": "/services/execution/benchmarks", "component": "app/(platform)/services/execution/benchmarks/page.tsx" },
-        { "path": "/services/execution/tca", "component": "app/(platform)/services/execution/tca/page.tsx" },
-        { "path": "/services/execution/venues", "component": "app/(platform)/services/execution/venues/page.tsx" }
+      "strategy_sub_tabs": [
+        {"label": "Overview", "route": "/services/research/strategy/overview", "lines": 611, "action": "WIRE — inline mock data"},
+        {"label": "Backtests", "route": "/services/research/strategy/backtests", "lines": 661, "action": "WIRE — inline mock data"},
+        {"label": "Candidates", "route": "/services/research/strategy/candidates", "lines": 493, "action": "KEEP — partially wired"},
+        {"label": "Compare", "route": "/services/research/strategy/compare", "lines": 626, "action": "WIRE — inline mock data"},
+        {"label": "Handoff", "route": "/services/research/strategy/handoff", "lines": 404, "action": "WIRE — inline mock data"},
+        {"label": "Heatmap", "route": "/services/research/strategy/heatmap", "lines": 429, "action": "WIRE — inline mock data"},
+        {"label": "Results", "route": "/services/research/strategy/results", "lines": 534, "action": "KEEP — partially wired"}
       ],
-      "ops": [
-        { "path": "/admin", "component": "app/(ops)/admin/page.tsx" },
-        { "path": "/admin/data", "component": "app/(ops)/admin/data/page.tsx" },
-        { "path": "/compliance", "component": "app/(ops)/compliance/page.tsx" },
-        { "path": "/config", "component": "app/(ops)/config/page.tsx" },
-        { "path": "/devops", "component": "app/(ops)/devops/page.tsx", "notes": "Deployment console" },
-        { "path": "/engagement", "component": "app/(ops)/engagement/page.tsx" },
-        { "path": "/internal", "component": "app/(ops)/internal/page.tsx" },
-        { "path": "/internal/data-etl", "component": "app/(ops)/internal/data-etl/page.tsx" },
-        { "path": "/manage/clients", "component": "app/(ops)/manage/clients/page.tsx" },
-        { "path": "/manage/users", "component": "app/(ops)/manage/users/page.tsx" },
-        { "path": "/manage/fees", "component": "app/(ops)/manage/fees/page.tsx" },
-        { "path": "/manage/mandates", "component": "app/(ops)/manage/mandates/page.tsx" },
-        { "path": "/ops", "component": "app/(ops)/ops/page.tsx" },
-        { "path": "/ops/jobs", "component": "app/(ops)/ops/jobs/page.tsx" },
-        { "path": "/ops/services", "component": "app/(ops)/ops/services/page.tsx" }
+      "satellite_absorption": {
+        "strategy-ui/src/components/wizard/": "Absorb as modal/drawer in strategy/overview. Files: WizardContainer (148L), BasicConfigStep (192L), StrategySelectionStep (219L), ReviewStep (150L). Total ~709L.",
+        "ml-training-ui": "Already covered — all 7 pages are subsets of existing /services/research/ml/* pages (which are larger and richer)."
+      }
+    },
+
+    "promote": {
+      "lifecycle_stage": "promote",
+      "entry_route": "/services/research/strategy/candidates",
+      "layout": "MISSING — needs creation or contextual tab switching in research layout",
+      "tab_set": "PROMOTE_TABS (defined but NEVER RENDERED — dead code)",
+      "api_gateway": "unified-trading-api",
+      "tabs": [
+        {"label": "Review Queue", "route": "/services/research/strategy/candidates", "lines": 493, "state": "REAL", "action": "KEEP — wire orphaned CandidateBasket component (components/platform/candidate-basket.tsx)"},
+        {"label": "Execution Analysis", "route": "/services/execution/tca", "lines": 405, "state": "REAL", "action": "KEEP — cross-service link"},
+        {"label": "Risk Review", "route": "/services/trading/risk", "lines": 1297, "state": "REAL", "action": "KEEP — cross-service link. NOTE: also used by Observe service."},
+        {"label": "Approval Status", "route": "/services/research/strategy/handoff", "lines": 404, "state": "REAL", "action": "WIRE — inline mock data"}
       ],
-      "redirects_only": {
-        "_note": "These URLs work but have NO page.tsx. They resolve via next.config.mjs permanent redirects. Do NOT create page files at these paths.",
-        "paths": ["/overview", "/data", "/trading", "/trading/*", "/research", "/research/*", "/ml", "/ml/*", "/positions", "/risk", "/alerts", "/strategy-platform", "/strategy-platform/*", "/execution", "/execution/*", "/reports", "/reports/*", "/markets", "/markets/*", "/executive", "/quant"]
+      "critical_fix": "Create promote layout that renders PROMOTE_TABS. Currently these pages fall through to research/trading layouts showing wrong tab sets."
+    },
+
+    "trading": {
+      "lifecycle_stage": "run",
+      "entry_route": "/services/trading/overview",
+      "layout": "app/(platform)/services/trading/layout.tsx",
+      "tab_set": "TRADING_TABS",
+      "api_gateway": "unified-trading-api",
+      "also": "/dashboard (Command Center, 460L, fully wired — separate entry under Run)",
+      "tabs": [
+        {"label": "Terminal", "route": "/services/trading/overview", "lines": 818, "state": "REAL", "api_hooks": ["useTickers", "usePositions", "useAlerts"], "action": "KEEP — fully built. Add ManualTradingPanel drawer (restore from live-health-monitor-ui git 5c24fa2). Wire BatchLiveRail (orphaned component/platform/batch-live-rail.tsx)."},
+        {"label": "Positions", "route": "/services/trading/positions", "lines": 849, "state": "REAL", "api_hooks": ["useExecutionMode"], "action": "WIRE — has content but uses inline mock data. Wire to usePositions API hook."},
+        {"label": "Orders", "route": "/services/trading/orders", "lines": 24, "state": "STUB", "action": "FILL — extract order blotter from Terminal page (818L already has order entry). The order-book.tsx component (components/trading/order-book.tsx) exists. Build orders table using seed data from GET /execution/orders API."},
+        {"label": "Accounts", "route": "/services/trading/accounts", "lines": 24, "state": "STUB", "action": "FILL — expand components/trading/margin-utilization.tsx (200L, already in repo) with per-venue balances. Wire to GET /positions/balances API."},
+        {"label": "Markets", "route": "/services/trading/markets", "lines": 2116, "state": "REAL", "action": "KEEP — fully built. Near-duplicate of data/markets (2009L)."},
+        {"label": "Strategies", "route": "/services/trading/strategies", "lines": 561, "state": "REAL", "api_hooks": ["useStrategyPerformance"], "action": "KEEP — wired. Detail page at strategies/[id] (764L) also wired."}
+      ],
+      "satellite_absorption": {
+        "ManualTradingPanel": "Restore from live-health-monitor-ui git commit 5c24fa2. Was 256L with order entry form (client_id, instrument, side, qty, venue, price, reason). Render as drawer in Terminal.",
+        "BatchLiveRail": "Already in repo at components/platform/batch-live-rail.tsx — orphaned (zero imports). Wire into Terminal + Dashboard."
+      }
+    },
+
+    "execution": {
+      "lifecycle_stage": "execute",
+      "entry_route": "/services/execution/overview",
+      "layout": "app/(platform)/services/execution/layout.tsx",
+      "tab_set": "EXECUTE_TABS (NEW — needs creation)",
+      "api_gateway": "unified-trading-api",
+      "tabs": [
+        {"label": "Analytics", "route": "/services/execution/overview", "lines": 324, "state": "REAL", "api_hooks": [], "action": "WIRE — uses inline mock data. Wire to GET /execution/fills, /execution/venues APIs."},
+        {"label": "Algos", "route": "/services/execution/algos", "lines": 302, "state": "REAL", "api_hooks": ["useAlgos"], "action": "KEEP — wired"},
+        {"label": "Venues", "route": "/services/execution/venues", "lines": 298, "state": "REAL", "api_hooks": [], "action": "WIRE — uses inline mock data. Wire to GET /execution/venues API."},
+        {"label": "TCA", "route": "/services/execution/tca", "lines": 405, "state": "REAL", "api_hooks": ["useOrders"], "action": "KEEP — wired"},
+        {"label": "Benchmarks", "route": "/services/execution/benchmarks", "lines": 356, "state": "REAL", "api_hooks": ["useAlgos", "useOrders"], "action": "KEEP — wired"},
+        {"label": "Candidates", "route": "/services/execution/candidates", "lines": 350, "state": "REAL", "api_hooks": [], "action": "WIRE — inline mock data"},
+        {"label": "Handoff", "route": "/services/execution/handoff", "lines": 367, "state": "REAL", "api_hooks": [], "action": "WIRE — inline mock data"}
+      ],
+      "critical_fix": "Add 'execute' lifecycle stage to lifecycle-mapping.ts. Create EXECUTE_TABS in service-tabs.tsx. Update execution/layout.tsx to use EXECUTE_TABS instead of EXECUTION_TABS (legacy)."
+    },
+
+    "observe": {
+      "lifecycle_stage": "observe",
+      "entry_route": "/services/trading/risk",
+      "layout": "MISSING — needs creation. Currently risk/alerts use trading layout (wrong tabs)",
+      "tab_set": "OBSERVE_TABS (defined but NEVER RENDERED — dead code)",
+      "api_gateway": "unified-trading-api",
+      "tabs": [
+        {"label": "Risk Dashboard", "route": "/services/trading/risk", "lines": 1297, "state": "REAL", "api_hooks": ["useRiskLimits", "useVaR", "useGreeks", "useStressScenarios"], "action": "KEEP — fully wired. Also: components/dashboards/risk-dashboard.tsx (809L) exists."},
+        {"label": "Alerts", "route": "/services/trading/alerts", "lines": 403, "state": "REAL", "api_hooks": ["useAlerts"], "action": "KEEP — wired"},
+        {"label": "News", "route": "/services/observe/news", "lines": 24, "state": "STUB", "action": "FILL — adapt components/platform/activity-feed.tsx (111L, already in repo) for news feed pattern. Seed 10-15 news items in API.", "sources": ["components/platform/activity-feed.tsx (111L)"]},
+        {"label": "Strategy Health", "route": "/services/observe/strategy-health", "lines": 24, "state": "STUB", "action": "FILL — adapt live-health-monitor-ui/src/pages/DashboardPage.tsx (312L) for per-strategy health indicators.", "sources": ["live-health-monitor-ui/src/pages/DashboardPage.tsx (312L)"]},
+        {"label": "System Health", "route": "/services/observe/health", "lines": 430, "state": "REAL", "api_hooks": ["useServiceHealth", "useFeatureFreshness"], "action": "KEEP — wired. Absorb DependencyDagPage.tsx (727L) from live-health-monitor-ui as sub-tab/expandable."}
+      ],
+      "critical_fix": "Create observe layout that renders OBSERVE_TABS. Currently risk/alerts pages use trading layout → show TRADING_TABS (wrong context).",
+      "satellite_absorption": {
+        "live-health-monitor-ui/DependencyDagPage.tsx": "727L — unique DAG visualization, absorb into System Health",
+        "live-health-monitor-ui/ResourceMetricsPage.tsx": "111L — CPU/memory metrics, add to System Health",
+        "logs-dashboard-ui": "Log viewer patterns → add to System Health or dedicated sub-tab"
+      }
+    },
+
+    "manage": {
+      "lifecycle_stage": "manage",
+      "entry_route": "/services/manage/clients",
+      "layout": "app/(platform)/services/manage/layout.tsx",
+      "tab_set": "MANAGE_TABS (defined but NEVER RENDERED — dead code because pages live in (ops) group)",
+      "api_gateway": "unified-trading-api",
+      "tabs": [
+        {"label": "Clients", "route": "/services/manage/clients", "lines": 495, "state": "REAL", "api_hooks": ["useOrganizationsList", "useSubscriptions"], "action": "KEEP — wired. Absorb onboarding-ui/ClientOnboarding.tsx (503L) as 'Onboard Client' modal."},
+        {"label": "Mandates", "route": "/services/manage/mandates", "lines": 107, "state": "REAL", "api_hooks": [], "action": "WIRE — uses inline mock data. Expand with mandate config."},
+        {"label": "Fees", "route": "/services/manage/fees", "lines": 369, "state": "REAL", "api_hooks": ["useOrganizationsList", "useSubscriptions"], "action": "KEEP — wired"},
+        {"label": "Users", "route": "/services/manage/users", "lines": 353, "state": "REAL", "api_hooks": ["useOrganizationsList", "useOrgMembers"], "action": "KEEP — wired. Absorb user-management-ui patterns for onboard/modify/deactivate."},
+        {"label": "Compliance", "route": "/services/manage/compliance", "lines": 157, "state": "REAL", "api_hooks": [], "action": "WIRE — uses inline mock data. Absorb _reference/versa-audit-ui/CompliancePage.tsx (346L) patterns."}
+      ],
+      "critical_fix": "Pages currently live in app/(ops)/manage/* but should be at app/(platform)/services/manage/*. Either move the pages or fix the routing. The (ops) route group enforces admin-only access which is wrong for Manage (should be visible to some client tiers too).",
+      "satellite_absorption": {
+        "onboarding-ui/ClientOnboarding.tsx": "503L — multi-step wizard with react-hook-form + zod. Absorb as modal in Clients tab.",
+        "onboarding-ui/ClientDetail.tsx": "545L — rich client detail view. Absorb into Clients tab detail view.",
+        "onboarding-ui/RiskConfiguration.tsx": "344L — risk limit config. Absorb into Mandates tab.",
+        "user-management-ui/UserDetailPage.tsx": "255L — user detail with role changes. Absorb into Users tab.",
+        "user-management-ui/OnboardUserPage.tsx": "225L — user onboard form. Absorb as 'Add User' modal."
+      }
+    },
+
+    "reports": {
+      "lifecycle_stage": "report",
+      "entry_route": "/services/reports/overview",
+      "layout": "app/(platform)/services/reports/layout.tsx",
+      "tab_set": "REPORTS_TABS",
+      "api_gateway": "client-reporting-api",
+      "tabs": [
+        {"label": "P&L Attribution", "route": "/services/reports/overview", "lines": 611, "state": "REAL", "api_hooks": ["useReports", "useSettlements", "useContextState"], "action": "KEEP — wired. Absorb client-reporting-ui GenerateTab (107L) as report generation modal."},
+        {"label": "Executive", "route": "/services/reports/executive", "lines": 7, "state": "DELEGATE", "action": "KEEP — delegates to components/dashboards/executive-dashboard.tsx (717L, already built). Not a stub.", "delegate_component": "components/dashboards/executive-dashboard.tsx (717L)"},
+        {"label": "Settlement", "route": "/services/reports/settlement", "lines": 24, "state": "STUB", "action": "FILL — adapt settlement-ui/src/pages/Settlements.tsx (522L). Direct source, most complete match.", "sources": ["settlement-ui/src/pages/Settlements.tsx (522L)", "settlement-ui/src/pages/Invoices.tsx (120L)"]},
+        {"label": "Reconciliation", "route": "/services/reports/reconciliation", "lines": 24, "state": "STUB", "action": "FILL — reuse DriftAnalysisPanel from Dashboard (already built as component). Add settlement-ui/Positions.tsx (122L) for batch/live position comparison.", "sources": ["components/trading/drift-analysis-panel.tsx (already in repo)", "settlement-ui/src/pages/Positions.tsx (122L)"]},
+        {"label": "Regulatory", "route": "/services/reports/regulatory", "lines": 24, "state": "STUB", "action": "FILL — adapt _reference/versa-audit-ui/CompliancePage.tsx (346L) for MiFID II / FCA / EMIR regulatory reporting.", "sources": ["_reference/versa-audit-ui/src/pages/CompliancePage.tsx (346L)"]}
+      ],
+      "satellite_absorption": {
+        "settlement-ui/Settlements.tsx": "522L — complete settlement table with status, filters. Direct fill for settlement stub.",
+        "client-reporting-ui/GenerateTab.tsx": "107L — report generation form. Add as modal in P&L tab.",
+        "client-reporting-ui/PerformanceTab.tsx": "90L — performance metrics. Already covered by executive-dashboard.tsx (717L).",
+        "_reference/versa-client-reporting/PerformancePage.tsx": "174L — additional performance patterns."
+      }
+    },
+
+    "admin": {
+      "lifecycle_stage": "manage",
+      "entry_route": "/admin",
+      "layout": "app/(ops)/layout.tsx",
+      "tab_set": "ADMIN_TABS (NEW — needs creation)",
+      "api_gateway": "unified-trading-api",
+      "internal_only": true,
+      "tabs": [
+        {"label": "Admin Dashboard", "route": "/admin", "lines": 228, "state": "REAL", "action": "KEEP. Also: components/dashboards/audit-dashboard.tsx (615L) exists."},
+        {"label": "Config", "route": "/config", "lines": 771, "state": "REAL", "action": "KEEP — substantial config viewer/editor"},
+        {"label": "DevOps", "route": "/devops", "lines": 108, "state": "REAL", "action": "ENRICH — only 108L. Absorb deployment-ui richness: DeployForm (1759L), DeploymentHistory (636L), CloudBuildsTab (703L), ReadinessTab (527L), EpicReadinessView (491L). Also: components/dashboards/devops-dashboard.tsx (779L) already exists."},
+        {"label": "Jobs", "route": "/ops/jobs", "lines": 303, "state": "REAL", "action": "KEEP — batch job management"},
+        {"label": "Services", "route": "/ops/services", "lines": 405, "state": "REAL", "action": "KEEP — service registry"},
+        {"label": "Data ETL", "route": "/internal/data-etl", "lines": 593, "state": "REAL", "action": "KEEP — ETL pipeline management"}
+      ],
+      "existing_dashboards": {
+        "components/dashboards/audit-dashboard.tsx": "615L — audit patterns, wire into Admin Dashboard",
+        "components/dashboards/devops-dashboard.tsx": "779L — deployment patterns, wire into DevOps tab"
+      },
+      "satellite_absorption": {
+        "deployment-ui": "Richest satellite (9/10). Key components: DeployForm (1759L), DataStatusTab (4013L), CloudBuildsTab (703L), ReadinessTab (527L), EpicReadinessView (491L). Absorb into DevOps tab with sub-tabs.",
+        "batch-audit-ui": "AuditTrailPage (243L), DataCompletenessPage (290L), CompliancePage (346L). Absorb into Admin Dashboard or dedicated Audit sub-tab."
       }
     }
   },
 
-  "pending_work": {
-    "description": "Work that was planned in Phase 2 target_structure but not yet completed.",
-    "items": [
-      {
-        "id": "delete-flat-mock-files",
-        "priority": "medium",
-        "status": "not_started",
-        "description": "8 flat lib/*.ts mock-data files still exist and pages still import from them directly. Must be deleted after all pages are wired to React Query hooks consuming MSW handlers.",
-        "files_to_delete": [
-          "lib/strategy-registry.ts (1,856 lines → handlers/strategy.ts + handlers/positions.ts)",
-          "lib/reference-data.ts (895 lines → handlers/data.ts + fixtures/venues.json)",
-          "lib/ml-mock-data.ts (1,019 lines → handlers/ml.ts)",
-          "lib/trading-data.ts (769 lines → handlers/trading.ts + handlers/user-management.ts)",
-          "lib/data-service-mock-data.ts (638 lines → handlers/data.ts)",
-          "lib/strategy-platform-mock-data.ts (617 lines → handlers/strategy.ts)",
-          "lib/execution-platform-mock-data.ts (551 lines → handlers/execution.ts)",
-          "lib/taxonomy.ts (810 lines → handlers/data.ts or keep as lib/config/taxonomy.ts)"
-        ],
-        "blocker": "All page components must switch to React Query hooks before flat files can be removed"
-      },
-      {
-        "id": "wire-remaining-react-query-hooks",
-        "priority": "high",
-        "status": "in_progress",
-        "description": "14 React Query hooks exist in hooks/api/ but most page components still import mock data directly from flat lib/*.ts files. Each page component needs to be updated to use the hook instead.",
-        "notes": "use-instruments.ts was the Phase 2 proof-of-concept. Remaining 13 hooks need page-level wiring."
-      },
-      {
-        "id": "increase-test-coverage",
-        "priority": "low",
-        "status": "not_started",
-        "description": "Coverage at ~minimal (4 unit tests, 2 E2E). Target 70% per quality gates.",
-        "target": "70% coverage minimum"
-      }
-    ]
-  },
-
-  "target_structure": {
-    "status": "Phase 3 — React Query Full Wiring + Flat File Cleanup",
-    "description": "Wire all page components to React Query hooks (consuming MSW handlers). Delete the 8 flat lib/*.ts mock-data files once all pages are migrated. Increase test coverage to 70%.",
-    "key_changes": [
-      "Update all page components to import data from hooks/api/ instead of lib/*.ts",
-      "Delete the 8 flat mock-data files listed in pending_work.delete-flat-mock-files",
-      "Add React Query invalidation and optimistic updates to mutation hooks",
-      "Add error boundaries around data-dependent page sections",
-      "Increase test coverage to 70% (add unit tests for hooks and stores)",
-      "Add Playwright E2E tests for the 5 persona login flows"
-    ]
-  },
-
-  "personas": {
-    "count": 5,
-    "source": "lib/mocks/fixtures/personas.ts",
-    "list": [
-      {
-        "id": "admin",
-        "email": "admin@odum.internal",
-        "role": "admin",
-        "org": "Odum Internal",
-        "entitlements": ["*"],
-        "description": "Full system admin. Sees everything: platform, ops, deployments, user management."
-      },
-      {
-        "id": "internal-trader",
-        "email": "trader@odum.internal",
-        "role": "internal",
-        "org": "Odum Internal",
-        "entitlements": ["*"],
-        "description": "Internal trading desk. All platform features, no ops/admin pages."
-      },
-      {
-        "id": "client-full",
-        "email": "pm@alphacapital.com",
-        "role": "client",
-        "org": "Alpha Capital",
-        "entitlements": ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
-        "description": "External client with full subscription. Sees own org data only."
-      },
-      {
-        "id": "client-data-only",
-        "email": "analyst@betafund.com",
-        "role": "client",
-        "org": "Beta Fund",
-        "entitlements": ["data-basic"],
-        "description": "External client with basic data tier. 180 instruments, CEFI only."
-      },
-      {
-        "id": "client-premium",
-        "email": "cio@vertex.com",
-        "role": "client",
-        "org": "Vertex Partners",
-        "entitlements": ["data-pro", "execution-full", "strategy-full"],
-        "description": "Premium execution client. Data + strategy + Smart Alpha execution, no ML."
-      }
-    ]
-  },
-
-  "service_completion": {
-    "_note": "Machine-readable service completion status. Updated 2026-03-21.",
-    "data": { "public": "complete", "product": "complete", "admin": "basic", "ops": "basic" },
-    "research_simulate": { "public": "complete", "product": "complete", "admin": "n/a", "ops": "n/a" },
-    "trading_run_monitor": { "public": "complete", "product": "complete", "admin": "n/a", "ops": "n/a" },
-    "reporting_explain_reconcile": { "public": "complete", "product": "complete", "admin": "partial", "ops": "not_started" },
-    "admin_onboarding": { "public": "hidden", "product": "hidden", "admin": "complete", "ops": "n/a" },
-    "deployment_devops": { "public": "hidden", "product": "hidden", "admin": "n/a", "ops": "ported" },
-    "audit_compliance": { "public": "complete", "product": "basic", "admin": "n/a", "ops": "basic" },
-    "service_hub": "complete",
-    "execution": { "public": "complete", "product": "complete", "admin": "n/a", "ops": "n/a" }
-  },
-
-  "component_inventory": {
-    "_note": "Accurate counts as of 2026-03-21 post-cleanup (commit 8e536fc).",
-    "ui_primitives": 57,
-    "trading_components": 30,
-    "platform_components": 10,
-    "shell_components": 6,
-    "ops_deployment_components": 19,
-    "dashboards": 6,
-    "ml_components": 2,
-    "data_components": 5,
-    "marketing_components": 6,
-    "deleted_in_cleanup": {
-      "count": 5,
-      "files": ["trading/global-nav-bar.tsx", "trading/app-shell.tsx", "trading/lifecycle-rail.tsx", "shell/role-layout.tsx", "platform/unified-batch-shell.tsx"],
-      "reason": "Zero consumers after navigation model consolidated to lifecycle nav only"
-    }
-  },
-
-  "msw_handlers": {
-    "count": 15,
-    "source": "lib/mocks/handlers/",
-    "files": [
-      "auth.ts — login, profile, persona switch",
-      "alerts.ts — alert CRUD, severity filtering, acknowledge/resolve (client-scoped)",
-      "audit.ts — compliance checks, event history, data health (internal-only)",
-      "data.ts — instruments, catalogue, download status (subscription-filtered)",
-      "deployment.ts — services, deployments, cloud builds, shards (internal-only)",
-      "execution.ts — orders, fills, execution results, backtest grids (client-scoped)",
-      "market-data.ts — OHLCV candles, book snapshots, trades (shared, REST only)",
-      "ml.ts — models, features, experiments, training (subscription-filtered)",
-      "positions.ts — positions, risk groups, margin, historical (client-scoped)",
-      "reporting.ts — reports, settlement, reconciliation, invoicing (client-scoped)",
-      "risk.ts — limits, exposure, VaR, Greeks, stress scenarios (client-scoped)",
-      "service-status.ts — service health, feature freshness, system overview (internal-only for full view)",
-      "strategy.ts — strategies, configs, backtests, candidates (client-scoped)",
-      "trading.ts — live P&L, attribution, performance (client-scoped)",
-      "user-management.ts — orgs, users, roles, subscriptions (internal sees all; client sees own org)"
-    ]
-  },
-
-  "lib_registry": {
-    "description": "Generated reference files. Do not edit manually — regenerate from source.",
-    "source": "lib/registry/",
-    "files": {
-      "openapi.json": "298 API endpoints across all backend services",
-      "openapi.yaml": "Same as openapi.json in YAML format",
-      "config-registry.json": "46 service configuration classes with all fields, types, and defaults",
-      "sharding_config.yaml": "Shard definitions (CEFI, DeFi, Sports, TradFi) with venue mappings",
-      "system-topology.json": "Service dependency graph",
-      "runtime-topology.yaml": "Runtime mode configuration (live vs batch per service)",
-      "ui-reference-data.json": "Static reference data: venues, asset classes, currencies"
-    },
-    "regenerate": "Run generator scripts in unified-trading-pm to refresh these files"
-  },
-
-  "structure_documentation": {
-    "description": "Documentation files for agent navigation. Created 2026-03-21.",
-    "root_index": "CODEBASE_STRUCTURE.md — one-page agent index, read this first",
-    "deep_docs": {
-      "docs/STRUCTURE_APP.md": "Full route tree, three parallel domain trees, dynamic routes, layout hierarchy",
-      "docs/STRUCTURE_COMPONENTS.md": "All component domains with file-level detail, naming rules, collision warnings",
-      "docs/STRUCTURE_LIB.md": "lib/ layout — stores, mocks, config, types, pending flat file cleanup",
-      "docs/STRUCTURE_HOOKS.md": "hooks/api/ domain map, React Query patterns, MSW wiring",
-      "docs/STRUCTURE_CONTEXT.md": "context/ reference folder — what each subfolder provides and when to use it",
-      "docs/STRUCTURE_REFERENCE.md": "_reference/ Python services — what they contain, how to read them"
-    }
-  },
-
-  "refactor_history": [
-    {
-      "id": "initial-setup",
-      "date": "2026-03-19",
-      "title": "Initial Architecture & Rules Setup",
-      "type": "setup",
-      "from_state": "empty",
-      "to_state": "pre-phase-2",
-      "description": "V0 generated prototype with marketing pages, trading components, inline mock data. Architecture docs and coding rules established.",
-      "status": "completed",
-      "approved_by": "Iggy Ikenna"
-    },
-    {
-      "id": "rules-alignment-2026-03-19",
-      "date": "2026-03-19",
-      "title": "Rules Alignment for Next.js App Router + Dimensional Scoping",
-      "type": "documentation",
-      "from_state": "pre-phase-2",
-      "to_state": "pre-phase-2",
-      "description": "Rewrote .cursorrules, V0_SYSTEM_PROMPT.txt, REFACTORING_PLAN for Next.js App Router. Added dimensional mocking (same endpoint, different data per persona), demo personas with entitlements, Zustand+React Query rules, cache reset protocol, MSW migration manifest. Refreshed lib/registry/ with latest generated files.",
-      "status": "completed",
-      "approved_by": "Iggy Ikenna",
-      "changes": [
-        ".cursorrules rewritten for Next.js App Router + (public)/(platform)/(ops) route groups",
-        "V0_SYSTEM_PROMPT.txt rewritten with one-platform model + 3 USPs + dimensional scoping",
-        "REFACTORING_PLAN Phase 2 expanded: shells in-repo, MSW migration manifest, type-gen, auth personas, state mgmt",
-        "SHARDING_DIMENSIONS.md rewritten as 3-layer model",
-        "lib/registry/ refreshed with latest generated files (openapi.json, config-registry.json, etc.)",
-        "Updated PM cursor-rules and codex docs"
-      ]
-    },
-    {
-      "id": "phase-2-structural-refactor",
-      "date": "2026-03-19",
-      "title": "Phase 2 Structural Refactor — Shell Infrastructure + MSW Migration",
-      "type": "refactor",
-      "from_state": "pre-phase-2",
-      "to_state": "post-phase-2",
-      "description": "Created route groups (public)/(platform)/(ops) with shell layouts. Moved all 32 page directories. Created lib/config/. Set up MSW with 15 handlers. Created 5 personas with entitlement-based scoping. Added 4 Zustand stores + React Query client + reset-demo. Generated types from openapi.json. Created 14 React Query hooks.",
-      "status": "completed",
-      "approved_by": "Iggy Ikenna",
-      "changes": [
-        "app/(public)/layout.tsx — PublicShell: SiteHeader + footer, no auth",
-        "app/(platform)/layout.tsx — PlatformShell: RequireAuth + UnifiedShell",
-        "app/(ops)/layout.tsx — OpsShell: RequireAuth + role=internal/admin gate",
-        "32 page directories moved into route groups (URLs unchanged)",
-        "lib/config/ — api.ts, branding.ts, auth.ts, services.ts, index.ts",
-        "lib/mocks/ — browser.ts, server.ts, utils.ts",
-        "lib/mocks/handlers/ — 15 domain handlers + index.ts",
-        "lib/mocks/fixtures/personas.ts — 5 demo personas",
-        "lib/stores/ — filter-store.ts, auth-store.ts, ui-prefs-store.ts, global-scope-store.ts",
-        "lib/query-client.ts, lib/reset-demo.ts, lib/providers.tsx",
-        "hooks/use-auth.ts upgraded — role/org/entitlements, persona login/switch",
-        "hooks/api/ — 14 React Query hooks (use-instruments proof-of-concept + 13 domain hooks)",
-        "lib/types/api-generated.ts — generated from openapi.json",
-        "Dependencies: msw, zustand, @tanstack/react-query, openapi-typescript"
-      ]
-    },
-    {
-      "id": "nav-cleanup-and-404-fix-2026-03-21",
-      "date": "2026-03-21",
-      "commit": "8e536fc",
-      "title": "Fix 404s, Remove Legacy Nav Model, Consolidate to Single Canonical Route Tree",
-      "type": "refactor",
-      "from_state": "post-phase-2",
-      "to_state": "post-phase-2-cleanup",
-      "description": "~68 duplicate page files (~30K lines) deleted. All legacy flat routes now permanent redirects to /services/*. 5 deprecated components deleted. 3 pages with unique content copied to canonical /services/* locations before deletion. 3 placeholder pages added to fix 404 broken links. All pages migrated off legacy GlobalNavBar/AppShell/RoleLayout wrappers.",
-      "status": "completed",
-      "approved_by": "Iggy Ikenna",
-      "changes": [
-        "DELETED: app/(platform)/execution/* (all 9 pages) → permanent redirects to /services/execution/*",
-        "DELETED: app/(platform)/ml/* (all 11 pages) → permanent redirects to /services/research/ml/*",
-        "DELETED: app/(platform)/research/ml/* (all 11 pages) → same canonical location",
-        "DELETED: app/(platform)/research/strategy/* (all 7 pages) → /services/research/strategy/*",
-        "DELETED: app/(platform)/strategy-platform/* (all 8 pages) → /services/research/strategy/*",
-        "DELETED: app/(platform)/trading/page.tsx, trading/alerts, trading/markets, trading/positions, trading/risk → /services/trading/*",
-        "DELETED: app/(platform)/overview, quant, executive, positions, risk, alerts, markets/pnl → redirects",
-        "COPIED before deletion: /services/data/markets/pnl (335 lines), /services/research/strategy/overview (611 lines), /services/research/quant",
-        "ADDED placeholder pages: /portal/execution, /portal/whitelabel, /settings",
-        "DELETED components (5): trading/global-nav-bar.tsx, trading/app-shell.tsx, trading/lifecycle-rail.tsx, shell/role-layout.tsx, platform/unified-batch-shell.tsx",
-        "UPDATED unified-shell.tsx: removed useLegacyNav prop and conditional rendering",
-        "FIXED role-selection.tsx: stale UserRole type import",
-        "ADDED 30+ permanent redirects to next.config.mjs",
-        "MIGRATED 25+ pages off legacy nav wrappers (GlobalNavBar, AppShell, RoleLayout)",
-        "Result: 1 nav model, 0 broken links, 0 double-redirect chains, 0 deprecated component references, build passing"
-      ]
-    },
-    {
-      "id": "structure-documentation-2026-03-21",
-      "date": "2026-03-21",
-      "title": "Structure Documentation for Agent Navigation",
-      "type": "documentation",
-      "from_state": "post-phase-2",
-      "to_state": "post-phase-2",
-      "description": "Created CODEBASE_STRUCTURE.md (root-level one-page index) and 6 deep documentation files in docs/STRUCTURE_*.md covering app/, components/, lib/, hooks/, context/, and _reference/. Updated UI_STRUCTURE_MANIFEST.json to reflect accurate current state: fixed persona count (4→5), corrected component counts (ui: 57, ops/deployment: 19), added lib/registry/ inventory, removed stale target_structure (Phase 2 already complete), defined Phase 3 target.",
-      "status": "completed",
-      "approved_by": "Iggy Ikenna",
-      "changes": [
-        "CODEBASE_STRUCTURE.md created at repo root — agent quick-reference index",
-        "docs/STRUCTURE_APP.md — full route tree with 3-way parallel domain explanation",
-        "docs/STRUCTURE_COMPONENTS.md — all 11 component domains with file-level detail",
-        "docs/STRUCTURE_LIB.md — lib/ layout including pending flat file cleanup",
-        "docs/STRUCTURE_HOOKS.md — hooks/api/ domain map and React Query patterns",
-        "docs/STRUCTURE_CONTEXT.md — context/ reference folder guide",
-        "docs/STRUCTURE_REFERENCE.md — _reference/ Python services guide",
-        "UI_STRUCTURE_MANIFEST.json updated: version 2.0.0 → 2.1.0",
-        "Fixed persona count inconsistency (was 4 in one note, 5 in another — confirmed 5)",
-        "Fixed UI component count (was 59, actual 57)",
-        "Added ops/deployment component count (19)",
-        "Added lib/registry/ inventory section",
-        "Added component_inventory section with accurate counts",
-        "Added msw_handlers section with file-level list",
-        "Added pending_work section with prioritised items",
-        "Added personas section with full detail",
-        "Moved stale migration file list from target_structure to pending_work"
-      ]
-    }
+  "routes_to_delete": [
+    {"route": "/portal", "file": "app/(platform)/portal/page.tsx", "reason": "redirect to /services/overview"},
+    {"route": "/portal/backtesting", "file": "app/(platform)/portal/backtesting/page.tsx", "reason": "redirect"},
+    {"route": "/portal/dashboard", "file": "app/(platform)/portal/dashboard/page.tsx", "reason": "redirect"},
+    {"route": "/portal/data", "file": "app/(platform)/portal/data/page.tsx", "reason": "redirect"},
+    {"route": "/portal/execution", "file": "app/(platform)/portal/execution/page.tsx", "reason": "redirect"},
+    {"route": "/portal/investment", "file": "app/(platform)/portal/investment/page.tsx", "reason": "redirect"},
+    {"route": "/portal/login", "file": "app/(platform)/portal/login/page.tsx", "reason": "redirect"},
+    {"route": "/portal/regulatory", "file": "app/(platform)/portal/regulatory/page.tsx", "reason": "redirect"},
+    {"route": "/portal/whitelabel", "file": "app/(platform)/portal/whitelabel/page.tsx", "reason": "redirect"},
+    {"route": "/services/[key]", "file": "app/(platform)/services/[key]/page.tsx", "reason": "card landing page — replaced by direct-to-tab routing"},
+    {"route": "/services/overview", "file": "app/(platform)/services/overview/page.tsx", "reason": "hub page — replaced by /dashboard"}
   ],
 
-  "breaking_changes_log": [],
+  "orphaned_components_to_wire": [
+    {"file": "components/platform/batch-live-rail.tsx", "target": "Trading Terminal + Dashboard", "action": "Import and render for batch/live mode switching"},
+    {"file": "components/platform/filter-bar.tsx", "target": "All data table pages (Positions, Orders, Alerts, Fills)", "action": "Import and render for quick filtering"},
+    {"file": "components/platform/candidate-basket.tsx", "target": "Promote > Review Queue", "action": "Import and render for strategy promotion workflow"},
+    {"file": "components/platform/live-asof-toggle.tsx", "target": "All service layouts (Row 2 right slot)", "action": "Verify wired in all layouts"},
+    {"file": "components/ops/venue-connectivity.tsx", "lines": 400, "target": "Data > Venue Health (currently STUB)", "action": "Import as page content — component already built"},
+    {"file": "components/dashboards/executive-dashboard.tsx", "lines": 717, "target": "Reports > Executive", "action": "Already wired via 7L delegate page"},
+    {"file": "components/dashboards/quant-dashboard.tsx", "lines": 947, "target": "Research > Quant", "action": "Already wired via 7L delegate page"},
+    {"file": "components/dashboards/devops-dashboard.tsx", "lines": 779, "target": "Admin > DevOps", "action": "Wire into DevOps page (currently 108L)"},
+    {"file": "components/dashboards/audit-dashboard.tsx", "lines": 615, "target": "Admin > Dashboard", "action": "Wire into Admin Dashboard page"},
+    {"file": "components/dashboards/risk-dashboard.tsx", "lines": 809, "target": "Observe > Risk", "action": "Consider merging with trading/risk (1297L) or keep as secondary view"},
+    {"file": "components/dashboards/trader-dashboard.tsx", "lines": 307, "target": "Trading context", "action": "Review if useful or redundant with Terminal"}
+  ],
 
-  "notes": {
-    "for_agents": [
-      "READ FIRST: CODEBASE_STRUCTURE.md at repo root — one page, folder map + decision guide.",
-      "DEEP DOCS: docs/STRUCTURE_*.md — one file per major folder (app, components, lib, hooks, context, _reference).",
-      "CANONICAL ROUTE TREE: All platform content lives under app/(platform)/services/. Legacy paths (/trading/*, /execution/*, /ml/*, /research/*, /strategy-platform/*, etc.) are permanent redirects in next.config.mjs — NO page.tsx files exist there. See routes.redirects_only.",
-      "ADDING NEW PAGES: Always create under app/(platform)/services/<domain>/. Never at old flat paths.",
-      "SINGLE NAV MODEL: lifecycle nav only (shell/lifecycle-nav.tsx). GlobalNavBar, AppShell, RoleLayout, LifecycleRail, UnifiedBatchShell are DELETED — do not recreate them.",
-      "PERSONAS: 5 demo personas (admin, internal-trader, client-full, client-data-only, client-premium). See personas section.",
-      "PENDING: 8 flat lib/*.ts mock-data files still exist and pages import from them directly. Do NOT delete until the page is migrated to React Query hook. See pending_work section.",
-      "CONTEXT FOLDER: context/ is NOT React context files. It is read-only backend reference material (API specs, schemas, topology). See docs/STRUCTURE_CONTEXT.md.",
-      "REFERENCE FOLDER: _reference/ is Python FastAPI backend code — READ ONLY, do not modify, do not import.",
-      "STAGING AUTH: NEXT_PUBLIC_STAGING_AUTH=true enables password protection (Cloud Run only).",
-      "MOCK MODE: NEXT_PUBLIC_MOCK_API=true — MSW intercepts all fetch calls, no real backend needed."
-    ],
-    "rules": [
-      "Any structural change (new folder, route group change, new store) MUST be documented here FIRST",
-      "Before making breaking changes, agent MUST ask user: 'I plan to [change]. Approve?'",
-      "If refactor spans multiple sessions, agent updates 'current_structure' to match actual state before resuming",
-      "Do not delete flat lib/*.ts mock-data files until the consuming pages are fully wired to React Query hooks"
-    ]
+  "dead_tab_sets": {
+    "PROMOTE_TABS": "Defined in service-tabs.tsx but no layout renders it. Fix: create promote layout or use contextual tab switching.",
+    "OBSERVE_TABS": "Defined in service-tabs.tsx but no layout renders it. Fix: create observe layout.",
+    "MANAGE_TABS": "Defined in service-tabs.tsx but pages live in (ops) route group. Fix: move pages to (platform)/services/manage/ or create layout in (ops)."
+  },
+
+  "pages_needing_api_wiring": [
+    "/services/data/markets/pnl (326L — inline mock data)",
+    "/services/execution/overview (324L — inline mock data)",
+    "/services/execution/candidates (350L — inline mock data)",
+    "/services/execution/handoff (367L — inline mock data)",
+    "/services/execution/venues (298L — inline mock data)",
+    "/services/manage/compliance (157L — inline mock data)",
+    "/services/manage/mandates (107L — inline mock data)",
+    "/services/research/ml (591L — inline mock data, duplicates /ml/overview)",
+    "/services/research/ml/experiments (704L — inline mock data)",
+    "/services/research/ml/experiments/[id] (655L — inline mock data)",
+    "/services/research/ml/training (577L — inline mock data)",
+    "/services/research/ml/deploy (459L — inline mock data)",
+    "/services/research/ml/validation (698L — inline mock data)",
+    "/services/research/strategy/overview (611L — inline mock data)",
+    "/services/research/strategy/backtests (661L — inline mock data)",
+    "/services/research/strategy/compare (626L — inline mock data)",
+    "/services/research/strategy/handoff (404L — inline mock data)",
+    "/services/research/strategy/heatmap (429L — inline mock data)"
+  ],
+
+  "codegen_pipelines": {
+    "uac_to_ui": "cd unified-api-contracts && .venv/bin/python scripts/generate_ui_reference_data.py --output ../unified-trading-system-ui/lib/registry/ui-reference-data.json",
+    "api_to_types": "cd unified-trading-system-ui && npm run generate:types (reads lib/registry/openapi.json)"
   }
 }
