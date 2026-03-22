@@ -663,31 +663,13 @@ export default function FeatureProvenancePage() {
             <CardDescription>Which models use which features</CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Model</TableHead>
-                  {featureCatalog.slice(0, 6).map(f => (
-                    <TableHead key={f.id} className="text-center">
-                      <span className="text-xs">{f.name.split(" ")[0]}</span>
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {featureUsageMatrix.map(row => (
-                  <TableRow key={row.model}>
-                    <TableCell className="font-medium">{row.model}</TableCell>
-                    <TableCell className="text-center">{row.funding_rate_8h ? <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" /> : <span className="text-muted-foreground">—</span>}</TableCell>
-                    <TableCell className="text-center">{row.oi_change_1h ? <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" /> : <span className="text-muted-foreground">—</span>}</TableCell>
-                    <TableCell className="text-center">{row.volume_imbalance ? <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" /> : <span className="text-muted-foreground">—</span>}</TableCell>
-                    <TableCell className="text-center">{row.basis_spread ? <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" /> : <span className="text-muted-foreground">—</span>}</TableCell>
-                    <TableCell className="text-center">{row.liquidation_ratio ? <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" /> : <span className="text-muted-foreground">—</span>}</TableCell>
-                    <TableCell className="text-center">{row.whale_flow ? <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" /> : <span className="text-muted-foreground">—</span>}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable
+              columns={usageMatrixColumns}
+              data={featureUsageMatrix}
+              enableSorting={false}
+              enableColumnVisibility={false}
+              emptyMessage="No usage data"
+            />
           </CardContent>
         </Card>
       </main>

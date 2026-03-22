@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DataFreshness } from "@/components/ui/data-freshness"
 import {
   Select,
   SelectContent,
@@ -576,6 +577,11 @@ export default function AlertsPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <DataFreshness
+              lastUpdated={alertsData ? new Date() : null}
+              isWebSocket={false}
+              isBatch={isBatchMode}
+            />
             {criticalCount > 0 && (
               <Badge variant="destructive" className="gap-1">
                 <XCircle className="size-3" />

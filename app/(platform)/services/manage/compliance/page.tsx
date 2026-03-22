@@ -2,12 +2,11 @@
 
 import * as React from "react"
 import { useQuery } from "@tanstack/react-query"
+import { type ColumnDef } from "@tanstack/react-table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
+import { DataTable } from "@/components/ui/data-table"
 import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible"
@@ -121,6 +120,28 @@ function formatTimestamp(iso: string): string {
     hour: "2-digit", minute: "2-digit",
   })
 }
+
+/* ------------------------------------------------------------------ */
+/*  Column definitions                                                 */
+/* ------------------------------------------------------------------ */
+
+const rulesColumns: ColumnDef<ComplianceRule, unknown>[] = [
+  { accessorKey: "ruleId", header: "Rule ID", cell: ({ row }) => <span className="font-mono font-medium">{row.getValue<string>("ruleId")}</span> },
+  { accessorKey: "description", header: "Description" },
+  { accessorKey: "category", header: "Category", cell: ({ row }) => { const v = row.getValue<ComplianceRule["category"]>("category"); return <Badge variant="outline" className={CATEGORY_STYLES[v]}>{v}</Badge> } },
+  { accessorKey: "severity", header: "Severity", cell: ({ row }) => { const v = row.getValue<ComplianceRule["severity"]>("severity"); return <Badge className={SEVERITY_STYLES[v]}>{v}</Badge> } },
+  { accessorKey: "status", header: "Status", cell: ({ row }) => { const v = row.getValue<ComplianceRule["status"]>("status"); return <Badge className={RULE_STATUS_STYLES[v]}>{v}</Badge> } },
+  { accessorKey: "lastCheck", header: "Last Check", cell: ({ row }) => <span className="text-muted-foreground text-sm">{formatTimestamp(row.getValue<string>("lastCheck"))}</span> },
+]
+
+const violationsColumns: ColumnDef<Violation, unknown>[] = [
+  { accessorKey: "date", header: "Date", cell: ({ row }) => <span className="font-mono text-sm">{row.getValue<string>("date")}</span> },
+  { accessorKey: "ruleId", header: "Rule", cell: ({ row }) => <span className="font-mono font-medium">{row.getValue<string>("ruleId")}</span> },
+  { accessorKey: "detail", header: "Violation Detail", cell: ({ row }) => <span className="max-w-[300px] truncate block">{row.getValue<string>("detail")}</span> },
+  { accessorKey: "severity", header: "Severity", cell: ({ row }) => { const v = row.getValue<Violation["severity"]>("severity"); return <Badge className={SEVERITY_STYLES[v]}>{v}</Badge> } },
+  { accessorKey: "resolution", header: "Resolution", cell: ({ row }) => { const v = row.getValue<Violation["resolution"]>("resolution"); return <Badge className={RESOLUTION_STYLES[v]}>{v}</Badge> } },
+  { accessorKey: "assignedTo", header: "Assigned To", cell: ({ row }) => <span className="text-muted-foreground">{row.getValue<string>("assignedTo")}</span> },
+]
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -367,36 +388,7 @@ export default function CompliancePage() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rule ID</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Severity</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Check</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rules.map((r) => (
-                <TableRow key={r.ruleId}>
-                  <TableCell className="font-mono font-medium">{r.ruleId}</TableCell>
-                  <TableCell>{r.description}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={CATEGORY_STYLES[r.category]}>{r.category}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={SEVERITY_STYLES[r.severity]}>{r.severity}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={RULE_STATUS_STYLES[r.status]}>{r.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{formatTimestamp(r.lastCheck)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable columns={rulesColumns} data={rules} enableColumnVisibility={false} emptyMessage="No compliance rules found." />
         </CardContent>
       </Card>
 
@@ -412,34 +404,7 @@ export default function CompliancePage() {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Rule</TableHead>
-                <TableHead>Violation Detail</TableHead>
-                <TableHead>Severity</TableHead>
-                <TableHead>Resolution</TableHead>
-                <TableHead>Assigned To</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {violations.map((v, idx) => (
-                <TableRow key={`${v.ruleId}-${idx}`}>
-                  <TableCell className="font-mono text-sm">{v.date}</TableCell>
-                  <TableCell className="font-mono font-medium">{v.ruleId}</TableCell>
-                  <TableCell className="max-w-[300px] truncate">{v.detail}</TableCell>
-                  <TableCell>
-                    <Badge className={SEVERITY_STYLES[v.severity]}>{v.severity}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={RESOLUTION_STYLES[v.resolution]}>{v.resolution}</Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{v.assignedTo}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable columns={violationsColumns} data={violations} enableColumnVisibility={false} emptyMessage="No violations recorded." />
         </CardContent>
       </Card>
 

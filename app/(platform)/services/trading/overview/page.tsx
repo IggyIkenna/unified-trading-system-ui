@@ -39,6 +39,7 @@ const VolSurfaceChart = dynamic(() => import("@/components/trading/vol-surface-c
   loading: () => <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">Loading vol surface...</div>,
 })
 import { useTickers, useCandles, useOrderBook } from "@/hooks/api/use-market-data"
+import { useInstruments } from "@/hooks/api/use-instruments"
 import { usePositions } from "@/hooks/api/use-positions"
 import { useAlerts } from "@/hooks/api/use-alerts"
 import { useWebSocket } from "@/hooks/use-websocket"
@@ -134,23 +135,8 @@ export default function TradingPage() {
   const { data: positionsData, error: positionsError } = usePositions(modeParam, asOfParam)
   const { data: alertsData, error: alertsError } = useAlerts()
   const { data: strategiesApiData } = useStrategyPerformance()
+  const { data: instrumentsApiData } = useInstruments()
   const { data: balancesApiData } = useBalances()
-
-  // API data: candles and order book from server
-  const { data: candlesApiData } = useCandles(
-    selectedInstrument?.venue ?? "Binance",
-    selectedInstrument?.symbol ?? "BTC/USDT",
-    timeframe === "1m" ? "1M" : timeframe === "5m" ? "5M" : timeframe === "15m" ? "15M" : "1H",
-    200,
-    modeParam,
-    asOfParam
-  )
-  const { data: orderbookApiData } = useOrderBook(
-    selectedInstrument?.venue ?? "Binance",
-    selectedInstrument?.symbol ?? "BTC/USDT",
-    modeParam,
-    asOfParam
-  )
 
   // WebSocket bid/ask state for orderbook overlay
   const [wsBid, setWsBid] = React.useState<number | null>(null)
@@ -179,17 +165,46 @@ export default function TradingPage() {
     }
   }, [ws.status, selectedInstrument?.symbol, ws.subscribe, ws.unsubscribe])
 
-  // Extract API data - instruments from tickers
-  const tickersRaw: any[] = (tickersData as any)?.data ?? (tickersData as any)?.tickers ?? []
-  const instruments = tickersRaw.length > 0
-    ? tickersRaw.map((t: any) => ({
-        symbol: t.symbol ?? "",
-        name: t.name ?? t.symbol ?? "",
-        venue: t.venue ?? "",
-        midPrice: t.midPrice ?? t.price ?? 0,
-        change: t.change ?? t.changePct ?? 0,
+  // Extract instruments: prefer instruments API (with categories), fallback to tickers, then defaults
+  const instruments = React.useMemo(() => {
+    // Try instruments API (from useInstruments → /api/instruments/list)
+    const instData = instrumentsApiData as Record<string, unknown> | undefined
+    const instArr = (instData?.instruments ?? []) as Array<Record<string, unknown>>
+    if (instArr.length > 0) {
+      return instArr.map((i) => ({
+        symbol: (i.symbol as string) ?? (i.instrumentKey as string) ?? "",
+        name: (i.symbol as string) ?? "",
+        venue: (i.venue as string) ?? "",
+        category: (i.category as string) ?? "Other",
+        midPrice: 0,
+        change: 0,
       }))
-    : DEFAULT_INSTRUMENTS
+    }
+    // Fallback to tickers API
+    const tickersRaw: Record<string, unknown>[] = (tickersData as Record<string, unknown>)?.data as Record<string, unknown>[] ?? (tickersData as Record<string, unknown>)?.tickers as Record<string, unknown>[] ?? []
+    if (tickersRaw.length > 0) {
+      return tickersRaw.map((t) => ({
+        symbol: (t.symbol as string) ?? "",
+        name: (t.name as string) ?? (t.symbol as string) ?? "",
+        venue: (t.venue as string) ?? "",
+        category: (t.category as string) ?? "CeFi",
+        midPrice: (t.midPrice as number) ?? (t.price as number) ?? 0,
+        change: (t.change as number) ?? (t.changePct as number) ?? 0,
+      }))
+    }
+    return DEFAULT_INSTRUMENTS.map(d => ({ ...d, category: "CeFi" }))
+  }, [instrumentsApiData, tickersData])
+
+  // Group instruments by category for the selector
+  const instrumentsByCategory = React.useMemo(() => {
+    const groups: Record<string, typeof instruments> = {}
+    for (const inst of instruments) {
+      const cat = inst.category ?? "Other"
+      if (!groups[cat]) groups[cat] = []
+      groups[cat].push(inst)
+    }
+    return groups
+  }, [instruments])
 
   const [selectedInstrument, setSelectedInstrument] = React.useState(instruments[0])
   const [selectedAccount, setSelectedAccount] = React.useState<{ id: string; name: string; venueAccountId: string; marginType: string } | null>(null)
@@ -201,7 +216,23 @@ export default function TradingPage() {
   const [chartType, setChartType] = React.useState<"candles" | "line" | "depth" | "options">("candles")
   const [activeIndicators, setActiveIndicators] = React.useState<Set<string>>(new Set())
   const [tradesTab, setTradesTab] = React.useState<"market" | "own">("market")
-  
+
+  // API data: candles and order book (must be after useState declarations to avoid TS block-scoping errors)
+  const { data: candlesApiData } = useCandles(
+    selectedInstrument?.venue ?? "Binance",
+    selectedInstrument?.symbol ?? "BTC/USDT",
+    timeframe === "1m" ? "1M" : timeframe === "5m" ? "5M" : timeframe === "15m" ? "15M" : "1H",
+    200,
+    modeParam,
+    asOfParam
+  )
+  const { data: orderbookApiData } = useOrderBook(
+    selectedInstrument?.venue ?? "Binance",
+    selectedInstrument?.symbol ?? "BTC/USDT",
+    modeParam,
+    asOfParam
+  )
+
   // Own trades (user's fills)
   const [ownTrades, setOwnTrades] = React.useState<Array<{
     id: string
@@ -560,14 +591,19 @@ export default function TradingPage() {
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                {instruments.map((inst) => (
-                  <SelectItem key={inst.symbol} value={inst.symbol}>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-medium">{inst.symbol}</span>
-                      <span className="text-xs text-muted-foreground">{inst.venue}</span>
-                    </div>
-                  </SelectItem>
+              <SelectContent className="max-h-[400px]">
+                {Object.entries(instrumentsByCategory).map(([category, catInstruments]) => (
+                  <React.Fragment key={category}>
+                    <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{category}</div>
+                    {catInstruments.map((inst) => (
+                      <SelectItem key={inst.symbol} value={inst.symbol}>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-medium">{inst.symbol}</span>
+                          <span className="text-xs text-muted-foreground">{inst.venue}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </React.Fragment>
                 ))}
               </SelectContent>
             </Select>

@@ -11,14 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { DataTable } from "@/components/ui/data-table"
+import { type ColumnDef } from "@tanstack/react-table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel"
 import { useReconciliation } from "@/hooks/api/use-reports"
@@ -100,6 +94,69 @@ const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "pending", label: "Pending" },
   { value: "investigating", label: "Investigating" },
   { value: "resolved", label: "Resolved" },
+]
+
+// ---------------------------------------------------------------------------
+// Column definitions
+// ---------------------------------------------------------------------------
+
+const historyColumns: ColumnDef<ReconciliationRecord, unknown>[] = [
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => (
+      <span className="font-mono text-muted-foreground">{row.original.date}</span>
+    ),
+  },
+  {
+    accessorKey: "venue",
+    header: "Venue",
+  },
+  {
+    accessorKey: "breakType",
+    header: "Break Type",
+    cell: ({ row }) => breakTypeBadge(row.original.breakType),
+  },
+  {
+    accessorKey: "liveValue",
+    header: () => <span className="flex justify-end">Live Value</span>,
+    cell: ({ row }) => (
+      <span className="flex justify-end font-mono">{formatNumeric(row.original.liveValue)}</span>
+    ),
+  },
+  {
+    accessorKey: "batchValue",
+    header: () => <span className="flex justify-end">Batch Value</span>,
+    cell: ({ row }) => (
+      <span className="flex justify-end font-mono">{formatNumeric(row.original.batchValue)}</span>
+    ),
+  },
+  {
+    accessorKey: "delta",
+    header: () => <span className="flex justify-end">Delta</span>,
+    cell: ({ row }) => {
+      const delta = row.original.delta
+      const colorClass =
+        delta > 0
+          ? "text-[var(--pnl-positive)]"
+          : delta < 0
+          ? "text-[var(--pnl-negative)]"
+          : "text-muted-foreground"
+      return (
+        <span className={`flex justify-end font-mono ${colorClass}`}>
+          {delta > 0 ? "+" : ""}
+          {formatNumeric(delta)}
+        </span>
+      )
+    },
+  },
+  {
+    accessorKey: "status",
+    header: () => <span className="flex justify-end">Status</span>,
+    cell: ({ row }) => (
+      <span className="flex justify-end">{statusBadge(row.original.status)}</span>
+    ),
+  },
 ]
 
 // ---------------------------------------------------------------------------
@@ -368,49 +425,13 @@ export default function ReconciliationPage() {
           </div>
         </CardHeader>
         <CardContent>
-          {filtered.length === 0 ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">
-              No records match the current filters.
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Date</TableHead>
-                  <TableHead className="text-xs">Venue</TableHead>
-                  <TableHead className="text-xs">Break Type</TableHead>
-                  <TableHead className="text-xs text-right">Live Value</TableHead>
-                  <TableHead className="text-xs text-right">Batch Value</TableHead>
-                  <TableHead className="text-xs text-right">Delta</TableHead>
-                  <TableHead className="text-xs text-right">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filtered.map((row) => (
-                  <TableRow key={row.id} className="text-xs">
-                    <TableCell className="font-mono text-muted-foreground">{row.date}</TableCell>
-                    <TableCell>{row.venue}</TableCell>
-                    <TableCell>{breakTypeBadge(row.breakType)}</TableCell>
-                    <TableCell className="text-right font-mono">{formatNumeric(row.liveValue)}</TableCell>
-                    <TableCell className="text-right font-mono">{formatNumeric(row.batchValue)}</TableCell>
-                    <TableCell
-                      className={`text-right font-mono ${
-                        row.delta > 0
-                          ? "text-[var(--pnl-positive)]"
-                          : row.delta < 0
-                          ? "text-[var(--pnl-negative)]"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {row.delta > 0 ? "+" : ""}
-                      {formatNumeric(row.delta)}
-                    </TableCell>
-                    <TableCell className="text-right">{statusBadge(row.status)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
+          <DataTable
+            columns={historyColumns}
+            data={filtered}
+            enableColumnVisibility={false}
+            className="text-xs"
+            emptyMessage="No reconciliation records match your filters."
+          />
         </CardContent>
       </Card>
     </main>

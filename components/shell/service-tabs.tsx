@@ -148,6 +148,16 @@ export const REPORTS_TABS: ServiceTab[] = [
   { label: "Regulatory", href: "/services/reports/regulatory" },
 ]
 
+// ── Admin/Ops (Internal Operations) ─────────────────────────────────────────
+export const ADMIN_TABS: ServiceTab[] = [
+  { label: "Admin Dashboard", href: "/admin" },
+  { label: "Config", href: "/config" },
+  { label: "DevOps", href: "/devops" },
+  { label: "Jobs", href: "/ops/jobs" },
+  { label: "Services", href: "/ops/services" },
+  { label: "Operations", href: "/ops" },
+]
+
 // ── Legacy aliases (for backward compatibility during transition) ─────────────
 export const RESEARCH_TABS = BUILD_TABS
 export const EXECUTE_TABS: ServiceTab[] = [

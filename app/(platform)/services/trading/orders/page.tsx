@@ -1,18 +1,12 @@
 "use client"
 
 import * as React from "react"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { DataTable } from "@/components/ui/data-table"
 import {
   Select,
   SelectContent,
@@ -32,7 +26,6 @@ import {
 import { cn } from "@/lib/utils"
 import { ExportDropdown } from "@/components/ui/export-dropdown"
 import type { ExportColumn } from "@/lib/utils/export"
-import { formatCurrency } from "@/lib/reference-data"
 import { useOrders } from "@/hooks/api/use-orders"
 import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar"
 
@@ -65,6 +58,130 @@ function getStatusColor(status: string): string {
   }
   return "border-muted-foreground text-muted-foreground"
 }
+
+const columns: ColumnDef<OrderRecord, unknown>[] = [
+  {
+    accessorKey: "order_id",
+    header: "Order ID",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="font-mono text-xs">{row.getValue<string>("order_id")}</span>
+    ),
+  },
+  {
+    accessorKey: "instrument",
+    header: "Instrument",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="font-mono font-medium">{row.getValue<string>("instrument")}</span>
+    ),
+  },
+  {
+    accessorKey: "side",
+    header: () => <span className="flex justify-center">Side</span>,
+    enableSorting: false,
+    cell: ({ row }) => {
+      const side = row.getValue<"BUY" | "SELL">("side")
+      return (
+        <div className="text-center">
+          <Badge
+            variant="outline"
+            className={cn(
+              "font-mono text-xs",
+              side === "BUY"
+                ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
+                : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]"
+            )}
+          >
+            {side === "BUY" ? (
+              <ArrowUpRight className="size-3 mr-1" />
+            ) : (
+              <ArrowDownRight className="size-3 mr-1" />
+            )}
+            {side}
+          </Badge>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="text-xs uppercase">{row.getValue<string>("type")}</span>
+    ),
+  },
+  {
+    accessorKey: "price",
+    header: () => <span className="flex justify-end">Price</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-right font-mono">
+        ${row.getValue<number>("price").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "quantity",
+    header: () => <span className="flex justify-end">Quantity</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-right font-mono">
+        {row.getValue<number>("quantity").toLocaleString()}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "filled",
+    header: () => <span className="flex justify-end">Filled</span>,
+    enableSorting: true,
+    cell: ({ row }) => {
+      const filled = row.getValue<number>("filled")
+      const quantity = row.original.quantity
+      const fillPct = quantity > 0 ? (filled / quantity) * 100 : 0
+      return (
+        <div className="flex flex-col items-end">
+          <span className="font-mono">{filled.toLocaleString()}</span>
+          <span className="text-[10px] text-muted-foreground">{fillPct.toFixed(0)}%</span>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "status",
+    header: () => <span className="flex justify-center">Status</span>,
+    enableSorting: false,
+    cell: ({ row }) => {
+      const status = row.getValue<string>("status")
+      return (
+        <div className="text-center">
+          <Badge variant="outline" className={cn("text-xs", getStatusColor(status))}>
+            {status}
+          </Badge>
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "venue",
+    header: "Venue",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="text-sm">{row.getValue<string>("venue")}</span>
+    ),
+  },
+  {
+    accessorKey: "created_at",
+    header: () => <span className="flex justify-end">Created</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-right text-xs text-muted-foreground">
+        {row.getValue<string>("created_at")}
+      </div>
+    ),
+  },
+]
 
 export default function OrdersPage() {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders()
@@ -291,78 +408,13 @@ export default function OrdersPage() {
       {/* Orders table */}
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead>Order ID</TableHead>
-                <TableHead>Instrument</TableHead>
-                <TableHead className="text-center">Side</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Quantity</TableHead>
-                <TableHead className="text-right">Filled</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead>Venue</TableHead>
-                <TableHead className="text-right">Created</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredOrders.map((order) => {
-                const fillPct = order.quantity > 0 ? (order.filled / order.quantity) * 100 : 0
-                return (
-                  <TableRow key={order.order_id} className="hover:bg-muted/30">
-                    <TableCell className="font-mono text-xs">{order.order_id}</TableCell>
-                    <TableCell className="font-mono font-medium">{order.instrument}</TableCell>
-                    <TableCell className="text-center">
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "font-mono text-xs",
-                          order.side === "BUY"
-                            ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
-                            : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]"
-                        )}
-                      >
-                        {order.side === "BUY" ? (
-                          <ArrowUpRight className="size-3 mr-1" />
-                        ) : (
-                          <ArrowDownRight className="size-3 mr-1" />
-                        )}
-                        {order.side}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-xs uppercase">{order.type}</TableCell>
-                    <TableCell className="text-right font-mono">
-                      ${order.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </TableCell>
-                    <TableCell className="text-right font-mono">
-                      {order.quantity.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex flex-col items-end">
-                        <span className="font-mono">{order.filled.toLocaleString()}</span>
-                        <span className="text-[10px] text-muted-foreground">{fillPct.toFixed(0)}%</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge variant="outline" className={cn("text-xs", getStatusColor(order.status))}>
-                        {order.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">{order.venue}</TableCell>
-                    <TableCell className="text-right text-xs text-muted-foreground">{order.created_at}</TableCell>
-                  </TableRow>
-                )
-              })}
-              {filteredOrders.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
-                    No orders match your filters
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+          <DataTable
+            columns={columns}
+            data={filteredOrders}
+            enableSorting
+            enableColumnVisibility
+            emptyMessage="No orders match your filters"
+          />
         </CardContent>
       </Card>
     </main>

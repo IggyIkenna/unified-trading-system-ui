@@ -2,6 +2,7 @@
 
 import { RequireAuth } from "@/components/shell/require-auth"
 import { UnifiedShell } from "@/components/shell/unified-shell"
+import { ServiceTabs, ADMIN_TABS } from "@/components/shell/service-tabs"
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
 import * as React from "react"
@@ -53,6 +54,7 @@ function OpsShellInner({ children }: { children: React.ReactNode }) {
       userName={user.email?.split("@")[0] ?? "Admin"}
       userRole={user.role ?? "admin"}
     >
+      <ServiceTabs tabs={ADMIN_TABS} entitlements={user?.entitlements} />
       {children}
     </UnifiedShell>
   )

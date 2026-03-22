@@ -376,7 +376,7 @@ export default function ExperimentsPage() {
           </div>
           <div className="flex items-center gap-2">
             <ExportDropdown
-              data={sorted.map((exp) => {
+              data={filtered.map((exp) => {
                 const family = modelFamilies.find((f) => f.id === exp.modelFamilyId)
                 return {
                   name: exp.name,

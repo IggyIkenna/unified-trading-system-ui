@@ -64,6 +64,7 @@ import { exportTableToCsv, exportTableToXlsx, type ExportColumn } from "@/lib/ut
 import { cn } from "@/lib/utils"
 import { useServiceHealth, useFeatureFreshness, useServiceActivity } from "@/hooks/api/use-service-status"
 import { useQueryClient } from "@tanstack/react-query"
+import { DataFreshness } from "@/components/ui/data-freshness"
 
 type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "idle"
 
@@ -670,6 +671,10 @@ export default function HealthPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <DataFreshness
+              lastUpdated={healthData ? new Date() : null}
+              isWebSocket={false}
+            />
             <Button variant="outline" size="sm" className="gap-1.5" onClick={handleRefresh}>
               <RefreshCw className="size-3.5" />
               Refresh

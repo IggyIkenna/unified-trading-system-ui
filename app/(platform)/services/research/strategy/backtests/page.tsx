@@ -426,7 +426,7 @@ export default function BacktestsPage() {
                 sharpe: bt.metrics?.sharpe ?? null,
                 totalReturn: bt.metrics?.totalReturn ?? null,
                 maxDrawdown: bt.metrics?.maxDrawdown ?? null,
-                tradesCount: bt.metrics?.tradesCount ?? null,
+                tradesCount: bt.metrics?.turnover ?? null,
                 sortino: bt.metrics?.sortino ?? null,
                 hitRate: bt.metrics?.hitRate ?? null,
               } as Record<string, unknown>))}
