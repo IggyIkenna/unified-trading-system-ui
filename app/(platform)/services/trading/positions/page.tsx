@@ -50,6 +50,7 @@ import { ExportDropdown } from "@/components/ui/export-dropdown"
 import type { ExportColumn } from "@/lib/utils/export"
 import { formatCurrency } from "@/lib/reference-data"
 import { usePositions, useBalances } from "@/hooks/api/use-positions"
+import { useGlobalScope } from "@/lib/stores/global-scope-store"
 import { FilterBar, useFilterState, type FilterDefinition } from "@/components/platform/filter-bar"
 import { useWebSocket } from "@/hooks/use-websocket"
 import { useQueryClient } from "@tanstack/react-query"
@@ -89,6 +90,7 @@ interface BalanceRecord {
 function PositionsPageContent() {
   const searchParams = useSearchParams()
   const strategyIdFilter = searchParams.get("strategy_id")
+  const { scope: globalScope } = useGlobalScope()
 
   const { isLive } = useExecutionMode()
   const { data: positionsRaw, isLoading: positionsLoading, error: positionsError, refetch: refetchPositions } = usePositions()
@@ -138,13 +140,18 @@ function PositionsPageContent() {
     }
   }, [strategyIdFilter])
 
-  // Coerce API response to typed arrays
+  // Coerce API response to typed arrays, then filter by global scope
   const positions: PositionRecord[] = React.useMemo(() => {
     if (!positionsRaw) return []
     const raw = positionsRaw as Record<string, unknown>
     const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).positions
-    return Array.isArray(arr) ? (arr as PositionRecord[]) : []
-  }, [positionsRaw])
+    let result = Array.isArray(arr) ? (arr as PositionRecord[]) : []
+    // Apply global scope strategy filter
+    if (globalScope.strategyIds.length > 0) {
+      result = result.filter(p => globalScope.strategyIds.includes(p.strategy_id))
+    }
+    return result
+  }, [positionsRaw, globalScope.strategyIds])
 
   const balances: BalanceRecord[] = React.useMemo(() => {
     if (!balancesRaw) return []
@@ -300,17 +307,6 @@ function PositionsPageContent() {
 
   return (
     <div className="p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <ExecutionModeIndicator />
-          <span className="text-sm text-muted-foreground">
-            {isLive ? "Real-time positions" : "Reconstructed positions from batch"}
-          </span>
-        </div>
-        <ExecutionModeToggle showDescription />
-      </div>
-
       {/* Unified Filter Bar */}
       <FilterBar
         filters={positionFilterDefs}

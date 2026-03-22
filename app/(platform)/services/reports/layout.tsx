@@ -2,6 +2,7 @@
 
 import { ServiceTabs, REPORTS_TABS } from "@/components/shell/service-tabs"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { EntitlementGate } from "@/components/platform/entitlement-gate"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function ReportsServiceLayout({ children }: { children: React.ReactNode }) {
@@ -10,7 +11,9 @@ export default function ReportsServiceLayout({ children }: { children: React.Rea
   return (
     <>
       <ServiceTabs tabs={REPORTS_TABS} entitlements={user?.entitlements} />
-      <ErrorBoundary>{children}</ErrorBoundary>
+      <EntitlementGate entitlement="reporting" serviceName="Reports">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </EntitlementGate>
     </>
   )
 }

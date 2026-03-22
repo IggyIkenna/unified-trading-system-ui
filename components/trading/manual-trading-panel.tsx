@@ -25,6 +25,15 @@ import { cn } from "@/lib/utils"
 import { usePlaceOrder, usePreTradeCheck } from "@/hooks/api/use-orders"
 import { useAuth } from "@/hooks/use-auth"
 
+const VENUES = [
+  "Binance", "Deribit", "Hyperliquid", "Coinbase", "OKX", "Bybit",
+  "Uniswap", "Aave", "Smarkets", "Betfair", "Polymarket", "Kalshi",
+] as const
+
+const ALGOS = [
+  "MARKET", "TWAP", "VWAP", "ICEBERG", "SOR", "BEST_PRICE", "BENCHMARK_FILL",
+] as const
+
 interface ComplianceCheckResult {
   name: string
   passed: boolean
@@ -68,6 +77,11 @@ export function ManualTradingPanel({
   const [price, setPrice] = React.useState("")
   const [strategyId, setStrategyId] = React.useState("manual")
   const [reason, setReason] = React.useState("")
+  const [algo, setAlgo] = React.useState<string>("MARKET")
+  const [algoParams, setAlgoParams] = React.useState<Record<string, number>>({})
+  const [executionMode, setExecutionMode] = React.useState<"execute" | "record_only">("execute")
+  const [counterparty, setCounterparty] = React.useState("")
+  const [sourceReference, setSourceReference] = React.useState("")
   const [orderState, setOrderState] = React.useState<OrderState>("idle")
   const [errorMessage, setErrorMessage] = React.useState("")
   const [complianceResult, setComplianceResult] = React.useState<PreTradeCheckResponse | null>(null)
@@ -127,6 +141,11 @@ export function ManualTradingPanel({
         strategy_id: strategyId === "manual" ? undefined : strategyId,
         client_id: user?.org?.id,
         reason: reason || undefined,
+        algo,
+        algo_params: Object.keys(algoParams).length > 0 ? algoParams : undefined,
+        execution_mode: executionMode,
+        counterparty: executionMode === "record_only" && counterparty ? counterparty : undefined,
+        source_reference: executionMode === "record_only" && sourceReference ? sourceReference : undefined,
       })
       setOrderState("success")
       setTimeout(() => {
@@ -143,6 +162,11 @@ export function ManualTradingPanel({
     setPrice("")
     setReason("")
     setStrategyId("manual")
+    setAlgo("MARKET")
+    setAlgoParams({})
+    setExecutionMode("execute")
+    setCounterparty("")
+    setSourceReference("")
     setOrderState("idle")
     setErrorMessage("")
     setComplianceResult(null)
@@ -199,7 +223,7 @@ export function ManualTradingPanel({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {["Binance", "Deribit", "Hyperliquid", "Coinbase", "OKX", "Bybit", "Uniswap", "Aave"].map((v) => (
+                {VENUES.map((v) => (
                   <SelectItem key={v} value={v}>{v}</SelectItem>
                 ))}
               </SelectContent>
@@ -233,6 +257,59 @@ export function ManualTradingPanel({
               <TabsTrigger value="market" className="flex-1">Market</TabsTrigger>
             </TabsList>
           </Tabs>
+
+          {/* Algo */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Algo</label>
+            <Select value={algo} onValueChange={(v) => { setAlgo(v); setAlgoParams({}) }}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ALGOS.map((a) => (
+                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Algo Params */}
+          {algo === "TWAP" && (
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground">Duration (minutes)</label>
+              <Input
+                type="number"
+                placeholder="e.g. 30"
+                value={algoParams.duration_minutes ?? ""}
+                onChange={(e) => setAlgoParams({ ...algoParams, duration_minutes: parseFloat(e.target.value) || 0 })}
+                className="font-mono"
+              />
+            </div>
+          )}
+          {algo === "ICEBERG" && (
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground">Number of Slices</label>
+              <Input
+                type="number"
+                placeholder="e.g. 5"
+                value={algoParams.num_slices ?? ""}
+                onChange={(e) => setAlgoParams({ ...algoParams, num_slices: parseFloat(e.target.value) || 0 })}
+                className="font-mono"
+              />
+            </div>
+          )}
+          {algo === "SOR" && (
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground">Max Slippage (bps)</label>
+              <Input
+                type="number"
+                placeholder="e.g. 10"
+                value={algoParams.max_slippage_bps ?? ""}
+                onChange={(e) => setAlgoParams({ ...algoParams, max_slippage_bps: parseFloat(e.target.value) || 0 })}
+                className="font-mono"
+              />
+            </div>
+          )}
 
           {/* Price */}
           {orderType === "limit" && (
@@ -298,6 +375,38 @@ export function ManualTradingPanel({
               onChange={(e) => setReason(e.target.value)}
             />
           </div>
+
+          {/* Execution Mode */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Execution Mode</label>
+            <Tabs value={executionMode} onValueChange={(v) => setExecutionMode(v as "execute" | "record_only")}>
+              <TabsList className="w-full">
+                <TabsTrigger value="execute" className="flex-1">Execute</TabsTrigger>
+                <TabsTrigger value="record_only" className="flex-1">Record Only</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {executionMode === "record_only" && (
+            <div className="space-y-3 p-3 rounded-lg border bg-muted/30">
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground">Counterparty</label>
+                <Input
+                  placeholder="e.g. Goldman Sachs"
+                  value={counterparty}
+                  onChange={(e) => setCounterparty(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground">Source Reference</label>
+                <Input
+                  placeholder="e.g. Bloomberg ticket #12345"
+                  value={sourceReference}
+                  onChange={(e) => setSourceReference(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
 
           <Separator />
 

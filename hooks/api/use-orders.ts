@@ -82,6 +82,13 @@ export interface PlaceOrderParams {
   strategy_id?: string
   client_id?: string
   reason?: string
+  execution_mode?: "execute" | "record_only"
+  counterparty?: string
+  source_reference?: string
+  category?: string
+  portfolio_id?: string
+  algo?: string
+  algo_params?: Record<string, number>
 }
 
 export interface PreTradeCheckParams {

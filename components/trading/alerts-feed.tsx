@@ -147,10 +147,11 @@ export function AlertsFeed({
         const displayTitle = alert.title || alert.message || "Alert"
 
         return (
-          <div
+          <Link
             key={alert.id}
+            href="/services/trading/alerts"
             className={cn(
-              "flex items-start gap-3 p-3 rounded-lg border transition-all",
+              "flex items-start gap-3 p-3 rounded-lg border transition-all hover:border-white/30 cursor-pointer block",
               alert.acknowledged ? "opacity-50 border-border/30" : "border-border/50",
               escalation?.escalated && "border-[var(--status-error)] animate-pulse"
             )}
@@ -259,7 +260,7 @@ export function AlertsFeed({
                 </div>
               )}
             </div>
-          </div>
+          </Link>
         )
       })}
 

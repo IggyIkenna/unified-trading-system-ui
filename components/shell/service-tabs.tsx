@@ -89,7 +89,6 @@ export const DATA_TABS: ServiceTab[] = [
   { label: "Coverage Matrix", href: "/services/data/coverage" },
   { label: "Missing Data", href: "/services/data/missing" },
   { label: "Venue Health", href: "/services/data/venues" },
-  { label: "Markets", href: "/services/data/markets" },
   { label: "ETL Logs", href: "/services/data/logs" },
 ]
 
@@ -101,7 +100,7 @@ export const BUILD_TABS: ServiceTab[] = [
   { label: "Strategies", href: "/services/research/strategy/backtests", matchPrefix: "/services/research/strategy", requiredEntitlement: "strategy-full" },
   { label: "Backtests", href: "/services/research/strategy/compare", requiredEntitlement: "strategy-full" },
   { label: "Signals", href: "/services/research/ml/validation", requiredEntitlement: "ml-full" },
-  { label: "Execution Research", href: "/services/execution/algos", matchPrefix: "/services/execution", requiredEntitlement: "execution-basic" },
+  { label: "Quant Workspace", href: "/services/research/quant", requiredEntitlement: "strategy-full" },
 ]
 
 // ── Promote (Trader + Risk Review) ───────────────────────────────────────────
@@ -114,17 +113,20 @@ export const PROMOTE_TABS: ServiceTab[] = [
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────
 export const TRADING_TABS: ServiceTab[] = [
-  { label: "Terminal", href: "/services/trading/overview" },
+  { label: "Overview", href: "/services/trading/overview" },
+  { label: "Terminal", href: "/services/trading/terminal" },
   { label: "Positions", href: "/services/trading/positions" },
   { label: "Orders", href: "/services/trading/orders" },
+  { label: "Alerts", href: "/services/trading/alerts" },
+  { label: "Book Trade", href: "/services/trading/book" },
   { label: "Accounts", href: "/services/trading/accounts" },
-  { label: "Markets", href: "/services/trading/markets" },
+  { label: "P&L Breakdown", href: "/services/trading/pnl" },
 ]
 
 // ── Observe (Risk / Ops) ─────────────────────────────────────────────────────
 export const OBSERVE_TABS: ServiceTab[] = [
-  { label: "Risk Dashboard", href: "/services/trading/risk" },
-  { label: "Alerts", href: "/services/trading/alerts" },
+  { label: "Risk Dashboard", href: "/services/observe/risk" },
+  { label: "Alerts", href: "/services/observe/alerts" },
   { label: "News", href: "/services/observe/news" },
   { label: "Strategy Health", href: "/services/observe/strategy-health" },
   { label: "System Health", href: "/services/observe/health" },

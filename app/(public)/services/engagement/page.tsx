@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Check, Database, Brain, FlaskConical, Zap, BarChart3, Shield, FileText, TrendingUp, Sparkles } from "lucide-react"
+import { ArrowRight, Check, Database, Brain, FlaskConical, Zap, BarChart3, Shield, FileText, TrendingUp, Sparkles, Briefcase, Scale } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -101,6 +101,48 @@ const ENGAGEMENT_TIERS = [
     services: ["Everything above", "Investment Management", "Compliance & Reporting", "Dedicated Support"],
     bestFor: "Allocators, family offices, and institutions seeking managed alpha",
     cta: "Schedule Consultation",
+  },
+  {
+    id: "investment",
+    name: "Investment Management",
+    tagline: "FCA-authorised. Co-invest at the same terms as house.",
+    description: "Professional-client investment management under FCA authorisation. Separately managed accounts or fund structures across crypto, traditional finance, DeFi, and sports. You allocate capital — we manage the full lifecycle from strategy selection through execution to regulatory reporting. Co-investment means our capital sits alongside yours, same terms, same strategies.",
+    icon: Briefcase,
+    pricing: "Contact us",
+    color: "border-rose-500/30",
+    serviceUrl: "/services/investment",
+    journey: [
+      "Separately managed accounts or fund access",
+      "Cross-asset mandates — crypto, TradFi, DeFi, sports",
+      "Co-investment: our capital alongside yours, same terms",
+      "Full transparency — see every trade, every position, every fee",
+      "Monthly performance reporting and attribution",
+      "FCA-authorised, MiFID II compliant",
+    ],
+    services: ["Separately Managed Accounts", "Fund Access", "Cross-Asset Mandates", "Monthly Reporting", "Full Transparency"],
+    bestFor: "Allocators, family offices, and professional investors seeking managed alpha with full regulatory protection and co-investment alignment",
+    cta: "Schedule Consultation",
+  },
+  {
+    id: "regulatory",
+    name: "Regulatory Umbrella",
+    tagline: "FCA Appointed Representative services. Operate legally in weeks.",
+    description: "Become an FCA Appointed Representative under our principal firm. We provide the regulatory permissions, compliance supervision, and reporting infrastructure — you focus on trading. Ideal for institutional algo trading firms that need FCA coverage without the 12-month authorisation process.",
+    icon: Scale,
+    pricing: "Contact us",
+    color: "border-slate-500/30",
+    serviceUrl: "/services/regulatory",
+    journey: [
+      "FCA Appointed Representative status — fast-track onboarding",
+      "Compliance supervision and ongoing monitoring",
+      "MiFID II transaction and best execution reporting",
+      "MLRO services and financial crime oversight",
+      "Regulatory change management — we track rule changes for you",
+      "Operate under 4 regulated activities",
+    ],
+    services: ["FCA AR Coverage", "Compliance Supervision", "MiFID II Reporting", "MLRO Services", "Best Execution Monitoring"],
+    bestFor: "Algo trading firms and quant shops that need FCA permissions without building their own compliance function",
+    cta: "Get in Touch",
   },
   {
     id: "custom",
@@ -235,7 +277,7 @@ export default function EngagementModelsPage() {
       {/* Tier Cards */}
       <section className="py-16">
         <div className="container px-4 md:px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {ENGAGEMENT_TIERS.map((tier) => {
               const Icon = tier.icon
               return (

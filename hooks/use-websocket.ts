@@ -25,6 +25,9 @@ interface UseWebSocketOptions {
 }
 
 export function useWebSocket({ url, enabled = true, onMessage, reconnectInterval = 5000 }: UseWebSocketOptions) {
+  // Disable WebSocket in static mock mode — no backend to connect to
+  const isMockMode = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true"
+  if (isMockMode) enabled = false
   const [status, setStatus] = useState<WebSocketStatus>("disconnected")
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)

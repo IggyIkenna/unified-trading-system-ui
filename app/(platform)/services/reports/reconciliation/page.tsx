@@ -25,14 +25,29 @@ import {
   RefreshCw,
   TrendingDown,
   PackageX,
+  CheckCircle2,
+  XCircle,
+  Search,
+  ArrowRight,
+  PenLine,
 } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { Textarea } from "@/components/ui/textarea"
+import { useRouter } from "next/navigation"
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 type BreakType = "position" | "pnl" | "fee"
-type ReconciliationStatus = "resolved" | "pending" | "investigating"
+type ReconciliationStatus = "resolved" | "pending" | "investigating" | "rejected"
 
 interface ReconciliationRecord {
   id: string
@@ -94,70 +109,139 @@ const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "pending", label: "Pending" },
   { value: "investigating", label: "Investigating" },
   { value: "resolved", label: "Resolved" },
+  { value: "rejected", label: "Rejected" },
 ]
 
 // ---------------------------------------------------------------------------
 // Column definitions
 // ---------------------------------------------------------------------------
 
-const historyColumns: ColumnDef<ReconciliationRecord, unknown>[] = [
-  {
-    accessorKey: "date",
-    header: "Date",
-    cell: ({ row }) => (
-      <span className="font-mono text-muted-foreground">{row.original.date}</span>
-    ),
-  },
-  {
-    accessorKey: "venue",
-    header: "Venue",
-  },
-  {
-    accessorKey: "breakType",
-    header: "Break Type",
-    cell: ({ row }) => breakTypeBadge(row.original.breakType),
-  },
-  {
-    accessorKey: "liveValue",
-    header: () => <span className="flex justify-end">Live Value</span>,
-    cell: ({ row }) => (
-      <span className="flex justify-end font-mono">{formatNumeric(row.original.liveValue)}</span>
-    ),
-  },
-  {
-    accessorKey: "batchValue",
-    header: () => <span className="flex justify-end">Batch Value</span>,
-    cell: ({ row }) => (
-      <span className="flex justify-end font-mono">{formatNumeric(row.original.batchValue)}</span>
-    ),
-  },
-  {
-    accessorKey: "delta",
-    header: () => <span className="flex justify-end">Delta</span>,
-    cell: ({ row }) => {
-      const delta = row.original.delta
-      const colorClass =
-        delta > 0
-          ? "text-[var(--pnl-positive)]"
-          : delta < 0
-          ? "text-[var(--pnl-negative)]"
-          : "text-muted-foreground"
-      return (
-        <span className={`flex justify-end font-mono ${colorClass}`}>
-          {delta > 0 ? "+" : ""}
-          {formatNumeric(delta)}
-        </span>
-      )
+function buildHistoryColumns(handlers: {
+  onResolveAction: (record: ReconciliationRecord, action: "accept" | "reject" | "investigate") => void
+  onBookCorrection: (record: ReconciliationRecord) => void
+  onViewMarket: (record: ReconciliationRecord) => void
+}): ColumnDef<ReconciliationRecord, unknown>[] {
+  return [
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: ({ row }) => (
+        <span className="font-mono text-muted-foreground">{row.original.date}</span>
+      ),
     },
-  },
-  {
-    accessorKey: "status",
-    header: () => <span className="flex justify-end">Status</span>,
-    cell: ({ row }) => (
-      <span className="flex justify-end">{statusBadge(row.original.status)}</span>
-    ),
-  },
-]
+    {
+      accessorKey: "venue",
+      header: "Venue",
+    },
+    {
+      accessorKey: "breakType",
+      header: "Break Type",
+      cell: ({ row }) => breakTypeBadge(row.original.breakType),
+    },
+    {
+      accessorKey: "liveValue",
+      header: () => <span className="flex justify-end">Live Value</span>,
+      cell: ({ row }) => (
+        <span className="flex justify-end font-mono">{formatNumeric(row.original.liveValue)}</span>
+      ),
+    },
+    {
+      accessorKey: "batchValue",
+      header: () => <span className="flex justify-end">Batch Value</span>,
+      cell: ({ row }) => (
+        <span className="flex justify-end font-mono">{formatNumeric(row.original.batchValue)}</span>
+      ),
+    },
+    {
+      accessorKey: "delta",
+      header: () => <span className="flex justify-end">Delta</span>,
+      cell: ({ row }) => {
+        const delta = row.original.delta
+        const colorClass =
+          delta > 0
+            ? "text-[var(--pnl-positive)]"
+            : delta < 0
+            ? "text-[var(--pnl-negative)]"
+            : "text-muted-foreground"
+        return (
+          <span className={`flex justify-end font-mono ${colorClass}`}>
+            {delta > 0 ? "+" : ""}
+            {formatNumeric(delta)}
+          </span>
+        )
+      },
+    },
+    {
+      accessorKey: "status",
+      header: () => <span className="flex justify-end">Status</span>,
+      cell: ({ row }) => (
+        <span className="flex justify-end">{statusBadge(row.original.status)}</span>
+      ),
+    },
+    {
+      id: "actions",
+      header: () => <span className="flex justify-end">Actions</span>,
+      cell: ({ row }) => {
+        const record = row.original
+        return (
+          <div className="flex justify-end items-center gap-1">
+            {record.status !== "resolved" && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  title="Accept"
+                  onClick={() => handlers.onResolveAction(record, "accept")}
+                >
+                  <CheckCircle2 className="size-3.5 text-emerald-500" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  title="Reject"
+                  onClick={() => handlers.onResolveAction(record, "reject")}
+                >
+                  <XCircle className="size-3.5 text-rose-500" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0"
+                  title="Investigate"
+                  onClick={() => handlers.onResolveAction(record, "investigate")}
+                >
+                  <Search className="size-3.5 text-blue-500" />
+                </Button>
+              </>
+            )}
+            {record.status === "rejected" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                title="Book Correction"
+                onClick={() => handlers.onBookCorrection(record)}
+              >
+                <PenLine className="size-3.5 text-amber-500" />
+              </Button>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              title="View Market"
+              onClick={() => handlers.onViewMarket(record)}
+            >
+              <ArrowRight className="size-3.5 text-muted-foreground" />
+            </Button>
+          </div>
+        )
+      },
+    },
+  ]
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -182,6 +266,7 @@ function statusBadge(status: ReconciliationStatus) {
     resolved: "bg-[var(--status-live)]/10 text-[var(--status-live)]",
     pending: "bg-[var(--status-warning)]/10 text-[var(--status-warning)]",
     investigating: "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]",
+    rejected: "bg-[var(--pnl-negative)]/10 text-[var(--pnl-negative)]",
   }
   return (
     <Badge variant="outline" className={`text-[10px] capitalize ${map[status]}`}>
@@ -226,17 +311,25 @@ function LoadingSkeleton() {
 // ---------------------------------------------------------------------------
 
 export default function ReconciliationPage() {
+  const router = useRouter()
   const { data: apiData, isLoading, isError, refetch } = useReconciliation()
 
   const [breakTypeFilter, setBreakTypeFilter] = React.useState("all")
   const [venueFilter, setVenueFilter] = React.useState("All")
   const [statusFilter, setStatusFilter] = React.useState("all")
 
-  // Merge API data with fallback
+  // Resolution dialog state
+  const [resolvingBreak, setResolvingBreak] = React.useState<ReconciliationRecord | null>(null)
+  const [resolveAction, setResolveAction] = React.useState<"accept" | "reject" | "investigate">("accept")
+  const [resolveNote, setResolveNote] = React.useState("")
+  const [localOverrides, setLocalOverrides] = React.useState<Record<string, ReconciliationStatus>>({})
+
+  // Merge API data with fallback, apply local overrides
   const history: ReconciliationRecord[] = React.useMemo(() => {
     const raw = (apiData as Record<string, unknown>)?.history as ReconciliationRecord[] | undefined
-    return raw ?? FALLBACK_HISTORY
-  }, [apiData])
+    const base = raw ?? FALLBACK_HISTORY
+    return base.map((r) => localOverrides[r.id] ? { ...r, status: localOverrides[r.id] } : r)
+  }, [apiData, localOverrides])
 
   // Filtered history
   const filtered = React.useMemo(() => {
@@ -247,6 +340,47 @@ export default function ReconciliationPage() {
       return true
     })
   }, [history, breakTypeFilter, venueFilter, statusFilter])
+
+  // Resolution handlers
+  const handleResolveAction = React.useCallback((record: ReconciliationRecord, action: "accept" | "reject" | "investigate") => {
+    setResolvingBreak(record)
+    setResolveAction(action)
+    setResolveNote("")
+  }, [])
+
+  const handleBookCorrection = React.useCallback((record: ReconciliationRecord) => {
+    const prefill = {
+      venue: record.venue,
+      instrument_id: record.id,
+      quantity: Math.abs(record.delta),
+      side: record.delta > 0 ? "BUY" : "SELL",
+      execution_mode: "record_only",
+      reason: `Correction for break ${record.id}`,
+    }
+    router.push(`/services/trading/book?prefill=${encodeURIComponent(JSON.stringify(prefill))}`)
+  }, [router])
+
+  const handleViewMarket = React.useCallback((record: ReconciliationRecord) => {
+    router.push(`/services/trading/markets?instrument=${record.id}`)
+  }, [router])
+
+  const handleConfirmResolve = React.useCallback(() => {
+    if (!resolvingBreak || resolveNote.length < 10) return
+    const statusMap: Record<"accept" | "reject" | "investigate", ReconciliationStatus> = {
+      accept: "resolved",
+      reject: "rejected",
+      investigate: "investigating",
+    }
+    setLocalOverrides((prev) => ({ ...prev, [resolvingBreak.id]: statusMap[resolveAction] }))
+    setResolvingBreak(null)
+    setResolveNote("")
+  }, [resolvingBreak, resolveAction, resolveNote])
+
+  // Build columns with handlers
+  const historyColumns = React.useMemo(
+    () => buildHistoryColumns({ onResolveAction: handleResolveAction, onBookCorrection: handleBookCorrection, onViewMarket: handleViewMarket }),
+    [handleResolveAction, handleBookCorrection, handleViewMarket],
+  )
 
   // Summary counts
   const totalBreaks = history.filter((r) => r.status !== "resolved").length
@@ -434,6 +568,65 @@ export default function ReconciliationPage() {
           />
         </CardContent>
       </Card>
+
+      {/* Resolution Dialog */}
+      <Dialog open={resolvingBreak !== null} onOpenChange={(open) => { if (!open) { setResolvingBreak(null); setResolveNote("") } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Resolve Break {resolvingBreak?.id}</DialogTitle>
+            <DialogDescription>
+              Confirm resolution action for this reconciliation break.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Action:</span>
+              <Badge
+                variant="outline"
+                className={
+                  resolveAction === "accept"
+                    ? "border-emerald-500 text-emerald-500"
+                    : resolveAction === "reject"
+                    ? "border-rose-500 text-rose-500"
+                    : "border-blue-500 text-blue-500"
+                }
+              >
+                {resolveAction.toUpperCase()}
+              </Badge>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground">Note (min 10 characters)</label>
+              <Textarea
+                placeholder="Describe the rationale for this resolution..."
+                value={resolveNote}
+                onChange={(e) => setResolveNote(e.target.value)}
+                className="min-h-[80px]"
+              />
+              {resolveNote.length > 0 && resolveNote.length < 10 && (
+                <p className="text-[10px] text-rose-500">{10 - resolveNote.length} more characters required</p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setResolvingBreak(null); setResolveNote("") }}>
+              Cancel
+            </Button>
+            <Button
+              disabled={resolveNote.length < 10}
+              onClick={handleConfirmResolve}
+              className={
+                resolveAction === "accept"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : resolveAction === "reject"
+                  ? "bg-rose-600 hover:bg-rose-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }
+            >
+              Confirm {resolveAction.charAt(0).toUpperCase() + resolveAction.slice(1)}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }

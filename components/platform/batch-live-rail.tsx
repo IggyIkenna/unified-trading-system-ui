@@ -239,7 +239,7 @@ export function BatchLiveToggle({
         onClick={() => onChange("BATCH")}
         disabled={disabled}
       >
-        BATCH
+        SIMULATED
       </button>
       <button
         className={cn(

@@ -51,8 +51,30 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
     return "bg-[var(--status-live)]"
   }
 
+  // Aggregate by venue name
+  const aggregatedVenues = React.useMemo(() => {
+    const grouped: Record<string, { venue: string; venueLabel: string; used: number; available: number; total: number; positions: number }> = {}
+    venues.forEach(v => {
+      const key = v.venue || v.venueLabel || "Unknown"
+      if (!grouped[key]) {
+        grouped[key] = { venue: key, venueLabel: v.venueLabel || key, used: 0, available: 0, total: 0, positions: 0 }
+      }
+      grouped[key].used += v.used || 0
+      grouped[key].available += v.available || 0
+      grouped[key].total += v.total || 0
+      grouped[key].positions += 1
+    })
+    return Object.values(grouped).map(g => ({
+      ...g,
+      utilization: g.total > 0 ? Math.round((g.used / g.total) * 100) : 0,
+      trend: "stable" as const,
+      marginCallDistance: g.total > 0 ? Math.max(5, 30 - Math.round((g.used / g.total) * 30)) : 30,
+      lastUpdate: new Date().toISOString(),
+    }))
+  }, [venues])
+
   // Sort by utilization descending
-  const sortedVenues = [...venues].sort((a, b) => b.utilization - a.utilization)
+  const sortedVenues = [...aggregatedVenues].sort((a, b) => b.utilization - a.utilization)
 
   return (
     <Card className={className}>
@@ -60,7 +82,7 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm">Margin Utilization by Venue</CardTitle>
           <Badge variant="outline" className="text-[10px]">
-            {venues.length} venues
+            {sortedVenues.length} venues
           </Badge>
         </div>
       </CardHeader>
@@ -146,17 +168,17 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
           </TooltipProvider>
         ))}
 
-        {/* Summary row */}
+        {/* Summary row — uses aggregated data to avoid double-counting */}
         <div className="pt-2 border-t border-border">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Total Across Venues</span>
             <div className="flex items-center gap-2">
               <span className="font-mono">
-                {formatCurrency(venues.reduce((sum, v) => sum + v.used, 0))}
+                {formatCurrency(sortedVenues.reduce((sum, v) => sum + v.used, 0))}
               </span>
               <span className="text-muted-foreground">/</span>
               <span className="font-mono text-muted-foreground">
-                {formatCurrency(venues.reduce((sum, v) => sum + v.total, 0))}
+                {formatCurrency(sortedVenues.reduce((sum, v) => sum + v.total, 0))}
               </span>
             </div>
           </div>
@@ -168,9 +190,23 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
 
 // Compact inline version for the command center header
 export function MarginUtilizationCompact({ venues }: { venues: VenueMargin[] }) {
-  const maxUtilization = Math.max(...venues.map((v) => v.utilization))
-  const criticalCount = venues.filter((v) => v.utilization >= 90).length
-  const warningCount = venues.filter((v) => v.utilization >= 75 && v.utilization < 90).length
+  // Aggregate by venue to avoid counting per-position rows
+  const aggregated = React.useMemo(() => {
+    const grouped: Record<string, { used: number; total: number }> = {}
+    venues.forEach(v => {
+      const key = v.venue || v.venueLabel || "Unknown"
+      if (!grouped[key]) grouped[key] = { used: 0, total: 0 }
+      grouped[key].used += v.used || 0
+      grouped[key].total += v.total || 0
+    })
+    return Object.values(grouped).map(g => ({
+      utilization: g.total > 0 ? Math.round((g.used / g.total) * 100) : 0,
+    }))
+  }, [venues])
+
+  const maxUtilization = Math.max(...aggregated.map((v) => v.utilization), 0)
+  const criticalCount = aggregated.filter((v) => v.utilization >= 90).length
+  const warningCount = aggregated.filter((v) => v.utilization >= 75 && v.utilization < 90).length
 
   return (
     <div className="flex items-center gap-2">

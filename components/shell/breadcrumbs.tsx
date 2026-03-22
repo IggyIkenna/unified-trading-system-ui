@@ -9,12 +9,9 @@ export function Breadcrumbs() {
   const pathname = usePathname() || ""
 
   // Don't show on dashboard or top-level routes
-  if (!pathname.startsWith("/services/")) return null
+  if (!pathname.startsWith("/services/") && !pathname.startsWith("/admin") && !pathname.startsWith("/config") && !pathname.startsWith("/devops") && !pathname.startsWith("/ops") && !pathname.startsWith("/internal") && !pathname.startsWith("/investor")) return null
 
   const mapping = getRouteMapping(pathname)
-  if (!mapping) return null
-
-  const stage = lifecycleStages[mapping.primaryStage]
 
   // Build crumbs from URL segments: /services/data/coverage -> ["data", "coverage"]
   const segments = pathname.replace("/services/", "").split("/").filter(Boolean)
@@ -34,19 +31,23 @@ export function Breadcrumbs() {
   const formatLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ")
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1 px-6 py-2 text-xs text-muted-foreground border-b border-border/50 bg-background/50">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 px-6 py-2 text-xs text-muted-foreground bg-card/50 border-b border-border">
       <Link href="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1">
         <Home className="size-3" />
-        Home
+        Services
       </Link>
-      <ChevronRight className="size-3" />
-      <Link href={`/services/${serviceName}/overview`} className="hover:text-foreground transition-colors">
-        {serviceLabels[serviceName] ?? formatLabel(serviceName)}
-      </Link>
+      {serviceName && (
+        <>
+          <ChevronRight className="size-3" />
+          <Link href={`/services/${serviceName}/overview`} className="hover:text-foreground transition-colors">
+            {serviceLabels[serviceName] ?? formatLabel(serviceName)}
+          </Link>
+        </>
+      )}
       {pageName && pageName !== "overview" && pageName !== serviceName && (
         <>
           <ChevronRight className="size-3" />
-          <span className="text-foreground font-medium">{mapping.label || formatLabel(pageName)}</span>
+          <span className="text-foreground font-medium">{mapping?.label || formatLabel(pageName)}</span>
         </>
       )}
     </nav>

@@ -300,6 +300,15 @@ export default function RiskPage() {
     var95: Math.round((d.var95 ?? 0) * varMethodMultipliers[varMethod] * regimeMultiplier),
   }))
 
+  // Sorted limits for display — MUST be before early returns to preserve hook order
+  const sortedLimits = React.useMemo(() => {
+    return [...mockLimitsHierarchy].sort((a, b) => {
+      const utilA = getUtilization(a.value, a.limit)
+      const utilB = getUtilization(b.value, b.limit)
+      return utilB - utilA
+    })
+  }, [mockLimitsHierarchy])
+
   if (isLoading) {
     return (
       <div className="p-6">
@@ -338,15 +347,6 @@ export default function RiskPage() {
   const totalVar99 = 4800000 * regimeMultiplier
   const totalES95 = 3200000 * regimeMultiplier
   const totalES99 = 6700000 * regimeMultiplier
-
-  // Sorted limits for display
-  const sortedLimits = React.useMemo(() => {
-    return [...mockLimitsHierarchy].sort((a, b) => {
-      const utilA = getUtilization(a.value, a.limit)
-      const utilB = getUtilization(b.value, b.limit)
-      return utilB - utilA
-    })
-  }, [])
 
   const criticalCount = sortedLimits.filter((l) => getUtilization(l.value, l.limit) >= 90).length
   const warningCount = sortedLimits.filter((l) => {

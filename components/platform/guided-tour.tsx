@@ -20,8 +20,8 @@ const TOUR_STEPS: Step[] = [
   },
   {
     target: '[href="/services/trading/overview"]',
-    content: "The Trading Terminal shows live prices, candlestick charts, order book depth, and order entry. Prices update via WebSocket.",
-    title: "Trading Terminal",
+    content: "The Trading Overview shows your P&L, strategy performance, alerts, and service health. Click into the Terminal tab to trade.",
+    title: "Trading Overview",
   },
   {
     target: '[data-slot="debug-footer"]',

@@ -2,20 +2,218 @@
 
 import { ServiceTabs, TRADING_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
+import { BatchLiveRail } from "@/components/platform/batch-live-rail"
+import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { EntitlementGate } from "@/components/platform/entitlement-gate"
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/hooks/use-auth"
+import { useGlobalScope } from "@/lib/stores/global-scope-store"
+import { usePositionsSummary } from "@/hooks/api/use-positions"
+import { useAlertsSummary } from "@/hooks/api/use-alerts"
+import { useServiceHealth } from "@/hooks/api/use-service-status"
+import { useOrders } from "@/hooks/api/use-orders"
+import { Activity, AlertTriangle, TrendingUp, Wallet, Server, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { cn } from "@/lib/utils"
+import Link from "next/link"
+
+function TradingSidebar() {
+  const { data: positionsSummary } = usePositionsSummary()
+  const { data: alertsSummary } = useAlertsSummary()
+  const { data: healthData } = useServiceHealth()
+  const { data: ordersData } = useOrders()
+  const ps = positionsSummary as Record<string, unknown> | undefined
+  const als = alertsSummary as Record<string, unknown> | undefined
+  const health = healthData as Record<string, unknown> | undefined
+  const ordersRaw = ordersData as unknown
+  const orders = Array.isArray(ordersRaw) ? ordersRaw : ((ordersRaw as Record<string, unknown>)?.orders ?? []) as Array<Record<string, unknown>>
+
+  const fmt = (v: unknown) => {
+    const n = Number(v) || 0
+    if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(1)}M`
+    if (Math.abs(n) >= 1e3) return `$${(n / 1e3).toFixed(0)}K`
+    return `$${n.toFixed(0)}`
+  }
+
+  const services = (health?.services ?? []) as Array<Record<string, unknown>>
+  const healthyCount = services.filter(s => s.status === "live" || s.status === "healthy").length
+
+  return (
+    <div className="h-full space-y-3 p-3 overflow-y-auto">
+      <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Quick View</div>
+
+      {/* Positions */}
+      <Link href="/services/trading/positions">
+        <Card className="hover:border-white/20 transition-colors cursor-pointer">
+          <CardContent className="p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              <Activity className="size-3" /> Positions
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <div className="text-muted-foreground text-[10px]">Open</div>
+                <div className="font-mono font-medium">{Number(ps?.totalPositions) || 0}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-[10px]">Exposure</div>
+                <div className="font-mono font-medium">{fmt(ps?.totalExposure)}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-[10px]">Unrealised P&L</div>
+                <div className={cn("font-mono font-medium", Number(ps?.totalUnrealizedPnl) >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                  {fmt(ps?.totalUnrealizedPnl)}
+                </div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-[10px]">Margin</div>
+                <div className="font-mono font-medium">{fmt(ps?.totalMargin)}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Alerts */}
+      <Link href="/services/trading/alerts">
+        <Card className="hover:border-white/20 transition-colors cursor-pointer">
+          <CardContent className="p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              <AlertTriangle className="size-3" /> Alerts
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <div className="text-muted-foreground text-[10px]">Critical</div>
+                <div className="font-mono font-medium text-rose-400">{Number(als?.critical) || 0}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-[10px]">Warning</div>
+                <div className="font-mono font-medium text-amber-400">{Number(als?.warning) || 0}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-[10px]">Total</div>
+                <div className="font-mono font-medium">{Number(als?.total) || 0}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-[10px]">Unacked</div>
+                <div className="font-mono font-medium">{Number(als?.unacknowledged) || 0}</div>
+              </div>
+          </div>
+        </CardContent>
+      </Card>
+      </Link>
+
+      {/* Recent Fills */}
+      <Link href="/services/trading/orders">
+        <Card className="hover:border-white/20 transition-colors cursor-pointer">
+          <CardContent className="p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              <TrendingUp className="size-3" /> Recent Fills
+            </div>
+            <div className="space-y-1">
+              {(orders as Array<Record<string, unknown>>).slice(0, 3).map((o, i) => (
+                <div key={String(o.order_id ?? i)} className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center gap-1">
+                    {String(o.side) === "BUY" ? (
+                      <ArrowUpRight className="size-2.5 text-emerald-400" />
+                    ) : (
+                      <ArrowDownRight className="size-2.5 text-rose-400" />
+                    )}
+                    <span className="font-mono">{String(o.instrument ?? "")}</span>
+                  </div>
+                  <span className={cn("font-mono", String(o.status) === "FILLED" ? "text-emerald-400" : "text-amber-400")}>
+                    {String(o.status ?? "")}
+                  </span>
+                </div>
+              ))}
+              {orders.length === 0 && (
+                <div className="text-[10px] text-muted-foreground text-center py-2">No recent fills</div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* System Health */}
+      <Link href="/services/observe/health">
+        <Card className="hover:border-white/20 transition-colors cursor-pointer">
+          <CardContent className="p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              <Server className="size-3" /> System Health
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <div className="text-muted-foreground text-[10px]">Services</div>
+                <div className="font-mono font-medium">{services.length}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground text-[10px]">Healthy</div>
+                <div className="font-mono font-medium text-emerald-400">{healthyCount}/{services.length}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Account Balances */}
+      <Link href="/services/trading/accounts">
+        <Card className="hover:border-white/20 transition-colors cursor-pointer">
+          <CardContent className="p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              <Wallet className="size-3" /> Accounts
+            </div>
+            <div className="text-xs">
+              <div className="text-muted-foreground text-[10px]">Total Balance</div>
+              <div className="font-mono font-medium">{fmt(ps?.totalExposure ? Number(ps.totalExposure) * 1.8 : 0)}</div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    </div>
+  )
+}
 
 export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
+  const { scope, setMode } = useGlobalScope()
 
   return (
     <>
       <ServiceTabs
         tabs={TRADING_TABS}
         entitlements={user?.entitlements}
-        rightSlot={LIVE_ASOF_VISIBLE.run ? <LiveAsOfToggle /> : undefined}
+        rightSlot={
+          <div className="flex items-center gap-3">
+            <GlobalScopeFilters />
+            {LIVE_ASOF_VISIBLE.run && <LiveAsOfToggle />}
+          </div>
+        }
       />
-      <ErrorBoundary>{children}</ErrorBoundary>
+      <BatchLiveRail
+        platform="strategy"
+        currentStage="Monitor"
+        context={scope.mode === "live" ? "LIVE" : "BATCH"}
+        onContextChange={(v) => setMode(v === "LIVE" ? "live" : "batch")}
+        compact
+      />
+      <ResizablePanelGroup
+        direction="horizontal"
+        autoSaveId="trading-service-layout"
+        className="min-h-[calc(100vh-180px)]"
+      >
+        <ResizablePanel defaultSize={82} minSize={60}>
+          <div className="h-full overflow-auto min-w-[800px]">
+            <EntitlementGate entitlement="execution-basic" serviceName="Trading">
+              <ErrorBoundary>{children}</ErrorBoundary>
+            </EntitlementGate>
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel defaultSize={18} minSize={12} maxSize={30} collapsible>
+          <TradingSidebar />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </>
   )
 }

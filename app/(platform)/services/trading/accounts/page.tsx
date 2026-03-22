@@ -183,12 +183,12 @@ export default function AccountsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {balances.map((b) => {
+                {balances.map((b, idx) => {
                   const marginUsed = b.margin_used ?? b.locked
                   const marginTotal = b.margin_total ?? b.total
                   const utilization = marginTotal > 0 ? (marginUsed / marginTotal) * 100 : 0
                   return (
-                    <TableRow key={b.venue}>
+                    <TableRow key={`${b.venue}-${b.account ?? idx}`}>
                       <TableCell className="font-medium">{b.venue}</TableCell>
                       <TableCell className="text-right font-mono">${formatCurrency(b.free)}</TableCell>
                       <TableCell className="text-right font-mono">${formatCurrency(b.locked)}</TableCell>

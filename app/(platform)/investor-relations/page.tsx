@@ -904,6 +904,43 @@ export default function PresentationPage() {
               </div>
             )}
 
+            {/* Demo Slide */}
+            {slide.type === "demo" && (
+              <div>
+                <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
+                <p className="text-muted-foreground mb-8 max-w-3xl">{slide.subtitle}</p>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {slide.sections?.map((section: { name: string; desc: string }, i: number) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * i }}
+                      className="p-6 rounded-lg border border-border bg-card"
+                    >
+                      <div className="text-sm font-semibold text-primary mb-1">{section.name}</div>
+                      <div className="text-xs text-muted-foreground">{section.desc}</div>
+                    </motion.div>
+                  ))}
+                </div>
+                {slide.previewLink && (
+                  <div className="flex justify-center mb-6">
+                    <Button size="lg" asChild>
+                      <Link href={slide.previewLink}>
+                        Launch Interactive Preview
+                        <ArrowRight className="ml-2 size-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+                {slide.note && (
+                  <div className="p-4 rounded-lg border border-border/50 bg-muted/30 text-center">
+                    <p className="text-xs text-muted-foreground italic">{slide.note}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Lifecycle Slide */}
             {slide.type === "lifecycle" && (
               <div>

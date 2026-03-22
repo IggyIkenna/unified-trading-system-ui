@@ -70,7 +70,7 @@ stop_all() {
     rm -f "$pidfile"
   done
   # Also kill anything holding our ports
-  for port in 3000 8030 8200 8014; do
+  for port in 3000 3100 8030 8200 8014; do
     local holders
     holders=$(lsof -ti ":$port" 2>/dev/null || true)
     if [ -n "$holders" ]; then
@@ -105,7 +105,7 @@ show_status() {
 
   echo ""
   echo "═══ Port Check ═══"
-  for port in 3000 8030 8200 8014; do
+  for port in 3000 3100 8030 8200 8014; do
     local result
     result=$(lsof -i ":$port" -sTCP:LISTEN 2>/dev/null | tail -1)
     if [ -n "$result" ]; then
@@ -172,12 +172,13 @@ echo ""
 # ─── Tier 0: UI only ─────────────────────────────────────────────────────────
 
 if [ "$TIER" = "0" ]; then
-  echo "[T0] UI-only — no Python processes"
+  echo "[T0] UI-only — no Python processes (static visual preview)"
   start_process "ui" "$UI_ROOT" \
-    npx next dev
+    env NEXT_PUBLIC_MOCK_API=true NEXT_PUBLIC_AUTH_PROVIDER=demo \
+    npx next dev --port 3100
   echo ""
-  echo "  UI:   http://localhost:3000"
-  echo "  Tier: 0 (in-browser mock)"
+  echo "  UI:   http://localhost:3100"
+  echo "  Tier: 0 (in-browser mock — all API calls intercepted client-side)"
   exit 0
 fi
 

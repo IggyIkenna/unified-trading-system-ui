@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils"
 import { ExportDropdown } from "@/components/ui/export-dropdown"
 import type { ExportColumn } from "@/lib/utils/export"
 import { useOrders } from "@/hooks/api/use-orders"
+import { useGlobalScope } from "@/lib/stores/global-scope-store"
 import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar"
 
 // Order shape from the API
@@ -36,10 +37,15 @@ interface OrderRecord {
   side: "BUY" | "SELL"
   type: string
   price: number
+  mark_price: number
   quantity: number
   filled: number
   status: string
   venue: string
+  strategy_id: string
+  strategy_name: string
+  edge_bps: number
+  instant_pnl: number
   created_at: string
 }
 
@@ -123,8 +129,56 @@ const columns: ColumnDef<OrderRecord, unknown>[] = [
     ),
   },
   {
+    accessorKey: "mark_price",
+    header: () => <span className="flex justify-end">Mark</span>,
+    enableSorting: true,
+    cell: ({ row }) => {
+      const mark = row.getValue<number>("mark_price")
+      return (
+        <div className="text-right font-mono text-muted-foreground">
+          {mark ? `$${mark.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—"}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "edge_bps",
+    header: () => <span className="flex justify-end">Edge</span>,
+    enableSorting: true,
+    cell: ({ row }) => {
+      const edge = row.getValue<number>("edge_bps") ?? 0
+      return (
+        <div className={cn("text-right font-mono text-xs", edge >= 0 ? "text-emerald-400" : "text-rose-400")}>
+          {edge >= 0 ? "+" : ""}{edge.toFixed(1)} bps
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "instant_pnl",
+    header: () => <span className="flex justify-end">Instant P&L</span>,
+    enableSorting: true,
+    cell: ({ row }) => {
+      const pnl = row.getValue<number>("instant_pnl") ?? 0
+      const fmt = Math.abs(pnl) >= 1000 ? `$${(pnl / 1000).toFixed(1)}K` : `$${pnl.toFixed(0)}`
+      return (
+        <div className={cn("text-right font-mono font-medium", pnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
+          {pnl >= 0 ? "+" : ""}{fmt}
+        </div>
+      )
+    },
+  },
+  {
+    accessorKey: "strategy_name",
+    header: "Strategy",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="text-xs text-muted-foreground truncate max-w-24 block">{row.getValue<string>("strategy_name") || "—"}</span>
+    ),
+  },
+  {
     accessorKey: "quantity",
-    header: () => <span className="flex justify-end">Quantity</span>,
+    header: () => <span className="flex justify-end">Qty</span>,
     enableSorting: true,
     cell: ({ row }) => (
       <div className="text-right font-mono">
@@ -185,6 +239,7 @@ const columns: ColumnDef<OrderRecord, unknown>[] = [
 
 export default function OrdersPage() {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders()
+  const { scope: globalScope } = useGlobalScope()
 
   const [searchQuery, setSearchQuery] = React.useState("")
   const [venueFilter, setVenueFilter] = React.useState("all")
@@ -198,9 +253,18 @@ export default function OrdersPage() {
     return Array.isArray(arr) ? (arr as OrderRecord[]) : []
   }, [ordersRaw])
 
+  // Apply global scope filter
+  const scopedOrders = React.useMemo(() => {
+    if (globalScope.strategyIds.length === 0) return orders
+    // Filter orders by strategy_id if available, otherwise show all
+    return orders.filter((o: Record<string, unknown>) =>
+      !o.strategy_id || globalScope.strategyIds.includes(String(o.strategy_id))
+    )
+  }, [orders, globalScope.strategyIds])
+
   // Filtered orders
   const filteredOrders = React.useMemo(() => {
-    let result = orders
+    let result = scopedOrders
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase()

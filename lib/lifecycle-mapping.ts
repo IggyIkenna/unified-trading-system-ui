@@ -170,10 +170,16 @@ export const routeMappings: RouteMapping[] = [
 
   // RUN stage — Trading Service
   { path: "/dashboard", label: "Command Center", primaryStage: "run", lanes: ["execution", "strategy", "capital"], description: "KPIs, P&L, alerts, risk limits, service health", requiresAuth: true },
-  { path: "/services/trading/overview", label: "Trading", primaryStage: "run", lanes: ["execution"], description: "Live P&L, order entry, charts", requiresAuth: true },
+  { path: "/services/trading/overview", label: "Trading Overview", primaryStage: "run", lanes: ["execution"], description: "Command center — P&L, strategies, alerts", requiresAuth: true },
+  { path: "/services/trading/terminal", label: "Terminal", primaryStage: "run", lanes: ["execution"], description: "Live trading — charts, order book, order entry", requiresAuth: true },
   { path: "/services/trading/positions", label: "Positions", primaryStage: "run", secondaryStage: "observe", lanes: ["execution", "capital"], requiresAuth: true },
-  { path: "/services/trading/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
-  { path: "/services/trading/alerts", label: "Alerts", primaryStage: "observe", lanes: ["strategy", "execution", "ml"], requiresAuth: true },
+  { path: "/services/trading/orders", label: "Orders", primaryStage: "run", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/trading/book", label: "Book Trade", primaryStage: "run", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/trading/accounts", label: "Accounts", primaryStage: "run", lanes: ["execution", "capital"], requiresAuth: true },
+  { path: "/services/trading/pnl", label: "P&L Breakdown", primaryStage: "run", secondaryStage: "report", lanes: ["execution", "capital"], requiresAuth: true },
+  { path: "/services/trading/strategies", label: "Strategies", primaryStage: "run", lanes: ["strategy"], requiresAuth: true },
+  { path: "/services/observe/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
+  { path: "/services/observe/alerts", label: "Alerts", primaryStage: "observe", lanes: ["strategy", "execution", "ml"], requiresAuth: true },
 
   // Execution Service (Execute stage)
   { path: "/services/execution/overview", label: "Execution Analytics", primaryStage: "execute", lanes: ["execution"], description: "Live execution analytics", requiresAuth: true },
@@ -267,15 +273,14 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
       { path: "/services/research/strategy/candidates", label: "Strategy Candidates", lanes: ["strategy"], description: "Review and promote winning strategies" },
     ],
     run: [
-      { path: "/dashboard", label: "Command Center", lanes: ["execution", "strategy", "capital"], description: "KPIs, P&L, alerts, risk limits, service health" },
-      { path: "/services/trading/overview", label: "Trading Terminal", lanes: ["execution"], description: "Live P&L, order entry, position management" },
+      { path: "/services/trading/overview", label: "Trading", lanes: ["execution", "strategy", "capital"], description: "Overview, terminal, positions, orders" },
     ],
     execute: [
       { path: "/services/execution/overview", label: "Execution Analytics", lanes: ["execution"], description: "Live execution analytics and venue status" },
     ],
     observe: [
-      { path: "/services/trading/risk", label: "Risk", lanes: ["strategy", "execution", "capital"], description: "Exposure, VaR, Greeks, risk limits" },
-      { path: "/services/trading/alerts", label: "Alerts", lanes: ["strategy", "execution", "ml"], description: "Alert management and notifications" },
+      { path: "/services/observe/risk", label: "Risk", lanes: ["strategy", "execution", "capital"], description: "Exposure, VaR, Greeks, risk limits" },
+      { path: "/services/observe/alerts", label: "Alerts", lanes: ["strategy", "execution", "ml"], description: "Alert management and notifications" },
       { path: "/services/observe/health", label: "Health", lanes: ["data", "execution"], description: "Service health dashboard" },
     ],
     manage: [

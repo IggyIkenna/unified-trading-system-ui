@@ -28,8 +28,8 @@ const nextConfig = {
       { source: "/portal/:path*", destination: "/dashboard", permanent: true },
       // Data service
       { source: "/data", destination: "/services/data/overview", permanent: true },
-      { source: "/trading/markets", destination: "/services/data/markets", permanent: true },
-      { source: "/trading/markets/:path*", destination: "/services/data/markets/:path*", permanent: true },
+      { source: "/trading/markets", destination: "/services/trading/pnl", permanent: true },
+      { source: "/trading/markets/:path*", destination: "/services/trading/pnl", permanent: true },
       // Trading service
       { source: "/trading", destination: "/services/trading/overview", permanent: true },
       { source: "/trading/positions", destination: "/services/trading/positions", permanent: true },
@@ -58,10 +58,13 @@ const nextConfig = {
       // Reports service
       { source: "/reports", destination: "/services/reports/overview", permanent: true },
       { source: "/reports/:path*", destination: "/services/reports/:path*", permanent: true },
-      // /markets flat routes (specific paths before catch-all)
-      { source: "/markets/pnl", destination: "/services/data/markets/pnl", permanent: true },
-      { source: "/markets/:path*", destination: "/services/data/markets/:path*", permanent: true },
-      { source: "/markets", destination: "/services/data/markets", permanent: true },
+      // Markets moved from data service to trading/pnl
+      { source: "/services/data/markets", destination: "/services/trading/pnl", permanent: true },
+      { source: "/services/data/markets/:path*", destination: "/services/trading/pnl", permanent: true },
+      { source: "/services/trading/markets", destination: "/services/trading/pnl", permanent: true },
+      { source: "/markets/pnl", destination: "/services/trading/pnl", permanent: true },
+      { source: "/markets/:path*", destination: "/services/trading/pnl", permanent: true },
+      { source: "/markets", destination: "/services/trading/pnl", permanent: true },
       // Misc legacy flat routes (direct, no double-hop)
       { source: "/executive", destination: "/services/reports/executive", permanent: true },
       { source: "/quant", destination: "/services/research/quant", permanent: true },

@@ -65,7 +65,7 @@ export function DriftAnalysisPanel({
   onViewUnreconciled,
   className,
 }: DriftAnalysisPanelProps) {
-  const [isExpanded, setIsExpanded] = React.useState(true)
+  const [isExpanded, setIsExpanded] = React.useState(false)
   const [isPromoting, setIsPromoting] = React.useState(false)
 
   const formatValue = (value: number, unit?: string) => {
@@ -109,7 +109,7 @@ export function DriftAnalysisPanel({
                 )}
                 <CardTitle className="text-sm flex items-center gap-2">
                   <ArrowLeftRight className="size-4" />
-                  Drift Analysis: Live vs Batch
+                  Live vs Simulated
                 </CardTitle>
                 {significantDrifts.length > 0 && (
                   <Badge
@@ -266,25 +266,6 @@ export function DriftAnalysisPanel({
 
             {/* Actions */}
             <div className="flex items-center gap-2 pt-2 border-t border-border">
-              <Button
-                variant="default"
-                size="sm"
-                className="gap-1.5"
-                onClick={handlePromote}
-                disabled={isPromoting}
-              >
-                {isPromoting ? (
-                  <>
-                    <RefreshCw className="size-3.5 animate-spin" />
-                    Reconciling...
-                  </>
-                ) : (
-                  <>
-                    <Check className="size-3.5" />
-                    Promote to Batch
-                  </>
-                )}
-              </Button>
               <Button
                 variant="outline"
                 size="sm"

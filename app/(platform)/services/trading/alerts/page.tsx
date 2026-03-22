@@ -169,6 +169,8 @@ export default function AlertsPage() {
 
   const filteredAlerts = React.useMemo(() => {
     return allAlerts.filter((alert) => {
+      // Global scope filter
+      if (scope.strategyIds.length > 0 && alert.entity && !scope.strategyIds.includes(alert.entity)) return false
       if (filter !== "all" && alert.status !== filter) return false
       if (severityFilter !== "all" && alert.severity !== severityFilter) return false
       if (searchQuery) {

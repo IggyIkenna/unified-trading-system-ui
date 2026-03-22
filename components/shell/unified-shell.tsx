@@ -43,8 +43,11 @@ export function UnifiedShell({
     return () => document.removeEventListener("keydown", down)
   }, [])
 
-  const publicRoutes = ["/", "/login", "/signup", "/services", "/pricing", "/docs", "/contact", "/presentation", "/demo", "/privacy", "/terms"]
+  const publicRoutes = ["/", "/login", "/signup", "/pricing", "/docs", "/contact", "/presentation", "/demo", "/privacy", "/terms"]
+  // Commercial landing pages under /services/ (exact paths, not prefix match)
+  const publicServicePages = ["/services/data", "/services/backtesting", "/services/execution", "/services/platform", "/services/investment", "/services/regulatory", "/services/engagement"]
   const isPublicRoute = publicRoutes.some(r => pathname === r || pathname.startsWith(r + "/"))
+    || publicServicePages.includes(pathname)
 
   if (isPublicRoute) {
     return <>{children}</>

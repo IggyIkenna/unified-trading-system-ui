@@ -135,10 +135,33 @@ function CompactMultiSelect<T extends { id: string }>({
             </div>
             <div className="h-px bg-border my-1" />
             {groupBy
-              ? Object.entries(groupedItems).map(([group, groupItems]) => (
+              ? Object.entries(groupedItems).map(([group, groupItems]) => {
+                  const groupIds = groupItems.map(i => i.id)
+                  const allGroupSelected = groupIds.every(id => selectedIds.includes(id))
+                  const someGroupSelected = groupIds.some(id => selectedIds.includes(id))
+                  const toggleGroup = () => {
+                    if (allGroupSelected) {
+                      onSelectionChange(selectedIds.filter(id => !groupIds.includes(id)))
+                    } else {
+                      onSelectionChange([...new Set([...selectedIds, ...groupIds])])
+                    }
+                  }
+                  return (
                   <div key={group}>
-                    <div className="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                      {getGroupLabel ? getGroupLabel(group) : group}
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={toggleGroup}
+                      onKeyDown={e => e.key === "Enter" && toggleGroup()}
+                      className="flex items-center gap-2 px-2 py-1 cursor-pointer hover:bg-secondary/50 rounded"
+                    >
+                      <span className={cn("size-3.5 rounded border flex items-center justify-center shrink-0", allGroupSelected ? "bg-primary border-primary" : someGroupSelected ? "bg-primary/50 border-primary" : "border-input")}>
+                        {(allGroupSelected || someGroupSelected) && <Check className="size-2.5 text-primary-foreground" />}
+                      </span>
+                      <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                        {getGroupLabel ? getGroupLabel(group) : group}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground/50 ml-auto">{groupItems.length}</span>
                     </div>
                     {groupItems.map(item => {
                       const isSelected = selectedIds.includes(item.id)
@@ -159,7 +182,7 @@ function CompactMultiSelect<T extends { id: string }>({
                       )
                     })}
                   </div>
-                ))
+                )})
               : items.map(item => {
                   const isSelected = selectedIds.includes(item.id)
                   return (
