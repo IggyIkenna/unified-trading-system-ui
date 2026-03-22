@@ -34,7 +34,7 @@ coverage:
 	pytest --cov=deployment_service_v3 --cov-report=term-missing --cov-report=html
 
 install:
-	uv pip install -e ".[dev]"
+	uv pip install -e "."
 
 clean:
 	rm -rf build/

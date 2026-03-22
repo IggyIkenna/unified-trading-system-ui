@@ -20,11 +20,3 @@ class CanonicalOnChainMetric(CanonicalBase):
     chain: str | None = None
     raw: dict[str, float | int | str | None] | None = Field(default=None, description="Original fields as-is")
     schema_version: str = "1.0"
-
-
-    timestamp: AwareDatetime
-    venue: str = "pyth"
-    feed_id: str = Field(description="Pyth price feed ID (hex)")
-    price: Decimal = Field(description="Actual price after fixed-point conversion")
-    confidence: Decimal | None = Field(default=None, description="Confidence interval (same units as price)")
-    schema_version: str = "1.0"

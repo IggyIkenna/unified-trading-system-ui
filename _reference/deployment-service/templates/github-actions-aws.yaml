@@ -75,7 +75,7 @@ jobs:
           pip install uv
           uv pip install -e ../unified-trading-library
           uv pip install -e ../deployment-service-v2 || true  # || true: cleanup step, failure is intentional (deployment-service-v2 is optional dep)
-          uv pip install -e . || uv pip install -e ".[dev]"
+          uv pip install -e "."
           uv pip install ruff pytest
 
       - name: Run linting

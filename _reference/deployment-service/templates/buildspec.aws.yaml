@@ -40,7 +40,7 @@ phases:
       # Install dependencies
       - uv pip install -e /tmp/unified-trading-library
       - uv pip install -e /tmp/deployment-service || true # || true: cleanup step, failure is intentional (deployment-service is optional dep)
-      - uv pip install -e . || uv pip install -e "."
+      - uv pip install -e "."
       - uv pip install ruff pytest
 
       # ECR login

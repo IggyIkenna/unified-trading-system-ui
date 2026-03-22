@@ -241,8 +241,8 @@ Sports features are sharded by **league**, not by category. The UI should use le
 - Market categories: `context/internal-contracts/schemas/market_category.py`
 - Runtime topology: `lib/registry/runtime-topology.yaml`
 - System topology: `lib/registry/system-topology.json`
-- Data alignment: `_reference/deployment-service/docs/SHARDING_AND_DATA_ALIGNMENT.md`
-- Dimension processor: `_reference/deployment-service/deployment_service/calculators/shard_dimensions.py`
+- Sharding SSOT: `unified-trading-pm/configs/` (canonical sharding config)
+- Dimension processor: `deployment-service/deployment_service/calculators/shard_dimensions.py`
 - OpenAPI spec: `lib/registry/openapi.json`
 - Config registry: `lib/registry/config-registry.json`
 - UI reference data (venues, instruments): `lib/registry/ui-reference-data.json`
