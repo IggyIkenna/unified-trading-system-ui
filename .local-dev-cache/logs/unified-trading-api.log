@@ -5,3 +5,8 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8030 (Press CTRL+C to quit)
 INFO:     127.0.0.1:63404 - "GET /health HTTP/1.1" 200 OK
 INFO:     127.0.0.1:63411 - "GET /health HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2026-03-22 14:48:03,775 INFO Shutting down unified-trading-api
+INFO:     Application shutdown complete.
+INFO:     Finished server process [52154]
