@@ -3,9 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-/* eslint-disable */
-// @ts-nocheck — generated from unified-trading-api OpenAPI spec
-
 export interface paths {
     "/health": {
         parameters: {
