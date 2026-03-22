@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import dynamic from "next/dynamic"
 import { LimitBar } from "@/components/trading/limit-bar"
 import { PnLValue } from "@/components/trading/pnl-value"
 import { StatusBadge } from "@/components/trading/status-badge"
@@ -52,6 +53,10 @@ import {
   Info,
   Target,
   X,
+  OctagonX,
+  RotateCcw,
+  ArrowDownToLine,
+  Power,
 } from "lucide-react"
 import {
   ResponsiveContainer,
@@ -69,8 +74,40 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { useRiskLimits, useVaR, useGreeks, useStressScenarios } from "@/hooks/api/use-risk"
+import { apiFetch } from "@/lib/api/fetch"
+import { toast } from "sonner"
+import { useGlobalScope } from "@/lib/stores/global-scope-store"
+import {
+  useRiskLimits,
+  useVaR,
+  useGreeks,
+  useStressScenarios,
+  useVarSummary,
+  useStressTest,
+  useRegime,
+  usePortfolioGreeks,
+  useVenueCircuitBreakers,
+  useCircuitBreakerMutation,
+  useKillSwitchMutation,
+} from "@/hooks/api/use-risk"
+
+const DynamicCorrelationHeatmap = dynamic(
+  () => import("@/components/risk/correlation-heatmap").then(m => m.CorrelationHeatmap),
+  { ssr: false, loading: () => <div className="space-y-2">{Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-8 w-full bg-accent animate-pulse rounded-md" />)}</div> }
+)
 
 // =============================================================================
 // TYPES & INTERFACES
@@ -191,6 +228,32 @@ export default function RiskPage() {
   const { data: greeksData, isLoading: greeksLoading } = useGreeks()
   const { data: stressScenariosData, isLoading: stressLoading } = useStressScenarios()
 
+  // --- New hooks (Parts 1-7) ---
+  const { scope } = useGlobalScope()
+  const isBatchMode = scope.mode === "batch"
+
+  const { data: varSummaryData, isLoading: varSummaryLoading } = useVarSummary()
+  const [selectedStressScenario, setSelectedStressScenario] = React.useState<string | null>(null)
+  const { data: stressTestResult, isLoading: stressTestLoading } = useStressTest(selectedStressScenario)
+  const { data: regimeData } = useRegime()
+  const { data: portfolioGreeksData, isLoading: portfolioGreeksLoading } = usePortfolioGreeks()
+  // Correlation heatmap data now handled by DynamicCorrelationHeatmap component
+  const { data: venueCircuitBreakers } = useVenueCircuitBreakers()
+
+  const circuitBreakerMutation = useCircuitBreakerMutation()
+  const killSwitchMutation = useKillSwitchMutation()
+
+  // Per-strategy state tracking for UI badges
+  const [trippedStrategies, setTrippedStrategies] = React.useState<Set<string>>(new Set())
+  const [killedStrategies, setKilledStrategies] = React.useState<Set<string>>(new Set())
+  const [scaledStrategies, setScaledStrategies] = React.useState<Record<string, number>>({})
+
+  // Stress scenario slider state (Part 5)
+  const [btcPriceChangePct, setBtcPriceChangePct] = React.useState(0)
+
+  // Correlation heatmap hover state (Part 7)
+  // hoveredCell state moved to CorrelationHeatmap component
+
   // Extract API data with safe fallbacks
   const mockLimitsHierarchy: RiskLimit[] = (riskLimitsData as any)?.data ?? (riskLimitsData as any)?.limits ?? []
   const componentVarData: any[] = (varData as any)?.data ?? (varData as any)?.components ?? []
@@ -299,9 +362,83 @@ export default function RiskPage() {
     return groups
   }, [filteredExposureRows])
 
+  // --- Action handlers (Part 1) ---
+  const handleTripCircuitBreaker = (strategyId: string, strategyName: string) => {
+    circuitBreakerMutation.mutate(
+      { strategy_id: strategyId, action: "trip" },
+      {
+        onSuccess: () => {
+          setTrippedStrategies((prev) => new Set([...prev, strategyId]))
+          toast.success(`Circuit breaker tripped for ${strategyName}`)
+        },
+        onError: () => {
+          toast.error(`Failed to trip circuit breaker for ${strategyName}`)
+        },
+      },
+    )
+  }
+
+  const handleResetCircuitBreaker = (strategyId: string, strategyName: string) => {
+    circuitBreakerMutation.mutate(
+      { strategy_id: strategyId, action: "reset" },
+      {
+        onSuccess: () => {
+          setTrippedStrategies((prev) => {
+            const next = new Set(prev)
+            next.delete(strategyId)
+            return next
+          })
+          toast.success(`Circuit breaker reset for ${strategyName}`)
+        },
+        onError: () => {
+          toast.error(`Failed to reset circuit breaker for ${strategyName}`)
+        },
+      },
+    )
+  }
+
+  const handleKillSwitch = (strategyId: string, strategyName: string) => {
+    killSwitchMutation.mutate(
+      { scope: "strategy", target_id: strategyId },
+      {
+        onSuccess: () => {
+          setKilledStrategies((prev) => new Set([...prev, strategyId]))
+          toast.error(`Kill switch activated for ${strategyName}`)
+        },
+        onError: () => {
+          toast.error(`Failed to activate kill switch for ${strategyName}`)
+        },
+      },
+    )
+  }
+
+  // Check if any strategy has kill_switch_active
+  const anyKillSwitchActive =
+    killedStrategies.size > 0 ||
+    (venueCircuitBreakers ?? []).some((v) => v.kill_switch_active)
+
+  // Stress slider PnL computation (Part 5)
+  const greeksForSlider = portfolioGreeksData?.portfolio ?? portfolioGreeks
+  const btcSpot = 65000
+  const dS = btcSpot * (btcPriceChangePct / 100)
+  const estimatedPnl = greeksForSlider.delta * dS + 0.5 * greeksForSlider.gamma * dS * dS
+
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
+        {/* Kill Switch Banner (Part 6) */}
+        {anyKillSwitchActive && (
+          <div className="rounded-lg border-2 border-rose-500 bg-rose-500/10 p-4 flex items-center gap-3">
+            <OctagonX className="size-6 text-rose-400 shrink-0" />
+            <div>
+              <p className="font-semibold text-rose-400">KILL SWITCH ACTIVE</p>
+              <p className="text-sm text-rose-300">
+                One or more strategies have been forcibly stopped. Review immediately.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -314,9 +451,12 @@ export default function RiskPage() {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            {isBatchMode && (
+              <Badge variant="secondary" className="text-xs">Batch Mode - Actions Disabled</Badge>
+            )}
             {criticalCount > 0 && <StatusBadge status="critical" label={`${criticalCount} Critical`} />}
             {warningCount > 0 && <StatusBadge status="warning" label={`${warningCount} Warning`} />}
-            <Badge variant="outline" className="font-mono">Kill Switches: 1</Badge>
+            <Badge variant="outline" className="font-mono">Kill Switches: {killedStrategies.size + 1}</Badge>
           </div>
         </div>
 
@@ -455,7 +595,7 @@ export default function RiskPage() {
               </Card>
             </div>
 
-            {/* Strategy Risk Heatmap */}
+            {/* Strategy Risk Heatmap with Action Buttons (Part 1) */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-base">Strategy Risk Heatmap</CardTitle>
@@ -463,43 +603,176 @@ export default function RiskPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {strategyRiskHeatmap.map((row) => (
-                    <div
-                      key={row.strategy}
-                      className={cn(
-                        "flex items-center justify-between p-3 rounded-lg border",
-                        row.status === "ok" && "border-border bg-muted/30",
-                        row.status === "warning" && "border-amber-500/50 bg-amber-500/10",
-                        row.status === "critical" && "border-rose-500/50 bg-rose-500/10"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={cn(
-                            "size-2 rounded-full",
-                            row.status === "ok" && "bg-emerald-500",
-                            row.status === "warning" && "bg-amber-500",
-                            row.status === "critical" && "bg-rose-500"
+                  {strategyRiskHeatmap.map((row) => {
+                    const strategyId = row.strategy.replace(/\s+/g, "_").toLowerCase()
+                    const isTripped = trippedStrategies.has(strategyId)
+                    const isKilled = killedStrategies.has(strategyId)
+                    const scaleFactor = scaledStrategies[strategyId]
+                    return (
+                      <div
+                        key={row.strategy}
+                        className={cn(
+                          "flex items-center justify-between p-3 rounded-lg border",
+                          isKilled && "border-rose-500 bg-rose-500/20",
+                          !isKilled && row.status === "ok" && "border-border bg-muted/30",
+                          !isKilled && row.status === "warning" && "border-amber-500/50 bg-amber-500/10",
+                          !isKilled && row.status === "critical" && "border-rose-500/50 bg-rose-500/10"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={cn(
+                              "size-2 rounded-full",
+                              row.status === "ok" && "bg-emerald-500",
+                              row.status === "warning" && "bg-amber-500",
+                              row.status === "critical" && "bg-rose-500"
+                            )}
+                          />
+                          <span className="font-mono text-sm font-medium">{row.strategy}</span>
+                          {isTripped && (
+                            <Badge variant="destructive" className="text-[10px] h-5">HALTED</Badge>
                           )}
-                        />
-                        <span className="font-mono text-sm font-medium">{row.strategy}</span>
+                          {isKilled && (
+                            <Badge className="bg-rose-600 text-white text-[10px] h-5">KILLED</Badge>
+                          )}
+                          {scaleFactor !== undefined && (
+                            <Badge variant="secondary" className="text-[10px] h-5">Scaled to {Math.round(scaleFactor * 100)}%</Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-6 text-sm font-mono">
+                            {row.delta && <span>Delta: <strong>{row.delta}</strong></span>}
+                            {row.funding && <span>Funding: <strong>{row.funding}</strong></span>}
+                            {row.hf && <span>HF: <strong>{row.hf}</strong></span>}
+                            {row.inventory && <span>Inv: <strong>{row.inventory}</strong></span>}
+                            {row.spread && <span>Spread: <strong>{row.spread}</strong></span>}
+                            {row.gamma && <span>Gamma: <strong>{row.gamma}</strong></span>}
+                            {row.vega && <span>Vega: <strong>{row.vega}</strong></span>}
+                            {row.drawdown && <span>DD: <strong>{row.drawdown}</strong></span>}
+                            {row.var && <span>VaR: <strong>{row.var}</strong></span>}
+                            {row.edge && <span>Edge: <strong>{row.edge}</strong></span>}
+                            {row.exposure && <span>Exp: <strong>{row.exposure}</strong></span>}
+                            {row.clv && <span>CLV: <strong>{row.clv}</strong></span>}
+                          </div>
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-1.5 ml-4 shrink-0">
+                            {isTripped ? (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 px-2 text-xs"
+                                      disabled={isBatchMode || circuitBreakerMutation.isPending}
+                                      onClick={() => handleResetCircuitBreaker(strategyId, row.strategy)}
+                                    >
+                                      <RotateCcw className="size-3 mr-1" />
+                                      Reset
+                                    </Button>
+                                  </TooltipTrigger>
+                                  {isBatchMode && (
+                                    <TooltipContent>Switch to live mode to take action</TooltipContent>
+                                  )}
+                                </Tooltip>
+                              </TooltipProvider>
+                            ) : (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 px-2 text-xs text-amber-400 border-amber-500/50 hover:bg-amber-500/10"
+                                      disabled={isBatchMode || isKilled || circuitBreakerMutation.isPending}
+                                      onClick={() => handleTripCircuitBreaker(strategyId, row.strategy)}
+                                    >
+                                      <Zap className="size-3 mr-1" />
+                                      Trip CB
+                                    </Button>
+                                  </TooltipTrigger>
+                                  {isBatchMode && (
+                                    <TooltipContent>Switch to live mode to take action</TooltipContent>
+                                  )}
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 px-2 text-xs"
+                                    disabled={isBatchMode || isKilled}
+                                    onClick={() => {
+                                      const factor = 0.5
+                                      apiFetch(`/api/analytics/strategies/${strategyId}/scale`, null, {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ scale_factor: factor }),
+                                      }).then(() => {
+                                        setScaledStrategies((prev) => ({ ...prev, [strategyId]: factor }))
+                                        toast.success(`Scaled ${row.strategy} to 50%`)
+                                      }).catch(() => {
+                                        toast.error(`Failed to scale ${row.strategy}`)
+                                      })
+                                    }}
+                                  >
+                                    <ArrowDownToLine className="size-3 mr-1" />
+                                    50%
+                                  </Button>
+                                </TooltipTrigger>
+                                {isBatchMode && (
+                                  <TooltipContent>Switch to live mode to take action</TooltipContent>
+                                )}
+                              </Tooltip>
+                            </TooltipProvider>
+                            <AlertDialog>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        className="h-7 px-2 text-xs"
+                                        disabled={isBatchMode || isKilled}
+                                      >
+                                        <Power className="size-3 mr-1" />
+                                        Kill
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                  </TooltipTrigger>
+                                  {isBatchMode && (
+                                    <TooltipContent>Switch to live mode to take action</TooltipContent>
+                                  )}
+                                </Tooltip>
+                              </TooltipProvider>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Activate Kill Switch</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will immediately halt all trading activity for <strong>{row.strategy}</strong>.
+                                    All open orders will be cancelled. This action requires manual intervention to reverse.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-rose-600 hover:bg-rose-700"
+                                    onClick={() => handleKillSwitch(strategyId, row.strategy)}
+                                  >
+                                    Confirm Kill Switch
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-6 text-sm font-mono">
-                        {row.delta && <span>Delta: <strong>{row.delta}</strong></span>}
-                        {row.funding && <span>Funding: <strong>{row.funding}</strong></span>}
-                        {row.hf && <span>HF: <strong>{row.hf}</strong></span>}
-                        {row.inventory && <span>Inv: <strong>{row.inventory}</strong></span>}
-                        {row.spread && <span>Spread: <strong>{row.spread}</strong></span>}
-                        {row.gamma && <span>Gamma: <strong>{row.gamma}</strong></span>}
-                        {row.vega && <span>Vega: <strong>{row.vega}</strong></span>}
-                        {row.drawdown && <span>DD: <strong>{row.drawdown}</strong></span>}
-                        {row.var && <span>VaR: <strong>{row.var}</strong></span>}
-                        {row.edge && <span>Edge: <strong>{row.edge}</strong></span>}
-                        {row.exposure && <span>Exp: <strong>{row.exposure}</strong></span>}
-                        {row.clv && <span>CLV: <strong>{row.clv}</strong></span>}
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -1291,6 +1564,370 @@ export default function RiskPage() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* ================================================================= */}
+        {/* PART 2: VaR Summary Cards                                         */}
+        {/* ================================================================= */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <BarChart3 className="size-5 text-amber-400" />
+            VaR Summary (99% Confidence)
+          </h2>
+          {varSummaryLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4 space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-8 w-32" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : varSummaryData ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Historical VaR (99%)</div>
+                  <div className="text-2xl font-bold font-mono text-amber-400">
+                    {formatCurrency(-varSummaryData.historical_var_99)}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Parametric VaR (99%)</div>
+                  <div className="text-2xl font-bold font-mono text-amber-400">
+                    {formatCurrency(-varSummaryData.parametric_var_99)}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">CVaR (99%)</div>
+                  <div className="text-2xl font-bold font-mono text-rose-400">
+                    {formatCurrency(-varSummaryData.cvar_99)}
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4">
+                  <div className="text-sm text-muted-foreground">Monte Carlo VaR (99%)</div>
+                  <div className="text-2xl font-bold font-mono text-amber-400">
+                    {formatCurrency(-varSummaryData.monte_carlo_var_99)}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                No VaR data available
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* ================================================================= */}
+        {/* PART 3: Stress Scenario Panel                                      */}
+        {/* ================================================================= */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <AlertTriangle className="size-4 text-amber-400" />
+                  Stress Scenario Analysis
+                </CardTitle>
+                <CardDescription>Select a historical stress scenario to analyze portfolio impact</CardDescription>
+              </div>
+              <div className="flex items-center gap-3">
+                {regimeData && (
+                  <Badge
+                    className={cn(
+                      "text-xs",
+                      regimeData.regime === "normal" && "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30",
+                      regimeData.regime === "stressed" && "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30",
+                      regimeData.regime === "crisis" && "bg-rose-500/20 text-rose-400 hover:bg-rose-500/30",
+                    )}
+                  >
+                    Regime: {regimeData.regime.charAt(0).toUpperCase() + regimeData.regime.slice(1)}
+                  </Badge>
+                )}
+                <Select value={selectedStressScenario ?? ""} onValueChange={(v) => setSelectedStressScenario(v || null)}>
+                  <SelectTrigger className="w-[240px]">
+                    <SelectValue placeholder="Select scenario..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="GFC_2008">GFC 2008</SelectItem>
+                    <SelectItem value="COVID_2020">COVID 2020</SelectItem>
+                    <SelectItem value="CRYPTO_BLACK_THURSDAY">Crypto Black Thursday</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {selectedStressScenario ? (
+              stressTestLoading ? (
+                <div className="grid grid-cols-3 gap-4">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="p-4 rounded-lg bg-muted/30 space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-8 w-32" />
+                    </div>
+                  ))}
+                </div>
+              ) : stressTestResult ? (
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="p-4 rounded-lg bg-muted/30 text-center">
+                    <div className="text-sm text-muted-foreground">Expected Loss</div>
+                    <div className="text-2xl font-bold font-mono text-rose-400">
+                      {formatCurrency(-stressTestResult.expected_loss_usd)}
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/30 text-center">
+                    <div className="text-sm text-muted-foreground">Portfolio Impact</div>
+                    <div className="text-2xl font-bold font-mono text-rose-400">
+                      {stressTestResult.portfolio_impact_pct.toFixed(1)}%
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg bg-muted/30 text-center">
+                    <div className="text-sm text-muted-foreground">Worst Strategy</div>
+                    <div className="text-xl font-bold font-mono">
+                      {stressTestResult.worst_strategy}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground py-4">
+                  No stress test data available for {selectedStressScenario.replace(/_/g, " ")}
+                </p>
+              )
+            ) : (
+              <p className="text-center text-muted-foreground py-4">
+                Select a scenario above to see stress test results
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* ================================================================= */}
+        {/* PART 4: Portfolio Greeks Summary                                    */}
+        {/* ================================================================= */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Activity className="size-5 text-blue-400" />
+            Portfolio Greeks (Derivatives)
+          </h2>
+          {portfolioGreeksLoading ? (
+            <div className="grid grid-cols-5 gap-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4 text-center space-y-2">
+                    <Skeleton className="h-4 w-20 mx-auto" />
+                    <Skeleton className="h-8 w-24 mx-auto" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : portfolioGreeksData ? (
+            <>
+              <div className="grid grid-cols-5 gap-4 mb-4">
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-sm text-muted-foreground">Net Delta</div>
+                    <div className="text-2xl font-bold font-mono">
+                      {portfolioGreeksData.portfolio.delta.toFixed(2)}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-sm text-muted-foreground">Net Gamma</div>
+                    <div className="text-2xl font-bold font-mono">
+                      {portfolioGreeksData.portfolio.gamma.toFixed(4)}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-sm text-muted-foreground">Net Vega</div>
+                    <div className="text-2xl font-bold font-mono">
+                      ${portfolioGreeksData.portfolio.vega.toLocaleString()}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-sm text-muted-foreground">Net Theta</div>
+                    <div className="text-2xl font-bold font-mono text-rose-400">
+                      ${portfolioGreeksData.portfolio.theta.toLocaleString()}/day
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 text-center">
+                    <div className="text-sm text-muted-foreground">Net Rho</div>
+                    <div className="text-2xl font-bold font-mono">
+                      ${portfolioGreeksData.portfolio.rho.toLocaleString()}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Per-Underlying Breakdown Table */}
+              {portfolioGreeksData.per_underlying.length > 0 && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Per-Underlying Breakdown</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/50">
+                          <TableHead>Underlying</TableHead>
+                          <TableHead className="text-right">Delta</TableHead>
+                          <TableHead className="text-right">Gamma</TableHead>
+                          <TableHead className="text-right">Vega</TableHead>
+                          <TableHead className="text-right">Theta</TableHead>
+                          <TableHead className="text-right">Rho</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {portfolioGreeksData.per_underlying.map((row) => (
+                          <TableRow key={row.underlying}>
+                            <TableCell className="font-medium">{row.underlying}</TableCell>
+                            <TableCell className="text-right font-mono">{row.delta.toFixed(2)}</TableCell>
+                            <TableCell className="text-right font-mono">{row.gamma.toFixed(4)}</TableCell>
+                            <TableCell className="text-right font-mono">${row.vega.toLocaleString()}</TableCell>
+                            <TableCell className="text-right font-mono text-rose-400">${row.theta.toLocaleString()}</TableCell>
+                            <TableCell className="text-right font-mono">${row.rho.toLocaleString()}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                No portfolio Greeks data available
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* ================================================================= */}
+        {/* PART 5: Stress Scenario Slider (What-If)                           */}
+        {/* ================================================================= */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Target className="size-4 text-blue-400" />
+              What-If: BTC Price Shock
+            </CardTitle>
+            <CardDescription>
+              Slide to estimate portfolio PnL impact using Greeks (Delta + Gamma approximation)
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-6">
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">BTC Price Change</span>
+                  <span className={cn(
+                    "font-mono font-bold text-lg",
+                    btcPriceChangePct > 0 && "text-emerald-400",
+                    btcPriceChangePct < 0 && "text-rose-400",
+                    btcPriceChangePct === 0 && "text-muted-foreground",
+                  )}>
+                    {btcPriceChangePct > 0 ? "+" : ""}{btcPriceChangePct}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={-30}
+                  max={30}
+                  step={1}
+                  value={btcPriceChangePct}
+                  onChange={(e) => setBtcPriceChangePct(Number(e.target.value))}
+                  className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-muted accent-blue-500"
+                />
+                <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+                  <span>-30%</span>
+                  <span>0%</span>
+                  <span>+30%</span>
+                </div>
+              </div>
+              <div className="w-px h-16 bg-border" />
+              <div className="text-center min-w-[180px]">
+                <div className="text-sm text-muted-foreground mb-1">Estimated Portfolio PnL</div>
+                <div className={cn(
+                  "text-3xl font-bold font-mono",
+                  estimatedPnl > 0 && "text-emerald-400",
+                  estimatedPnl < 0 && "text-rose-400",
+                  estimatedPnl === 0 && "text-muted-foreground",
+                )}>
+                  {estimatedPnl >= 0 ? "+" : ""}{formatCurrency(estimatedPnl)}
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  dS = {formatCurrency(dS)} | Delta={greeksForSlider.delta.toFixed(2)} | Gamma={greeksForSlider.gamma.toFixed(4)}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ================================================================= */}
+        {/* PART 6: Per-Venue Circuit Breaker Status                           */}
+        {/* ================================================================= */}
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Zap className="size-5 text-amber-400" />
+            Venue Circuit Breaker Status
+          </h2>
+          {venueCircuitBreakers && venueCircuitBreakers.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {venueCircuitBreakers.map((vcb) => (
+                <Card key={`${vcb.venue}-${vcb.strategy_id}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-sm">{vcb.venue}</span>
+                      <Badge
+                        className={cn(
+                          "text-[10px]",
+                          vcb.status === "CLOSED" && "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30",
+                          vcb.status === "HALF_OPEN" && "bg-amber-500/20 text-amber-400 hover:bg-amber-500/30",
+                          vcb.status === "OPEN" && "bg-rose-500/20 text-rose-400 hover:bg-rose-500/30",
+                        )}
+                      >
+                        {vcb.status}
+                      </Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground">{vcb.strategy_id}</div>
+                    {vcb.kill_switch_active && (
+                      <Badge variant="destructive" className="mt-2 text-[10px]">Kill Switch Active</Badge>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                No venue circuit breaker data available
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* ================================================================= */}
+        {/* PART 7: Correlation Heatmap (dynamically imported for bundle size) */}
+        {/* ================================================================= */}
+        <DynamicCorrelationHeatmap />
       </div>
     </div>
   )

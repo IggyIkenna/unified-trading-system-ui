@@ -88,7 +88,7 @@ const ACCESS_TIERS = [
       "Manage API keys and cloud",
     ],
     cta: "Sign In",
-    href: "/portal/data",
+    href: "/services/data/overview",
     badge: "Auth Required",
   },
   {

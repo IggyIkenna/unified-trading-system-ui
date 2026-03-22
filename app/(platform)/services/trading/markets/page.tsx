@@ -19,6 +19,7 @@ import {
   TrendingUp,
   TrendingDown,
   AlertTriangle,
+  AlertCircle,
   FileText,
   BarChart3,
   Activity,
@@ -27,10 +28,17 @@ import {
   Database,
   LineChart,
   LayoutGrid,
+  RefreshCw,
 } from "lucide-react"
 import { PNL_FACTORS, SERVICES } from "@/lib/reference-data"
-import { ORGANIZATIONS, CLIENTS, STRATEGIES } from "@/lib/trading-data"
 import { useTickers } from "@/hooks/api/use-market-data"
+import { useStrategyPerformance } from "@/hooks/api/use-strategies"
+import { useOrganizationsList } from "@/hooks/api/use-organizations"
+
+// Minimal shapes extracted from API responses for chart generation
+interface StrategyRecord { id: string; name: string; clientId: string }
+interface ClientRecord { id: string; name: string; orgId: string }
+interface OrgRecord { id: string; name: string }
 import {
   AreaChart,
   Area,
@@ -193,9 +201,9 @@ function generatePnLComponents(
 }
 
 // Generate strategy breakdown for a specific P&L factor
-function generateStrategyBreakdown(factorName: string, totalValue: number, isBatch: boolean) {
+function generateStrategyBreakdown(factorName: string, totalValue: number, isBatch: boolean, allStrategies: StrategyRecord[], allClients: ClientRecord[]) {
   // Generate breakdown across strategies
-  const strategies = STRATEGIES.slice(0, 6) // Top 6 strategies
+  const strategies = allStrategies.slice(0, 6) // Top 6 strategies
   const parts: number[] = []
   let remaining = totalValue
   
@@ -216,7 +224,7 @@ function generateStrategyBreakdown(factorName: string, totalValue: number, isBat
   return strategies.map((s, i) => ({
     id: s.id,
     name: s.name,
-    client: CLIENTS.find(c => c.id === s.clientId)?.name || "Unknown",
+    client: allClients.find(c => c.id === s.clientId)?.name || "Unknown",
     value: Math.round(parts[i] * batchAdjust),
     percentage: (parts[i] / totalValue) * 100,
   })).sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
@@ -224,17 +232,18 @@ function generateStrategyBreakdown(factorName: string, totalValue: number, isBat
 
 // Generate time series for a single factor by strategy
 function generateFactorTimeSeries(
-  factorName: string, 
+  factorName: string,
   baseValue: number,
   dateRange: string,
-  isBatch: boolean
+  isBatch: boolean,
+  allStrategies: StrategyRecord[],
 ) {
   const points = dateRange === "today" ? 24 : dateRange === "wtd" ? 7 : dateRange === "mtd" ? 30 : 12
-  const labelFormat = dateRange === "today" ? (i: number) => `${i}:00` : 
+  const labelFormat = dateRange === "today" ? (i: number) => `${i}:00` :
                       dateRange === "wtd" ? (i: number) => ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i % 7] :
                       (i: number) => `Day ${i + 1}`
-  
-  const strategies = STRATEGIES.slice(0, 5) // Top 5 for readability
+
+  const strategies = allStrategies.slice(0, 5) // Top 5 for readability
   const data = []
   
   // Generate cumulative values per strategy with drift
@@ -262,10 +271,10 @@ function generateFactorTimeSeries(
 }
 
 // Generate client P&L based on filters
-function generateClientPnL(orgIds: string[], clientIds: string[], isBatch: boolean) {
-  const allClients = CLIENTS.map(c => {
-    const org = ORGANIZATIONS.find(o => o.id === c.orgId)
-    const strategies = STRATEGIES.filter(s => s.clientId === c.id)
+function generateClientPnL(orgIds: string[], clientIds: string[], isBatch: boolean, allOrgs: OrgRecord[], allClients: ClientRecord[], allStrategies: StrategyRecord[]) {
+  const clientRows = allClients.map(c => {
+    const org = allOrgs.find(o => o.id === c.orgId)
+    const strategies = allStrategies.filter(s => s.clientId === c.id)
     
     // Skip if filtered out
     if (orgIds.length > 0 && !orgIds.includes(c.orgId)) return null
@@ -285,7 +294,7 @@ function generateClientPnL(orgIds: string[], clientIds: string[], isBatch: boole
     }
   }).filter(Boolean) as Array<{ id: string; name: string; org: string; pnl: number; strategies: number; change: number }>
   
-  return allClients.slice(0, 5)
+  return clientRows.slice(0, 5)
 }
 
 // Venues by asset class
@@ -610,7 +619,31 @@ const _latencyMetricsPlaceholder: LatencyMetric[] = [
 ]
 
 export default function MarketsPage() {
-  const { data: tickersData, isLoading: tickersLoading } = useTickers()
+  const { data: tickersData, isLoading: tickersLoading, error: tickersError, refetch: refetchTickers } = useTickers()
+  const { data: perfRaw } = useStrategyPerformance()
+  const { data: orgsRaw } = useOrganizationsList()
+
+  // Derive strategy/client/org lists from API responses
+  const apiStrategies: StrategyRecord[] = React.useMemo(() => {
+    if (!perfRaw) return []
+    const raw = perfRaw as Record<string, unknown>
+    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).strategies
+    return Array.isArray(arr) ? (arr as StrategyRecord[]) : []
+  }, [perfRaw])
+
+  const apiOrgs: OrgRecord[] = React.useMemo(() => {
+    if (!orgsRaw) return []
+    const raw = orgsRaw as Record<string, unknown>
+    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).organizations
+    return Array.isArray(arr) ? (arr as OrgRecord[]) : []
+  }, [orgsRaw])
+
+  const apiClients: ClientRecord[] = React.useMemo(() => {
+    if (!orgsRaw) return []
+    const raw = orgsRaw as Record<string, unknown>
+    const arr = (raw as Record<string, unknown>).clients
+    return Array.isArray(arr) ? (arr as ClientRecord[]) : []
+  }, [orgsRaw])
 
   // API-sourced data with fallbacks for complex generated structures
   const reconRuns: Array<any> = (tickersData as any)?.reconRuns ?? []
@@ -661,8 +694,8 @@ export default function MarketsPage() {
   const netPnL = pnlComponents.reduce((sum, c) => sum + c.value, 0)
   
   const clientPnL = React.useMemo(() =>
-    generateClientPnL(selectedOrgIds, selectedClientIds, dataMode === "batch"),
-    [selectedOrgIds, selectedClientIds, dataMode]
+    generateClientPnL(selectedOrgIds, selectedClientIds, dataMode === "batch", apiOrgs, apiClients, apiStrategies),
+    [selectedOrgIds, selectedClientIds, dataMode, apiOrgs, apiClients, apiStrategies]
   )
   
   // Generate time series data with calculated net P&L
@@ -698,8 +731,8 @@ export default function MarketsPage() {
     const factorComponent = pnlComponents.find(c => c.name === selectedFactor)
     if (!factorComponent) return null
     
-    const breakdown = generateStrategyBreakdown(selectedFactor, factorComponent.value, dataMode === "batch")
-    const timeSeries = generateFactorTimeSeries(selectedFactor, factorComponent.value, dateRange, dataMode === "batch")
+    const breakdown = generateStrategyBreakdown(selectedFactor, factorComponent.value, dataMode === "batch", apiStrategies, apiClients)
+    const timeSeries = generateFactorTimeSeries(selectedFactor, factorComponent.value, dateRange, dataMode === "batch", apiStrategies)
     
     return {
       factor: factorComponent,
@@ -707,9 +740,22 @@ export default function MarketsPage() {
       timeSeries: timeSeries.data,
       strategyNames: timeSeries.strategies,
     }
-  }, [selectedFactor, pnlComponents, dataMode, dateRange])
+  }, [selectedFactor, pnlComponents, dataMode, dateRange, apiStrategies, apiClients])
 
   if (tickersLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+
+  if (tickersError) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+        <AlertCircle className="size-8 text-destructive" />
+        <p>Failed to load market data</p>
+        <Button variant="outline" size="sm" onClick={() => refetchTickers()}>
+          <RefreshCw className="size-3.5 mr-1.5" />
+          Retry
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6">

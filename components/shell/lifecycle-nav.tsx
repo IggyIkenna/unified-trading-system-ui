@@ -9,6 +9,7 @@
  */
 
 import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
+import { NotificationBell } from "./notification-bell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -59,6 +60,7 @@ const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: strin
   build: Wrench,
   promote: ArrowUpCircle,
   run: Play,
+  execute: Zap,
   observe: Eye,
   manage: Settings2,
   report: FileText,
@@ -81,7 +83,15 @@ export function LifecycleNav({
 }: LifecycleNavProps) {
   const pathname = usePathname() || ""
   const [searchOpen, setSearchOpen] = React.useState(false)
-  const { user, hasEntitlement, isAdmin, isInternal, switchPersona: doSwitchPersona, logout: doLogout } = useAuth()
+  const { user, hasEntitlement, isAdmin, isInternal, logout: doLogout } = useAuth()
+
+  // Persona switch redirects to login page for proper JWT re-issue
+  const switchPersonaViaLogin = React.useCallback((personaId: string) => {
+    localStorage.removeItem("portal_user")
+    localStorage.removeItem("portal_token")
+    localStorage.removeItem("odum_user")
+    window.location.href = `/login?persona=${personaId}`
+  }, [])
 
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true)
@@ -275,13 +285,8 @@ export function LifecycleNav({
 
         <div className="w-px h-5 bg-border" />
 
-        {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative size-8">
-          <Bell className="size-4" />
-          <span className="absolute -top-0.5 -right-0.5 size-3.5 rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground flex items-center justify-center">
-            3
-          </span>
-        </Button>
+        {/* Notifications — real alert count + dropdown */}
+        <NotificationBell />
 
         {/* Org switcher */}
         <DropdownMenu>
@@ -299,7 +304,7 @@ export function LifecycleNav({
               <>
                 <DropdownMenuItem
                   className="flex items-center justify-between"
-                  onClick={() => doSwitchPersona("admin")}
+                  onClick={() => switchPersonaViaLogin("admin")}
                 >
                   <div>
                     <div className="text-sm">Odum Research</div>
@@ -313,7 +318,7 @@ export function LifecycleNav({
             )}
             <DropdownMenuItem
               className="flex items-center justify-between"
-              onClick={() => doSwitchPersona("client-full")}
+              onClick={() => switchPersonaViaLogin("client-full")}
             >
               <div>
                 <div className="text-sm">Alpha Capital</div>
@@ -323,7 +328,7 @@ export function LifecycleNav({
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex items-center justify-between"
-              onClick={() => doSwitchPersona("client-premium")}
+              onClick={() => switchPersonaViaLogin("client-premium")}
             >
               <div>
                 <div className="text-sm">Vertex Partners</div>
@@ -333,7 +338,7 @@ export function LifecycleNav({
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex items-center justify-between"
-              onClick={() => doSwitchPersona("client-data-only")}
+              onClick={() => switchPersonaViaLogin("client-data-only")}
             >
               <div>
                 <div className="text-sm">Beta Fund</div>
@@ -383,7 +388,7 @@ export function LifecycleNav({
                 ] : []).map((p) => (
                   <DropdownMenuItem
                     key={p.id}
-                    onClick={() => doSwitchPersona(p.id)}
+                    onClick={() => switchPersonaViaLogin(p.id)}
                     className={user?.id === p.id ? "bg-primary/10" : ""}
                   >
                     <div className="flex flex-col">

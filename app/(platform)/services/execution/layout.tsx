@@ -1,7 +1,8 @@
 "use client"
 
-import { ServiceTabs, EXECUTION_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
+import { ServiceTabs, EXECUTE_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function ExecutionServiceLayout({ children }: { children: React.ReactNode }) {
@@ -10,11 +11,11 @@ export default function ExecutionServiceLayout({ children }: { children: React.R
   return (
     <>
       <ServiceTabs
-        tabs={EXECUTION_TABS}
+        tabs={EXECUTE_TABS}
         entitlements={user?.entitlements}
-        rightSlot={LIVE_ASOF_VISIBLE.run ? <LiveAsOfToggle /> : undefined}
+        rightSlot={LIVE_ASOF_VISIBLE.execute ? <LiveAsOfToggle /> : undefined}
       />
-      {children}
+      <ErrorBoundary>{children}</ErrorBoundary>
     </>
   )
 }

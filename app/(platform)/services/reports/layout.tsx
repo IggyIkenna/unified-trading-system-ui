@@ -1,6 +1,7 @@
 "use client"
 
 import { ServiceTabs, REPORTS_TABS } from "@/components/shell/service-tabs"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function ReportsServiceLayout({ children }: { children: React.ReactNode }) {
@@ -9,7 +10,7 @@ export default function ReportsServiceLayout({ children }: { children: React.Rea
   return (
     <>
       <ServiceTabs tabs={REPORTS_TABS} entitlements={user?.entitlements} />
-      {children}
+      <ErrorBoundary>{children}</ErrorBoundary>
     </>
   )
 }

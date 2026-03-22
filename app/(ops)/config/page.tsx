@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -46,8 +47,11 @@ import {
   History,
   Save,
   X,
+  RefreshCw,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/use-auth"
+import { apiFetch } from "@/lib/api/fetch"
 import { 
   CLOB_VENUES, 
   DEX_VENUES, 
@@ -198,13 +202,28 @@ const riskLimits = [
 ]
 
 export default function ConfigPage() {
+  const { token } = useAuth()
   const [searchQuery, setSearchQuery] = React.useState("")
   const [activeTab, setActiveTab] = React.useState("clients")
   const [showNewModal, setShowNewModal] = React.useState(false)
-  
+  const [reloading, setReloading] = React.useState(false)
+
   // Config editor state
   const [editingStrategy, setEditingStrategy] = React.useState<string | null>(null)
   const [editedParams, setEditedParams] = React.useState<Record<string, number | string | boolean | string[]>>({})
+
+  // Hot-reload config trigger
+  const handleConfigReload = async () => {
+    setReloading(true)
+    try {
+      await apiFetch("/api/config/reload", token, { method: "POST" })
+      toast.success("Configuration reloaded successfully")
+    } catch {
+      toast.error("Failed to reload configuration")
+    } finally {
+      setReloading(false)
+    }
+  }
   
   // Initialize edited params when opening editor
   const openConfigEditor = (strategyId: string) => {
@@ -256,6 +275,16 @@ export default function ConfigPage() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-2"
+              disabled={reloading}
+              onClick={handleConfigReload}
+            >
+              <RefreshCw className={`size-4 ${reloading ? "animate-spin" : ""}`} />
+              {reloading ? "Reloading..." : "Hot Reload"}
+            </Button>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
@@ -265,9 +294,9 @@ export default function ConfigPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button 
-              size="sm" 
-              className="gap-2" 
+            <Button
+              size="sm"
+              className="gap-2"
               style={{ backgroundColor: "var(--surface-config)" }}
               onClick={() => setShowNewModal(true)}
             >
@@ -759,7 +788,22 @@ export default function ConfigPage() {
               <X className="size-4 mr-2" />
               Cancel
             </Button>
-            <Button onClick={() => setEditingStrategy(null)} disabled={getChangedParams().length === 0}>
+            <Button
+              disabled={getChangedParams().length === 0}
+              onClick={async () => {
+                try {
+                  await apiFetch("/api/config/strategies", token, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ strategyId: editingStrategy, params: editedParams }),
+                  })
+                  toast.success(`Config saved for ${editingStrategy}`)
+                } catch {
+                  toast.error("Failed to save config")
+                }
+                setEditingStrategy(null)
+              }}
+            >
               <Save className="size-4 mr-2" />
               Save Changes
             </Button>

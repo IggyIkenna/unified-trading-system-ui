@@ -3,37 +3,65 @@
 import * as React from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { 
-  MOCK_VENUES, 
-  MOCK_RECENT_ORDERS, 
-  MOCK_EXECUTION_METRICS,
-  MOCK_EXECUTION_ALGOS
-} from "@/lib/execution-platform-mock-data"
-import { 
-  Activity, 
-  TrendingUp, 
+import { useOrders, useAlgos, useVenues, useExecutionMetrics } from "@/hooks/api/use-orders"
+import {
+  Activity,
+  TrendingUp,
   TrendingDown,
   Zap,
   Clock,
   AlertTriangle,
+  AlertCircle,
   CheckCircle2,
   XCircle,
   ArrowUpRight,
   ArrowDownRight,
-  BarChart3
+  BarChart3,
+  RefreshCw,
 } from "lucide-react"
 
 export default function ExecutionOverviewPage() {
-  const metrics = MOCK_EXECUTION_METRICS
-  
+  const { data: metricsData, isLoading: metricsLoading, error: metricsError, refetch: refetchMetrics } = useExecutionMetrics()
+  const { data: venuesData, isLoading: venuesLoading, error: venuesError, refetch: refetchVenues } = useVenues()
+  const { data: ordersData, isLoading: ordersLoading, error: ordersError, refetch: refetchOrders } = useOrders()
+  const { data: algosData, isLoading: algosLoading, error: algosError, refetch: refetchAlgos } = useAlgos()
+
+  const isLoading = metricsLoading || venuesLoading || ordersLoading || algosLoading
+
+  const metrics: Record<string, any> = (metricsData as any)?.data ?? {
+    ordersExecuted: 0, volumeTraded: 0, avgSlippage: 0, avgFillRate: 0, avgLatency: 0, rejects: 0, byAlgo: {}
+  }
+  const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? []
+  const MOCK_RECENT_ORDERS: Array<any> = (ordersData as any)?.data ?? []
+  const MOCK_EXECUTION_ALGOS: Array<any> = (algosData as any)?.data ?? []
+
+  const hasError = metricsError || venuesError || ordersError || algosError
+  const refetchAll = () => { refetchMetrics(); refetchVenues(); refetchOrders(); refetchAlgos() }
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+
+  if (hasError) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+        <AlertCircle className="size-8 text-destructive" />
+        <p>Failed to load execution data</p>
+        <Button variant="outline" size="sm" onClick={refetchAll}>
+          <RefreshCw className="size-3.5 mr-1.5" />
+          Retry
+        </Button>
+      </div>
+    )
+  }
+
   // Calculate some aggregate stats
-  const venueHealth = MOCK_VENUES.filter(v => v.connectivity.status === "connected").length
+  const venueHealth = MOCK_VENUES.filter((v: any) => v.connectivity?.status === "connected").length
   const totalVenues = MOCK_VENUES.length
-  const liveAlgos = MOCK_EXECUTION_ALGOS.filter(a => a.status === "live").length
+  const liveAlgos = MOCK_EXECUTION_ALGOS.filter((a: any) => a.status === "live").length
 
   return (
     <div className="min-h-screen bg-background">
@@ -135,6 +163,9 @@ export default function ExecutionOverviewPage() {
               <CardDescription>{venueHealth}/{totalVenues} venues connected</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
+              {MOCK_VENUES.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-6">No venues connected</p>
+              )}
               {MOCK_VENUES.map(venue => (
                 <div key={venue.id} className="flex items-center justify-between p-2 rounded-lg border">
                   <div className="flex items-center gap-3">
@@ -178,6 +209,13 @@ export default function ExecutionOverviewPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {MOCK_RECENT_ORDERS.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                        No recent executions
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {MOCK_RECENT_ORDERS.map(order => (
                     <TableRow key={order.id}>
                       <TableCell>
@@ -233,6 +271,9 @@ export default function ExecutionOverviewPage() {
             <CardDescription>Execution quality by algorithm type</CardDescription>
           </CardHeader>
           <CardContent>
+            {Object.keys(metrics.byAlgo).length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6">No algo performance data available yet</p>
+            )}
             <div className="grid grid-cols-5 gap-4">
               {Object.entries(metrics.byAlgo)
                 .filter(([, data]) => data.orders > 0)
@@ -289,6 +330,13 @@ export default function ExecutionOverviewPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {MOCK_EXECUTION_ALGOS.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      No algorithms configured
+                    </TableCell>
+                  </TableRow>
+                )}
                 {MOCK_EXECUTION_ALGOS.map(algo => (
                   <TableRow key={algo.id}>
                     <TableCell className="font-medium">{algo.name}</TableCell>

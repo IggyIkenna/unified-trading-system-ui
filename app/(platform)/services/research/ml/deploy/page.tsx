@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { 
-  ArrowLeft, 
-  Rocket, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  ArrowLeft,
+  Rocket,
+  CheckCircle2,
+  XCircle,
   AlertTriangle,
   Clock,
   Shield,
@@ -45,9 +45,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useMLDeployments } from "@/hooks/api/use-ml-models"
 
-// Deploy readiness checklist
-const deploymentChecklist = {
+// Default deploy readiness checklist
+const DEFAULT_DEPLOYMENT_CHECKLIST = {
   modelId: "funding-pred-v2.4.0-rc1",
   modelName: "Funding Rate Predictor v2.4.0",
   targetStage: "CHAMPION",
@@ -123,8 +125,8 @@ const deploymentChecklist = {
   ],
 }
 
-// Deployment stages
-const deploymentStages = [
+// Default deployment stages
+const DEFAULT_DEPLOYMENT_STAGES = [
   { id: "canary", name: "Canary (5%)", status: "ready", duration: "30 min", metrics: "Error rate, latency" },
   { id: "shadow", name: "Shadow Mode", status: "ready", duration: "2 hours", metrics: "Prediction accuracy" },
   { id: "partial", name: "Partial (25%)", status: "pending", duration: "4 hours", metrics: "P&L impact" },
@@ -132,8 +134,8 @@ const deploymentStages = [
   { id: "full", name: "Full Rollout", status: "pending", duration: "—", metrics: "Champion promotion" },
 ]
 
-// Recent deployments
-const recentDeployments = [
+// Default recent deployments
+const DEFAULT_RECENT_DEPLOYMENTS = [
   { modelId: "vol-forecast-v1.8.2", deployedAt: "2026-03-15 09:00", status: "success", duration: "4h 32m", promotedBy: "j.smith@odum.io" },
   { modelId: "liq-detect-v3.1.0", deployedAt: "2026-03-12 14:30", status: "rolled_back", duration: "1h 15m", promotedBy: "m.wong@odum.io", reason: "Latency regression" },
   { modelId: "funding-pred-v2.3.1", deployedAt: "2026-03-01 10:00", status: "success", duration: "6h 45m", promotedBy: "a.chen@odum.io" },
@@ -141,6 +143,11 @@ const recentDeployments = [
 ]
 
 export default function DeployReadinessPage() {
+  const { data: rawData, isLoading } = useMLDeployments()
+
+  const deploymentChecklist = (rawData as any)?.data?.checklist ?? (rawData as any)?.checklist ?? DEFAULT_DEPLOYMENT_CHECKLIST
+  const deploymentStages: any[] = (rawData as any)?.data?.stages ?? (rawData as any)?.stages ?? DEFAULT_DEPLOYMENT_STAGES
+  const recentDeployments: any[] = (rawData as any)?.data?.recentDeployments ?? (rawData as any)?.recentDeployments ?? DEFAULT_RECENT_DEPLOYMENTS
   const [deploymentConfig, setDeploymentConfig] = useState({
     canaryPercent: 5,
     autoRollback: true,
@@ -148,10 +155,11 @@ export default function DeployReadinessPage() {
     notifySlack: true,
   })
 
-  const totalChecks = deploymentChecklist.categories.flatMap(c => c.checks).length
-  const passedChecks = deploymentChecklist.categories.flatMap(c => c.checks).filter(c => c.status === "passed").length
-  const warningChecks = deploymentChecklist.categories.flatMap(c => c.checks).filter(c => c.status === "warning").length
-  const pendingChecks = deploymentChecklist.categories.flatMap(c => c.checks).filter(c => c.status === "pending").length
+  const allChecks = deploymentChecklist.categories.flatMap((c: { checks: { status: string }[] }) => c.checks)
+  const totalChecks = allChecks.length
+  const passedChecks = allChecks.filter((c: { status: string }) => c.status === "passed").length
+  const warningChecks = allChecks.filter((c: { status: string }) => c.status === "warning").length
+  const pendingChecks = allChecks.filter((c: { status: string }) => c.status === "pending").length
   const readinessScore = Math.round((passedChecks / totalChecks) * 100)
 
   const getStatusIcon = (status: string) => {
@@ -173,6 +181,13 @@ export default function DeployReadinessPage() {
       default: return null
     }
   }
+
+  if (isLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -311,7 +326,7 @@ export default function DeployReadinessPage() {
               </CardHeader>
               <CardContent>
                 <Accordion type="multiple" defaultValue={["validation", "governance"]}>
-                  {deploymentChecklist.categories.map(category => (
+                  {deploymentChecklist.categories.map((category: { id: string; name: string; status: string; checks: { id: string; name: string; status: string; detail: string }[] }) => (
                     <AccordionItem key={category.id} value={category.id}>
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex items-center justify-between w-full pr-4">
@@ -326,7 +341,7 @@ export default function DeployReadinessPage() {
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-2 pl-8">
-                          {category.checks.map(check => (
+                          {category.checks.map((check: { id: string; name: string; status: string; detail: string }) => (
                             <div key={check.id} className="flex items-center justify-between py-2 border-b last:border-0">
                               <div className="flex items-center gap-3">
                                 {getStatusIcon(check.status)}

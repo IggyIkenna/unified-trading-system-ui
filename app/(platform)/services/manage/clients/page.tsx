@@ -17,9 +17,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Building2, Plus, ArrowLeft, Users, Key, Database, CreditCard,
-  BarChart3,
+  BarChart3, ChevronRight, ChevronLeft, Check,
 } from "lucide-react"
 import { useOrganizationsList, useSubscriptions } from "@/hooks/api/use-organizations"
 
@@ -151,7 +153,94 @@ export default function ClientsManagementPage() {
     })
   }
 
-  if (isApiLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  // Multi-step onboarding state
+  const [onboardOpen, setOnboardOpen] = React.useState(false)
+  const [onboardStep, setOnboardStep] = React.useState(0)
+  const [onboardData, setOnboardData] = React.useState({
+    name: "",
+    type: "client" as "internal" | "client",
+    tier: "professional" as typeof TIERS[number],
+    contactEmail: "",
+    contactName: "",
+    strategies: [] as string[],
+    venues: [] as string[],
+    maxDrawdown: "10",
+    maxPositionSize: "1000000",
+    maxLeverage: "3",
+  })
+
+  const STRATEGY_OPTIONS = [
+    "CeFi Momentum", "CeFi Mean-Reversion", "CeFi Market-Making",
+    "TradFi ML-Directional", "TradFi Options-ML", "DeFi Basis-Trade",
+    "DeFi AAVE-Lending", "DeFi AMM-LP", "Sports Arbitrage", "Sports Value-Betting",
+  ]
+  const VENUE_OPTIONS = [
+    "Binance", "Coinbase", "Deribit", "OKX", "Bybit", "Hyperliquid",
+    "Aave", "Uniswap", "Polymarket", "Betfair",
+  ]
+
+  function handleOnboardComplete() {
+    if (!onboardData.name.trim()) {
+      toast.error("Organization name is required")
+      return
+    }
+    const monthlyFee =
+      onboardData.tier === "starter" ? 1500
+        : onboardData.tier === "professional" ? 5500
+          : onboardData.tier === "institutional" ? 15000
+            : 25000
+    const id = `org-${String(Date.now()).slice(-6)}`
+    const org: Organization = {
+      id,
+      name: onboardData.name.trim(),
+      type: onboardData.type,
+      status: "onboarding",
+      memberCount: 0,
+      subscriptionTier: onboardData.tier,
+      monthlyFee,
+      apiKeys: 0,
+      usageGb: 0,
+      createdAt: new Date().toISOString().split("T")[0],
+    }
+    addOrg(org)
+    addSubscription({
+      orgId: id,
+      tier: onboardData.tier,
+      entitlements: ["data-basic"],
+      startDate: new Date().toISOString().split("T")[0],
+      renewalDate: new Date(Date.now() + 365 * 86400000).toISOString().split("T")[0],
+      monthlyFee,
+      managementFeePct: onboardData.tier === "enterprise" ? 1.0 : onboardData.tier === "institutional" ? 1.5 : 2.0,
+      performanceFeePct: 20,
+      dataFeePct: 0.05,
+      aumUsd: 0,
+    })
+    toast.success("Client onboarded", {
+      description: `${org.name} created with ${onboardData.strategies.length} strategies and ${onboardData.venues.length} venues`,
+    })
+    setOnboardData({ name: "", type: "client", tier: "professional", contactEmail: "", contactName: "", strategies: [], venues: [], maxDrawdown: "10", maxPositionSize: "1000000", maxLeverage: "3" })
+    setOnboardStep(0)
+    setOnboardOpen(false)
+  }
+
+  const ONBOARD_STEPS = ["Client Details", "Strategy Selection", "Risk Config", "Review"]
+
+  if (isApiLoading) return (
+    <main className="flex-1 p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <Skeleton className="h-10 w-40" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Card key={i}><CardContent className="pt-6 space-y-3"><Skeleton className="h-5 w-40" /><Skeleton className="h-4 w-24" /><div className="grid grid-cols-3 gap-2"><Skeleton className="h-10" /><Skeleton className="h-10" /><Skeleton className="h-10" /></div></CardContent></Card>
+        ))}
+      </div>
+    </main>
+  )
 
   // Detail view
   if (selectedOrg) {
@@ -367,11 +456,16 @@ export default function ClientsManagementPage() {
                 Manage client organizations, subscriptions, and access
               </p>
             </div>
+            <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setOnboardOpen(true)}>
+              <Plus className="mr-2 size-4" />
+              Onboard Client
+            </Button>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <Button variant="ghost" size="sm">
                   <Plus className="mr-2 size-4" />
-                  Create Org
+                  Quick Create
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -429,6 +523,7 @@ export default function ClientsManagementPage() {
               </DialogContent>
             </Dialog>
           </div>
+        </div>
         </div>
       </div>
 
@@ -490,6 +585,188 @@ export default function ClientsManagementPage() {
           })}
         </div>
       </div>
+
+      {/* Multi-Step Onboarding Modal */}
+      <Dialog open={onboardOpen} onOpenChange={(open) => { setOnboardOpen(open); if (!open) setOnboardStep(0) }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Onboard Client</DialogTitle>
+            <DialogDescription>
+              Step {onboardStep + 1} of {ONBOARD_STEPS.length}: {ONBOARD_STEPS[onboardStep]}
+            </DialogDescription>
+          </DialogHeader>
+          {/* Step indicators */}
+          <div className="flex items-center gap-1 py-2">
+            {ONBOARD_STEPS.map((step, i) => (
+              <div key={step} className="flex items-center gap-1 flex-1">
+                <div className={`size-6 rounded-full flex items-center justify-center text-xs font-medium ${
+                  i < onboardStep ? "bg-emerald-500/20 text-emerald-400" : i === onboardStep ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+                }`}>
+                  {i < onboardStep ? <Check className="size-3" /> : i + 1}
+                </div>
+                {i < ONBOARD_STEPS.length - 1 && <div className={`flex-1 h-px ${i < onboardStep ? "bg-emerald-500/40" : "bg-border"}`} />}
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-4 py-2 min-h-[200px]">
+            {/* Step 0: Client Details */}
+            {onboardStep === 0 && (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Organization Name <span className="text-destructive">*</span></label>
+                  <Input placeholder="e.g. Apex Trading Group" value={onboardData.name} onChange={(e) => setOnboardData(d => ({ ...d, name: e.target.value }))} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Contact Name</label>
+                    <Input placeholder="Primary contact" value={onboardData.contactName} onChange={(e) => setOnboardData(d => ({ ...d, contactName: e.target.value }))} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Contact Email</label>
+                    <Input type="email" placeholder="contact@example.com" value={onboardData.contactEmail} onChange={(e) => setOnboardData(d => ({ ...d, contactEmail: e.target.value }))} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Type</label>
+                    <Select value={onboardData.type} onValueChange={(v) => setOnboardData(d => ({ ...d, type: v as "internal" | "client" }))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="client">Client</SelectItem>
+                        <SelectItem value="internal">Internal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Subscription Tier</label>
+                    <Select value={onboardData.tier} onValueChange={(v) => setOnboardData(d => ({ ...d, tier: v as typeof TIERS[number] }))}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {TIERS.map((t) => <SelectItem key={t} value={t} className="capitalize">{t}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Step 1: Strategy Selection */}
+            {onboardStep === 1 && (
+              <div className="space-y-3">
+                <p className="text-sm text-muted-foreground">Select strategies to activate for this client:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {STRATEGY_OPTIONS.map((s) => (
+                    <label key={s} className="flex items-center gap-2 p-2 rounded border border-border hover:bg-muted/50 cursor-pointer text-sm">
+                      <Checkbox
+                        checked={onboardData.strategies.includes(s)}
+                        onCheckedChange={(checked) => setOnboardData(d => ({
+                          ...d,
+                          strategies: checked ? [...d.strategies, s] : d.strategies.filter(x => x !== s),
+                        }))}
+                      />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Risk Config */}
+            {onboardStep === 2 && (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">Configure risk limits for this client:</p>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Max Drawdown (%)</label>
+                  <Input type="number" value={onboardData.maxDrawdown} onChange={(e) => setOnboardData(d => ({ ...d, maxDrawdown: e.target.value }))} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Max Position Size ($)</label>
+                  <Input type="number" value={onboardData.maxPositionSize} onChange={(e) => setOnboardData(d => ({ ...d, maxPositionSize: e.target.value }))} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Max Leverage</label>
+                  <Input type="number" value={onboardData.maxLeverage} onChange={(e) => setOnboardData(d => ({ ...d, maxLeverage: e.target.value }))} />
+                </div>
+                <div className="space-y-3 pt-2">
+                  <p className="text-sm font-medium">Venue Connections</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {VENUE_OPTIONS.map((v) => (
+                      <label key={v} className="flex items-center gap-2 p-2 rounded border border-border hover:bg-muted/50 cursor-pointer text-sm">
+                        <Checkbox
+                          checked={onboardData.venues.includes(v)}
+                          onCheckedChange={(checked) => setOnboardData(d => ({
+                            ...d,
+                            venues: checked ? [...d.venues, v] : d.venues.filter(x => x !== v),
+                          }))}
+                        />
+                        {v}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Review */}
+            {onboardStep === 3 && (
+              <div className="space-y-3 text-sm">
+                <div className="rounded border p-3 space-y-2">
+                  <p className="font-medium">Client Details</p>
+                  <div className="grid grid-cols-2 gap-1 text-muted-foreground">
+                    <span>Name:</span><span className="text-foreground">{onboardData.name || "—"}</span>
+                    <span>Type:</span><span className="text-foreground capitalize">{onboardData.type}</span>
+                    <span>Tier:</span><span className="text-foreground capitalize">{onboardData.tier}</span>
+                    <span>Contact:</span><span className="text-foreground">{onboardData.contactName || "—"} ({onboardData.contactEmail || "—"})</span>
+                  </div>
+                </div>
+                <div className="rounded border p-3 space-y-2">
+                  <p className="font-medium">Strategies ({onboardData.strategies.length})</p>
+                  <div className="flex flex-wrap gap-1">
+                    {onboardData.strategies.length > 0 ? onboardData.strategies.map(s => <Badge key={s} variant="outline" className="text-xs">{s}</Badge>) : <span className="text-muted-foreground">None selected</span>}
+                  </div>
+                </div>
+                <div className="rounded border p-3 space-y-2">
+                  <p className="font-medium">Risk Limits</p>
+                  <div className="grid grid-cols-2 gap-1 text-muted-foreground">
+                    <span>Max Drawdown:</span><span className="text-foreground font-mono">{onboardData.maxDrawdown}%</span>
+                    <span>Max Position:</span><span className="text-foreground font-mono">${Number(onboardData.maxPositionSize).toLocaleString()}</span>
+                    <span>Max Leverage:</span><span className="text-foreground font-mono">{onboardData.maxLeverage}x</span>
+                  </div>
+                </div>
+                <div className="rounded border p-3 space-y-2">
+                  <p className="font-medium">Venues ({onboardData.venues.length})</p>
+                  <div className="flex flex-wrap gap-1">
+                    {onboardData.venues.length > 0 ? onboardData.venues.map(v => <Badge key={v} variant="outline" className="text-xs">{v}</Badge>) : <span className="text-muted-foreground">None selected</span>}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="flex justify-between">
+            <div>
+              {onboardStep > 0 && (
+                <Button variant="ghost" size="sm" onClick={() => setOnboardStep(s => s - 1)}>
+                  <ChevronLeft className="mr-1 size-4" /> Back
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => { setOnboardOpen(false); setOnboardStep(0) }}>Cancel</Button>
+              {onboardStep < ONBOARD_STEPS.length - 1 ? (
+                <Button onClick={() => setOnboardStep(s => s + 1)}>
+                  Next <ChevronRight className="ml-1 size-4" />
+                </Button>
+              ) : (
+                <Button onClick={handleOnboardComplete}>
+                  <Check className="mr-1 size-4" /> Complete Onboarding
+                </Button>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -34,7 +34,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
-import { TRAINING_RUNS, EXPERIMENTS } from "@/lib/ml-mock-data"
+import { useTrainingRuns, useExperiments } from "@/hooks/api/use-ml-models"
+import type { TrainingRun, Experiment } from "@/lib/ml-types"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
 import {
   LineChart,
   Line,
@@ -150,16 +154,60 @@ const FAILED_JOBS = [
 ]
 
 export default function TrainingRunsPage() {
-  const [selectedRun, setSelectedRun] = React.useState<string | null>(TRAINING_RUNS[0]?.id || null)
-  
-  const activeRun = TRAINING_RUNS.find(r => r.id === selectedRun)
-  const experiment = activeRun ? EXPERIMENTS.find(e => e.id === activeRun.experimentId) : null
-  
+  const { data: trainingRunsData, isLoading: runsLoading, isError: runsIsError, error: runsError, refetch: runsRefetch } = useTrainingRuns()
+  const { data: experimentsData, isLoading: experimentsLoading } = useExperiments()
+
+  const trainingRuns: TrainingRun[] = (trainingRunsData as any)?.data ?? (trainingRunsData as any)?.runs ?? []
+  const experiments: Experiment[] = (experimentsData as any)?.data ?? (experimentsData as any)?.experiments ?? []
+
+  const [selectedRun, setSelectedRun] = React.useState<string | null>(null)
+
+  // Auto-select first run when data loads
+  React.useEffect(() => {
+    if (trainingRuns.length > 0 && selectedRun === null) {
+      setSelectedRun(trainingRuns[0].id)
+    }
+  }, [trainingRuns, selectedRun])
+
+  const activeRun = trainingRuns.find(r => r.id === selectedRun)
+  const experiment = activeRun ? experiments.find(e => e.id === activeRun.experimentId) : null
+
   const resourceData = React.useMemo(() => generateResourceData(), [])
   const lossData = React.useMemo(() => generateLossData(activeRun?.currentEpoch || 50), [activeRun?.currentEpoch])
-  
-  const runningJobs = TRAINING_RUNS.filter(r => r.status === "training" || r.status === "validating")
-  
+
+  const runningJobs = trainingRuns.filter(r => r.status === "training" || r.status === "validating")
+
+  const isLoading = runsLoading || experimentsLoading
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (runsIsError) {
+    return (
+      <div className="p-6">
+        <ApiError error={runsError} onRetry={() => runsRefetch()} />
+      </div>
+    )
+  }
+
+  if (trainingRuns.length === 0) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No training runs"
+          description="No training jobs have been submitted yet. Start an experiment to begin training."
+          icon={Cpu}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="p-6">
       <div className="max-w-[1800px] mx-auto space-y-6">
@@ -257,7 +305,7 @@ export default function TrainingRunsPage() {
                 <TabsContent value="running" className="px-4 pb-4">
                   <div className="space-y-2">
                     {runningJobs.map((run) => {
-                      const exp = EXPERIMENTS.find(e => e.id === run.experimentId)
+                      const exp = experiments.find(e => e.id === run.experimentId)
                       return (
                         <div
                           key={run.id}

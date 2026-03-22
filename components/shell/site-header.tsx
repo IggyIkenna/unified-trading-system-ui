@@ -55,13 +55,13 @@ export function SiteHeader() {
           {!loading && user ? (
             <>
               <Link
-                href="/services/overview"
+                href="/dashboard"
                 className="text-sm text-muted-foreground hover:text-foreground hidden sm:block"
               >
                 Dashboard
               </Link>
               <Button size="sm" variant="outline" asChild>
-                <Link href="/services/overview" className="flex items-center gap-2">
+                <Link href="/dashboard" className="flex items-center gap-2">
                   <span className="flex size-5 items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
                     {user.displayName.split(" ").map(n => n[0]).join("").slice(0, 2)}
                   </span>

@@ -32,6 +32,7 @@ import {
   Loader2,
 } from "lucide-react"
 import { useModelFamilies, useFeatureProvenance } from "@/hooks/api/use-ml-models"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Workflow steps
 const STEPS = [
@@ -106,7 +107,12 @@ export default function MLConfigPage() {
     }, 2000)
   }
 
-  if (familiesLoading || featuresLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (familiesLoading || featuresLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
 
   return (
     <div className="space-y-6 p-6">

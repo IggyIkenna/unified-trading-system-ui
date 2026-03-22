@@ -29,7 +29,11 @@ import {
   Timer,
   AlertTriangle,
 } from "lucide-react"
+import { toast } from "sonner"
 import { DATA_FLOWS, SERVICES } from "@/lib/reference-data"
+import { useBatchJobs } from "@/hooks/api/use-audit"
+import { useAuth } from "@/hooks/use-auth"
+import { apiFetch } from "@/lib/api/fetch"
 
 // Batch job types from system topology
 interface BatchJob {
@@ -48,8 +52,8 @@ interface BatchJob {
   schedule: string
 }
 
-// Generate mock jobs from DATA_FLOWS
-const batchJobs: BatchJob[] = DATA_FLOWS
+// Generate fallback jobs from DATA_FLOWS (used when API returns no data)
+const fallbackJobs: BatchJob[] = DATA_FLOWS
   .filter((f) => f.mode === "batch")
   .map((flow, idx) => ({
     id: `job-${flow.id}`,
@@ -83,10 +87,36 @@ function getStatusIcon(status: BatchJob["status"]) {
 }
 
 export default function JobsPage() {
+  const { token } = useAuth()
+  const { data: apiJobs, refetch } = useBatchJobs()
+
+  // Use API data if available, otherwise fall back to reference-data-derived mock
+  const batchJobs: BatchJob[] = (apiJobs as Record<string, unknown>)?.jobs as BatchJob[] ?? fallbackJobs
+
   const runningJobs = batchJobs.filter((j) => j.status === "running")
   const queuedJobs = batchJobs.filter((j) => j.status === "queued")
   const failedJobs = batchJobs.filter((j) => j.status === "failed")
   const completedJobs = batchJobs.filter((j) => j.status === "completed")
+
+  const handleTriggerJob = async (jobId: string) => {
+    try {
+      await apiFetch(`/api/audit/batch-jobs/${jobId}/trigger`, token, { method: "POST" })
+      toast.success(`Job ${jobId} triggered`)
+      refetch()
+    } catch {
+      toast.error(`Failed to trigger job ${jobId}`)
+    }
+  }
+
+  const handleCancelJob = async (jobId: string) => {
+    try {
+      await apiFetch(`/api/audit/batch-jobs/${jobId}/cancel`, token, { method: "POST" })
+      toast.success(`Job ${jobId} cancelled`)
+      refetch()
+    } catch {
+      toast.error(`Failed to cancel job ${jobId}`)
+    }
+  }
 
   return (
     <div className="p-6">
@@ -108,7 +138,7 @@ export default function JobsPage() {
               <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input placeholder="Search jobs..." className="pl-8 w-64" />
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => { refetch(); toast.info("Refreshing jobs...") }}>
               <RefreshCw className="size-4 mr-2" />
               Refresh
             </Button>
@@ -192,10 +222,10 @@ export default function JobsPage() {
                         <p className="text-xs text-muted-foreground">{job.records.toLocaleString()} records</p>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="size-8">
+                        <Button variant="ghost" size="icon" className="size-8" title="Pause" onClick={() => toast.info(`Pausing ${job.name}...`)}>
                           <Pause className="size-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="size-8">
+                        <Button variant="ghost" size="icon" className="size-8" title="Cancel" onClick={() => handleCancelJob(job.id)}>
                           <XCircle className="size-4" />
                         </Button>
                       </div>
@@ -222,13 +252,13 @@ export default function JobsPage() {
           </TabsList>
 
           <TabsContent value="all">
-            <JobsTable jobs={batchJobs} />
+            <JobsTable jobs={batchJobs} onTrigger={handleTriggerJob} />
           </TabsContent>
           <TabsContent value="failed">
-            <JobsTable jobs={failedJobs} />
+            <JobsTable jobs={failedJobs} onTrigger={handleTriggerJob} />
           </TabsContent>
           <TabsContent value="completed">
-            <JobsTable jobs={completedJobs} />
+            <JobsTable jobs={completedJobs} onTrigger={handleTriggerJob} />
           </TabsContent>
         </Tabs>
       </div>
@@ -236,7 +266,7 @@ export default function JobsPage() {
   )
 }
 
-function JobsTable({ jobs }: { jobs: BatchJob[] }) {
+function JobsTable({ jobs, onTrigger }: { jobs: BatchJob[]; onTrigger?: (jobId: string) => void }) {
   return (
     <Card>
       <Table>
@@ -289,7 +319,7 @@ function JobsTable({ jobs }: { jobs: BatchJob[] }) {
               <TableCell className="text-sm text-muted-foreground">{job.schedule}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="icon" className="size-8" title="Rerun">
+                  <Button variant="ghost" size="icon" className="size-8" title="Rerun" onClick={() => onTrigger?.(job.id)}>
                     <RotateCcw className="size-4" />
                   </Button>
                 </div>

@@ -44,3 +44,20 @@ export {
   type TimeSeriesSeries,
   type TimeSeriesDataPoint,
 } from "./time-series-panel"
+
+// Options / Derivatives Components
+export {
+  OptionsChain,
+  generateMockOptionsChain,
+  type OptionsChainResponse,
+  type ExpiryGroup,
+  type OptionsRow,
+  type OptionLeg,
+} from "./options-chain"
+export {
+  VolSurfaceChart,
+  generateMockVolSurface,
+  type VolSurfaceResponse,
+  type VolSmileLine,
+  type VolSmilePoint,
+} from "./vol-surface-chart"

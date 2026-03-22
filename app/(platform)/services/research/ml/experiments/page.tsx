@@ -2,13 +2,9 @@
 
 import * as React from "react"
 import {
-  ArrowUpDown,
-  ChevronDown,
-  ChevronUp,
   Filter,
   FlaskConical,
   GitCompare,
-  Play,
   Search,
   X,
 } from "lucide-react"
@@ -32,17 +28,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { type ColumnDef } from "@tanstack/react-table"
+import { DataTable } from "@/components/ui/data-table"
 
-import { EXPERIMENTS, MODEL_FAMILIES, FEATURE_SET_VERSIONS, DATASET_SNAPSHOTS } from "@/lib/ml-mock-data"
-import type { Experiment } from "@/lib/ml-types"
+import { useExperiments, useModelFamilies, useFeatureProvenance, useDatasets, useCreateTrainingJob } from "@/hooks/api/use-ml-models"
+import type { Experiment, ModelFamily, FeatureSetVersion, DatasetSnapshot } from "@/lib/ml-types"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
+import { ExportDropdown } from "@/components/ui/export-dropdown"
+import type { ExportColumn } from "@/lib/utils/export"
+
+// ---------------------------------------------------------------------------
+// Export columns
+// ---------------------------------------------------------------------------
+
+const experimentExportColumns: ExportColumn[] = [
+  { key: "name", header: "Name" },
+  { key: "modelFamily", header: "Model Family" },
+  { key: "status", header: "Status" },
+  { key: "accuracy", header: "Accuracy", format: "percent" },
+  { key: "sharpe", header: "Sharpe Ratio", format: "number" },
+  { key: "loss", header: "Loss", format: "number" },
+  { key: "maxDrawdown", header: "Max Drawdown", format: "percent" },
+  { key: "directionalAccuracy", header: "Dir. Accuracy", format: "percent" },
+  { key: "createdBy", header: "Created By" },
+  { key: "createdAt", header: "Created At" },
+]
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -74,8 +86,6 @@ function fmtPct(v: number) {
 function fmtNum(v: number, decimals = 2) {
   return v.toFixed(decimals)
 }
-
-type SortField = "accuracy" | "sharpe" | "loss" | "maxDrawdown" | "directionalAccuracy"
 
 // ---------------------------------------------------------------------------
 // Filter State
@@ -126,10 +136,18 @@ const INITIAL_FORM: ExperimentFormState = {
 // ---------------------------------------------------------------------------
 
 export default function ExperimentsPage() {
-  const [experiments, setExperiments] = React.useState<Experiment[]>(EXPERIMENTS)
+  const { data: experimentsData, isLoading: experimentsLoading, isError: experimentsIsError, error: experimentsError, refetch: experimentsRefetch } = useExperiments()
+  const { data: familiesData, isLoading: familiesLoading } = useModelFamilies()
+  const { data: featuresData, isLoading: featuresLoading } = useFeatureProvenance()
+  const { data: datasetsData, isLoading: datasetsLoading } = useDatasets()
+  const createJob = useCreateTrainingJob()
+
+  const experiments: Experiment[] = (experimentsData as any)?.data ?? (experimentsData as any)?.experiments ?? []
+  const modelFamilies: ModelFamily[] = (familiesData as any)?.data ?? (familiesData as any)?.families ?? []
+  const featureSetVersions: FeatureSetVersion[] = (featuresData as any)?.data ?? (featuresData as any)?.features ?? []
+  const datasetSnapshots: DatasetSnapshot[] = (datasetsData as any)?.data ?? (datasetsData as any)?.datasets ?? []
+
   const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS)
-  const [sortField, setSortField] = React.useState<SortField>("sharpe")
-  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const [form, setForm] = React.useState<ExperimentFormState>(INITIAL_FORM)
   const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set())
@@ -146,47 +164,6 @@ export default function ExperimentsPage() {
     return true
   })
 
-  // Sort
-  const sorted = [...filtered].sort((a, b) => {
-    if (!a.metrics && !b.metrics) return 0
-    if (!a.metrics) return 1
-    if (!b.metrics) return -1
-    const aM = a.metrics
-    const bM = b.metrics
-    let aV: number, bV: number
-    switch (sortField) {
-      case "accuracy":
-        aV = aM.accuracy; bV = bM.accuracy; break
-      case "sharpe":
-        aV = aM.sharpe; bV = bM.sharpe; break
-      case "loss":
-        aV = aM.loss; bV = bM.loss; break
-      case "maxDrawdown":
-        aV = aM.maxDrawdown; bV = bM.maxDrawdown; break
-      case "directionalAccuracy":
-        aV = aM.directionalAccuracy; bV = bM.directionalAccuracy; break
-    }
-    return sortDir === "desc" ? bV - aV : aV - bV
-  })
-
-  function handleSort(field: SortField) {
-    if (sortField === field) {
-      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
-    } else {
-      setSortField(field)
-      setSortDir(field === "loss" || field === "maxDrawdown" ? "asc" : "desc")
-    }
-  }
-
-  function SortIcon({ field }: { field: SortField }) {
-    if (sortField !== field) return <ArrowUpDown className="size-3 opacity-30" />
-    return sortDir === "desc" ? (
-      <ChevronDown className="size-3" />
-    ) : (
-      <ChevronUp className="size-3" />
-    )
-  }
-
   function toggleCompare(id: string) {
     setCompareSet((prev) => {
       const next = new Set(prev)
@@ -199,16 +176,135 @@ export default function ExperimentsPage() {
     })
   }
 
+  const experimentColumns: ColumnDef<Experiment, unknown>[] = React.useMemo(
+    () => [
+      {
+        id: "compare",
+        header: "",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <button
+            onClick={() => toggleCompare(row.original.id)}
+            className="p-0.5 rounded hover:bg-muted"
+            title={
+              compareSet.has(row.original.id) ? "Remove from comparison" : "Add to comparison"
+            }
+          >
+            <GitCompare
+              className={`size-3.5 ${compareSet.has(row.original.id) ? "text-blue-400" : "text-muted-foreground"}`}
+            />
+          </button>
+        ),
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div>
+            <p className="font-medium text-sm">{row.original.name}</p>
+            <p className="text-[10px] text-muted-foreground font-mono">{row.original.id}</p>
+          </div>
+        ),
+      },
+      {
+        id: "family",
+        header: "Family",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const family = modelFamilies.find((f) => f.id === row.original.modelFamilyId)
+          return (
+            <span className="text-muted-foreground text-xs">
+              {family?.name ?? row.original.modelFamilyId}
+            </span>
+          )
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className={statusColor(row.original.status)}>
+              {row.original.status}
+            </Badge>
+            {row.original.status === "running" && (
+              <span className="text-xs text-muted-foreground">{row.original.progress}%</span>
+            )}
+          </div>
+        ),
+      },
+      {
+        id: "accuracy",
+        header: "Accuracy",
+        accessorFn: (row) => row.metrics?.accuracy ?? -Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtPct(row.original.metrics.accuracy) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "sharpe",
+        header: "Sharpe",
+        accessorFn: (row) => row.metrics?.sharpe ?? -Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtNum(row.original.metrics.sharpe) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "loss",
+        header: "Loss",
+        accessorFn: (row) => row.metrics?.loss ?? Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtNum(row.original.metrics.loss, 3) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "maxDrawdown",
+        header: "Max DD",
+        accessorFn: (row) => row.metrics?.maxDrawdown ?? Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm text-red-400">
+            {row.original.metrics ? fmtPct(row.original.metrics.maxDrawdown) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "directionalAccuracy",
+        header: "Dir. Acc",
+        accessorFn: (row) => row.metrics?.directionalAccuracy ?? -Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtPct(row.original.metrics.directionalAccuracy) : "--"}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "createdBy",
+        header: "Created By",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-xs">{row.original.createdBy}</span>
+        ),
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [compareSet, modelFamilies],
+  )
+
   function handleSubmitExperiment() {
     if (!form.familyId || !form.name) return
 
-    const newExp: Experiment = {
-      id: `exp-${Date.now()}`,
+    createJob.mutate({
       name: form.name,
       description: form.description || "New experiment",
       modelFamilyId: form.familyId,
-      status: "queued",
-      progress: 0,
       datasetSnapshotId: form.datasetId || "ds-auto-latest",
       featureSetVersionId: form.featureSetId || "fs-auto-latest",
       hyperparameters: {
@@ -227,20 +323,44 @@ export default function ExperimentsPage() {
         gpuType: "A100",
         numGpus: 4,
       },
-      metrics: null,
-      startedAt: null,
-      completedAt: null,
-      createdBy: "current_user",
-      createdAt: new Date().toISOString(),
-    }
-
-    setExperiments((prev) => [newExp, ...prev])
+    })
     setForm(INITIAL_FORM)
     setDialogOpen(false)
   }
 
+  const isLoading = experimentsLoading || familiesLoading || featuresLoading || datasetsLoading
   const activeFilterCount = Object.values(filters).filter(Boolean).length
   const compareExps = experiments.filter((e) => compareSet.has(e.id) && e.metrics)
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (experimentsIsError) {
+    return (
+      <div className="p-6">
+        <ApiError error={experimentsError} onRetry={() => experimentsRefetch()} />
+      </div>
+    )
+  }
+
+  if (experiments.length === 0) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No experiments"
+          description="Start your first ML experiment to begin tracking model performance."
+          action={{ label: "New Experiment", onClick: () => setDialogOpen(true) }}
+          icon={FlaskConical}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -254,10 +374,31 @@ export default function ExperimentsPage() {
               {experiments.filter((e) => e.status === "running").length} running
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)}>
-            <FlaskConical className="size-4" />
-            New Experiment
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportDropdown
+              data={sorted.map((exp) => {
+                const family = modelFamilies.find((f) => f.id === exp.modelFamilyId)
+                return {
+                  name: exp.name,
+                  modelFamily: family?.name ?? exp.modelFamilyId,
+                  status: exp.status,
+                  accuracy: exp.metrics?.accuracy ?? null,
+                  sharpe: exp.metrics?.sharpe ?? null,
+                  loss: exp.metrics?.loss ?? null,
+                  maxDrawdown: exp.metrics?.maxDrawdown ?? null,
+                  directionalAccuracy: exp.metrics?.directionalAccuracy ?? null,
+                  createdBy: exp.createdBy,
+                  createdAt: exp.createdAt,
+                } as Record<string, unknown>
+              })}
+              columns={experimentExportColumns}
+              filename="ml-experiments"
+            />
+            <Button onClick={() => setDialogOpen(true)}>
+              <FlaskConical className="size-4" />
+              New Experiment
+            </Button>
+          </div>
         </div>
 
         {/* Filter Bar */}
@@ -283,7 +424,7 @@ export default function ExperimentsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="__all__">All Families</SelectItem>
-                  {MODEL_FAMILIES.map((fam) => (
+                  {modelFamilies.map((fam) => (
                     <SelectItem key={fam.id} value={fam.id}>
                       {fam.name}
                     </SelectItem>
@@ -336,120 +477,11 @@ export default function ExperimentsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border/50 hover:bg-transparent">
-                  <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Name</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Family</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("accuracy")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Accuracy <SortIcon field="accuracy" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("sharpe")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Sharpe <SortIcon field="sharpe" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("loss")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Loss <SortIcon field="loss" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("maxDrawdown")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Max DD <SortIcon field="maxDrawdown" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("directionalAccuracy")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Dir. Acc <SortIcon field="directionalAccuracy" />
-                    </span>
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Created By</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sorted.map((exp) => {
-                  const m = exp.metrics
-                  const family = MODEL_FAMILIES.find((f) => f.id === exp.modelFamilyId)
-                  return (
-                    <TableRow
-                      key={exp.id}
-                      className={`border-border/30 ${compareSet.has(exp.id) ? "bg-blue-500/5" : ""}`}
-                    >
-                      <TableCell>
-                        <button
-                          onClick={() => toggleCompare(exp.id)}
-                          className="p-0.5 rounded hover:bg-muted"
-                          title={
-                            compareSet.has(exp.id) ? "Remove from comparison" : "Add to comparison"
-                          }
-                        >
-                          <GitCompare
-                            className={`size-3.5 ${compareSet.has(exp.id) ? "text-blue-400" : "text-muted-foreground"}`}
-                          />
-                        </button>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium text-sm">{exp.name}</p>
-                          <p className="text-[10px] text-muted-foreground font-mono">{exp.id}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">
-                        {family?.name ?? exp.modelFamilyId}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1.5">
-                          <Badge variant="outline" className={statusColor(exp.status)}>
-                            {exp.status}
-                          </Badge>
-                          {exp.status === "running" && (
-                            <span className="text-xs text-muted-foreground">{exp.progress}%</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtPct(m.accuracy) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtNum(m.sharpe) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtNum(m.loss, 3) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm text-red-400">
-                        {m ? fmtPct(m.maxDrawdown) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtPct(m.directionalAccuracy) : "--"}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">
-                        {exp.createdBy}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+            <DataTable
+              columns={experimentColumns}
+              data={filtered}
+              emptyMessage="No experiments found"
+            />
           </CardContent>
         </Card>
 
@@ -569,7 +601,7 @@ export default function ExperimentsPage() {
                     <SelectValue placeholder="Select model family..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {MODEL_FAMILIES.map((fam) => (
+                    {modelFamilies.map((fam) => (
                       <SelectItem key={fam.id} value={fam.id}>
                         {fam.name}
                       </SelectItem>
@@ -607,7 +639,7 @@ export default function ExperimentsPage() {
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {FEATURE_SET_VERSIONS.map((fs) => (
+                      {featureSetVersions.map((fs) => (
                         <SelectItem key={fs.id} value={fs.id}>
                           {fs.name} v{fs.version}
                         </SelectItem>
@@ -625,7 +657,7 @@ export default function ExperimentsPage() {
                       <SelectValue placeholder="Select..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {DATASET_SNAPSHOTS.map((ds) => (
+                      {datasetSnapshots.map((ds) => (
                         <SelectItem key={ds.id} value={ds.id}>
                           {ds.name}
                         </SelectItem>

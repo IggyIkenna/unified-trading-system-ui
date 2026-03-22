@@ -33,3 +33,14 @@ export function useServiceActivity() {
     refetchInterval: 30000,
   })
 }
+
+export function useServicesList() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["services-list", user?.id],
+    queryFn: () => apiFetch("/api/service-status/services", token),
+    enabled: !!user,
+    refetchInterval: 30000,
+  })
+}

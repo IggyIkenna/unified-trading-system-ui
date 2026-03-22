@@ -35,14 +35,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import {
-  MODEL_FAMILIES,
-  EXPERIMENTS,
-  TRAINING_RUNS,
-  FEATURE_PROVENANCE,
-  ML_ALERTS,
-} from "@/lib/ml-mock-data"
-import type { Experiment, ModelFamily } from "@/lib/ml-types"
+import { useExperiments, useModelFamilies, useTrainingRuns, useFeatureProvenance, useCreateTrainingJob, useMLMonitoring } from "@/hooks/api/use-ml-models"
+import type { Experiment, ModelFamily, TrainingRun } from "@/lib/ml-types"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -140,26 +135,35 @@ const INITIAL_FORM: TrainFormState = {
 // ---------------------------------------------------------------------------
 
 export default function MLOverviewPage() {
-  const [experiments, setExperiments] = React.useState<Experiment[]>(EXPERIMENTS)
+  const { data: experimentsData, isLoading: experimentsLoading } = useExperiments()
+  const { data: familiesData, isLoading: familiesLoading } = useModelFamilies()
+  const { data: trainingRunsData, isLoading: runsLoading } = useTrainingRuns()
+  const { data: featureProvenanceData, isLoading: featuresLoading } = useFeatureProvenance()
+  const { data: monitoringData, isLoading: monitoringLoading } = useMLMonitoring()
+  const createJob = useCreateTrainingJob()
+
+  const experiments: Experiment[] = (experimentsData as any)?.data ?? (experimentsData as any)?.experiments ?? []
+  const modelFamilies: ModelFamily[] = (familiesData as any)?.data ?? (familiesData as any)?.families ?? []
+  const trainingRuns: TrainingRun[] = (trainingRunsData as any)?.data ?? (trainingRunsData as any)?.runs ?? []
+  const featureProvenance: { featureName: string; status: string; freshness: string }[] = (featureProvenanceData as any)?.data ?? (featureProvenanceData as any)?.features ?? []
+  const mlAlerts: { id: string; severity: string; message: string; triggeredAt: string; resolvedAt: string | null }[] = (monitoringData as any)?.alerts ?? (monitoringData as any)?.data ?? []
+
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const [form, setForm] = React.useState<TrainFormState>(INITIAL_FORM)
 
   // KPIs
-  const totalFamilies = MODEL_FAMILIES.length
+  const totalFamilies = modelFamilies.length
   const runningExperiments = experiments.filter((e) => e.status === "running").length
   const completedExperiments = experiments.filter((e) => e.status === "completed").length
-  const unresolvedAlerts = ML_ALERTS.filter((a) => !a.resolvedAt).length
+  const unresolvedAlerts = mlAlerts.filter((a) => !a.resolvedAt).length
 
   function handleSubmitTraining() {
     if (!form.familyId || !form.name) return
 
-    const newExp: Experiment = {
-      id: `exp-${Date.now()}`,
+    createJob.mutate({
       name: form.name,
       description: "New training experiment",
       modelFamilyId: form.familyId,
-      status: "queued",
-      progress: 0,
       datasetSnapshotId: "ds-auto-latest",
       featureSetVersionId: "fs-auto-latest",
       hyperparameters: {
@@ -177,16 +181,20 @@ export default function MLOverviewPage() {
         gpuType: form.gpuType,
         numGpus: form.gpuType === "A100" ? 4 : 2,
       },
-      metrics: null,
-      startedAt: null,
-      completedAt: null,
-      createdBy: "current_user",
-      createdAt: new Date().toISOString(),
-    }
-
-    setExperiments((prev) => [newExp, ...prev])
+    })
     setForm(INITIAL_FORM)
     setDialogOpen(false)
+  }
+
+  const isLoading = experimentsLoading || familiesLoading || runsLoading || featuresLoading || monitoringLoading
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
   }
 
   return (
@@ -280,7 +288,7 @@ export default function MLOverviewPage() {
             Model Families
           </h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {MODEL_FAMILIES.map((family) => {
+            {modelFamilies.map((family) => {
               const familyExps = experiments.filter((e) => e.modelFamilyId === family.id)
               const runningCount = familyExps.filter((e) => e.status === "running").length
 
@@ -347,7 +355,7 @@ export default function MLOverviewPage() {
               Training Status
             </h2>
             {experiments.slice(0, 6).map((exp) => {
-              const run = TRAINING_RUNS.find((r) => r.experimentId === exp.id)
+              const run = trainingRuns.find((r) => r.experimentId === exp.id)
               return (
                 <Card key={exp.id} className="border-border/50">
                   <CardContent className="pt-0">
@@ -412,7 +420,7 @@ export default function MLOverviewPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {FEATURE_PROVENANCE.map((fp) => (
+                {featureProvenance.map((fp) => (
                   <div
                     key={fp.featureName}
                     className="flex items-center justify-between text-sm"
@@ -446,7 +454,7 @@ export default function MLOverviewPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {ML_ALERTS.filter((a) => !a.resolvedAt).map((alert) => (
+                {mlAlerts.filter((a) => !a.resolvedAt).map((alert) => (
                   <div
                     key={alert.id}
                     className="rounded-lg border border-border/50 p-3 space-y-1.5"
@@ -487,7 +495,7 @@ export default function MLOverviewPage() {
                     <SelectValue placeholder="Select model family..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {MODEL_FAMILIES.map((fam) => (
+                    {modelFamilies.map((fam) => (
                       <SelectItem key={fam.id} value={fam.id}>
                         {fam.name}
                       </SelectItem>

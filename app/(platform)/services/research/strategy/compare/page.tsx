@@ -26,16 +26,17 @@ import {
   AlertTriangle,
   ShoppingBasket,
 } from "lucide-react"
-import {
-  STRATEGY_CONFIGS,
-  BACKTEST_RUNS,
-} from "@/lib/strategy-platform-mock-data"
+import { useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
+import type { BacktestRun, StrategyConfig } from "@/lib/strategy-platform-types"
 
 // Get backtest metrics for a config
-function getConfigMetrics(configId: string) {
-  const runs = BACKTEST_RUNS.filter(
-    (r) => r.configId === configId && r.status === "completed" && r.metrics
+function getConfigMetrics(configId: string, backtestRuns: BacktestRun[]) {
+  const runs = backtestRuns.filter(
+    (r: BacktestRun) => r.configId === configId && r.status === "completed" && r.metrics
   )
   if (runs.length === 0) return null
   
@@ -212,14 +213,18 @@ function ConfigSelector({
   onSelect,
   onRemove,
   isBase,
+  strategyConfigs,
+  backtestRuns,
 }: {
   configId: string | null
   onSelect: (id: string) => void
   onRemove?: () => void
   isBase?: boolean
+  strategyConfigs: StrategyConfig[]
+  backtestRuns: BacktestRun[]
 }) {
-  const config = configId ? STRATEGY_CONFIGS.find((c) => c.id === configId) : null
-  const metrics = configId ? getConfigMetrics(configId) : null
+  const config = configId ? strategyConfigs.find((c) => c.id === configId) : null
+  const metrics = configId ? getConfigMetrics(configId, backtestRuns) : null
 
   if (!config) {
     return (
@@ -230,7 +235,7 @@ function ConfigSelector({
               <SelectValue placeholder="Select config to compare" />
             </SelectTrigger>
             <SelectContent>
-              {STRATEGY_CONFIGS.map((cfg) => (
+              {strategyConfigs.map((cfg) => (
                 <SelectItem key={cfg.id} value={cfg.id}>
                   <div className="flex items-center gap-2">
                     <span>{cfg.name}</span>
@@ -317,10 +322,16 @@ function ConfigSelector({
 }
 
 export default function StrategyComparePage() {
+  const { data: backtestsData, isLoading: backtestsLoading, isError: backtestsIsError, error: backtestsError, refetch: backtestsRefetch } = useStrategyBacktests()
+  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates()
+
+  const BACKTEST_RUNS: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
+  const STRATEGY_CONFIGS: StrategyConfig[] = (templatesData as any)?.data ?? (templatesData as any)?.configs ?? []
+
   const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH")
   const [selectedConfigs, setSelectedConfigs] = React.useState<(string | null)[]>([
-    "cfg-eth-basis-v1",
-    "cfg-eth-basis-v2",
+    null,
+    null,
     null,
   ])
   const [baseIndex, setBaseIndex] = React.useState(0)
@@ -349,12 +360,14 @@ export default function StrategyComparePage() {
     setSelectedConfigs(newConfigs)
   }
 
+  const isLoading = backtestsLoading || templatesLoading
+
   // Get configs and metrics
   const configs = selectedConfigs.map((id) =>
     id ? STRATEGY_CONFIGS.find((c) => c.id === id) : null
   )
   const metricsData = selectedConfigs.map((id) =>
-    id ? getConfigMetrics(id) : null
+    id ? getConfigMetrics(id, BACKTEST_RUNS) : null
   )
   const baseMetrics = metricsData[baseIndex]
 
@@ -365,6 +378,35 @@ export default function StrategyComparePage() {
       Object.keys(cfg.parameters).forEach((k) => allParams.add(k))
     }
   })
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (backtestsIsError) {
+    return (
+      <div className="p-6">
+        <ApiError error={backtestsError} onRetry={() => backtestsRefetch()} />
+      </div>
+    )
+  }
+
+  if (BACKTEST_RUNS.length === 0) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No backtests to compare"
+          description="Run some backtests first, then come back to compare their results side-by-side."
+          icon={GitCompare}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col flex-1">
@@ -407,6 +449,8 @@ export default function StrategyComparePage() {
                   onSelect={(id) => setConfig(i, id)}
                   onRemove={selectedConfigs.length > 2 ? () => removeSlot(i) : undefined}
                   isBase={baseIndex === i}
+                  strategyConfigs={STRATEGY_CONFIGS}
+                  backtestRuns={BACKTEST_RUNS}
                 />
               </div>
             ))}

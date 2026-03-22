@@ -16,6 +16,7 @@ export type LifecycleStage =
   | "build"     // Research, ML, strategy development, backtesting
   | "promote"   // Candidate review, config diff, approval queue
   | "run"       // Live trading, order entry, positions
+  | "execute"   // Execution algos, venue connectivity, TCA
   | "observe"   // Risk, alerts, P&L, monitoring
   | "manage"    // Clients, mandates, allocations, fees, settings
   | "report"    // Client reports, invoices, regulatory, analytics
@@ -70,6 +71,12 @@ export const lifecycleStages: Record<LifecycleStage, {
     description: "Live trading, execution & account management (Trader)",
     icon: "Play",
     color: "text-emerald-400",
+  },
+  execute: {
+    label: "Execute",
+    description: "Execution algos, venue connectivity, TCA (Execution)",
+    icon: "Zap",
+    color: "text-orange-400",
   },
   observe: {
     label: "Observe",
@@ -168,14 +175,14 @@ export const routeMappings: RouteMapping[] = [
   { path: "/services/trading/risk", label: "Risk", primaryStage: "observe", lanes: ["strategy", "execution", "capital"], requiresAuth: true },
   { path: "/services/trading/alerts", label: "Alerts", primaryStage: "observe", lanes: ["strategy", "execution", "ml"], requiresAuth: true },
 
-  // Execution Service
-  { path: "/services/execution/overview", label: "Execution Analytics", primaryStage: "run", lanes: ["execution"], description: "Live execution analytics", requiresAuth: true },
-  { path: "/services/execution/algos", label: "Algo Comparison", primaryStage: "build", lanes: ["execution"], requiresAuth: true },
-  { path: "/services/execution/venues", label: "Venues", primaryStage: "build", lanes: ["execution", "data"], requiresAuth: true },
-  { path: "/services/execution/tca", label: "TCA", primaryStage: "observe", lanes: ["execution"], requiresAuth: true },
-
-  // Service Hub
-  { path: "/services/overview", label: "Service Hub", primaryStage: "run", secondaryStage: "observe", lanes: ["strategy", "execution"], requiresAuth: true },
+  // Execution Service (Execute stage)
+  { path: "/services/execution/overview", label: "Execution Analytics", primaryStage: "execute", lanes: ["execution"], description: "Live execution analytics", requiresAuth: true },
+  { path: "/services/execution/algos", label: "Algo Comparison", primaryStage: "execute", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/venues", label: "Venues", primaryStage: "execute", lanes: ["execution", "data"], requiresAuth: true },
+  { path: "/services/execution/tca", label: "TCA", primaryStage: "execute", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/benchmarks", label: "Benchmarks", primaryStage: "execute", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/candidates", label: "Candidates", primaryStage: "execute", lanes: ["execution"], requiresAuth: true },
+  { path: "/services/execution/handoff", label: "Handoff", primaryStage: "execute", lanes: ["execution"], requiresAuth: true },
 
   // OBSERVE stage
   { path: "/services/observe/health", label: "Health", primaryStage: "observe", lanes: ["data", "execution"], requiresAuth: true },
@@ -245,7 +252,7 @@ export interface LifecycleNavItem {
 
 // Build navigation structure — simplified: one primary service link per stage
 export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavItem[] {
-  const stages: LifecycleStage[] = ["acquire", "build", "promote", "run", "observe", "manage", "report"]
+  const stages: LifecycleStage[] = ["acquire", "build", "promote", "run", "execute", "observe", "manage", "report"]
 
   // Service-centric nav: each stage shows its primary service entry point
   const stageServiceMap: Record<LifecycleStage, { path: string; label: string; lanes: DomainLane[]; description?: string }[]> = {
@@ -261,7 +268,9 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
     ],
     run: [
       { path: "/dashboard", label: "Command Center", lanes: ["execution", "strategy", "capital"], description: "KPIs, P&L, alerts, risk limits, service health" },
-      { path: "/services/trading/overview", label: "Trading", lanes: ["execution"], description: "Live P&L, order entry, position management" },
+      { path: "/services/trading/overview", label: "Trading Terminal", lanes: ["execution"], description: "Live P&L, order entry, position management" },
+    ],
+    execute: [
       { path: "/services/execution/overview", label: "Execution Analytics", lanes: ["execution"], description: "Live execution analytics and venue status" },
     ],
     observe: [

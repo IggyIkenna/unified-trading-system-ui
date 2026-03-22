@@ -1,9 +1,18 @@
 "use client"
 
-// CandlestickChart v3.0 - only accepts Unix timestamps (numbers), not date strings
+// CandlestickChart v4.0 - supports indicator overlays via LineSeries
 import * as React from "react"
-import { createChart, CandlestickSeries, HistogramSeries, ColorType } from "lightweight-charts"
-import type { IChartApi, ISeriesApi, CandlestickData, Time } from "lightweight-charts"
+import { createChart, CandlestickSeries, HistogramSeries, LineSeries, ColorType } from "lightweight-charts"
+import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from "lightweight-charts"
+
+export interface IndicatorOverlay {
+  id: string
+  label: string
+  color: string
+  data: Array<{ time: number; value: number | null }>
+  lineWidth?: number
+  lineStyle?: number
+}
 
 interface CandlestickChartProps {
   data: Array<{
@@ -14,15 +23,17 @@ interface CandlestickChartProps {
     close: number
     volume?: number
   }>
+  indicators?: IndicatorOverlay[]
   height?: number
   className?: string
 }
 
-export function CandlestickChart({ data, height = 300, className }: CandlestickChartProps) {
+export function CandlestickChart({ data, indicators = [], height = 300, className }: CandlestickChartProps) {
   const chartContainerRef = React.useRef<HTMLDivElement>(null)
   const chartRef = React.useRef<IChartApi | null>(null)
   const candlestickSeriesRef = React.useRef<ISeriesApi<"Candlestick"> | null>(null)
   const volumeSeriesRef = React.useRef<ISeriesApi<"Histogram"> | null>(null)
+  const indicatorSeriesRef = React.useRef<Map<string, ISeriesApi<"Line">>>(new Map())
 
   // Initialize chart once
   React.useEffect(() => {
@@ -87,6 +98,7 @@ export function CandlestickChart({ data, height = 300, className }: CandlestickC
     return () => {
       window.removeEventListener("resize", handleResize)
       chart.remove()
+      indicatorSeriesRef.current.clear()
     }
   }, [])
 
@@ -95,7 +107,6 @@ export function CandlestickChart({ data, height = 300, className }: CandlestickC
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return
     if (!data || !Array.isArray(data) || data.length === 0) return
 
-    // Filter out any invalid data points (must have numeric time)
     const validData = data.filter(d => typeof d.time === "number" && !isNaN(d.time))
     if (validData.length === 0) return
 
@@ -120,6 +131,46 @@ export function CandlestickChart({ data, height = 300, className }: CandlestickC
       chartRef.current.timeScale().fitContent()
     }
   }, [data])
+
+  // Update indicator overlays
+  React.useEffect(() => {
+    const chart = chartRef.current
+    if (!chart) return
+
+    const currentIds = new Set(indicators.map(i => i.id))
+    const existingMap = indicatorSeriesRef.current
+
+    // Remove indicators that are no longer present
+    for (const [id, series] of existingMap) {
+      if (!currentIds.has(id)) {
+        chart.removeSeries(series)
+        existingMap.delete(id)
+      }
+    }
+
+    // Add or update indicators
+    for (const indicator of indicators) {
+      const lineData: LineData[] = indicator.data
+        .filter(d => d.value !== null && typeof d.time === "number")
+        .map(d => ({ time: d.time as Time, value: d.value as number }))
+
+      if (lineData.length === 0) continue
+
+      let series = existingMap.get(indicator.id)
+      if (!series) {
+        series = chart.addSeries(LineSeries, {
+          color: indicator.color,
+          lineWidth: (indicator.lineWidth ?? 1) as 1 | 2 | 3 | 4,
+          lineStyle: indicator.lineStyle ?? 0,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+        })
+        existingMap.set(indicator.id, series)
+      }
+      series.setData(lineData)
+    }
+  }, [indicators])
 
   return (
     <div

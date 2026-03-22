@@ -10,20 +10,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
 import { useAlgos, useExecutionBacktests } from "@/hooks/api/use-orders"
-import { 
-  Cpu, 
+import {
+  Cpu,
   GitCompare,
   BarChart3,
   TrendingUp,
   TrendingDown,
   Zap,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react"
 
 export default function ExecutionAlgosPage() {
-  const { data: algosData, isLoading: algosLoading } = useAlgos()
-  const { data: backtestsData, isLoading: btLoading } = useExecutionBacktests()
+  const { data: algosData, isLoading: algosLoading, error: algosError, refetch: refetchAlgos } = useAlgos()
+  const { data: backtestsData, isLoading: btLoading, error: btError, refetch: refetchBt } = useExecutionBacktests()
   const MOCK_EXECUTION_ALGOS: Array<any> = (algosData as any)?.data ?? []
   const MOCK_ALGO_BACKTESTS: Array<any> = (backtestsData as any)?.data ?? []
 
@@ -40,7 +42,23 @@ export default function ExecutionAlgosPage() {
 
   const selectedAlgoData = MOCK_EXECUTION_ALGOS.filter((a: any) => selectedAlgos.includes(a.id))
 
+  const hasError = algosError || btError
+  const refetchAll = () => { refetchAlgos(); refetchBt() }
+
   if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+
+  if (hasError) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+        <AlertCircle className="size-8 text-destructive" />
+        <p>Failed to load algorithm data</p>
+        <Button variant="outline" size="sm" onClick={refetchAll}>
+          <RefreshCw className="size-3.5 mr-1.5" />
+          Retry
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -199,6 +217,13 @@ export default function ExecutionAlgosPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {MOCK_EXECUTION_ALGOS.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                      No execution algorithms configured. Algorithms will appear here once deployed.
+                    </TableCell>
+                  </TableRow>
+                )}
                 {MOCK_EXECUTION_ALGOS.map(algo => (
                   <TableRow key={algo.id} className={cn(selectedAlgos.includes(algo.id) && "bg-muted/50")}>
                     <TableCell>
@@ -252,6 +277,9 @@ export default function ExecutionAlgosPage() {
             <CardDescription>Historical performance analysis across market conditions</CardDescription>
           </CardHeader>
           <CardContent>
+            {MOCK_ALGO_BACKTESTS.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6">No backtest results available yet</p>
+            )}
             <div className="grid grid-cols-2 gap-4">
               {MOCK_ALGO_BACKTESTS.map(bt => {
                 const algo = MOCK_EXECUTION_ALGOS.find(a => a.id === bt.algoId)

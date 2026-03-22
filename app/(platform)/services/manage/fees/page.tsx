@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { useOrganizationsList } from "@/hooks/api/use-organizations"
 import { useSubscriptions } from "@/hooks/api/use-organizations"
+import { ExportDropdown } from "@/components/ui/export-dropdown"
 
 interface FeeRow {
   orgId: string
@@ -148,11 +149,24 @@ export default function FeeManagementPage() {
       <div className="container px-4 py-8 md:px-6 space-y-8">
         {/* Fee Schedule Table */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Fee Schedule by Client</CardTitle>
-            <CardDescription>
-              Click Edit to modify fee percentages for each client. Changes take effect immediately.
-            </CardDescription>
+          <CardHeader className="flex flex-row items-start justify-between">
+            <div>
+              <CardTitle className="text-base">Fee Schedule by Client</CardTitle>
+              <CardDescription>
+                Click Edit to modify fee percentages for each client. Changes take effect immediately.
+              </CardDescription>
+            </div>
+            <ExportDropdown
+              data={feeRows.map(r => ({ client: r.orgName, aum: r.aumUsd, managementFee: r.managementFeePct, performanceFee: r.performanceFeePct, dataFee: r.dataFeePct }))}
+              columns={[
+                { key: "client", header: "Client" },
+                { key: "aum", header: "AUM ($)", format: "currency" },
+                { key: "managementFee", header: "Management Fee %" },
+                { key: "performanceFee", header: "Performance Fee %" },
+                { key: "dataFee", header: "Data Fee %" },
+              ]}
+              filename="fee-schedules"
+            />
           </CardHeader>
           <CardContent>
             <Table>

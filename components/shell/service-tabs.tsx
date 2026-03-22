@@ -37,7 +37,7 @@ export function ServiceTabs({ tabs, rightSlot, entitlements, className }: Servic
   return (
     <div className={cn("border-b border-border bg-card/30", className)}>
       <div className="flex items-center justify-between px-6">
-        <nav className="flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto" aria-label="Service sections">
+        <nav className="flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]" aria-label="Service sections">
           {tabs.map((tab) => {
             const matchPath = tab.matchPrefix || tab.href
             const isActive = pathname === tab.href || pathname.startsWith(matchPath + "/")
@@ -117,7 +117,6 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "Terminal", href: "/services/trading/overview" },
   { label: "Positions", href: "/services/trading/positions" },
   { label: "Orders", href: "/services/trading/orders" },
-  { label: "Execution Analytics", href: "/services/execution/overview", matchPrefix: "/services/execution" },
   { label: "Accounts", href: "/services/trading/accounts" },
   { label: "Markets", href: "/services/trading/markets" },
 ]
@@ -151,13 +150,18 @@ export const REPORTS_TABS: ServiceTab[] = [
 
 // ── Legacy aliases (for backward compatibility during transition) ─────────────
 export const RESEARCH_TABS = BUILD_TABS
-export const EXECUTION_TABS: ServiceTab[] = [
+export const EXECUTE_TABS: ServiceTab[] = [
   { label: "Analytics", href: "/services/execution/overview" },
   { label: "Algos", href: "/services/execution/algos" },
   { label: "Venues", href: "/services/execution/venues" },
   { label: "TCA", href: "/services/execution/tca" },
   { label: "Benchmarks", href: "/services/execution/benchmarks" },
+  { label: "Candidates", href: "/services/execution/candidates" },
+  { label: "Handoff", href: "/services/execution/handoff" },
 ]
+
+// Legacy alias
+export const EXECUTION_TABS = EXECUTE_TABS
 
 // ── Live/As-Of visibility per service ────────────────────────────────────────
 export const LIVE_ASOF_VISIBLE: Record<string, boolean> = {
@@ -165,6 +169,7 @@ export const LIVE_ASOF_VISIBLE: Record<string, boolean> = {
   build: true,
   promote: false,
   run: true,
+  execute: true,
   observe: true,
   manage: false,
   report: false,

@@ -2,6 +2,7 @@
 
 import { ServiceTabs, BUILD_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function ResearchServiceLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,7 @@ export default function ResearchServiceLayout({ children }: { children: React.Re
         entitlements={user?.entitlements}
         rightSlot={LIVE_ASOF_VISIBLE.build ? <LiveAsOfToggle /> : undefined}
       />
-      {children}
+      <ErrorBoundary>{children}</ErrorBoundary>
     </>
   )
 }

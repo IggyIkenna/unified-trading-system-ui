@@ -22,6 +22,8 @@ export function resetDemo() {
   localStorage.removeItem("portal_token")
   localStorage.removeItem("odum_user")
   localStorage.removeItem("nav-preference")
+  localStorage.removeItem("unified-ui-prefs")
+  localStorage.removeItem("unified-global-scope")
 
   // Reload to fresh state
   window.location.href = "/"

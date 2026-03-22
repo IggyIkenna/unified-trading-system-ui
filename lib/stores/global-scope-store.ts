@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 /**
  * Global scope store — shared data-scoping state lifted out of per-page ContextBar.
@@ -28,6 +29,8 @@ interface GlobalScopeActions {
   reset: () => void
 }
 
+const STORAGE_KEY = "unified-global-scope"
+
 const INITIAL_SCOPE: GlobalScopeState = {
   organizationIds: [],
   clientIds: [],
@@ -37,20 +40,31 @@ const INITIAL_SCOPE: GlobalScopeState = {
   asOfDatetime: undefined,
 }
 
-export const useGlobalScope = create<GlobalScopeActions>((set) => ({
-  scope: { ...INITIAL_SCOPE },
-  setOrganizationIds: (ids) => set((s) => ({ scope: { ...s.scope, organizationIds: ids } })),
-  setClientIds: (ids) => set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
-  setStrategyIds: (ids) => set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
-  setUnderlyingIds: (ids) => set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
-  setMode: (mode) => set((s) => ({
-    scope: {
-      ...s.scope,
-      mode,
-      asOfDatetime: mode === "live" ? undefined : s.scope.asOfDatetime ?? new Date().toISOString().slice(0, 16),
-    },
-  })),
-  setAsOfDatetime: (dt) => set((s) => ({ scope: { ...s.scope, asOfDatetime: dt } })),
-  clearAll: () => set({ scope: { ...INITIAL_SCOPE } }),
-  reset: () => set({ scope: { ...INITIAL_SCOPE } }),
-}))
+export const useGlobalScope = create<GlobalScopeActions>()(
+  persist(
+    (set) => ({
+      scope: { ...INITIAL_SCOPE },
+      setOrganizationIds: (ids) => set((s) => ({ scope: { ...s.scope, organizationIds: ids } })),
+      setClientIds: (ids) => set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
+      setStrategyIds: (ids) => set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
+      setUnderlyingIds: (ids) => set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
+      setMode: (mode) => set((s) => ({
+        scope: {
+          ...s.scope,
+          mode,
+          asOfDatetime: mode === "live" ? undefined : s.scope.asOfDatetime ?? new Date().toISOString().slice(0, 16),
+        },
+      })),
+      setAsOfDatetime: (dt) => set((s) => ({ scope: { ...s.scope, asOfDatetime: dt } })),
+      clearAll: () => {
+        localStorage.removeItem(STORAGE_KEY)
+        set({ scope: { ...INITIAL_SCOPE } })
+      },
+      reset: () => {
+        localStorage.removeItem(STORAGE_KEY)
+        set({ scope: { ...INITIAL_SCOPE } })
+      },
+    }),
+    { name: STORAGE_KEY },
+  ),
+)

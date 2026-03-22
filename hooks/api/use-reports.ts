@@ -31,3 +31,43 @@ export function useReconciliation() {
     enabled: !!user,
   })
 }
+
+export function useRegulatoryReports() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["regulatory-reports", user?.id],
+    queryFn: () => apiFetch("/api/reporting/regulatory", token),
+    enabled: !!user,
+  })
+}
+
+export function usePnlAttribution() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["pnl-attribution", user?.id],
+    queryFn: () => apiFetch("/api/reporting/pnl-attribution", token),
+    enabled: !!user,
+  })
+}
+
+export function useExecutiveSummary() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["executive-summary", user?.id],
+    queryFn: () => apiFetch("/api/reporting/executive-summary", token),
+    enabled: !!user,
+  })
+}
+
+export function useInvoices() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["invoices", user?.id],
+    queryFn: () => apiFetch("/api/reporting/invoices", token),
+    enabled: !!user,
+  })
+}

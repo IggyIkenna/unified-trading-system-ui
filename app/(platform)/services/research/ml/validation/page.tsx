@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import Link from "next/link"
-import { 
-  ArrowLeft, 
-  GitCompare, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  ArrowLeft,
+  GitCompare,
+  TrendingUp,
+  TrendingDown,
   AlertTriangle,
   CheckCircle2,
   XCircle,
@@ -54,9 +54,13 @@ import {
   AreaChart,
   Cell,
 } from "recharts"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useValidationResults } from "@/hooks/api/use-ml-models"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
 
-// Validation results for champion vs challenger comparison
-const validationResults = {
+// Default validation results used when API returns no data
+const DEFAULT_VALIDATION_RESULTS = {
   champion: {
     modelId: "funding-pred-v2.3.1",
     name: "Funding Rate Predictor",
@@ -99,30 +103,8 @@ const validationResults = {
   },
 }
 
-// Time series comparison data
-const timeSeriesComparison = Array.from({ length: 60 }, (_, i) => ({
-  date: new Date(2026, 0, 1 + i).toISOString().split("T")[0],
-  championPnL: Math.random() * 0.02 - 0.005 + (i * 0.0003),
-  challengerPnL: Math.random() * 0.02 - 0.004 + (i * 0.00035),
-  championSharpe: 2.2 + Math.random() * 0.4,
-  challengerSharpe: 2.3 + Math.random() * 0.5,
-}))
-
-// Cumulative returns
-let champCum = 0
-let challCum = 0
-const cumulativeReturns = timeSeriesComparison.map(d => {
-  champCum += d.championPnL
-  challCum += d.challengerPnL
-  return {
-    date: d.date,
-    champion: champCum,
-    challenger: challCum,
-  }
-})
-
-// Regime performance breakdown
-const regimePerformance = [
+// Default regime performance breakdown
+const DEFAULT_REGIME_PERFORMANCE = [
   { regime: "Low Vol", championSharpe: 2.8, challengerSharpe: 3.1, samples: 12400, description: "VIX < 15" },
   { regime: "Normal", championSharpe: 2.4, challengerSharpe: 2.6, samples: 24100, description: "15 ≤ VIX < 25" },
   { regime: "High Vol", championSharpe: 1.9, challengerSharpe: 2.2, samples: 6800, description: "VIX ≥ 25" },
@@ -130,8 +112,8 @@ const regimePerformance = [
   { regime: "Ranging", championSharpe: 2.1, challengerSharpe: 2.3, samples: 18900, description: "ADX ≤ 25" },
 ]
 
-// Walk-forward validation windows
-const walkForwardResults = [
+// Default walk-forward validation windows
+const DEFAULT_WALK_FORWARD_RESULTS = [
   { window: "W1", trainStart: "2025-03", trainEnd: "2025-06", testStart: "2025-07", testEnd: "2025-08", champSharpe: 2.31, challSharpe: 2.48, champAcc: 0.841, challAcc: 0.858 },
   { window: "W2", trainStart: "2025-05", trainEnd: "2025-08", testStart: "2025-09", testEnd: "2025-10", champSharpe: 2.45, challSharpe: 2.62, champAcc: 0.852, challAcc: 0.867 },
   { window: "W3", trainStart: "2025-07", trainEnd: "2025-10", testStart: "2025-11", testEnd: "2025-12", champSharpe: 2.38, challSharpe: 2.51, champAcc: 0.844, challAcc: 0.859 },
@@ -139,8 +121,8 @@ const walkForwardResults = [
   { window: "W5", trainStart: "2025-11", trainEnd: "2026-02", testStart: "2026-03", testEnd: "2026-03", champSharpe: 2.44, challSharpe: 2.59, champAcc: 0.848, challAcc: 0.864 },
 ]
 
-// Statistical tests
-const statisticalTests = [
+// Default statistical tests
+const DEFAULT_STATISTICAL_TESTS = [
   { test: "Paired t-test (Sharpe)", statistic: 3.42, pValue: 0.0012, significant: true, conclusion: "Challenger significantly better" },
   { test: "Diebold-Mariano", statistic: 2.87, pValue: 0.0041, significant: true, conclusion: "Challenger forecasts are superior" },
   { test: "Model Confidence Set", statistic: "N/A", pValue: 0.018, significant: true, conclusion: "Challenger in MCS, Champion excluded" },
@@ -148,8 +130,8 @@ const statisticalTests = [
   { test: "Kolmogorov-Smirnov", statistic: 0.089, pValue: 0.142, significant: false, conclusion: "Return distributions similar" },
 ]
 
-// Feature importance comparison
-const featureImportance = [
+// Default feature importance comparison
+const DEFAULT_FEATURE_IMPORTANCE = [
   { feature: "funding_rate_8h", champion: 0.23, challenger: 0.21 },
   { feature: "oi_change_1h", champion: 0.18, challenger: 0.22 },
   { feature: "volume_imbalance", champion: 0.15, challenger: 0.16 },
@@ -160,6 +142,36 @@ const featureImportance = [
 ]
 
 export default function ValidationPage() {
+  const { data: rawData, isLoading, isError, error, refetch } = useValidationResults()
+
+  const validationResults = (rawData as any)?.data?.comparison ?? (rawData as any)?.comparison ?? DEFAULT_VALIDATION_RESULTS
+  const regimePerformance: any[] = (rawData as any)?.data?.regimePerformance ?? (rawData as any)?.regimePerformance ?? DEFAULT_REGIME_PERFORMANCE
+  const walkForwardResults: any[] = (rawData as any)?.data?.walkForward ?? (rawData as any)?.walkForward ?? DEFAULT_WALK_FORWARD_RESULTS
+  const statisticalTests: any[] = (rawData as any)?.data?.statisticalTests ?? (rawData as any)?.statisticalTests ?? DEFAULT_STATISTICAL_TESTS
+  const featureImportance: any[] = (rawData as any)?.data?.featureImportance ?? (rawData as any)?.featureImportance ?? DEFAULT_FEATURE_IMPORTANCE
+
+  // Time series comparison data (derived from API or generated)
+  const timeSeriesComparison = useMemo(() => (rawData as any)?.data?.timeSeries ?? (rawData as any)?.timeSeries ?? Array.from({ length: 60 }, (_, i) => ({
+    date: new Date(2026, 0, 1 + i).toISOString().split("T")[0],
+    championPnL: Math.random() * 0.02 - 0.005 + (i * 0.0003),
+    challengerPnL: Math.random() * 0.02 - 0.004 + (i * 0.00035),
+    championSharpe: 2.2 + Math.random() * 0.4,
+    challengerSharpe: 2.3 + Math.random() * 0.5,
+  })), [rawData])
+
+  // Cumulative returns (derived from time series)
+  const cumulativeReturns = useMemo(() => {
+    if ((rawData as any)?.data?.cumulativeReturns) return (rawData as any).data.cumulativeReturns
+    if ((rawData as any)?.cumulativeReturns) return (rawData as any).cumulativeReturns
+    let champCum = 0
+    let challCum = 0
+    return timeSeriesComparison.map((d: any) => {
+      champCum += d.championPnL
+      challCum += d.challengerPnL
+      return { date: d.date, champion: champCum, challenger: challCum }
+    })
+  }, [rawData, timeSeriesComparison])
+
   const [selectedComparison, setSelectedComparison] = useState("funding-pred")
   const [validationPeriod, setValidationPeriod] = useState("6m")
 
@@ -171,6 +183,29 @@ export default function ValidationPage() {
     const pctDiff = (diff / Math.abs(champion.metrics[metric])) * 100
     return { diff, pctDiff }
   }
+
+  if (isLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
+
+  if (isError) return (
+    <div className="p-6">
+      <ApiError error={error} onRetry={() => refetch()} />
+    </div>
+  )
+
+  if (!validationResults.champion && !validationResults.challenger) return (
+    <div className="p-6">
+      <EmptyState
+        title="No validation results"
+        description="No champion vs challenger comparisons available. Run a validation to compare model versions."
+        icon={GitCompare}
+      />
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -459,8 +494,8 @@ export default function ValidationPage() {
                   <TableBody>
                     {Object.entries(champion.metrics).map(([key, value]) => {
                       const challValue = challenger.metrics[key as keyof typeof challenger.metrics]
-                      const diff = challValue - value
-                      const pctDiff = (diff / Math.abs(value)) * 100
+                      const diff = challValue - (value as number)
+                      const pctDiff = (diff / Math.abs(value as number)) * 100
                       const isHigherBetter = !key.includes("Drawdown")
                       const challengerWins = isHigherBetter ? diff > 0 : diff < 0
                       
@@ -468,7 +503,7 @@ export default function ValidationPage() {
                         <TableRow key={key}>
                           <TableCell className="font-medium">{key.replace(/([A-Z])/g, ' $1').trim()}</TableCell>
                           <TableCell className="text-right font-mono">
-                            {typeof value === "number" ? value.toFixed(3) : value}
+                            {typeof value === "number" ? value.toFixed(3) : String(value)}
                           </TableCell>
                           <TableCell className="text-right font-mono">
                             {typeof challValue === "number" ? challValue.toFixed(3) : challValue}

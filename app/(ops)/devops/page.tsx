@@ -11,18 +11,46 @@
  * Readiness: ReadinessTab + EpicReadinessView
  */
 
-import * as React from "react"
+import dynamic from "next/dynamic"
 import { DevOpsDashboard } from "@/components/dashboards/devops-dashboard"
-import { DeploymentHistory } from "@/components/ops/deployment/DeploymentHistory"
-import { DataStatusTab } from "@/components/ops/deployment/DataStatusTab"
-import { CloudBuildsTab } from "@/components/ops/deployment/CloudBuildsTab"
-import { ServicesOverviewTab } from "@/components/ops/deployment/ServicesOverviewTab"
-import { ReadinessTab } from "@/components/ops/deployment/ReadinessTab"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Cloud, Database, Rocket, Activity, CheckCircle2, History,
 } from "lucide-react"
+
+function TabSkeleton() {
+  return (
+    <div className="space-y-4 py-6">
+      <Skeleton className="h-8 w-64" />
+      <Skeleton className="h-64 w-full" />
+      <Skeleton className="h-8 w-full" />
+      <Skeleton className="h-8 w-full" />
+    </div>
+  )
+}
+
+const DeploymentHistory = dynamic(
+  () => import("@/components/ops/deployment/DeploymentHistory").then(m => m.DeploymentHistory),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const DataStatusTab = dynamic(
+  () => import("@/components/ops/deployment/DataStatusTab").then(m => m.DataStatusTab),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const CloudBuildsTab = dynamic(
+  () => import("@/components/ops/deployment/CloudBuildsTab").then(m => m.CloudBuildsTab),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const ServicesOverviewTab = dynamic(
+  () => import("@/components/ops/deployment/ServicesOverviewTab").then(m => m.ServicesOverviewTab),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
+const ReadinessTab = dynamic(
+  () => import("@/components/ops/deployment/ReadinessTab").then(m => m.ReadinessTab),
+  { ssr: false, loading: () => <TabSkeleton /> }
+)
 
 export default function DevOpsPage() {
   return (
@@ -73,33 +101,23 @@ export default function DevOpsPage() {
           </TabsContent>
 
           <TabsContent value="deployments">
-            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading deployments...</div>}>
-              <DeploymentHistory />
-            </React.Suspense>
+            <DeploymentHistory />
           </TabsContent>
 
           <TabsContent value="data-status">
-            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading data status...</div>}>
-              <DataStatusTab serviceName="market-tick-data-service" />
-            </React.Suspense>
+            <DataStatusTab serviceName="market-tick-data-service" />
           </TabsContent>
 
           <TabsContent value="builds">
-            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading builds...</div>}>
-              <CloudBuildsTab />
-            </React.Suspense>
+            <CloudBuildsTab />
           </TabsContent>
 
           <TabsContent value="services">
-            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading services...</div>}>
-              <ServicesOverviewTab />
-            </React.Suspense>
+            <ServicesOverviewTab />
           </TabsContent>
 
           <TabsContent value="readiness">
-            <React.Suspense fallback={<div className="py-12 text-center text-muted-foreground">Loading readiness...</div>}>
-              <ReadinessTab />
-            </React.Suspense>
+            <ReadinessTab />
           </TabsContent>
         </Tabs>
       </div>

@@ -265,3 +265,114 @@
 .animate-scroll-venues:hover {
   animation-play-state: paused;
 }
+
+/* ── Print-Optimized Styles for Reports ────────────────────────────────────── */
+@media print {
+  /* Hide non-printable elements */
+  nav,
+  [data-slot="service-tabs"],
+  [data-slot="debug-footer"],
+  [data-slot="lifecycle-nav"],
+  [data-slot="command-palette"],
+  [role="navigation"],
+  button,
+  .no-print,
+  footer {
+    display: none !important;
+  }
+
+  /* Reset background for printing */
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --card: #ffffff;
+    --card-foreground: #000000;
+    --border: #e5e7eb;
+    --muted-foreground: #6b7280;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+
+  /* Full-width tables with visible borders */
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    border: 1px solid #d1d5db !important;
+    padding: 6px 8px !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  th {
+    background: #f3f4f6 !important;
+    font-weight: 600;
+  }
+
+  /* Cards print as bordered sections */
+  [data-slot="card"] {
+    border: 1px solid #d1d5db !important;
+    background: white !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  /* Page breaks between report sections */
+  .print-break-before {
+    break-before: page;
+  }
+
+  /* Report header on each page */
+  .print-header {
+    display: block !important;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: 700;
+    margin-bottom: 12pt;
+    border-bottom: 2px solid black;
+    padding-bottom: 8pt;
+  }
+
+  /* Timestamp footer */
+  .print-footer {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #6b7280;
+    border-top: 1px solid #d1d5db;
+    padding-top: 4pt;
+  }
+
+  /* Charts at print resolution */
+  .tv-lightweight-charts,
+  canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Badges print as text with borders */
+  [data-slot="badge"] {
+    border: 1px solid #6b7280 !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  /* Ensure main content is full-width */
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}

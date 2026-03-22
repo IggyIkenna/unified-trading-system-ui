@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import {
   ArrowUpDown,
+  ArrowLeft,
   TrendingUp,
   TrendingDown,
   RefreshCw,
@@ -19,20 +20,30 @@ import {
   Maximize2,
   Radio,
   Database,
+  AlertTriangle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {
-  STRATEGIES,
-  ACCOUNTS,
-  getFilteredStrategies,
-  getAccountsForClient,
-  type FilterContext,
-  type TradingAccount,
-} from "@/lib/trading-data"
-import { CLIENTS, ORGANIZATIONS } from "@/lib/trading-data"
-import { useTickers } from "@/hooks/api/use-market-data"
+import Link from "next/link"
+import { useStrategyPerformance } from "@/hooks/api/use-strategies"
+import { useBalances } from "@/hooks/api/use-positions"
+import dynamic from "next/dynamic"
+import { ManualTradingPanel } from "@/components/trading/manual-trading-panel"
+import { BatchLiveRail } from "@/components/platform/batch-live-rail"
+
+const OptionsChain = dynamic(() => import("@/components/trading/options-chain").then(m => ({ default: m.OptionsChain })), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">Loading options chain...</div>,
+})
+const VolSurfaceChart = dynamic(() => import("@/components/trading/vol-surface-chart").then(m => ({ default: m.VolSurfaceChart })), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">Loading vol surface...</div>,
+})
+import { useTickers, useCandles, useOrderBook } from "@/hooks/api/use-market-data"
 import { usePositions } from "@/hooks/api/use-positions"
 import { useAlerts } from "@/hooks/api/use-alerts"
+import { useWebSocket } from "@/hooks/use-websocket"
+import { sma, ema, bollingerBands } from "@/lib/utils/indicators"
+import type { IndicatorOverlay } from "@/components/trading/candlestick-chart"
 import {
   Area,
   AreaChart,
@@ -116,10 +127,57 @@ const generateCandleData = (basePrice: number, timeframe: string) => {
 }
 
 export default function TradingPage() {
-  const { scope: context } = useGlobalScope()
-  const { data: tickersData } = useTickers()
-  const { data: positionsData } = usePositions()
-  const { data: alertsData } = useAlerts()
+  const { scope: context, setMode } = useGlobalScope()
+  const { data: tickersData, error: tickersError } = useTickers()
+  const modeParam = context.mode === "batch" ? "batch" : "live"
+  const asOfParam = context.mode === "batch" ? context.asOfDatetime?.split("T")[0] : undefined
+  const { data: positionsData, error: positionsError } = usePositions(modeParam, asOfParam)
+  const { data: alertsData, error: alertsError } = useAlerts()
+  const { data: strategiesApiData } = useStrategyPerformance()
+  const { data: balancesApiData } = useBalances()
+
+  // API data: candles and order book from server
+  const { data: candlesApiData } = useCandles(
+    selectedInstrument?.venue ?? "Binance",
+    selectedInstrument?.symbol ?? "BTC/USDT",
+    timeframe === "1m" ? "1M" : timeframe === "5m" ? "5M" : timeframe === "15m" ? "15M" : "1H",
+    200,
+    modeParam,
+    asOfParam
+  )
+  const { data: orderbookApiData } = useOrderBook(
+    selectedInstrument?.venue ?? "Binance",
+    selectedInstrument?.symbol ?? "BTC/USDT",
+    modeParam,
+    asOfParam
+  )
+
+  // WebSocket bid/ask state for orderbook overlay
+  const [wsBid, setWsBid] = React.useState<number | null>(null)
+  const [wsAsk, setWsAsk] = React.useState<number | null>(null)
+
+  // WebSocket for real-time ticks
+  const handleWsMessage = React.useCallback((msg: Record<string, unknown>) => {
+    if (msg.instrument === selectedInstrument?.symbol && typeof msg.price === "number") {
+      setLivePrice(msg.price as number)
+      if (typeof msg.bid === "number") setWsBid(msg.bid as number)
+      if (typeof msg.ask === "number") setWsAsk(msg.ask as number)
+    }
+  }, [selectedInstrument?.symbol])
+
+  const ws = useWebSocket({
+    url: `ws://localhost:8030/ws`,
+    enabled: context.mode === "live",
+    onMessage: handleWsMessage,
+  })
+
+  // Subscribe to selected instrument on WebSocket
+  React.useEffect(() => {
+    if (ws.status === "connected" && selectedInstrument) {
+      ws.subscribe([selectedInstrument.symbol])
+      return () => { ws.unsubscribe([selectedInstrument.symbol]) }
+    }
+  }, [ws.status, selectedInstrument?.symbol, ws.subscribe, ws.unsubscribe])
 
   // Extract API data - instruments from tickers
   const tickersRaw: any[] = (tickersData as any)?.data ?? (tickersData as any)?.tickers ?? []
@@ -134,13 +192,14 @@ export default function TradingPage() {
     : DEFAULT_INSTRUMENTS
 
   const [selectedInstrument, setSelectedInstrument] = React.useState(instruments[0])
-  const [selectedAccount, setSelectedAccount] = React.useState<TradingAccount | null>(null)
+  const [selectedAccount, setSelectedAccount] = React.useState<{ id: string; name: string; venueAccountId: string; marginType: string } | null>(null)
   const [orderType, setOrderType] = React.useState<"limit" | "market">("limit")
   const [orderSide, setOrderSide] = React.useState<"buy" | "sell">("buy")
   const [orderPrice, setOrderPrice] = React.useState("")
   const [orderSize, setOrderSize] = React.useState("")
   const [timeframe, setTimeframe] = React.useState("5m")
-  const [chartType, setChartType] = React.useState<"candles" | "line" | "depth">("candles")
+  const [chartType, setChartType] = React.useState<"candles" | "line" | "depth" | "options">("candles")
+  const [activeIndicators, setActiveIndicators] = React.useState<Set<string>>(new Set())
   const [tradesTab, setTradesTab] = React.useState<"market" | "own">("market")
   
   // Own trades (user's fills)
@@ -163,13 +222,20 @@ export default function TradingPage() {
     setPriceChange(selectedInstrument.change)
   }, [selectedInstrument])
   
-  // Get available accounts based on selected client
+  // Get available accounts from balances API
   const availableAccounts = React.useMemo(() => {
-    if (context.clientIds.length === 1) {
-      return getAccountsForClient(context.clientIds[0])
+    const raw = balancesApiData as Record<string, unknown> | undefined
+    const balances = (raw?.balances ?? raw?.data ?? []) as Array<Record<string, unknown>>
+    if (balances.length > 0) {
+      return balances.map((b, i) => ({
+        id: (b.id as string) ?? `acc-${i}`,
+        name: (b.venue as string) ?? `Account ${i + 1}`,
+        venueAccountId: (b.account_id as string) ?? "",
+        marginType: (b.margin_type as string) ?? "cross",
+      }))
     }
-    return ACCOUNTS
-  }, [context.clientIds])
+    return [{ id: "default", name: "Default Account", venueAccountId: "default-001", marginType: "cross" }]
+  }, [balancesApiData])
   
   // Check if trading context is complete
   const isContextComplete = React.useMemo(() => {
@@ -219,20 +285,17 @@ export default function TradingPage() {
     setRecentTrades(newTrades)
   }, [isClient, selectedInstrument])
   
-  // Build filter context
-  const filterContext: FilterContext = React.useMemo(() => ({
-    organizationIds: context.organizationIds,
-    clientIds: context.clientIds,
-    strategyIds: context.strategyIds,
-    mode: context.mode,
-    date: new Date().toISOString().split("T")[0],
-  }), [context])
-  
-  // Get filtered strategies
-  const filteredStrategies = React.useMemo(() => 
-    getFilteredStrategies(filterContext), 
-    [filterContext]
-  )
+  // Get strategies from API (replaces lib/trading-data.ts STRATEGIES)
+  const filteredStrategies = React.useMemo(() => {
+    const raw = strategiesApiData as Record<string, unknown> | undefined
+    const strategies = (raw?.strategies ?? raw?.data ?? []) as Array<{ id: string; name: string; status?: string; [k: string]: unknown }>
+    if (!Array.isArray(strategies) || strategies.length === 0) return []
+    // Apply scope filters if set
+    if (context.strategyIds.length > 0) {
+      return strategies.filter(s => context.strategyIds.includes(s.id))
+    }
+    return strategies
+  }, [strategiesApiData, context.strategyIds])
   
   // When strategy filter changes, update instrument
   React.useEffect(() => {
@@ -300,16 +363,68 @@ export default function TradingPage() {
     return () => clearInterval(interval)
   }, [isClient])
   
-  // Generate order book for selected instrument with live price - updates on each tick
-  const { bids, asks } = React.useMemo(() => 
-    generateMockOrderBook(selectedInstrument.symbol, livePrice, tickCount),
-    [selectedInstrument.symbol, livePrice, tickCount]
-  )
+  // Order book: prefer API data, fall back to client-side generation
+  // WebSocket bid/ask updates the top-of-book in real-time
+  const { bids, asks } = React.useMemo(() => {
+    const apiOb = orderbookApiData as Record<string, unknown> | undefined
+    const apiBids = apiOb?.bids as Array<Record<string, number>> | undefined
+    const apiAsks = apiOb?.asks as Array<Record<string, number>> | undefined
+    if (apiBids && apiAsks && apiBids.length > 0) {
+      const mappedBids = apiBids.map((b) => ({ price: b.price, quantity: b.quantity ?? b.size ?? 0, total: b.total ?? 0 }))
+      const mappedAsks = apiAsks.map((a) => ({ price: a.price, quantity: a.quantity ?? a.size ?? 0, total: a.total ?? 0 }))
+      // Overlay WebSocket bid/ask at top of book
+      if (wsBid !== null && mappedBids.length > 0) mappedBids[0] = { ...mappedBids[0], price: wsBid }
+      if (wsAsk !== null && mappedAsks.length > 0) mappedAsks[0] = { ...mappedAsks[0], price: wsAsk }
+      return { bids: mappedBids, asks: mappedAsks }
+    }
+    return generateMockOrderBook(selectedInstrument.symbol, livePrice, tickCount)
+  }, [orderbookApiData, selectedInstrument.symbol, livePrice, tickCount, wsBid, wsAsk])
   
-  // Generate candle data - update last candle with live price
+  // Candle data: prefer API data, fall back to client-side generation
   const candleData = React.useMemo(() => {
+    // Use API candle data if available
+    const apiCandles = (candlesApiData as Record<string, unknown>)?.candles as Array<Record<string, unknown>> | undefined
+    if (apiCandles && Array.isArray(apiCandles) && apiCandles.length > 0) {
+      const mapped = apiCandles.map((c) => ({
+        time: typeof c.time === "number" ? c.time : Math.floor(new Date(c.time as string).getTime() / 1000),
+        open: c.open as number,
+        high: c.high as number,
+        low: c.low as number,
+        close: c.close as number,
+        volume: (c.volume as number) ?? 0,
+        isUp: (c.close as number) >= (c.open as number),
+      }))
+      // Update last candle or create new one based on live price
+      if (mapped.length > 0 && isClient && livePrice > 0) {
+        const last = mapped[mapped.length - 1]
+        const intervalSeconds = timeframe === "1m" ? 60 : timeframe === "5m" ? 300 : timeframe === "15m" ? 900 : 3600
+        const nowUnix = Math.floor(Date.now() / 1000)
+        const candleBoundary = last.time + intervalSeconds
+
+        if (nowUnix >= candleBoundary) {
+          // New candle period: create new candle from live price
+          const newTime = Math.floor(nowUnix / intervalSeconds) * intervalSeconds
+          mapped.push({
+            time: newTime,
+            open: livePrice,
+            high: livePrice,
+            low: livePrice,
+            close: livePrice,
+            volume: 0,
+            isUp: true,
+          })
+        } else {
+          // Still in current candle: update close/high/low
+          last.close = livePrice
+          last.high = Math.max(last.high, livePrice)
+          last.low = Math.min(last.low, livePrice)
+          last.isUp = last.close >= last.open
+        }
+      }
+      return mapped
+    }
+    // Fallback: client-side generated candles
     const data = generateCandleData(selectedInstrument.midPrice, timeframe)
-    // Update the last candle to reflect live price movement
     if (data.length > 0 && isClient) {
       const lastCandle = data[data.length - 1]
       const variation = (tickCount % 10) * 0.0001 * livePrice
@@ -319,8 +434,51 @@ export default function TradingPage() {
       lastCandle.isUp = lastCandle.close >= lastCandle.open
     }
     return data
-  }, [selectedInstrument.midPrice, timeframe, tickCount, livePrice, isClient])
+  }, [candlesApiData, selectedInstrument.midPrice, timeframe, tickCount, livePrice, isClient])
   
+  // Compute indicator overlays from candle close prices
+  const indicatorOverlays: IndicatorOverlay[] = React.useMemo(() => {
+    if (!candleData || candleData.length === 0) return []
+    const closes = candleData.map(c => c.close)
+    const times = candleData.map(c => c.time)
+    const overlays: IndicatorOverlay[] = []
+
+    if (activeIndicators.has("sma20")) {
+      const values = sma(closes, 20)
+      overlays.push({ id: "sma20", label: "SMA 20", color: "#f59e0b", data: times.map((t, i) => ({ time: t, value: values[i] })) })
+    }
+    if (activeIndicators.has("sma50")) {
+      const values = sma(closes, 50)
+      overlays.push({ id: "sma50", label: "SMA 50", color: "#8b5cf6", data: times.map((t, i) => ({ time: t, value: values[i] })) })
+    }
+    if (activeIndicators.has("ema12")) {
+      const values = ema(closes, 12)
+      overlays.push({ id: "ema12", label: "EMA 12", color: "#06b6d4", data: times.map((t, i) => ({ time: t, value: values[i] })) })
+    }
+    if (activeIndicators.has("ema26")) {
+      const values = ema(closes, 26)
+      overlays.push({ id: "ema26", label: "EMA 26", color: "#ec4899", data: times.map((t, i) => ({ time: t, value: values[i] })) })
+    }
+    if (activeIndicators.has("bb")) {
+      const bb = bollingerBands(closes, 20, 2)
+      overlays.push(
+        { id: "bb-upper", label: "BB Upper", color: "rgba(148, 163, 184, 0.5)", data: times.map((t, i) => ({ time: t, value: bb.upper[i] })), lineStyle: 2 },
+        { id: "bb-lower", label: "BB Lower", color: "rgba(148, 163, 184, 0.5)", data: times.map((t, i) => ({ time: t, value: bb.lower[i] })), lineStyle: 2 },
+        { id: "bb-middle", label: "BB Middle", color: "rgba(148, 163, 184, 0.8)", data: times.map((t, i) => ({ time: t, value: bb.middle[i] })) },
+      )
+    }
+    return overlays
+  }, [candleData, activeIndicators])
+
+  const toggleIndicator = React.useCallback((id: string) => {
+    setActiveIndicators(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }, [])
+
   const spread = asks[0]?.price - bids[0]?.price || 0
   const spreadBps = (spread / livePrice) * 10000
   
@@ -362,11 +520,41 @@ export default function TradingPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <main className="flex-1 p-4 space-y-4 overflow-auto">
+        <BatchLiveRail
+          platform="execution"
+          currentStage="Live"
+          context={context.mode === "live" ? "LIVE" : "BATCH"}
+          onContextChange={(v) => setMode(v === "LIVE" ? "live" : "batch")}
+        />
+        {/* Breadcrumb nav */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/dashboard" className="flex items-center gap-1 hover:text-foreground transition-colors">
+            <ArrowLeft className="size-3.5" />
+            Command Center
+          </Link>
+          <span>/</span>
+          <span className="text-foreground font-medium">Trading Terminal</span>
+        </div>
+
+        {/* Inline error banner for API failures */}
+        {(tickersError || positionsError || alertsError) && (
+          <div className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+            <AlertTriangle className="size-4 shrink-0" />
+            <span>
+              Some data failed to load
+              {tickersError ? " (tickers)" : ""}
+              {positionsError ? " (positions)" : ""}
+              {alertsError ? " (alerts)" : ""}
+              . Parts of the terminal may show stale or missing data.
+            </span>
+          </div>
+        )}
+
         {/* Instrument & Account Selector */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Select 
-              value={selectedInstrument.symbol} 
+            <Select
+              value={selectedInstrument.symbol}
               onValueChange={(v) => setSelectedInstrument(instruments.find(i => i.symbol === v) || instruments[0])}
             >
               <SelectTrigger className="w-[180px]">
@@ -438,6 +626,14 @@ export default function TradingPage() {
               )}
             </Badge>
             
+            <ManualTradingPanel
+              defaultInstrument={selectedInstrument.symbol}
+              defaultVenue={selectedInstrument.venue}
+              currentPrice={livePrice}
+              instruments={instruments}
+              strategies={filteredStrategies.map((s) => ({ id: s.id, name: s.name }))}
+            />
+
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="sm">
                 <RefreshCw className="size-4" />
@@ -452,8 +648,21 @@ export default function TradingPage() {
           </div>
         </div>
 
+        {/* Batch Mode Banner */}
+        {context.mode === "batch" && (
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+            <Database className="size-4 text-amber-500 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-amber-500">Viewing Batch Data</p>
+              <p className="text-xs text-muted-foreground">
+                As of {context.asOfDatetime?.split("T")[0] ?? "yesterday"} — Historical snapshot, read-only
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Main Trading Grid */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Order Book */}
           <div className="col-span-1">
             <OrderBook
@@ -469,14 +678,14 @@ export default function TradingPage() {
           </div>
           
           {/* Chart */}
-          <div className="col-span-2">
+          <div className="col-span-1 lg:col-span-2">
             <Card className="h-full">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <CardTitle className="text-sm">Price Chart</CardTitle>
                     <div className="flex items-center gap-1 ml-4">
-                      {["candles", "line", "depth"].map((type) => (
+                      {["candles", "line", "depth", "options"].map((type) => (
                         <Button 
                           key={type}
                           variant={chartType === type ? "secondary" : "ghost"} 
@@ -489,6 +698,28 @@ export default function TradingPage() {
                       ))}
                     </div>
                   </div>
+                  {/* Indicator toggles */}
+                  {chartType === "candles" && (
+                    <div className="flex items-center gap-1">
+                      {[
+                        { id: "sma20", label: "SMA 20", color: "#f59e0b" },
+                        { id: "sma50", label: "SMA 50", color: "#8b5cf6" },
+                        { id: "ema12", label: "EMA 12", color: "#06b6d4" },
+                        { id: "bb", label: "BB", color: "#94a3b8" },
+                      ].map((ind) => (
+                        <Button
+                          key={ind.id}
+                          variant={activeIndicators.has(ind.id) ? "secondary" : "ghost"}
+                          size="sm"
+                          className="h-5 px-1.5 text-[10px]"
+                          style={activeIndicators.has(ind.id) ? { borderBottom: `2px solid ${ind.color}` } : undefined}
+                          onClick={() => toggleIndicator(ind.id)}
+                        >
+                          {ind.label}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex items-center gap-1">
                     {["1m", "5m", "15m", "1H", "4H", "1D"].map((tf) => (
                       <Button 
@@ -508,8 +739,9 @@ export default function TradingPage() {
                 {/* Candlestick / Line / Depth Chart */}
                 <div className="h-[300px]">
                   {chartType === "candles" ? (
-                    <CandlestickChart 
-                      data={candleData} 
+                    <CandlestickChart
+                      data={candleData}
+                      indicators={indicatorOverlays}
                       height={300}
                     />
                   ) : chartType === "line" ? (
@@ -551,7 +783,7 @@ export default function TradingPage() {
                         />
                       </AreaChart>
                     </ResponsiveContainer>
-                  ) : (
+                  ) : chartType === "depth" ? (
                     <DepthChart
                       bids={bids}
                       asks={asks}
@@ -559,7 +791,17 @@ export default function TradingPage() {
                       symbol={selectedInstrument.symbol}
                       height={300}
                     />
-                  )}
+                  ) : chartType === "options" ? (
+                    <div className="space-y-4">
+                      <OptionsChain
+                        underlying={selectedInstrument.symbol.split("/")[0].split("-")[0]}
+                        venue={selectedInstrument.venue.toLowerCase()}
+                      />
+                      <VolSurfaceChart
+                        underlying={selectedInstrument.symbol.split("/")[0].split("-")[0]}
+                      />
+                    </div>
+                  ) : null}
                 </div>
                 
                 {/* Volume Chart below - only show for line chart (candles have built-in volume) */}

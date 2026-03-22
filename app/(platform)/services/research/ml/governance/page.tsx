@@ -38,11 +38,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useAuditEvents } from "@/hooks/api/use-audit"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useMLGovernance } from "@/hooks/api/use-ml-models"
 
 export default function GovernancePage() {
-  const { data: auditData, isLoading } = useAuditEvents()
-  const rawEvents: Array<Record<string, unknown>> = (auditData as any)?.data ?? []
+  const { data: governanceData, isLoading } = useMLGovernance()
+  const rawEvents: Array<Record<string, unknown>> = (governanceData as any)?.data ?? (governanceData as any)?.events ?? []
 
   // Derive governance data from audit events
   const auditLog = rawEvents.map((e: any, i: number) => ({
@@ -93,7 +94,12 @@ export default function GovernancePage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [actionFilter, setActionFilter] = useState("all")
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
 
   const filteredAuditLog = auditLog.filter(entry => {
     const matchesSearch = entry.model.toLowerCase().includes(searchTerm.toLowerCase()) ||

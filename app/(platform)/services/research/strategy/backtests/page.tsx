@@ -2,9 +2,6 @@
 
 import * as React from "react"
 import {
-  ArrowUpDown,
-  ChevronDown,
-  ChevronUp,
   Filter,
   FlaskConical,
   Play,
@@ -33,24 +30,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { type ColumnDef } from "@tanstack/react-table"
+import { DataTable } from "@/components/ui/data-table"
 
-import {
-  BACKTEST_RUNS,
-  STRATEGY_TEMPLATES,
-  ARCHETYPE_OPTIONS,
-  ASSET_CLASS_OPTIONS,
-  VENUE_OPTIONS,
-  TESTING_STAGE_OPTIONS,
-} from "@/lib/strategy-platform-mock-data"
-import type { BacktestRun, StrategyArchetype } from "@/lib/strategy-platform-types"
+import { useStrategyBacktests, useCreateBacktest, useStrategyTemplates } from "@/hooks/api/use-strategies"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
+import { StrategyWizard } from "@/components/research/strategy-wizard"
+import type { BacktestRun, StrategyArchetype, StrategyTemplate } from "@/lib/strategy-platform-types"
+import { ExportDropdown } from "@/components/ui/export-dropdown"
+import type { ExportColumn } from "@/lib/utils/export"
+
+// ---------------------------------------------------------------------------
+// Export columns
+// ---------------------------------------------------------------------------
+
+const backtestExportColumns: ExportColumn[] = [
+  { key: "name", header: "Name" },
+  { key: "archetype", header: "Archetype" },
+  { key: "assetClass", header: "Asset Class" },
+  { key: "status", header: "Status" },
+  { key: "sharpe", header: "Sharpe", format: "number" },
+  { key: "totalReturn", header: "Total Return", format: "percent" },
+  { key: "maxDrawdown", header: "Max Drawdown", format: "percent" },
+  { key: "tradesCount", header: "Trades Count", format: "number" },
+  { key: "sortino", header: "Sortino", format: "number" },
+  { key: "hitRate", header: "Hit Rate", format: "percent" },
+]
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -80,8 +87,6 @@ function fmtPct(v: number) {
 function fmtNum(v: number, decimals = 2) {
   return v.toFixed(decimals)
 }
-
-type SortField = "sharpe" | "return" | "drawdown" | "sortino" | "hitRate"
 
 // ---------------------------------------------------------------------------
 // Filters
@@ -134,13 +139,39 @@ const INITIAL_FORM: BacktestFormState = {
 // ---------------------------------------------------------------------------
 
 export default function BacktestsPage() {
-  const [backtests, setBacktests] = React.useState<BacktestRun[]>(BACKTEST_RUNS)
+  const { data: backtestsData, isLoading: backtestsLoading, isError: backtestsIsError, error: backtestsError, refetch: backtestsRefetch } = useStrategyBacktests()
+  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates()
+  const createBacktest = useCreateBacktest()
+
+  const backtestsFromApi: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
+  const STRATEGY_TEMPLATES: StrategyTemplate[] = (templatesData as any)?.data ?? (templatesData as any)?.templates ?? []
+
+  // Derive filter options from data
+  const ARCHETYPE_OPTIONS = React.useMemo(() => {
+    const counts: Record<string, number> = {}
+    backtestsFromApi.forEach((bt) => { counts[bt.archetype] = (counts[bt.archetype] || 0) + 1 })
+    return Object.entries(counts).map(([value, count]) => ({ value, label: value.replace(/_/g, " "), count }))
+  }, [backtestsFromApi])
+
+  const VENUE_OPTIONS = React.useMemo(() => {
+    const counts: Record<string, number> = {}
+    backtestsFromApi.forEach((bt) => { counts[bt.venue] = (counts[bt.venue] || 0) + 1 })
+    return Object.entries(counts).map(([value, count]) => ({ value, label: value, count }))
+  }, [backtestsFromApi])
+
+  const TESTING_STAGE_OPTIONS = React.useMemo(() => {
+    const counts: Record<string, number> = {}
+    backtestsFromApi.forEach((bt) => { counts[bt.testingStage] = (counts[bt.testingStage] || 0) + 1 })
+    return Object.entries(counts).map(([value, count]) => ({ value, label: value.replace(/_/g, " "), count }))
+  }, [backtestsFromApi])
+
+  const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([])
+  const backtests = [...localBacktests, ...backtestsFromApi]
   const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS)
-  const [sortField, setSortField] = React.useState<SortField>("sharpe")
-  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM)
   const [candidateBasket, setCandidateBasket] = React.useState<Set<string>>(new Set())
+  const [wizardOpen, setWizardOpen] = React.useState(false)
 
   // Filter logic
   const filtered = backtests.filter((bt) => {
@@ -158,47 +189,6 @@ export default function BacktestsPage() {
     return true
   })
 
-  // Sort logic
-  const sorted = [...filtered].sort((a, b) => {
-    if (!a.metrics && !b.metrics) return 0
-    if (!a.metrics) return 1
-    if (!b.metrics) return -1
-    const aM = a.metrics
-    const bM = b.metrics
-    let aV: number, bV: number
-    switch (sortField) {
-      case "sharpe":
-        aV = aM.sharpe; bV = bM.sharpe; break
-      case "return":
-        aV = aM.totalReturn; bV = bM.totalReturn; break
-      case "drawdown":
-        aV = aM.maxDrawdown; bV = bM.maxDrawdown; break
-      case "sortino":
-        aV = aM.sortino; bV = bM.sortino; break
-      case "hitRate":
-        aV = aM.hitRate; bV = bM.hitRate; break
-    }
-    return sortDir === "desc" ? bV - aV : aV - bV
-  })
-
-  function handleSort(field: SortField) {
-    if (sortField === field) {
-      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
-    } else {
-      setSortField(field)
-      setSortDir("desc")
-    }
-  }
-
-  function SortIcon({ field }: { field: SortField }) {
-    if (sortField !== field) return <ArrowUpDown className="size-3 opacity-30" />
-    return sortDir === "desc" ? (
-      <ChevronDown className="size-3" />
-    ) : (
-      <ChevronUp className="size-3" />
-    )
-  }
-
   function toggleCandidate(id: string) {
     setCandidateBasket((prev) => {
       const next = new Set(prev)
@@ -210,6 +200,127 @@ export default function BacktestsPage() {
       return next
     })
   }
+
+  const backtestColumns: ColumnDef<BacktestRun, unknown>[] = React.useMemo(
+    () => [
+      {
+        id: "star",
+        header: "",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const bt = row.original
+          if (bt.status !== "completed") return null
+          return (
+            <button
+              onClick={() => toggleCandidate(bt.id)}
+              className="p-0.5 rounded hover:bg-muted"
+              title={candidateBasket.has(bt.id) ? "Remove from basket" : "Add to candidate basket"}
+            >
+              <Star
+                className={`size-3.5 ${candidateBasket.has(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+              />
+            </button>
+          )
+        },
+      },
+      {
+        accessorKey: "templateName",
+        header: "Strategy",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="font-medium text-sm">{row.original.templateName}</span>
+        ),
+      },
+      {
+        accessorKey: "instrument",
+        header: "Instrument",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-xs font-mono">{row.original.instrument}</span>
+        ),
+      },
+      {
+        accessorKey: "venue",
+        header: "Venue",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-xs">{row.original.venue}</span>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <Badge variant="outline" className={backtestStatusColor(row.original.status)}>
+            {row.original.status === "running" ? `${row.original.progress}%` : row.original.status}
+          </Badge>
+        ),
+      },
+      {
+        id: "sharpe",
+        header: "Sharpe",
+        accessorFn: (row) => row.metrics?.sharpe ?? -Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtNum(row.original.metrics.sharpe) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "return",
+        header: "Return",
+        accessorFn: (row) => row.metrics?.totalReturn ?? -Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtPct(row.original.metrics.totalReturn) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "drawdown",
+        header: "Max DD",
+        accessorFn: (row) => row.metrics?.maxDrawdown ?? Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm text-red-400">
+            {row.original.metrics ? fmtPct(row.original.metrics.maxDrawdown) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "sortino",
+        header: "Sortino",
+        accessorFn: (row) => row.metrics?.sortino ?? -Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtNum(row.original.metrics.sortino) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "hitRate",
+        header: "Hit Rate",
+        accessorFn: (row) => row.metrics?.hitRate ?? -Infinity,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {row.original.metrics ? fmtPct(row.original.metrics.hitRate) : "--"}
+          </span>
+        ),
+      },
+      {
+        id: "window",
+        header: "Window",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-xs">
+            {row.original.dateWindow.start} - {row.original.dateWindow.end}
+          </span>
+        ),
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [candidateBasket],
+  )
 
   function handleSubmitBacktest() {
     if (!form.templateId) return
@@ -243,13 +354,56 @@ export default function BacktestsPage() {
       driftScore: null,
     }
 
-    setBacktests((prev) => [newBt, ...prev])
+    createBacktest.mutate({
+      templateId: tpl.id,
+      instrument: form.instrument || tpl.instruments[0],
+      venue: form.venue || tpl.venues[0],
+      dateStart: form.dateStart,
+      dateEnd: form.dateEnd,
+      entryThreshold: parseFloat(form.entryThreshold),
+      exitThreshold: parseFloat(form.exitThreshold),
+      maxLeverage: parseFloat(form.maxLeverage),
+    })
+
+    // Optimistically add to local list
+    setLocalBacktests((prev) => [newBt, ...prev])
     setForm(INITIAL_FORM)
     setDialogOpen(false)
   }
 
+  const isLoading = backtestsLoading || templatesLoading
   const selectedTemplate = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
   const activeFilterCount = Object.values(filters).filter(Boolean).length
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (backtestsIsError) {
+    return (
+      <div className="p-6">
+        <ApiError error={backtestsError} onRetry={() => backtestsRefetch()} />
+      </div>
+    )
+  }
+
+  if (backtests.length === 0) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No backtests"
+          description="No backtests have been run yet. Create your first backtest to evaluate a strategy."
+          action={{ label: "Run New Backtest", onClick: () => setDialogOpen(true) }}
+          icon={FlaskConical}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -262,10 +416,32 @@ export default function BacktestsPage() {
               {filtered.length} backtests &middot; {backtests.filter((b) => b.status === "running").length} running
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)}>
-            <Play className="size-4" />
-            Run New Backtest
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportDropdown
+              data={filtered.map((bt) => ({
+                name: bt.templateName,
+                archetype: bt.archetype,
+                assetClass: bt.instrument,
+                status: bt.status,
+                sharpe: bt.metrics?.sharpe ?? null,
+                totalReturn: bt.metrics?.totalReturn ?? null,
+                maxDrawdown: bt.metrics?.maxDrawdown ?? null,
+                tradesCount: bt.metrics?.tradesCount ?? null,
+                sortino: bt.metrics?.sortino ?? null,
+                hitRate: bt.metrics?.hitRate ?? null,
+              } as Record<string, unknown>))}
+              columns={backtestExportColumns}
+              filename="strategy-backtests"
+            />
+            <Button variant="outline" onClick={() => setWizardOpen(true)}>
+              <Plus className="size-4" />
+              New Strategy
+            </Button>
+            <Button onClick={() => setDialogOpen(true)}>
+              <Play className="size-4" />
+              Run New Backtest
+            </Button>
+          </div>
         </div>
 
         {/* Filter Bar */}
@@ -366,111 +542,11 @@ export default function BacktestsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border/50 hover:bg-transparent">
-                  <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Strategy</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Instrument</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Venue</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("sharpe")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Sharpe <SortIcon field="sharpe" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("return")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Return <SortIcon field="return" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("drawdown")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Max DD <SortIcon field="drawdown" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("sortino")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Sortino <SortIcon field="sortino" />
-                    </span>
-                  </TableHead>
-                  <TableHead
-                    className="text-xs text-muted-foreground cursor-pointer select-none"
-                    onClick={() => handleSort("hitRate")}
-                  >
-                    <span className="flex items-center gap-1">
-                      Hit Rate <SortIcon field="hitRate" />
-                    </span>
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Window</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sorted.map((bt) => {
-                  const m = bt.metrics
-                  return (
-                    <TableRow
-                      key={bt.id}
-                      className={`border-border/30 ${candidateBasket.has(bt.id) ? "bg-amber-500/5" : ""}`}
-                    >
-                      <TableCell>
-                        {bt.status === "completed" && (
-                          <button
-                            onClick={() => toggleCandidate(bt.id)}
-                            className="p-0.5 rounded hover:bg-muted"
-                            title={candidateBasket.has(bt.id) ? "Remove from basket" : "Add to candidate basket"}
-                          >
-                            <Star
-                              className={`size-3.5 ${candidateBasket.has(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
-                            />
-                          </button>
-                        )}
-                      </TableCell>
-                      <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
-                      <TableCell className="text-muted-foreground text-xs font-mono">
-                        {bt.instrument}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={backtestStatusColor(bt.status)}>
-                          {bt.status === "running" ? `${bt.progress}%` : bt.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtNum(m.sharpe) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtPct(m.totalReturn) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm text-red-400">
-                        {m ? fmtPct(m.maxDrawdown) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtNum(m.sortino) : "--"}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {m ? fmtPct(m.hitRate) : "--"}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">
-                        {bt.dateWindow.start} - {bt.dateWindow.end}
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+            <DataTable
+              columns={backtestColumns}
+              data={filtered}
+              emptyMessage="No backtests found"
+            />
           </CardContent>
         </Card>
 
@@ -514,6 +590,9 @@ export default function BacktestsPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* New Strategy Wizard */}
+        <StrategyWizard open={wizardOpen} onOpenChange={setWizardOpen} />
 
         {/* New Backtest Dialog */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

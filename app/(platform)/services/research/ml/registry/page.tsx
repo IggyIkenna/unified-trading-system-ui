@@ -42,6 +42,9 @@ import {
 } from "@/components/ui/table"
 
 import { useModelVersions, useModelFamilies, useMLDeployments } from "@/hooks/api/use-ml-models"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
 import type { ModelVersion } from "@/lib/ml-types"
 
 // ---------------------------------------------------------------------------
@@ -88,7 +91,7 @@ type SortField = "accuracy" | "sharpe" | "maxDrawdown" | "latencyP50"
 // ---------------------------------------------------------------------------
 
 export default function RegistryPage() {
-  const { data: versionsData, isLoading: verLoading } = useModelVersions()
+  const { data: versionsData, isLoading: verLoading, isError: verIsError, error: verError, refetch: verRefetch } = useModelVersions()
   const { data: familiesData, isLoading: famLoading } = useModelFamilies()
   const { data: deploymentsData, isLoading: depLoading } = useMLDeployments()
 
@@ -183,7 +186,28 @@ export default function RegistryPage() {
 
   const compareVersions = versions.filter((v) => compareSet.has(v.id))
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
+
+  if (verIsError) return (
+    <div className="p-6">
+      <ApiError error={verError} onRetry={() => verRefetch()} />
+    </div>
+  )
+
+  if (MODEL_VERSIONS.length === 0) return (
+    <div className="p-6">
+      <EmptyState
+        title="No model versions"
+        description="No models have been registered yet. Train and register a model to see it here."
+        icon={Layers}
+      />
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-background text-foreground">

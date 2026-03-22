@@ -41,9 +41,12 @@ import {
   DollarSign,
   Percent,
 } from "lucide-react"
-import { BACKTEST_RUNS as DEFAULT_BACKTEST_RUNS } from "@/lib/strategy-platform-mock-data"
+import { useStrategyBacktests } from "@/hooks/api/use-strategies"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
 import { cn } from "@/lib/utils"
-import { useStrategyPerformance } from "@/hooks/api/use-strategies"
+import type { BacktestRun } from "@/lib/strategy-platform-types"
 
 // Generate mock time series data for a backtest run
 function generateTimeSeriesData(runId: string, days: number = 180) {
@@ -252,7 +255,7 @@ function AttributionWaterfall({ data }: { data: ReturnType<typeof generateAttrib
 }
 
 // KPI Summary Card
-function KPISummary({ run }: { run: typeof DEFAULT_BACKTEST_RUNS[0] }) {
+function KPISummary({ run }: { run: BacktestRun }) {
   if (!run.metrics) return null
 
   const kpis = [
@@ -291,14 +294,20 @@ function KPISummary({ run }: { run: typeof DEFAULT_BACKTEST_RUNS[0] }) {
 }
 
 export default function StrategyResultsPage() {
-  const { data: perfData, isLoading } = useStrategyPerformance()
-  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.backtestRuns ?? []
-  const BACKTEST_RUNS = perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RUNS
+  const { data: backtestsData, isLoading, isError, error, refetch } = useStrategyBacktests()
+  const BACKTEST_RUNS: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
 
   const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH")
-  const [selectedRunId, setSelectedRunId] = React.useState<string>(BACKTEST_RUNS[0]?.id ?? "")
+  const [selectedRunId, setSelectedRunId] = React.useState<string>("")
 
-  const selectedRun = BACKTEST_RUNS.find((r: any) => r.id === selectedRunId)
+  // Auto-select the first run when data loads
+  React.useEffect(() => {
+    if (BACKTEST_RUNS.length > 0 && !selectedRunId) {
+      setSelectedRunId(BACKTEST_RUNS[0].id)
+    }
+  }, [BACKTEST_RUNS, selectedRunId])
+
+  const selectedRun = BACKTEST_RUNS.find((r: BacktestRun) => r.id === selectedRunId)
   const timeSeriesData = React.useMemo(
     () => generateTimeSeriesData(selectedRunId),
     [selectedRunId]
@@ -312,7 +321,34 @@ export default function StrategyResultsPage() {
     [selectedRunId]
   )
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ApiError error={error} onRetry={() => refetch()} />
+      </div>
+    )
+  }
+
+  if (BACKTEST_RUNS.length === 0) {
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No results"
+          description="No completed backtests to display. Run a backtest first to see results."
+          icon={BarChart3}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col flex-1">

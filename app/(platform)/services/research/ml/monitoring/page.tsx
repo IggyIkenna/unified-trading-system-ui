@@ -53,6 +53,7 @@ import {
 } from "recharts"
 
 import { useMLDeployments, useModelVersions } from "@/hooks/api/use-ml-models"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Live model metrics (simulated real-time data)
 const generateLiveMetrics = () => {
@@ -131,7 +132,12 @@ export default function LiveMonitoringPage() {
     return () => clearInterval(interval)
   }, [])
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
 
   const healthyModels = activeModels.filter(m => m.status === "healthy").length
   const warningModels = activeModels.filter(m => m.status === "warning").length

@@ -10,9 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { 
-  ArrowRight, 
-  CheckCircle2, 
+import { useExecutionHandoff } from "@/hooks/api/use-orders"
+import {
+  ArrowRight,
+  CheckCircle2,
   AlertTriangle,
   FileText,
   Users,
@@ -23,60 +24,25 @@ import {
   Settings,
 } from "lucide-react"
 
-// Mock handoff data
-const mockHandoff = {
-  algoId: "IS_ADAPTIVE_V2",
-  algoName: "IS Adaptive V2",
-  version: "2.3.1",
-  sourceEnv: "Paper",
-  targetEnv: "Production",
-  requestedBy: "algo_team",
-  requestedAt: "2026-03-17T10:30:00Z",
-  
-  // Performance summary
-  performance: {
-    backtestSlippage: -0.2,
-    paperSlippage: -0.3,
-    backtestFillRate: 97.8,
-    paperFillRate: 98.2,
-    backtestLatency: 14,
-    paperLatency: 12,
-  },
-  
-  // Config changes
-  configChanges: [
-    { key: "urgency_threshold", oldValue: "0.7", newValue: "0.65", impact: "medium" },
-    { key: "max_participation_rate", oldValue: "0.15", newValue: "0.12", impact: "low" },
-    { key: "spread_limit_bps", oldValue: "5", newValue: "4", impact: "high" },
-    { key: "min_order_size", oldValue: "1000", newValue: "500", impact: "low" },
-  ],
-  
-  // Approvals
-  approvals: {
-    risk: { approved: true, approver: "risk_manager", timestamp: "2026-03-17T11:00:00Z" },
-    compliance: { approved: true, approver: "compliance_officer", timestamp: "2026-03-17T12:30:00Z" },
-    ops: { approved: false, approver: null, timestamp: null },
-    tech: { approved: true, approver: "tech_lead", timestamp: "2026-03-17T10:45:00Z" },
-  },
-  
-  // Deployment checklist
-  checklist: [
-    { id: "backtest", label: "Backtest validation complete", done: true },
-    { id: "paper", label: "Paper trading minimum 2 weeks", done: true },
-    { id: "risk_limits", label: "Risk limits configured", done: true },
-    { id: "monitoring", label: "Monitoring alerts set up", done: true },
-    { id: "rollback", label: "Rollback procedure documented", done: false },
-    { id: "runbook", label: "Runbook updated", done: false },
-  ],
-}
-
 const impactColors: Record<string, string> = {
   high: "text-red-500 bg-red-500/10",
   medium: "text-amber-500 bg-amber-500/10",
   low: "text-emerald-500 bg-emerald-500/10",
 }
 
+const HANDOFF_DEFAULTS = {
+  algoId: "", algoName: "", version: "", sourceEnv: "", targetEnv: "",
+  requestedBy: "", requestedAt: new Date().toISOString(),
+  performance: { backtestSlippage: 0, paperSlippage: 0, backtestFillRate: 0, paperFillRate: 0, backtestLatency: 0, paperLatency: 0 },
+  configChanges: [] as Array<{ key: string; oldValue: string; newValue: string; impact: string }>,
+  approvals: {} as Record<string, { approved: boolean; approver: string | null; timestamp: string | null }>,
+  checklist: [] as Array<{ id: string; label: string; done: boolean }>,
+}
+
 export default function ExecutionHandoffPage() {
+  const { data: handoffData, isLoading } = useExecutionHandoff()
+  const mockHandoff: typeof HANDOFF_DEFAULTS = (handoffData as any)?.data ?? HANDOFF_DEFAULTS
+
   const [notes, setNotes] = React.useState("")
   const [rolloutStrategy, setRolloutStrategy] = React.useState("canary")
   const [checklist, setChecklist] = React.useState(mockHandoff.checklist)
@@ -89,8 +55,10 @@ export default function ExecutionHandoffPage() {
     )
   }
 
-  const allApprovalsComplete = Object.values(mockHandoff.approvals).every(a => a.approved)
-  const allChecklistComplete = checklist.every(item => item.done)
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+
+  const allApprovalsComplete = Object.values(mockHandoff.approvals).every((a: any) => a.approved)
+  const allChecklistComplete = checklist.every((item: any) => item.done)
   const canDeploy = allApprovalsComplete && allChecklistComplete
 
   return (

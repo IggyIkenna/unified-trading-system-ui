@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
 import { StrategyPlatformNav } from "@/components/strategy-platform/strategy-nav"
-import { 
-  Send, 
-  CheckCircle2, 
+import { useStrategyHandoffs } from "@/hooks/api/use-strategies"
+import {
+  Send,
+  CheckCircle2,
   AlertTriangle,
   ArrowRight,
   FileJson,
@@ -27,13 +29,13 @@ import {
   ExternalLink
 } from "lucide-react"
 
-// Mock handoff data
-const HANDOFF_CANDIDATE = {
+// Fallback data used when the API returns no handoffs
+const FALLBACK_HANDOFF = {
   strategyId: "ETH_BASIS_v3.2",
   backtestId: "bt-001",
   configVersion: "3.2.1",
   sourceExperiment: "exp-eth-basis-2024-03",
-  
+
   metrics: {
     sharpe: 1.82,
     sortino: 2.14,
@@ -43,14 +45,14 @@ const HANDOFF_CANDIDATE = {
     profitFactor: 1.64,
     tradesPerDay: 12.4,
   },
-  
+
   champion: {
     strategyId: "ETH_BASIS_v3.1",
     sharpe: 1.65,
     returns: 22.2,
     maxDD: -8.6,
   },
-  
+
   configDiff: [
     { field: "entry_threshold", old: "0.0015", new: "0.0012", type: "changed" },
     { field: "exit_threshold", old: "0.0008", new: "0.0006", type: "changed" },
@@ -58,7 +60,7 @@ const HANDOFF_CANDIDATE = {
     { field: "regime_filter.enabled", old: "false", new: "true", type: "added" },
     { field: "regime_filter.min_volatility", old: "-", new: "0.02", type: "added" },
   ],
-  
+
   riskChecks: [
     { name: "VaR 95% within limit", passed: true, value: "$42,500", limit: "$50,000" },
     { name: "Max drawdown acceptable", passed: true, value: "-8.2%", limit: "-15%" },
@@ -66,7 +68,7 @@ const HANDOFF_CANDIDATE = {
     { name: "Correlation to existing", passed: true, value: "0.32", limit: "0.7" },
     { name: "Sufficient backtest period", passed: true, value: "18 months", limit: "12 months" },
   ],
-  
+
   approvals: [
     { role: "Quant Lead", user: "Alice Chen", status: "approved", timestamp: "2 hours ago" },
     { role: "Risk Manager", user: null, status: "pending", timestamp: null },
@@ -79,10 +81,69 @@ export default function StrategyHandoffPage() {
   const [shadowTradingEnabled, setShadowTradingEnabled] = React.useState(true)
   const [autoRollback, setAutoRollback] = React.useState(true)
   const [gradualRollout, setGradualRollout] = React.useState(true)
-  
-  const allChecksPass = HANDOFF_CANDIDATE.riskChecks.every(c => c.passed)
-  const pendingApprovals = HANDOFF_CANDIDATE.approvals.filter(a => a.status === "pending").length
+
+  const { data: rawData, isLoading, isError, refetch } = useStrategyHandoffs()
+  const handoffs = (rawData as Record<string, unknown>)?.data ?? (rawData as Record<string, unknown>)?.handoffs ?? []
+  const HANDOFF_CANDIDATE = Array.isArray(handoffs) && handoffs.length > 0
+    ? (handoffs[0] as typeof FALLBACK_HANDOFF)
+    : FALLBACK_HANDOFF
+
+  const allChecksPass = (HANDOFF_CANDIDATE.riskChecks ?? []).every((c: { passed: boolean }) => c.passed)
+  const pendingApprovals = (HANDOFF_CANDIDATE.approvals ?? []).filter((a: { status: string }) => a.status === "pending").length
   const canPromote = allChecksPass && pendingApprovals === 0
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="max-w-[1800px] mx-auto px-6 py-3">
+            <StrategyPlatformNav />
+          </div>
+        </div>
+        <div className="max-w-[1800px] mx-auto p-6 space-y-6">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-72" />
+          <Skeleton className="h-24 w-full" />
+          <div className="grid grid-cols-3 gap-6">
+            <div className="col-span-2 space-y-6">
+              <Skeleton className="h-64 w-full" />
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-48 w-full" />
+            </div>
+            <div className="space-y-6">
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-48 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="max-w-[1800px] mx-auto px-6 py-3">
+            <StrategyPlatformNav />
+          </div>
+        </div>
+        <div className="max-w-[1800px] mx-auto p-6 space-y-6">
+          <Alert className="border-red-500/50 bg-red-500/5">
+            <AlertTriangle className="size-4 text-red-500" />
+            <AlertTitle className="text-red-500">Failed to load handoff data</AlertTitle>
+            <AlertDescription>
+              Could not fetch strategy handoffs from the API.{" "}
+              <Button variant="link" className="p-0 h-auto" onClick={() => refetch()}>
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

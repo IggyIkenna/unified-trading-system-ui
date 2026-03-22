@@ -8,110 +8,17 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { 
-  ShoppingBasket, 
-  ChevronRight, 
-  CheckCircle2, 
+import { useExecutionCandidates } from "@/hooks/api/use-orders"
+import {
+  ShoppingBasket,
+  ChevronRight,
+  CheckCircle2,
   AlertTriangle,
   TrendingUp,
   Zap,
   Clock,
   ArrowRight,
 } from "lucide-react"
-
-// Mock candidate algos for promotion
-const mockCandidates = [
-  {
-    id: "cand_1",
-    algoId: "IS_ADAPTIVE_V2",
-    algoName: "IS Adaptive V2",
-    sourceEnv: "Paper",
-    targetEnv: "Production",
-    backtestPeriod: "2025-12-01 to 2026-03-01",
-    paperPeriod: "2026-03-01 to 2026-03-15",
-    metrics: {
-      slippageVsArrival: -0.3,
-      fillRate: 98.2,
-      avgLatency: 12,
-      orderCount: 1247,
-    },
-    improvement: {
-      slippage: "+1.2 bps",
-      fillRate: "+0.8%",
-      latency: "-3ms",
-    },
-    status: "ready",
-    addedAt: "2026-03-17T10:30:00Z",
-    addedBy: "algo_team",
-    checklist: {
-      backtestComplete: true,
-      paperTradingComplete: true,
-      riskApproved: true,
-      complianceApproved: false,
-      opsApproved: false,
-    },
-  },
-  {
-    id: "cand_2",
-    algoId: "SNIPER_V3",
-    algoName: "Sniper V3",
-    sourceEnv: "Paper",
-    targetEnv: "Production",
-    backtestPeriod: "2025-11-01 to 2026-02-01",
-    paperPeriod: "2026-02-15 to 2026-03-10",
-    metrics: {
-      slippageVsArrival: 0.8,
-      fillRate: 94.5,
-      avgLatency: 8,
-      orderCount: 892,
-    },
-    improvement: {
-      slippage: "+2.1 bps",
-      fillRate: "+1.2%",
-      latency: "-5ms",
-    },
-    status: "pending_review",
-    addedAt: "2026-03-16T14:20:00Z",
-    addedBy: "quant_research",
-    checklist: {
-      backtestComplete: true,
-      paperTradingComplete: true,
-      riskApproved: false,
-      complianceApproved: false,
-      opsApproved: false,
-    },
-  },
-  {
-    id: "cand_3",
-    algoId: "POV_SMART",
-    algoName: "POV Smart",
-    sourceEnv: "Backtest",
-    targetEnv: "Paper",
-    backtestPeriod: "2025-10-01 to 2026-03-01",
-    paperPeriod: null,
-    metrics: {
-      slippageVsArrival: 0.1,
-      fillRate: 96.8,
-      avgLatency: 15,
-      orderCount: 5420,
-    },
-    improvement: {
-      slippage: "+0.9 bps",
-      fillRate: "+0.5%",
-      latency: "-2ms",
-    },
-    status: "needs_paper",
-    addedAt: "2026-03-15T09:00:00Z",
-    addedBy: "algo_team",
-    checklist: {
-      backtestComplete: true,
-      paperTradingComplete: false,
-      riskApproved: false,
-      complianceApproved: false,
-      opsApproved: false,
-    },
-  },
-]
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   ready: { label: "Ready", color: "text-emerald-500" },
@@ -121,6 +28,9 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 }
 
 export default function ExecutionCandidatesPage() {
+  const { data: candidatesData, isLoading } = useExecutionCandidates()
+  const mockCandidates: Array<any> = (candidatesData as any)?.data ?? []
+
   const [selectedCandidates, setSelectedCandidates] = React.useState<string[]>([])
 
   const toggleCandidate = (id: string) => {
@@ -129,8 +39,10 @@ export default function ExecutionCandidatesPage() {
     )
   }
 
-  const readyCandidates = mockCandidates.filter(c => c.status === "ready")
-  const pendingCandidates = mockCandidates.filter(c => c.status !== "ready")
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+
+  const readyCandidates = mockCandidates.filter((c: any) => c.status === "ready")
+  const pendingCandidates = mockCandidates.filter((c: any) => c.status !== "ready")
 
   return (
     <div className="min-h-screen bg-background">

@@ -168,11 +168,11 @@ export interface Strategy {
   // Classification
   assetClass: "DeFi" | "CeFi" | "TradFi" | "Sports" | "Prediction"
   strategyType: string
-  archetype: "BASIS_TRADE" | "MARKET_MAKING" | "ARBITRAGE" | "YIELD" | "DIRECTIONAL" | "MOMENTUM" | "MEAN_REVERSION" | "STATISTICAL_ARB" | "OPTIONS" | "PREDICTION_ARB"
+  archetype: "BASIS_TRADE" | "MARKET_MAKING" | "ARBITRAGE" | "YIELD" | "DIRECTIONAL" | "MOMENTUM" | "MEAN_REVERSION" | "STATISTICAL_ARB" | "OPTIONS" | "PREDICTION_ARB" | "ML_DIRECTIONAL" | "AMM_LP" | "RECURSIVE_STAKED_BASIS" | "SPORTS_ARB"
   executionMode: "SCE" | "HUF" | "EVT" // Strategy execution mode
-  
+
   // Status
-  status: "live" | "paused" | "warning" | "development" | "staging"
+  status: "live" | "paused" | "warning" | "development" | "staging" | "paper"
   version: string
   deployedAt?: string
   
@@ -1648,6 +1648,1366 @@ id: "DEFI_AAVE_LEND_EVT_1D",
     venues: ["BINANCE", "OKX", "BYBIT", "COINBASE"],
     performance: { pnlTotal: 520000, pnlMTD: 65000, sharpe: 4.2, maxDrawdown: 1.8, returnPct: 12.4, positions: 0, netExposure: 5000000 },
     sparklineData: [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-019: CEFI_AVAX_MOMENTUM_HUF_1H
+  // ============================================
+  {
+    id: "CEFI_AVAX_MOMENTUM_HUF_1H",
+    name: "AVAX Momentum",
+    description: "Momentum-based directional trading on AVAX. Trend-following with volatility scaling.",
+    strategyIdPattern: "CEFI_AVAX_MOMENTUM_HUF_1H",
+    clientId: "delta-one",
+    assetClass: "CeFi",
+    strategyType: "Momentum",
+    archetype: "MOMENTUM",
+    executionMode: "HUF",
+    status: "live",
+    version: "1.3.0",
+    deployedAt: "2025-04-12 08:00:00",
+    instruments: [
+      { key: "BINANCE:PERPETUAL:AVAX-USDT", venue: "Binance", type: "Perp", role: "Primary instrument" },
+    ],
+    featuresConsumed: [
+      { name: "momentum_signal", source: "features-momentum", sla: "1m", usedFor: "Trend direction" },
+      { name: "volatility", source: "features-volatility", sla: "1m", usedFor: "Position sizing" },
+    ],
+    dataArchitecture: { rawDataSource: "Exchange WebSocket", processedData: ["momentum", "volatility"], interval: "1H", lowestGranularity: "1H", executionMode: "hold_until_flip" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Momentum P&L", settlementType: "MARK_TO_MARKET", description: "Trend capture", color: "#4ade80" },
+        { id: "funding", label: "Funding", settlementType: "FUNDING_8H", description: "Perp funding", color: "#60a5fa" },
+        { id: "fees", label: "Fees", settlementType: "PER_FILL", description: "Exchange fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "20-35%", targetSharpe: "1.4+", maxDrawdown: "16%", maxLeverage: "2x", capitalScalability: "$5M" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "20ms", instructionToFill: "500ms", endToEnd: "~1s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Scale down" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "lookback_period", value: "20", description: "Momentum lookback in bars" }],
+    venues: ["BINANCE"],
+    performance: { pnlTotal: 340000, pnlMTD: 52000, sharpe: 1.5, maxDrawdown: 13.8, returnPct: 22.1, positions: 1, netExposure: 1800000 },
+    sparklineData: [8, 12, 10, 16, 14, 20, 18, 24, 22, 28, 26, 30],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-020: CEFI_ETH_MEAN_REV_SCE_4H
+  // ============================================
+  {
+    id: "CEFI_ETH_MEAN_REV_SCE_4H",
+    name: "ETH Mean Reversion",
+    description: "Mean reversion strategy on ETH/USDT and ETH/USDC. Statistical arbitrage on spread deviations.",
+    strategyIdPattern: "CEFI_ETH_MEAN_REV_SCE_4H",
+    clientId: "quant-fund",
+    assetClass: "CeFi",
+    strategyType: "Mean Reversion",
+    archetype: "MEAN_REVERSION",
+    executionMode: "SCE",
+    status: "live",
+    version: "2.0.0",
+    deployedAt: "2025-01-20 09:00:00",
+    instruments: [
+      { key: "OKX:SPOT:ETH-USDT", venue: "OKX", type: "SPOT_ASSET", role: "Primary pair" },
+      { key: "OKX:SPOT:ETH-USDC", venue: "OKX", type: "SPOT_ASSET", role: "Secondary pair" },
+    ],
+    featuresConsumed: [
+      { name: "z_score", source: "features-volatility", sla: "1m", usedFor: "Entry/exit threshold" },
+      { name: "spread", source: "features-delta-one", sla: "10s", usedFor: "Spread monitoring" },
+    ],
+    dataArchitecture: { rawDataSource: "OKX API", processedData: ["spread", "z_score"], interval: "4H", lowestGranularity: "4H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Spread P&L", settlementType: "MARK_TO_MARKET", description: "Spread convergence capture", color: "#4ade80" },
+        { id: "fees", label: "Fees", settlementType: "PER_FILL", description: "Exchange fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "10-18%", targetSharpe: "1.8+", maxDrawdown: "8%", maxLeverage: "2x", capitalScalability: "$8M" },
+    latencyProfile: { dataToSignal: "100ms", signalToInstruction: "10ms", instructionToFill: "200ms", endToEnd: "~500ms", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Spread divergence", action: "Widen stop" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "entry_zscore", value: "2.0", description: "Z-score threshold for entry" }],
+    venues: ["OKX"],
+    performance: { pnlTotal: 480000, pnlMTD: 62000, sharpe: 1.9, maxDrawdown: 6.8, returnPct: 14.2, positions: 2, netExposure: 3200000 },
+    sparklineData: [10, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-021: CEFI_DOGE_MM_HUF_30S
+  // ============================================
+  {
+    id: "CEFI_DOGE_MM_HUF_30S",
+    name: "DOGE Market Making",
+    description: "Two-sided quoting on Binance DOGE/USDT. Sub-second latency market making on meme coins.",
+    strategyIdPattern: "CEFI_DOGE_MM_HUF_30S",
+    clientId: "delta-one",
+    assetClass: "CeFi",
+    strategyType: "Market Making",
+    archetype: "MARKET_MAKING",
+    executionMode: "HUF",
+    status: "live",
+    version: "1.0.1",
+    deployedAt: "2025-06-15 10:00:00",
+    instruments: [
+      { key: "BINANCE:SPOT:DOGE-USDT", venue: "Binance", type: "SPOT_ASSET", role: "Quoted pair" },
+    ],
+    featuresConsumed: [
+      { name: "mid_price", source: "features-mm", sla: "5ms", usedFor: "Recalculate quotes" },
+      { name: "orderbook_imbalance", source: "features-mm", sla: "5ms", usedFor: "Skew adjustment" },
+    ],
+    dataArchitecture: { rawDataSource: "Exchange WebSocket", processedData: ["mid_price", "orderbook_imbalance"], interval: "30S", lowestGranularity: "30S", executionMode: "hold_until_flip" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Spread P&L", settlementType: "PER_FILL", description: "Bid/ask capture", color: "#4ade80" },
+        { id: "inventory_pnl", label: "Inventory P&L", settlementType: "MARK_TO_MARKET", description: "Inventory value change", color: "#60a5fa" },
+        { id: "fees", label: "Exchange Fees", settlementType: "PER_FILL", description: "Maker/taker fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "15-25%", targetSharpe: "2.5+", maxDrawdown: "6%", maxLeverage: "1x", capitalScalability: "$2M" },
+    latencyProfile: { dataToSignal: "5ms", signalToInstruction: "1ms", instructionToFill: "10ms", endToEnd: "~20ms", coLocationNeeded: true },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Inventory skew > max", action: "Skew quotes" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "spread_min_bps", value: "8", description: "Minimum spread in bps" }],
+    venues: ["BINANCE"],
+    performance: { pnlTotal: 210000, pnlMTD: 38000, sharpe: 2.6, maxDrawdown: 4.2, returnPct: 18.5, positions: 2, netExposure: 800000 },
+    sparklineData: [12, 14, 13, 16, 15, 18, 17, 20, 19, 22, 21, 24],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-022: CEFI_LINK_MOMENTUM_SCE_2H
+  // ============================================
+  {
+    id: "CEFI_LINK_MOMENTUM_SCE_2H",
+    name: "LINK Momentum",
+    description: "Momentum-based directional trading on LINK perpetual. Staging for Hyperliquid deployment.",
+    strategyIdPattern: "CEFI_LINK_MOMENTUM_SCE_2H",
+    clientId: "delta-one",
+    assetClass: "CeFi",
+    strategyType: "Momentum",
+    archetype: "MOMENTUM",
+    executionMode: "SCE",
+    status: "staging",
+    version: "0.6.0",
+    instruments: [
+      { key: "HYPERLIQUID:PERPETUAL:LINK-PERP", venue: "Hyperliquid", type: "Perp", role: "Primary instrument" },
+    ],
+    featuresConsumed: [
+      { name: "momentum_signal", source: "features-momentum", sla: "1m", usedFor: "Trend direction" },
+    ],
+    dataArchitecture: { rawDataSource: "Hyperliquid WS", processedData: ["momentum"], interval: "2H", lowestGranularity: "2H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Momentum P&L", settlementType: "MARK_TO_MARKET", description: "Trend capture", color: "#4ade80" },
+        { id: "fees", label: "Fees", settlementType: "PER_FILL", description: "Exchange fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "18-30%", targetSharpe: "1.3+", maxDrawdown: "15%", maxLeverage: "2x", capitalScalability: "$3M" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "20ms", instructionToFill: "500ms", endToEnd: "~1s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Scale down" }],
+    testingStatus: [{ stage: "STAGING", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "lookback_period", value: "18", description: "Momentum lookback in bars" }],
+    venues: ["HYPERLIQUID"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-023: CEFI_ARB_MEAN_REV_HUF_15M
+  // ============================================
+  {
+    id: "CEFI_ARB_MEAN_REV_HUF_15M",
+    name: "ARB Mean Reversion",
+    description: "Mean reversion on ARB/USDT. Development phase strategy for beta fund.",
+    strategyIdPattern: "CEFI_ARB_MEAN_REV_HUF_15M",
+    clientId: "quant-fund",
+    assetClass: "CeFi",
+    strategyType: "Mean Reversion",
+    archetype: "MEAN_REVERSION",
+    executionMode: "HUF",
+    status: "development",
+    version: "0.1.0",
+    instruments: [
+      { key: "OKX:SPOT:ARB-USDT", venue: "OKX", type: "SPOT_ASSET", role: "Primary pair" },
+    ],
+    featuresConsumed: [
+      { name: "z_score", source: "features-volatility", sla: "1m", usedFor: "Mean reversion signal" },
+    ],
+    dataArchitecture: { rawDataSource: "OKX API", processedData: ["z_score"], interval: "15M", lowestGranularity: "15M", executionMode: "hold_until_flip" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Spread P&L", settlementType: "MARK_TO_MARKET", description: "Mean reversion capture", color: "#4ade80" },
+        { id: "fees", label: "Fees", settlementType: "PER_FILL", description: "Exchange fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "8-15%", targetSharpe: "1.2+", maxDrawdown: "10%", maxLeverage: "1x", capitalScalability: "$2M" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "20ms", instructionToFill: "500ms", endToEnd: "~1s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Spread divergence", action: "Widen stop" }],
+    testingStatus: [{ stage: "MOCK", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "entry_zscore", value: "2.5", description: "Z-score entry threshold" }],
+    venues: ["OKX"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-024: CEFI_XRP_MM_HUF_1M
+  // ============================================
+  {
+    id: "CEFI_XRP_MM_HUF_1M",
+    name: "XRP Market Making",
+    description: "Two-sided quoting on Binance XRP/USDT. Fast-cycle market making.",
+    strategyIdPattern: "CEFI_XRP_MM_HUF_1M",
+    clientId: "delta-one",
+    assetClass: "CeFi",
+    strategyType: "Market Making",
+    archetype: "MARKET_MAKING",
+    executionMode: "HUF",
+    status: "live",
+    version: "1.7.0",
+    deployedAt: "2025-05-22 08:00:00",
+    instruments: [
+      { key: "BINANCE:SPOT:XRP-USDT", venue: "Binance", type: "SPOT_ASSET", role: "Quoted pair" },
+    ],
+    featuresConsumed: [
+      { name: "mid_price", source: "features-mm", sla: "5ms", usedFor: "Recalculate quotes" },
+      { name: "orderbook_imbalance", source: "features-mm", sla: "5ms", usedFor: "Skew adjustment" },
+    ],
+    dataArchitecture: { rawDataSource: "Exchange WebSocket", processedData: ["mid_price", "orderbook_imbalance"], interval: "1M", lowestGranularity: "1M", executionMode: "hold_until_flip" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Spread P&L", settlementType: "PER_FILL", description: "Bid/ask capture", color: "#4ade80" },
+        { id: "inventory_pnl", label: "Inventory P&L", settlementType: "MARK_TO_MARKET", description: "Inventory value change", color: "#60a5fa" },
+        { id: "fees", label: "Exchange Fees", settlementType: "PER_FILL", description: "Maker/taker fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "12-20%", targetSharpe: "2.8+", maxDrawdown: "4%", maxLeverage: "1x", capitalScalability: "$3M" },
+    latencyProfile: { dataToSignal: "5ms", signalToInstruction: "1ms", instructionToFill: "10ms", endToEnd: "~20ms", coLocationNeeded: true },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Inventory skew > max", action: "Skew quotes" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "spread_min_bps", value: "6", description: "Minimum spread in bps" }],
+    venues: ["BINANCE"],
+    performance: { pnlTotal: 280000, pnlMTD: 42000, sharpe: 2.9, maxDrawdown: 3.1, returnPct: 16.4, positions: 2, netExposure: 1200000 },
+    sparklineData: [10, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-025: TRADFI_ES_ML_DIR_SCE_30M
+  // ============================================
+  {
+    id: "TRADFI_ES_ML_DIR_SCE_30M",
+    name: "ES ML Directional",
+    description: "ML-driven directional strategy on E-mini S&P 500 futures. Gradient boosting predictions.",
+    strategyIdPattern: "TRADFI_ES_ML_DIR_SCE_30M",
+    clientId: "quant-fund",
+    assetClass: "TradFi",
+    strategyType: "ML Directional",
+    archetype: "ML_DIRECTIONAL",
+    executionMode: "SCE",
+    status: "live",
+    version: "2.2.0",
+    deployedAt: "2025-01-05 09:30:00",
+    instruments: [
+      { key: "CME:FUTURE:ES", venue: "CME", type: "Future", role: "Primary instrument" },
+    ],
+    featuresConsumed: [
+      { name: "ml_signal", source: "ml-inference-service", sla: "5s", usedFor: "Direction prediction" },
+      { name: "es_price", source: "market-tick-data", sla: "100ms", usedFor: "Entry/exit timing" },
+    ],
+    dataArchitecture: { rawDataSource: "CME / Databento", processedData: ["es_price", "ml_features"], interval: "30M", lowestGranularity: "30M", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Directional P&L", settlementType: "MARK_TO_MARKET", description: "Price direction capture", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_TRADE", description: "CME commissions", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "15-25%", targetSharpe: "1.6+", maxDrawdown: "10%", maxLeverage: "2x", capitalScalability: "$20M" },
+    latencyProfile: { dataToSignal: "50ms", signalToInstruction: "5ms", instructionToFill: "100ms", endToEnd: "~200ms", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Reduce position" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "max_contracts", value: "50", description: "Max ES contracts" }],
+    venues: ["CME"],
+    performance: { pnlTotal: 620000, pnlMTD: 85000, sharpe: 1.7, maxDrawdown: 8.4, returnPct: 18.6, positions: 1, netExposure: 4500000 },
+    sparklineData: [12, 15, 14, 18, 16, 22, 20, 25, 23, 28, 26, 30],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-026: TRADFI_SPY_OPTIONS_ML_EVT_1D
+  // ============================================
+  {
+    id: "TRADFI_SPY_OPTIONS_ML_EVT_1D",
+    name: "SPY Options ML",
+    description: "ML-driven options strategy on SPY. Volatility surface modeling with delta hedging.",
+    strategyIdPattern: "TRADFI_SPY_OPTIONS_ML_EVT_1D",
+    clientId: "quant-fund",
+    assetClass: "TradFi",
+    strategyType: "Options ML",
+    archetype: "OPTIONS",
+    executionMode: "EVT",
+    status: "live",
+    version: "1.4.0",
+    deployedAt: "2024-10-15 09:30:00",
+    instruments: [
+      { key: "CBOE:EQUITY:SPY", venue: "CBOE", type: "SPOT_ASSET", role: "Underlying" },
+      { key: "CBOE:OPTION:SPY-C-500-20260320", venue: "CBOE", type: "Option", role: "Call option" },
+    ],
+    featuresConsumed: [
+      { name: "iv_surface", source: "features-volatility", sla: "1m", usedFor: "Options pricing" },
+      { name: "ml_vol_prediction", source: "ml-inference-service", sla: "30s", usedFor: "Vol direction" },
+    ],
+    dataArchitecture: { rawDataSource: "CBOE / OPRA", processedData: ["iv_surface", "greeks"], interval: "1D", lowestGranularity: "1D", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "vega_pnl", label: "Vega P&L", settlementType: "MARK_TO_MARKET", description: "Vol change capture", color: "#a78bfa" },
+        { id: "theta_pnl", label: "Theta P&L", settlementType: "DAILY", description: "Time decay", color: "#60a5fa" },
+        { id: "commission", label: "Commission", settlementType: "PER_TRADE", description: "CBOE commissions", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "18-30%", targetSharpe: "1.8+", maxDrawdown: "12%", maxLeverage: "3x", capitalScalability: "$10M" },
+    latencyProfile: { dataToSignal: "1s", signalToInstruction: "100ms", instructionToFill: "500ms", endToEnd: "~2s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "vega", subscribed: true, threshold: "Max vega exposure", action: "Reduce vol exposure" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "max_vega_usd", value: "100000", description: "Max vega exposure" }],
+    venues: ["CBOE"],
+    performance: { pnlTotal: 560000, pnlMTD: 72000, sharpe: 1.9, maxDrawdown: 9.5, returnPct: 22.4, positions: 6, netExposure: 2800000 },
+    sparklineData: [10, 13, 11, 16, 14, 19, 17, 22, 20, 25, 23, 28],
+    instructionTypes: ["TRADE", "HEDGE"],
+  },
+
+  // ============================================
+  // strat-027: TRADFI_CL_ML_DIR_SCE_1H
+  // ============================================
+  {
+    id: "TRADFI_CL_ML_DIR_SCE_1H",
+    name: "Crude Oil ML Directional",
+    description: "ML-driven directional strategy on CL and BZ crude oil futures.",
+    strategyIdPattern: "TRADFI_CL_ML_DIR_SCE_1H",
+    clientId: "quant-fund",
+    assetClass: "TradFi",
+    strategyType: "ML Directional",
+    archetype: "ML_DIRECTIONAL",
+    executionMode: "SCE",
+    status: "live",
+    version: "1.9.0",
+    deployedAt: "2025-02-01 09:00:00",
+    instruments: [
+      { key: "CME:FUTURE:CL", venue: "CME", type: "Future", role: "WTI Crude" },
+      { key: "CME:FUTURE:BZ", venue: "CME", type: "Future", role: "Brent Crude" },
+    ],
+    featuresConsumed: [
+      { name: "ml_signal", source: "ml-inference-service", sla: "5s", usedFor: "Direction prediction" },
+      { name: "inventory_data", source: "tradfi-data-service", sla: "1h", usedFor: "Supply/demand" },
+    ],
+    dataArchitecture: { rawDataSource: "CME / EIA", processedData: ["cl_price", "bz_price", "ml_features"], interval: "1H", lowestGranularity: "1H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Directional P&L", settlementType: "MARK_TO_MARKET", description: "Price direction capture", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_TRADE", description: "CME commissions", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "12-22%", targetSharpe: "1.4+", maxDrawdown: "12%", maxLeverage: "2x", capitalScalability: "$15M" },
+    latencyProfile: { dataToSignal: "100ms", signalToInstruction: "10ms", instructionToFill: "200ms", endToEnd: "~500ms", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Reduce position" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "max_contracts", value: "30", description: "Max CL contracts" }],
+    venues: ["CME"],
+    performance: { pnlTotal: 410000, pnlMTD: 55000, sharpe: 1.5, maxDrawdown: 10.2, returnPct: 16.8, positions: 2, netExposure: 3500000 },
+    sparklineData: [8, 10, 12, 11, 14, 16, 15, 18, 17, 20, 19, 22],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-028: TRADFI_GC_MM_OPTIONS_EVT_TICK
+  // ============================================
+  {
+    id: "TRADFI_GC_MM_OPTIONS_EVT_TICK",
+    name: "Gold Options MM",
+    description: "Market making in gold options with delta hedging. Multi-strike quoting across expiries.",
+    strategyIdPattern: "TRADFI_GC_MM_OPTIONS_EVT_TICK",
+    clientId: "delta-one",
+    assetClass: "TradFi",
+    strategyType: "Options MM",
+    archetype: "OPTIONS",
+    executionMode: "EVT",
+    status: "live",
+    version: "3.0.1",
+    deployedAt: "2024-12-01 08:00:00",
+    instruments: [
+      { key: "CME:FUTURE:GC", venue: "CME", type: "Future", role: "Gold futures underlying" },
+      { key: "CME:OPTION:GC-C-2500-20260617", venue: "CME", type: "Option", role: "Gold call option" },
+    ],
+    featuresConsumed: [
+      { name: "iv_surface", source: "features-volatility", sla: "1m", usedFor: "Option pricing" },
+      { name: "gold_price", source: "market-tick-data", sla: "100ms", usedFor: "Delta hedging" },
+    ],
+    dataArchitecture: { rawDataSource: "CME", processedData: ["gold_price", "iv_surface", "greeks"], interval: "Tick", lowestGranularity: "Tick", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Options Spread", settlementType: "PER_FILL", description: "Bid/ask spread capture", color: "#4ade80" },
+        { id: "theta_pnl", label: "Theta P&L", settlementType: "DAILY", description: "Time decay", color: "#60a5fa" },
+        { id: "hedge_cost", label: "Hedge Cost", settlementType: "PER_FILL", description: "Delta hedge slippage", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "20-35%", targetSharpe: "2.2+", maxDrawdown: "8%", maxLeverage: "N/A (Greeks-managed)", capitalScalability: "$10M" },
+    latencyProfile: { dataToSignal: "5ms", signalToInstruction: "2ms", instructionToFill: "10ms", endToEnd: "~20ms", coLocationNeeded: true },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Portfolio delta > hedge threshold", action: "Hedge underlying" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "spread_bps_atm", value: "12", description: "ATM spread in bps" }],
+    venues: ["CME"],
+    performance: { pnlTotal: 780000, pnlMTD: 105000, sharpe: 2.3, maxDrawdown: 6.2, returnPct: 26.8, positions: 12, netExposure: 4200000 },
+    sparklineData: [10, 14, 12, 18, 16, 22, 20, 26, 24, 30, 28, 34],
+    instructionTypes: ["TRADE", "HEDGE"],
+  },
+
+  // ============================================
+  // strat-029: TRADFI_ZN_OPTIONS_ML_SCE_4H
+  // ============================================
+  {
+    id: "TRADFI_ZN_OPTIONS_ML_SCE_4H",
+    name: "Treasury Options ML",
+    description: "ML-driven options strategy on 10-Year Treasury Note futures. Volatility surface modeling.",
+    strategyIdPattern: "TRADFI_ZN_OPTIONS_ML_SCE_4H",
+    clientId: "quant-fund",
+    assetClass: "TradFi",
+    strategyType: "Options ML",
+    archetype: "OPTIONS",
+    executionMode: "SCE",
+    status: "staging",
+    version: "0.8.1",
+    instruments: [
+      { key: "CME:FUTURE:ZN", venue: "CME", type: "Future", role: "10Y Treasury futures" },
+      { key: "CME:OPTION:ZN-P-110-20260918", venue: "CME", type: "Option", role: "Put option" },
+    ],
+    featuresConsumed: [
+      { name: "iv_surface", source: "features-volatility", sla: "1m", usedFor: "Options pricing" },
+      { name: "yield_curve", source: "tradfi-data-service", sla: "5m", usedFor: "Rate structure" },
+    ],
+    dataArchitecture: { rawDataSource: "CME", processedData: ["zn_price", "iv_surface"], interval: "4H", lowestGranularity: "4H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "vega_pnl", label: "Vega P&L", settlementType: "MARK_TO_MARKET", description: "Vol change capture", color: "#a78bfa" },
+        { id: "commission", label: "Commission", settlementType: "PER_TRADE", description: "CME commissions", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "10-18%", targetSharpe: "1.5+", maxDrawdown: "10%", maxLeverage: "2x", capitalScalability: "$15M" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "20ms", instructionToFill: "500ms", endToEnd: "~1s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "vega", subscribed: true, threshold: "Max vega exposure", action: "Reduce vol exposure" }],
+    testingStatus: [{ stage: "STAGING", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "max_vega_usd", value: "80000", description: "Max vega exposure" }],
+    venues: ["CME"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE", "HEDGE"],
+  },
+
+  // ============================================
+  // strat-030: TRADFI_SI_ML_DIR_SCE_2H
+  // ============================================
+  {
+    id: "TRADFI_SI_ML_DIR_SCE_2H",
+    name: "Silver ML Directional",
+    description: "ML-driven directional strategy on silver futures. Vertex Partners allocation.",
+    strategyIdPattern: "TRADFI_SI_ML_DIR_SCE_2H",
+    clientId: "quant-fund",
+    assetClass: "TradFi",
+    strategyType: "ML Directional",
+    archetype: "ML_DIRECTIONAL",
+    executionMode: "SCE",
+    status: "live",
+    version: "1.1.0",
+    deployedAt: "2025-04-20 09:00:00",
+    instruments: [
+      { key: "CME:FUTURE:SI", venue: "CME", type: "Future", role: "Silver futures" },
+    ],
+    featuresConsumed: [
+      { name: "ml_signal", source: "ml-inference-service", sla: "5s", usedFor: "Direction prediction" },
+      { name: "si_price", source: "market-tick-data", sla: "100ms", usedFor: "Entry/exit timing" },
+    ],
+    dataArchitecture: { rawDataSource: "CME", processedData: ["si_price", "ml_features"], interval: "2H", lowestGranularity: "2H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Directional P&L", settlementType: "MARK_TO_MARKET", description: "Price direction capture", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_TRADE", description: "CME commissions", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "12-20%", targetSharpe: "1.3+", maxDrawdown: "12%", maxLeverage: "2x", capitalScalability: "$8M" },
+    latencyProfile: { dataToSignal: "100ms", signalToInstruction: "10ms", instructionToFill: "200ms", endToEnd: "~500ms", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Reduce position" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "max_contracts", value: "20", description: "Max SI contracts" }],
+    venues: ["CME"],
+    performance: { pnlTotal: 290000, pnlMTD: 38000, sharpe: 1.4, maxDrawdown: 10.8, returnPct: 14.2, positions: 1, netExposure: 2200000 },
+    sparklineData: [6, 8, 10, 9, 12, 14, 13, 16, 15, 18, 17, 20],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-031: TRADFI_QQQ_MM_OPTIONS_EVT_5M
+  // ============================================
+  {
+    id: "TRADFI_QQQ_MM_OPTIONS_EVT_5M",
+    name: "QQQ Options MM",
+    description: "Market making in QQQ options. Paper trading phase for beta fund.",
+    strategyIdPattern: "TRADFI_QQQ_MM_OPTIONS_EVT_5M",
+    clientId: "delta-one",
+    assetClass: "TradFi",
+    strategyType: "Options MM",
+    archetype: "OPTIONS",
+    executionMode: "EVT",
+    status: "paper",
+    version: "0.3.0",
+    instruments: [
+      { key: "CBOE:ETF:QQQ", venue: "CBOE", type: "SPOT_ASSET", role: "Underlying" },
+      { key: "CBOE:OPTION:QQQ-C-480-20260320", venue: "CBOE", type: "Option", role: "Call option" },
+    ],
+    featuresConsumed: [
+      { name: "iv_surface", source: "features-volatility", sla: "1m", usedFor: "Option pricing" },
+      { name: "qqq_price", source: "market-tick-data", sla: "100ms", usedFor: "Delta hedging" },
+    ],
+    dataArchitecture: { rawDataSource: "CBOE / OPRA", processedData: ["qqq_price", "iv_surface"], interval: "5M", lowestGranularity: "5M", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Options Spread", settlementType: "PER_FILL", description: "Bid/ask capture", color: "#4ade80" },
+        { id: "theta_pnl", label: "Theta P&L", settlementType: "DAILY", description: "Time decay", color: "#60a5fa" },
+        { id: "hedge_cost", label: "Hedge Cost", settlementType: "PER_FILL", description: "Delta hedge slippage", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "15-28%", targetSharpe: "1.8+", maxDrawdown: "10%", maxLeverage: "N/A (Greeks-managed)", capitalScalability: "$5M" },
+    latencyProfile: { dataToSignal: "5ms", signalToInstruction: "2ms", instructionToFill: "10ms", endToEnd: "~20ms", coLocationNeeded: true },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Portfolio delta > hedge threshold", action: "Hedge underlying" }],
+    testingStatus: [{ stage: "LIVE_MOCK", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "spread_bps_atm", value: "15", description: "ATM spread in bps" }],
+    venues: ["CBOE"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE", "HEDGE"],
+  },
+
+  // ============================================
+  // strat-032: TRADFI_EURUSD_ML_DIR_SCE_1H
+  // ============================================
+  {
+    id: "TRADFI_EURUSD_ML_DIR_SCE_1H",
+    name: "EUR/USD ML Directional",
+    description: "ML-driven directional strategy on 6E (EUR/USD) currency futures.",
+    strategyIdPattern: "TRADFI_EURUSD_ML_DIR_SCE_1H",
+    clientId: "quant-fund",
+    assetClass: "TradFi",
+    strategyType: "ML Directional",
+    archetype: "ML_DIRECTIONAL",
+    executionMode: "SCE",
+    status: "live",
+    version: "2.5.0",
+    deployedAt: "2024-06-01 09:00:00",
+    instruments: [
+      { key: "CME:FUTURE:6E", venue: "CME", type: "Future", role: "EUR/USD futures" },
+    ],
+    featuresConsumed: [
+      { name: "ml_signal", source: "ml-inference-service", sla: "5s", usedFor: "Direction prediction" },
+      { name: "macro_features", source: "tradfi-data-service", sla: "1h", usedFor: "Macro inputs" },
+    ],
+    dataArchitecture: { rawDataSource: "CME", processedData: ["eurusd_price", "ml_features"], interval: "1H", lowestGranularity: "1H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Directional P&L", settlementType: "MARK_TO_MARKET", description: "Price direction capture", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_TRADE", description: "CME commissions", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "10-18%", targetSharpe: "1.5+", maxDrawdown: "8%", maxLeverage: "2x", capitalScalability: "$25M" },
+    latencyProfile: { dataToSignal: "100ms", signalToInstruction: "10ms", instructionToFill: "200ms", endToEnd: "~500ms", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Reduce position" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "max_contracts", value: "40", description: "Max 6E contracts" }],
+    venues: ["CME"],
+    performance: { pnlTotal: 520000, pnlMTD: 68000, sharpe: 1.6, maxDrawdown: 7.5, returnPct: 15.8, positions: 1, netExposure: 3800000 },
+    sparklineData: [8, 10, 12, 11, 14, 16, 15, 18, 17, 20, 19, 22],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-033: TRADFI_HG_OPTIONS_ML_SCE_1D
+  // ============================================
+  {
+    id: "TRADFI_HG_OPTIONS_ML_SCE_1D",
+    name: "Copper Options ML",
+    description: "ML-driven options strategy on HG copper futures. Development phase.",
+    strategyIdPattern: "TRADFI_HG_OPTIONS_ML_SCE_1D",
+    clientId: "quant-fund",
+    assetClass: "TradFi",
+    strategyType: "Options ML",
+    archetype: "OPTIONS",
+    executionMode: "SCE",
+    status: "development",
+    version: "0.1.0",
+    instruments: [
+      { key: "CME:FUTURE:HG", venue: "CME", type: "Future", role: "Copper futures" },
+    ],
+    featuresConsumed: [
+      { name: "iv_surface", source: "features-volatility", sla: "1m", usedFor: "Options pricing" },
+    ],
+    dataArchitecture: { rawDataSource: "CME", processedData: ["hg_price", "iv_surface"], interval: "1D", lowestGranularity: "1D", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "vega_pnl", label: "Vega P&L", settlementType: "MARK_TO_MARKET", description: "Vol change capture", color: "#a78bfa" },
+        { id: "commission", label: "Commission", settlementType: "PER_TRADE", description: "CME commissions", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "10-18%", targetSharpe: "1.4+", maxDrawdown: "10%", maxLeverage: "2x", capitalScalability: "$5M" },
+    latencyProfile: { dataToSignal: "1s", signalToInstruction: "100ms", instructionToFill: "500ms", endToEnd: "~2s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "vega", subscribed: true, threshold: "Max vega exposure", action: "Reduce vol exposure" }],
+    testingStatus: [{ stage: "MOCK", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "max_vega_usd", value: "50000", description: "Max vega exposure" }],
+    venues: ["CME"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-034: DEFI_WBTC_BASIS_SCE_4H
+  // ============================================
+  {
+    id: "DEFI_WBTC_BASIS_SCE_4H",
+    name: "WBTC Basis Trade",
+    description: "Long WBTC on Uniswap V3 + short BTC perp. DeFi basis trade on wrapped BTC.",
+    strategyIdPattern: "DEFI_WBTC_BASIS_SCE_4H",
+    clientId: "delta-one",
+    assetClass: "DeFi",
+    strategyType: "Basis Trade",
+    archetype: "BASIS_TRADE",
+    executionMode: "SCE",
+    status: "live",
+    version: "1.5.0",
+    deployedAt: "2025-03-15 08:00:00",
+    instruments: [
+      { key: "UNISWAPV3:SPOT:WBTC-USDC", venue: "Uniswap V3", type: "SPOT_ASSET", role: "Long leg" },
+      { key: "UNISWAPV3:SPOT:WBTC-ETH", venue: "Uniswap V3", type: "SPOT_ASSET", role: "Cross pair" },
+    ],
+    featuresConsumed: [
+      { name: "funding_rate", source: "features-delta-one", sla: "10s", usedFor: "Signal" },
+      { name: "basis_bps", source: "features-delta-one", sla: "10s", usedFor: "Spread monitoring" },
+    ],
+    dataArchitecture: { rawDataSource: "On-chain / Uniswap", processedData: ["wbtc_price", "basis_bps"], interval: "4H", lowestGranularity: "4H", executionMode: "same_candle_exit" },
+    sorEnabled: true,
+    sorConfig: { legs: [{ name: "WBTC swap", sorEnabled: true, allowedVenues: ["UNISWAPV3-ETH"] }] },
+    pnlAttribution: {
+      components: [
+        { id: "funding_pnl", label: "Funding P&L", settlementType: "FUNDING_8H", description: "Funding rate capture", color: "#4ade80" },
+        { id: "basis_spread_pnl", label: "Basis Spread", settlementType: "MARK_TO_MARKET", description: "Premium change", color: "#60a5fa" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "On-chain gas", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "8-14%", targetSharpe: "1.8+", maxDrawdown: "6%", maxLeverage: "1x", capitalScalability: "$5M" },
+    latencyProfile: { dataToSignal: "50ms", signalToInstruction: "5ms", instructionToFill: "5s", endToEnd: "~6s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "2% drift", action: "Adjust perp size" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "initial_capital", value: "1000000", description: "Starting capital" }],
+    venues: ["UNISWAPV3-ETH"],
+    performance: { pnlTotal: 320000, pnlMTD: 45000, sharpe: 1.9, maxDrawdown: 4.8, returnPct: 10.2, positions: 2, netExposure: 2800000 },
+    sparklineData: [8, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20],
+    instructionTypes: ["SWAP", "TRADE"],
+  },
+
+  // ============================================
+  // strat-035: DEFI_STETH_STAKED_BASIS_EVT_1D
+  // ============================================
+  {
+    id: "DEFI_STETH_STAKED_BASIS_EVT_1D",
+    name: "stETH Staked Basis",
+    description: "Long stETH/wstETH staking yield + short ETH perp hedge. LST basis trade via Lido.",
+    strategyIdPattern: "DEFI_STETH_STAKED_BASIS_EVT_1D",
+    clientId: "delta-one",
+    assetClass: "DeFi",
+    strategyType: "Staked Basis",
+    archetype: "BASIS_TRADE",
+    executionMode: "EVT",
+    status: "live",
+    version: "2.0.0",
+    deployedAt: "2025-02-10 10:00:00",
+    instruments: [
+      { key: "LIDO:STAKED:STETH@ETHEREUM", venue: "Lido", type: "SPOT_ASSET", role: "Staking position" },
+      { key: "WALLET:SPOT_ASSET:WSTETH", venue: "Wallet", type: "SPOT_ASSET", role: "Wrapped staked ETH" },
+      { key: "WALLET:SPOT_ASSET:ETH", venue: "Wallet", type: "SPOT_ASSET", role: "Base asset" },
+    ],
+    featuresConsumed: [
+      { name: "lst_staking_apy", source: "features-onchain", sla: "60s", usedFor: "Staking yield" },
+      { name: "steth_discount", source: "features-onchain", sla: "60s", usedFor: "Peg monitoring" },
+    ],
+    dataArchitecture: { rawDataSource: "On-chain / Lido", processedData: ["staking_apy", "steth_discount"], interval: "1D", lowestGranularity: "1D", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "staking_yield", label: "Staking Yield", settlementType: "LST_YIELD", description: "stETH appreciation", color: "#4ade80" },
+        { id: "funding_pnl", label: "Funding P&L", settlementType: "FUNDING_8H", description: "Short perp funding", color: "#60a5fa" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "Transaction gas", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "8-15%", targetSharpe: "2.0+", maxDrawdown: "5%", maxLeverage: "1x", capitalScalability: "$10M" },
+    latencyProfile: { dataToSignal: "500ms", signalToInstruction: "10ms", instructionToFill: "5s", endToEnd: "~6s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "protocol_risk", subscribed: true, threshold: "stETH depeg > 2%", action: "Emergency exit" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "initial_capital", value: "2000000", description: "Starting capital" }],
+    venues: ["LIDO", "HYPERLIQUID"],
+    performance: { pnlTotal: 480000, pnlMTD: 58000, sharpe: 2.1, maxDrawdown: 3.5, returnPct: 11.8, positions: 3, netExposure: 4000000 },
+    sparklineData: [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28],
+    instructionTypes: ["SWAP", "TRADE"],
+  },
+
+  // ============================================
+  // strat-036: DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK
+  // ============================================
+  {
+    id: "DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK",
+    name: "ETH Recursive Staked (Acme)",
+    description: "Recursive staked basis via Aave V3. Flash loan leveraged wstETH/WETH looping.",
+    strategyIdPattern: "DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK",
+    clientId: "quant-fund",
+    assetClass: "DeFi",
+    strategyType: "Recursive Staked Basis",
+    archetype: "RECURSIVE_STAKED_BASIS",
+    executionMode: "EVT",
+    status: "live",
+    version: "1.0.0",
+    deployedAt: "2025-05-01 10:00:00",
+    instruments: [
+      { key: "AAVE_V3_ETH:A_TOKEN:AWSTETH@ETHEREUM", venue: "Aave V3", type: "aToken", role: "Collateral" },
+      { key: "AAVE_V3_ETH:DEBT_TOKEN:DEBTWETH@ETHEREUM", venue: "Aave V3", type: "debtToken", role: "Debt" },
+    ],
+    featuresConsumed: [
+      { name: "health_factor", source: "features-onchain", sla: "60s", usedFor: "Liquidation risk" },
+      { name: "lst_staking_apy", source: "features-onchain", sla: "60s", usedFor: "Yield monitoring" },
+    ],
+    dataArchitecture: { rawDataSource: "On-chain / Aave", processedData: ["health_factor", "staking_apy", "borrow_apy"], interval: "Per-block", lowestGranularity: "Per-block", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "staking_yield", label: "Staking Yield (Leveraged)", settlementType: "LST_YIELD", description: "wstETH rate x leverage", color: "#4ade80" },
+        { id: "borrow_cost", label: "Borrow Cost", settlementType: "AAVE_INDEX", description: "WETH borrow rate", color: "#ef4444" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "Flash loan + gas", color: "#dc2626" },
+      ],
+    },
+    riskProfile: { targetReturn: "20-30%", targetSharpe: "1.8+", maxDrawdown: "15%", maxLeverage: "3x", capitalScalability: "$5M" },
+    latencyProfile: { dataToSignal: "50ms", signalToInstruction: "5ms", instructionToFill: "5s", endToEnd: "~6s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "aave_liquidation", subscribed: true, threshold: "HF < 1.2", action: "Emergency deleverage" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "target_leverage", value: "2.5", description: "Target leverage" }],
+    venues: ["AAVE_V3_ETH"],
+    performance: { pnlTotal: 380000, pnlMTD: 52000, sharpe: 1.9, maxDrawdown: 12.4, returnPct: 24.2, positions: 2, netExposure: 1800000 },
+    sparklineData: [5, 8, 12, 10, 16, 20, 18, 24, 22, 28, 26, 32],
+    instructionTypes: ["FLASH_BORROW", "SWAP", "LEND", "BORROW", "FLASH_REPAY"],
+  },
+
+  // ============================================
+  // strat-037: DEFI_USDC_AAVE_LEND_EVT_1H
+  // ============================================
+  {
+    id: "DEFI_USDC_AAVE_LEND_EVT_1H",
+    name: "USDC Aave Lending",
+    description: "Multi-stablecoin lending on Aave V3. Supply USDC/USDT/DAI for yield optimization.",
+    strategyIdPattern: "DEFI_USDC_AAVE_LEND_EVT_1H",
+    clientId: "delta-one",
+    assetClass: "DeFi",
+    strategyType: "Lending",
+    archetype: "YIELD",
+    executionMode: "EVT",
+    status: "live",
+    version: "1.8.0",
+    deployedAt: "2025-01-15 10:00:00",
+    instruments: [
+      { key: "AAVE_V3_ETH:A_TOKEN:AUSDC@ETHEREUM", venue: "Aave V3", type: "aToken", role: "USDC supply" },
+      { key: "AAVE_V3_ETH:A_TOKEN:AUSDT@ETHEREUM", venue: "Aave V3", type: "aToken", role: "USDT supply" },
+      { key: "AAVE_V3_ETH:A_TOKEN:ADAI@ETHEREUM", venue: "Aave V3", type: "aToken", role: "DAI supply" },
+    ],
+    featuresConsumed: [
+      { name: "supply_apy", source: "features-onchain", sla: "60s", usedFor: "Yield comparison" },
+      { name: "utilization_rate", source: "features-onchain", sla: "60s", usedFor: "APY prediction" },
+    ],
+    dataArchitecture: { rawDataSource: "On-chain / Aave", processedData: ["supply_apy", "utilization"], interval: "1H", lowestGranularity: "1H", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "lending_yield", label: "Lending Yield", settlementType: "AAVE_INDEX", description: "Supply interest", color: "#4ade80" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "Rebalance gas", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "4-8%", targetSharpe: "4.0+", maxDrawdown: "1%", maxLeverage: "1x", capitalScalability: "$50M" },
+    latencyProfile: { dataToSignal: "500ms", signalToInstruction: "10ms", instructionToFill: "5s", endToEnd: "~6s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "protocol_risk", subscribed: true, threshold: "Aave exploit", action: "Emergency withdraw" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "min_supply_apy", value: "0.03", description: "Min 3% APY" }],
+    venues: ["AAVE_V3_ETH"],
+    performance: { pnlTotal: 220000, pnlMTD: 24000, sharpe: 4.5, maxDrawdown: 0.3, returnPct: 5.4, positions: 3, netExposure: 4200000 },
+    sparklineData: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    instructionTypes: ["LEND", "WITHDRAW", "REBALANCE"],
+  },
+
+  // ============================================
+  // strat-038: DEFI_ARB_AMM_LP_SCE_4H
+  // ============================================
+  {
+    id: "DEFI_ARB_AMM_LP_SCE_4H",
+    name: "ARB AMM LP",
+    description: "Concentrated liquidity provision on Uniswap V3 for ARB/USDC and ARB/ETH pairs.",
+    strategyIdPattern: "DEFI_ARB_AMM_LP_SCE_4H",
+    clientId: "defi-desk",
+    assetClass: "DeFi",
+    strategyType: "AMM LP",
+    archetype: "AMM_LP",
+    executionMode: "SCE",
+    status: "staging",
+    version: "0.5.0",
+    instruments: [
+      { key: "UNISWAPV3:LP:ARB-USDC", venue: "Uniswap V3", type: "LP NFT", role: "ARB/USDC LP" },
+      { key: "UNISWAPV3:LP:ARB-ETH", venue: "Uniswap V3", type: "LP NFT", role: "ARB/ETH LP" },
+    ],
+    featuresConsumed: [
+      { name: "pool_price", source: "features-onchain", sla: "12s", usedFor: "Rebalance trigger" },
+      { name: "fee_apy_24h", source: "features-onchain", sla: "1h", usedFor: "Profitability check" },
+    ],
+    dataArchitecture: { rawDataSource: "On-chain / Uniswap", processedData: ["pool_price", "fee_apy"], interval: "4H", lowestGranularity: "4H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "fee_income", label: "Fee Income", settlementType: "LP_FEE_ACCRUAL", description: "Swap fees", color: "#4ade80" },
+        { id: "il_pnl", label: "Impermanent Loss", settlementType: "MARK_TO_MARKET", description: "IL from price divergence", color: "#ef4444" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "Rebalance gas", color: "#dc2626" },
+      ],
+    },
+    riskProfile: { targetReturn: "10-20%", targetSharpe: "1.3+", maxDrawdown: "15%", maxLeverage: "1x", capitalScalability: "$3M" },
+    latencyProfile: { dataToSignal: "50ms", signalToInstruction: "10ms", instructionToFill: "5s", endToEnd: "~6s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "impermanent_loss", subscribed: true, threshold: "IL > 5%", action: "Widen range or exit" }],
+    testingStatus: [{ stage: "STAGING", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "tick_range", value: "2000", description: "Tick range offset" }],
+    venues: ["UNISWAPV3-ETH"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["ADD_LIQUIDITY", "REMOVE_LIQUIDITY", "COLLECT_FEES"],
+  },
+
+  // ============================================
+  // strat-039: DEFI_MATIC_AMM_LP_SCE_2H
+  // ============================================
+  {
+    id: "DEFI_MATIC_AMM_LP_SCE_2H",
+    name: "MATIC AMM LP",
+    description: "Concentrated liquidity provision for MATIC/USDC on Uniswap V3. Development phase.",
+    strategyIdPattern: "DEFI_MATIC_AMM_LP_SCE_2H",
+    clientId: "delta-one",
+    assetClass: "DeFi",
+    strategyType: "AMM LP",
+    archetype: "AMM_LP",
+    executionMode: "SCE",
+    status: "development",
+    version: "0.2.0",
+    instruments: [
+      { key: "UNISWAPV3:LP:MATIC-USDC", venue: "Uniswap V3", type: "LP NFT", role: "MATIC/USDC LP" },
+    ],
+    featuresConsumed: [
+      { name: "pool_price", source: "features-onchain", sla: "12s", usedFor: "Rebalance trigger" },
+    ],
+    dataArchitecture: { rawDataSource: "On-chain / Uniswap", processedData: ["pool_price"], interval: "2H", lowestGranularity: "2H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "fee_income", label: "Fee Income", settlementType: "LP_FEE_ACCRUAL", description: "Swap fees", color: "#4ade80" },
+        { id: "il_pnl", label: "Impermanent Loss", settlementType: "MARK_TO_MARKET", description: "IL from price divergence", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "8-15%", targetSharpe: "1.2+", maxDrawdown: "18%", maxLeverage: "1x", capitalScalability: "$2M" },
+    latencyProfile: { dataToSignal: "50ms", signalToInstruction: "10ms", instructionToFill: "5s", endToEnd: "~6s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "impermanent_loss", subscribed: true, threshold: "IL > 8%", action: "Exit" }],
+    testingStatus: [{ stage: "MOCK", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "tick_range", value: "1500", description: "Tick range offset" }],
+    venues: ["UNISWAPV3-ETH"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["ADD_LIQUIDITY", "REMOVE_LIQUIDITY", "COLLECT_FEES"],
+  },
+
+  // ============================================
+  // strat-040: DEFI_DAI_AAVE_LEND_EVT_8H
+  // ============================================
+  {
+    id: "DEFI_DAI_AAVE_LEND_EVT_8H",
+    name: "DAI Aave Lending",
+    description: "Supply DAI/USDC to Aave V3 for yield. Conservative stablecoin lending.",
+    strategyIdPattern: "DEFI_DAI_AAVE_LEND_EVT_8H",
+    clientId: "delta-one",
+    assetClass: "DeFi",
+    strategyType: "Lending",
+    archetype: "YIELD",
+    executionMode: "EVT",
+    status: "live",
+    version: "1.3.0",
+    deployedAt: "2025-04-20 10:00:00",
+    instruments: [
+      { key: "AAVE_V3_ETH:A_TOKEN:ADAI@ETHEREUM", venue: "Aave V3", type: "aToken", role: "DAI supply" },
+      { key: "AAVE_V3_ETH:A_TOKEN:AUSDC@ETHEREUM", venue: "Aave V3", type: "aToken", role: "USDC supply" },
+    ],
+    featuresConsumed: [
+      { name: "supply_apy", source: "features-onchain", sla: "60s", usedFor: "Yield monitoring" },
+      { name: "utilization_rate", source: "features-onchain", sla: "60s", usedFor: "APY prediction" },
+    ],
+    dataArchitecture: { rawDataSource: "On-chain / Aave", processedData: ["supply_apy", "utilization"], interval: "8H", lowestGranularity: "8H", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "lending_yield", label: "Lending Yield", settlementType: "AAVE_INDEX", description: "Supply interest", color: "#4ade80" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "Transaction gas", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "3-7%", targetSharpe: "3.5+", maxDrawdown: "1%", maxLeverage: "1x", capitalScalability: "$30M" },
+    latencyProfile: { dataToSignal: "500ms", signalToInstruction: "10ms", instructionToFill: "5s", endToEnd: "~6s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "protocol_risk", subscribed: true, threshold: "Smart contract risk", action: "Monitor" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "min_supply_apy", value: "0.025", description: "Min 2.5% APY" }],
+    venues: ["AAVE_V3_ETH"],
+    performance: { pnlTotal: 145000, pnlMTD: 16000, sharpe: 3.8, maxDrawdown: 0.4, returnPct: 4.8, positions: 2, netExposure: 3200000 },
+    sparklineData: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    instructionTypes: ["LEND", "WITHDRAW"],
+  },
+
+  // ============================================
+  // strat-041: SPORTS_EPL_ARB_EVT_MATCH
+  // ============================================
+  {
+    id: "SPORTS_EPL_ARB_EVT_MATCH",
+    name: "EPL Cross-Book Arb",
+    description: "Cross-bookmaker arbitrage on EPL matches. Back/lay across Betfair and bookmakers.",
+    strategyIdPattern: "SPORTS_EPL_ARB_EVT_MATCH",
+    clientId: "sports-desk",
+    assetClass: "Sports",
+    strategyType: "Arbitrage",
+    archetype: "SPORTS_ARB",
+    executionMode: "EVT",
+    status: "live",
+    version: "2.4.0",
+    deployedAt: "2024-09-15 10:00:00",
+    instruments: [
+      { key: "BETFAIR:EXCHANGE_ODDS:EPL_MATCH_ODDS", venue: "Betfair", type: "Exchange Odds", role: "Exchange execution" },
+      { key: "BETFAIR:EXCHANGE_ODDS:EPL_ASIAN_HANDICAP", venue: "Betfair", type: "Exchange Odds", role: "Asian handicap" },
+    ],
+    featuresConsumed: [
+      { name: "odds_snapshot", source: "features-sports", sla: "1s", usedFor: "Arb detection" },
+      { name: "line_movement", source: "features-sports", sla: "1s", usedFor: "Sharp vs soft divergence" },
+    ],
+    dataArchitecture: { rawDataSource: "Odds API", processedData: ["odds_snapshot", "arb_opportunities"], interval: "Event-driven", lowestGranularity: "Sub-second", executionMode: "event_driven" },
+    sorEnabled: true,
+    sorConfig: { legs: [{ name: "Back leg", sorEnabled: true, allowedVenues: ["BETFAIR", "PINNACLE"] }, { name: "Lay leg", sorEnabled: true, allowedVenues: ["BETFAIR"] }] },
+    pnlAttribution: {
+      components: [
+        { id: "arb_pnl", label: "Arbitrage P&L", settlementType: "MATCH_SETTLEMENT", description: "Arb profit", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_FILL", description: "Exchange commission", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "6-14%", targetSharpe: "4.0+", maxDrawdown: "2%", maxLeverage: "1x", capitalScalability: "$500K" },
+    latencyProfile: { dataToSignal: "100ms", signalToInstruction: "10ms", instructionToFill: "500ms", endToEnd: "~700ms", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "edge_decay", subscribed: true, threshold: "Arb closes", action: "Cancel unmatched" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "min_arb_pct", value: "0.02", description: "Min 2% arb" }],
+    venues: ["BETFAIR", "PINNACLE"],
+    performance: { pnlTotal: 185000, pnlMTD: 28000, sharpe: 4.5, maxDrawdown: 1.2, returnPct: 9.8, positions: 8, netExposure: 120000 },
+    sparklineData: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-042: SPORTS_NFL_VALUE_BET_EVT_GAME
+  // ============================================
+  {
+    id: "SPORTS_NFL_VALUE_BET_EVT_GAME",
+    name: "NFL Value Betting",
+    description: "Value betting on NFL moneyline and totals. Kelly-criterion sizing against sharp lines.",
+    strategyIdPattern: "SPORTS_NFL_VALUE_BET_EVT_GAME",
+    clientId: "sports-desk",
+    assetClass: "Sports",
+    strategyType: "Value Betting",
+    archetype: "SPORTS_ARB",
+    executionMode: "EVT",
+    status: "live",
+    version: "1.6.0",
+    deployedAt: "2025-01-01 08:00:00",
+    instruments: [
+      { key: "BETFAIR:EXCHANGE_ODDS:NFL_MONEYLINE", venue: "Betfair", type: "Exchange Odds", role: "Moneyline" },
+      { key: "BETFAIR:EXCHANGE_ODDS:NFL_TOTAL", venue: "Betfair", type: "Exchange Odds", role: "Totals" },
+    ],
+    featuresConsumed: [
+      { name: "sharp_odds", source: "features-sports", sla: "1s", usedFor: "True probability estimate" },
+      { name: "kelly_edge", source: "features-sports", sla: "1s", usedFor: "Position sizing" },
+    ],
+    dataArchitecture: { rawDataSource: "Odds API", processedData: ["sharp_odds", "soft_odds", "kelly_edge"], interval: "Game-driven", lowestGranularity: "Per-game", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "betting_pnl", label: "Betting P&L", settlementType: "MATCH_SETTLEMENT", description: "Win/loss on value bets", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_FILL", description: "Exchange commission", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "10-20%", targetSharpe: "2.0+", maxDrawdown: "8%", maxLeverage: "1x", capitalScalability: "$1M" },
+    latencyProfile: { dataToSignal: "500ms", signalToInstruction: "50ms", instructionToFill: "1s", endToEnd: "~2s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "concentration", subscribed: true, threshold: "10% per game", action: "Cap exposure" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "kelly_fraction", value: "0.25", description: "Fractional Kelly" }],
+    venues: ["BETFAIR"],
+    performance: { pnlTotal: 165000, pnlMTD: 22000, sharpe: 2.2, maxDrawdown: 6.5, returnPct: 14.2, positions: 0, netExposure: 600000 },
+    sparklineData: [8, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-043: SPORTS_LALIGA_ML_EVT_MATCH
+  // ============================================
+  {
+    id: "SPORTS_LALIGA_ML_EVT_MATCH",
+    name: "La Liga ML Sports",
+    description: "ML-driven match prediction for La Liga. Gradient boosting on historical match data.",
+    strategyIdPattern: "SPORTS_LALIGA_ML_EVT_MATCH",
+    clientId: "sports-desk",
+    assetClass: "Sports",
+    strategyType: "Sports ML",
+    archetype: "SPORTS_ARB",
+    executionMode: "EVT",
+    status: "live",
+    version: "1.2.0",
+    deployedAt: "2025-03-10 10:00:00",
+    instruments: [
+      { key: "SMARKETS:EXCHANGE_ODDS:LALIGA_MATCH_ODDS", venue: "Smarkets", type: "Exchange Odds", role: "Match odds" },
+    ],
+    featuresConsumed: [
+      { name: "ml_prediction", source: "sports-ml-service", sla: "5s", usedFor: "Win probability" },
+      { name: "team_form", source: "features-sports", sla: "1h", usedFor: "Model input" },
+    ],
+    dataArchitecture: { rawDataSource: "Sports API", processedData: ["ml_features", "ml_prediction"], interval: "Match-driven", lowestGranularity: "Per-match", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "betting_pnl", label: "Betting P&L", settlementType: "MATCH_SETTLEMENT", description: "ML-driven bets", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_FILL", description: "Exchange commission", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "12-22%", targetSharpe: "1.8+", maxDrawdown: "10%", maxLeverage: "1x", capitalScalability: "$1M" },
+    latencyProfile: { dataToSignal: "500ms", signalToInstruction: "50ms", instructionToFill: "1s", endToEnd: "~2s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "concentration", subscribed: true, threshold: "Max per match", action: "Cap exposure" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "kelly_fraction", value: "0.20", description: "Fractional Kelly" }],
+    venues: ["SMARKETS"],
+    performance: { pnlTotal: 142000, pnlMTD: 18000, sharpe: 1.9, maxDrawdown: 8.5, returnPct: 16.8, positions: 0, netExposure: 500000 },
+    sparklineData: [6, 8, 10, 9, 12, 14, 13, 16, 15, 18, 17, 20],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-044: SPORTS_NBA_MM_EVT_QUARTER
+  // ============================================
+  {
+    id: "SPORTS_NBA_MM_EVT_QUARTER",
+    name: "NBA Market Making",
+    description: "In-play market making on NBA moneyline and spread. Quarter-level rebalancing.",
+    strategyIdPattern: "SPORTS_NBA_MM_EVT_QUARTER",
+    clientId: "sports-desk",
+    assetClass: "Sports",
+    strategyType: "Sports MM",
+    archetype: "MARKET_MAKING",
+    executionMode: "EVT",
+    status: "staging",
+    version: "0.7.0",
+    instruments: [
+      { key: "BETFAIR:EXCHANGE_ODDS:NBA_MONEYLINE", venue: "Betfair", type: "Exchange Odds", role: "Moneyline" },
+      { key: "BETFAIR:EXCHANGE_ODDS:NBA_SPREAD", venue: "Betfair", type: "Exchange Odds", role: "Point spread" },
+    ],
+    featuresConsumed: [
+      { name: "live_score", source: "sports-data-feed", sla: "1s", usedFor: "Market adjustment" },
+      { name: "implied_probability", source: "features-sports", sla: "1s", usedFor: "Fair value" },
+    ],
+    dataArchitecture: { rawDataSource: "Sports API", processedData: ["live_score", "implied_probability"], interval: "Quarter-driven", lowestGranularity: "Per-quarter", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Spread P&L", settlementType: "MATCH_SETTLEMENT", description: "Bid/ask capture", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_FILL", description: "Exchange commission", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "15-25%", targetSharpe: "2.5+", maxDrawdown: "8%", maxLeverage: "1x", capitalScalability: "$500K" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "20ms", instructionToFill: "500ms", endToEnd: "~1s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "market_suspension", subscribed: true, threshold: "Game suspended", action: "Cancel all" }],
+    testingStatus: [{ stage: "STAGING", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "spread_bps", value: "50", description: "Spread in bps" }],
+    venues: ["BETFAIR"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-045: SPORTS_MLB_VALUE_BET_EVT_GAME
+  // ============================================
+  {
+    id: "SPORTS_MLB_VALUE_BET_EVT_GAME",
+    name: "MLB Value Betting",
+    description: "Value betting on MLB moneyline and run line. Paper trading phase.",
+    strategyIdPattern: "SPORTS_MLB_VALUE_BET_EVT_GAME",
+    clientId: "sports-desk",
+    assetClass: "Sports",
+    strategyType: "Value Betting",
+    archetype: "SPORTS_ARB",
+    executionMode: "EVT",
+    status: "paper",
+    version: "0.4.0",
+    instruments: [
+      { key: "SMARKETS:EXCHANGE_ODDS:MLB_MONEYLINE", venue: "Smarkets", type: "Exchange Odds", role: "Moneyline" },
+      { key: "SMARKETS:EXCHANGE_ODDS:MLB_RUN_LINE", venue: "Smarkets", type: "Exchange Odds", role: "Run line" },
+    ],
+    featuresConsumed: [
+      { name: "sharp_odds", source: "features-sports", sla: "1s", usedFor: "True probability" },
+      { name: "pitcher_stats", source: "features-sports", sla: "1h", usedFor: "Model input" },
+    ],
+    dataArchitecture: { rawDataSource: "Sports API", processedData: ["sharp_odds", "pitcher_data"], interval: "Game-driven", lowestGranularity: "Per-game", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "betting_pnl", label: "Betting P&L", settlementType: "MATCH_SETTLEMENT", description: "Value bet wins/losses", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_FILL", description: "Exchange commission", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "8-16%", targetSharpe: "1.5+", maxDrawdown: "12%", maxLeverage: "1x", capitalScalability: "$500K" },
+    latencyProfile: { dataToSignal: "500ms", signalToInstruction: "50ms", instructionToFill: "1s", endToEnd: "~2s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "concentration", subscribed: true, threshold: "Max per game", action: "Cap exposure" }],
+    testingStatus: [{ stage: "LIVE_MOCK", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "kelly_fraction", value: "0.20", description: "Fractional Kelly" }],
+    venues: ["SMARKETS"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-046: SPORTS_SERIE_A_ARB_EVT_MATCH
+  // ============================================
+  {
+    id: "SPORTS_SERIE_A_ARB_EVT_MATCH",
+    name: "Serie A Arbitrage",
+    description: "Cross-bookmaker arbitrage on Serie A matches. Development phase for beta fund.",
+    strategyIdPattern: "SPORTS_SERIE_A_ARB_EVT_MATCH",
+    clientId: "sports-desk",
+    assetClass: "Sports",
+    strategyType: "Arbitrage",
+    archetype: "SPORTS_ARB",
+    executionMode: "EVT",
+    status: "development",
+    version: "0.1.0",
+    instruments: [
+      { key: "BETFAIR:EXCHANGE_ODDS:SERIE_A_MATCH_ODDS", venue: "Betfair", type: "Exchange Odds", role: "Match odds" },
+    ],
+    featuresConsumed: [
+      { name: "odds_snapshot", source: "features-sports", sla: "1s", usedFor: "Arb detection" },
+    ],
+    dataArchitecture: { rawDataSource: "Odds API", processedData: ["odds_snapshot"], interval: "Event-driven", lowestGranularity: "Sub-second", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "arb_pnl", label: "Arbitrage P&L", settlementType: "MATCH_SETTLEMENT", description: "Arb profit", color: "#4ade80" },
+        { id: "commission", label: "Commission", settlementType: "PER_FILL", description: "Exchange commission", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "5-10%", targetSharpe: "3.0+", maxDrawdown: "3%", maxLeverage: "1x", capitalScalability: "$200K" },
+    latencyProfile: { dataToSignal: "100ms", signalToInstruction: "10ms", instructionToFill: "500ms", endToEnd: "~700ms", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "edge_decay", subscribed: true, threshold: "Arb closes", action: "Cancel unmatched" }],
+    testingStatus: [{ stage: "MOCK", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "min_arb_pct", value: "0.025", description: "Min 2.5% arb" }],
+    venues: ["BETFAIR"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-047: PREDICTION_POLY_ML_DIR_EVT_4H
+  // ============================================
+  {
+    id: "PREDICTION_POLY_ML_DIR_EVT_4H",
+    name: "Prediction ML Directional",
+    description: "ML-driven directional trading on Polymarket CPI and NFP prediction events.",
+    strategyIdPattern: "PREDICTION_POLY_ML_DIR_EVT_4H",
+    clientId: "quant-fund",
+    assetClass: "Prediction",
+    strategyType: "ML Directional",
+    archetype: "PREDICTION_ARB",
+    executionMode: "EVT",
+    status: "live",
+    version: "1.1.0",
+    deployedAt: "2025-07-20 10:00:00",
+    instruments: [
+      { key: "POLYMARKET:PREDICTION_MARKET:POLY_CPI_PRINT", venue: "Polymarket", type: "SPOT_ASSET", role: "CPI prediction" },
+      { key: "POLYMARKET:PREDICTION_MARKET:POLY_NFP_ABOVE", venue: "Polymarket", type: "SPOT_ASSET", role: "NFP prediction" },
+    ],
+    featuresConsumed: [
+      { name: "ml_prediction", source: "ml-inference-service", sla: "30s", usedFor: "Event probability" },
+      { name: "macro_data", source: "tradfi-data-service", sla: "1h", usedFor: "Model input" },
+    ],
+    dataArchitecture: { rawDataSource: "Polymarket API / FRED", processedData: ["ml_features", "event_probabilities"], interval: "4H", lowestGranularity: "4H", executionMode: "event_driven" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Directional P&L", settlementType: "EVENT_SETTLEMENT", description: "Event outcome prediction", color: "#4ade80" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "Polygon gas", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "15-25%", targetSharpe: "2.0+", maxDrawdown: "10%", maxLeverage: "1x", capitalScalability: "$500K" },
+    latencyProfile: { dataToSignal: "500ms", signalToInstruction: "50ms", instructionToFill: "2s", endToEnd: "~3s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "concentration", subscribed: true, threshold: "Max per event", action: "Cap exposure" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "max_position_per_event", value: "20000", description: "Max per event" }],
+    venues: ["POLYMARKET"],
+    performance: { pnlTotal: 180000, pnlMTD: 25000, sharpe: 2.1, maxDrawdown: 7.8, returnPct: 18.5, positions: 4, netExposure: 150000 },
+    sparklineData: [6, 8, 10, 12, 14, 16, 15, 18, 17, 20, 19, 22],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-048: PREDICTION_POLY_ARB_EVT_1H
+  // ============================================
+  {
+    id: "PREDICTION_POLY_ARB_EVT_1H",
+    name: "Prediction Cross-Platform Arb",
+    description: "Arbitrage between Polymarket crypto prediction events. ETH and BTC price threshold markets.",
+    strategyIdPattern: "PREDICTION_POLY_ARB_EVT_1H",
+    clientId: "quant-fund",
+    assetClass: "Prediction",
+    strategyType: "Arbitrage",
+    archetype: "PREDICTION_ARB",
+    executionMode: "EVT",
+    status: "staging",
+    version: "0.6.0",
+    instruments: [
+      { key: "POLYMARKET:PREDICTION_MARKET:POLY_ETH_ABOVE_5K", venue: "Polymarket", type: "SPOT_ASSET", role: "ETH prediction" },
+      { key: "POLYMARKET:PREDICTION_MARKET:POLY_BTC_ABOVE_100K", venue: "Polymarket", type: "SPOT_ASSET", role: "BTC prediction" },
+    ],
+    featuresConsumed: [
+      { name: "poly_odds", source: "features-prediction", sla: "5s", usedFor: "Market prices" },
+      { name: "cross_platform_spread", source: "features-prediction", sla: "5s", usedFor: "Arb detection" },
+    ],
+    dataArchitecture: { rawDataSource: "Polymarket API", processedData: ["poly_odds", "arb_spread"], interval: "1H", lowestGranularity: "1H", executionMode: "event_driven" },
+    sorEnabled: true,
+    sorConfig: { legs: [{ name: "Prediction leg", sorEnabled: true, allowedVenues: ["POLYMARKET"] }] },
+    pnlAttribution: {
+      components: [
+        { id: "arb_pnl", label: "Arb P&L", settlementType: "EVENT_SETTLEMENT", description: "Cross-platform arb", color: "#4ade80" },
+        { id: "gas_cost", label: "Gas Cost", settlementType: "PER_FILL", description: "Polygon gas", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "10-18%", targetSharpe: "2.5+", maxDrawdown: "5%", maxLeverage: "1x", capitalScalability: "$500K" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "10ms", instructionToFill: "2s", endToEnd: "~3s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "edge_decay", subscribed: true, threshold: "Arb closes", action: "Cancel unmatched" }],
+    testingStatus: [{ stage: "STAGING", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "min_arb_pct", value: "0.03", description: "Min 3% arb" }],
+    venues: ["POLYMARKET"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-049: CEFI_MATIC_MOMENTUM_SCE_2H
+  // ============================================
+  {
+    id: "CEFI_MATIC_MOMENTUM_SCE_2H",
+    name: "MATIC Momentum",
+    description: "Momentum-based directional trading on MATIC/USDT. Development phase.",
+    strategyIdPattern: "CEFI_MATIC_MOMENTUM_SCE_2H",
+    clientId: "delta-one",
+    assetClass: "CeFi",
+    strategyType: "Momentum",
+    archetype: "MOMENTUM",
+    executionMode: "SCE",
+    status: "development",
+    version: "0.2.0",
+    instruments: [
+      { key: "OKX:SPOT:MATIC-USDT", venue: "OKX", type: "SPOT_ASSET", role: "Primary pair" },
+    ],
+    featuresConsumed: [
+      { name: "momentum_signal", source: "features-momentum", sla: "1m", usedFor: "Trend direction" },
+    ],
+    dataArchitecture: { rawDataSource: "OKX API", processedData: ["momentum"], interval: "2H", lowestGranularity: "2H", executionMode: "same_candle_exit" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Momentum P&L", settlementType: "MARK_TO_MARKET", description: "Trend capture", color: "#4ade80" },
+        { id: "fees", label: "Fees", settlementType: "PER_FILL", description: "Exchange fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "15-28%", targetSharpe: "1.2+", maxDrawdown: "18%", maxLeverage: "2x", capitalScalability: "$2M" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "20ms", instructionToFill: "500ms", endToEnd: "~1s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Scale down" }],
+    testingStatus: [{ stage: "MOCK", status: "in_progress" }, { stage: "LIVE_REAL", status: "pending" }],
+    configParams: [{ key: "lookback_period", value: "16", description: "Momentum lookback" }],
+    venues: ["OKX"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // strat-050: CEFI_SUI_MOMENTUM_HUF_1H
+  // ============================================
+  {
+    id: "CEFI_SUI_MOMENTUM_HUF_1H",
+    name: "SUI Momentum",
+    description: "Momentum-based directional trading on SUI/USDT. Trend-following with volatility scaling.",
+    strategyIdPattern: "CEFI_SUI_MOMENTUM_HUF_1H",
+    clientId: "delta-one",
+    assetClass: "CeFi",
+    strategyType: "Momentum",
+    archetype: "MOMENTUM",
+    executionMode: "HUF",
+    status: "live",
+    version: "1.0.0",
+    deployedAt: "2025-12-10 08:00:00",
+    instruments: [
+      { key: "BINANCE:PERPETUAL:SUI-USDT", venue: "Binance", type: "Perp", role: "Primary instrument" },
+    ],
+    featuresConsumed: [
+      { name: "momentum_signal", source: "features-momentum", sla: "1m", usedFor: "Trend direction" },
+      { name: "volatility", source: "features-volatility", sla: "1m", usedFor: "Position sizing" },
+    ],
+    dataArchitecture: { rawDataSource: "Exchange WebSocket", processedData: ["momentum", "volatility"], interval: "1H", lowestGranularity: "1H", executionMode: "hold_until_flip" },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "directional_pnl", label: "Momentum P&L", settlementType: "MARK_TO_MARKET", description: "Trend capture", color: "#4ade80" },
+        { id: "funding", label: "Funding", settlementType: "FUNDING_8H", description: "Perp funding", color: "#60a5fa" },
+        { id: "fees", label: "Fees", settlementType: "PER_FILL", description: "Exchange fees", color: "#ef4444" },
+      ],
+    },
+    riskProfile: { targetReturn: "20-35%", targetSharpe: "1.4+", maxDrawdown: "16%", maxLeverage: "2x", capitalScalability: "$5M" },
+    latencyProfile: { dataToSignal: "200ms", signalToInstruction: "20ms", instructionToFill: "500ms", endToEnd: "~1s", coLocationNeeded: false },
+    riskSubscriptions: [{ riskType: "delta", subscribed: true, threshold: "Max exposure", action: "Scale down" }],
+    testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
+    configParams: [{ key: "lookback_period", value: "20", description: "Momentum lookback in bars" }],
+    venues: ["BINANCE"],
+    performance: { pnlTotal: 195000, pnlMTD: 32000, sharpe: 1.5, maxDrawdown: 14.2, returnPct: 20.8, positions: 1, netExposure: 1200000 },
+    sparklineData: [6, 10, 8, 14, 12, 18, 16, 22, 20, 26, 24, 28],
     instructionTypes: ["TRADE"],
   },
 ]

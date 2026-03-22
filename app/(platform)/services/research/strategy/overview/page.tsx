@@ -42,14 +42,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import {
-  STRATEGY_CONFIGS,
-  BACKTEST_RUNS,
-  STRATEGY_CANDIDATES,
-  STRATEGY_ALERTS,
-  STRATEGY_TEMPLATES,
-} from "@/lib/strategy-platform-mock-data"
-import type { BacktestRun, StrategyConfig } from "@/lib/strategy-platform-types"
+import { useStrategyBacktests, useStrategyTemplates, useStrategyCandidates, useCreateBacktest } from "@/hooks/api/use-strategies"
+import { Skeleton } from "@/components/ui/skeleton"
+import type { BacktestRun, StrategyConfig, StrategyTemplate, StrategyCandidate, StrategyAlert } from "@/lib/strategy-platform-types"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -139,7 +134,21 @@ const INITIAL_FORM: BacktestFormState = {
 // ---------------------------------------------------------------------------
 
 export default function StrategyOverviewPage() {
-  const [backtests, setBacktests] = React.useState<BacktestRun[]>(BACKTEST_RUNS)
+  const { data: backtestsData, isLoading: backtestsLoading } = useStrategyBacktests()
+  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates()
+  const { data: candidatesData, isLoading: candidatesLoading } = useStrategyCandidates()
+  const createBacktest = useCreateBacktest()
+
+  const backtestsFromApi: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
+  const STRATEGY_CONFIGS: StrategyConfig[] = (templatesData as any)?.data ?? (templatesData as any)?.configs ?? []
+  const STRATEGY_TEMPLATES: StrategyTemplate[] = (templatesData as any)?.data ?? (templatesData as any)?.templates ?? []
+  const STRATEGY_CANDIDATES: StrategyCandidate[] = (candidatesData as any)?.data ?? (candidatesData as any)?.candidates ?? []
+  const STRATEGY_ALERTS: StrategyAlert[] = (templatesData as any)?.alerts ?? []
+
+  const isLoading = backtestsLoading || templatesLoading || candidatesLoading
+
+  const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([])
+  const backtests = [...localBacktests, ...backtestsFromApi]
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM)
   const [sortField, setSortField] = React.useState<"sharpe" | "return" | "drawdown">("sharpe")
@@ -229,12 +238,30 @@ export default function StrategyOverviewPage() {
       driftScore: null,
     }
 
-    setBacktests((prev) => [newBt, ...prev])
+    createBacktest.mutate({
+      templateId: tpl.id,
+      instrument: form.instrument || tpl.instruments[0],
+      venue: form.venue || tpl.venues[0],
+      dateStart: form.dateStart,
+      dateEnd: form.dateEnd,
+    })
+
+    // Optimistically add to local list
+    setLocalBacktests((prev) => [newBt, ...prev])
     setForm(INITIAL_FORM)
     setDialogOpen(false)
   }
 
   const selectedTemplate = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">

@@ -2,7 +2,7 @@
 
 // FreshnessHeatmap — GitHub-contribution-style calendar for data availability
 // Shows per-date completeness for a given shard/instrument
-// Used in /portal/data (catalogue tab) and /admin/data (pipeline freshness tab)
+// Used in /services/data/overview (catalogue tab) and /admin/data (pipeline freshness tab)
 
 import * as React from "react"
 import { cn } from "@/lib/utils"

@@ -216,11 +216,11 @@
       "tab_set": "MANAGE_TABS (defined but NEVER RENDERED — dead code because pages live in (ops) group)",
       "api_gateway": "unified-trading-api",
       "tabs": [
-        {"label": "Clients", "route": "/services/manage/clients", "lines": 495, "state": "REAL", "api_hooks": ["useOrganizationsList", "useSubscriptions"], "action": "KEEP — wired. Absorb onboarding-ui/ClientOnboarding.tsx (503L) as 'Onboard Client' modal."},
-        {"label": "Mandates", "route": "/services/manage/mandates", "lines": 107, "state": "REAL", "api_hooks": [], "action": "WIRE — uses inline mock data. Expand with mandate config."},
+        {"label": "Clients", "route": "/services/manage/clients", "lines": 773, "state": "REAL", "api_hooks": ["useOrganizationsList", "useSubscriptions"], "action": "DONE — wired with multi-step Onboard Client modal (4 steps), skeleton loading, org cards."},
+        {"label": "Mandates", "route": "/services/manage/mandates", "lines": 529, "state": "REAL", "api_hooks": ["useMandates"], "action": "DONE — mandate table with expandable detail, allocation tracking, compliance monitoring."},
         {"label": "Fees", "route": "/services/manage/fees", "lines": 369, "state": "REAL", "api_hooks": ["useOrganizationsList", "useSubscriptions"], "action": "KEEP — wired"},
-        {"label": "Users", "route": "/services/manage/users", "lines": 353, "state": "REAL", "api_hooks": ["useOrganizationsList", "useOrgMembers"], "action": "KEEP — wired. Absorb user-management-ui patterns for onboard/modify/deactivate."},
-        {"label": "Compliance", "route": "/services/manage/compliance", "lines": 157, "state": "REAL", "api_hooks": [], "action": "WIRE — uses inline mock data. Absorb _reference/versa-audit-ui/CompliancePage.tsx (346L) patterns."}
+        {"label": "Users", "route": "/services/manage/users", "lines": 360, "state": "REAL", "api_hooks": ["useOrganizationsList", "useOrgMembers"], "action": "DONE — user table with invite modal, inline role editing, skeleton loading, empty state."},
+        {"label": "Compliance", "route": "/services/manage/compliance", "lines": 461, "state": "REAL", "api_hooks": ["useComplianceStatus"], "action": "DONE — compliance rules table, violations log, audit trail, FCA info section."}
       ],
       "critical_fix": "Pages currently live in app/(ops)/manage/* but should be at app/(platform)/services/manage/*. Either move the pages or fix the routing. The (ops) route group enforces admin-only access which is wrong for Manage (should be visible to some client tiers too).",
       "satellite_absorption": {
@@ -239,11 +239,11 @@
       "tab_set": "REPORTS_TABS",
       "api_gateway": "client-reporting-api",
       "tabs": [
-        {"label": "P&L Attribution", "route": "/services/reports/overview", "lines": 611, "state": "REAL", "api_hooks": ["useReports", "useSettlements", "useContextState"], "action": "KEEP — wired. Absorb client-reporting-ui GenerateTab (107L) as report generation modal."},
+        {"label": "P&L Attribution", "route": "/services/reports/overview", "lines": 650, "state": "REAL", "api_hooks": ["useReports", "useSettlements", "useContextState"], "action": "DONE — wired with Generate Report modal, Print button, Export dropdown, skeleton loading, error state."},
         {"label": "Executive", "route": "/services/reports/executive", "lines": 7, "state": "DELEGATE", "action": "KEEP — delegates to components/dashboards/executive-dashboard.tsx (717L, already built). Not a stub.", "delegate_component": "components/dashboards/executive-dashboard.tsx (717L)"},
-        {"label": "Settlement", "route": "/services/reports/settlement", "lines": 24, "state": "STUB", "action": "FILL — adapt settlement-ui/src/pages/Settlements.tsx (522L). Direct source, most complete match.", "sources": ["settlement-ui/src/pages/Settlements.tsx (522L)", "settlement-ui/src/pages/Invoices.tsx (120L)"]},
-        {"label": "Reconciliation", "route": "/services/reports/reconciliation", "lines": 24, "state": "STUB", "action": "FILL — reuse DriftAnalysisPanel from Dashboard (already built as component). Add settlement-ui/Positions.tsx (122L) for batch/live position comparison.", "sources": ["components/trading/drift-analysis-panel.tsx (already in repo)", "settlement-ui/src/pages/Positions.tsx (122L)"]},
-        {"label": "Regulatory", "route": "/services/reports/regulatory", "lines": 24, "state": "STUB", "action": "FILL — adapt _reference/versa-audit-ui/CompliancePage.tsx (346L) for MiFID II / FCA / EMIR regulatory reporting.", "sources": ["_reference/versa-audit-ui/src/pages/CompliancePage.tsx (346L)"]}
+        {"label": "Settlement", "route": "/services/reports/settlement", "lines": 480, "state": "REAL", "api_hooks": ["useSettlements"], "action": "DONE — settlement table with status filters, venue breakdown, invoice section, documents panel. Skeleton loading, error states."},
+        {"label": "Reconciliation", "route": "/services/reports/reconciliation", "lines": 404, "state": "REAL", "api_hooks": ["useReconciliation"], "action": "DONE — reuses DriftAnalysisPanel, reconciliation history table, break summary cards. Skeleton loading, error states."},
+        {"label": "Regulatory", "route": "/services/reports/regulatory", "lines": 667, "state": "REAL", "api_hooks": ["useRegulatoryReports"], "action": "DONE — MiFID II/FCA/EMIR reporting table, status summaries, expandable details, compliance calendar. Skeleton loading, error states."}
       ],
       "satellite_absorption": {
         "settlement-ui/Settlements.tsx": "522L — complete settlement table with status, filters. Direct fill for settlement stub.",
@@ -319,8 +319,6 @@
     "/services/execution/candidates (350L — inline mock data)",
     "/services/execution/handoff (367L — inline mock data)",
     "/services/execution/venues (298L — inline mock data)",
-    "/services/manage/compliance (157L — inline mock data)",
-    "/services/manage/mandates (107L — inline mock data)",
     "/services/research/ml (591L — inline mock data, duplicates /ml/overview)",
     "/services/research/ml/experiments (704L — inline mock data)",
     "/services/research/ml/experiments/[id] (655L — inline mock data)",

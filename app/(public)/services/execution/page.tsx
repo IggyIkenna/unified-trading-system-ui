@@ -178,7 +178,7 @@ export default function ExecutionServicePage() {
               Monitor your execution performance, alpha tracking, and order flow in the Trader dashboard.
             </p>
             <Button size="lg" asChild>
-              <Link href="/services/overview?service=execution">
+              <Link href="/services/execution/overview">
                 View Execution Dashboard
                 <ArrowRight className="ml-2 size-4" />
               </Link>

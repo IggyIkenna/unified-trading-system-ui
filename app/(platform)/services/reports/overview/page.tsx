@@ -44,12 +44,18 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useReports, useSettlements } from "@/hooks/api/use-reports"
+import { Skeleton } from "@/components/ui/skeleton"
+import { GenerateReportModal } from "@/components/reports/generate-report-modal"
+import { ScheduleReportModal } from "@/components/reports/schedule-report-modal"
+import { ExportDropdown } from "@/components/ui/export-dropdown"
+import { ApiError } from "@/components/ui/api-error"
+import { Printer, CalendarClock } from "lucide-react"
 
 type TransferStatus = "confirming" | "settled" | "confirmed" | "pending" | "failed";
 
 export default function ReportsPage() {
-  const { data: reportsApiData, isLoading: reportsLoading } = useReports()
-  const { data: settlementsApiData, isLoading: settlementsLoading } = useSettlements()
+  const { data: reportsApiData, isLoading: reportsLoading, isError: reportsIsError, error: reportsErr, refetch: refetchReports } = useReports()
+  const { data: settlementsApiData, isLoading: settlementsLoading, isError: settlementsIsError, refetch: refetchSettlements } = useSettlements()
 
   const allReports: Array<any> = (reportsApiData as any)?.data ?? []
   const allSettlements: Array<any> = (settlementsApiData as any)?.settlements ?? (settlementsApiData as any)?.data ?? []
@@ -115,7 +121,28 @@ export default function ReportsPage() {
   const pendingSettlement = settlements.filter(s => s.status !== "settled").reduce((sum, s) => sum + s.amount, 0)
   const reportsThisMonth = reports.length
 
-  if (isApiLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  const [generateOpen, setGenerateOpen] = React.useState(false)
+  const [scheduleOpen, setScheduleOpen] = React.useState(false)
+
+  if (reportsIsError || settlementsIsError) return (
+    <div className="p-6 max-w-[1600px] mx-auto">
+      <ApiError
+        error={reportsErr instanceof Error ? reportsErr : new Error("Failed to load reports data")}
+        onRetry={() => { refetchReports(); refetchSettlements() }}
+      />
+    </div>
+  )
+
+  if (isApiLoading) return (
+    <div className="p-6 max-w-[1600px] mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2"><Skeleton className="h-8 w-64" /><Skeleton className="h-4 w-96" /></div>
+        <div className="flex gap-3"><Skeleton className="h-9 w-32" /><Skeleton className="h-9 w-40" /></div>
+      </div>
+      <div className="grid grid-cols-4 gap-4">{Array.from({ length: 4 }).map((_, i) => <Card key={i}><CardContent className="pt-4"><Skeleton className="h-16" /></CardContent></Card>)}</div>
+      <Skeleton className="h-[400px]" />
+    </div>
+  )
 
   return (
     <div className="p-6">
@@ -133,7 +160,26 @@ export default function ReportsPage() {
               <Calendar className="size-4" />
               March 2026
             </Button>
-            <Button size="sm" className="gap-2" style={{ backgroundColor: "var(--surface-reports)" }}>
+            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => window.print()}>
+              <Printer className="size-4" />
+              Print
+            </Button>
+            <ExportDropdown
+              data={reports.map(r => ({ ...r }))}
+              columns={[
+                { key: "id", header: "ID" },
+                { key: "name", header: "Report" },
+                { key: "type", header: "Type" },
+                { key: "status", header: "Status" },
+                { key: "date", header: "Date" },
+              ]}
+              filename="reports-pnl"
+            />
+            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => setScheduleOpen(true)}>
+              <CalendarClock className="size-4" />
+              Schedule
+            </Button>
+            <Button size="sm" className="gap-2" onClick={() => setGenerateOpen(true)}>
               <FileText className="size-4" />
               Generate Report
             </Button>
@@ -606,6 +652,16 @@ export default function ReportsPage() {
           </TabsContent>
         </Tabs>
       </div>
+
+      <GenerateReportModal
+        open={generateOpen}
+        onOpenChange={setGenerateOpen}
+        defaultType="pnl-attribution"
+      />
+      <ScheduleReportModal
+        open={scheduleOpen}
+        onOpenChange={setScheduleOpen}
+      />
     </div>
   )
 }

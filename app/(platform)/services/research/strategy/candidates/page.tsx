@@ -24,18 +24,15 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { type ColumnDef } from "@tanstack/react-table"
+import { DataTable } from "@/components/ui/data-table"
 
-import { STRATEGY_CANDIDATES as DEFAULT_CANDIDATES, BACKTEST_RUNS } from "@/lib/strategy-platform-mock-data"
-import type { StrategyCandidate } from "@/lib/strategy-platform-types"
-import { useStrategyPerformance } from "@/hooks/api/use-strategies"
+import { useStrategyCandidates, useStrategyBacktests, usePromoteStrategy, useRejectStrategy } from "@/hooks/api/use-strategies"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
+import { CandidateBasket, useCandidateBasket } from "@/components/platform/candidate-basket"
+import type { StrategyCandidate, BacktestRun } from "@/lib/strategy-platform-types"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -79,10 +76,25 @@ type PromotionTarget = "paper" | "live"
 // ---------------------------------------------------------------------------
 
 export default function CandidatesPage() {
-  const { data: perfData, isLoading } = useStrategyPerformance()
-  const candidatesRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.candidates ?? []
-  const initialCandidates = candidatesRaw.length > 0 ? candidatesRaw as StrategyCandidate[] : DEFAULT_CANDIDATES
-  const [candidates, setCandidates] = React.useState<StrategyCandidate[]>(initialCandidates)
+  const { data: candidatesData, isLoading: candidatesLoading, isError: candidatesIsError, error: candidatesError, refetch: candidatesRefetch } = useStrategyCandidates()
+  const { data: backtestsData, isLoading: backtestsLoading } = useStrategyBacktests()
+  const promoteStrategy = usePromoteStrategy()
+  const rejectStrategy = useRejectStrategy()
+
+  const candidatesFromApi: StrategyCandidate[] = (candidatesData as any)?.data ?? (candidatesData as any)?.candidates ?? []
+  const BACKTEST_RUNS: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
+
+  const isLoading = candidatesLoading || backtestsLoading
+  const [candidates, setCandidates] = React.useState<StrategyCandidate[]>([])
+  const basket = useCandidateBasket()
+
+  // Sync API data into local state when it arrives
+  React.useEffect(() => {
+    if (candidatesFromApi.length > 0) {
+      setCandidates(candidatesFromApi)
+    }
+  }, [candidatesFromApi])
+
   const [promotionTargets, setPromotionTargets] = React.useState<
     Record<string, PromotionTarget | null>
   >({})
@@ -90,6 +102,7 @@ export default function CandidatesPage() {
   const [commentText, setCommentText] = React.useState("")
 
   function promoteCandidate(candidateId: string, target: PromotionTarget) {
+    promoteStrategy.mutate(candidateId)
     setCandidates((prev) =>
       prev.map((c) => {
         if (c.id !== candidateId) return c
@@ -113,6 +126,7 @@ export default function CandidatesPage() {
   }
 
   function rejectCandidate(candidateId: string) {
+    rejectStrategy.mutate(candidateId)
     setCandidates((prev) =>
       prev.map((c) => {
         if (c.id !== candidateId) return c
@@ -170,17 +184,137 @@ export default function CandidatesPage() {
     (c) => c.reviewState === "approved" || c.reviewState === "rejected"
   )
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  const resolvedColumns: ColumnDef<StrategyCandidate, unknown>[] = React.useMemo(
+    () => [
+      {
+        id: "strategy",
+        header: "Strategy",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const bt = BACKTEST_RUNS.find((b) => b.id === row.original.backtestRunId)
+          return (
+            <span className="font-medium">
+              {bt?.templateName ?? row.original.configId}
+            </span>
+          )
+        },
+      },
+      {
+        accessorKey: "configVersion",
+        header: "Version",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="text-muted-foreground font-mono text-xs">
+            v{row.original.configVersion}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "reviewState",
+        header: "Status",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <Badge
+            variant="outline"
+            className={reviewStateColor(row.original.reviewState)}
+          >
+            {row.original.reviewState}
+          </Badge>
+        ),
+      },
+      {
+        id: "promotedTo",
+        header: "Promoted To",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const target = promotionTargets[row.original.id]
+          if (target) {
+            return (
+              <Badge
+                variant="outline"
+                className={
+                  target === "live"
+                    ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                    : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+                }
+              >
+                {target}
+              </Badge>
+            )
+          }
+          return <span className="text-muted-foreground text-xs">--</span>
+        },
+      },
+      {
+        id: "sharpe",
+        header: "Sharpe",
+        accessorFn: (row) => row.metricsSnapshot.sharpe,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {fmtNum(row.original.metricsSnapshot.sharpe)}
+          </span>
+        ),
+      },
+      {
+        id: "return",
+        header: "Return",
+        accessorFn: (row) => row.metricsSnapshot.totalReturn,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">
+            {fmtPct(row.original.metricsSnapshot.totalReturn)}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "selectedBy",
+        header: "Selected By",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="text-muted-foreground text-xs">{row.original.selectedBy}</span>
+        ),
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [BACKTEST_RUNS, promotionTargets],
+  )
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (candidatesIsError) {
+    return (
+      <div className="p-6">
+        <ApiError error={candidatesError} onRetry={() => candidatesRefetch()} />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-7xl space-y-6 p-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Promotion Pipeline</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {pendingCandidates.length} pending &middot; {resolvedCandidates.length} resolved
-          </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Promotion Pipeline</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {pendingCandidates.length} pending &middot; {resolvedCandidates.length} resolved
+            </p>
+          </div>
+          <CandidateBasket
+            platform="strategy"
+            candidates={basket.candidates}
+            onRemove={basket.removeCandidate}
+            onClearAll={basket.clearAll}
+            onUpdateNote={basket.updateNote}
+            onSendToReview={() => {/* TODO: wire to review API */}}
+            onPreparePackage={() => {/* TODO: wire to package API */}}
+          />
         </div>
 
         {/* Pending Candidates */}
@@ -358,83 +492,22 @@ export default function CandidatesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-border/50 hover:bg-transparent">
-                    <TableHead className="text-xs text-muted-foreground">Strategy</TableHead>
-                    <TableHead className="text-xs text-muted-foreground">Version</TableHead>
-                    <TableHead className="text-xs text-muted-foreground">Status</TableHead>
-                    <TableHead className="text-xs text-muted-foreground">Promoted To</TableHead>
-                    <TableHead className="text-xs text-muted-foreground">Sharpe</TableHead>
-                    <TableHead className="text-xs text-muted-foreground">Return</TableHead>
-                    <TableHead className="text-xs text-muted-foreground">Selected By</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {resolvedCandidates.map((candidate) => {
-                    const bt = BACKTEST_RUNS.find((b) => b.id === candidate.backtestRunId)
-                    const target = promotionTargets[candidate.id]
-                    return (
-                      <TableRow key={candidate.id} className="border-border/30">
-                        <TableCell className="font-medium">
-                          {bt?.templateName ?? candidate.configId}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground font-mono text-xs">
-                          v{candidate.configVersion}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={reviewStateColor(candidate.reviewState)}
-                          >
-                            {candidate.reviewState}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {target ? (
-                            <Badge
-                              variant="outline"
-                              className={
-                                target === "live"
-                                  ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                                  : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
-                              }
-                            >
-                              {target}
-                            </Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">--</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {fmtNum(candidate.metricsSnapshot.sharpe)}
-                        </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {fmtPct(candidate.metricsSnapshot.totalReturn)}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-xs">
-                          {candidate.selectedBy}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
+              <DataTable
+                columns={resolvedColumns}
+                data={resolvedCandidates}
+                emptyMessage="No resolved candidates"
+              />
             </CardContent>
           </Card>
         )}
 
         {/* Empty state */}
         {candidates.length === 0 && (
-          <Card className="border-border/50">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Target className="size-12 text-muted-foreground/30 mb-4" />
-              <p className="text-muted-foreground">No candidates in the pipeline</p>
-              <p className="text-sm text-muted-foreground/70 mt-1">
-                Add candidates from the Backtests page
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            title="All strategies reviewed"
+            description="No candidates in the pipeline. Add candidates from the Backtests page."
+            icon={Target}
+          />
         )}
 
         {/* Comment Dialog */}

@@ -32,12 +32,14 @@ import {
   Layers,
 } from "lucide-react"
 import * as React from "react"
+import { toast } from "sonner"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { SERVICES, type Service } from "@/lib/reference-data"
+import { useServicesList } from "@/hooks/api/use-service-status"
 
 // Extend services with runtime status
 interface ServiceStatus extends Service {
@@ -133,13 +135,18 @@ function getServiceHealth(service: ServiceStatus): "healthy" | "degraded" | "unh
 }
 
 export default function ServicesPage() {
-  const apiServices = serviceStatuses.filter((s) => s.type === "api-service")
-  const coreServices = serviceStatuses.filter((s) => s.type === "service" || s.type === "batch-service")
-  
+  const { data: apiData, refetch } = useServicesList()
+
+  // Use API data if available, fall back to reference-data-derived mock
+  const allServices: ServiceStatus[] = (apiData as Record<string, unknown>)?.services as ServiceStatus[] ?? serviceStatuses
+
+  const apiServices = allServices.filter((s) => s.type === "api-service")
+  const coreServices = allServices.filter((s) => s.type === "service" || s.type === "batch-service")
+
   const healthyCounts = {
-    healthy: serviceStatuses.filter((s) => getServiceHealth(s) === "healthy").length,
-    degraded: serviceStatuses.filter((s) => getServiceHealth(s) === "degraded").length,
-    unhealthy: serviceStatuses.filter((s) => getServiceHealth(s) === "unhealthy").length,
+    healthy: allServices.filter((s) => getServiceHealth(s) === "healthy").length,
+    degraded: allServices.filter((s) => getServiceHealth(s) === "degraded").length,
+    unhealthy: allServices.filter((s) => getServiceHealth(s) === "unhealthy").length,
   }
 
   return (
@@ -158,7 +165,7 @@ export default function ServicesPage() {
               <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
               <Input placeholder="Search services..." className="pl-8 w-64" />
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => { refetch(); toast.info("Refreshing services...") }}>
               <RefreshCw className="size-4 mr-2" />
               Refresh
             </Button>
@@ -172,7 +179,7 @@ export default function ServicesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Services</p>
-                  <p className="text-2xl font-semibold">{serviceStatuses.length}</p>
+                  <p className="text-2xl font-semibold">{allServices.length}</p>
                 </div>
                 <Server className="size-8 text-muted-foreground" />
               </div>
@@ -216,13 +223,13 @@ export default function ServicesPage() {
         {/* Services Tabs */}
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="all">All Services ({serviceStatuses.length})</TabsTrigger>
+            <TabsTrigger value="all">All Services ({allServices.length})</TabsTrigger>
             <TabsTrigger value="apis">APIs ({apiServices.length})</TabsTrigger>
             <TabsTrigger value="core">Core Services ({coreServices.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-4">
-            <ServiceTable services={serviceStatuses} />
+            <ServiceTable services={allServices} />
           </TabsContent>
           <TabsContent value="apis" className="space-y-4">
             <ServiceTable services={apiServices} />

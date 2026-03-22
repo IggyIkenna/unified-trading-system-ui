@@ -1,7 +1,7 @@
 "use client"
 
 /**
- * /portal/data — Data service portal for SIGNED-IN users.
+ * /services/data/overview — Data service portal for SIGNED-IN users.
  * Shows data status, instrument coverage, freshness monitoring.
  * NOT a marketing page — user is already authenticated.
  *

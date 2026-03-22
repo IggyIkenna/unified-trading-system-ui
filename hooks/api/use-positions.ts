@@ -8,12 +8,16 @@ type PositionsResponse = ApiResponse<"/positions/active">
 
 type PositionsSummaryResponse = ApiResponse<"/positions/summary">
 
-export function usePositions() {
+export function usePositions(mode?: string, asOf?: string) {
   const { user, token } = useAuth()
+  const params = new URLSearchParams()
+  if (mode) params.set("mode", mode)
+  if (asOf) params.set("as_of", asOf)
+  const qs = params.toString()
 
   return useQuery<PositionsResponse>({
-    queryKey: ["positions", user?.id],
-    queryFn: () => typedFetch<PositionsResponse>("/api/positions/active", token),
+    queryKey: ["positions", mode, asOf, user?.id],
+    queryFn: () => typedFetch<PositionsResponse>(`/api/positions/active${qs ? `?${qs}` : ""}`, token),
     enabled: !!user,
   })
 }

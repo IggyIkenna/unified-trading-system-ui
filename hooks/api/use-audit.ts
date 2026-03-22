@@ -31,3 +31,14 @@ export function useDataHealth() {
     enabled: !!user,
   })
 }
+
+export function useBatchJobs() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["batch-jobs", user?.id],
+    queryFn: () => apiFetch("/api/audit/batch-jobs", token),
+    enabled: !!user,
+    refetchInterval: 15000, // refresh every 15s for running jobs
+  })
+}

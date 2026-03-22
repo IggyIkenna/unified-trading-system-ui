@@ -1,18 +1,16 @@
-import { Metadata } from "next"
+"use client"
 
-export const metadata: Metadata = {
-  title: "Manage | Unified Trading Platform",
-  description: "Client management, mandates, fees, and organisational settings",
-}
+import { ServiceTabs, MANAGE_TABS } from "@/components/shell/service-tabs"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
+import { useAuth } from "@/hooks/use-auth"
 
-interface ManageLayoutProps {
-  children: React.ReactNode
-}
+export default function ManageLayout({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
 
-export default function ManageLayout({ children }: ManageLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">
-      {children}
-    </div>
+    <>
+      <ServiceTabs tabs={MANAGE_TABS} entitlements={user?.entitlements} />
+      <ErrorBoundary>{children}</ErrorBoundary>
+    </>
   )
 }

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useGlobalScope } from "@/lib/stores/global-scope-store"
+import { BatchLiveRail } from "@/components/platform/batch-live-rail"
 import { KPICard } from "@/components/trading/kpi-card"
 import { AlertsFeed } from "@/components/trading/alerts-feed"
 import { PnLAttributionPanel, type PnLComponent } from "@/components/trading/pnl-attribution-panel"
@@ -16,7 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { ChevronDown, ChevronUp, Radio, Database, AlertTriangle, Loader2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Radio, Database, AlertTriangle, Loader2, ArrowRight } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -32,6 +33,7 @@ import Link from "next/link"
 import { useAlerts } from "@/hooks/api/use-alerts"
 import { usePositions } from "@/hooks/api/use-positions"
 import { useServiceHealth } from "@/hooks/api/use-service-status"
+import { useWebSocket } from "@/hooks/use-websocket"
 import {
   useTradingOrgs,
   useTradingClients,
@@ -97,6 +99,40 @@ export default function OverviewPage() {
   const { data: positionsData, isLoading: positionsLoading, error: positionsError } = usePositions()
   const { data: healthData, isLoading: healthLoading, error: healthError } = useServiceHealth()
 
+  // ---- Real-time PnL via WebSocket ----
+  const [realtimePnl, setRealtimePnl] = React.useState<Record<string, number>>({})
+  const [realtimePnlPoints, setRealtimePnlPoints] = React.useState<Array<{ date: string; value: number }>>([])
+  const { scope: wsScope } = useGlobalScope()
+
+  const handleWsMessage = React.useCallback((msg: Record<string, unknown>) => {
+    if (msg.channel === "analytics" && msg.type === "pnl_snapshot") {
+      const strategies = (msg.data as Record<string, unknown>)?.strategies as Array<Record<string, unknown>> | undefined
+      if (strategies) {
+        const pnlMap: Record<string, number> = {}
+        let totalSnapshotPnl = 0
+        for (const s of strategies) {
+          if (typeof s.id === "string" && typeof s.pnl === "number") {
+            pnlMap[s.id] = s.pnl
+            totalSnapshotPnl += s.pnl
+          }
+        }
+        setRealtimePnl(pnlMap)
+        // Append to equity curve timeseries
+        setRealtimePnlPoints(prev => {
+          const now = new Date().toISOString()
+          const next = [...prev, { date: now, value: totalSnapshotPnl }]
+          return next.length > 500 ? next.slice(-500) : next
+        })
+      }
+    }
+  }, [])
+
+  useWebSocket({
+    url: "ws://localhost:8030/ws",
+    enabled: wsScope.mode === "live",
+    onMessage: handleWsMessage,
+  })
+
   // ---- Derived: organizations, clients, strategies ----
   const organizations: TradingOrganization[] = orgsData?.organizations ?? []
   const clients: TradingClient[] = clientsData?.clients ?? []
@@ -150,7 +186,7 @@ export default function OverviewPage() {
   const strategyPerformance = performanceData?.strategies ?? []
 
   // ---- UI state ----
-  const { scope: context, setOrganizationIds, setClientIds, setStrategyIds } = useGlobalScope()
+  const { scope: context, setMode, setOrganizationIds, setClientIds, setStrategyIds } = useGlobalScope()
   const [showTimeSeries, setShowTimeSeries] = React.useState(true)
   const [batchDate, setBatchDate] = React.useState(getYesterday())
   const { format: valueFormat, setFormat: setValueFormat } = useValueFormat("dollar")
@@ -168,7 +204,11 @@ export default function OverviewPage() {
   if (isLoading) return <PageLoader />
 
   // ---- Computed KPIs ----
-  const totalPnl = aggregatedPnL.total
+  // Use real-time PnL from WebSocket if available, otherwise fall back to API snapshot
+  const hasRealtimePnl = Object.keys(realtimePnl).length > 0
+  const totalPnl = hasRealtimePnl
+    ? Object.values(realtimePnl).reduce((sum, v) => sum + v, 0)
+    : aggregatedPnL.total
   const totalNav = strategyPerformance.reduce((sum, s) => sum + s.nav, 0) || 1
   const totalExposure = liveTimeSeries.exposure[liveTimeSeries.exposure.length - 1]?.value || 0
   const liveStrategies = strategyPerformance.filter((s) => s.status === "live").length
@@ -221,6 +261,12 @@ export default function OverviewPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <main className="flex-1 p-4 space-y-4 overflow-auto">
+        <BatchLiveRail
+          platform="strategy"
+          currentStage="Monitor"
+          context={context.mode === "live" ? "LIVE" : "BATCH"}
+          onContextChange={(v) => setMode(v === "LIVE" ? "live" : "batch")}
+        />
         {/* Command Center Header */}
         <div className="flex items-center justify-between gap-4 px-3 py-2 bg-secondary/30 rounded-lg border border-border">
           <ScopeSummary
@@ -239,16 +285,24 @@ export default function OverviewPage() {
               setStrategyIds([])
             }}
           />
-          <InterventionControls
-            scope={{
-              strategyCount: strategyPerformance.length,
-              totalExposure: totalExposure,
-              scopeLabel:
-                context.organizationIds.length > 0 || context.clientIds.length > 0
-                  ? "Filtered"
-                  : "All Strategies",
-            }}
-          />
+          <div className="flex items-center gap-2">
+            <InterventionControls
+              scope={{
+                strategyCount: strategyPerformance.length,
+                totalExposure: totalExposure,
+                scopeLabel:
+                  context.organizationIds.length > 0 || context.clientIds.length > 0
+                    ? "Filtered"
+                    : "All Strategies",
+              }}
+            />
+            <Link href="/services/trading/overview">
+              <Button variant="default" size="sm" className="h-8 gap-1.5">
+                Open Trading Terminal
+                <ArrowRight className="size-3.5" />
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Time Series Controls */}
@@ -296,7 +350,7 @@ export default function OverviewPage() {
               <TabsContent value="pnl">
                 <LiveBatchComparison
                   title="Cumulative P&L"
-                  liveData={liveTimeSeries.pnl}
+                  liveData={[...liveTimeSeries.pnl, ...realtimePnlPoints]}
                   batchData={batchTimeSeries.pnl}
                   valueFormatter={formatCurrency}
                   height={220}
@@ -431,7 +485,9 @@ export default function OverviewPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {strategyPerformance.slice(0, 8).map((s) => (
+                    {strategyPerformance.slice(0, 8).map((s) => {
+                      const livePnl = realtimePnl[s.id] ?? s.pnl
+                      return (
                       <TableRow key={s.id} className="text-xs">
                         <TableCell>
                           <Link href={`/services/trading/strategies/${s.id}`} className="font-medium hover:underline">
@@ -439,8 +495,8 @@ export default function OverviewPage() {
                           </Link>
                           <p className="text-[10px] text-muted-foreground">{s.assetClass}</p>
                         </TableCell>
-                        <TableCell className={cn("text-right font-mono tabular-nums", s.pnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}>
-                          {formatDollar(s.pnl)}
+                        <TableCell className={cn("text-right font-mono tabular-nums", livePnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}>
+                          {formatDollar(livePnl)}
                         </TableCell>
                         <TableCell className="text-right font-mono tabular-nums">{s.sharpe.toFixed(2)}</TableCell>
                         <TableCell className="text-right font-mono tabular-nums">{formatDollar(s.exposure)}</TableCell>
@@ -455,7 +511,7 @@ export default function OverviewPage() {
                           </Badge>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )})}
                   </TableBody>
                 </Table>
               </CardContent>

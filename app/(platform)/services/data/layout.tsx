@@ -2,6 +2,7 @@
 
 import { ServiceTabs, DATA_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
+import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { useAuth } from "@/hooks/use-auth"
 
 export default function DataServiceLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,7 @@ export default function DataServiceLayout({ children }: { children: React.ReactN
         entitlements={user?.entitlements}
         rightSlot={LIVE_ASOF_VISIBLE.acquire ? <LiveAsOfToggle /> : undefined}
       />
-      {children}
+      <ErrorBoundary>{children}</ErrorBoundary>
     </>
   )
 }

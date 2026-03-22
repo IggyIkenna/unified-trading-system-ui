@@ -9,33 +9,53 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { MOCK_VENUES } from "@/lib/execution-platform-mock-data"
-import { 
-  Building2, 
+import { useVenues } from "@/hooks/api/use-orders"
+import {
+  Building2,
   CheckCircle2,
   AlertTriangle,
+  AlertCircle,
   XCircle,
   Zap,
   TrendingUp,
   BarChart3,
   Globe,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react"
 
-// Mock venue matrix data for a specific instrument
-const VENUE_MATRIX = {
-  instrument: "ETH-PERP",
-  venues: [
-    { venueId: "binance", spread: 0.02, bidDepth: 2500000, askDepth: 2800000, fillProb: 99.2, score: 95 },
-    { venueId: "okx", spread: 0.025, bidDepth: 1800000, askDepth: 2000000, fillProb: 98.5, score: 88 },
-    { venueId: "hyperliquid", spread: 0.03, bidDepth: 850000, askDepth: 900000, fillProb: 97.2, score: 82 },
-    { venueId: "deribit", spread: 0.018, bidDepth: 950000, askDepth: 1000000, fillProb: 99.5, score: 90 },
-    { venueId: "bybit", spread: 0.028, bidDepth: 1200000, askDepth: 1100000, fillProb: 97.8, score: 78 },
-  ]
-}
-
 export default function ExecutionVenuesPage() {
+  const { data: venuesData, isLoading, error: venuesError, refetch: refetchVenues } = useVenues()
+  const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? []
+
+  // Venue routing matrix derived from API response or fallback
+  const VENUE_MATRIX: { instrument: string; venues: Array<any> } = (venuesData as any)?.routingMatrix ?? {
+    instrument: "ETH-PERP",
+    venues: MOCK_VENUES.slice(0, 5).map((v: any) => ({
+      venueId: v.id ?? "",
+      spread: v.quality?.avgSpread ?? 0,
+      bidDepth: v.volume?.bidDepth ?? 0,
+      askDepth: v.volume?.askDepth ?? 0,
+      fillProb: v.quality?.fillRate ?? 0,
+      score: v.quality?.score ?? 0,
+    })),
+  }
+
   const [selectedInstrument, setSelectedInstrument] = React.useState("ETH-PERP")
+
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+
+  if (venuesError) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+        <AlertCircle className="size-8 text-destructive" />
+        <p>Failed to load venue data</p>
+        <Button variant="outline" size="sm" onClick={() => refetchVenues()}>
+          <RefreshCw className="size-3.5 mr-1.5" />
+          Retry
+        </Button>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,6 +96,13 @@ export default function ExecutionVenuesPage() {
         </div>
 
         {/* Venue Status Grid */}
+        {MOCK_VENUES.length === 0 && (
+          <Card>
+            <CardContent className="py-12">
+              <p className="text-sm text-muted-foreground text-center">No venues available. Venue connections will appear here once configured.</p>
+            </CardContent>
+          </Card>
+        )}
         <div className="grid grid-cols-5 gap-4">
           {MOCK_VENUES.map(venue => (
             <Card key={venue.id}>

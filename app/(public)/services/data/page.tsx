@@ -3,7 +3,7 @@
 // /services/data — Public marketing page for Data Provision service
 // Three sections: Hero → Tabs (Catalogue | Pricing | Demo) → Social proof
 // Uses orgMode="demo" for the catalogue preview — no auth required
-// This page is the sales entry point. All CTAs lead to /signup or /portal/login
+// This page is the sales entry point. All CTAs lead to /signup or /login
 
 import * as React from "react"
 import Link from "next/link"

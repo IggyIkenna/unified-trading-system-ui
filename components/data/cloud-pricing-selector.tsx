@@ -3,7 +3,7 @@
 // CloudPricingSelector — Two-part component:
 // 1. Cloud toggle (GCP / AWS / Both) with linked account status
 // 2. Access mode selector (In-System cheaper vs Download/egress more expensive)
-// Used on /portal/data (Cloud & API tab) and as a pre-query modal step
+// Used on /services/data/overview (Cloud & API tab) and as a pre-query modal step
 
 import * as React from "react"
 import { cn } from "@/lib/utils"

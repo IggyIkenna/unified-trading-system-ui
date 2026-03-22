@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
 import { apiFetch } from "@/lib/api/fetch"
 
@@ -39,5 +39,85 @@ export function useExecutionBacktests() {
     queryKey: ["execution-backtests", user?.id],
     queryFn: () => apiFetch("/api/execution/backtests", token),
     enabled: !!user,
+  })
+}
+
+export function useExecutionMetrics() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["execution-metrics", user?.id],
+    queryFn: () => apiFetch("/api/execution/metrics", token),
+    enabled: !!user,
+  })
+}
+
+export function useExecutionCandidates() {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["execution-candidates", user?.id],
+    queryFn: () => apiFetch("/api/execution/candidates", token),
+    enabled: !!user,
+  })
+}
+
+export function useExecutionHandoff(algoId?: string) {
+  const { user, token } = useAuth()
+
+  return useQuery({
+    queryKey: ["execution-handoff", algoId, user?.id],
+    queryFn: () => apiFetch(`/api/execution/handoff${algoId ? `?algoId=${algoId}` : ""}`, token),
+    enabled: !!user,
+  })
+}
+
+export interface PlaceOrderParams {
+  instrument: string
+  side: "buy" | "sell"
+  order_type: "limit" | "market"
+  quantity: number
+  price?: number
+  venue?: string
+  strategy_id?: string
+  client_id?: string
+  reason?: string
+}
+
+export interface PreTradeCheckParams {
+  instrument: string
+  side: string
+  quantity: number
+  price?: number
+  strategy_id?: string
+}
+
+export function usePreTradeCheck() {
+  const { token } = useAuth()
+  return useMutation({
+    mutationFn: (params: PreTradeCheckParams) =>
+      apiFetch("/api/compliance/pre-trade-check", token, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      }),
+  })
+}
+
+export function usePlaceOrder() {
+  const { token } = useAuth()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: PlaceOrderParams) =>
+      apiFetch("/api/execution/orders", token, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] })
+      queryClient.invalidateQueries({ queryKey: ["positions"] })
+    },
   })
 }

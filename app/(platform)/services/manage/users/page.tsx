@@ -16,8 +16,10 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ExportDropdown } from "@/components/ui/export-dropdown"
 import {
-  Users, Plus, Search, Shield, Clock,
+  Users, Plus, Search, Shield, Clock, UserPlus,
 } from "lucide-react"
 import { useOrganizationsList, useOrgMembers } from "@/hooks/api/use-organizations"
 
@@ -131,7 +133,16 @@ export default function UsersManagementPage() {
     })
   }
 
-  if (orgsLoading || membersLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (orgsLoading || membersLoading) return (
+    <main className="flex-1 p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2"><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-80" /></div>
+        <Skeleton className="h-8 w-24" />
+      </div>
+      <div className="flex gap-3"><Skeleton className="h-10 flex-1" /><Skeleton className="h-10 w-48" /><Skeleton className="h-10 w-32" /></div>
+      <Card><CardContent className="pt-6 space-y-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</CardContent></Card>
+    </main>
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -145,6 +156,18 @@ export default function UsersManagementPage() {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <ExportDropdown
+                data={filteredUsers.map(u => ({ name: u.name, email: u.email, org: u.org, role: u.role, lastLogin: u.lastLogin, status: u.status }))}
+                columns={[
+                  { key: "name", header: "Name" },
+                  { key: "email", header: "Email" },
+                  { key: "org", header: "Organization" },
+                  { key: "role", header: "Role" },
+                  { key: "lastLogin", header: "Last Login" },
+                  { key: "status", header: "Status" },
+                ]}
+                filename="users"
+              />
               <Badge variant="outline" className="text-xs">
                 <Users className="mr-1 size-3" />
                 {users.length} users
@@ -338,8 +361,21 @@ export default function UsersManagementPage() {
                 ))}
                 {filteredUsers.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      No users found matching your filters.
+                    <TableCell colSpan={7} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-3">
+                        <UserPlus className="size-8 text-muted-foreground/50" />
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">No users found</p>
+                          <p className="text-xs text-muted-foreground/70 mt-1">
+                            {searchQuery || orgFilter !== "all" ? "Try adjusting your filters" : "Add your first team member to get started"}
+                          </p>
+                        </div>
+                        {!searchQuery && orgFilter === "all" && (
+                          <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>
+                            <Plus className="mr-1 size-3" /> Add User
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

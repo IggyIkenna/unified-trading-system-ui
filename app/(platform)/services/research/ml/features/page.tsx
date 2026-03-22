@@ -30,14 +30,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { type ColumnDef } from "@tanstack/react-table"
+import { DataTable } from "@/components/ui/data-table"
 import {
   LineChart,
   Line,
@@ -50,6 +44,22 @@ import {
   Area,
 } from "recharts"
 import { useFeatureProvenance } from "@/hooks/api/use-ml-models"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApiError } from "@/components/ui/api-error"
+import { EmptyState } from "@/components/ui/empty-state"
+import { ExportDropdown } from "@/components/ui/export-dropdown"
+import type { ExportColumn } from "@/lib/utils/export"
+
+const featureExportColumns: ExportColumn[] = [
+  { key: "name", header: "Name" },
+  { key: "source", header: "Source" },
+  { key: "updateFrequency", header: "Update Freq" },
+  { key: "latency", header: "Latency" },
+  { key: "status", header: "Status" },
+  { key: "usedByModels", header: "Used By Models", format: "number" },
+  { key: "coverage", header: "Coverage", format: "percent" },
+  { key: "nullRate", header: "Null Rate", format: "percent" },
+]
 
 // Default feature catalog
 const DEFAULT_FEATURE_CATALOG = [
@@ -226,7 +236,7 @@ const DEFAULT_FEATURE_CATALOG = [
 // Feature history and usage matrix are loaded from API inside the component
 
 export default function FeatureProvenancePage() {
-  const { data: featuresData, isLoading } = useFeatureProvenance()
+  const { data: featuresData, isLoading, isError, error, refetch } = useFeatureProvenance()
   const featuresRaw: any[] = (featuresData as any)?.data ?? (featuresData as any)?.features ?? []
   const featureCatalog = featuresRaw.length > 0 ? featuresRaw : DEFAULT_FEATURE_CATALOG
 
@@ -262,7 +272,125 @@ export default function FeatureProvenancePage() {
 
   const selectedFeatureData = selectedFeature ? featureCatalog.find((f: any) => f.id === selectedFeature) : null
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const featureCatalogColumns: ColumnDef<any, unknown>[] = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Feature",
+        enableSorting: false,
+        cell: ({ row }: { row: { original: { name: string; id: string } } }) => (
+          <div
+            className="cursor-pointer"
+            onClick={() => setSelectedFeature(row.original.id)}
+          >
+            <p className="font-medium">{row.original.name}</p>
+            <p className="text-xs text-muted-foreground font-mono">{row.original.id}</p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "source",
+        header: "Source",
+        enableSorting: false,
+        cell: ({ row }: { row: { original: { source: string } } }) => (
+          <Badge variant="outline">{row.original.source}</Badge>
+        ),
+      },
+      {
+        accessorKey: "updateFrequency",
+        header: "Update Freq",
+        enableSorting: false,
+        cell: ({ row }: { row: { original: { updateFrequency: string } } }) => (
+          <span className="font-mono text-sm">{row.original.updateFrequency}</span>
+        ),
+      },
+      {
+        accessorKey: "latency",
+        header: "Latency",
+        enableSorting: false,
+        cell: ({ row }: { row: { original: { latency: string } } }) => (
+          <span className={`font-mono text-sm ${parseInt(row.original.latency) > 500 ? "text-[var(--status-warning)]" : ""}`}>
+            {row.original.latency}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        enableSorting: false,
+        cell: ({ row }: { row: { original: { status: string } } }) =>
+          row.original.status === "healthy" ? (
+            <CheckCircle2 className="size-4 text-[var(--status-success)]" />
+          ) : (
+            <AlertTriangle className="size-4 text-[var(--status-warning)]" />
+          ),
+      },
+      {
+        accessorKey: "usedByModels",
+        header: "Used By",
+        cell: ({ row }: { row: { original: { usedByModels: number } } }) => (
+          <span className="text-right">{row.original.usedByModels} models</span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        enableSorting: false,
+        cell: () => <ChevronRight className="size-4 text-muted-foreground" />,
+      },
+    ],
+    [],
+  )
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const usageMatrixColumns: ColumnDef<any, unknown>[] = useMemo(
+    () => [
+      {
+        accessorKey: "model",
+        header: "Model",
+        enableSorting: false,
+        cell: ({ row }: { row: { original: { model: string } } }) => (
+          <span className="font-medium">{row.original.model}</span>
+        ),
+      },
+      ...featureCatalog.slice(0, 6).map((f: { id: string; name: string }) => ({
+        accessorKey: f.id,
+        header: () => <span className="text-xs">{f.name.split(" ")[0]}</span>,
+        enableSorting: false,
+        cell: ({ row }: { row: { original: Record<string, boolean> } }) =>
+          row.original[f.id] ? (
+            <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" />
+          ) : (
+            <span className="text-muted-foreground text-center block">&mdash;</span>
+          ),
+      })),
+    ],
+    [featureCatalog],
+  )
+
+  if (isLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
+
+  if (isError) return (
+    <div className="p-6">
+      <ApiError error={error} onRetry={() => refetch()} />
+    </div>
+  )
+
+  if (featureCatalog.length === 0) return (
+    <div className="p-6">
+      <EmptyState
+        title="No features"
+        description="No features have been registered yet. Register your first feature to start tracking provenance."
+        icon={Database}
+      />
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -285,10 +413,20 @@ export default function FeatureProvenancePage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <Download className="size-4 mr-2" />
-                Export Catalog
-              </Button>
+              <ExportDropdown
+                data={filteredFeatures.map((f: any) => ({
+                  name: f.name,
+                  source: f.source,
+                  updateFrequency: f.updateFrequency,
+                  latency: f.latency,
+                  status: f.status,
+                  usedByModels: f.usedByModels,
+                  coverage: f.statistics?.coverage != null ? f.statistics.coverage / 100 : null,
+                  nullRate: f.statistics?.nullRate ?? null,
+                } as Record<string, unknown>))}
+                columns={featureExportColumns}
+                filename="ml-features"
+              />
               <Button size="sm">
                 <Zap className="size-4 mr-2" />
                 Register Feature
@@ -398,53 +536,13 @@ export default function FeatureProvenancePage() {
                 <CardDescription>{filteredFeatures.length} features</CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Feature</TableHead>
-                      <TableHead>Source</TableHead>
-                      <TableHead>Update Freq</TableHead>
-                      <TableHead>Latency</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Used By</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredFeatures.map(feature => (
-                      <TableRow 
-                        key={feature.id} 
-                        className={`cursor-pointer ${selectedFeature === feature.id ? "bg-muted/50" : ""}`}
-                        onClick={() => setSelectedFeature(feature.id)}
-                      >
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{feature.name}</p>
-                            <p className="text-xs text-muted-foreground font-mono">{feature.id}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{feature.source}</Badge>
-                        </TableCell>
-                        <TableCell className="font-mono text-sm">{feature.updateFrequency}</TableCell>
-                        <TableCell className={`font-mono text-sm ${parseInt(feature.latency) > 500 ? "text-[var(--status-warning)]" : ""}`}>
-                          {feature.latency}
-                        </TableCell>
-                        <TableCell>
-                          {feature.status === "healthy" ? (
-                            <CheckCircle2 className="size-4 text-[var(--status-success)]" />
-                          ) : (
-                            <AlertTriangle className="size-4 text-[var(--status-warning)]" />
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">{feature.usedByModels} models</TableCell>
-                        <TableCell>
-                          <ChevronRight className="size-4 text-muted-foreground" />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <DataTable
+                  columns={featureCatalogColumns}
+                  data={filteredFeatures}
+                  enableSorting={false}
+                  enableColumnVisibility={false}
+                  emptyMessage="No features found"
+                />
               </CardContent>
             </Card>
           </div>

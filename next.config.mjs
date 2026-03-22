@@ -20,8 +20,12 @@ const nextConfig = {
 
   async redirects() {
     return [
-      // Service hub
-      { source: "/overview", destination: "/services/overview", permanent: true },
+      // Dashboard (formerly Service Hub)
+      { source: "/overview", destination: "/dashboard", permanent: true },
+      // Removed routes — redirect to dashboard
+      { source: "/services/overview", destination: "/dashboard", permanent: true },
+      { source: "/portal", destination: "/dashboard", permanent: true },
+      { source: "/portal/:path*", destination: "/dashboard", permanent: true },
       // Data service
       { source: "/data", destination: "/services/data/overview", permanent: true },
       { source: "/trading/markets", destination: "/services/data/markets", permanent: true },

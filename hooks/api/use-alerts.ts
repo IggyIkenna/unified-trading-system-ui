@@ -40,6 +40,20 @@ export function useAcknowledgeAlert() {
   })
 }
 
+export function useEscalateAlert() {
+  const { token } = useAuth()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (alertId: string) =>
+      typedFetch<unknown>("/api/alerts/escalate", token, { method: "POST", body: JSON.stringify({ alertId }) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["alerts"] })
+      queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })
+    },
+  })
+}
+
 export function useResolveAlert() {
   const { token } = useAuth()
   const queryClient = useQueryClient()

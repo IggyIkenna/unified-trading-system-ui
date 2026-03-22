@@ -29,6 +29,7 @@ import {
 import Link from "next/link"
 import { MLNav } from "@/components/ml/ml-nav"
 import { useModelFamilies, useExperiments, useMLDeployments, useModelVersions, useFeatureProvenance } from "@/hooks/api/use-ml-models"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Context badge component
 function ContextBadge({ context }: { context: "BATCH" | "LIVE" }) {
@@ -117,7 +118,12 @@ export default function MLOverviewPage() {
   const totalPredictionsToday = LIVE_DEPLOYMENTS.reduce((sum: number, d: any) => sum + (d.metrics?.predictionsToday ?? 0), 0)
   const avgLatency = LIVE_DEPLOYMENTS.length > 0 ? LIVE_DEPLOYMENTS.reduce((sum: number, d: any) => sum + (d.metrics?.latencyP50 ?? 0), 0) / LIVE_DEPLOYMENTS.length : 0
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading) return (
+    <div className="space-y-4 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-64 w-full" />
+    </div>
+  )
 
   return (
     <div className="p-6">

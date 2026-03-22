@@ -2,7 +2,7 @@
 
 // ShardCatalogue — Browse instruments grouped by sharding dimensions
 // Hierarchy: Category → Venue → Folder → Data Type → Instrument
-// Used in /services/data (public, demo mode), /portal/data (client), /admin/data (admin)
+// Used in /services/data (public, demo mode), /services/data/overview (client), /admin/data (admin)
 
 import * as React from "react"
 import { cn } from "@/lib/utils"

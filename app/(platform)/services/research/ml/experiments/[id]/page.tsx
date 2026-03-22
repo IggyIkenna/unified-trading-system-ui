@@ -31,14 +31,9 @@ import {
   Layers,
 } from "lucide-react"
 import Link from "next/link"
-import {
-  EXPERIMENTS,
-  MODEL_FAMILIES,
-  DATASET_SNAPSHOTS,
-  FEATURE_SET_VERSIONS,
-  MODEL_VERSIONS,
-} from "@/lib/ml-mock-data"
-import type { ExperimentMetrics } from "@/lib/ml-types"
+import { useExperimentDetail, useModelFamilies, useDatasets, useFeatureProvenance, useModelVersions } from "@/hooks/api/use-ml-models"
+import type { ExperimentMetrics, Experiment, ModelFamily, DatasetSnapshot, FeatureSetVersion, ModelVersion } from "@/lib/ml-types"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   LineChart,
   Line,
@@ -157,20 +152,42 @@ function generateRadarData(metrics: ExperimentMetrics | null) {
 export default function ExperimentDetailPage() {
   const params = useParams()
   const experimentId = params.id as string
-  
-  const experiment = EXPERIMENTS.find(e => e.id === experimentId)
-  const modelFamily = experiment ? MODEL_FAMILIES.find(f => f.id === experiment.modelFamilyId) : null
-  const dataset = experiment ? DATASET_SNAPSHOTS.find(d => d.id === experiment.datasetSnapshotId) : null
-  const featureSet = experiment ? FEATURE_SET_VERSIONS.find(f => f.id === experiment.featureSetVersionId) : null
-  
+
+  const { data: experimentData, isLoading: experimentLoading } = useExperimentDetail(experimentId)
+  const { data: familiesData, isLoading: familiesLoading } = useModelFamilies()
+  const { data: datasetsData, isLoading: datasetsLoading } = useDatasets()
+  const { data: featuresData, isLoading: featuresLoading } = useFeatureProvenance()
+  const { data: versionsData, isLoading: versionsLoading } = useModelVersions()
+
+  const experiment: Experiment | undefined = (experimentData as any)?.data ?? (experimentData as any)?.experiment ?? undefined
+  const allFamilies: ModelFamily[] = (familiesData as any)?.data ?? (familiesData as any)?.families ?? []
+  const allDatasets: DatasetSnapshot[] = (datasetsData as any)?.data ?? (datasetsData as any)?.datasets ?? []
+  const allFeatureSets: FeatureSetVersion[] = (featuresData as any)?.data ?? (featuresData as any)?.features ?? []
+  const allVersions: ModelVersion[] = (versionsData as any)?.data ?? (versionsData as any)?.versions ?? []
+
+  const modelFamily = experiment ? allFamilies.find(f => f.id === experiment.modelFamilyId) : null
+  const dataset = experiment ? allDatasets.find(d => d.id === experiment.datasetSnapshotId) : null
+  const featureSet = experiment ? allFeatureSets.find(f => f.id === experiment.featureSetVersionId) : null
+
   // Related models from same family
-  const relatedModels = modelFamily ? MODEL_VERSIONS.filter(m => m.modelFamilyId === modelFamily.id) : []
-  
+  const relatedModels = modelFamily ? allVersions.filter(m => m.modelFamilyId === modelFamily.id) : []
+
   const validationCurves = React.useMemo(() => generateValidationCurves(), [])
   const featureImportance = React.useMemo(() => generateFeatureImportance(), [])
   const regimePerformance = React.useMemo(() => generateRegimePerformance(), [])
   const radarData = React.useMemo(() => generateRadarData(experiment?.metrics || null), [experiment?.metrics])
-  
+
+  const isLoading = experimentLoading || familiesLoading || datasetsLoading || featuresLoading || versionsLoading
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
   if (!experiment) {
     return (
       <div className="p-6">
