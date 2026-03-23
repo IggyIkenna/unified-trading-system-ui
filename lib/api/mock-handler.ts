@@ -1176,7 +1176,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
             permissions: [
               { key: "regulatory-umbrella", label: "Regulatory Umbrella (AR)", description: "FCA Appointed Representative services", internal_only: false },
               { key: "investment-management", label: "Investment Management", description: "FCA-authorised investment management", internal_only: false },
-              { key: "fund-structure", label: "Fund Structure (POD)", description: "Fund vehicle setup via affiliate partner", internal_only: false },
+              { key: "fund-structure", label: "Fund Structure (POD — EU Licensed)", description: "Regulated fund vehicle setup via EU-licensed affiliate partner", internal_only: false },
               { key: "advisory-engagement", label: "Advisory Engagement", description: "Strategic advisory role under supervision", internal_only: false },
             ],
           },

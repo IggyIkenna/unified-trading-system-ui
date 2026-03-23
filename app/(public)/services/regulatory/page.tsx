@@ -107,6 +107,13 @@ export default function RegulatoryServicePage() {
                   <div className="text-sm text-muted-foreground">Discretionary portfolio management</div>
                 </div>
               </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <CheckCircle2 className="size-5 text-primary shrink-0" />
+                <div>
+                  <div className="font-medium">Fund Structure via Affiliate <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">EU Licensed</Badge></div>
+                  <div className="text-sm text-muted-foreground">Launch regulated fund vehicles through our affiliate partner POD, operating under an EU license. Combined with our FCA umbrella for UK + EU coverage.</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -178,16 +185,16 @@ export default function RegulatoryServicePage() {
                 <Badge variant="outline" className="w-fit mb-2 border-primary/40 text-primary">Fund Structure</Badge>
                 <CardTitle>Fund Partnership</CardTitle>
                 <div className="text-2xl font-bold">Contact Us</div>
-                <CardDescription>Partner with our affiliate POD to launch a fund vehicle</CardDescription>
+                <CardDescription>Partner with our EU-licensed affiliate POD to launch a fund vehicle</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Fund structuring via affiliate partner
+                  Fund structuring via EU-licensed affiliate partner
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Regulated fund vehicle setup
+                  Regulated fund vehicle setup (EU jurisdiction)
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
@@ -195,11 +202,11 @@ export default function RegulatoryServicePage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Combined with regulatory umbrella
+                  Combined FCA + EU regulatory coverage
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Full compliance coverage included
+                  Full compliance and reporting included
                 </div>
               </CardContent>
             </Card>
