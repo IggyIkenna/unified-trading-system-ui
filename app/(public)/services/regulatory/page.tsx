@@ -233,11 +233,11 @@ export default function RegulatoryServicePage() {
           {/* CTA */}
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-4">
-              Access your compliance dashboard, regulatory filings, and audit trail.
+              Start your application. Upload documents progressively — you don&apos;t need everything at once.
             </p>
             <Button size="lg" asChild>
-              <Link href="/admin?service=regulatory">
-                View Compliance Portal
+              <Link href="/signup?service=regulatory">
+                Get Started
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -252,12 +252,14 @@ export default function RegulatoryServicePage() {
             <div className="text-center">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                The compliance dashboard includes FCA reporting, immutable audit trail, and best execution monitoring.
-                Sign in as admin to access the full compliance module.
+                Start your application online. Upload your documents at your own pace — proof of address, identity, source of funds.
+                We review everything and get you trading under our regulatory umbrella.
               </p>
-              <Badge variant="outline" className="mt-4 border-primary/30 text-primary">
-                Available in Platform
-              </Badge>
+              <Link href="/signup?service=regulatory">
+                <Badge variant="outline" className="mt-4 border-primary/30 text-primary cursor-pointer hover:bg-primary/10">
+                  Apply Now
+                </Badge>
+              </Link>
             </div>
           </div>
         </div>
@@ -269,7 +271,7 @@ export default function RegulatoryServicePage() {
           <div className="mx-auto max-w-4xl">
             <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
             <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-4 gap-4">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Self-Service</CardTitle>
@@ -306,6 +308,18 @@ export default function RegulatoryServicePage() {
                   <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Faster onboarding than direct FCA authorisation</div>
                 </CardContent>
               </Card>
+              <Card className="border-primary/20 bg-primary/5">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Fund Structure</CardTitle>
+                  <CardDescription className="text-xs">Partner with our affiliate POD to set up a fund</CardDescription>
+                </CardHeader>
+                <CardContent className="text-xs text-muted-foreground space-y-1.5">
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Fund structuring via our affiliate partner POD</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Launch regulated fund vehicles for your strategies</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Client distribution through our network</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Combined with our regulatory umbrella for full coverage</div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
@@ -330,7 +344,7 @@ export default function RegulatoryServicePage() {
                 <Link href="/contact">Contact Sales</Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
-                <Link href="/signup">Create Account</Link>
+                <Link href="/signup?service=regulatory">Create Account</Link>
               </Button>
             </div>
           </div>

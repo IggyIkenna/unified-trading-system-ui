@@ -204,8 +204,8 @@ export default function InvestmentServicePage() {
               View your portfolio performance, NAV, and monthly reports in the Executive dashboard.
             </p>
             <Button size="lg" asChild>
-              <Link href="/login?redirect=/executive">
-                Sign In to View Investor Portal
+              <Link href="/signup?service=investment">
+                Get Started
                 <ArrowRight className="ml-2 size-4" />
               </Link>
             </Button>
@@ -369,7 +369,7 @@ export default function InvestmentServicePage() {
                 <Link href="/contact">Contact Sales</Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
-                <Link href="/signup">Create Account</Link>
+                <Link href="/signup?service=investment">Create Account</Link>
               </Button>
             </div>
           </div>
