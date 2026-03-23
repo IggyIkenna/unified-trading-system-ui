@@ -249,9 +249,48 @@ Maintain a scratch file or the top of the dated audit with:
 - [ ] Reset Demo tried Y/N
 - [ ] Unhandled API routes seen (copy exact path)
 - [ ] Screenshots directory path (if any)
+- [ ] Venue / instrument counts consistent across landing page, dashboard, and service cards
+- [ ] Footer links (every link in every footer) — actually navigate, don't just check `href` exists
+- [ ] Console errors per page — not just "page loaded" but check for ErrorBoundary / TypeError
+- [ ] Pages stuck on "Loading" after 5s wait — flag as broken data fetch, not "it loaded"
+- [ ] Lifecycle stage count matches between public landing and authenticated dashboard nav
+- [ ] Mock handler coverage — `console.warn` count across a full page scan; zero is the target
 
 ---
 
 ## 8. Link back to the living playbook
 
 After each audit, add one row to [`END_TO_END_STATIC_TIER_ZERO_TESTING.md`](./END_TO_END_STATIC_TIER_ZERO_TESTING.md) **§9 Audit log** pointing to `docs/audits/TIER_ZERO_AUDIT_YYYY-MM-DD.md` (or paste a one-line summary).
+
+---
+
+## 9. Lessons from 2026-03-23 audit (enhance for next run)
+
+### Issues the existing tests did NOT catch
+
+| Issue | Why tests missed it | New test / enhancement |
+| --- | --- | --- |
+| **Admin approve button invisible** (G-01) | `loginAsAdmin` didn't switch to Internal tab; persona card locator failed silently on External tab | Fixed: `loginAsAdmin` now clicks Internal tab first, then `admin@odum` card, then waits for URL redirect |
+| **Footer `/compliance` link → 404** (G-05) | `static-smoke.spec.ts` checks page content but never follows footer links to verify their targets | Added: `footer FCA link does not 404` test in behavior-audit |
+| **Venue count inconsistency** (G-06) | No test compares PLATFORM_STATS across landing page vs dashboard | Added: `landing page and dashboard venue counts are consistent` test; also `dashboard shows non-zero venue count` |
+| **10+ unhandled API routes** (G-08) | `static-smoke` logged warnings but did **not fail** (`// Note: we warn but don't fail`) | Changed: unhandled routes now **fail** the smoke test; added behavior-audit test scanning key pages |
+| **Pages stuck on "Loading"** (G-09/10/11) | Smoke test waits 2s then checks for content; persistent spinners pass because the spinner IS content | Added: check for `Loading dashboard` / `Loading...` text after wait; console log for persistent spinners |
+| **All stats zero** (G-04) | No test checks that mock data produces non-zero values on data-heavy pages | Added: `$0` widget counter in smoke as a warning signal |
+| **Reconciliation test strict mode** | Page had 2 `<main>` elements; `page.locator('main')` ambiguous | Fixed: use `.last()` for inner main in nested layouts |
+| **Deny round-trip** | Only Approve was tested; Deny path never exercised | Added: `admin approve → deny round-trip preserves state` test |
+| **Persona reflected in shell** | No test verified that the mock footer shows the logged-in persona | Added: `persona login sets correct role in authenticated shell` test |
+| **Reset Demo visibility** | No test checked that the Reset Demo button exists in mock mode | Added: `Reset Demo button is visible in mock footer` test |
+
+### Runbook instructions to improve for next auditor
+
+| Gap | Fix |
+| --- | --- |
+| **Runbook says "run `quality-gates.sh`"** but does not say what to expect for the UI repo | Add note: UI repo QG runs `tsc --noEmit` + ESLint. Expect TypeScript output, not pytest. |
+| **Phase 1 says "note console errors"** but no systematic method | Use `page.on('console')` in a Playwright `run_code` loop to capture errors across all routes. Export JSON. |
+| **"Persona matrix tested"** has no concrete instructions | Login as each persona → navigate to `/dashboard` → verify footer shows correct persona name + role. Then navigate to admin route and verify client persona gets redirect or empty state. |
+| **No data consistency checks** | Verify venue counts from `PLATFORM_STATS` match values on landing page, dashboard, and service cards. Flag hardcoded numbers. |
+| **"Loading" ≠ "rendered"** | A page showing only "Loading..." after 5s is a **broken data fetch**, not a partial render. Flag as P1. |
+| **Footer link validation missing** | Phase 2 says "no 404 on critical links" but doesn't say to follow every footer link to target. `/compliance` → 404 was missed by all tracks. |
+| **Lifecycle stage count never mentioned** | Add to scorecard #29: count stages on landing vs authenticated nav. Mismatches are a finding. |
+| **No rapid-scan recipe** | For agent audits: use `page.goto` + `body.textContent` in a `run_code` loop scanning all registry routes in ~2 min. Export JSON with `{ route, len, comingSoon, loading, errors }`. Deep-dive only flagged routes. |
+| **`dev-tiers.sh` exits but spawns background process** | Note: `dev-tiers.sh --tier 0` exits immediately after spawning Next.js. Verify server with `lsof -i :3100` before proceeding. |

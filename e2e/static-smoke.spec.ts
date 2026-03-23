@@ -131,7 +131,21 @@ for (const { path, name } of ALL_PAGES) {
     if (unhandledRoutes.length > 0) {
       console.log(`  Unhandled mock routes on ${path}:`, unhandledRoutes)
     }
-    // Note: we warn but don't fail — some routes are called by shared components on every page
+    expect(unhandledRoutes, `${name} has unhandled mock routes: ${unhandledRoutes.join('; ')}`).toHaveLength(0)
+
+    // 10. No persistent "Loading" spinners after 2s wait (indicates broken data fetch)
+    const loadingTexts = await page.locator('text=/Loading dashboard|Loading\\.\\.\\./').count()
+    if (loadingTexts > 0) {
+      console.log(`  Persistent loading spinner on ${path}`)
+    }
+
+    // 11. Data widgets should not all be zero on pages that have them
+    // (catches the "everything renders but with no mock data" pattern)
+    const zeroWidgets = await page.locator('text="$0"').count()
+    const totalWidgets = await page.locator('[class*="card"], [class*="Card"]').count()
+    if (zeroWidgets > 3 && totalWidgets > 0) {
+      console.log(`  ${name} has ${zeroWidgets} zero-value widgets — check mock data coverage`)
+    }
   })
 }
 
