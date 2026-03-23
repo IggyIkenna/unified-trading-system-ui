@@ -126,7 +126,7 @@ const services = [
     lifecycle: ["Manage", "Report"],
     metrics: [
       { label: "FCA Ref", value: "975797" },
-      { label: "Activities", value: "4" },
+      { label: "Activities", value: "6" },
       { label: "Setup", value: "Fast-Track" },
     ],
     features: ["FCA AR Coverage", "Compliance Supervision", "MiFID II Reporting", "MLRO Services", "Best Execution Monitoring"],
