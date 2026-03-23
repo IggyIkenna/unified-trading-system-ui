@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils"
 import { usePlaceOrder, usePreTradeCheck } from "@/hooks/api/use-orders"
 import { useOrganizationsList } from "@/hooks/api/use-organizations"
 import { useAuth } from "@/hooks/use-auth"
+import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry"
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -290,14 +291,16 @@ export default function BookTradePage() {
               <SelectTrigger className="w-[180px] h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 <SelectItem value="manual">Manual (unlinked)</SelectItem>
-                <SelectItem value="market-making">Market Making</SelectItem>
-                <SelectItem value="stat-arb">Statistical Arbitrage</SelectItem>
-                <SelectItem value="momentum">Momentum</SelectItem>
-                <SelectItem value="mean-reversion">Mean Reversion</SelectItem>
-                <SelectItem value="delta-hedge">Delta Hedge</SelectItem>
-                <SelectItem value="basis-trade">Basis Trade</SelectItem>
+                {REGISTRY_STRATEGIES.filter(s => s.status === "live" || s.status === "paper").map(s => (
+                  <SelectItem key={s.id} value={s.id}>
+                    <div className="flex items-center gap-2">
+                      <span>{s.name}</span>
+                      <span className="text-[10px] text-muted-foreground">{s.assetClass}</span>
+                    </div>
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

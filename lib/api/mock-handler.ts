@@ -286,16 +286,16 @@ function mockRoute(path: string): Promise<Response> | null {
     }))
   }
   if (route === "/api/execution/algos") {
-    return json(MOCK_EXECUTION_ALGOS)
+    return json({ data: MOCK_EXECUTION_ALGOS })
   }
   if (route === "/api/execution/venues") {
-    return json(MOCK_VENUES)
+    return json({ data: MOCK_VENUES })
   }
   if (route === "/api/execution/backtests") {
     return json(MOCK_ALGO_BACKTESTS)
   }
   if (route === "/api/execution/metrics") {
-    return json(MOCK_EXECUTION_METRICS)
+    return json({ data: { ordersExecuted: 847, volumeTraded: 124500000, avgSlippage: 1.2, avgFillRate: 98.5, avgLatency: 32, rejects: 3 } })
   }
   if (route === "/api/execution/candidates") {
     return json(MOCK_EXECUTION_CANDIDATES)
