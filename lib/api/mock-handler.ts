@@ -309,7 +309,16 @@ function mockRoute(path: string): Promise<Response> | null {
 
   // --- Instruments ---
   if (route === "/api/instruments/list") {
-    return json({ instruments: MOCK_INSTRUMENTS, total: MOCK_INSTRUMENTS.length, persona: "admin" })
+    // Also include venue-level aggregation for data overview page
+    const venueMap: Record<string, { venue: string; category: string; instruments: number; coverage: number }> = {}
+    MOCK_INSTRUMENTS.forEach(inst => {
+      if (!venueMap[inst.venue]) venueMap[inst.venue] = { venue: inst.venue, category: inst.category, instruments: 0, coverage: 85 + Math.random() * 15 }
+      venueMap[inst.venue].instruments++
+    })
+    return json({
+      instruments: MOCK_INSTRUMENTS, total: MOCK_INSTRUMENTS.length, persona: "admin",
+      venues: Object.values(venueMap),
+    })
   }
   if (route === "/api/instruments/catalogue") {
     return json({ catalogue: MOCK_CATALOGUE, total: MOCK_CATALOGUE.length })

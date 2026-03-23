@@ -111,7 +111,7 @@ function CompactMultiSelect<T extends { id: string }>({
           )}
         >
           {icon}
-          <span className="max-w-20 truncate">{getDisplayText()}</span>
+          <span className="hidden sm:inline max-w-20 truncate">{getDisplayText()}</span>
           {selectedCount > 1 && (
             <Badge variant="secondary" className="h-4 px-1 text-[10px] ml-0.5">{selectedCount}</Badge>
           )}
@@ -265,7 +265,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
           </span>
         )}
       />
-      <span className="text-muted-foreground/30 text-xs">/</span>
+      <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
       <CompactMultiSelect
         icon={<Users className="size-3" />}
         items={filteredClients}
@@ -287,7 +287,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
           </span>
         )}
       />
-      <span className="text-muted-foreground/30 text-xs">/</span>
+      <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
       <CompactMultiSelect
         icon={<BarChart3 className="size-3" />}
         items={filteredStrategies}

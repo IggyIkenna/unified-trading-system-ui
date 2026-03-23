@@ -51,7 +51,16 @@ export default function LoginPage() {
 
   // Auto-login when ?persona= param is present (from persona switcher)
   React.useEffect(() => {
-    if (personaParam && !loading && !user) {
+    if (!personaParam || loading) return
+    // If already logged in as a different persona, logout first
+    if (user && user.id !== personaParam) {
+      localStorage.removeItem("portal_user")
+      localStorage.removeItem("portal_token")
+      localStorage.removeItem("odum_user")
+      window.location.reload()
+      return
+    }
+    if (!user) {
       const success = login(personaParam)
       if (success) {
         router.replace(redirectTo || PERSONA_REDIRECTS[personaParam] || "/dashboard")

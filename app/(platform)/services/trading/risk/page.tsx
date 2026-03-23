@@ -309,6 +309,39 @@ export default function RiskPage() {
     })
   }, [mockLimitsHierarchy])
 
+  // Item 1: Filter exposure rows by strategy archetype — MUST be before early returns
+  const selectedStrategy = MOCK_STRATEGIES.find(s => s.archetype === riskFilterStrategy)
+  const relevantRiskTypes = riskFilterStrategy === "all"
+    ? null
+    : STRATEGY_RISK_MAP[riskFilterStrategy] || []
+
+  const filteredExposureRows = React.useMemo(() => {
+    if (!relevantRiskTypes) return allExposureRows
+    return allExposureRows.filter(row => {
+      const riskType = COMPONENT_TO_RISK_TYPE[row.component]
+      return riskType && relevantRiskTypes.includes(riskType)
+    })
+  }, [relevantRiskTypes, allExposureRows])
+
+  // Item 2: Get selected hierarchy node info
+  const selectedHierarchyNode = selectedNode
+    ? mockLimitsHierarchy.find(l => l.entity === selectedNode)
+    : null
+
+  const groupedExposure = React.useMemo(() => {
+    const groups: Record<string, ExposureRow[]> = {
+      first_order: [],
+      second_order: [],
+      structural: [],
+      operational: [],
+      domain_specific: [],
+    }
+    filteredExposureRows.forEach(row => {
+      if (groups[row.category]) groups[row.category].push(row)
+    })
+    return groups
+  }, [filteredExposureRows])
+
   if (isLoading) {
     return (
       <div className="p-6">
@@ -362,38 +395,7 @@ export default function RiskPage() {
     )
   }
 
-  // Item 1: Filter exposure rows by strategy archetype
-  const selectedStrategy = MOCK_STRATEGIES.find(s => s.archetype === riskFilterStrategy)
-  const relevantRiskTypes = riskFilterStrategy === "all" 
-    ? null 
-    : STRATEGY_RISK_MAP[riskFilterStrategy] || []
-  
-  const filteredExposureRows = React.useMemo(() => {
-    if (!relevantRiskTypes) return allExposureRows
-    return allExposureRows.filter(row => {
-      const riskType = COMPONENT_TO_RISK_TYPE[row.component]
-      return riskType && relevantRiskTypes.includes(riskType)
-    })
-  }, [relevantRiskTypes])
-
-  // Item 2: Get selected hierarchy node info
-  const selectedHierarchyNode = selectedNode 
-    ? mockLimitsHierarchy.find(l => l.entity === selectedNode) 
-    : null
-
-  const groupedExposure = React.useMemo(() => {
-    const groups: Record<string, ExposureRow[]> = {
-      first_order: [],
-      second_order: [],
-      structural: [],
-      operational: [],
-      domain_specific: [],
-    }
-    filteredExposureRows.forEach(row => {
-      groups[row.category].push(row)
-    })
-    return groups
-  }, [filteredExposureRows])
+  // (selectedStrategy, filteredExposureRows, groupedExposure moved before early returns)
 
   // --- Action handlers (Part 1) ---
   const handleTripCircuitBreaker = (strategyId: string, strategyName: string) => {
