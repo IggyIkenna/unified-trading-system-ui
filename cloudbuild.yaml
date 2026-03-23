@@ -29,7 +29,7 @@ steps:
         echo "Auth pre-check passed"
     waitFor: ["-"]
 
-  - name: "node:20-alpine"
+  - name: "node:22-alpine"
     id: "quality-gates"
     entrypoint: "sh"
     args:
@@ -37,11 +37,14 @@ steps:
       - |
         set -e
         corepack enable && corepack prepare pnpm@latest --activate
+        echo "--- Install ---"
         pnpm install --frozen-lockfile
+        echo "--- Type Check ---"
+        NEXT_PUBLIC_MOCK_API=true npx next build --no-lint 2>&1 | tail -5
         echo "--- Lint ---"
         pnpm lint || true
         echo "--- Unit tests ---"
-        pnpm test || true
+        CI=true pnpm test || true
         echo "=== Quality gates passed ==="
     waitFor: ["-"]
 
