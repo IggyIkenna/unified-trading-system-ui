@@ -28,10 +28,24 @@ const SERVICES = [
   { id: "regulatory", name: "Regulatory Umbrella", icon: Shield, color: "text-slate-400", price: "Contact us", desc: "FCA Appointed Representative services for algo trading firms" },
 ]
 const ONBOARDING_SERVICES = new Set(["regulatory", "investment"])
-const REG_OPTS = [
-  { id: "ar", label: "Appointed Representative (AR)" }, { id: "compliance", label: "Compliance Monitoring" },
-  { id: "aml", label: "AML Monitoring" }, { id: "reporting", label: "P&L & Client Reporting" },
-  { id: "fund", label: "Fund Structure (via affiliate)" },
+const REG_ENGAGEMENT = [
+  { id: "ar", label: "Appointed Representative (AR)", desc: "Operate as our AR under our FCA authorisation" },
+  { id: "advisor", label: "Strategic Advisor", desc: "Contracted advisory role under our supervision" },
+]
+const REG_ACTIVITIES = [
+  { id: "dealing_principal", label: "Dealing in Investments as Principal" },
+  { id: "dealing_agent", label: "Dealing in Investments as Agent" },
+  { id: "arranging", label: "Arranging Deals in Investments" },
+  { id: "managing", label: "Managing Investments (SMA only)" },
+]
+const REG_ADDONS = [
+  { id: "compliance", label: "Compliance Monitoring", price: "£1,000/mo" },
+  { id: "aml", label: "AML Monitoring", price: "£1,000/mo" },
+  { id: "reporting", label: "P&L & Client Reporting", price: "£1,000/mo" },
+]
+const REG_FUND_OPTS = [
+  { id: "fund_crypto_spot", label: "Crypto Spot Fund (in-house, unregulated)" },
+  { id: "fund_derivatives", label: "Derivatives & TradFi Fund (EU-licensed affiliate)" },
 ]
 const INV_OPTS = [
   { id: "sma", label: "Separately Managed Account" }, { id: "fund_access", label: "Fund Access" },
@@ -111,7 +125,13 @@ function StepIndicator({ current, onNavigate }: { current: number; onNavigate: (
 
 function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "investment" }) {
   const svcName = serviceType === "regulatory" ? "Regulatory Umbrella" : "Investment Management"
-  const options = serviceType === "regulatory" ? REG_OPTS : INV_OPTS
+  const allOptLabels: Record<string, string> = Object.fromEntries([
+    ...REG_ENGAGEMENT.map(e => [e.id, e.label]),
+    ...REG_ACTIVITIES.map(a => [a.id, a.label]),
+    ...REG_ADDONS.map(a => [a.id, a.label]),
+    ...REG_FUND_OPTS.map(f => [f.id, f.label]),
+    ...INV_OPTS.map(o => [o.id, o.label]),
+  ])
   const [step, setStep] = React.useState(1)
   const [name, setName] = React.useState("")
   const [email, setEmail] = React.useState("")
@@ -195,12 +215,67 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
           </Card>
         )}
 
-        {step === 2 && (
+        {step === 2 && serviceType === "regulatory" && (
+          <Card>
+            <CardHeader><CardTitle className="text-lg">Configure Your Engagement</CardTitle></CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Engagement Type</Label>
+                {REG_ENGAGEMENT.map(e => (
+                  <label key={e.id} className={`flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-colors ${selOpts.has(e.id) ? "border-primary bg-primary/5" : "hover:bg-accent/30"}`}>
+                    <Checkbox checked={selOpts.has(e.id)} onCheckedChange={() => {
+                      setSelOpts(p => { const n = new Set(p); REG_ENGAGEMENT.forEach(x => n.delete(x.id)); if (!p.has(e.id)) n.add(e.id); return n })
+                    }} />
+                    <div><span className="text-sm font-medium">{e.label}</span><p className="text-xs text-muted-foreground">{e.desc}</p></div>
+                  </label>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Regulated Activities (select all that apply)</Label>
+                <p className="text-xs text-muted-foreground">Which of our FCA-authorised activities do you want to conduct?</p>
+                {REG_ACTIVITIES.map(a => (
+                  <label key={a.id} className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors">
+                    <Checkbox checked={selOpts.has(a.id)} onCheckedChange={() => toggle(a.id)} />
+                    <span className="text-sm">{a.label}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Add-on Services (optional)</Label>
+                <p className="text-xs text-muted-foreground">If you don&apos;t select a service, you&apos;ll need to provide proof of your own coverage.</p>
+                {REG_ADDONS.map(a => (
+                  <label key={a.id} className="flex items-center justify-between rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors">
+                    <div className="flex items-center gap-3">
+                      <Checkbox checked={selOpts.has(a.id)} onCheckedChange={() => toggle(a.id)} />
+                      <span className="text-sm">{a.label}</span>
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">{a.price}</Badge>
+                  </label>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Fund Structure (optional bolt-on)</Label>
+                <p className="text-xs text-muted-foreground">Bolt on a fund vehicle to any engagement above.</p>
+                {REG_FUND_OPTS.map(f => (
+                  <label key={f.id} className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors">
+                    <Checkbox checked={selOpts.has(f.id)} onCheckedChange={() => toggle(f.id)} />
+                    <span className="text-sm">{f.label}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="flex justify-between pt-2">
+                <BackBtn to={1} /><NextBtn disabled={!selOpts.has("ar") && !selOpts.has("advisor")} onClick={() => setStep(3)} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {step === 2 && serviceType === "investment" && (
           <Card>
             <CardHeader><CardTitle className="text-lg">What are you looking for?</CardTitle></CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                {options.map(o => (
+                {INV_OPTS.map(o => (
                   <label key={o.id} className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors">
                     <Checkbox checked={selOpts.has(o.id)} onCheckedChange={() => toggle(o.id)} />
                     <span className="text-sm">{o.label}</span>
@@ -334,7 +409,7 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
               <div className="rounded-lg border p-4 space-y-2">
                 <h3 className="text-sm font-semibold">Requirements</h3>
                 <div className="flex flex-wrap gap-1.5">
-                  {[...selOpts].map(id => <Badge key={id} variant="secondary" className="text-xs">{options.find(o => o.id === id)?.label ?? id}</Badge>)}
+                  {[...selOpts].map(id => <Badge key={id} variant="secondary" className="text-xs">{allOptLabels[id] ?? id}</Badge>)}
                 </div>
               </div>
               <div className="rounded-lg border p-4 space-y-2">
