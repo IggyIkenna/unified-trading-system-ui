@@ -57,7 +57,7 @@ const REG_ADDONS = [
   { id: "reporting", label: "P&L & Client Reporting" },
 ]
 const REG_FUND_OPTS = [
-  { id: "fund_crypto_spot", label: "Crypto Spot Fund (in-house)" },
+  { id: "fund_crypto_spot", label: "Crypto Spot Fund" },
   { id: "fund_derivatives", label: "Derivatives & TradFi Fund (EU-regulated)" },
 ]
 const INV_OPTS = [
