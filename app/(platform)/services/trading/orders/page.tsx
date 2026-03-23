@@ -29,6 +29,39 @@ import type { ExportColumn } from "@/lib/utils/export"
 import { useOrders } from "@/hooks/api/use-orders"
 import { useGlobalScope } from "@/lib/stores/global-scope-store"
 import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar"
+import Link from "next/link"
+
+// Instrument type classification
+type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction"
+
+const INSTRUMENT_TYPES: InstrumentType[] = ["All", "Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"]
+
+function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> {
+  const upper = instrument.toUpperCase()
+  if (/\d+-[CP]$/.test(upper) || upper.includes("OPTIONS")) return "Options"
+  if (upper.includes("PERPETUAL") || upper.includes("PERP")) return "Perp"
+  if (/^[A-Z]+-\d{1,2}[A-Z]{3}\d{2,4}$/.test(upper)) return "Futures"
+  if (upper.includes("AAVE") || upper.includes("UNISWAP") || upper.includes("LIDO") || upper.includes("WALLET:") || upper.includes("MORPHO")) return "DeFi"
+  if (upper.includes("BETFAIR") || upper.includes("POLYMARKET") || upper.includes("KALSHI") || upper.includes("NBA:") || upper.includes("NFL:") || upper.includes("EPL:") || upper.includes("LALIGA:")) return "Prediction"
+  return "Spot"
+}
+
+function getInstrumentRoute(instrument: string, type: Exclude<InstrumentType, "All">): string {
+  const asset = instrument.split("-")[0].split(":")[0].toUpperCase()
+  switch (type) {
+    case "Spot":
+    case "Perp":
+      return "/services/trading/terminal"
+    case "Options":
+      return `/services/trading/options?tab=chain&asset=${asset}`
+    case "Futures":
+      return `/services/trading/options?tab=futures&asset=${asset}`
+    case "DeFi":
+      return "/services/trading/defi"
+    case "Prediction":
+      return "/services/trading/sports"
+  }
+}
 
 // Order shape from the API
 interface OrderRecord {
@@ -78,9 +111,18 @@ const columns: ColumnDef<OrderRecord, unknown>[] = [
     accessorKey: "instrument",
     header: "Instrument",
     enableSorting: false,
-    cell: ({ row }) => (
-      <span className="font-mono font-medium">{row.getValue<string>("instrument")}</span>
-    ),
+    cell: ({ row }) => {
+      const instrument = row.getValue<string>("instrument")
+      const type = classifyInstrument(instrument)
+      return (
+        <Link
+          href={getInstrumentRoute(instrument, type)}
+          className="font-mono font-medium text-primary hover:underline cursor-pointer"
+        >
+          {instrument}
+        </Link>
+      )
+    },
   },
   {
     accessorKey: "side",
@@ -244,6 +286,7 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = React.useState("")
   const [venueFilter, setVenueFilter] = React.useState("all")
   const [statusFilter, setStatusFilter] = React.useState("all")
+  const [instrumentTypeFilter, setInstrumentTypeFilter] = React.useState<InstrumentType>("All")
 
   // Coerce API response to typed array
   const orders: OrderRecord[] = React.useMemo(() => {
@@ -283,8 +326,12 @@ export default function OrdersPage() {
       result = result.filter(o => o.status.toUpperCase() === statusFilter)
     }
 
+    if (instrumentTypeFilter !== "All") {
+      result = result.filter(o => classifyInstrument(o.instrument) === instrumentTypeFilter)
+    }
+
     return result
-  }, [orders, searchQuery, venueFilter, statusFilter])
+  }, [orders, searchQuery, venueFilter, statusFilter, instrumentTypeFilter])
 
   // Unique values for filters
   const uniqueVenues = React.useMemo(() =>
@@ -343,6 +390,7 @@ export default function OrdersPage() {
     setSearchQuery("")
     setVenueFilter("all")
     setStatusFilter("all")
+    setInstrumentTypeFilter("All")
   }, [])
 
   // Summary counts
@@ -421,6 +469,21 @@ export default function OrdersPage() {
         <Badge variant="outline" className="text-xs border-[var(--status-live)] text-[var(--status-live)]">
           {summary.filled} Filled
         </Badge>
+      </div>
+
+      {/* Instrument Type Filter */}
+      <div className="flex items-center gap-1 flex-wrap">
+        {INSTRUMENT_TYPES.map((type) => (
+          <Button
+            key={type}
+            variant={instrumentTypeFilter === type ? "default" : "outline"}
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={() => setInstrumentTypeFilter(type)}
+          >
+            {type}
+          </Button>
+        ))}
       </div>
 
       {/* Unified Filter Bar */}

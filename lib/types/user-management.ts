@@ -152,3 +152,25 @@ export interface AccessRequest {
   created_at: string
   updated_at: string
 }
+
+export interface Permission {
+  key: string
+  label: string
+  description: string
+  internal_only: boolean
+}
+
+export interface PermissionCategory {
+  key: string
+  label: string
+  description: string
+  permissions: Permission[]
+}
+
+export interface PermissionDomain {
+  key: string
+  label: string
+  description: string
+  icon: string
+  categories: PermissionCategory[]
+}

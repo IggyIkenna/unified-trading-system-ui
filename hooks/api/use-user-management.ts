@@ -14,6 +14,7 @@ import type {
   HealthCheckResult,
   HealthCheckHistoryEntry,
   AccessRequest,
+  PermissionDomain,
 } from "@/lib/types/user-management"
 
 const BASE = "/api/auth/provisioning"
@@ -193,5 +194,21 @@ export function useReviewRequest() {
         body: JSON.stringify({ action, admin_note: admin_note ?? "" }),
       }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["provisioning", "access-requests"] }),
+  })
+}
+
+export function usePermissionCatalogue() {
+  return useQuery({
+    queryKey: ["catalogue"],
+    queryFn: () => fetchJson<{ domains: PermissionDomain[] }>(`${BASE.replace('/provisioning', '')}/catalogue`),
+    staleTime: Infinity, // Catalogue is static
+  })
+}
+
+export function useSearchPermissions(query: string) {
+  return useQuery({
+    queryKey: ["catalogue", "search", query],
+    queryFn: () => fetchJson<{ results: Array<{ domain: string; domain_label: string; category: string; category_label: string; key: string; label: string; description: string; internal_only: string }>; total: number }>(`${BASE.replace('/provisioning', '')}/catalogue/search/${encodeURIComponent(query)}`),
+    enabled: query.length >= 2,
   })
 }

@@ -30,11 +30,14 @@ import {
   Shield,
   ArrowDown,
   TrendingUp,
+  Send,
+  Globe,
+  Wallet,
 } from "lucide-react"
 
 // ---------- Types ----------
 
-type DeFiTab = "lending" | "swap" | "liquidity" | "staking" | "flash"
+type DeFiTab = "lending" | "swap" | "liquidity" | "staking" | "flash" | "transfer"
 
 interface LendingProtocol {
   name: string
@@ -801,6 +804,239 @@ function FlashLoanTab() {
   )
 }
 
+// ---------- Transfer Tab ----------
+
+const DEFI_CHAINS = ["Ethereum", "Arbitrum", "Optimism", "Base", "Polygon"] as const
+const DEFI_TOKENS = ["ETH", "USDC", "USDT", "WETH", "WBTC", "DAI"] as const
+const BRIDGE_PROTOCOLS = ["Auto (best rate)", "Across", "Stargate", "Hop"] as const
+
+const MOCK_TOKEN_BALANCES: Record<string, number> = {
+  ETH: 12.45, USDC: 34_520, USDT: 18_200, WETH: 5.2, WBTC: 0.85, DAI: 12_100,
+}
+
+function TransferTab() {
+  const [mode, setMode] = React.useState<"send" | "bridge">("send")
+  const [toAddress, setToAddress] = React.useState("")
+  const [chain, setChain] = React.useState<string>(DEFI_CHAINS[0])
+  const [fromChain, setFromChain] = React.useState<string>(DEFI_CHAINS[0])
+  const [toChain, setToChain] = React.useState<string>(DEFI_CHAINS[1])
+  const [token, setToken] = React.useState<string>(DEFI_TOKENS[0])
+  const [amount, setAmount] = React.useState("")
+  const [bridgeProtocol, setBridgeProtocol] = React.useState<string>(BRIDGE_PROTOCOLS[0])
+
+  const amountNum = parseFloat(amount) || 0
+  const balance = MOCK_TOKEN_BALANCES[token] ?? 0
+
+  return (
+    <div className="space-y-4">
+      {/* Mode Toggle */}
+      <div className="grid grid-cols-2 gap-1">
+        <Button
+          variant={mode === "send" ? "default" : "outline"}
+          size="sm"
+          className="text-xs h-8 gap-1"
+          onClick={() => setMode("send")}
+        >
+          <Send className="size-3" />
+          Send
+        </Button>
+        <Button
+          variant={mode === "bridge" ? "default" : "outline"}
+          size="sm"
+          className="text-xs h-8 gap-1"
+          onClick={() => setMode("bridge")}
+        >
+          <Globe className="size-3" />
+          Bridge
+        </Button>
+      </div>
+
+      {mode === "send" ? (
+        /* ---------- Send Mode ---------- */
+        <div className="space-y-4">
+          {/* Connected Wallet */}
+          <div className="p-3 rounded-lg border bg-muted/30">
+            <div className="flex items-center gap-2 text-xs">
+              <Wallet className="size-3.5 text-muted-foreground" />
+              <span className="text-muted-foreground">From Wallet</span>
+              <code className="ml-auto font-mono text-[11px]">0x7a23...4f91</code>
+            </div>
+          </div>
+
+          {/* To Address */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">To Address</label>
+            <Input
+              placeholder="0x... or ENS name"
+              value={toAddress}
+              onChange={(e) => setToAddress(e.target.value)}
+              className="font-mono text-xs"
+            />
+          </div>
+
+          {/* Chain */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Chain</label>
+            <Select value={chain} onValueChange={setChain}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {DEFI_CHAINS.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Token */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Token</label>
+            <Select value={token} onValueChange={setToken}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {DEFI_TOKENS.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    <span className="font-mono">{t}</span>
+                    <span className="text-[10px] text-muted-foreground ml-2">
+                      Bal: {(MOCK_TOKEN_BALANCES[t] ?? 0).toLocaleString()}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Amount */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-muted-foreground">Amount</label>
+              <span className="text-[10px] text-muted-foreground font-mono">
+                Balance: {balance.toLocaleString()} {token}
+              </span>
+            </div>
+            <Input
+              type="number"
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="font-mono"
+            />
+          </div>
+
+          {/* Gas Estimate */}
+          <div className="p-3 rounded-lg border bg-muted/30">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground flex items-center gap-1">
+                <Fuel className="size-3" />
+                Gas Estimate
+              </span>
+              <span className="font-mono">~0.0008 ETH ($2.76)</span>
+            </div>
+          </div>
+
+          <Button className="w-full" disabled={amountNum <= 0 || amountNum > balance || !toAddress}>
+            <Send className="size-3.5 mr-1.5" />
+            Send {token}
+          </Button>
+        </div>
+      ) : (
+        /* ---------- Bridge Mode ---------- */
+        <div className="space-y-4">
+          {/* From / To Chain */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground">From Chain</label>
+              <Select value={fromChain} onValueChange={setFromChain}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DEFI_CHAINS.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs text-muted-foreground">To Chain</label>
+              <Select value={toChain} onValueChange={setToChain}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DEFI_CHAINS.map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Bridge Protocol */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Bridge Protocol</label>
+            <Select value={bridgeProtocol} onValueChange={setBridgeProtocol}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {BRIDGE_PROTOCOLS.map((p) => (
+                  <SelectItem key={p} value={p}>{p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Token */}
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Token</label>
+            <Select value={token} onValueChange={setToken}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {DEFI_TOKENS.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    <span className="font-mono">{t}</span>
+                    <span className="text-[10px] text-muted-foreground ml-2">
+                      Bal: {(MOCK_TOKEN_BALANCES[t] ?? 0).toLocaleString()}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Amount */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs text-muted-foreground">Amount</label>
+              <span className="text-[10px] text-muted-foreground font-mono">
+                Balance: {balance.toLocaleString()} {token}
+              </span>
+            </div>
+            <Input
+              type="number"
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="font-mono"
+            />
+          </div>
+
+          {/* Bridge Info */}
+          <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Bridge Fee</span>
+              <span className="font-mono">~0.05% ($1.72)</span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Estimated Time</span>
+              <span>~2-15 min</span>
+            </div>
+          </div>
+
+          <Button className="w-full" disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain}>
+            <Globe className="size-3.5 mr-1.5" />
+            Bridge {token}
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ---------- Main Component ----------
 
 interface DeFiOpsPanelProps {
@@ -819,7 +1055,7 @@ export function DeFiOpsPanel({ className }: DeFiOpsPanelProps) {
       </CardHeader>
       <CardContent className="pt-0">
         <Tabs defaultValue="lending" className="w-full">
-          <TabsList className="w-full grid grid-cols-5 h-8">
+          <TabsList className="w-full grid grid-cols-6 h-8">
             <TabsTrigger value="lending" className="text-xs gap-1">
               <Landmark className="size-3" />
               Lend
@@ -840,6 +1076,10 @@ export function DeFiOpsPanel({ className }: DeFiOpsPanelProps) {
               <Zap className="size-3" />
               Flash
             </TabsTrigger>
+            <TabsTrigger value="transfer" className="text-xs gap-1">
+              <Send className="size-3" />
+              Transfer
+            </TabsTrigger>
           </TabsList>
 
           <div className="mt-4">
@@ -857,6 +1097,9 @@ export function DeFiOpsPanel({ className }: DeFiOpsPanelProps) {
             </TabsContent>
             <TabsContent value="flash" className="mt-0">
               <FlashLoanTab />
+            </TabsContent>
+            <TabsContent value="transfer" className="mt-0">
+              <TransferTab />
             </TabsContent>
           </div>
         </Tabs>

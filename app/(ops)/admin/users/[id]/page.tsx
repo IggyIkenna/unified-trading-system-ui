@@ -74,6 +74,10 @@ export default function UserDetailPage() {
             <Mail className="h-3 w-3" /> {user.email}
             {user.github_handle && <><Github className="h-3 w-3 ml-2" /> {user.github_handle}</>}
           </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
+            <span>Provisioned: {new Date(user.provisioned_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+            <span>Last modified: {new Date(user.last_modified).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
+          </div>
         </div>
         <div className="flex gap-2">
           <Link href={`/admin/users/${params.id}/modify`}>
@@ -90,6 +94,9 @@ export default function UserDetailPage() {
         <Badge variant={user.status === "active" ? "default" : "secondary"}>{user.status}</Badge>
         <Badge variant={isInternal ? "default" : "outline"}>{isInternal ? "Internal" : "External"}</Badge>
         <Badge variant="outline">{user.role}</Badge>
+        {user.access_template && (
+          <Badge variant="outline">Template: {user.access_template.name}</Badge>
+        )}
         {pendingRequests.length > 0 && (
           <Badge variant="destructive">{pendingRequests.length} pending request(s)</Badge>
         )}
@@ -130,9 +137,16 @@ export default function UserDetailPage() {
             </CardHeader>
             <CardContent className="space-y-2">
               {(Object.entries(user.services) as [string, ProvisioningStatus][]).map(([svc, status]) => (
-                <div key={svc} className="flex items-center justify-between">
-                  <span className="text-sm">{SERVICE_LABELS[svc] ?? svc}</span>
-                  {statusBadge(status)}
+                <div key={svc}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">{SERVICE_LABELS[svc] ?? svc}</span>
+                    {statusBadge(status)}
+                  </div>
+                  {user.service_messages?.[svc as keyof typeof user.services] && (
+                    <p className="text-xs text-muted-foreground ml-1 mt-0.5">
+                      {user.service_messages[svc as keyof typeof user.services]}
+                    </p>
+                  )}
                 </div>
               ))}
             </CardContent>
@@ -174,23 +188,39 @@ export default function UserDetailPage() {
         </Card>
       )}
 
-      {/* Workflow History (only if there are any) */}
-      {(workflows.data?.runs?.length ?? 0) > 0 && (
-        <Card>
-          <CardHeader><CardTitle className="text-base">Provisioning History</CardTitle></CardHeader>
-          <CardContent>
-            {workflows.data?.runs.map((run) => (
+      {/* Workflow History */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Workflow History</CardTitle></CardHeader>
+        <CardContent>
+          {workflows.isLoading ? (
+            <p className="text-sm text-muted-foreground">Loading workflows...</p>
+          ) : (workflows.data?.runs?.length ?? 0) === 0 ? (
+            <p className="text-sm text-muted-foreground">No workflow runs recorded.</p>
+          ) : (
+            workflows.data?.runs.map((run) => (
               <div key={run.id} className="flex items-center justify-between py-2 border-b last:border-0 text-sm">
-                <span className="font-medium">{run.run_type}</span>
+                <span className="font-medium capitalize">{run.run_type.replace(/_/g, " ")}</span>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline">{run.status}</Badge>
-                  <span className="text-xs text-muted-foreground">{run.created_at}</span>
+                  <Badge
+                    variant={
+                      run.status === "succeeded" || run.status === "completed"
+                        ? "default"
+                        : run.status === "failed"
+                          ? "destructive"
+                          : "secondary"
+                    }
+                  >
+                    {run.status}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(run.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                  </span>
                 </div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+            ))
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

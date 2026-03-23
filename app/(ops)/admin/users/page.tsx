@@ -123,6 +123,7 @@ function UserSection({
               <th className="py-2 px-4 font-medium">Email</th>
               <th className="py-2 px-4 font-medium">Role</th>
               <th className="py-2 px-4 font-medium">Access</th>
+              <th className="py-2 px-4 font-medium">Since</th>
               <th className="py-2 px-4 font-medium">Status</th>
               <th className="py-2 px-4 font-medium w-8"></th>
             </tr>
@@ -157,6 +158,9 @@ function UserSection({
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
                     </div>
+                  </td>
+                  <td className="py-2.5 px-4 text-muted-foreground text-xs">
+                    {user.provisioned_at ? new Date(user.provisioned_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
                   </td>
                   <td className="py-2.5 px-4">
                     <div className="flex items-center gap-1.5">

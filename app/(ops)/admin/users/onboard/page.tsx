@@ -9,8 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, UserPlus, Mail, Shield, Briefcase } from "lucide-react"
-import { useOnboardUser } from "@/hooks/api/use-user-management"
+import { ArrowLeft, UserPlus, Mail, Shield, Briefcase, ChevronRight, ChevronDown, Lock } from "lucide-react"
+import { useOnboardUser, usePermissionCatalogue } from "@/hooks/api/use-user-management"
 import type { ProvisioningRole } from "@/lib/types/user-management"
 
 const INTERNAL_ROLES: { value: ProvisioningRole; label: string }[] = [
@@ -27,37 +27,6 @@ const EXTERNAL_ROLES: { value: ProvisioningRole; label: string }[] = [
   { value: "shareholder", label: "Shareholder — shareholder view" },
 ]
 
-// Service access — granular entitlements the admin can toggle individually
-const SERVICE_ACCESS = [
-  {
-    category: "Data",
-    items: [
-      { key: "data-basic", label: "Data (Basic)", desc: "180 CeFi instruments, daily candles" },
-      { key: "data-pro", label: "Data (Pro)", desc: "2400+ instruments, CeFi/TradFi/DeFi, tick data, full coverage" },
-    ],
-  },
-  {
-    category: "Research & Backtesting",
-    items: [
-      { key: "ml-full", label: "ML & Models", desc: "Model training, experiments, feature store, deployment" },
-      { key: "strategy-full", label: "Strategy Platform", desc: "Backtesting, strategy candidates, comparison, handoff" },
-    ],
-  },
-  {
-    category: "Trading & Execution",
-    items: [
-      { key: "execution-basic", label: "Execution (Basic)", desc: "TWAP, VWAP algos, basic venue routing" },
-      { key: "execution-full", label: "Execution (Full)", desc: "All algos, SOR, dark pools, TCA, custom strategies" },
-    ],
-  },
-  {
-    category: "Reporting & Regulatory",
-    items: [
-      { key: "reporting", label: "Reporting & Analytics", desc: "P&L, settlement, reconciliation, regulatory, client reporting" },
-    ],
-  },
-]
-
 // Internal provisioning services — Slack, GitHub, M365, GCP, AWS
 const INTERNAL_SERVICES = [
   { key: "slack", label: "Slack" },
@@ -70,6 +39,7 @@ const INTERNAL_SERVICES = [
 export default function OnboardUserPage() {
   const router = useRouter()
   const onboard = useOnboardUser()
+  const { data: catalogueData, isLoading: catalogueLoading } = usePermissionCatalogue()
 
   // Step 1: Identity
   const [name, setName] = React.useState("")
@@ -81,8 +51,10 @@ export default function OnboardUserPage() {
   const [createAuthEmail, setCreateAuthEmail] = React.useState(true)
   const [githubHandle, setGithubHandle] = React.useState("")
 
-  // Step 3: Service access (granular)
+  // Step 3: Service access (granular) — driven by catalogue
   const [selectedAccess, setSelectedAccess] = React.useState<string[]>([])
+  const [expandedDomains, setExpandedDomains] = React.useState<Set<string>>(new Set())
+  const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(new Set())
 
   // Step 4: Internal provisioning
   const [selectedServices, setSelectedServices] = React.useState<string[]>(
@@ -107,6 +79,30 @@ export default function OnboardUserPage() {
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
     )
   }
+
+  const toggleDomain = (key: string) => {
+    setExpandedDomains((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  const toggleCategory = (domainKey: string, catKey: string) => {
+    const compositeKey = `${domainKey}:${catKey}`
+    setExpandedCategories((prev) => {
+      const next = new Set(prev)
+      if (next.has(compositeKey)) next.delete(compositeKey)
+      else next.add(compositeKey)
+      return next
+    })
+  }
+
+  // Filter domains: hide internal-services for external users
+  const domains = (catalogueData?.domains ?? []).filter(
+    (d) => userType === "internal" || !d.categories.every((c) => c.permissions.every((p) => p.internal_only))
+  )
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -223,7 +219,7 @@ export default function OnboardUserPage() {
             </CardContent>
           </Card>
 
-          {/* Step 2: Service Access */}
+          {/* Step 2: Service Access — catalogue-driven */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
@@ -231,32 +227,89 @@ export default function OnboardUserPage() {
               </CardTitle>
               <CardDescription>
                 Select which apps and services this user can access.
-                Choose individually or select multiple.
+                Expand domains and categories to pick individual permissions.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-5">
-              {SERVICE_ACCESS.map((cat) => (
-                <div key={cat.category}>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2">{cat.category}</h3>
-                  <div className="space-y-2">
-                    {cat.items.map((item) => (
-                      <div key={item.key} className="flex items-start gap-3 py-1">
-                        <Checkbox
-                          id={`access-${item.key}`}
-                          checked={selectedAccess.includes(item.key)}
-                          onCheckedChange={() => toggleAccess(item.key)}
-                        />
-                        <div>
-                          <Label htmlFor={`access-${item.key}`} className="text-sm cursor-pointer font-medium">
-                            {item.label}
-                          </Label>
-                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+            <CardContent className="space-y-3">
+              {catalogueLoading ? (
+                <p className="text-sm text-muted-foreground">Loading catalogue...</p>
+              ) : (
+                domains.map((domain) => {
+                  const isDomainExpanded = expandedDomains.has(domain.key)
+                  // Count selected permissions in this domain
+                  const domainSelectedCount = domain.categories.reduce(
+                    (sum, cat) => sum + cat.permissions.filter((p) => selectedAccess.includes(p.key)).length,
+                    0
+                  )
+                  return (
+                    <div key={domain.key} className="border rounded-md">
+                      <button
+                        type="button"
+                        onClick={() => toggleDomain(domain.key)}
+                        className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted/50 transition-colors text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          {isDomainExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                          <span className="text-sm font-medium">{domain.label}</span>
+                          <span className="text-xs text-muted-foreground">{domain.description}</span>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+                        {domainSelectedCount > 0 && (
+                          <Badge variant="default" className="text-xs">{domainSelectedCount} selected</Badge>
+                        )}
+                      </button>
+                      {isDomainExpanded && (
+                        <div className="px-3 pb-3 space-y-2">
+                          {domain.categories.map((cat) => {
+                            const compositeKey = `${domain.key}:${cat.key}`
+                            const isCatExpanded = expandedCategories.has(compositeKey)
+                            // Filter out internal_only permissions for external users
+                            const visiblePerms = userType === "internal"
+                              ? cat.permissions
+                              : cat.permissions.filter((p) => !p.internal_only)
+                            if (visiblePerms.length === 0) return null
+                            return (
+                              <div key={cat.key} className="ml-4">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleCategory(domain.key, cat.key)}
+                                  className="w-full flex items-center gap-2 py-1 text-sm hover:bg-muted/30 rounded px-2 transition-colors text-left"
+                                >
+                                  {isCatExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                                  <span className="font-medium">{cat.label}</span>
+                                  <span className="text-xs text-muted-foreground">({visiblePerms.length})</span>
+                                </button>
+                                {isCatExpanded && (
+                                  <div className="ml-5 space-y-1 pb-1">
+                                    {visiblePerms.map((perm) => (
+                                      <div key={perm.key} className="flex items-start gap-3 py-1">
+                                        <Checkbox
+                                          id={`access-${domain.key}-${cat.key}-${perm.key}`}
+                                          checked={selectedAccess.includes(perm.key)}
+                                          onCheckedChange={() => toggleAccess(perm.key)}
+                                        />
+                                        <div>
+                                          <Label
+                                            htmlFor={`access-${domain.key}-${cat.key}-${perm.key}`}
+                                            className="text-sm cursor-pointer font-medium flex items-center gap-1"
+                                          >
+                                            {perm.label}
+                                            {perm.internal_only && <Lock className="h-3 w-3 text-muted-foreground" />}
+                                          </Label>
+                                          <p className="text-xs text-muted-foreground">{perm.description}</p>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })
+              )}
             </CardContent>
           </Card>
 

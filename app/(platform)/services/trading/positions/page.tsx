@@ -59,6 +59,44 @@ import Link from "next/link"
 // DeFi venues that may have health factors
 const DEFI_VENUES = new Set(["AAVE_V3", "COMPOUND_V3", "AAVE", "COMPOUND", "MORPHO", "EULER"])
 
+// Instrument type classification
+type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction"
+
+const INSTRUMENT_TYPES: InstrumentType[] = ["All", "Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"]
+
+function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> {
+  const upper = instrument.toUpperCase()
+  // Options: strike+C/P suffix or contains OPTIONS
+  if (/\d+-[CP]$/.test(upper) || upper.includes("OPTIONS")) return "Options"
+  // Perp
+  if (upper.includes("PERPETUAL") || upper.includes("PERP")) return "Perp"
+  // Dated futures: e.g. BTC-26JUN26 (asset-datecode, no strike/C/P)
+  if (/^[A-Z]+-\d{1,2}[A-Z]{3}\d{2,4}$/.test(upper)) return "Futures"
+  // DeFi
+  if (upper.includes("AAVE") || upper.includes("UNISWAP") || upper.includes("LIDO") || upper.includes("WALLET:") || upper.includes("MORPHO")) return "DeFi"
+  // Prediction
+  if (upper.includes("BETFAIR") || upper.includes("POLYMARKET") || upper.includes("KALSHI") || upper.includes("NBA:") || upper.includes("NFL:") || upper.includes("EPL:") || upper.includes("LALIGA:")) return "Prediction"
+  // Default → Spot
+  return "Spot"
+}
+
+function getInstrumentRoute(instrument: string, type: Exclude<InstrumentType, "All">): string {
+  const asset = instrument.split("-")[0].split(":")[0].toUpperCase()
+  switch (type) {
+    case "Spot":
+    case "Perp":
+      return "/services/trading/terminal"
+    case "Options":
+      return `/services/trading/options?tab=chain&asset=${asset}`
+    case "Futures":
+      return `/services/trading/options?tab=futures&asset=${asset}`
+    case "DeFi":
+      return "/services/trading/defi"
+    case "Prediction":
+      return "/services/trading/sports"
+  }
+}
+
 // Position shape from the API
 interface PositionRecord {
   id: string
@@ -100,6 +138,7 @@ function PositionsPageContent() {
   const [venueFilter, setVenueFilter] = React.useState("all")
   const [sideFilter, setSideFilter] = React.useState<"all" | "LONG" | "SHORT">("all")
   const [strategyFilter, setStrategyFilter] = React.useState(strategyIdFilter || "all")
+  const [instrumentTypeFilter, setInstrumentTypeFilter] = React.useState<InstrumentType>("All")
   const [balancesOpen, setBalancesOpen] = React.useState(false)
 
   // Real-time PnL updates via WebSocket
@@ -185,8 +224,12 @@ function PositionsPageContent() {
       result = result.filter(p => p.side === sideFilter)
     }
 
+    if (instrumentTypeFilter !== "All") {
+      result = result.filter(p => classifyInstrument(p.instrument) === instrumentTypeFilter)
+    }
+
     return result
-  }, [positions, searchQuery, strategyFilter, venueFilter, sideFilter])
+  }, [positions, searchQuery, strategyFilter, venueFilter, sideFilter, instrumentTypeFilter])
 
   // Summary stats
   const summary = React.useMemo(() => ({
@@ -270,6 +313,7 @@ function PositionsPageContent() {
     setStrategyFilter("all")
     setVenueFilter("all")
     setSideFilter("all")
+    setInstrumentTypeFilter("All")
   }, [])
 
   const positionExportColumns: ExportColumn[] = React.useMemo(() => [
@@ -315,6 +359,21 @@ function PositionsPageContent() {
         onReset={handleFilterReset}
         className="mb-6 -mx-6 rounded-none"
       />
+
+      {/* Instrument Type Filter */}
+      <div className="flex items-center gap-1 mb-4 flex-wrap">
+        {INSTRUMENT_TYPES.map((type) => (
+          <Button
+            key={type}
+            variant={instrumentTypeFilter === type ? "default" : "outline"}
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={() => setInstrumentTypeFilter(type)}
+          >
+            {type}
+          </Button>
+        ))}
+      </div>
 
       {/* Account Balances - Collapsible */}
       <Collapsible open={balancesOpen} onOpenChange={setBalancesOpen} className="mb-6">
@@ -539,7 +598,12 @@ function PositionsPageContent() {
                 <TableRow key={pos.id} className="hover:bg-muted/30">
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-mono font-medium">{pos.instrument}</span>
+                      <Link
+                        href={getInstrumentRoute(pos.instrument, classifyInstrument(pos.instrument))}
+                        className="font-mono font-medium text-primary hover:underline cursor-pointer"
+                      >
+                        {pos.instrument}
+                      </Link>
                       <span className="text-xs text-muted-foreground">{pos.strategy_name}</span>
                     </div>
                   </TableCell>
@@ -615,7 +679,7 @@ function PositionsPageContent() {
               ))}
               {filteredPositions.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                     No positions match your filters
                   </TableCell>
                 </TableRow>

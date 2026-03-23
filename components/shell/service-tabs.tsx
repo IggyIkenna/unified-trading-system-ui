@@ -116,7 +116,9 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/trading/overview" },
   { label: "Terminal", href: "/services/trading/terminal" },
   { label: "DeFi Ops", href: "/services/trading/defi" },
+  { label: "Options & Futures", href: "/services/trading/options" },
   { label: "Sports", href: "/services/trading/sports" },
+  { label: "Predictions", href: "/services/trading/predictions" },
   { label: "Bundles", href: "/services/trading/bundles" },
   { label: "Instructions", href: "/services/trading/instructions" },
   { label: "Positions", href: "/services/trading/positions" },
@@ -159,6 +161,7 @@ export const ADMIN_TABS: ServiceTab[] = [
   { label: "Users", href: "/admin/users" },
   { label: "Access Requests", href: "/admin/users/requests" },
   { label: "Onboard", href: "/admin/users/onboard" },
+  { label: "Catalogue", href: "/admin/users/catalogue" },
 ]
 
 // Alias — user management IS the admin section

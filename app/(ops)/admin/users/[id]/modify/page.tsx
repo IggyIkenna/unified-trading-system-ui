@@ -7,12 +7,31 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, Save } from "lucide-react"
 import { useProvisionedUser, useModifyUser, useAccessTemplates } from "@/hooks/api/use-user-management"
 import type { ProvisioningRole } from "@/lib/types/user-management"
 
 const ROLES: ProvisioningRole[] = [
   "admin", "collaborator", "board", "client", "shareholder", "accounting", "operations", "investor"
+]
+
+const SERVICE_ACCESS = [
+  { category: "Data", items: [
+    { key: "data-basic", label: "Data (Basic)", desc: "180 CeFi instruments, daily candles" },
+    { key: "data-pro", label: "Data (Pro)", desc: "2400+ instruments, tick data, full coverage" },
+  ]},
+  { category: "Research & Backtesting", items: [
+    { key: "ml-full", label: "ML & Models", desc: "Model training, experiments, deployment" },
+    { key: "strategy-full", label: "Strategy Platform", desc: "Backtesting, candidates, handoff" },
+  ]},
+  { category: "Trading & Execution", items: [
+    { key: "execution-basic", label: "Execution (Basic)", desc: "TWAP, VWAP, basic routing" },
+    { key: "execution-full", label: "Execution (Full)", desc: "All algos, SOR, dark pools, TCA" },
+  ]},
+  { category: "Reporting", items: [
+    { key: "reporting", label: "Reporting & Analytics", desc: "P&L, settlement, reconciliation, regulatory" },
+  ]},
 ]
 
 export default function ModifyUserPage() {
@@ -26,14 +45,22 @@ export default function ModifyUserPage() {
   const [role, setRole] = React.useState<ProvisioningRole | "">("")
   const [githubHandle, setGithubHandle] = React.useState("")
   const [templateId, setTemplateId] = React.useState("")
+  const [productSlugs, setProductSlugs] = React.useState<string[]>([])
 
   React.useEffect(() => {
     if (user) {
       setRole(user.role)
       setGithubHandle(user.github_handle ?? "")
       setTemplateId(user.access_template_id ?? "")
+      setProductSlugs(user.product_slugs ?? [])
     }
   }, [user])
+
+  const toggleSlug = (key: string) => {
+    setProductSlugs((prev) =>
+      prev.includes(key) ? prev.filter((s) => s !== key) : [...prev, key]
+    )
+  }
 
   if (!user) return <div className="p-6 text-muted-foreground">Loading...</div>
 
@@ -45,6 +72,7 @@ export default function ModifyUserPage() {
         role: role as ProvisioningRole,
         github_handle: githubHandle || undefined,
         access_template_id: templateId || undefined,
+        product_slugs: productSlugs,
       },
       { onSuccess: () => router.push(`/admin/users/${params.id}`) }
     )
@@ -86,6 +114,30 @@ export default function ModifyUserPage() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-4 pt-2">
+              <Label className="text-base font-semibold">Entitlements</Label>
+              {SERVICE_ACCESS.map((cat) => (
+                <div key={cat.category} className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">{cat.category}</p>
+                  {cat.items.map((item) => (
+                    <label
+                      key={item.key}
+                      className="flex items-start gap-3 cursor-pointer rounded-md border p-3 hover:bg-muted/30"
+                    >
+                      <Checkbox
+                        checked={productSlugs.includes(item.key)}
+                        onCheckedChange={() => toggleSlug(item.key)}
+                        className="mt-0.5"
+                      />
+                      <div>
+                        <span className="text-sm font-medium">{item.label}</span>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              ))}
             </div>
             <Button type="submit" disabled={modify.isPending}>
               <Save className="h-4 w-4 mr-2" />

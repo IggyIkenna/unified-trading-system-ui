@@ -12,6 +12,8 @@ import { MOCK_EXECUTION_ALGOS, MOCK_VENUES, MOCK_RECENT_ORDERS, MOCK_ALGO_BACKTE
 import { MODEL_FAMILIES, EXPERIMENTS, TRAINING_RUNS, MODEL_VERSIONS, DATASET_SNAPSHOTS, FEATURE_SET_VERSIONS, VALIDATION_PACKAGES, DEPLOYMENT_CANDIDATES, LIVE_DEPLOYMENTS } from "@/lib/ml-mock-data"
 import { STRATEGY_TEMPLATES, BACKTEST_RUNS, STRATEGY_CANDIDATES, STRATEGY_ALERTS } from "@/lib/strategy-platform-mock-data"
 import { MOCK_CATALOGUE, MOCK_INSTRUMENTS, MOCK_SHARD_AVAILABILITY } from "@/lib/data-service-mock-data"
+import { getState as getProvisioningState, addUser, updateUser, addRequest, updateRequest } from "@/lib/api/mock-provisioning-state"
+import type { MockUser } from "@/lib/api/mock-provisioning-state"
 
 export const MOCK_MODE = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true"
 
@@ -293,15 +295,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- Execution ---
   if (route === "/api/execution/orders") {
     // Generate 24 TCA-enriched orders across venues and algos
-    const tcaVenues = ["binance", "okx", "hyperliquid", "deribit"]
+    const tcaVenues = ["binance", "okx", "hyperliquid", "deribit", "aave", "uniswap", "polymarket", "betfair"]
     const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"]
-    const tcaInstruments = ["BTC-PERP", "ETH-PERP", "SOL-PERP", "BTC-USDT", "ETH-USDT", "DOGE-USDT", "AVAX-PERP", "LINK-PERP"]
+    const tcaInstruments = ["BTC-PERP", "ETH-PERP", "SOL-PERP", "BTC-USDT", "ETH-USDT", "DOGE-USDT", "BTC-26JUN26", "ETH-26JUN26-60000-C", "AAVE_V3:SUPPLY:USDC", "UNISWAPV3:LP:ETH-USDC", "POLYMARKET:BINARY:BTC-100K@YES", "BETFAIR:EPL:MUN-LIV"]
     const tcaOrders = Array.from({ length: 24 }, (_, i) => {
       const instrument = tcaInstruments[i % tcaInstruments.length]
       const venue = tcaVenues[i % tcaVenues.length]
       const algo = tcaAlgos[i % tcaAlgos.length]
       const side = i % 3 === 0 ? "SELL" : "BUY"
-      const basePrice = instrument.includes("BTC") ? 42000 : instrument.includes("ETH") ? 3200 : instrument.includes("SOL") ? 145 : instrument.includes("DOGE") ? 0.18 : instrument.includes("AVAX") ? 38 : instrument.includes("LINK") ? 16 : 100
+      const basePrice = instrument.includes("BTC") ? 42000 : instrument.includes("ETH") ? 3200 : instrument.includes("SOL") ? 145 : instrument.includes("DOGE") ? 0.18 : instrument.includes("AVAX") ? 38 : instrument.includes("LINK") ? 16 : instrument.includes("AAVE") ? 1 : instrument.includes("UNISWAP") ? 1 : instrument.includes("POLYMARKET") || instrument.includes("BETFAIR") ? 0.65 : 100
       const arrivalPrice = basePrice * (1 + (Math.sin(i * 0.7) * 0.002))
       const slippageBps = parseFloat(((Math.sin(i * 1.3) * 3) + 1.5).toFixed(1))
       const avgFillPrice = arrivalPrice * (1 + slippageBps / 10000 * (side === "BUY" ? 1 : -1))
@@ -793,88 +795,303 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- Chat ---
   if (route.startsWith("/api/chat")) return json({ message: "Mock mode — chat unavailable" })
 
-  // --- Provisioning (user lifecycle management) ---
-  const provisioningUsers = [
-    {
-      id: "admin", firebase_uid: "admin-uid", name: "Admin", email: "admin@odum.internal",
-      role: "admin", github_handle: "odum-admin", product_slugs: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
-      status: "active", provisioned_at: "2026-01-10T09:00:00Z", last_modified: "2026-03-20T12:00:00Z",
-      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
-    },
-    {
-      id: "internal-trader", firebase_uid: "trader-uid", name: "Internal Trader", email: "trader@odum.internal",
-      role: "collaborator", github_handle: "odum-trader", product_slugs: ["data-pro", "execution-full", "strategy-full"],
-      status: "active", provisioned_at: "2026-01-12T09:00:00Z", last_modified: "2026-03-18T15:00:00Z",
-      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
-    },
-    {
-      id: "ops-user", firebase_uid: "ops-uid", name: "Ops Manager", email: "ops@odum.internal",
-      role: "operations", slack_handle: "ops-mgr", product_slugs: ["reporting"],
-      status: "active", provisioned_at: "2026-02-05T09:00:00Z", last_modified: "2026-03-15T10:00:00Z",
-      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
-    },
-    {
-      id: "client-full", firebase_uid: "client-full-uid", name: "Portfolio Manager", email: "pm@alphacapital.com",
-      role: "client", product_slugs: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
-      status: "active", provisioned_at: "2026-02-20T09:00:00Z", last_modified: "2026-03-10T12:00:00Z",
-      services: { github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable", gcp: "not_applicable", aws: "not_applicable", portal: "provisioned" },
-    },
-    {
-      id: "client-data-only", firebase_uid: "client-basic-uid", name: "Data Analyst", email: "analyst@betafund.com",
-      role: "client", product_slugs: ["data-basic"],
-      status: "active", provisioned_at: "2026-03-01T09:00:00Z", last_modified: "2026-03-01T09:00:00Z",
-      services: { github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable", gcp: "not_applicable", aws: "not_applicable", portal: "provisioned" },
-    },
-    {
-      id: "client-premium", firebase_uid: "client-premium-uid", name: "CIO", email: "cio@vertex.com",
-      role: "client", product_slugs: ["data-pro", "execution-full", "strategy-full"],
-      status: "active", provisioned_at: "2026-02-15T09:00:00Z", last_modified: "2026-03-05T09:00:00Z",
-      services: { github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable", gcp: "not_applicable", aws: "not_applicable", portal: "provisioned" },
-    },
-  ]
+  // --- Permission Catalogue ---
 
-  // Matches auth-api MockStateStore access_requests seed
-  const provisioningRequests = [
-    {
-      id: "req-001", requester_email: "newtrader@vertex.com", requester_name: "New Trader",
-      org_id: "vertex", requested_entitlements: ["execution-full", "ml-full"],
-      reason: "Need execution and ML access for Q2 strategy deployment",
-      status: "pending", admin_note: "", reviewed_by: "",
-      created_at: "2026-03-22T14:00:00Z", updated_at: "2026-03-22T14:00:00Z",
-    },
-    {
-      id: "req-002", requester_email: "analyst@betafund.com", requester_name: "Beta Researcher",
-      org_id: "beta", requested_entitlements: ["data-pro", "strategy-full"],
-      reason: "Upgrading from data-basic to run backtests",
-      status: "pending", admin_note: "", reviewed_by: "",
-      created_at: "2026-03-21T10:00:00Z", updated_at: "2026-03-21T10:00:00Z",
-    },
-    {
-      id: "req-003", requester_email: "ops@alphacapital.com", requester_name: "Alpha Ops Manager",
-      org_id: "acme", requested_entitlements: ["reporting"], requested_role: "operations",
-      reason: "Need reporting access for compliance audit",
-      status: "approved", admin_note: "Approved — compliance requirement", reviewed_by: "admin@odum.internal",
-      created_at: "2026-03-19T09:00:00Z", updated_at: "2026-03-20T11:00:00Z",
-    },
-  ]
+  const MOCK_PERMISSION_CATALOGUE = {
+    domains: [
+      {
+        key: "platform", label: "Platform Services", description: "Which app sections accessible", icon: "Shield",
+        categories: [
+          {
+            key: "services", label: "Service Access", description: "UI and API domain access",
+            permissions: [
+              { key: "data", label: "Data", description: "Instrument catalogue, market data", internal_only: false },
+              { key: "research", label: "Research & Backtesting", description: "ML, strategy, features", internal_only: false },
+              { key: "trading", label: "Trading", description: "Live trading terminal", internal_only: false },
+              { key: "execution", label: "Execution", description: "TCA, algos, venues", internal_only: false },
+              { key: "observe", label: "Observe", description: "Risk, alerts, health", internal_only: false },
+              { key: "manage", label: "Manage", description: "Clients, mandates, compliance", internal_only: false },
+              { key: "reports", label: "Reports", description: "P&L, settlement, regulatory", internal_only: false },
+            ],
+          },
+          {
+            key: "admin", label: "Admin Access", description: "Internal operations",
+            permissions: [
+              { key: "admin-dashboard", label: "Admin Dashboard", description: "System admin", internal_only: true },
+              { key: "user-management", label: "User Management", description: "User lifecycle", internal_only: true },
+              { key: "devops", label: "DevOps", description: "Deployments", internal_only: true },
+            ],
+          },
+        ],
+      },
+      {
+        key: "data", label: "Data Access", description: "Venues, instruments, data types", icon: "Database",
+        categories: [
+          {
+            key: "venues", label: "Venues", description: "Exchange and data source access",
+            permissions: [
+              { key: "binance", label: "Binance", description: "CeFi exchange", internal_only: false },
+              { key: "coinbase", label: "Coinbase", description: "CeFi exchange", internal_only: false },
+              { key: "bybit", label: "Bybit", description: "CeFi exchange", internal_only: false },
+              { key: "okx", label: "OKX", description: "CeFi exchange", internal_only: false },
+              { key: "deribit", label: "Deribit", description: "CeFi derivatives", internal_only: false },
+              { key: "databento", label: "Databento", description: "TradFi data", internal_only: false },
+              { key: "tardis", label: "Tardis", description: "TradFi tick data", internal_only: false },
+              { key: "yahoo-finance", label: "Yahoo Finance", description: "TradFi equities", internal_only: false },
+              { key: "aave-v3", label: "Aave V3", description: "DeFi lending", internal_only: false },
+              { key: "uniswap-v3", label: "Uniswap V3", description: "DeFi AMM", internal_only: false },
+              { key: "hyperliquid", label: "Hyperliquid", description: "Onchain perps", internal_only: false },
+              { key: "polymarket", label: "Polymarket", description: "Prediction market", internal_only: false },
+              { key: "kalshi", label: "Kalshi", description: "Prediction market (regulated)", internal_only: false },
+              { key: "betfair", label: "Betfair", description: "Sports exchange", internal_only: false },
+              { key: "pinnacle", label: "Pinnacle", description: "Sports betting", internal_only: false },
+              { key: "ibkr", label: "Interactive Brokers", description: "TradFi multi-asset", internal_only: false },
+            ],
+          },
+          {
+            key: "market-categories", label: "Market Categories", description: "Asset class access",
+            permissions: [
+              { key: "cefi", label: "CeFi", description: "Centralised finance", internal_only: false },
+              { key: "tradfi", label: "TradFi", description: "Traditional finance", internal_only: false },
+              { key: "defi", label: "DeFi", description: "Decentralised finance", internal_only: false },
+              { key: "sports", label: "Sports", description: "Sports betting", internal_only: false },
+              { key: "prediction", label: "Prediction", description: "Prediction markets", internal_only: false },
+            ],
+          },
+          {
+            key: "data-types", label: "Data Types", description: "Types of market data",
+            permissions: [
+              { key: "tick-ohlcv", label: "Tick OHLCV", description: "Open, high, low, close, volume", internal_only: false },
+              { key: "daily-candles", label: "Daily Candles", description: "End-of-day aggregates", internal_only: false },
+              { key: "order-book", label: "Order Book", description: "Level 2 depth", internal_only: false },
+              { key: "processed-data", label: "Processed Data", description: "Cleaned/normalised", internal_only: false },
+              { key: "features", label: "Features", description: "ML features and signals", internal_only: false },
+            ],
+          },
+        ],
+      },
+      {
+        key: "execution", label: "Execution & Trading", description: "Algos, instructions, trading gates", icon: "Zap",
+        categories: [
+          {
+            key: "trading-gate", label: "Trading Gates", description: "Hard access controls",
+            permissions: [
+              { key: "can-trade", label: "Can Trade", description: "Permission to submit orders", internal_only: false },
+              { key: "can-trade-live", label: "Can Trade Live", description: "Live market execution", internal_only: false },
+              { key: "paper-trading-only", label: "Paper Trading Only", description: "Simulated only", internal_only: false },
+            ],
+          },
+          {
+            key: "algos", label: "Execution Algorithms", description: "Available algo strategies",
+            permissions: [
+              { key: "twap", label: "TWAP", description: "Time-weighted average price", internal_only: false },
+              { key: "vwap", label: "VWAP", description: "Volume-weighted average price", internal_only: false },
+              { key: "sor", label: "SOR", description: "Smart order routing", internal_only: false },
+              { key: "iceberg", label: "Iceberg", description: "Hidden quantity", internal_only: false },
+              { key: "pov", label: "POV", description: "Participation of volume", internal_only: false },
+              { key: "passive-aggressive", label: "Passive Aggressive", description: "Adaptive spread capture", internal_only: false },
+              { key: "adaptive-twap", label: "Adaptive TWAP", description: "Market-aware TWAP", internal_only: false },
+              { key: "almgren-chriss", label: "Almgren-Chriss", description: "Optimal execution", internal_only: false },
+            ],
+          },
+          {
+            key: "instruction-types", label: "Instruction Types", description: "Order types allowed",
+            permissions: [
+              { key: "trade", label: "Trade", description: "Standard trade", internal_only: false },
+              { key: "swap", label: "Swap", description: "DeFi swap", internal_only: false },
+              { key: "futures-roll", label: "Futures Roll", description: "Roll futures position", internal_only: false },
+              { key: "options-combo", label: "Options Combo", description: "Multi-leg options", internal_only: false },
+              { key: "add-liquidity", label: "Add Liquidity", description: "LP provision", internal_only: false },
+            ],
+          },
+        ],
+      },
+      {
+        key: "internal-services", label: "Internal Provisioning", description: "Slack, GitHub, M365, GCP, AWS", icon: "Lock",
+        categories: [
+          {
+            key: "slack", label: "Slack", description: "Workspace and channel access",
+            permissions: [
+              { key: "workspace-access", label: "Workspace Access", description: "Join Slack workspace", internal_only: true },
+              { key: "channel:engineering", label: "#engineering", description: "Engineering channel", internal_only: true },
+              { key: "channel:ops", label: "#ops", description: "Operations channel", internal_only: true },
+              { key: "channel:trading", label: "#trading", description: "Trading channel", internal_only: true },
+              { key: "channel:alerts", label: "#alerts", description: "System alerts", internal_only: true },
+            ],
+          },
+          {
+            key: "github", label: "GitHub", description: "Org and team membership",
+            permissions: [
+              { key: "org-membership", label: "Org Membership", description: "Join GitHub org", internal_only: true },
+              { key: "team:engineering", label: "Team: Engineering", description: "Engineering team", internal_only: true },
+              { key: "team:ops", label: "Team: Ops", description: "Operations team", internal_only: true },
+              { key: "team:platform", label: "Team: Platform", description: "Platform team", internal_only: true },
+            ],
+          },
+          {
+            key: "microsoft365", label: "Microsoft 365", description: "Email and productivity",
+            permissions: [
+              { key: "account", label: "M365 Account", description: "Create M365 account", internal_only: true },
+              { key: "email", label: "Email", description: "Outlook email", internal_only: true },
+              { key: "teams-access", label: "Teams", description: "Microsoft Teams", internal_only: true },
+            ],
+          },
+          {
+            key: "gcp", label: "GCP", description: "Google Cloud Platform",
+            permissions: [
+              { key: "project-access", label: "Project Access", description: "GCP project", internal_only: true },
+              { key: "iam:viewer", label: "IAM Viewer", description: "Read-only access", internal_only: true },
+              { key: "iam:editor", label: "IAM Editor", description: "Read-write access", internal_only: true },
+              { key: "iam:admin", label: "IAM Admin", description: "Full admin access", internal_only: true },
+            ],
+          },
+          {
+            key: "aws", label: "AWS", description: "Amazon Web Services",
+            permissions: [
+              { key: "iam-user", label: "IAM User", description: "AWS IAM user", internal_only: true },
+              { key: "sso-access", label: "SSO Access", description: "AWS SSO login", internal_only: true },
+              { key: "permission-set:power-user", label: "Power User", description: "Full dev access", internal_only: true },
+              { key: "permission-set:read-only", label: "Read Only", description: "View-only access", internal_only: true },
+            ],
+          },
+        ],
+      },
+      {
+        key: "research", label: "Research & ML", description: "ML models, strategies, signals", icon: "FlaskConical",
+        categories: [
+          {
+            key: "ml", label: "Machine Learning", description: "Model lifecycle",
+            permissions: [
+              { key: "model-training", label: "Model Training", description: "Train ML models", internal_only: false },
+              { key: "experiments", label: "Experiments", description: "Run experiments", internal_only: false },
+              { key: "feature-store", label: "Feature Store", description: "Access feature store", internal_only: false },
+              { key: "model-registry", label: "Model Registry", description: "Browse models", internal_only: false },
+              { key: "deployment", label: "Model Deployment", description: "Deploy to production", internal_only: false },
+            ],
+          },
+          {
+            key: "strategy", label: "Strategy", description: "Backtesting and strategy management",
+            permissions: [
+              { key: "backtesting", label: "Backtesting", description: "Run backtests", internal_only: false },
+              { key: "candidates", label: "Candidates", description: "Strategy candidates", internal_only: false },
+              { key: "handoff", label: "Handoff", description: "Promote to live", internal_only: false },
+            ],
+          },
+        ],
+      },
+      {
+        key: "reporting", label: "Reporting & Regulatory", description: "P&L, settlement, compliance", icon: "FileText",
+        categories: [
+          {
+            key: "reports", label: "Reports", description: "Financial reporting",
+            permissions: [
+              { key: "pnl-attribution", label: "P&L Attribution", description: "Profit & loss breakdown", internal_only: false },
+              { key: "settlement", label: "Settlement", description: "Trade settlement", internal_only: false },
+              { key: "reconciliation", label: "Reconciliation", description: "Book reconciliation", internal_only: false },
+              { key: "regulatory", label: "Regulatory", description: "MiFID/FCA reporting", internal_only: false },
+              { key: "client-reporting", label: "Client Reporting", description: "Client-facing reports", internal_only: false },
+            ],
+          },
+        ],
+      },
+      {
+        key: "org-scoping", label: "Organisation Scoping", description: "Org-level access boundaries", icon: "Building2",
+        categories: [
+          {
+            key: "subscription-tier", label: "Subscription Tier", description: "Org subscription level",
+            permissions: [
+              { key: "basic", label: "Basic", description: "Entry-level access", internal_only: false },
+              { key: "pro", label: "Pro", description: "Professional access", internal_only: false },
+              { key: "enterprise", label: "Enterprise", description: "Full enterprise", internal_only: false },
+              { key: "internal", label: "Internal", description: "Internal (wildcard)", internal_only: true },
+            ],
+          },
+        ],
+      },
+    ],
+  }
+
+  if (route === "/api/auth/catalogue") {
+    return json(MOCK_PERMISSION_CATALOGUE)
+  }
+  if (route.match(/^\/api\/auth\/catalogue\/search\/[^/]+$/)) {
+    const queryStr = decodeURIComponent(route.split("/").pop() ?? "").toLowerCase()
+    const results: Array<{ domain: string; domain_label: string; category: string; category_label: string; key: string; label: string; description: string; internal_only: string }> = []
+    for (const domain of MOCK_PERMISSION_CATALOGUE.domains) {
+      for (const cat of domain.categories) {
+        for (const perm of cat.permissions) {
+          if (perm.key.toLowerCase().includes(queryStr) || perm.label.toLowerCase().includes(queryStr) || perm.description.toLowerCase().includes(queryStr)) {
+            results.push({
+              domain: domain.key,
+              domain_label: domain.label,
+              category: cat.key,
+              category_label: cat.label,
+              key: perm.key,
+              label: perm.label,
+              description: perm.description,
+              internal_only: perm.internal_only ? "True" : "False",
+            })
+          }
+        }
+      }
+    }
+    return json({ results, total: results.length })
+  }
+  if (route.match(/^\/api\/auth\/catalogue\/[^/]+$/) && !route.includes("search")) {
+    const domainKey = route.split("/").pop()
+    const domain = MOCK_PERMISSION_CATALOGUE.domains.find(d => d.key === domainKey)
+    if (domain) return json({ domain })
+    return json({ error: "Domain not found" })
+  }
+
+  // --- Provisioning (user lifecycle management) — stateful via mock-provisioning-state.ts ---
 
   if (route === "/api/auth/provisioning/users") {
-    return json({ users: provisioningUsers, total: provisioningUsers.length })
+    const { users } = getProvisioningState()
+    return json({ users, total: users.length })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/offboard$/)) {
+    const userId = route.split("/").at(-2)
+    if (!userId) return json({ error: "Missing user id" })
+    const offboardedServices: Record<string, string> = {
+      github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable",
+      gcp: "not_applicable", aws: "not_applicable", portal: "not_applicable",
+    }
+    const updated = updateUser(userId, { status: "offboarded", services: offboardedServices })
+    return json({ user: updated ?? { error: "User not found" } })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {
+    const userId = route.split("/").at(-2)
+    return json({ execution_name: `mock-reprovision-${userId}-${Date.now()}` })
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && !route.includes("onboard") && !route.includes("quota")) {
     const userId = route.split("/").pop()
-    const user = provisioningUsers.find(u => u.firebase_uid === userId || u.id === userId)
-    return json({ user: user ?? provisioningUsers[0] })
+    if (opts?.method === "PUT") {
+      const body = opts.body ? JSON.parse(opts.body as string) : {}
+      const updated = updateUser(userId ?? "", body as Partial<MockUser>)
+      return json({ user: updated ?? { error: "User not found" } })
+    }
+    const { users } = getProvisioningState()
+    const user = users.find(u => u.firebase_uid === userId || u.id === userId)
+    return json({ user: user ?? users[0] })
   }
   if (route === "/api/auth/provisioning/users/onboard") {
     const body = opts?.body ? JSON.parse(opts.body as string) : {}
-    const newUser = {
-      id: (body.email ?? "new").split("@")[0], firebase_uid: `uid-${Date.now()}`,
-      name: body.name ?? "New User", email: body.email ?? "new@example.com",
-      role: body.role ?? "collaborator", product_slugs: body.product_slugs ?? [],
-      status: "active", provisioned_at: new Date().toISOString(), last_modified: new Date().toISOString(),
+    const now = new Date().toISOString()
+    const newUser: MockUser = {
+      id: (body.email ?? "new").split("@")[0],
+      firebase_uid: `uid-${Date.now()}`,
+      name: body.name ?? "New User",
+      email: body.email ?? "new@example.com",
+      role: body.role ?? "collaborator",
+      github_handle: body.github_handle,
+      product_slugs: body.product_slugs ?? [],
+      status: "active",
+      provisioned_at: now,
+      last_modified: now,
       services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
     }
+    addUser(newUser)
     return json({
       user: newUser,
       provisioning_steps: [
@@ -895,34 +1112,109 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   if (route === "/api/auth/provisioning/access-requests") {
     if (opts?.method === "POST") {
-      const body = opts.body ? JSON.parse(opts.body as string) : {}
-      return json({
-        request: {
-          id: `req-${Date.now()}`, requester_email: "you@example.com", requester_name: "You",
-          org_id: "", requested_entitlements: body.requested_entitlements ?? [],
-          reason: body.reason ?? "", status: "pending", admin_note: "", reviewed_by: "",
-          created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-        },
-      })
+      const body = opts?.body ? JSON.parse(opts.body as string) : {}
+      const now = new Date().toISOString()
+      const newReq = {
+        id: `req-${Date.now()}`,
+        requester_email: body.requester_email ?? "you@example.com",
+        requester_name: body.requester_name ?? "You",
+        org_id: body.org_id ?? "",
+        requested_entitlements: body.requested_entitlements ?? [],
+        requested_role: body.requested_role ?? null,
+        reason: body.reason ?? "",
+        status: "pending" as const,
+        admin_note: "",
+        reviewed_by: "",
+        created_at: now,
+        updated_at: now,
+      }
+      addRequest(newReq)
+      return json({ request: newReq })
     }
     // Support ?status= filter
     const urlObj = new URL(route, "http://localhost")
     const statusFilter = urlObj.searchParams.get("status")
-    const filtered = statusFilter ? provisioningRequests.filter(r => r.status === statusFilter) : provisioningRequests
+    const { requests } = getProvisioningState()
+    const filtered = statusFilter ? requests.filter(r => r.status === statusFilter) : requests
     return json({ requests: filtered, total: filtered.length })
   }
   if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
     const reqId = route.split("/").at(-2)
     const body = opts?.body ? JSON.parse(opts.body as string) : {}
-    const existing = provisioningRequests.find(r => r.id === reqId)
+    const newStatus = body.action === "deny" ? "denied" : "approved"
+    const updated = updateRequest(reqId ?? "", {
+      status: newStatus,
+      admin_note: body.admin_note ?? "",
+      reviewed_by: "admin@odum.internal",
+    })
+    if (updated) return json({ request: updated })
+    // Fallback if request not found
+    return json({ request: { id: reqId, status: newStatus, admin_note: body.admin_note ?? "", reviewed_by: "admin@odum.internal", updated_at: new Date().toISOString() } })
+  }
+  if (route === "/api/auth/provisioning/admin/health-checks") {
     return json({
-      request: {
-        ...(existing ?? provisioningRequests[0]),
-        status: body.action === "deny" ? "denied" : "approved",
-        admin_note: body.admin_note ?? "",
-        reviewed_by: "admin@odum.internal",
-        updated_at: new Date().toISOString(),
-      },
+      checks: [
+        { service: "github", status: "healthy", latency_ms: 42, message: "GitHub API reachable" },
+        { service: "slack", status: "healthy", latency_ms: 38, message: "Slack API reachable" },
+        { service: "microsoft365", status: "healthy", latency_ms: 55, message: "M365 Graph API reachable" },
+        { service: "gcp", status: "healthy", latency_ms: 31, message: "GCP IAM reachable" },
+        { service: "aws", status: "healthy", latency_ms: 47, message: "AWS IAM reachable" },
+        { service: "portal", status: "healthy", latency_ms: 12, message: "Portal DB reachable" },
+      ],
+    })
+  }
+  if (route === "/api/auth/provisioning/admin/health-checks/history") {
+    return json({ history: [] })
+  }
+
+  // --- Options & Futures ---
+  if (route === "/api/options/chain") {
+    return json({
+      asset: "BTC",
+      spotPrice: 71583.00,
+      ivIndex: 50.9,
+      expiries: [
+        { date: "2026-03-24", label: "24 MAR 26", daysToExpiry: 1, hasPositions: false },
+        { date: "2026-03-25", label: "25 MAR 26", daysToExpiry: 2, hasPositions: false },
+        { date: "2026-03-26", label: "26 MAR 26", daysToExpiry: 3, hasPositions: false },
+        { date: "2026-03-27", label: "27 MAR 26", daysToExpiry: 4, hasPositions: false },
+        { date: "2026-04-03", label: "03 APR 26", daysToExpiry: 11, hasPositions: false },
+        { date: "2026-04-10", label: "10 APR 26", daysToExpiry: 18, hasPositions: false },
+        { date: "2026-04-24", label: "24 APR 26", daysToExpiry: 32, hasPositions: false },
+        { date: "2026-05-29", label: "29 MAY 26", daysToExpiry: 67, hasPositions: false },
+        { date: "2026-06-26", label: "26 JUN 26", daysToExpiry: 95, hasPositions: true },
+        { date: "2026-09-25", label: "25 SEP 26", daysToExpiry: 186, hasPositions: false },
+        { date: "2026-12-25", label: "25 DEC 26", daysToExpiry: 277, hasPositions: false },
+      ],
+      underlyingFuture: 71583.87,
+      chain: [],
+    })
+  }
+  if (route === "/api/options/positions") {
+    return json({
+      data: [
+        { id: "opt-pos-1", instrument: "BTC-26JUN26-80000-C", side: "long", quantity: 5, entryPrice: 2450.00, markPrice: 2180.00, pnl: -1350.00, iv: 52.3, delta: 0.32, gamma: 0.00004, theta: -28.50, vega: 85.20, expiry: "2026-06-26" },
+        { id: "opt-pos-2", instrument: "BTC-26JUN26-65000-P", side: "long", quantity: 10, entryPrice: 980.00, markPrice: 720.00, pnl: -2600.00, iv: 48.1, delta: -0.22, gamma: 0.00003, theta: -18.30, vega: 72.40, expiry: "2026-06-26" },
+        { id: "opt-pos-3", instrument: "BTC-26JUN26-75000-C", side: "short", quantity: 8, entryPrice: 3800.00, markPrice: 3450.00, pnl: 2800.00, iv: 51.0, delta: -0.45, gamma: -0.00005, theta: 32.10, vega: -92.80, expiry: "2026-06-26" },
+        { id: "opt-pos-4", instrument: "BTC-26JUN26-70000-C", side: "long", quantity: 3, entryPrice: 5200.00, markPrice: 5680.00, pnl: 1440.00, iv: 49.8, delta: 0.55, gamma: 0.00006, theta: -35.20, vega: 98.50, expiry: "2026-06-26" },
+        { id: "opt-pos-5", instrument: "BTC-26JUN26-60000-P", side: "short", quantity: 6, entryPrice: 450.00, markPrice: 380.00, pnl: 420.00, iv: 46.5, delta: 0.12, gamma: -0.00002, theta: 12.80, vega: -45.60, expiry: "2026-06-26" },
+      ],
+    })
+  }
+  if (route === "/api/futures/contracts") {
+    return json({
+      data: [
+        { contract: "BTC-PERPETUAL", asset: "BTC", settlement: "BTC", markPrice: 71583.00, change24h: 3.66, volume24h: 654372520, openInterest: 42850, fundingRate: 0.0042, basis: null, isFavorite: false },
+        { contract: "BTC-27MAR26", asset: "BTC", settlement: "BTC", markPrice: 71650.00, change24h: 3.72, volume24h: 123456000, openInterest: 18500, fundingRate: null, basis: 4.2, isFavorite: false },
+        { contract: "BTC-26JUN26", asset: "BTC", settlement: "BTC", markPrice: 72100.00, change24h: 3.81, volume24h: 89234000, openInterest: 12300, fundingRate: null, basis: 5.8, isFavorite: false },
+        { contract: "BTC-25SEP26", asset: "BTC", settlement: "BTC", markPrice: 72850.00, change24h: 3.95, volume24h: 34567000, openInterest: 8900, fundingRate: null, basis: 7.1, isFavorite: false },
+        { contract: "BTC-25DEC26", asset: "BTC", settlement: "BTC", markPrice: 73500.00, change24h: 4.02, volume24h: 12345000, openInterest: 5600, fundingRate: null, basis: 8.4, isFavorite: false },
+        { contract: "ETH-PERPETUAL", asset: "ETH", settlement: "ETH", markPrice: 3456.78, change24h: 2.15, volume24h: 345678000, openInterest: 85600, fundingRate: 0.0038, basis: null, isFavorite: false },
+        { contract: "ETH-26JUN26", asset: "ETH", settlement: "ETH", markPrice: 3520.00, change24h: 2.31, volume24h: 56789000, openInterest: 15200, fundingRate: null, basis: 6.2, isFavorite: false },
+        { contract: "ETH-25DEC26", asset: "ETH", settlement: "ETH", markPrice: 3650.00, change24h: 2.48, volume24h: 23456000, openInterest: 9800, fundingRate: null, basis: 9.1, isFavorite: false },
+        { contract: "SOL-PERPETUAL", asset: "SOL", settlement: "USDC", markPrice: 156.42, change24h: 5.12, volume24h: 123456000, openInterest: 34500, fundingRate: 0.0055, basis: null, isFavorite: false },
+        { contract: "SOL-26JUN26", asset: "SOL", settlement: "USDC", markPrice: 159.80, change24h: 5.28, volume24h: 34567000, openInterest: 8900, fundingRate: null, basis: 8.6, isFavorite: false },
+      ],
     })
   }
 
