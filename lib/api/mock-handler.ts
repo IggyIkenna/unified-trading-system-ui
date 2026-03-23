@@ -1176,7 +1176,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
             permissions: [
               { key: "regulatory-umbrella", label: "Regulatory Umbrella (AR)", description: "FCA Appointed Representative services", internal_only: false },
               { key: "investment-management", label: "Investment Management", description: "FCA-authorised investment management", internal_only: false },
-              { key: "fund-structure", label: "Fund Structure (POD — EU Licensed)", description: "Regulated fund vehicle setup via EU-licensed affiliate partner", internal_only: false },
+              { key: "fund-crypto-spot", label: "Fund Structure — Crypto Spot (In-House)", description: "Pure crypto spot fund vehicles housed entirely in-house (unregulated)", internal_only: false },
+              { key: "fund-derivatives-tradfi", label: "Fund Structure — Derivatives & TradFi (EU Affiliate)", description: "Crypto derivatives, options, futures, traditional markets via EU-licensed affiliate POD", internal_only: false },
               { key: "advisory-engagement", label: "Advisory Engagement", description: "Strategic advisory role under supervision", internal_only: false },
             ],
           },
