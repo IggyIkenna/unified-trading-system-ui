@@ -38,12 +38,13 @@ import type {
 import { MOCK_CATALOGUE, VENUE_DISPLAY } from "@/lib/data-service-mock-data"
 
 // Category accent colours
-const CATEGORY_COLORS: Record<DataCategory, string> = {
+export const CATEGORY_COLORS: Record<DataCategory, string> = {
   cefi:              "text-sky-400 bg-sky-400/10 border-sky-400/30",
   tradfi:            "text-violet-400 bg-violet-400/10 border-violet-400/30",
   defi:              "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",
   onchain_perps:     "text-amber-400 bg-amber-400/10 border-amber-400/30",
   prediction_market: "text-rose-400 bg-rose-400/10 border-rose-400/30",
+  sports:            "text-teal-400 bg-teal-400/10 border-teal-400/30",
 }
 
 interface ShardCatalogueProps {

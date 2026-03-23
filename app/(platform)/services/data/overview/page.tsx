@@ -23,9 +23,10 @@ import {
   Database, Clock, AlertTriangle,
   RefreshCw, Search, Globe, Activity,
 } from "lucide-react"
-import { ShardCatalogue } from "@/components/data/shard-catalogue"
+import { ShardCatalogue, CATEGORY_COLORS } from "@/components/data/shard-catalogue"
 import { FreshnessHeatmap } from "@/components/data/freshness-heatmap"
 import { MOCK_SHARD_AVAILABILITY, MOCK_DATA_GAPS } from "@/lib/data-service-mock-data"
+import { DATA_CATEGORY_LABELS, type DataCategory } from "@/lib/data-service-types"
 import { PLATFORM_STATS } from "@/lib/config/platform-stats"
 import { useServiceHealth } from "@/hooks/api/use-service-status"
 import { useInstruments } from "@/hooks/api/use-instruments"
@@ -36,7 +37,19 @@ export default function PortalDataPage() {
   const { data: instrumentsData, isLoading: instrumentsLoading } = useInstruments()
 
   const PIPELINE_SERVICES: any[] = (healthData as any)?.data ?? (healthData as any)?.services ?? []
-  const VENUE_STATUS: any[] = (instrumentsData as any)?.data ?? (instrumentsData as any)?.venues ?? []
+
+  // Build venue-level aggregation from instruments (same source as Instrument Catalogue)
+  const VENUE_STATUS = React.useMemo(() => {
+    const instruments: any[] = (instrumentsData as any)?.instruments ?? []
+    const venueMap: Record<string, { venue: string; category: string; instruments: number; coverage: number; cloud: string; lastUpdate: string }> = {}
+    instruments.forEach((inst: any) => {
+      if (!venueMap[inst.venue]) {
+        venueMap[inst.venue] = { venue: inst.venue, category: inst.category, instruments: 0, coverage: 85 + Math.random() * 15, cloud: "GCP", lastUpdate: "2026-03-18" }
+      }
+      venueMap[inst.venue].instruments++
+    })
+    return Object.values(venueMap)
+  }, [instrumentsData])
 
   const [search, setSearch] = React.useState("")
   const [categoryFilter, setCategoryFilter] = React.useState<string>("all")
@@ -50,7 +63,7 @@ export default function PortalDataPage() {
   // Filter venues by subscription
   const filteredVenues = VENUE_STATUS.filter(v => {
     if (isAdmin || hasDataPro) return true
-    return v.category === "CEFI"
+    return v.category === "cefi"
   }).filter(v => {
     if (categoryFilter !== "all") return v.category === categoryFilter
     return true
@@ -211,10 +224,24 @@ export default function PortalDataPage() {
                   <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                   <Input placeholder="Search venues..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
                 </div>
-                <div className="flex gap-1.5">
-                  {["all", "CEFI", "TRADFI", "DEFI", "SPORTS"].map(cat => (
-                    <Button key={cat} variant={categoryFilter === cat ? "secondary" : "ghost"} size="sm" onClick={() => setCategoryFilter(cat)} className="h-7 text-xs">
-                      {cat === "all" ? "All" : cat}
+                <div className="flex gap-1.5 flex-wrap">
+                  <Button
+                    variant={categoryFilter === "all" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setCategoryFilter("all")}
+                    className="h-7 text-xs"
+                  >
+                    All
+                  </Button>
+                  {(Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map(cat => (
+                    <Button
+                      key={cat}
+                      variant={categoryFilter === cat ? "secondary" : "ghost"}
+                      size="sm"
+                      onClick={() => setCategoryFilter(cat === categoryFilter ? "all" : cat)}
+                      className={cn("h-7 text-xs", categoryFilter === cat && CATEGORY_COLORS[cat])}
+                    >
+                      {DATA_CATEGORY_LABELS[cat]}
                     </Button>
                   ))}
                 </div>
@@ -231,7 +258,7 @@ export default function PortalDataPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="text-sm font-semibold">{v.venue}</span>
-                          <Badge variant="secondary" className="text-[10px]">{v.category}</Badge>
+                          <Badge variant="secondary" className="text-[10px]">{DATA_CATEGORY_LABELS[v.category as DataCategory] ?? v.category}</Badge>
                           <Badge variant="outline" className={cn("text-[10px]",
                             v.cloud === "GCP" ? "text-blue-400 border-blue-400/30" : "text-orange-400 border-orange-400/30"
                           )}>{v.cloud}</Badge>

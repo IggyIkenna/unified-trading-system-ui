@@ -38,7 +38,6 @@
   "exclude": [
     "node_modules",
     "_reference",
-    "__tests__",
     "coverage",
     "e2e"
   ]

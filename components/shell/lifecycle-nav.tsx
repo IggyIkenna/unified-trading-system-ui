@@ -8,6 +8,7 @@
  * Acquire -> Build -> Promote -> Run -> Observe -> Manage -> Report
  */
 
+import { ApiStatusIndicator } from "./api-status-indicator"
 import { NotificationBell } from "./notification-bell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -144,7 +145,12 @@ export function LifecycleNav({
   }, [])
 
   return (
-    <nav className={cn("flex items-center justify-between px-3 py-1.5 bg-card border-b border-border shadow-sm gap-2 overflow-x-auto", className)}>
+    <nav
+      className={cn(
+        "sticky top-0 z-40 flex shrink-0 items-center justify-between gap-2 overflow-x-auto border-b border-border bg-card/95 px-3 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/90",
+        className,
+      )}
+    >
       {/* Left: Logo + Lifecycle stages */}
       <div className="flex items-center gap-4">
         {/* Logo */}
@@ -277,6 +283,9 @@ export function LifecycleNav({
             <span className="text-xs">⌘</span>K
           </kbd>
         </button>
+
+        {/* API / env status indicator */}
+        <ApiStatusIndicator />
 
         <div className="w-px h-5 bg-border" />
 

@@ -26,13 +26,15 @@ export type DataCategory =
   | "defi"
   | "onchain_perps"
   | "prediction_market"
+  | "sports"
 
 export const DATA_CATEGORY_LABELS: Record<DataCategory, string> = {
   cefi: "Crypto CeFi",
   tradfi: "TradFi",
   defi: "DeFi",
   onchain_perps: "Onchain Perps",
-  prediction_market: "Sports & Predictions",
+  prediction_market: "Predictions",
+  sports: "Sports",
 }
 
 export const VENUES_BY_CATEGORY: Record<DataCategory, string[]> = {
@@ -44,6 +46,7 @@ export const VENUES_BY_CATEGORY: Record<DataCategory, string[]> = {
   ],
   onchain_perps: ["hyperliquid"],
   prediction_market: ["polymarket", "kalshi"],
+  sports: ["api_football", "footystats"],
 }
 
 export type DataFolder =
@@ -60,13 +63,15 @@ export type DataFolder =
   | "odds"
   | "predictions"
   | "game_events"
+  | "fixtures"
 
 export const FOLDERS_BY_CATEGORY: Record<DataCategory, DataFolder[]> = {
   cefi: ["spot", "perpetuals", "options", "futures"],
   tradfi: ["equity", "futures", "options", "rates"],
   defi: ["pool_state", "lending", "swaps", "staking"],
   onchain_perps: ["perpetuals"],
-  prediction_market: ["odds", "predictions", "game_events"],
+  prediction_market: ["odds", "predictions"],
+  sports: ["fixtures", "odds", "game_events"],
 }
 
 export type DataType =
@@ -165,7 +170,7 @@ export const DATA_PLANS: DataPlan[] = [
     name: "Enterprise",
     monthlyPrice: 0, // custom
     queryLimitGb: -1, // unlimited
-    categories: ["cefi", "tradfi", "defi", "onchain_perps", "prediction_market"],
+    categories: ["cefi", "tradfi", "defi", "onchain_perps", "prediction_market", "sports"],
     historyYears: 6,
     features: ["All categories", "Custom instruments", "Unlimited egress", "SLA + white-glove"],
   },

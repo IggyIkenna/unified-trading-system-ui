@@ -96,6 +96,11 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // Prediction Markets
   { instrumentKey: "polymarket:predictions:TRUMP_WIN_2024", venue: "polymarket", category: "prediction_market", folder: "predictions", symbol: "TRUMP_WIN_2024", dataTypes: ["odds", "settlement_prices"], availableFrom: "2024-01-01", availableTo: "2024-11-06" },
   { instrumentKey: "kalshi:predictions:FED_RATE_JUL2025", venue: "kalshi", category: "prediction_market", folder: "predictions", symbol: "FED_RATE_JUL2025", dataTypes: ["odds", "settlement_prices"], availableFrom: "2024-12-01" },
+  // Sports
+  { instrumentKey: "api_football:fixtures:EPL_2025", venue: "api_football", category: "sports", folder: "fixtures", symbol: "EPL_2025", dataTypes: ["odds", "game_events"], availableFrom: "2023-08-01" },
+  { instrumentKey: "api_football:fixtures:UCL_2025", venue: "api_football", category: "sports", folder: "fixtures", symbol: "UCL_2025", dataTypes: ["odds", "game_events"], availableFrom: "2023-09-01" },
+  { instrumentKey: "footystats:fixtures:EPL_2025", venue: "footystats", category: "sports", folder: "fixtures", symbol: "EPL_2025", dataTypes: ["odds", "game_events"], availableFrom: "2022-01-01" },
+  { instrumentKey: "footystats:fixtures:LA_LIGA_2025", venue: "footystats", category: "sports", folder: "fixtures", symbol: "LA_LIGA_2025", dataTypes: ["odds", "game_events"], availableFrom: "2022-01-01" },
 ]
 
 // ─── Catalogue entries (what we have in storage) ──────────────────────────────
@@ -206,6 +211,74 @@ export const MOCK_CATALOGUE: CatalogueEntry[] = [
     lastUpdated: "2026-03-18",
     sizeGb: 89,
     gcpCompleteness: 99,
+    awsCompleteness: 0,
+  },
+  // Prediction Markets
+  {
+    instrument: MOCK_INSTRUMENTS[17], // polymarket:predictions:TRUMP_WIN_2024
+    cloud: "gcp",
+    totalDates: 310,
+    datesWithData: 308,
+    freshnessPct: 99,
+    lastUpdated: "2026-03-18",
+    sizeGb: 12,
+    gcpCompleteness: 99,
+    awsCompleteness: 0,
+  },
+  {
+    instrument: MOCK_INSTRUMENTS[18], // kalshi:predictions:FED_RATE_JUL2025
+    cloud: "gcp",
+    totalDates: 120,
+    datesWithData: 118,
+    freshnessPct: 98,
+    lastUpdated: "2026-03-18",
+    sizeGb: 8,
+    gcpCompleteness: 98,
+    awsCompleteness: 0,
+  },
+  // Sports
+  {
+    instrument: MOCK_INSTRUMENTS[19], // api_football:fixtures:EPL_2025
+    cloud: "gcp",
+    totalDates: 950,
+    datesWithData: 938,
+    freshnessPct: 98,
+    lastUpdated: "2026-03-18",
+    sizeGb: 45,
+    gcpCompleteness: 98,
+    awsCompleteness: 0,
+  },
+  {
+    instrument: MOCK_INSTRUMENTS[20], // api_football:fixtures:UCL_2025
+    cloud: "gcp",
+    totalDates: 900,
+    datesWithData: 882,
+    freshnessPct: 98,
+    lastUpdated: "2026-03-18",
+    sizeGb: 38,
+    gcpCompleteness: 98,
+    awsCompleteness: 0,
+  },
+  {
+    instrument: MOCK_INSTRUMENTS[21], // footystats:fixtures:EPL_2025
+    cloud: "gcp",
+    totalDates: 1500,
+    datesWithData: 1470,
+    freshnessPct: 98,
+    lastUpdated: "2026-03-17",
+    sizeGb: 62,
+    gcpCompleteness: 98,
+    awsCompleteness: 0,
+  },
+  {
+    instrument: MOCK_INSTRUMENTS[22], // footystats:fixtures:LA_LIGA_2025
+    cloud: "gcp",
+    totalDates: 1500,
+    datesWithData: 1455,
+    freshnessPct: 97,
+    lastUpdated: "2026-03-17",
+    sizeGb: 58,
+    gcpCompleteness: 97,
     awsCompleteness: 0,
   },
 ]
@@ -425,6 +498,7 @@ export const ADMIN_SUMMARY = {
     defi: 3100,
     onchain_perps: 847,
     prediction_market: 796,
+    sports: 512,
   },
 }
 
@@ -621,4 +695,6 @@ export const VENUE_DISPLAY: Record<string, { label: string; logo?: string; dataH
   hyperliquid:   { label: "Hyperliquid",    dataHistory: "Jun 2023" },
   polymarket:    { label: "Polymarket",     dataHistory: "Jan 2024" },
   kalshi:        { label: "Kalshi",         dataHistory: "Dec 2024" },
+  api_football:  { label: "API-Football",  dataHistory: "Aug 2023" },
+  footystats:    { label: "FootyStats",    dataHistory: "Jan 2022" },
 }
