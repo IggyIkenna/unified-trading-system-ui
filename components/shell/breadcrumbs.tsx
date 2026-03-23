@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ChevronRight, Home } from "lucide-react"
 import { getRouteMapping, lifecycleStages } from "@/lib/lifecycle-mapping"
+import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
 
 export function Breadcrumbs() {
   const pathname = usePathname() || ""
@@ -31,7 +32,8 @@ export function Breadcrumbs() {
   const formatLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ")
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 px-6 py-2 text-xs text-muted-foreground bg-card/50 border-b border-border">
+    <nav aria-label="Breadcrumb" className="flex items-center justify-between px-6 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border">
+      <div className="flex items-center gap-1.5">
       <Link href="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1">
         <Home className="size-3" />
         Services
@@ -50,6 +52,8 @@ export function Breadcrumbs() {
           <span className="text-foreground font-medium">{mapping?.label || formatLabel(pageName)}</span>
         </>
       )}
+      </div>
+      <GlobalScopeFilters />
     </nav>
   )
 }

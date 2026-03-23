@@ -8,7 +8,6 @@
  * Acquire -> Build -> Promote -> Run -> Observe -> Manage -> Report
  */
 
-import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
 import { NotificationBell } from "./notification-bell"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -262,12 +261,8 @@ export function LifecycleNav({
         </div>
       </div>
 
-      {/* Center: Global Scope Filters (Org / Client / Strategy) */}
-      <div className="hidden xl:flex items-center shrink-0">
-        <div className="w-px h-5 bg-border mx-1" />
-        <GlobalScopeFilters />
-        <div className="w-px h-5 bg-border mx-1" />
-      </div>
+      {/* Spacer */}
+      <div className="flex-1" />
 
       {/* Right: Search, Notifications, Org, User */}
       <div className="flex items-center gap-2 shrink-0">
