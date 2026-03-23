@@ -37,14 +37,54 @@ const INV_OPTS = [
   { id: "sma", label: "Separately Managed Account" }, { id: "fund_access", label: "Fund Access" },
   { id: "strategy", label: "Strategy Allocation" }, { id: "discretionary", label: "Full Discretionary" },
 ]
-interface DocSlot { key: string; label: string; required: boolean | "investment_only"; template?: string }
+interface DeclarationField { id: string; label: string; placeholder: string; multiline?: boolean }
+interface DocSlot { key: string; label: string; required: boolean | "investment_only"; declaration?: DeclarationField[] }
+const SOF_FIELDS: DeclarationField[] = [
+  { id: "employment", label: "Current employment / business activity", placeholder: "e.g. Director at XYZ Capital Ltd" },
+  { id: "source", label: "Primary source of funds for trading", placeholder: "e.g. Business profits, salary, investment returns" },
+  { id: "origin", label: "Country of origin of funds", placeholder: "e.g. United Kingdom" },
+  { id: "expected_volume", label: "Expected annual trading volume", placeholder: "e.g. GBP 500,000 — 1,000,000" },
+]
+const WEALTH_FIELDS: DeclarationField[] = [
+  { id: "net_worth", label: "Approximate net worth (excluding primary residence)", placeholder: "e.g. GBP 1,000,000 — 5,000,000" },
+  { id: "liquid_assets", label: "Liquid assets available for investment", placeholder: "e.g. GBP 250,000" },
+  { id: "income", label: "Annual income", placeholder: "e.g. GBP 150,000" },
+  { id: "experience", label: "Investment experience", placeholder: "e.g. 10+ years in equities and crypto derivatives", multiline: true },
+]
 const DOC_SLOTS: DocSlot[] = [
   { key: "proof_of_address", label: "Proof of Address (utility bill, bank statement)", required: true },
   { key: "identity", label: "Identity Document (passport, national ID)", required: true },
-  { key: "source_of_funds", label: "Source of Funds Declaration", required: true, template: "source-of-funds-declaration" },
-  { key: "wealth_declaration", label: "Wealth Self-Declaration", required: "investment_only", template: "wealth-self-declaration" },
+  { key: "source_of_funds", label: "Source of Funds Declaration", required: true, declaration: SOF_FIELDS },
+  { key: "wealth_declaration", label: "Wealth Self-Declaration", required: "investment_only", declaration: WEALTH_FIELDS },
   { key: "management_agreement", label: "Management Agreement (if applicable)", required: false },
 ]
+
+function generateDeclarationPdf(title: string, applicantName: string, company: string, fields: DeclarationField[], answers: Record<string, string>) {
+  const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+  const lines = [
+    title.toUpperCase(),
+    `Date: ${date}`,
+    "",
+    `I, ${applicantName}, of ${company}, hereby declare the following:`,
+    "",
+    ...fields.map(f => `${f.label}:\n  ${answers[f.id] || "(not provided)"}`),
+    "",
+    "I confirm that the information provided above is true and accurate to the best of my knowledge.",
+    "",
+    "",
+    `Signature: ____________________________`,
+    "",
+    `Name: ${applicantName}`,
+    `Date: ${date}`,
+  ]
+  const blob = new Blob([lines.join("\n")], { type: "text/plain" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `${title.toLowerCase().replace(/\s+/g, "-")}-${company.toLowerCase().replace(/\s+/g, "-")}.txt`
+  a.click()
+  URL.revokeObjectURL(url)
+}
 const STEP_LABELS = ["Your Details", "Requirements", "Documents", "Review", "Submitted"]
 
 function StepIndicator({ current, onNavigate }: { current: number; onNavigate: (s: number) => void }) {
@@ -79,6 +119,8 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
   const [phone, setPhone] = React.useState("")
   const [selOpts, setSelOpts] = React.useState<Set<string>>(new Set())
   const [docs, setDocs] = React.useState<Record<string, string>>({})
+  const [declarations, setDeclarations] = React.useState<Record<string, Record<string, string>>>({})
+  const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null)
   const [appId, setAppId] = React.useState("")
 
   const toggle = (id: string) => setSelOpts(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n })
@@ -179,6 +221,66 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
             <CardContent className="space-y-3">
               {DOC_SLOTS.map(slot => {
                 const req = isReq(slot), uploaded = !!docs[slot.key]
+                const isDecl = !!slot.declaration
+                const declAnswers = declarations[slot.key] || {}
+                const declComplete = isDecl && slot.declaration!.every(f => declAnswers[f.id]?.trim())
+                const isExpanded = expandedDecl === slot.key
+
+                if (isDecl) {
+                  return (
+                    <div key={slot.key} className="rounded-lg border p-3 space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <FileText className="size-4 text-muted-foreground shrink-0" />
+                          <div className="min-w-0">
+                            <p className="text-sm">{slot.label}</p>
+                            <p className="text-xs text-muted-foreground">Fill in the details below — we generate the document for you to sign.</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <Badge variant={declComplete ? "default" : "outline"} className={`text-[10px] ${declComplete ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : ""}`}>
+                            {declComplete ? "Complete" : req ? "Required" : "Optional"}
+                          </Badge>
+                          <Button variant="ghost" size="sm" className="text-xs" onClick={() => setExpandedDecl(isExpanded ? null : slot.key)}>
+                            {isExpanded ? "Collapse" : "Fill In"}
+                          </Button>
+                        </div>
+                      </div>
+                      {isExpanded && (
+                        <div className="space-y-3 pt-2 border-t">
+                          {slot.declaration!.map(field => (
+                            <div key={field.id} className="space-y-1">
+                              <Label className="text-xs">{field.label}</Label>
+                              {field.multiline ? (
+                                <Textarea placeholder={field.placeholder} rows={2} value={declAnswers[field.id] || ""}
+                                  onChange={e => setDeclarations(p => ({ ...p, [slot.key]: { ...p[slot.key], [field.id]: e.target.value } }))} />
+                              ) : (
+                                <Input placeholder={field.placeholder} value={declAnswers[field.id] || ""}
+                                  onChange={e => setDeclarations(p => ({ ...p, [slot.key]: { ...p[slot.key], [field.id]: e.target.value } }))} />
+                              )}
+                            </div>
+                          ))}
+                          <div className="flex items-center gap-2 pt-1">
+                            <Button variant="outline" size="sm" className="text-xs" disabled={!declComplete}
+                              onClick={() => {
+                                generateDeclarationPdf(slot.label, name, company, slot.declaration!, declAnswers)
+                                setDocs(p => ({ ...p, [slot.key]: `${slot.label} — generated` }))
+                              }}>
+                              <Download className="size-3 mr-1" />Generate &amp; Download to Sign
+                            </Button>
+                            <Button variant="outline" size="sm" className="relative text-xs" asChild>
+                              <label className="cursor-pointer"><Upload className="size-3 mr-1" />Upload Signed Copy
+                                <input type="file" className="absolute inset-0 opacity-0 cursor-pointer"
+                                  onChange={e => { if (e.target.files?.[0]) setDocs(p => ({ ...p, [slot.key]: e.target.files![0].name })) }} />
+                              </label>
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                }
+
                 return (
                   <div key={slot.key} className="rounded-lg border p-3 space-y-2">
                     <div className="flex items-center justify-between gap-3">
@@ -193,24 +295,13 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                         <Badge variant={uploaded ? "default" : "outline"} className={`text-[10px] ${uploaded ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : ""}`}>
                           {uploaded ? "Uploaded" : req ? "Required" : "Optional"}
                         </Badge>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {slot.template && (
-                        <Button variant="ghost" size="sm" className="text-xs" onClick={() => {
-                          const a = document.createElement("a")
-                          a.href = `/templates/${slot.template}.pdf`
-                          a.download = `${slot.template}.pdf`
-                          a.click()
-                        }}>
-                          <Download className="size-3 mr-1" />Download Template
+                        <Button variant="outline" size="sm" className="relative text-xs" asChild>
+                          <label className="cursor-pointer"><Upload className="size-3 mr-1" />{uploaded ? "Replace" : "Upload"}
+                            <input type="file" className="absolute inset-0 opacity-0 cursor-pointer"
+                              onChange={e => { if (e.target.files?.[0]) setDocs(p => ({ ...p, [slot.key]: e.target.files![0].name })) }} />
+                          </label>
                         </Button>
-                      )}
-                      <Button variant="outline" size="sm" className="relative text-xs" asChild>
-                        <label className="cursor-pointer"><Upload className="size-3 mr-1" />{uploaded ? "Replace" : slot.template ? "Upload Signed" : "Upload"}
-                          <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={e => { if (e.target.files?.[0]) setDocs(p => ({ ...p, [slot.key]: e.target.files![0].name })) }} />
-                        </label>
-                      </Button>
+                      </div>
                     </div>
                   </div>
                 )
