@@ -252,10 +252,11 @@ export default function RegulatoryServicePage() {
             <div className="text-center">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Coming soon: Preview the compliance dashboard with FCA reporting, audit trail, and best execution monitoring.
+                The compliance dashboard includes FCA reporting, immutable audit trail, and best execution monitoring.
+                Sign in as admin to access the full compliance module.
               </p>
               <Badge variant="outline" className="mt-4 border-primary/30 text-primary">
-                Coming Soon
+                Available in Platform
               </Badge>
             </div>
           </div>

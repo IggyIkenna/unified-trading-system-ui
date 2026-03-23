@@ -186,7 +186,7 @@ export default function ServicesLandingPage() {
                 <div className="text-xs text-muted-foreground">Asset Classes</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-primary">128</div>
+                <div className="text-2xl font-bold text-primary">{PLATFORM_STATS.totalVenues}</div>
                 <div className="text-xs text-muted-foreground">Venues</div>
               </div>
               <div>

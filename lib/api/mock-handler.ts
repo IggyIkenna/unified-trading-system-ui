@@ -1262,8 +1262,129 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     })
   }
 
-  // --- Health ---
+  // --- Auth Provisioning (access requests, users, templates) ---
+  if (route === "/api/auth/provisioning/users") {
+    const state = getProvisioningState()
+    return json({ users: state.users, total: state.users.length })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && !route.includes("/offboard") && !route.includes("/reprovision") && !route.includes("/workflows") && !route.includes("/quota-check")) {
+    const uid = route.split("/").pop()!
+    const state = getProvisioningState()
+    const user = state.users.find(u => u.id === uid || u.firebase_uid === uid)
+    return user ? json({ user }) : json({ error: "not found" })
+  }
+  if (route === "/api/auth/provisioning/users/onboard" && opts?.method === "POST") {
+    const body = opts.body ? JSON.parse(opts.body as string) : {}
+    const newUser: MockUser = {
+      id: `user-${Date.now()}`, firebase_uid: `uid-${Date.now()}`,
+      name: body.name || "New User", email: body.email || "new@example.com",
+      role: body.role || "client", product_slugs: body.product_slugs || [],
+      status: "active", provisioned_at: new Date().toISOString(), last_modified: new Date().toISOString(),
+      services: { portal: "provisioned" },
+    }
+    addUser(newUser)
+    return json({ user: newUser, provisioning_steps: [{ service: "portal", status: "success" }] })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && opts?.method === "PUT") {
+    const uid = route.split("/").pop()!
+    const body = opts.body ? JSON.parse(opts.body as string) : {}
+    const updated = updateUser(uid, body)
+    return updated ? json({ user: updated }) : json({ error: "not found" })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/offboard$/)) {
+    const uid = route.split("/")[5]
+    const updated = updateUser(uid, { status: "offboarded" })
+    return updated ? json({ user: updated, revocation_steps: [{ service: "portal", status: "revoked" }] }) : json({ error: "not found" })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {
+    return json({ workflow_execution: `wf-${Date.now()}` })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/workflows$/)) {
+    return json({ runs: [], total: 0 })
+  }
+  if (route === "/api/auth/provisioning/users/quota-check") {
+    return json({ quota: { allowed: true, currentUsers: 6, maxUsers: 50, reason: null } })
+  }
+  if (route === "/api/auth/provisioning/access-requests") {
+    if (opts?.method === "POST") {
+      const body = opts.body ? JSON.parse(opts.body as string) : {}
+      const state = getProvisioningState()
+      const newReq = {
+        id: `req-${Date.now()}`, requester_email: body.requester_email || "user@example.com",
+        requester_name: body.requester_name || "User", org_id: body.org_id || "unknown",
+        requested_entitlements: body.requested_entitlements || [],
+        requested_role: body.requested_role || null, reason: body.reason || "",
+        status: "pending" as const, admin_note: "", reviewed_by: "",
+        created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+      }
+      addRequest(newReq)
+      return json({ request: newReq })
+    }
+    const state = getProvisioningState()
+    const statusFilter = path.split("?status=")[1]
+    const filtered = statusFilter ? state.requests.filter(r => r.status === statusFilter) : state.requests
+    return json({ requests: filtered, total: filtered.length })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
+    const reqId = route.split("/")[5]
+    const body = opts?.body ? JSON.parse(opts.body as string) : {}
+    const action = body.action as "approve" | "deny"
+    const updated = updateRequest(reqId, {
+      status: action === "approve" ? "approved" : "denied",
+      admin_note: body.admin_note || "",
+      reviewed_by: "admin@odum.internal",
+    })
+    return updated ? json({ request: updated }) : json({ error: "not found" })
+  }
+  if (route === "/api/auth/provisioning/access-templates") {
+    return json({ templates: [{ id: "tpl-default", name: "Default Access", description: "Standard entitlements", github_teams: [], slack_channels: [], aws_permission_sets: [] }], total: 1 })
+  }
+  if (route.startsWith("/api/auth/provisioning/access-templates/")) {
+    return json({ template: { id: "tpl-default", name: "Default Access" } })
+  }
+  if (route === "/api/auth/provisioning/admin/health-checks") {
+    if (opts?.method === "POST") return json({ result: { status: "healthy", checks: [], timestamp: new Date().toISOString() } })
+    return json({ result: { status: "healthy" } })
+  }
+  if (route === "/api/auth/provisioning/admin/health-checks/history") {
+    return json({ history: [], total: 0 })
+  }
+  if (route === "/api/auth/catalogue") {
+    return json(MOCK_PERMISSION_CATALOGUE)
+  }
+  if (route.startsWith("/api/auth/catalogue/search/")) {
+    const query = decodeURIComponent(route.split("/api/auth/catalogue/search/")[1] || "").toLowerCase()
+    const results: Array<{ domain: string; domain_label: string; category: string; category_label: string; key: string; label: string; description: string; internal_only: string }> = []
+    for (const domain of MOCK_PERMISSION_CATALOGUE.domains) {
+      for (const cat of domain.categories) {
+        for (const perm of cat.permissions) {
+          if (perm.label.toLowerCase().includes(query) || perm.description.toLowerCase().includes(query) || perm.key.toLowerCase().includes(query)) {
+            results.push({ domain: domain.key, domain_label: domain.label, category: cat.key, category_label: cat.label, key: perm.key, label: perm.label, description: perm.description, internal_only: String(perm.internal_only) })
+          }
+        }
+      }
+    }
+    return json({ results, total: results.length })
+  }
+
+  // --- Health (service health endpoints) ---
   if (route === "/api/health") return json({ status: "healthy", mock: true })
+  if (route === "/api/auth/health") return json({ status: "healthy", service: "auth-api", mock: true })
+  if (route === "/api/reporting/health") return json({ status: "healthy", service: "client-reporting-api", mock: true })
+  if (route === "/api/execution/health") return json({ status: "healthy", service: "execution-service", mock: true })
+  if (route === "/api/deployment/health") return json({ status: "healthy", service: "deployment-service", mock: true })
+  if (route === "/api/config/health") return json({ status: "healthy", service: "config-interface", mock: true })
+  if (route === "/api/analytics/health") return json({ status: "healthy", service: "trading-analytics-api", mock: true })
+  if (route === "/api/audit/health") return json({ status: "healthy", service: "batch-audit-api", mock: true })
+  if (route === "/api/ml/health") return json({ status: "healthy", service: "ml-inference-api", mock: true })
+  if (route === "/api/market-data/health") return json({ status: "healthy", service: "market-data-api", mock: true })
+  if (route.endsWith("/health")) return json({ status: "healthy", mock: true })
+
+  // --- Catch-all for reporting/execution/analytics/deployment with data ---
+  if (route.startsWith("/api/reporting/")) return json({ data: [], total: 0 })
+  if (route.startsWith("/api/execution/") && !route.includes("/algos") && !route.includes("/venues") && !route.includes("/tca") && !route.includes("/benchmarks") && !route.includes("/candidates") && !route.includes("/handoff")) return json({ data: [], total: 0 })
+  if (route.startsWith("/api/analytics/")) return json({ data: [], total: 0 })
+  if (route.startsWith("/api/market-data/")) return json({ data: [], total: 0 })
 
   return null
 }

@@ -9,11 +9,21 @@ import { expect, test } from '@playwright/test'
 async function loginAsAdmin(page: import('@playwright/test').Page) {
   await page.goto('/login')
   await page.waitForLoadState('domcontentloaded')
-  const personaCard = page.locator('[data-testid="persona-card"], button:has-text("admin@odum"), button:has-text("Admin")')
-  if (await personaCard.count() > 0) {
-    await personaCard.first().click()
+  await page.waitForTimeout(500)
+
+  const internalTab = page.locator('button:has-text("Internal")')
+  if (await internalTab.count() > 0) {
+    await internalTab.first().click()
     await page.waitForTimeout(500)
   }
+
+  const adminCard = page.locator('button:has-text("admin@odum")')
+  if (await adminCard.count() > 0) {
+    await adminCard.first().click()
+    await page.waitForTimeout(1000)
+  }
+
+  await page.waitForURL(/\/(dashboard|admin|services)/, { timeout: 10000 }).catch(() => {})
 }
 
 async function resetMockProvisioning(page: import('@playwright/test').Page) {
@@ -75,7 +85,7 @@ test.describe('Tier 0 behavior audit', () => {
     await page.waitForLoadState('domcontentloaded')
     await page.waitForTimeout(1500)
 
-    const main = page.locator('main')
+    const main = page.locator('main').last()
     await expect(main, 'TIER0_AUDIT: reconciliation page should render main content').toBeVisible()
     const text = (await main.innerText()).toLowerCase()
     expect(

@@ -24,7 +24,7 @@ export default function PublicLayout({
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
               <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-              <Link href="/compliance" className="hover:text-foreground transition-colors">FCA 975797</Link>
+              <Link href="/services/regulatory" className="hover:text-foreground transition-colors">FCA 975797</Link>
               <Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link>
             </div>
           </div>

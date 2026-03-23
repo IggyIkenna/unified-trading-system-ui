@@ -8,21 +8,29 @@
 
 import registryData from "@/lib/registry/ui-reference-data.json"
 
-// Safely extract registries — the JSON may have a flat structure or nested
+// Safely extract registries — the JSON has a nested `registries` object
 const data = registryData as Record<string, unknown>
+const registries = (data.registries ?? {}) as Record<string, unknown>
 
-// Venue capabilities — primary venue list
+// Venue list — primary source is registries.venue_category_map (128 venues)
+// Falls back to venue_capabilities.entries for older JSON formats
+const venueCategoryMap = (registries.venue_category_map ?? {}) as Record<string, string>
 const venueCapabilities = (data.venue_capabilities ?? {}) as {
   entries?: Record<string, { venue: string; error_code_count?: number }>
 }
 const venueEntries = venueCapabilities.entries ?? {}
-const allVenues = Object.keys(venueEntries)
+const allVenues = Object.keys(venueCategoryMap).length > 0
+  ? Object.keys(venueCategoryMap)
+  : Object.keys(venueEntries)
 
-// Instrument sample
+// Instrument types — from registries.instrument_types_by_venue (115 venue→types map)
+const instrumentTypesByVenue = (registries.instrument_types_by_venue ?? {}) as Record<string, unknown>
 const instrumentSample = (data.representative_instrument_sample ?? {}) as {
   entries?: Record<string, unknown>
 }
-const instrumentEntries = instrumentSample.entries ?? {}
+const instrumentEntries = Object.keys(instrumentTypesByVenue).length > 0
+  ? instrumentTypesByVenue
+  : (instrumentSample.entries ?? {})
 
 // Derive venue categories from venue name patterns
 function categorizeVenue(venue: string): string {
@@ -39,7 +47,9 @@ function categorizeVenue(venue: string): string {
 
 const venuesByCategory: Record<string, number> = {}
 for (const venue of allVenues) {
-  const cat = categorizeVenue(venue)
+  const cat = Object.keys(venueCategoryMap).length > 0
+    ? (venueCategoryMap[venue] || categorizeVenue(venue))
+    : categorizeVenue(venue)
   venuesByCategory[cat] = (venuesByCategory[cat] || 0) + 1
 }
 
