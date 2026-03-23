@@ -297,8 +297,14 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                   <p className="text-xs text-amber-400">Managing Investments is required for fund structures and has been selected above.</p>
                 )}
               </div>
-              <div className="flex justify-between pt-2">
-                <BackBtn to={1} /><NextBtn disabled={!selOpts.has("ar") && !selOpts.has("advisor")} onClick={() => setStep(3)} />
+              <div className="flex justify-between items-center pt-4 border-t">
+                <BackBtn to={1} />
+                <div className="flex items-center gap-3">
+                  <Link href="/contact?service=regulatory" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    Feeling overwhelmed? Just get in touch — we&apos;ll walk you through it.
+                  </Link>
+                  <NextBtn disabled={!selOpts.has("ar") && !selOpts.has("advisor")} onClick={() => setStep(3)} />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -430,11 +436,16 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                 )
               })}
               <p className="text-xs text-muted-foreground pt-2">You can upload documents later — save your progress and come back anytime.</p>
-              <div className="flex justify-between pt-2">
+              <div className="flex justify-between items-center pt-4 border-t">
                 <BackBtn to={2} />
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setStep(4)}>Skip for now</Button>
-                  <NextBtn onClick={() => setStep(4)} />
+                <div className="flex items-center gap-3">
+                  <Link href="/contact?service=regulatory" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    Too much paperwork? We can help — get in touch.
+                  </Link>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setStep(4)}>Skip for now</Button>
+                    <NextBtn onClick={() => setStep(4)} />
+                  </div>
                 </div>
               </div>
             </CardContent>
