@@ -164,6 +164,25 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
   const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null)
   const [appId, setAppId] = React.useState("")
   const draftId = React.useRef(`draft-${Date.now().toString(36)}`).current
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [resumeDraft, setResumeDraft] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    const raw = localStorage.getItem("onboarding-draft")
+    if (raw) {
+      try { setResumeDraft(JSON.parse(raw)) } catch { /* invalid draft */ }
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (step > 1 && name) {
+      localStorage.setItem("onboarding-draft", JSON.stringify({
+        draftId, orgSlug: company.toLowerCase().replace(/\s+/g, "-"),
+        service: serviceType, name, email, company, phone, expectedAum,
+        selOpts: [...selOpts], docs, declarations, signatures, step,
+      }))
+    }
+  }, [step, draftId, serviceType, name, email, company, phone, expectedAum, selOpts, docs, declarations, signatures])
 
   const orgSlug = company.toLowerCase().replace(/\s+/g, "-") || "unknown"
 
@@ -226,6 +245,12 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
     addRequest(req)
     setAppId(id)
     setStep(5)
+    localStorage.setItem("onboarding-draft", JSON.stringify({
+      appId: id, draftId, orgSlug, service: serviceType,
+      name, email, company, phone, expectedAum,
+      selOpts: [...selOpts], docs, declarations, signatures,
+      step: 5, submittedAt: now,
+    }))
   }
 
   const BackBtn = ({ to }: { to: number }) => <Button variant="ghost" onClick={() => setStep(to)}><ArrowLeft className="mr-2 size-4" />Back</Button>
@@ -249,6 +274,40 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
           <Card>
             <CardHeader><CardTitle className="text-lg">Your Details</CardTitle></CardHeader>
             <CardContent className="space-y-4">
+              {resumeDraft && !name && (
+                <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 mb-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Continue your application?</p>
+                    <p className="text-xs text-muted-foreground">
+                      You have an incomplete application for {resumeDraft.company} ({resumeDraft.email}).
+                      {resumeDraft.step < 5 ? " You can continue where you left off." : " Your application was submitted — you can upload remaining documents."}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => {
+                      setName(resumeDraft.name || "")
+                      setEmail(resumeDraft.email || "")
+                      setCompany(resumeDraft.company || "")
+                      setPhone(resumeDraft.phone || "")
+                      setExpectedAum(resumeDraft.expectedAum || "")
+                      setSelOpts(new Set(resumeDraft.selOpts || []))
+                      setDocs(resumeDraft.docs || {})
+                      setDeclarations(resumeDraft.declarations || {})
+                      setSignatures(resumeDraft.signatures || {})
+                      if (resumeDraft.step >= 5) {
+                        setStep(3)
+                      } else {
+                        setStep(resumeDraft.step || 1)
+                      }
+                      setResumeDraft(null)
+                    }}>Resume</Button>
+                    <Button size="sm" variant="ghost" onClick={() => {
+                      localStorage.removeItem("onboarding-draft")
+                      setResumeDraft(null)
+                    }}>Start Fresh</Button>
+                  </div>
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5"><Label className="text-xs">Full Name *</Label>
                   <Input value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" /></div>
@@ -543,9 +602,9 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                 <ol className="space-y-3">
                   {([
                     [FileText, "We review your documents and application"],
-                    [Briefcase, "We create your organisation and accounts"],
-                    [Zap, "You receive API credentials and portal access"],
-                    [CheckCircle2, "You access your portal and start onboarding"],
+                    [Briefcase, "We create your organisation and set up your accounts"],
+                    [Zap, "You receive login credentials and connect your venue API keys"],
+                    [CheckCircle2, "Your portal goes live — reporting, compliance, and monitoring ready"],
                   ] as const).map(([Icon, text], i) => (
                     <li key={i} className="flex items-start gap-3">
                       <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 shrink-0 mt-0.5"><Icon className="size-3.5 text-primary" /></div>

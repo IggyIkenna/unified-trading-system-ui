@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Inbox, CheckCircle2, XCircle, Clock } from "lucide-react"
 import { useAccessRequests, useReviewRequest } from "@/hooks/api/use-user-management"
+import { toast } from "@/hooks/use-toast"
 import type { AccessRequest } from "@/lib/types/user-management"
 
 function statusIcon(status: string) {
@@ -39,8 +40,17 @@ export default function AccessRequestsPage() {
   const review = useReviewRequest()
 
   const handleReview = (id: string, action: "approve" | "deny") => {
+    const request = (data?.requests ?? []).find(r => r.id === id)
     const note = action === "deny" ? "Denied by admin" : "Approved by admin"
     review.mutate({ id, action, admin_note: note })
+    if (request) {
+      toast({
+        title: action === "approve" ? "Approved" : "Denied",
+        description: action === "approve"
+          ? `Confirmation email would be sent to ${request.requester_email}`
+          : `Notification email would be sent to ${request.requester_email}`,
+      })
+    }
   }
 
   return (

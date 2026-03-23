@@ -39,6 +39,7 @@ export function resetDemo() {
   localStorage.removeItem("nav-preference")
   localStorage.removeItem("unified-ui-prefs")
   localStorage.removeItem("unified-global-scope")
+  localStorage.removeItem("onboarding-draft")
 
   // Reload to fresh state
   window.location.href = "/"
