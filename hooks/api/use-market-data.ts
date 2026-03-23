@@ -27,7 +27,7 @@ export function useOrderBook(venue: string, instrument: string, mode?: string, a
     queryKey: ["orderbook", venue, instrument, mode, asOf, user?.id],
     queryFn: () => apiFetch(`/api/market-data/orderbook?${params.toString()}`, token),
     enabled: !!user && !!venue && !!instrument,
-    refetchInterval: mode === "batch" ? false : 5000,
+    refetchInterval: mode === "batch" || process.env.NEXT_PUBLIC_MOCK_API === "true" ? false : 5000,
   })
 }
 
@@ -39,7 +39,7 @@ export function useTrades(venue: string, instrument: string) {
     queryFn: () =>
       apiFetch(`/api/market-data/trades?venue=${encodeURIComponent(venue)}&instrument=${encodeURIComponent(instrument)}`, token),
     enabled: !!user && !!venue && !!instrument,
-    refetchInterval: 3000,
+    refetchInterval: process.env.NEXT_PUBLIC_MOCK_API === "true" ? false : 3000,
   })
 }
 
@@ -50,7 +50,7 @@ export function useTickers() {
     queryKey: ["tickers", user?.id],
     queryFn: () => apiFetch("/api/market-data/tickers", token),
     enabled: !!user,
-    refetchInterval: 10000,
+    refetchInterval: process.env.NEXT_PUBLIC_MOCK_API === "true" ? false : 10000,
   })
 }
 

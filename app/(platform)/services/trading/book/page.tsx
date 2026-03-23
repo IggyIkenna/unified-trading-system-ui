@@ -92,7 +92,8 @@ const ALGO_OPTIONS: AlgoType[] = [
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BookTradePage() {
-  const { user } = useAuth()
+  const { user, hasEntitlement } = useAuth()
+  const canExecute = hasEntitlement("execution-full" as never) || hasEntitlement("can-trade" as never) || user?.role === "admin"
   const searchParams = useSearchParams()
   const placeOrder = usePlaceOrder()
   const preTradeCheck = usePreTradeCheck()
@@ -714,9 +715,21 @@ export default function BookTradePage() {
           )}
 
           {/* ── Action Buttons ─────────────────────────────────────────── */}
+          {!canExecute && executionMode === "execute" && (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+              <AlertTriangle className="size-4 text-amber-500 shrink-0" />
+              <span className="text-sm text-amber-600 dark:text-amber-400">
+                Execution access required — contact admin to upgrade
+              </span>
+            </div>
+          )}
           <div className="flex gap-2">
             {orderState === "idle" && (
-              <Button className="flex-1" onClick={handlePreview} disabled={!canPreview}>
+              <Button
+                className="flex-1"
+                onClick={handlePreview}
+                disabled={!canPreview || (!canExecute && executionMode === "execute")}
+              >
                 Preview Order
               </Button>
             )}
@@ -731,7 +744,7 @@ export default function BookTradePage() {
                     side === "buy" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"
                   )}
                   onClick={handleSubmit}
-                  disabled={complianceLoading || (!compliancePassed && !complianceLoading)}
+                  disabled={complianceLoading || (!compliancePassed && !complianceLoading) || (!canExecute && executionMode === "execute")}
                 >
                   {complianceLoading ? (
                     <>

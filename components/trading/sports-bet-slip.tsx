@@ -39,6 +39,8 @@ import {
   Pause,
   Info,
 } from "lucide-react"
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger"
+import { useToast } from "@/hooks/use-toast"
 
 // ---------- Types ----------
 
@@ -451,6 +453,7 @@ function BackLayLadder({
   matchStatus: MatchStatus
   linkedStrategy: string
 }) {
+  const { toast } = useToast()
   const exchangeOdds = MOCK_EXCHANGE_ODDS[fixtureId] ?? MOCK_EXCHANGE_ODDS["fix-001"] ?? []
   const [selectedOutcome, setSelectedOutcome] = React.useState<string | null>(null)
   const [selectedSide, setSelectedSide] = React.useState<"BACK" | "LAY">("BACK")
@@ -575,7 +578,26 @@ function BackLayLadder({
             </span>
           </div>
 
-          <Button className="w-full h-8 text-xs" disabled={stakeNum <= 0 || isSuspended}>
+          <Button
+            className="w-full h-8 text-xs"
+            disabled={stakeNum <= 0 || isSuspended}
+            onClick={() => {
+              const order = placeMockOrder({
+                client_id: "internal-trader",
+                instrument_id: `EXCHANGE:${fixtureId}:${selectedOutcome}`,
+                venue: "Betfair",
+                side: selectedSide === "BACK" ? "buy" : "sell",
+                order_type: "market",
+                quantity: stakeNum,
+                price: odds,
+                asset_class: "Sports",
+                lane: "sports",
+              })
+              setStake("")
+              setSelectedOutcome(null)
+              toast({ title: "Bet placed", description: `${selectedSide} ${selectedOutcome} — $${stakeNum.toFixed(2)} @ ${odds.toFixed(2)} (${order.id})` })
+            }}
+          >
             {isSuspended ? "Market Suspended" : "Place Bet"}
           </Button>
         </div>
@@ -593,6 +615,7 @@ function FixedOddsPanel({
   matchStatus: MatchStatus
   linkedStrategy: string
 }) {
+  const { toast } = useToast()
   const rawOdds = MOCK_FIXED_ODDS[fixtureId] ?? MOCK_FIXED_ODDS["fix-001"] ?? []
   const [selectedOutcome, setSelectedOutcome] = React.useState<string | null>(null)
   const [stake, setStake] = React.useState("")
@@ -693,7 +716,26 @@ function FixedOddsPanel({
               {stakeNum > 0 ? `$${(potentialReturn - stakeNum).toFixed(2)}` : "--"}
             </span>
           </div>
-          <Button className="w-full h-8 text-xs" disabled={stakeNum <= 0 || isSuspended}>
+          <Button
+            className="w-full h-8 text-xs"
+            disabled={stakeNum <= 0 || isSuspended}
+            onClick={() => {
+              const order = placeMockOrder({
+                client_id: "internal-trader",
+                instrument_id: `FIXED:${fixtureId}:${selectedOutcome}`,
+                venue: "Pinnacle",
+                side: "buy",
+                order_type: "market",
+                quantity: stakeNum,
+                price: decimalOdds,
+                asset_class: "Sports",
+                lane: "sports",
+              })
+              setStake("")
+              setSelectedOutcome(null)
+              toast({ title: "Bet placed", description: `${selectedOutcome} — $${stakeNum.toFixed(2)} @ ${decimalOdds.toFixed(2)} (${order.id})` })
+            }}
+          >
             {isSuspended ? "Market Suspended" : "Place Bet"}
           </Button>
         </div>
@@ -703,6 +745,7 @@ function FixedOddsPanel({
 }
 
 function PredictionPanel({ matchStatus }: { matchStatus: MatchStatus }) {
+  const { toast } = useToast()
   const [side, setSide] = React.useState<"YES" | "NO">("YES")
   const [stake, setStake] = React.useState("")
   const stakeNum = parseFloat(stake) || 0
@@ -775,7 +818,25 @@ function PredictionPanel({ matchStatus }: { matchStatus: MatchStatus }) {
         </div>
       </div>
 
-      <Button className="w-full h-8 text-xs" disabled={stakeNum <= 0 || isSuspended}>
+      <Button
+        className="w-full h-8 text-xs"
+        disabled={stakeNum <= 0 || isSuspended}
+        onClick={() => {
+          const order = placeMockOrder({
+            client_id: "internal-trader",
+            instrument_id: `PRED:EPL:ARSENAL:${side}`,
+            venue: "polymarket",
+            side: "buy",
+            order_type: "market",
+            quantity: stakeNum,
+            price: market.price,
+            asset_class: "Prediction",
+            lane: "predictions",
+          })
+          setStake("")
+          toast({ title: "Shares purchased", description: `${side} shares — $${stakeNum.toFixed(2)} @ $${market.price.toFixed(2)} (${order.id})` })
+        }}
+      >
         {isSuspended ? "Market Suspended" : `Buy ${side} Shares`}
       </Button>
     </div>

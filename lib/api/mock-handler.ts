@@ -14,6 +14,9 @@ import { STRATEGY_TEMPLATES, BACKTEST_RUNS, STRATEGY_CANDIDATES, STRATEGY_ALERTS
 import { MOCK_CATALOGUE, MOCK_INSTRUMENTS, MOCK_SHARD_AVAILABILITY } from "@/lib/data-service-mock-data"
 import { getState as getProvisioningState, addUser, updateUser, addRequest, updateRequest } from "@/lib/api/mock-provisioning-state"
 import type { MockUser } from "@/lib/api/mock-provisioning-state"
+import { getOrders as getLedgerOrders, placeMockOrder, cancelMockOrder, amendMockOrder } from "@/lib/api/mock-trade-ledger"
+import { getOnboardingState, addApplication, updateApplication, addDocument } from "@/lib/api/mock-onboarding-state"
+import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state"
 
 export const MOCK_MODE = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true"
 
@@ -203,18 +206,27 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Market Data ---
   if (route === "/api/market-data/tickers") {
-    const tickers = ["BTC-USDT", "ETH-USDT", "SOL-USDT", "BNB-USDT", "XRP-USDT", "DOGE-USDT", "ADA-USDT", "AVAX-USDT"].map((sym, i) => ({
-      symbol: sym,
-      venue: i % 2 === 0 ? "Binance" : "OKX",
-      last: 40000 / (i + 1),
-      bid: 40000 / (i + 1) - 5,
-      ask: 40000 / (i + 1) + 5,
-      volume24h: 1000000000 / (i + 1),
-      change24h: (i % 3 === 0 ? -1 : 1) * (1.5 + i * 0.3),
-      high24h: 41000 / (i + 1),
-      low24h: 39000 / (i + 1),
-      timestamp: new Date().toISOString(),
-    }))
+    const RESTRICTED_SYMBOLS = ["DOGE-USDT", "SHIB-USDT"]
+    const DEFI_VENUES = ["Uniswap", "Aave", "Hyperliquid", "SushiSwap", "Curve", "Morpho"]
+    const tickers = ["BTC-USDT", "ETH-USDT", "SOL-USDT", "BNB-USDT", "XRP-USDT", "DOGE-USDT", "ADA-USDT", "AVAX-USDT"].map((sym, i) => {
+      const venueName = i % 2 === 0 ? "Binance" : "OKX"
+      const entitlement = RESTRICTED_SYMBOLS.includes(sym)
+        ? "restricted" as const
+        : DEFI_VENUES.includes(venueName) ? "delayed" as const : "live" as const
+      return {
+        symbol: sym,
+        venue: venueName,
+        last: 40000 / (i + 1),
+        bid: 40000 / (i + 1) - 5,
+        ask: 40000 / (i + 1) + 5,
+        volume24h: 1000000000 / (i + 1),
+        change24h: (i % 3 === 0 ? -1 : 1) * (1.5 + i * 0.3),
+        high24h: 41000 / (i + 1),
+        low24h: 39000 / (i + 1),
+        timestamp: new Date().toISOString(),
+        entitlement,
+      }
+    })
     return json(tickers)
   }
   if (route === "/api/market-data/candles") {
@@ -293,8 +305,43 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
 
   // --- Execution ---
+
+  // Cancel order: PUT /api/execution/orders/{id}/cancel
+  const cancelMatch = route.match(/^\/api\/execution\/orders\/([^/]+)\/cancel$/)
+  if (cancelMatch && opts?.method === "PUT") {
+    const result = cancelMockOrder(cancelMatch[1])
+    return json({ order: result })
+  }
+
+  // Amend order: PUT /api/execution/orders/{id}/amend
+  const amendMatch = route.match(/^\/api\/execution\/orders\/([^/]+)\/amend$/)
+  if (amendMatch && opts?.method === "PUT") {
+    const body = opts.body ? JSON.parse(opts.body as string) : {}
+    const result = amendMockOrder(amendMatch[1], body)
+    return json({ order: result })
+  }
+
   if (route === "/api/execution/orders") {
-    // Generate 24 TCA-enriched orders across venues and algos
+    // POST: place a new order via the stateful ledger
+    if (opts?.method === "POST") {
+      const body = opts.body ? JSON.parse(opts.body as string) : {}
+      const result = placeMockOrder({
+        strategy_id: body.strategy_id ?? null,
+        client_id: body.client_id ?? "internal-trader",
+        instrument_id: body.instrument ?? body.instrument_id ?? "BTC-PERP",
+        venue: body.venue ?? "Binance",
+        side: body.side ?? "buy",
+        order_type: body.order_type ?? "market",
+        quantity: body.quantity ?? 1,
+        price: body.price ?? 0,
+        asset_class: body.asset_class ?? "CeFi",
+        lane: body.lane ?? "book",
+        algo_type: body.algo ?? null,
+      })
+      return json({ order: result })
+    }
+
+    // GET: merge static TCA orders with stateful ledger orders
     const tcaVenues = ["binance", "okx", "hyperliquid", "deribit", "aave", "uniswap", "polymarket", "betfair"]
     const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"]
     const tcaInstruments = ["BTC-PERP", "ETH-PERP", "SOL-PERP", "BTC-USDT", "ETH-USDT", "DOGE-USDT", "BTC-26JUN26", "ETH-26JUN26-60000-C", "AAVE_V3:SUPPLY:USDC", "UNISWAPV3:LP:ETH-USDC", "POLYMARKET:BINARY:BTC-100K@YES", "BETFAIR:EPL:MUN-LIV"]
@@ -347,22 +394,54 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         },
       }
     })
+    const ledgerOrders = getLedgerOrders().map(o => ({
+      id: o.id,
+      order_id: o.id,
+      instrument: o.instrument_id,
+      venue: o.venue,
+      algo: o.algo_type ?? "MANUAL",
+      side: o.side.toUpperCase(),
+      type: o.order_type.toUpperCase(),
+      quantity: o.quantity,
+      price: o.price,
+      avgPrice: o.average_fill_price ?? o.price,
+      filled: o.filled_quantity,
+      status: o.status.toUpperCase(),
+      fillRate: o.quantity > 0 ? (o.filled_quantity / o.quantity) * 100 : 0,
+      durationMs: 0,
+      strategy_id: o.strategy_id ?? "",
+      strategy_name: o.strategy_id ?? "Manual",
+      edge_bps: 0,
+      instant_pnl: 0,
+      created_at: o.created_at,
+      tca: null,
+    }))
+
     return json({
-      data: tcaOrders,
+      data: [...ledgerOrders, ...tcaOrders],
       tcaBreakdown: [
-        { name: "Spread Cost", value: 1.8, color: "#3b82f6" },
-        { name: "Market Impact", value: 1.2, color: "#8b5cf6" },
-        { name: "Timing Cost", value: 0.6, color: "#f59e0b" },
-        { name: "Fees", value: 0.8, color: "#6b7280" },
+        { name: "Spread Cost", value: 12450, color: "#3b82f6" },
+        { name: "Market Impact", value: 8320, color: "#8b5cf6" },
+        { name: "Timing Cost", value: 3150, color: "#f59e0b" },
+        { name: "Opportunity Cost", value: 5680, color: "#10b981" },
+        { name: "Commission", value: 2100, color: "#6b7280" },
       ],
-      executionTimeline: Array.from({ length: 20 }, (_, i) => ({
-        time: new Date(Date.now() - (20 - i) * 3600000).toISOString(),
-        slippage: parseFloat((1.5 + Math.sin(i * 0.5) * 2).toFixed(1)),
-        volume: Math.round(500000 + Math.random() * 2000000),
-      })),
+      executionTimeline: Array.from({ length: 20 }, (_, i) => {
+        const base = 42000 + Math.sin(i * 0.3) * 120
+        return {
+          time: i * 5,
+          price: parseFloat((base + Math.sin(i * 0.7) * 40).toFixed(2)),
+          vwap: parseFloat((base + 15 + Math.cos(i * 0.4) * 20).toFixed(2)),
+          twap: parseFloat((base + 10).toFixed(2)),
+        }
+      }),
       slippageDistribution: [
-        { range: "<-2bps", count: 3 }, { range: "-2 to 0", count: 5 }, { range: "0 to 2", count: 8 },
-        { range: "2 to 4", count: 5 }, { range: "4 to 6", count: 2 }, { range: ">6bps", count: 1 },
+        { range: "<-2bps", count: 3, color: "#10b981" },
+        { range: "-2 to 0", count: 5, color: "#6ee7b7" },
+        { range: "0 to 2", count: 8, color: "#fbbf24" },
+        { range: "2 to 4", count: 5, color: "#f97316" },
+        { range: "4 to 6", count: 2, color: "#ef4444" },
+        { range: ">6bps", count: 1, color: "#dc2626" },
       ],
     })
   }
@@ -385,24 +464,69 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json({ handoffs: [], total: 0 })
   }
   if (route === "/api/compliance/pre-trade-check") {
-    return json({ approved: true, checks: [{ rule: "position-limit", passed: true }, { rule: "concentration", passed: true }] })
+    const body = opts?.body ? JSON.parse(opts.body as string) : {}
+    const instrument = (body.instrument ?? "") as string
+    const quantity = (body.quantity ?? 0) as number
+    const price = (body.price ?? 0) as number
+    if (instrument.toUpperCase().includes("DOGE") || instrument.toUpperCase().includes("SHIB")) {
+      return json({ approved: false, checks: [{ rule: "Restricted List", passed: false, reason: "Instrument on restricted list — requires risk committee override" }] })
+    }
+    if (quantity * price > 1_000_000) {
+      return json({ approved: true, checks: [{ rule: "Single Order Limit", passed: true, warning: "Order exceeds $1M — flagged for post-trade review" }, { rule: "Restricted List", passed: true }, { rule: "Position Limit", passed: true }] })
+    }
+    return json({ approved: true, checks: [{ rule: "Restricted List", passed: true }, { rule: "Position Limit", passed: true }, { rule: "Concentration Limit", passed: true }] })
   }
 
   // --- Instruments ---
   if (route === "/api/instruments/list") {
-    // Also include venue-level aggregation for data overview page
+    const DEFI_CATEGORIES = ["defi"]
+    const RESTRICTED_BASES = ["DOGE", "SHIB"]
     const venueMap: Record<string, { venue: string; category: string; instruments: number; coverage: number }> = {}
-    MOCK_INSTRUMENTS.forEach(inst => {
+    const enrichedInstruments = MOCK_INSTRUMENTS.map(inst => {
       if (!venueMap[inst.venue]) venueMap[inst.venue] = { venue: inst.venue, category: inst.category, instruments: 0, coverage: 85 + Math.random() * 15 }
       venueMap[inst.venue].instruments++
+      const entitlement = RESTRICTED_BASES.includes(inst.baseCurrency)
+        ? "restricted" as const
+        : DEFI_CATEGORIES.includes(inst.category) ? "delayed" as const : "live" as const
+      return { ...inst, entitlement }
     })
     return json({
-      instruments: MOCK_INSTRUMENTS, total: MOCK_INSTRUMENTS.length, persona: "admin",
+      instruments: enrichedInstruments, total: enrichedInstruments.length, persona: "admin",
       venues: Object.values(venueMap),
     })
   }
   if (route === "/api/instruments/catalogue") {
-    return json({ catalogue: MOCK_CATALOGUE, total: MOCK_CATALOGUE.length })
+    const DEFI_CATEGORIES = ["defi"]
+    const RESTRICTED_BASES = ["DOGE", "SHIB"]
+    const SYMBOLOGY_MAP: Record<string, { bloomberg: string | null; reuters: string | null; coingecko: string }> = {
+      BTC: { bloomberg: "BTCUSD Curncy", reuters: "BTC=", coingecko: "bitcoin" },
+      ETH: { bloomberg: "ETHUSD Curncy", reuters: "ETH=", coingecko: "ethereum" },
+      SOL: { bloomberg: null, reuters: null, coingecko: "solana" },
+      BNB: { bloomberg: null, reuters: null, coingecko: "binancecoin" },
+      XRP: { bloomberg: null, reuters: null, coingecko: "ripple" },
+      DOGE: { bloomberg: null, reuters: null, coingecko: "dogecoin" },
+      ADA: { bloomberg: null, reuters: null, coingecko: "cardano" },
+      AVAX: { bloomberg: null, reuters: null, coingecko: "avalanche-2" },
+      LINK: { bloomberg: null, reuters: null, coingecko: "chainlink" },
+      ARB: { bloomberg: null, reuters: null, coingecko: "arbitrum" },
+      USDT: { bloomberg: null, reuters: null, coingecko: "tether" },
+      USDC: { bloomberg: null, reuters: null, coingecko: "usd-coin" },
+    }
+    const enrichedCatalogue = MOCK_CATALOGUE.map(entry => {
+      const inst = entry.instrument
+      const entitlement = RESTRICTED_BASES.includes(inst.baseCurrency)
+        ? "restricted" as const
+        : DEFI_CATEGORIES.includes(inst.category) ? "delayed" as const : "live" as const
+      const symData = SYMBOLOGY_MAP[inst.baseCurrency]
+      const symbology = {
+        internal: inst.instrumentKey,
+        bloomberg: symData?.bloomberg ?? null,
+        reuters: symData?.reuters ?? null,
+        coingecko: symData?.coingecko ?? inst.baseCurrency.toLowerCase(),
+      }
+      return { ...entry, entitlement, symbology }
+    })
+    return json({ catalogue: enrichedCatalogue, total: enrichedCatalogue.length })
   }
 
   // --- Alerts ---
@@ -652,7 +776,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       })),
     })
   }
+  if (route.match(/^\/api\/reporting\/settlements\/[^/]+\/confirm$/) && opts?.method === "PUT") {
+    const settlementId = route.split("/").at(-2)
+    return json({ ok: true, settlement_id: settlementId, status: "confirmed" })
+  }
   if (route === "/api/reporting/settlements") {
+    const statuses = ["confirmed", "pending", "failed", "disputed", "confirmed", "pending"] as const
     return json({
       settlements: CLIENTS.slice(0, 6).flatMap((c, ci) =>
         Array.from({ length: 3 }, (_, i) => ({
@@ -660,8 +789,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           clientId: c.id,
           amount: 50000 + Math.round((ci * 30000 + i * 80000)),
           currency: "USD",
-          status: (["pending", "confirming", "settled"] as const)[i % 3],
-          settledAt: i === 2 ? new Date(Date.now() - i * 86400000).toISOString() : null,
+          status: statuses[(ci + i) % statuses.length],
+          settledAt: statuses[(ci + i) % statuses.length] === "confirmed" ? new Date(Date.now() - i * 86400000).toISOString() : null,
           venue: ["binance", "okx", "deribit"][i % 3],
         }))
       ),
@@ -679,7 +808,38 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       ],
     })
   }
-  if (route === "/api/reporting/reconciliation") return json({ breaks: [], total: 0 })
+  // --- Reporting Subscriptions ---
+  if (route.match(/^\/api\/reporting\/subscriptions\/[^/]+\/approve$/) && opts?.method === "PUT") {
+    const subId = route.split("/").at(-2)
+    return json({ ok: true, subscription_id: subId, status: "active" })
+  }
+  if (route === "/api/reporting/subscriptions/subscribe" && opts?.method === "POST") {
+    return json({ subscription: { id: `sub-new-${Date.now()}`, status: "pending_approval" } })
+  }
+  if (route === "/api/reporting/subscriptions") {
+    return json({
+      subscriptions: [
+        { id: "sub-001", client_id: "alpha-main", org_id: "alpha-capital", package: "Daily Execution Summary", frequency: "daily", format: "PDF", status: "active", next_run: "2026-03-24T06:00:00Z", created_at: "2026-02-01T00:00:00Z" },
+        { id: "sub-002", client_id: "alpha-main", org_id: "alpha-capital", package: "Monthly Regulatory Pack", frequency: "monthly", format: "PDF+Excel", status: "active", next_run: "2026-04-01T00:00:00Z", created_at: "2026-01-15T00:00:00Z" },
+        { id: "sub-003", client_id: "vertex-core", org_id: "vertex-partners", package: "Weekly Risk Report", frequency: "weekly", format: "PDF", status: "pending_approval", next_run: null, created_at: "2026-03-20T00:00:00Z" },
+      ],
+      total: 3,
+    })
+  }
+
+  if (route === "/api/reporting/reconciliation") return json({
+    breaks: [
+      { id: "BRK-001", type: "position", instrument: "BTC-PERP", venue: "binance", internal_qty: 2.5, external_qty: 2.3, diff: 0.2, status: "unresolved", severity: "high", detected_at: "2026-03-23T10:15:00Z", correlation_id: "corr-brk-001" },
+      { id: "BRK-002", type: "pnl", instrument: "ETH-USDT", venue: "hyperliquid", internal_qty: 15420.50, external_qty: 15380.25, diff: 40.25, status: "unresolved", severity: "medium", detected_at: "2026-03-23T09:30:00Z", correlation_id: "corr-brk-002" },
+      { id: "BRK-003", type: "fee", instrument: "SOL-PERP", venue: "binance", internal_qty: 125.00, external_qty: 132.50, diff: -7.50, status: "resolved", severity: "low", detected_at: "2026-03-22T16:00:00Z", correlation_id: "corr-brk-003" },
+      { id: "BRK-004", type: "position", instrument: "AAVE_V3:SUPPLY:USDT", venue: "aave", internal_qty: 50000, external_qty: 49850, diff: 150, status: "unresolved", severity: "medium", detected_at: "2026-03-23T08:00:00Z", correlation_id: "corr-brk-004" },
+    ],
+    total: 4,
+  })
+  if (route === "/api/reporting/reconciliation/resolve" && opts?.method === "POST") {
+    const body = opts.body ? JSON.parse(opts.body as string) : {}
+    return json({ ok: true, break_id: body.break_id, status: "resolved" })
+  }
   if (route === "/api/reporting/regulatory") return json([])
   if (route === "/api/reporting/pnl-attribution") return json({ factors: [], total: 0 })
   if (route === "/api/reporting/executive-summary") return json({ aum: 45200000, pnlMtd: 1446400, sharpe: 2.1, strategies: 12 })
@@ -751,7 +911,20 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
 
   // --- Audit ---
-  if (route === "/api/audit/events") return json([])
+  if (route === "/api/audit/events") return json([
+    { id: "evt-001", timestamp: "2026-03-23T10:30:00Z", actor: "admin@odum.internal", action: "order.placed", entity_type: "order", entity_id: "ord-001", correlation_id: "corr-ord-001", details: "BTC-PERP buy 2.5 @ $42,150 on Binance" },
+    { id: "evt-002", timestamp: "2026-03-23T10:30:01Z", actor: "system", action: "order.filled", entity_type: "order", entity_id: "ord-001", correlation_id: "corr-ord-001", details: "Filled 2.5 BTC-PERP @ avg $42,148.50" },
+    { id: "evt-003", timestamp: "2026-03-23T10:32:00Z", actor: "system", action: "position.updated", entity_type: "position", entity_id: "pos-btc-001", correlation_id: "corr-ord-001", details: "BTC-PERP position: 0 → 2.5 LONG" },
+    { id: "evt-004", timestamp: "2026-03-23T10:35:00Z", actor: "system", action: "alert.triggered", entity_type: "alert", entity_id: "alrt-001", correlation_id: "corr-alrt-001", details: "Margin utilisation 78% on Binance" },
+    { id: "evt-005", timestamp: "2026-03-23T10:36:00Z", actor: "admin@odum.internal", action: "alert.acknowledged", entity_type: "alert", entity_id: "alrt-001", correlation_id: "corr-alrt-001", details: "Admin acknowledged margin warning" },
+    { id: "evt-006", timestamp: "2026-03-23T09:00:00Z", actor: "system", action: "reconciliation.break_detected", entity_type: "break", entity_id: "BRK-001", correlation_id: "corr-brk-001", details: "Position mismatch: BTC-PERP internal=2.5 vs exchange=2.3" },
+    { id: "evt-007", timestamp: "2026-03-23T08:00:00Z", actor: "pm@alphacapital.com", action: "access.requested", entity_type: "access_request", entity_id: "req-001", correlation_id: "corr-req-001", details: "Requested execution-full, ml-full" },
+    { id: "evt-008", timestamp: "2026-03-23T07:00:00Z", actor: "admin@odum.internal", action: "access.approved", entity_type: "access_request", entity_id: "req-003", correlation_id: "corr-req-003", details: "Approved reporting access for Alpha Ops Manager" },
+    { id: "evt-009", timestamp: "2026-03-22T16:00:00Z", actor: "system", action: "strategy.deployed", entity_type: "strategy", entity_id: "DEFI_ETH_BASIS_SCE_1H", correlation_id: "corr-strat-001", details: "ETH Basis strategy promoted to live" },
+    { id: "evt-010", timestamp: "2026-03-22T14:00:00Z", actor: "system", action: "report.generated", entity_type: "report", entity_id: "rpt-001", correlation_id: "corr-rpt-001", details: "Monthly executive summary generated for March 2026" },
+    { id: "evt-011", timestamp: "2026-03-22T12:00:00Z", actor: "system", action: "settlement.confirmed", entity_type: "settlement", entity_id: "stl-001", correlation_id: "corr-stl-001", details: "BTC-PERP settlement confirmed on Binance" },
+    { id: "evt-012", timestamp: "2026-03-22T10:00:00Z", actor: "system", action: "model.deployed", entity_type: "ml_model", entity_id: "mdl-btc-v3", correlation_id: "corr-mdl-001", details: "BTC direction model v3 deployed to inference" },
+  ])
   if (route === "/api/audit/compliance") return json({ status: "compliant", checks: [] })
   if (route === "/api/audit/data-health") return json({ status: "healthy", gaps: 0 })
   if (route === "/api/audit/batch-jobs") return json([])
@@ -1209,6 +1382,66 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   if (route === "/api/auth/provisioning/admin/health-checks/history") {
     return json({ history: [] })
+  }
+
+  // --- Client Onboarding Applications ---
+  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/) && opts?.method === "POST") {
+    const appId = route.split("/").at(-2)!
+    const body = opts.body ? JSON.parse(opts.body as string) : {}
+    const newDoc: DocumentArtifact = {
+      id: `doc-${Date.now()}`,
+      application_id: appId,
+      doc_type: body.doc_type ?? "other",
+      file_name: body.file_name ?? "upload.pdf",
+      uploaded_at: new Date().toISOString(),
+      review_status: "pending",
+      review_note: "",
+    }
+    addDocument(newDoc)
+    return json({ document: newDoc })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/)) {
+    const appId = route.split("/").at(-2)!
+    const { documents } = getOnboardingState()
+    const appDocs = documents.filter(d => d.application_id === appId)
+    return json({ documents: appDocs, total: appDocs.length })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/review$/) && opts?.method === "PUT") {
+    const appId = route.split("/").at(-2)!
+    const body = opts.body ? JSON.parse(opts.body as string) : {}
+    const newStatus = body.action === "reject" ? "rejected" : "approved"
+    const updated = updateApplication(appId, {
+      status: newStatus as OnboardingApplication["status"],
+      reviewer_id: body.reviewer_id ?? "admin",
+      review_note: body.review_note ?? "",
+    })
+    return updated ? json({ application: updated }) : json({ error: "not found" })
+  }
+  if (route === "/api/auth/provisioning/onboarding-applications" && opts?.method === "POST") {
+    const body = opts.body ? JSON.parse(opts.body as string) : {}
+    const now = new Date().toISOString()
+    const newApp: OnboardingApplication = {
+      id: `onb-${Date.now()}`,
+      applicant_user_id: body.applicant_user_id ?? `uid-${Date.now()}`,
+      applicant_name: body.applicant_name ?? "New Applicant",
+      applicant_email: body.applicant_email ?? "applicant@example.com",
+      org_name: body.org_name ?? "New Organisation",
+      desired_product_slugs: body.desired_product_slugs ?? [],
+      subscription_tier: body.subscription_tier ?? "basic",
+      status: "draft",
+      submitted_at: null,
+      reviewer_id: null,
+      review_note: "",
+      correlation_id: `corr-onb-${Date.now()}`,
+      created_at: now,
+      updated_at: now,
+    }
+    addApplication(newApp)
+    return json({ application: newApp })
+  }
+  if (route === "/api/auth/provisioning/onboarding-applications") {
+    const { applications } = getOnboardingState()
+    return json({ applications, total: applications.length })
   }
 
   // --- Options & Futures ---

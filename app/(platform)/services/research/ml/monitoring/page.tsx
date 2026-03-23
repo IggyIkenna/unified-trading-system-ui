@@ -108,13 +108,14 @@ export default function LiveMonitoringPage() {
     drift: f.drift ?? 0,
     coverage: f.coverage ?? 100,
   }))
-  const isLoading = deploymentsLoading || versionsLoading
+  const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true"
+  const isLoading = deploymentsLoading && versionsLoading
   const [liveMetrics, setLiveMetrics] = useState(generateLiveMetrics())
   const [selectedModel, setSelectedModel] = useState("all")
   const [timeRange, setTimeRange] = useState("1h")
 
-  // Simulate real-time updates
   useEffect(() => {
+    if (isMockMode) return
     const interval = setInterval(() => {
       setLiveMetrics(prev => {
         const newPoint = {
@@ -130,7 +131,7 @@ export default function LiveMonitoringPage() {
       })
     }, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [isMockMode])
 
   if (isLoading) return (
     <div className="space-y-4 p-6">

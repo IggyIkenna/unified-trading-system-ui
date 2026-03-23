@@ -244,7 +244,7 @@ export default function ExecutionTCAPage() {
                       <div 
                         className="h-full rounded-full" 
                         style={{ 
-                          width: `${(item.value / totalCost) * 100}%`,
+                          width: `${totalCost > 0 ? (item.value / totalCost) * 100 : 0}%`,
                           backgroundColor: item.color
                         }} 
                       />
@@ -275,7 +275,7 @@ export default function ExecutionTCAPage() {
                   selectedOrder.avgPrice > selectedOrder.tca.arrivalPrice ? "text-red-500" : "text-emerald-500"
                 )}>
                   {selectedOrder.avgPrice > selectedOrder.tca.arrivalPrice ? "+" : ""}
-                  {((selectedOrder.avgPrice - selectedOrder.tca.arrivalPrice) / selectedOrder.tca.arrivalPrice * 10000).toFixed(1)} bps
+                  {(selectedOrder.tca.arrivalPrice > 0 ? (selectedOrder.avgPrice - selectedOrder.tca.arrivalPrice) / selectedOrder.tca.arrivalPrice * 10000 : 0).toFixed(1)} bps
                 </div>
               </div>
               <div className="p-4 rounded-lg border">
@@ -285,7 +285,7 @@ export default function ExecutionTCAPage() {
                   selectedOrder.avgPrice > selectedOrder.tca.vwap ? "text-red-500" : "text-emerald-500"
                 )}>
                   {selectedOrder.avgPrice > selectedOrder.tca.vwap ? "+" : ""}
-                  {((selectedOrder.avgPrice - selectedOrder.tca.vwap) / selectedOrder.tca.vwap * 10000).toFixed(1)} bps
+                  {(selectedOrder.tca.vwap > 0 ? (selectedOrder.avgPrice - selectedOrder.tca.vwap) / selectedOrder.tca.vwap * 10000 : 0).toFixed(1)} bps
                 </div>
               </div>
               <div className="p-4 rounded-lg border">
@@ -295,7 +295,7 @@ export default function ExecutionTCAPage() {
                   selectedOrder.avgPrice > selectedOrder.tca.twap ? "text-red-500" : "text-emerald-500"
                 )}>
                   {selectedOrder.avgPrice > selectedOrder.tca.twap ? "+" : ""}
-                  {((selectedOrder.avgPrice - selectedOrder.tca.twap) / selectedOrder.tca.twap * 10000).toFixed(1)} bps
+                  {(selectedOrder.tca.twap > 0 ? (selectedOrder.avgPrice - selectedOrder.tca.twap) / selectedOrder.tca.twap * 10000 : 0).toFixed(1)} bps
                 </div>
               </div>
               <div className="p-4 rounded-lg border">

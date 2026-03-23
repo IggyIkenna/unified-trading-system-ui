@@ -26,7 +26,9 @@ interface ScopeSummaryProps {
   strategies: { id: string; name: string; status: string }[]
   /** IDs of strategies explicitly selected by user (vs all strategies matching org/client filter) */
   selectedStrategyIds?: string[]
-  totalStrategies: number // Total available strategies before filtering
+  totalStrategies: number
+  totalOrganizations?: number
+  totalClients?: number
   totalCapital: number
   totalExposure: number
   mode: "live" | "batch"
@@ -41,6 +43,8 @@ export function ScopeSummary({
   strategies,
   selectedStrategyIds = [],
   totalStrategies,
+  totalOrganizations = 0,
+  totalClients = 0,
   totalCapital,
   totalExposure,
   mode,
@@ -64,10 +68,13 @@ export function ScopeSummary({
   const hasStrategyFilter = selectedStrategyIds.length > 0
   const hasAnyFilter = hasOrgFilter || hasClientFilter || hasStrategyFilter
 
-  // Build scope label
   const scopeLabel = React.useMemo(() => {
     if (!hasAnyFilter) {
-      return "All Strategies"
+      const parts: string[] = []
+      if (totalOrganizations > 0) parts.push(`All Orgs (${totalOrganizations})`)
+      if (totalClients > 0) parts.push(`All Clients (${totalClients})`)
+      parts.push(`${totalStrategies} Strategies`)
+      return parts.join(" / ")
     }
     const parts: string[] = []
     if (organizations.length === 1) {
@@ -87,7 +94,7 @@ export function ScopeSummary({
       parts.push(`${selectedStrategyIds.length} strategies`)
     }
     return parts.join(" > ") || "Filtered"
-  }, [organizations, clients, strategies, selectedStrategyIds, hasAnyFilter])
+  }, [organizations, clients, strategies, selectedStrategyIds, hasAnyFilter, totalOrganizations, totalClients, totalStrategies])
 
   const hasFilters = hasAnyFilter
 

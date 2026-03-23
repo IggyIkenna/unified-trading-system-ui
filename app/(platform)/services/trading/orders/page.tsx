@@ -15,6 +15,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import {
   Search,
   ArrowUpDown,
   ArrowUpRight,
@@ -22,11 +30,13 @@ import {
   RefreshCw,
   Loader2,
   AlertCircle,
+  XCircle,
+  Pencil,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ExportDropdown } from "@/components/ui/export-dropdown"
 import type { ExportColumn } from "@/lib/utils/export"
-import { useOrders } from "@/hooks/api/use-orders"
+import { useOrders, useCancelOrder, useAmendOrder } from "@/hooks/api/use-orders"
 import { useGlobalScope } from "@/lib/stores/global-scope-store"
 import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar"
 import Link from "next/link"
@@ -98,190 +108,260 @@ function getStatusColor(status: string): string {
   return "border-muted-foreground text-muted-foreground"
 }
 
-const columns: ColumnDef<OrderRecord, unknown>[] = [
-  {
-    accessorKey: "order_id",
-    header: "Order ID",
-    enableSorting: false,
-    cell: ({ row }) => (
-      <span className="font-mono text-xs">{row.getValue<string>("order_id")}</span>
-    ),
-  },
-  {
-    accessorKey: "instrument",
-    header: "Instrument",
-    enableSorting: false,
-    cell: ({ row }) => {
-      const instrument = row.getValue<string>("instrument")
-      const type = classifyInstrument(instrument)
-      return (
-        <Link
-          href={getInstrumentRoute(instrument, type)}
-          className="font-mono font-medium text-primary hover:underline cursor-pointer"
-        >
-          {instrument}
-        </Link>
-      )
+function isActionable(status: string): boolean {
+  const s = status.toUpperCase()
+  return s === "OPEN" || s === "PENDING" || s === "PARTIALLY_FILLED"
+}
+
+function buildColumns(
+  onCancel: (orderId: string) => void,
+  onAmend: (order: OrderRecord) => void,
+): ColumnDef<OrderRecord, unknown>[] {
+  return [
+    {
+      accessorKey: "order_id",
+      header: "Order ID",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="font-mono text-xs">{row.getValue<string>("order_id")}</span>
+      ),
     },
-  },
-  {
-    accessorKey: "side",
-    header: () => <span className="flex justify-center">Side</span>,
-    enableSorting: false,
-    cell: ({ row }) => {
-      const side = row.getValue<"BUY" | "SELL">("side")
-      return (
-        <div className="text-center">
-          <Badge
-            variant="outline"
-            className={cn(
-              "font-mono text-xs",
-              side === "BUY"
-                ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
-                : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]"
-            )}
+    {
+      accessorKey: "instrument",
+      header: "Instrument",
+      enableSorting: false,
+      cell: ({ row }) => {
+        const instrument = row.getValue<string>("instrument")
+        const type = classifyInstrument(instrument)
+        return (
+          <Link
+            href={getInstrumentRoute(instrument, type)}
+            className="font-mono font-medium text-primary hover:underline cursor-pointer"
           >
-            {side === "BUY" ? (
-              <ArrowUpRight className="size-3 mr-1" />
-            ) : (
-              <ArrowDownRight className="size-3 mr-1" />
-            )}
-            {side}
-          </Badge>
-        </div>
-      )
+            {instrument}
+          </Link>
+        )
+      },
     },
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    enableSorting: false,
-    cell: ({ row }) => (
-      <span className="text-xs uppercase">{row.getValue<string>("type")}</span>
-    ),
-  },
-  {
-    accessorKey: "price",
-    header: () => <span className="flex justify-end">Price</span>,
-    enableSorting: true,
-    cell: ({ row }) => (
-      <div className="text-right font-mono">
-        ${row.getValue<number>("price").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "mark_price",
-    header: () => <span className="flex justify-end">Mark</span>,
-    enableSorting: true,
-    cell: ({ row }) => {
-      const mark = row.getValue<number>("mark_price")
-      return (
-        <div className="text-right font-mono text-muted-foreground">
-          {mark ? `$${mark.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—"}
-        </div>
-      )
+    {
+      accessorKey: "side",
+      header: () => <span className="flex justify-center">Side</span>,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const side = row.getValue<"BUY" | "SELL">("side")
+        return (
+          <div className="text-center">
+            <Badge
+              variant="outline"
+              className={cn(
+                "font-mono text-xs",
+                side === "BUY"
+                  ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
+                  : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]"
+              )}
+            >
+              {side === "BUY" ? (
+                <ArrowUpRight className="size-3 mr-1" />
+              ) : (
+                <ArrowDownRight className="size-3 mr-1" />
+              )}
+              {side}
+            </Badge>
+          </div>
+        )
+      },
     },
-  },
-  {
-    accessorKey: "edge_bps",
-    header: () => <span className="flex justify-end">Edge</span>,
-    enableSorting: true,
-    cell: ({ row }) => {
-      const edge = row.getValue<number>("edge_bps") ?? 0
-      return (
-        <div className={cn("text-right font-mono text-xs", edge >= 0 ? "text-emerald-400" : "text-rose-400")}>
-          {edge >= 0 ? "+" : ""}{edge.toFixed(1)} bps
-        </div>
-      )
+    {
+      accessorKey: "type",
+      header: "Type",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-xs uppercase">{row.getValue<string>("type")}</span>
+      ),
     },
-  },
-  {
-    accessorKey: "instant_pnl",
-    header: () => <span className="flex justify-end">Instant P&L</span>,
-    enableSorting: true,
-    cell: ({ row }) => {
-      const pnl = row.getValue<number>("instant_pnl") ?? 0
-      const fmt = Math.abs(pnl) >= 1000 ? `$${(pnl / 1000).toFixed(1)}K` : `$${pnl.toFixed(0)}`
-      return (
-        <div className={cn("text-right font-mono font-medium", pnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
-          {pnl >= 0 ? "+" : ""}{fmt}
+    {
+      accessorKey: "price",
+      header: () => <span className="flex justify-end">Price</span>,
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-right font-mono">
+          ${row.getValue<number>("price").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
-      )
+      ),
     },
-  },
-  {
-    accessorKey: "strategy_name",
-    header: "Strategy",
-    enableSorting: false,
-    cell: ({ row }) => (
-      <span className="text-xs text-muted-foreground truncate max-w-24 block">{row.getValue<string>("strategy_name") || "—"}</span>
-    ),
-  },
-  {
-    accessorKey: "quantity",
-    header: () => <span className="flex justify-end">Qty</span>,
-    enableSorting: true,
-    cell: ({ row }) => (
-      <div className="text-right font-mono">
-        {row.getValue<number>("quantity").toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "filled",
-    header: () => <span className="flex justify-end">Filled</span>,
-    enableSorting: true,
-    cell: ({ row }) => {
-      const filled = row.getValue<number>("filled")
-      const quantity = row.original.quantity
-      const fillPct = quantity > 0 ? (filled / quantity) * 100 : 0
-      return (
-        <div className="flex flex-col items-end">
-          <span className="font-mono">{filled.toLocaleString()}</span>
-          <span className="text-[10px] text-muted-foreground">{fillPct.toFixed(0)}%</span>
+    {
+      accessorKey: "mark_price",
+      header: () => <span className="flex justify-end">Mark</span>,
+      enableSorting: true,
+      cell: ({ row }) => {
+        const mark = row.getValue<number>("mark_price")
+        return (
+          <div className="text-right font-mono text-muted-foreground">
+            {mark ? `$${mark.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—"}
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "edge_bps",
+      header: () => <span className="flex justify-end">Edge</span>,
+      enableSorting: true,
+      cell: ({ row }) => {
+        const edge = row.getValue<number>("edge_bps") ?? 0
+        return (
+          <div className={cn("text-right font-mono text-xs", edge >= 0 ? "text-emerald-400" : "text-rose-400")}>
+            {edge >= 0 ? "+" : ""}{edge.toFixed(1)} bps
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "instant_pnl",
+      header: () => <span className="flex justify-end">Instant P&L</span>,
+      enableSorting: true,
+      cell: ({ row }) => {
+        const pnl = row.getValue<number>("instant_pnl") ?? 0
+        const fmt = Math.abs(pnl) >= 1000 ? `$${(pnl / 1000).toFixed(1)}K` : `$${pnl.toFixed(0)}`
+        return (
+          <div className={cn("text-right font-mono font-medium", pnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
+            {pnl >= 0 ? "+" : ""}{fmt}
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "strategy_name",
+      header: "Strategy",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-xs text-muted-foreground truncate max-w-24 block">{row.getValue<string>("strategy_name") || "—"}</span>
+      ),
+    },
+    {
+      accessorKey: "quantity",
+      header: () => <span className="flex justify-end">Qty</span>,
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-right font-mono">
+          {row.getValue<number>("quantity").toLocaleString()}
         </div>
-      )
+      ),
     },
-  },
-  {
-    accessorKey: "status",
-    header: () => <span className="flex justify-center">Status</span>,
-    enableSorting: false,
-    cell: ({ row }) => {
-      const status = row.getValue<string>("status")
-      return (
-        <div className="text-center">
-          <Badge variant="outline" className={cn("text-xs", getStatusColor(status))}>
-            {status}
-          </Badge>
+    {
+      accessorKey: "filled",
+      header: () => <span className="flex justify-end">Filled</span>,
+      enableSorting: true,
+      cell: ({ row }) => {
+        const filled = row.getValue<number>("filled")
+        const quantity = row.original.quantity
+        const fillPct = quantity > 0 ? (filled / quantity) * 100 : 0
+        return (
+          <div className="flex flex-col items-end">
+            <span className="font-mono">{filled.toLocaleString()}</span>
+            <span className="text-[10px] text-muted-foreground">{fillPct.toFixed(0)}%</span>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "status",
+      header: () => <span className="flex justify-center">Status</span>,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const status = row.getValue<string>("status")
+        return (
+          <div className="text-center">
+            <Badge variant="outline" className={cn("text-xs", getStatusColor(status))}>
+              {status}
+            </Badge>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "venue",
+      header: "Venue",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-sm">{row.getValue<string>("venue")}</span>
+      ),
+    },
+    {
+      accessorKey: "created_at",
+      header: () => <span className="flex justify-end">Created</span>,
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-right text-xs text-muted-foreground">
+          {row.getValue<string>("created_at")}
         </div>
-      )
+      ),
     },
-  },
-  {
-    accessorKey: "venue",
-    header: "Venue",
-    enableSorting: false,
-    cell: ({ row }) => (
-      <span className="text-sm">{row.getValue<string>("venue")}</span>
-    ),
-  },
-  {
-    accessorKey: "created_at",
-    header: () => <span className="flex justify-end">Created</span>,
-    enableSorting: true,
-    cell: ({ row }) => (
-      <div className="text-right text-xs text-muted-foreground">
-        {row.getValue<string>("created_at")}
-      </div>
-    ),
-  },
-]
+    {
+      id: "actions",
+      header: () => <span className="flex justify-center">Actions</span>,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const status = row.original.status
+        if (!isActionable(status)) return <div className="text-center text-xs text-muted-foreground">—</div>
+        return (
+          <div className="flex items-center justify-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-400/10"
+              onClick={() => onCancel(row.original.order_id)}
+            >
+              <XCircle className="size-3.5 mr-1" />
+              Cancel
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
+              onClick={() => onAmend(row.original)}
+            >
+              <Pencil className="size-3.5 mr-1" />
+              Amend
+            </Button>
+          </div>
+        )
+      },
+    },
+  ]
+}
 
 export default function OrdersPage() {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders()
   const { scope: globalScope } = useGlobalScope()
+  const cancelOrder = useCancelOrder()
+  const amendOrder = useAmendOrder()
+
+  const [amendTarget, setAmendTarget] = React.useState<OrderRecord | null>(null)
+  const [amendQty, setAmendQty] = React.useState("")
+  const [amendPrice, setAmendPrice] = React.useState("")
+
+  const handleCancel = React.useCallback((orderId: string) => {
+    cancelOrder.mutate(orderId)
+  }, [cancelOrder])
+
+  const handleOpenAmend = React.useCallback((order: OrderRecord) => {
+    setAmendTarget(order)
+    setAmendQty(String(order.quantity))
+    setAmendPrice(String(order.price))
+  }, [])
+
+  const handleSubmitAmend = React.useCallback(() => {
+    if (!amendTarget) return
+    amendOrder.mutate(
+      { orderId: amendTarget.order_id, quantity: Number(amendQty), price: Number(amendPrice) },
+      { onSuccess: () => setAmendTarget(null) },
+    )
+  }, [amendTarget, amendQty, amendPrice, amendOrder])
+
+  const columns = React.useMemo(
+    () => buildColumns(handleCancel, handleOpenAmend),
+    [handleCancel, handleOpenAmend],
+  )
 
   const [searchQuery, setSearchQuery] = React.useState("")
   const [venueFilter, setVenueFilter] = React.useState("all")
@@ -544,6 +624,53 @@ export default function OrdersPage() {
           />
         </CardContent>
       </Card>
+
+      {/* Amend dialog */}
+      <Dialog open={!!amendTarget} onOpenChange={(open) => { if (!open) setAmendTarget(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Amend Order</DialogTitle>
+          </DialogHeader>
+          {amendTarget && (
+            <div className="space-y-4 py-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="font-mono">{amendTarget.order_id}</span>
+                <span>&middot;</span>
+                <span className="font-medium text-foreground">{amendTarget.instrument}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="amend-qty">Quantity</Label>
+                  <Input
+                    id="amend-qty"
+                    type="number"
+                    step="any"
+                    value={amendQty}
+                    onChange={(e) => setAmendQty(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="amend-price">Price</Label>
+                  <Input
+                    id="amend-price"
+                    type="number"
+                    step="any"
+                    value={amendPrice}
+                    onChange={(e) => setAmendPrice(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAmendTarget(null)}>Cancel</Button>
+            <Button onClick={handleSubmitAmend} disabled={amendOrder.isPending}>
+              {amendOrder.isPending ? <Loader2 className="size-3.5 mr-1.5 animate-spin" /> : null}
+              Confirm Amend
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }

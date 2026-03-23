@@ -128,3 +128,35 @@ export function usePlaceOrder() {
     },
   })
 }
+
+export function useCancelOrder() {
+  const { token } = useAuth()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (orderId: string) =>
+      apiFetch(`/api/execution/orders/${orderId}/cancel`, token, {
+        method: "PUT",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] })
+    },
+  })
+}
+
+export function useAmendOrder() {
+  const { token } = useAuth()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: { orderId: string; quantity?: number; price?: number }) =>
+      apiFetch(`/api/execution/orders/${params.orderId}/amend`, token, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity: params.quantity, price: params.price }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] })
+    },
+  })
+}

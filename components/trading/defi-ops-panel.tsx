@@ -34,6 +34,8 @@ import {
   Globe,
   Wallet,
 } from "lucide-react"
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger"
+import { toast } from "@/hooks/use-toast"
 
 // ---------- Types ----------
 
@@ -279,7 +281,25 @@ function LendingTab() {
         </div>
       </div>
 
-      <Button className="w-full" disabled={amountNum <= 0}>
+      <Button
+        className="w-full"
+        disabled={amountNum <= 0}
+        onClick={() => {
+          const order = placeMockOrder({
+            client_id: "internal-trader",
+            instrument_id: `${protocol.replace(/ /g, "_")}:${operation}:${asset}`,
+            venue: protocol,
+            side: operation === "LEND" || operation === "REPAY" ? "buy" : "sell",
+            order_type: "market",
+            quantity: amountNum,
+            price: operation === "LEND" ? supplyApy : borrowApy,
+            asset_class: "DeFi",
+            lane: "defi",
+          })
+          setAmount("")
+          toast({ title: "DeFi order placed", description: `${operation} ${amountNum} ${asset} on ${protocol} (${order.id})` })
+        }}
+      >
         {operation} {asset}
       </Button>
     </div>
@@ -395,7 +415,25 @@ function SwapTab() {
         </div>
       )}
 
-      <Button className="w-full" disabled={amountNum <= 0}>
+      <Button
+        className="w-full"
+        disabled={amountNum <= 0}
+        onClick={() => {
+          const order = placeMockOrder({
+            client_id: "internal-trader",
+            instrument_id: `SWAP:${tokenIn}-${tokenOut}`,
+            venue: "Uniswap",
+            side: "buy",
+            order_type: "market",
+            quantity: amountNum,
+            price: route?.expectedOutput ?? 0,
+            asset_class: "DeFi",
+            lane: "defi",
+          })
+          setAmountIn("")
+          toast({ title: "Swap submitted", description: `${amountNum} ${tokenIn} → ${tokenOut} (${order.id})` })
+        }}
+      >
         <ArrowLeftRight className="size-4 mr-2" />
         Swap {tokenIn} for {tokenOut}
       </Button>
@@ -529,7 +567,26 @@ function LiquidityTab() {
         </div>
       </div>
 
-      <Button className="w-full" disabled={!amount || parseFloat(amount) <= 0}>
+      <Button
+        className="w-full"
+        disabled={!amount || parseFloat(amount) <= 0}
+        onClick={() => {
+          const amountNum = parseFloat(amount) || 0
+          const order = placeMockOrder({
+            client_id: "internal-trader",
+            instrument_id: `UNISWAPV3:LP:${pool.name}`,
+            venue: "Uniswap",
+            side: operation === "ADD_LIQUIDITY" ? "buy" : "sell",
+            order_type: "market",
+            quantity: amountNum,
+            price: pool.apr24h,
+            asset_class: "DeFi",
+            lane: "defi",
+          })
+          setAmount("")
+          toast({ title: "Liquidity order placed", description: `${operation === "ADD_LIQUIDITY" ? "Add" : "Remove"} ${amountNum} ${pool.token0} in ${pool.name} (${order.id})` })
+        }}
+      >
         <Droplets className="size-4 mr-2" />
         {operation === "ADD_LIQUIDITY" ? "Add" : "Remove"} Liquidity
       </Button>
@@ -638,7 +695,25 @@ function StakingTab() {
         </div>
       </div>
 
-      <Button className="w-full" disabled={amountNum <= 0}>
+      <Button
+        className="w-full"
+        disabled={amountNum <= 0}
+        onClick={() => {
+          const order = placeMockOrder({
+            client_id: "internal-trader",
+            instrument_id: `${protocol.toUpperCase()}:${operation}:${selected.asset}`,
+            venue: protocol,
+            side: operation === "STAKE" ? "buy" : "sell",
+            order_type: "market",
+            quantity: amountNum,
+            price: selected.apy,
+            asset_class: "DeFi",
+            lane: "defi",
+          })
+          setAmount("")
+          toast({ title: "Staking order placed", description: `${operation} ${amountNum} ${selected.asset} on ${protocol} (${order.id})` })
+        }}
+      >
         <Coins className="size-4 mr-2" />
         {operation} {selected.asset} on {protocol}
       </Button>
@@ -795,7 +870,24 @@ function FlashLoanTab() {
           <Fuel className="size-3.5 mr-1.5" />
           Simulate
         </Button>
-        <Button className="text-xs" disabled={steps.length === 0}>
+        <Button
+          className="text-xs"
+          disabled={steps.length === 0}
+          onClick={() => {
+            const order = placeMockOrder({
+              client_id: "internal-trader",
+              instrument_id: `FLASH_LOAN:${steps.map(s => s.operationType).join(">")}`,
+              venue: "Aave",
+              side: "buy",
+              order_type: "market",
+              quantity: 100,
+              price: netPnl,
+              asset_class: "DeFi",
+              lane: "defi",
+            })
+            toast({ title: "Flash loan executed", description: `${steps.length}-step bundle — net P&L $${netPnl.toFixed(2)} (${order.id})` })
+          }}
+        >
           <Zap className="size-3.5 mr-1.5" />
           Execute Bundle
         </Button>

@@ -69,7 +69,7 @@ const services = [
     color: "text-amber-400",
     bgColor: "bg-amber-400/10",
     borderColor: "border-amber-400/30",
-    lifecycle: ["Build", "Promote", "Run", "Observe"],
+    lifecycle: ["Build", "Promote", "Run", "Execute", "Observe"],
     metrics: [
       { label: "Strategies", value: "17+" },
       { label: "Deployment", value: "Turnkey" },
@@ -87,7 +87,7 @@ const services = [
     color: "text-emerald-400",
     bgColor: "bg-emerald-400/10",
     borderColor: "border-emerald-400/30",
-    lifecycle: ["Promote", "Run", "Observe"],
+    lifecycle: ["Promote", "Run", "Execute", "Observe"],
     metrics: [
       { label: "Algo Types", value: "8+" },
       { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },

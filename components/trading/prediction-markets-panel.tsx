@@ -28,6 +28,8 @@ import {
   BarChart3,
   ArrowLeft,
 } from "lucide-react"
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger"
+import { useToast } from "@/hooks/use-toast"
 
 // ---------- Types ----------
 
@@ -761,6 +763,7 @@ function MarketDetailPanel({
   market: PredictionMarket
   onClose: () => void
 }) {
+  const { toast } = useToast()
   const [stakeAmount, setStakeAmount] = React.useState("")
   const [selectedSide, setSelectedSide] = React.useState<"yes" | "no">("yes")
   const [selectedOutcomeIdx, setSelectedOutcomeIdx] = React.useState(0)
@@ -952,6 +955,22 @@ function MarketDetailPanel({
                 : "bg-red-600 hover:bg-red-700"
             )}
             disabled={stakeNum <= 0}
+            onClick={() => {
+              const venueLabel = market.venue === "polymarket" ? "Polymarket" : "Kalshi"
+              const order = placeMockOrder({
+                client_id: "internal-trader",
+                instrument_id: `${market.venue.toUpperCase()}:${market.id}:${selectedOutcome.name}@${selectedSide.toUpperCase()}`,
+                venue: venueLabel,
+                side: "buy",
+                order_type: "limit",
+                quantity: stakeNum,
+                price,
+                asset_class: "Prediction",
+                lane: "predictions",
+              })
+              setStakeAmount("")
+              toast({ title: "Position opened", description: `${selectedSide.toUpperCase()} ${selectedOutcome.name} — $${stakeNum.toFixed(2)} @ ${(price * 100).toFixed(0)}c (${order.id})` })
+            }}
           >
             {selectedSide === "yes" ? "Buy YES" : "Buy NO"} — {selectedOutcome.name}
           </Button>

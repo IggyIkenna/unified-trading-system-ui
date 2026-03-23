@@ -38,7 +38,15 @@ const STAGES = [
     example: "Your strategy executes simultaneously on Binance, Hyperliquid, and Deribit. Next morning, the T+1 report shows 0.02% divergence from backtest — within tolerance.",
   },
   {
-    num: "5", name: "Observe", short: "Monitor, alert, reconcile",
+    num: "5", name: "Execute", short: "Algorithms, routing, best-ex",
+    color: "teal", borderClass: "border-teal-400/30", bgClass: "bg-teal-400/5",
+    hoverBorder: "border-teal-400/70", textClass: "text-teal-400",
+    detail: "Institutional execution algorithms — TWAP, VWAP, SOR, Almgren-Chriss — across 128 venues. Smart order routing finds the best price. Best execution monitoring and transaction cost analysis built in.",
+    services: ["TWAP/VWAP", "Smart Order Routing", "Best Execution", "TCA"],
+    example: "Your ETH basis strategy routes a $2M order through Almgren-Chriss across Binance and Hyperliquid. TCA report shows 0.3bps improvement vs TWAP.",
+  },
+  {
+    num: "6", name: "Observe", short: "Monitor, alert, reconcile",
     color: "cyan", borderClass: "border-cyan-400/30", bgClass: "bg-cyan-400/5",
     hoverBorder: "border-cyan-400/70", textClass: "text-cyan-400",
     detail: "Monitor risk exposure, P&L, and execution quality in real time. Receive alerts on limit breaches, model drift, or venue issues. Reconcile positions between batch and live systems.",
@@ -46,7 +54,7 @@ const STAGES = [
     example: "An alert fires: margin utilisation on Binance hits 78%. The risk dashboard shows which strategies are driving it and suggests rebalancing.",
   },
   {
-    num: "6", name: "Manage", short: "Allocate, govern, control",
+    num: "7", name: "Manage", short: "Allocate, govern, control",
     color: "rose", borderClass: "border-rose-400/30", bgClass: "bg-rose-400/5",
     hoverBorder: "border-rose-400/70", textClass: "text-rose-400",
     detail: "Manage client subscriptions, capital allocation, fee schedules, and user access. Internal operations — onboarding, deployment, configuration — all in one place.",
@@ -54,7 +62,7 @@ const STAGES = [
     example: "Onboard a new client, set their risk limits, assign strategy allocations, and configure their fee schedule — all from the admin dashboard.",
   },
   {
-    num: "7", name: "Report", short: "Attribute, audit, disclose",
+    num: "8", name: "Report", short: "Attribute, audit, disclose",
     color: "slate", borderClass: "border-slate-400/30", bgClass: "bg-slate-400/5",
     hoverBorder: "border-slate-400/70", textClass: "text-slate-400",
     detail: "Generate P&L attribution reports, settlement statements, and regulatory filings. Full audit trail for compliance. Clients see their own scoped reports; internal sees everything.",
@@ -73,7 +81,7 @@ export function OperatingModelStages() {
       {/* Connection line removed for cleaner look */}
 
       {/* Stage cards */}
-      <div className="grid grid-cols-7 gap-2 md:gap-3">
+      <div className="grid grid-cols-4 md:grid-cols-8 gap-2 md:gap-3">
         {STAGES.map((stage, i) => (
           <div
             key={stage.name}

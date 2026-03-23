@@ -1,4 +1,6 @@
 import { resetState as resetMockProvisioningState } from "./api/mock-provisioning-state"
+import { resetOnboardingState } from "./api/mock-onboarding-state"
+import { resetMockOrders } from "./api/mock-trade-ledger"
 import { useFilterStore } from "./stores/filter-store"
 import { useAuthStore } from "./stores/auth-store"
 import { useUIPrefsStore } from "./stores/ui-prefs-store"
@@ -16,6 +18,12 @@ export function resetDemo() {
 
   // Stateful mock: admin users, access requests, etc. (`mock-provisioning-state` in localStorage)
   resetMockProvisioningState()
+
+  // Stateful mock: onboarding applications and documents (`mock-onboarding-state` in localStorage)
+  resetOnboardingState()
+
+  // Stateful mock: trade ledger orders (`mock-trade-ledger` in localStorage)
+  resetMockOrders()
 
   // Clear React Query cache
   const qc = getQueryClient()

@@ -150,7 +150,6 @@ export default function ValidationPage() {
   const statisticalTests: any[] = (rawData as any)?.data?.statisticalTests ?? (rawData as any)?.statisticalTests ?? DEFAULT_STATISTICAL_TESTS
   const featureImportance: any[] = (rawData as any)?.data?.featureImportance ?? (rawData as any)?.featureImportance ?? DEFAULT_FEATURE_IMPORTANCE
 
-  // Time series comparison data (derived from API or generated)
   const timeSeriesComparison = useMemo(() => (rawData as any)?.data?.timeSeries ?? (rawData as any)?.timeSeries ?? Array.from({ length: 60 }, (_, i) => ({
     date: new Date(2026, 0, 1 + i).toISOString().split("T")[0],
     championPnL: Math.random() * 0.02 - 0.005 + (i * 0.0003),
@@ -159,7 +158,6 @@ export default function ValidationPage() {
     challengerSharpe: 2.3 + Math.random() * 0.5,
   })), [rawData])
 
-  // Cumulative returns (derived from time series)
   const cumulativeReturns = useMemo(() => {
     if ((rawData as any)?.data?.cumulativeReturns) return (rawData as any).data.cumulativeReturns
     if ((rawData as any)?.cumulativeReturns) return (rawData as any).cumulativeReturns
@@ -183,13 +181,6 @@ export default function ValidationPage() {
     const pctDiff = (diff / Math.abs(champion.metrics[metric])) * 100
     return { diff, pctDiff }
   }
-
-  if (isLoading) return (
-    <div className="space-y-4 p-6">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-64 w-full" />
-    </div>
-  )
 
   if (isError) return (
     <div className="p-6">

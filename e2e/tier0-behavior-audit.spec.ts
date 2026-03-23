@@ -23,7 +23,7 @@ async function loginAsAdmin(page: import('@playwright/test').Page) {
     await page.waitForTimeout(1000)
   }
 
-  await page.waitForURL(/\/(dashboard|admin|services)/, { timeout: 10000 }).catch(() => {})
+  await page.waitForURL(/\/(dashboard|admin|services)/, { timeout: 10000 }).catch(() => { })
 }
 
 async function resetMockProvisioning(page: import('@playwright/test').Page) {
@@ -45,7 +45,7 @@ test.describe('Tier 0 behavior audit', () => {
 
   test('admin access requests: pending row has Approve and approve mutates state', async ({ page }) => {
     await page.goto('/admin/users/requests')
-    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {})
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => { })
 
     const approve = page.getByRole('button', { name: /Approve/i }).first()
     await expect(
@@ -64,7 +64,7 @@ test.describe('Tier 0 behavior audit', () => {
 
   test('trading alerts: active alert shows Ack control; Ack updates status', async ({ page }) => {
     await page.goto('/services/trading/alerts')
-    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {})
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => { })
     await page.waitForTimeout(1500)
 
     const ack = page.getByRole('button', { name: /Acknowledge alert/i })
@@ -193,7 +193,7 @@ test.describe('Tier 0 behavior audit', () => {
 
     for (const path of ['/dashboard', '/services/trading/overview', '/admin/users/requests']) {
       await page.goto(path)
-      await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {})
+      await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => { })
       await page.waitForTimeout(1000)
     }
 
@@ -205,7 +205,7 @@ test.describe('Tier 0 behavior audit', () => {
 
   test('admin approve → deny round-trip preserves state', async ({ page }) => {
     await page.goto('/admin/users/requests')
-    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {})
+    await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => { })
 
     const pendingCount = await page.locator('text=pending').count()
     expect(pendingCount, 'TIER0_AUDIT: should have at least one pending request').toBeGreaterThan(0)

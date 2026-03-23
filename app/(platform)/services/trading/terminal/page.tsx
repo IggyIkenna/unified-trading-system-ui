@@ -424,21 +424,22 @@ export default function TradingPage() {
   // Tick counter for order book and depth chart updates
   const [tickCount, setTickCount] = React.useState(0)
   
+  const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true"
+
   // Animate price updates and increment tick
   // Brownian motion with slight upward drift (trending market)
   React.useEffect(() => {
+    if (isMockMode) return
     const interval = setInterval(() => {
       setLivePrice((prev: number) => {
-        // Random component (volatility)
         const volatility = (Math.random() - 0.5) * selectedInstrument.midPrice * 0.0002
-        // Drift component (slight upward trend ~0.001% per tick)
         const drift = selectedInstrument.midPrice * 0.00001
         return prev + volatility + drift
       })
       setTickCount(prev => prev + 1)
     }, 500)
     return () => clearInterval(interval)
-  }, [selectedInstrument.midPrice])
+  }, [selectedInstrument.midPrice, isMockMode])
   
   // Animate recent trades - use ref to avoid stale closure
   const livePriceRef = React.useRef(livePrice)
@@ -447,15 +448,14 @@ export default function TradingPage() {
   }, [livePrice])
   
   React.useEffect(() => {
-    if (!isClient) return
+    if (!isClient || isMockMode) return
     
     const interval = setInterval(() => {
       const currentPrice = livePriceRef.current
       setRecentTrades(prev => {
         const now = new Date()
         const side = Math.random() > 0.5 ? "buy" : "sell"
-        // Use realistic price variation based on instrument price
-        const priceVariation = currentPrice * 0.0002 // 0.02% tick
+        const priceVariation = currentPrice * 0.0002
         const price = currentPrice + (Math.random() - 0.5) * priceVariation * 2
         const size = Math.random() * 0.5 + 0.01
         const newTrade = {
@@ -467,9 +467,9 @@ export default function TradingPage() {
         }
         return [newTrade, ...prev.slice(0, 11)]
       })
-    }, 1200) // Slightly faster updates
+    }, 1200)
     return () => clearInterval(interval)
-  }, [isClient])
+  }, [isClient, isMockMode])
   
   // Order book: prefer API data, fall back to client-side generation
   // WebSocket bid/ask updates the top-of-book in real-time

@@ -190,11 +190,23 @@ export default function OverviewPage() {
 
   const strategyPerformance = React.useMemo(() => {
     let result = allStrategies
+    if (context.organizationIds.length > 0) {
+      result = result.filter(s => {
+        const orgHint = (s as Record<string, unknown>).orgId as string | undefined
+        return orgHint ? context.organizationIds.includes(orgHint) : true
+      })
+    }
+    if (context.clientIds.length > 0) {
+      result = result.filter(s => {
+        const clientHint = (s as Record<string, unknown>).clientId as string | undefined
+        return clientHint ? context.clientIds.includes(clientHint) : true
+      })
+    }
     if (context.strategyIds.length > 0) {
       result = result.filter(s => context.strategyIds.includes(s.id))
     }
     return result
-  }, [allStrategies, context.strategyIds])
+  }, [allStrategies, context.organizationIds, context.clientIds, context.strategyIds])
 
   // ---- UI state ----
   const [showTimeSeries, setShowTimeSeries] = React.useState(true)
@@ -265,17 +277,10 @@ export default function OverviewPage() {
     })
   }
 
-  // ---- Loading / error ----
+  // ---- Loading / error (progressive — never blocks entire page) ----
   const coreLoading = orgsLoading || clientsLoading || pnlLoading || timeseriesLoading || perfLoading
-  const sidebarLoading = alertsLoading || positionsLoading || healthLoading || liveBatchLoading
-  const isLoading = coreLoading && !pnlData && !performanceData // block render until core data arrives
 
   const firstError = orgsError ?? clientsError ?? pnlError ?? timeseriesError ?? perfError ?? alertsError ?? positionsError ?? healthError ?? liveBatchError
-  if (firstError && !pnlData && !performanceData) {
-    return <ErrorBanner message={(firstError as Error).message ?? "Unknown error"} />
-  }
-
-  if (isLoading) return <PageLoader />
 
   // ---- Computed KPIs ----
   // Use real-time PnL from WebSocket if available, otherwise fall back to API snapshot
@@ -337,6 +342,9 @@ export default function OverviewPage() {
   return (
     <div className="h-full bg-background flex flex-col">
       <main className="flex-1 p-4 space-y-4 overflow-auto">
+        {firstError && (
+          <ErrorBanner message={(firstError as Error).message ?? "Unknown error"} />
+        )}
         {/* Command Center Header */}
         <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-secondary/30 rounded-lg border border-border">
           <ScopeSummary
@@ -345,6 +353,8 @@ export default function OverviewPage() {
             strategies={kpiStrategies.map((s) => ({ id: s.id, name: s.name, status: s.status }))}
             selectedStrategyIds={context.strategyIds}
             totalStrategies={kpiStrategies.length}
+            totalOrganizations={organizations.length}
+            totalClients={clients.length}
             totalCapital={totalNav}
             totalExposure={totalExposure}
             mode={context.mode}
@@ -488,23 +498,17 @@ export default function OverviewPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <KPICard
             title={context.mode === "live" ? "P&L (Today)" : "P&L (As-Of)"}
-            value={formatCurrency(totalPnl)}
-            change={totalPnl > 0 ? 8.4 : -3.2}
-            changeLabel="vs target"
+            value={coreLoading ? "—" : formatCurrency(totalPnl)}
             accentColor={totalPnl >= 0 ? "var(--pnl-positive)" : "var(--pnl-negative)"}
           />
           <KPICard
             title="Net Exposure"
-            value={formatCurrency(totalExposure)}
-            change={-2.1}
-            changeLabel="24h"
+            value={coreLoading ? "—" : formatCurrency(totalExposure)}
             accentColor="var(--surface-trading)"
           />
           <KPICard
             title="Margin Used"
-            value={`${Math.round((totalExposure / totalNav) * 100)}%`}
-            change={5.2}
-            changeLabel="vs limit"
+            value={coreLoading ? "—" : `${Math.round((totalExposure / totalNav) * 100)}%`}
             accentColor="var(--status-warning)"
           />
           <KPICard
@@ -758,6 +762,10 @@ export default function OverviewPage() {
                 <div className="flex items-center justify-center py-6 text-muted-foreground">
                   <Loader2 className="size-4 animate-spin mr-2" />
                 </div>
+              ) : mockAlerts.length === 0 ? (
+                <div className="flex items-center justify-center py-6 text-muted-foreground text-xs">
+                  No active alerts
+                </div>
               ) : (
                 <div className="space-y-2">
                   {mockAlerts.slice(0, 4).map((a) => (
@@ -799,6 +807,9 @@ export default function OverviewPage() {
                   {(() => {
                     const raw = ordersData as unknown
                     const orders = Array.isArray(raw) ? raw : ((raw as Record<string, unknown>)?.orders ?? []) as Array<Record<string, unknown>>
+                    if (orders.length === 0) return (
+                      <div className="flex items-center justify-center py-6 text-muted-foreground text-xs">No recent fills</div>
+                    )
                     return (orders as Array<Record<string, unknown>>).slice(0, 5).map((o, i) => (
                       <div key={String(o.order_id ?? i)} className="flex items-center justify-between py-1.5 border-b border-border/50 last:border-0 text-xs">
                         <div className="flex items-center gap-2">

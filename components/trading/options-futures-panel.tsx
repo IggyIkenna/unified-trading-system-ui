@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger"
+import { toast } from "@/hooks/use-toast"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -1940,6 +1942,22 @@ function TradePanel({
         <Button
           className="w-full h-10 text-sm font-semibold bg-blue-600 hover:bg-blue-700"
           disabled={amountNum <= 0}
+          onClick={() => {
+            const legDesc = legs.map(l => `${l.direction} ${l.strike}`).join("+")
+            const order = placeMockOrder({
+              client_id: "internal-trader",
+              instrument_id: `OPTIONS:COMBO:${instrument.comboType}:${legDesc}`,
+              venue: "Deribit",
+              side: "buy",
+              order_type: "limit",
+              quantity: amountNum,
+              price: Math.abs(netDebit),
+              asset_class: "CeFi",
+              lane: "options",
+            })
+            setAmount("")
+            toast({ title: "Combo order placed", description: `${instrument.comboType} ${amountNum} contracts (${order.id})` })
+          }}
         >
           Place Combo Order
         </Button>
@@ -2032,6 +2050,21 @@ function TradePanel({
         <Button
           className="w-full h-10 text-sm font-semibold bg-blue-600 hover:bg-blue-700"
           disabled={amountNum <= 0}
+          onClick={() => {
+            const order = placeMockOrder({
+              client_id: "internal-trader",
+              instrument_id: `OPTIONS:SPREAD:${instrument.longLeg}/${instrument.shortLeg}`,
+              venue: "Deribit",
+              side: "buy",
+              order_type: "limit",
+              quantity: amountNum,
+              price: Math.abs(instrument.spreadAsk ?? 0),
+              asset_class: "CeFi",
+              lane: "options",
+            })
+            setAmount("")
+            toast({ title: "Spread order placed", description: `${instrument.longLeg} / ${instrument.shortLeg} ${amountNum} contracts (${order.id})` })
+          }}
         >
           Place Spread Order
         </Button>
@@ -2279,6 +2312,23 @@ function TradePanel({
             : "bg-rose-600 hover:bg-rose-700"
         )}
         disabled={noInstrument || amountNum <= 0 || (orderType !== "market" && priceNum <= 0)}
+        onClick={() => {
+          if (!instrument) return
+          const order = placeMockOrder({
+            client_id: "internal-trader",
+            instrument_id: instrument.name,
+            venue: "Deribit",
+            side: direction,
+            order_type: orderType === "market" ? "market" : "limit",
+            quantity: amountNum,
+            price: orderType === "market" ? (instrument.lastPrice ?? priceNum) : priceNum,
+            asset_class: "CeFi",
+            lane: "options",
+          })
+          setAmount("")
+          setPrice("")
+          toast({ title: "Order placed", description: `${direction.toUpperCase()} ${amountNum} ${instrument.name} @ ${orderType} (${order.id})` })
+        }}
       >
         Place {direction === "buy" ? "Buy" : "Sell"} Order
       </Button>
