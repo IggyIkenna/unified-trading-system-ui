@@ -128,7 +128,8 @@ export default function RegulatoryServicePage() {
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">Appointed Representative</Badge>
                 <CardTitle>AR Setup</CardTitle>
-                <CardDescription>Operate under our FCA authorisation as an Appointed Representative</CardDescription>
+                <div className="text-xl font-bold">From £4,000/mo</div>
+                <CardDescription>Plus one-time setup fee. Operate under our FCA authorisation as an Appointed Representative.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -157,7 +158,8 @@ export default function RegulatoryServicePage() {
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">Strategic Advisor</Badge>
                 <CardTitle>Advisory Engagement</CardTitle>
-                <CardDescription>Contracted advisory role under our regulatory supervision</CardDescription>
+                <div className="text-xl font-bold">From £3,000/mo</div>
+                <CardDescription>Plus one-time setup fee. Contracted advisory role under our regulatory supervision.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
