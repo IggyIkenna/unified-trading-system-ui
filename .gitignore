@@ -17,18 +17,36 @@ node_modules/
 .DS_Store
 .vercel
 
-# Build artifacts
+# Build artifacts — test coverage output directories (NOT app routes)
 coverage/
+# Allow the coverage tab app route (app/(platform)/services/data/coverage/)
+!app/**/coverage/
 next-env.d.ts
 tsconfig.tsbuildinfo
 *.tsbuildinfo
+dist/
+out/
+build/
+storybook-static/
 
 # Playwright test artifacts (machine-generated, never commit)
 test-results/
 playwright-report/
+blob-report/
 
 # Local dev cache and logs (machine-generated, never commit)
 .local-dev-cache/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Firebase deploy cache (machine-generated, never commit)
+.firebase/
+
+# macOS metadata (never commit)
+.DS_Store
+**/.DS_Store
 
 # Claude Code worktrees
 .claude/
