@@ -243,13 +243,10 @@ function mockRoute(path: string): Promise<Response> | null {
   }
   if (route === "/api/derivatives/portfolio-greeks") {
     return json({
-      totalDelta: 12.5,
-      totalGamma: 0.45,
-      totalTheta: -2400,
-      totalVega: 85000,
-      byUnderlying: [
-        { underlying: "BTC", delta: 8.2, gamma: 0.3, theta: -1600, vega: 55000 },
-        { underlying: "ETH", delta: 4.3, gamma: 0.15, theta: -800, vega: 30000 },
+      portfolio: { delta: 12.5, gamma: 0.45, theta: -2400, vega: 85000, rho: 1200 },
+      per_underlying: [
+        { underlying: "BTC", delta: 8.2, gamma: 0.3, theta: -1600, vega: 55000, rho: 800 },
+        { underlying: "ETH", delta: 4.3, gamma: 0.15, theta: -800, vega: 30000, rho: 400 },
       ],
     })
   }
@@ -372,7 +369,7 @@ function mockRoute(path: string): Promise<Response> | null {
     return json({ portfolioVaR: 185000, confidence: 0.99, horizon: "1D", method: "Historical", breakdown: [{ asset: "BTC", var: 95000 }, { asset: "ETH", var: 55000 }, { asset: "SOL", var: 35000 }] })
   }
   if (route === "/api/risk/greeks") {
-    return json({ delta: 12.5, gamma: 0.45, theta: -2400, vega: 85000 })
+    return json({ portfolio: { delta: 12.5, gamma: 0.45, theta: -2400, vega: 85000, rho: 1200 }, positions: [], timeSeries: [], secondOrder: { volga: 0.02, vanna: 0.01, slide: 0.005 } })
   }
   if (route === "/api/risk/stress") {
     return json({ scenarios: [

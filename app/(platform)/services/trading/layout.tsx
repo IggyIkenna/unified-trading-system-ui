@@ -15,15 +15,30 @@ import { usePositionsSummary } from "@/hooks/api/use-positions"
 import { useAlertsSummary } from "@/hooks/api/use-alerts"
 import { useServiceHealth } from "@/hooks/api/use-service-status"
 import { useOrders } from "@/hooks/api/use-orders"
-import { Activity, AlertTriangle, TrendingUp, Wallet, Server, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { Activity, AlertTriangle, TrendingUp, Wallet, Server, ArrowUpRight, ArrowDownRight, Lock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
 function TradingSidebar() {
+  const { hasEntitlement, isAdmin, isInternal } = useAuth()
+  // Only show internal data to internal/admin users
+  const canSeeInternalData = isAdmin() || isInternal() || hasEntitlement("execution-basic")
+
   const { data: positionsSummary } = usePositionsSummary()
   const { data: alertsSummary } = useAlertsSummary()
   const { data: healthData } = useServiceHealth()
   const { data: ordersData } = useOrders()
+
+  if (!canSeeInternalData) {
+    return (
+      <div className="h-full p-3 flex items-center justify-center">
+        <div className="text-center space-y-2">
+          <Lock className="size-5 text-muted-foreground mx-auto" />
+          <p className="text-xs text-muted-foreground">Upgrade to view trading data</p>
+        </div>
+      </div>
+    )
+  }
   const ps = positionsSummary as Record<string, unknown> | undefined
   const als = alertsSummary as Record<string, unknown> | undefined
   const health = healthData as Record<string, unknown> | undefined
