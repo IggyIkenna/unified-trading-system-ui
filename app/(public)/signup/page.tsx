@@ -86,29 +86,36 @@ const DOC_SLOTS: DocSlot[] = [
   { key: "management_agreement", label: "Management Agreement (if applicable)", required: false },
 ]
 
-function generateDeclarationPdf(title: string, applicantName: string, company: string, fields: DeclarationField[], answers: Record<string, string>) {
+function generateDeclarationHtml(title: string, applicantName: string, company: string, fields: DeclarationField[], answers: Record<string, string>, signature: string) {
   const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
-  const lines = [
-    title.toUpperCase(),
-    `Date: ${date}`,
-    "",
-    `I, ${applicantName}, of ${company}, hereby declare the following:`,
-    "",
-    ...fields.map(f => `${f.label}:\n  ${answers[f.id] || "(not provided)"}`),
-    "",
-    "I confirm that the information provided above is true and accurate to the best of my knowledge.",
-    "",
-    "",
-    `Signature: ____________________________`,
-    "",
-    `Name: ${applicantName}`,
-    `Date: ${date}`,
-  ]
-  const blob = new Blob([lines.join("\n")], { type: "text/plain" })
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+<style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:20px;color:#111;line-height:1.6}
+h1{font-size:18px;text-transform:uppercase;border-bottom:2px solid #111;padding-bottom:8px}
+.field{margin:16px 0}.field-label{font-weight:bold;font-size:13px;color:#555;margin-bottom:2px}
+.field-value{font-size:15px;padding:4px 0;border-bottom:1px solid #ddd}
+.confirmation{margin-top:32px;padding:16px;background:#f9f9f9;border:1px solid #ddd;font-size:14px}
+.sig-block{margin-top:40px;display:flex;gap:40px}.sig-col{flex:1}
+.sig-line{border-bottom:1px solid #111;min-height:40px;display:flex;align-items:flex-end;padding-bottom:4px;font-style:italic;font-size:18px}
+.sig-label{font-size:11px;color:#555;margin-top:4px}
+@media print{body{margin:0;padding:20px}}</style></head><body>
+<h1>${title}</h1><p style="color:#555;font-size:13px">Date: ${date}</p>
+<p>I, <strong>${applicantName}</strong>, of <strong>${company}</strong>, hereby declare the following:</p>
+${fields.map(f => `<div class="field"><div class="field-label">${f.label}</div><div class="field-value">${answers[f.id] || '<em>Not provided</em>'}</div></div>`).join("")}
+<div class="confirmation">I confirm that the information provided above is true and accurate to the best of my knowledge and belief.</div>
+<div class="sig-block"><div class="sig-col"><div class="sig-line">${signature}</div><div class="sig-label">Signature</div></div>
+<div class="sig-col"><div class="sig-line">${applicantName}</div><div class="sig-label">Print Name</div></div>
+<div class="sig-col"><div class="sig-line">${date}</div><div class="sig-label">Date</div></div></div>
+<p style="margin-top:40px;font-size:11px;color:#888">Document generated electronically via Odum Research Ltd onboarding portal. Electronic signature accepted.</p>
+</body></html>`
+}
+
+function downloadDeclaration(title: string, applicantName: string, company: string, fields: DeclarationField[], answers: Record<string, string>, signature: string) {
+  const html = generateDeclarationHtml(title, applicantName, company, fields, answers, signature)
+  const blob = new Blob([html], { type: "text/html" })
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = `${title.toLowerCase().replace(/\s+/g, "-")}-${company.toLowerCase().replace(/\s+/g, "-")}.txt`
+  a.download = `${title.toLowerCase().replace(/\s+/g, "-")}-${company.toLowerCase().replace(/\s+/g, "-")}.html`
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -152,6 +159,7 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
   const [selOpts, setSelOpts] = React.useState<Set<string>>(new Set())
   const [docs, setDocs] = React.useState<Record<string, string>>({})
   const [declarations, setDeclarations] = React.useState<Record<string, Record<string, string>>>({})
+  const [signatures, setSignatures] = React.useState<Record<string, string>>({})
   const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null)
   const [appId, setAppId] = React.useState("")
 
@@ -315,7 +323,9 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                 const req = isReq(slot), uploaded = !!docs[slot.key]
                 const isDecl = !!slot.declaration
                 const declAnswers = declarations[slot.key] || {}
-                const declComplete = isDecl && slot.declaration!.every(f => declAnswers[f.id]?.trim())
+                const declSigned = !!signatures[slot.key]
+                const declFieldsFilled = isDecl && slot.declaration!.every(f => declAnswers[f.id]?.trim())
+                const declComplete = declSigned
                 const isExpanded = expandedDecl === slot.key
 
                 if (isDecl) {
@@ -326,15 +336,15 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                           <FileText className="size-4 text-muted-foreground shrink-0" />
                           <div className="min-w-0">
                             <p className="text-sm">{slot.label}</p>
-                            <p className="text-xs text-muted-foreground">Fill in the details below — we generate the document for you to sign.</p>
+                            <p className="text-xs text-muted-foreground">{declSigned ? `E-signed by ${signatures[slot.key]}` : "Fill in the details below and sign electronically."}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <Badge variant={declComplete ? "default" : "outline"} className={`text-[10px] ${declComplete ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : ""}`}>
-                            {declComplete ? "Complete" : req ? "Required" : "Optional"}
+                            {declSigned ? "Signed" : req ? "Required" : "Optional"}
                           </Badge>
                           <Button variant="ghost" size="sm" className="text-xs" onClick={() => setExpandedDecl(isExpanded ? null : slot.key)}>
-                            {isExpanded ? "Collapse" : "Fill In"}
+                            {isExpanded ? "Collapse" : declSigned ? "Edit" : "Fill In"}
                           </Button>
                         </div>
                       </div>
@@ -352,20 +362,32 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                               )}
                             </div>
                           ))}
-                          <div className="flex items-center gap-2 pt-1">
-                            <Button variant="outline" size="sm" className="text-xs" disabled={!declComplete}
-                              onClick={() => {
-                                generateDeclarationPdf(slot.label, name, company, slot.declaration!, declAnswers)
-                                setDocs(p => ({ ...p, [slot.key]: `${slot.label} — generated` }))
-                              }}>
-                              <Download className="size-3 mr-1" />Generate &amp; Download to Sign
-                            </Button>
-                            <Button variant="outline" size="sm" className="relative text-xs" asChild>
-                              <label className="cursor-pointer"><Upload className="size-3 mr-1" />Upload Signed Copy
-                                <input type="file" className="absolute inset-0 opacity-0 cursor-pointer"
-                                  onChange={e => { if (e.target.files?.[0]) setDocs(p => ({ ...p, [slot.key]: e.target.files![0].name })) }} />
-                              </label>
-                            </Button>
+                          <div className="pt-3 border-t space-y-3">
+                            <div className="space-y-1.5">
+                              <Label className="text-xs">Electronic Signature — type your full name to sign</Label>
+                              <Input
+                                placeholder={`Type "${name}" to sign`}
+                                value={signatures[slot.key] || ""}
+                                onChange={e => setSignatures(p => ({ ...p, [slot.key]: e.target.value }))}
+                                className={signatures[slot.key] ? "font-serif italic text-lg" : ""}
+                              />
+                              {signatures[slot.key] && signatures[slot.key].toLowerCase() !== name.toLowerCase() && (
+                                <p className="text-xs text-amber-400">Signature should match your full name: {name}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button size="sm" className="text-xs" disabled={!declFieldsFilled || !signatures[slot.key]?.trim()}
+                                onClick={() => {
+                                  setDocs(p => ({ ...p, [slot.key]: `${slot.label} — e-signed by ${signatures[slot.key]}` }))
+                                  setExpandedDecl(null)
+                                }}>
+                                <CheckCircle2 className="size-3 mr-1" />Sign &amp; Complete
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-xs" disabled={!declFieldsFilled || !signatures[slot.key]?.trim()}
+                                onClick={() => downloadDeclaration(slot.label, name, company, slot.declaration!, declAnswers, signatures[slot.key] || "")}>
+                                <Download className="size-3 mr-1" />Download for Records
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       )}
