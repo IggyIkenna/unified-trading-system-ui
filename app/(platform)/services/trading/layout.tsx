@@ -3,7 +3,6 @@
 import { ServiceTabs, TRADING_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
 import { BatchLiveRail } from "@/components/platform/batch-live-rail"
-import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
 import { ErrorBoundary } from "@/components/ui/error-boundary"
 import { EntitlementGate } from "@/components/platform/entitlement-gate"
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
@@ -198,12 +197,7 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
       <ServiceTabs
         tabs={TRADING_TABS}
         entitlements={user?.entitlements}
-        rightSlot={
-          <div className="flex items-center gap-3">
-            <GlobalScopeFilters />
-            {LIVE_ASOF_VISIBLE.run && <LiveAsOfToggle />}
-          </div>
-        }
+        rightSlot={LIVE_ASOF_VISIBLE.run ? <LiveAsOfToggle /> : undefined}
       />
       <BatchLiveRail
         platform="strategy"
