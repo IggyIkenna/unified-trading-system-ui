@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { addApplication, addDocument } from "@/lib/api/mock-onboarding-state"
 import { addRequest } from "@/lib/api/mock-provisioning-state"
 import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state"
@@ -31,13 +30,13 @@ const SERVICES = [
 const ONBOARDING_SERVICES = new Set(["regulatory", "investment"])
 const REG_OPTS = [
   { id: "ar", label: "Appointed Representative (AR)" }, { id: "compliance", label: "Compliance Monitoring" },
-  { id: "reporting", label: "Transaction Reporting" }, { id: "fund", label: "Fund Structure (via affiliate)" },
+  { id: "aml", label: "AML Monitoring" }, { id: "reporting", label: "P&L & Client Reporting" },
+  { id: "fund", label: "Fund Structure (via affiliate)" },
 ]
 const INV_OPTS = [
   { id: "sma", label: "Separately Managed Account" }, { id: "fund_access", label: "Fund Access" },
   { id: "strategy", label: "Strategy Allocation" }, { id: "discretionary", label: "Full Discretionary" },
 ]
-const TIERS = ["basic", "professional", "institutional", "enterprise"] as const
 interface DocSlot { key: string; label: string; required: boolean | "investment_only" }
 const DOC_SLOTS: DocSlot[] = [
   { key: "proof_of_address", label: "Proof of Address (utility bill, bank statement)", required: true },
@@ -80,7 +79,6 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
   const [company, setCompany] = React.useState("")
   const [phone, setPhone] = React.useState("")
   const [selOpts, setSelOpts] = React.useState<Set<string>>(new Set())
-  const [tier, setTier] = React.useState<typeof TIERS[number]>("professional")
   const [docs, setDocs] = React.useState<Record<string, string>>({})
   const [appId, setAppId] = React.useState("")
 
@@ -93,7 +91,7 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
     const id = `onb-${Date.now().toString(36)}`, now = new Date().toISOString()
     const app: OnboardingApplication = {
       id, applicant_user_id: `uid-${Date.now()}`, applicant_name: name, applicant_email: email,
-      org_name: company, desired_product_slugs: [...selOpts], subscription_tier: tier,
+      org_name: company, desired_product_slugs: [...selOpts], subscription_tier: "standard",
       status: "submitted", submitted_at: now, reviewer_id: null, review_note: "",
       correlation_id: `corr-${id}`, created_at: now, updated_at: now,
     }
@@ -168,13 +166,6 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                   </label>
                 ))}
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Subscription Tier</Label>
-                <Select value={tier} onValueChange={v => setTier(v as typeof tier)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>{TIERS.map(t => <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
               <div className="flex justify-between pt-2">
                 <BackBtn to={1} /><NextBtn disabled={selOpts.size === 0} onClick={() => setStep(3)} />
               </div>
@@ -241,7 +232,6 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                 <div className="flex flex-wrap gap-1.5">
                   {[...selOpts].map(id => <Badge key={id} variant="secondary" className="text-xs">{options.find(o => o.id === id)?.label ?? id}</Badge>)}
                 </div>
-                <p className="text-xs text-muted-foreground">Tier: <span className="capitalize">{tier}</span></p>
               </div>
               <div className="rounded-lg border p-4 space-y-2">
                 <h3 className="text-sm font-semibold">Documents ({uploadedCount} uploaded)</h3>
