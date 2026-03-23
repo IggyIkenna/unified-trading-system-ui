@@ -557,7 +557,7 @@ export default function ValidationPage() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="mt-4 grid grid-cols-5 gap-4">
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                   {regimePerformance.map(r => (
                     <div key={r.regime} className="text-center p-3 rounded-lg bg-muted/30">
                       <p className="font-semibold">{r.regime}</p>

@@ -485,7 +485,7 @@ export default function OverviewPage() {
         </div>
 
         {/* KPI Row */}
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <KPICard
             title={context.mode === "live" ? "P&L (Today)" : "P&L (As-Of)"}
             value={formatCurrency(totalPnl)}

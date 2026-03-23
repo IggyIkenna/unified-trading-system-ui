@@ -268,7 +268,7 @@ function KPISummary({ run }: { run: BacktestRun }) {
   ]
 
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
       {kpis.map((kpi) => (
         <Card key={kpi.label}>
           <CardContent className="p-3">

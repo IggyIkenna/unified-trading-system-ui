@@ -81,7 +81,7 @@ export default function ExecutionOverviewPage() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card>
             <CardContent className="pt-4">
               <div className="flex items-center justify-between">
@@ -274,7 +274,7 @@ export default function ExecutionOverviewPage() {
             {Object.keys(metrics.byAlgo).length === 0 && (
               <p className="text-sm text-muted-foreground text-center py-6">No algo performance data available yet</p>
             )}
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {Object.entries(metrics.byAlgo as Record<string, { orders: number; volume: number; slippage: number; fillRate: number }>)
                 .filter(([, data]) => data.orders > 0)
                 .sort((a, b) => b[1].volume - a[1].volume)

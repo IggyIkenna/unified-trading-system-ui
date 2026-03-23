@@ -32,7 +32,7 @@ export function Breadcrumbs() {
   const formatLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ")
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center justify-between px-6 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border">
+    <nav aria-label="Breadcrumb" className="flex items-center justify-between flex-wrap gap-y-1 px-4 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border">
       <div className="flex items-center gap-1.5">
       <Link href="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1">
         <Home className="size-3" />

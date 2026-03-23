@@ -228,7 +228,7 @@ export default function ExecutionCandidatesPage() {
             <CardDescription>Required approvals before promotion</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {[
                 { key: "backtestComplete", label: "Backtest Complete", icon: CheckCircle2 },
                 { key: "paperTradingComplete", label: "Paper Trading", icon: Zap },

@@ -261,7 +261,7 @@ export default function ExperimentDetailPage() {
 
         {/* Metrics Overview (if available) */}
         {experiment.metrics && (
-          <div className="grid grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <Card className="p-4">
               <div className="text-sm text-muted-foreground">Sharpe Ratio</div>
               <div className={`text-2xl font-semibold font-mono mt-1 ${experiment.metrics.sharpe >= 2.0 ? "text-[var(--status-live)]" : ""}`}>

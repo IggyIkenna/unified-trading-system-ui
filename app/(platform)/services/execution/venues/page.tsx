@@ -103,7 +103,7 @@ export default function ExecutionVenuesPage() {
             </CardContent>
           </Card>
         )}
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {MOCK_VENUES.map(venue => (
             <Card key={venue.id}>
               <CardContent className="pt-4">

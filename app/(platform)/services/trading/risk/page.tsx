@@ -1139,7 +1139,7 @@ export default function RiskPage() {
           {/* ============================================================= */}
           <TabsContent value="greeks" className="space-y-6">
             {/* Portfolio Greeks Summary */}
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-sm text-muted-foreground">Portfolio Delta</div>
@@ -1754,7 +1754,7 @@ export default function RiskPage() {
             Portfolio Greeks (Derivatives)
           </h2>
           {portfolioGreeksLoading ? (
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Card key={i}>
                   <CardContent className="p-4 text-center space-y-2">
@@ -1766,7 +1766,7 @@ export default function RiskPage() {
             </div>
           ) : portfolioGreeksData ? (
             <>
-              <div className="grid grid-cols-5 gap-4 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
                 <Card>
                   <CardContent className="p-4 text-center">
                     <div className="text-sm text-muted-foreground">Net Delta</div>

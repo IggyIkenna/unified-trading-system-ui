@@ -182,9 +182,9 @@ export function LifecycleNav({
                       <Icon className="size-3.5" />
                       <span className="hidden lg:inline">{nav.label}</span>
                       {allLocked ? (
-                        <Lock className="size-3 opacity-40" />
+                        <Lock className="size-3 opacity-40 hidden sm:block" />
                       ) : (
-                        <ChevronDown className="size-3 opacity-50" />
+                        <ChevronDown className="size-3 opacity-50 hidden sm:block" />
                       )}
                     </button>
                   </DropdownMenuTrigger>

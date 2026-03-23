@@ -391,7 +391,7 @@ export default function CandidatesPage() {
                       </div>
 
                       {/* Metrics row */}
-                      <div className="grid grid-cols-6 gap-4 rounded-lg border border-border/30 p-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 rounded-lg border border-border/30 p-3">
                         <div>
                           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sharpe</p>
                           <p className="text-lg font-bold font-mono">{fmtNum(m.sharpe)}</p>

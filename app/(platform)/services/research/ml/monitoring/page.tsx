@@ -206,7 +206,7 @@ export default function LiveMonitoringPage() {
 
       <main className="container mx-auto px-4 py-6 space-y-6">
         {/* Health Summary */}
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">

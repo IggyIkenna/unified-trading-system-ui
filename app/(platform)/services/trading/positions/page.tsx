@@ -386,7 +386,7 @@ function PositionsPageContent() {
       </Collapsible>
 
       {/* Summary KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         <Card className="bg-card/50">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-1">

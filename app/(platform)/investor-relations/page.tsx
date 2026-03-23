@@ -505,7 +505,7 @@ export default function PresentationPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="mt-12 grid grid-cols-5 gap-6"
+                  className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6"
                 >
                   {slide.stats?.map((stat: { value: string; label: string }, i: number) => (
                     <div key={i} className="text-center">
@@ -570,7 +570,7 @@ export default function PresentationPage() {
               <div>
                 <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
                 <p className="text-muted-foreground mb-8">{slide.subtitle}</p>
-                <div className="grid grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                   {slide.entries?.map((entry: { name: string; stages: string[]; alpha: boolean; desc: string }, i: number) => (
                     <motion.div
                       key={i}
