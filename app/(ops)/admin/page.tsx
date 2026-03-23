@@ -113,7 +113,7 @@ export default function AdminDashboardPage() {
 
   // Derived metrics
   const totalStrategies = strategies.length
-  const totalAum = posSummary?.totalAum ?? posSummary?.total_notional ?? 0
+  const totalAum = posSummary?.totalAum ?? posSummary?.total_notional ?? strategies.reduce((sum: number, s: Record<string, unknown>) => sum + (Number(s.nav) || 0), 0) || posSummary?.totalExposure ?? 0
   const healthyServices = services.filter((s) => s.status === "healthy").length
   const totalServices = services.length
   const serviceHealthPct = totalServices > 0 ? Math.round((healthyServices / totalServices) * 100) : 0

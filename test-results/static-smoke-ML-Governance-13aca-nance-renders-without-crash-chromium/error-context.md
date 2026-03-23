@@ -1,0 +1,136 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic [active]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - navigation [ref=e6]:
+            - button "previous" [disabled] [ref=e7]:
+              - img "previous" [ref=e8]
+            - generic [ref=e10]:
+              - generic [ref=e11]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e12]:
+              - img "next" [ref=e13]
+          - img
+        - generic [ref=e15]:
+          - link "Next.js 16.1.6 (stale) Turbopack" [ref=e16] [cursor=pointer]:
+            - /url: https://nextjs.org/docs/messages/version-staleness
+            - img [ref=e17]
+            - generic "There is a newer version (16.2.1) available, upgrade recommended!" [ref=e19]: Next.js 16.1.6 (stale)
+            - generic [ref=e20]: Turbopack
+          - img
+      - dialog "Build Error" [ref=e22]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - generic [ref=e29]: Build Error
+              - generic [ref=e30]:
+                - button "Copy Error Info" [ref=e31] [cursor=pointer]:
+                  - img [ref=e32]
+                - button "No related documentation found" [disabled] [ref=e34]:
+                  - img [ref=e35]
+                - button "Attach Node.js inspector" [ref=e37] [cursor=pointer]:
+                  - img [ref=e38]
+            - generic [ref=e47]: Parsing ecmascript source code failed
+          - generic [ref=e49]:
+            - generic [ref=e51]:
+              - img [ref=e53]
+              - generic [ref=e56]: ./app/(ops)/admin/page.tsx (116:20)
+              - button "Open in editor" [ref=e57] [cursor=pointer]:
+                - img [ref=e59]
+            - generic [ref=e62]:
+              - generic [ref=e63]: Parsing ecmascript source code failed
+              - generic [ref=e64]: 114 |
+              - generic [ref=e65]: // Derived metrics
+              - generic [ref=e66]: 115 |
+              - text: const
+              - generic [ref=e67]: totalStrategies
+              - text: =
+              - generic [ref=e68]: strategies
+              - text: .
+              - generic [ref=e69]: length
+              - text: ">"
+              - generic [ref=e70]: 116 |
+              - text: const
+              - generic [ref=e71]: totalAum
+              - text: =
+              - generic [ref=e72]: posSummary
+              - text: "?."
+              - generic [ref=e73]: totalAum
+              - text: "??"
+              - generic [ref=e74]: posSummary
+              - text: "?."
+              - generic [ref=e75]: total_notional
+              - text: "??"
+              - generic [ref=e76]: strategies
+              - text: ".reduce((sum:"
+              - generic [ref=e77]: number
+              - text: ","
+              - generic [ref=e78]: s
+              - text: ": Record<string,"
+              - generic [ref=e79]: unknown
+              - text: ">"
+              - generic [ref=e80]: )
+              - text: =>
+              - generic [ref=e81]: sum
+              - text: +
+              - generic [ref=e82]: (
+              - text: Number(s.
+              - generic [ref=e83]: nav)
+              - text: "|| 0), 0"
+              - generic [ref=e84]: )
+              - text: "||"
+              - generic [ref=e85]: posSummary
+              - text: "?."
+              - generic [ref=e86]: totalExposure
+              - text: "?? 0"
+              - generic [ref=e87]: "|"
+              - text: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              - generic [ref=e88]: 117 |
+              - text: const
+              - generic [ref=e89]: healthyServices
+              - text: =
+              - generic [ref=e90]: services
+              - text: .
+              - generic [ref=e91]: filter((s)
+              - text: =>
+              - generic [ref=e92]: s
+              - text: .
+              - generic [ref=e93]: status
+              - text: === "healthy").
+              - generic [ref=e94]: length
+              - generic [ref=e95]: 118 |
+              - text: const
+              - generic [ref=e96]: totalServices
+              - text: =
+              - generic [ref=e97]: services
+              - text: .
+              - generic [ref=e98]: length
+              - generic [ref=e99]: 119 |
+              - text: const
+              - generic [ref=e100]: serviceHealthPct
+              - text: =
+              - generic [ref=e101]: totalServices
+              - text: "> 0 ? Math."
+              - generic [ref=e102]: round((healthyServices
+              - text: /
+              - generic [ref=e103]: totalServices)
+              - text: "* 100"
+              - generic [ref=e104]: )
+              - text: ": 0"
+              - generic [ref=e105]: Nullish coalescing operator(??) requires parens when mixing with logical operators
+        - generic [ref=e106]: "1"
+        - generic [ref=e107]: "2"
+    - generic [ref=e112] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e113]:
+        - img [ref=e114]
+      - button "Open issues overlay" [ref=e118]:
+        - generic [ref=e119]:
+          - generic [ref=e120]: "0"
+          - generic [ref=e121]: "1"
+        - generic [ref=e122]: Issue
+  - alert [ref=e123]
+```

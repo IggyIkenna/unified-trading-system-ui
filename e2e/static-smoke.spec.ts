@@ -237,10 +237,21 @@ for (const { path, name } of ALL_PAGES) {
     expect(renderErrors, `${name} has React render errors: ${renderErrors.join('; ')}`).toHaveLength(0)
 
     // 7. Page should have meaningful content (not just a blank shell)
-    //    Check for at least one heading, table, card, or data element
     const contentIndicators = page.locator('h1, h2, h3, table, [class*="card"], [class*="Card"], [role="tablist"], main')
     const contentCount = await contentIndicators.count()
     expect(contentCount, `${name} has no visible content`).toBeGreaterThan(0)
+
+    // 8. No stub pages — "Coming Soon" or "TODO" should not appear
+    const stubTexts = await page.locator('text=Coming Soon').count()
+    const todoTexts = await page.locator('text=TODO:').count()
+    expect(stubTexts + todoTexts, `${name} still has stub/placeholder content`).toBe(0)
+
+    // 9. No unhandled mock API routes (indicates missing mock data)
+    const unhandledRoutes = consoleErrors.filter(e => e.includes('Unhandled API route'))
+    if (unhandledRoutes.length > 0) {
+      console.log(`  Unhandled mock routes on ${path}:`, unhandledRoutes)
+    }
+    // Note: we warn but don't fail — some routes are called by shared components on every page
   })
 }
 

@@ -41,6 +41,7 @@ export default function LoginPage() {
   const searchParams = typeof window !== "undefined"
     ? new URLSearchParams(window.location.search) : null
   const redirectTo = searchParams?.get("redirect") || null
+  const personaParam = searchParams?.get("persona") || null
 
   const [loginType, setLoginType] = React.useState<"internal" | "external">("external")
   const [email, setEmail] = React.useState("")
@@ -48,11 +49,21 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
 
+  // Auto-login when ?persona= param is present (from persona switcher)
   React.useEffect(() => {
-    if (!loading && user) {
+    if (personaParam && !loading && !user) {
+      const success = login(personaParam)
+      if (success) {
+        router.replace(redirectTo || PERSONA_REDIRECTS[personaParam] || "/dashboard")
+      }
+    }
+  }, [personaParam, loading, user, login, router, redirectTo])
+
+  React.useEffect(() => {
+    if (!loading && user && !personaParam) {
       router.replace(redirectTo || "/dashboard")
     }
-  }, [loading, user, router, redirectTo])
+  }, [loading, user, router, redirectTo, personaParam])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

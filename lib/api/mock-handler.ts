@@ -344,12 +344,12 @@ function mockRoute(path: string): Promise<Response> | null {
     })) })
   }
   if (route === "/api/alerts/summary") {
-    // Derive from STRATEGY_ALERTS so counts match /api/alerts/list
+    // Use same severity mapping as /api/alerts/list (critical→critical, warning→high, info→medium)
     const critCount = STRATEGY_ALERTS.filter(a => a.severity === "critical").length
-    const warnCount = STRATEGY_ALERTS.filter(a => a.severity === "warning").length
-    const infoCount = STRATEGY_ALERTS.filter(a => a.severity === "info").length
+    const highCount = STRATEGY_ALERTS.filter(a => a.severity === "warning").length
+    const medCount = STRATEGY_ALERTS.filter(a => a.severity === "info").length
     const unacked = STRATEGY_ALERTS.filter(a => !a.acknowledgedAt).length
-    return json({ total: STRATEGY_ALERTS.length, critical: critCount, warning: warnCount, info: infoCount, unacknowledged: unacked })
+    return json({ total: STRATEGY_ALERTS.length, critical: critCount, high: highCount, medium: medCount, warning: highCount, info: medCount, unacknowledged: unacked })
   }
   if (route === "/api/alerts/acknowledge" || route === "/api/alerts/escalate" || route === "/api/alerts/resolve") {
     return json({ ok: true })
@@ -491,9 +491,23 @@ function mockRoute(path: string): Promise<Response> | null {
   if (route === "/api/audit/batch-jobs") return json([])
 
   // --- Users / Orgs ---
-  if (route === "/api/users/organizations") return json(ORGANIZATIONS)
-  if (route.startsWith("/api/users/organizations/")) return json([])
-  if (route === "/api/users/subscriptions") return json([])
+  if (route === "/api/users/organizations") {
+    return json({ data: ORGANIZATIONS.map((o, i) => ({
+      ...o, status: "active", memberCount: 3 + i * 2,
+      subscriptionTier: i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
+      monthlyFee: [0, 15000, 8000][i] ?? 5000,
+      apiKeys: 2 + i, usageGb: 12 + i * 8,
+    })) })
+  }
+  if (route.startsWith("/api/users/organizations/")) return json({ data: [] })
+  if (route === "/api/users/subscriptions") {
+    return json({ data: ORGANIZATIONS.map((o, i) => ({
+      orgId: o.id, tier: i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
+      entitlements: i === 0 ? ["*"] : i === 1 ? ["data-pro", "execution-full", "strategy-full", "reporting"] : ["data-basic"],
+      startDate: "2025-06-01", renewalDate: "2026-06-01",
+      monthlyFee: [0, 15000, 8000][i] ?? 5000,
+    })) })
+  }
 
   // --- Config ---
   if (route === "/api/config/mandates") return json([])
