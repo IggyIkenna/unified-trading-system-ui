@@ -114,8 +114,8 @@ export default function RegulatoryServicePage() {
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                 <CheckCircle2 className="size-5 text-primary shrink-0" />
                 <div>
-                  <div className="font-medium">Fund Structure — Derivatives &amp; TradFi <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">EU Regulated</Badge></div>
-                  <div className="text-sm text-muted-foreground">Crypto derivatives, options, futures, and traditional markets. Managed by us under combined UK + EU regulatory coverage.</div>
+                  <div className="font-medium">Fund Structure — Derivatives &amp; Traditional Markets <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">EU Regulated</Badge></div>
+                  <div className="text-sm text-muted-foreground">Crypto derivatives, options, futures, and traditional markets (equities, FX, fixed income, commodities). Managed by us under combined UK + EU regulatory coverage.</div>
                 </div>
               </div>
             </CardContent>
@@ -202,14 +202,14 @@ export default function RegulatoryServicePage() {
                   Streamlined setup with full platform support
                 </div>
                 <div className="border-t border-border my-2" />
-                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Derivatives &amp; TradFi — EU Affiliate</div>
+                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Derivatives &amp; Traditional Markets</div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Crypto derivatives, options, futures — EU-regulated fund vehicles
+                  Derivatives and traditional markets (equities, FX, fixed income, commodities)
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Traditional markets and regulated instruments
+                  EU-regulated fund vehicles for all asset classes
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
