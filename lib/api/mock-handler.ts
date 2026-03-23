@@ -1671,6 +1671,10 @@ export function installMockHandler(): void {
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url
     if (url.startsWith("/api/")) {
+      // Let real Next.js API routes pass through to the server
+      if (url.startsWith("/api/onboarding/")) {
+        return originalFetch(input, init)
+      }
       const mockResponse = mockRoute(url, init)
       if (mockResponse) {
         return mockResponse
