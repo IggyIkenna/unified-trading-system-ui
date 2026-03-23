@@ -35,9 +35,9 @@ export default function ExecutionOverviewPage() {
 
   const metricsRaw: Record<string, any> = (metricsData as any)?.data ?? {}
   const metrics: Record<string, any> = {
-    ordersExecuted: 0, volumeTraded: 0, avgSlippage: 0, avgFillRate: 0, avgLatency: 0, rejects: 0, byAlgo: {},
+    ordersExecuted: 0, volumeTraded: 0, avgSlippage: 0, avgFillRate: 0, avgLatency: 0, rejects: 0,
     ...metricsRaw,
-    byAlgo: metricsRaw.byAlgo ?? {},
+    byAlgo: metricsRaw?.byAlgo ?? {},
   }
   const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? []
   const MOCK_RECENT_ORDERS: Array<any> = (ordersData as any)?.data ?? []

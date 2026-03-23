@@ -380,7 +380,7 @@ export default function CompliancePage() {
                   { key: "category", header: "Category" },
                   { key: "severity", header: "Severity" },
                   { key: "status", header: "Status" },
-                  { key: "lastCheck", header: "Last Check", format: (v: string) => formatTimestamp(v) },
+                  { key: "lastCheck", header: "Last Check", format: (v: unknown) => formatTimestamp(String(v ?? "")) },
                 ]}
                 filename="compliance-rules"
               />

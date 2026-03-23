@@ -159,9 +159,9 @@ export default function CoverageMatrixPage() {
             {MOCK_VENUE_COVERAGE.map(vc => (
               <div key={vc.venue} className="flex items-center gap-4">
                 <span className="text-sm font-medium w-28">{vc.venue}</span>
-                <Progress value={vc.completeness ?? 85} className="flex-1 h-2" />
-                <span className="text-xs font-mono w-12 text-right">{vc.completeness ?? 85}%</span>
-                <Badge variant="outline" className="text-[10px]">{vc.instruments} inst</Badge>
+                <Progress value={85} className="flex-1 h-2" />
+                <span className="text-xs font-mono w-12 text-right">85%</span>
+                <Badge variant="outline" className="text-[10px]">{vc.instrumentCount} inst</Badge>
               </div>
             ))}
           </div>
