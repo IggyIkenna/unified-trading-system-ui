@@ -39,8 +39,8 @@ steps:
         corepack enable && corepack prepare pnpm@latest --activate
         echo "--- Install ---"
         pnpm install --frozen-lockfile
-        echo "--- Type Check ---"
-        NEXT_PUBLIC_MOCK_API=true npx next build --no-lint 2>&1 | tail -5
+        echo "--- Type Check (build) ---"
+        NEXT_PUBLIC_MOCK_API=true npx next build 2>&1 | tail -5
         echo "--- Lint ---"
         pnpm lint || true
         echo "--- Unit tests ---"

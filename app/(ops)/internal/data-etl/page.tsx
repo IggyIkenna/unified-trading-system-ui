@@ -65,6 +65,7 @@ const CATEGORY_COLORS: Record<DataCategory, string> = {
   defi: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
   onchain_perps: "text-amber-400 border-amber-500/30 bg-amber-500/10",
   prediction_market: "text-rose-400 border-rose-500/30 bg-rose-500/10",
+  sports: "text-orange-400 border-orange-500/30 bg-orange-500/10",
 }
 
 export default function DataETLDashboard() {

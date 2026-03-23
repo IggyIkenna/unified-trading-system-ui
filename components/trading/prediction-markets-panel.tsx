@@ -729,8 +729,8 @@ function MultiOutcomeMarketCard({
                 <YesNoButtons
                   yesPrice={outcome.yesPrice}
                   noPrice={outcome.noPrice}
-                  onYes={(e) => { (e as unknown as React.MouseEvent)?.stopPropagation?.() }}
-                  onNo={(e) => { (e as unknown as React.MouseEvent)?.stopPropagation?.() }}
+                  onYes={() => {}}
+                  onNo={() => {}}
                 />
               </div>
             </div>
