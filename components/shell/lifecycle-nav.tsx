@@ -145,7 +145,7 @@ export function LifecycleNav({
   }, [])
 
   return (
-    <nav className={cn("flex items-center justify-between px-4 py-2 bg-card border-b border-border shadow-sm", className)}>
+    <nav className={cn("flex items-center justify-between px-3 py-1.5 bg-card border-b border-border shadow-sm gap-2 overflow-x-auto", className)}>
       {/* Left: Logo + Lifecycle stages */}
       <div className="flex items-center gap-4">
         {/* Logo */}
@@ -263,14 +263,14 @@ export function LifecycleNav({
       </div>
 
       {/* Center: Global Scope Filters (Org / Client / Strategy) */}
-      <div className="hidden md:flex items-center">
-        <div className="w-px h-5 bg-border mx-2" />
+      <div className="hidden xl:flex items-center shrink-0">
+        <div className="w-px h-5 bg-border mx-1" />
         <GlobalScopeFilters />
-        <div className="w-px h-5 bg-border mx-2" />
+        <div className="w-px h-5 bg-border mx-1" />
       </div>
 
       {/* Right: Search, Notifications, Org, User */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         {/* Search */}
         <button
           onClick={() => setSearchOpen(true)}
