@@ -270,7 +270,7 @@ export default function RegulatoryServicePage() {
               <div>
                 <h4 className="font-medium text-amber-400">Professional Clients Only</h4>
                 <p className="text-sm text-muted-foreground mt-1">
-                  AR services are only available to firms that will deal exclusively with Professional Clients 
+                  All Odum Research services are available exclusively to Professional Clients 
                   and Eligible Counterparties. Retail client business is not permitted.
                 </p>
               </div>
