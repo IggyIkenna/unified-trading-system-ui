@@ -156,6 +156,7 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
   const [email, setEmail] = React.useState("")
   const [company, setCompany] = React.useState("")
   const [phone, setPhone] = React.useState("")
+  const [expectedAum, setExpectedAum] = React.useState("")
   const [selOpts, setSelOpts] = React.useState<Set<string>>(new Set())
   const [docs, setDocs] = React.useState<Record<string, string>>({})
   const [declarations, setDeclarations] = React.useState<Record<string, Record<string, string>>>({})
@@ -237,6 +238,25 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                   <Input value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Capital" /></div>
                 <div className="space-y-1.5"><Label className="text-xs">Phone (optional)</Label>
                   <Input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+44 7XXX XXX XXX" /></div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Expected AUM (optional)</Label>
+                <Input type="text" value={expectedAum} onChange={e => {
+                  const raw = e.target.value.replace(/[^0-9]/g, "")
+                  setExpectedAum(raw ? Number(raw).toLocaleString("en-GB") : "")
+                }} placeholder="e.g. 1,000,000" inputMode="numeric" />
+                {expectedAum && (() => {
+                  const aumNum = Number(expectedAum.replace(/,/g, ""))
+                  if (!aumNum || aumNum <= 0) return null
+                  const aumFee = Math.round(aumNum * 0.005 / 12)
+                  const monthlyFee = Math.max(aumFee, 3000)
+                  return (
+                    <p className="text-xs text-muted-foreground">
+                      Indicative monthly fee: <span className="font-medium text-foreground">GBP {monthlyFee.toLocaleString("en-GB")}/mo</span>
+                      <span className="text-muted-foreground/60"> (the greater of 0.5% AUM p.a. or GBP 3,000/mo)</span>
+                    </p>
+                  )
+                })()}
               </div>
               <div className="flex justify-end pt-2"><NextBtn disabled={!name || !email || !company} onClick={() => setStep(2)} /></div>
             </CardContent>
