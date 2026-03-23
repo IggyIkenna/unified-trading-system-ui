@@ -163,6 +163,28 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
   const [signatures, setSignatures] = React.useState<Record<string, string>>({})
   const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null)
   const [appId, setAppId] = React.useState("")
+  const draftId = React.useRef(`draft-${Date.now().toString(36)}`).current
+
+  const orgSlug = company.toLowerCase().replace(/\s+/g, "-") || "unknown"
+
+  async function uploadFile(file: File, docType: string) {
+    const form = new FormData()
+    form.append("file", file)
+    form.append("org_id", orgSlug)
+    form.append("application_id", draftId)
+    form.append("doc_type", docType)
+    try {
+      const res = await fetch("/api/onboarding/upload", { method: "POST", body: form })
+      const data = await res.json()
+      return data.ok ? data : null
+    } catch { return null }
+  }
+
+  async function uploadDeclarationHtml(docType: string, html: string, fileName: string) {
+    const blob = new Blob([html], { type: "text/html" })
+    const file = new File([blob], fileName, { type: "text/html" })
+    return uploadFile(file, docType)
+  }
 
   const toggle = (id: string) => setSelOpts(p => { const n = new Set(p); n.has(id) ? n.delete(id) : n.add(id); return n })
   const isReq = (s: DocSlot) => s.required === true || (s.required === "investment_only" && serviceType === "investment")
@@ -400,7 +422,10 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                             </div>
                             <div className="flex items-center gap-2">
                               <Button size="sm" className="text-xs" disabled={!declFieldsFilled || !signatures[slot.key]?.trim()}
-                                onClick={() => {
+                                onClick={async () => {
+                                  const html = generateDeclarationHtml(slot.label, name, company, slot.declaration!, declAnswers, signatures[slot.key] || "")
+                                  const fileName = `${slot.key}-${orgSlug}.html`
+                                  await uploadDeclarationHtml(slot.key, html, fileName)
                                   setDocs(p => ({ ...p, [slot.key]: `${slot.label} — e-signed by ${signatures[slot.key]}` }))
                                   setExpandedDecl(null)
                                 }}>
@@ -435,7 +460,12 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                         <Button variant="outline" size="sm" className="relative text-xs" asChild>
                           <label className="cursor-pointer"><Upload className="size-3 mr-1" />{uploaded ? "Replace" : "Upload"}
                             <input type="file" className="absolute inset-0 opacity-0 cursor-pointer"
-                              onChange={e => { if (e.target.files?.[0]) setDocs(p => ({ ...p, [slot.key]: e.target.files![0].name })) }} />
+                              onChange={async e => {
+                                const f = e.target.files?.[0]
+                                if (!f) return
+                                await uploadFile(f, slot.key)
+                                setDocs(p => ({ ...p, [slot.key]: f.name }))
+                              }} />
                           </label>
                         </Button>
                       </div>

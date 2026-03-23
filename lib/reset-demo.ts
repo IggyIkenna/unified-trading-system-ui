@@ -22,6 +22,9 @@ export function resetDemo() {
   // Stateful mock: onboarding applications and documents (`mock-onboarding-state` in localStorage)
   resetOnboardingState()
 
+  // Clear local onboarding docs from disk (mirrors GCS path structure)
+  fetch("/api/onboarding/reset", { method: "POST" }).catch(() => {})
+
   // Stateful mock: trade ledger orders (`mock-trade-ledger` in localStorage)
   resetMockOrders()
 
