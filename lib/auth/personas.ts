@@ -79,6 +79,17 @@ export const PERSONAS: readonly AuthPersona[] = [
     description:
       "Premium execution client. Data + strategy + Smart Alpha execution, no ML.",
   },
+  {
+    id: "investor",
+    email: "investor@odum-research.co.uk",
+    password: "demo",
+    displayName: "Investor",
+    role: "client",
+    org: { id: "odum-ir", name: "Odum Investor Relations" },
+    entitlements: ["investor-relations"],
+    description:
+      "Investor / board member. Sees investor relations presentations only — board deck, disaster recovery, security posture.",
+  },
 ] as const
 
 export function getPersonaById(id: string): AuthPersona | undefined {

@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { ALL_TIER0_ROUTES } from './tier0-route-registry'
 
 /**
  * STATIC SMOKE TESTS - Every page renders without crash
@@ -10,133 +11,12 @@ import { test, expect } from '@playwright/test'
  *   3. Has visible content (not a blank page)
  *   4. No "Cannot read properties of undefined" or similar runtime crashes
  *
+ * Route list SSOT: `e2e/tier0-route-registry.ts` (also enforced by `tier0-app-route-coverage.spec.ts`).
+ *
  * Run: PLAYWRIGHT_BASE_URL=http://localhost:3100 npx playwright test e2e/static-smoke.spec.ts
  */
 
-// ─── Complete route registry ────────────────────────────────────────────────
-
-const PUBLIC_PAGES = [
-  { path: '/', name: 'Home (Landing)' },
-  { path: '/login', name: 'Login' },
-  { path: '/signup', name: 'Sign Up' },
-  { path: '/contact', name: 'Contact' },
-  { path: '/docs', name: 'Docs' },
-  { path: '/demo', name: 'Demo' },
-  { path: '/privacy', name: 'Privacy Policy' },
-  { path: '/terms', name: 'Terms of Service' },
-  { path: '/health', name: 'Health Check' },
-]
-
-const PLATFORM_PAGES = [
-  { path: '/dashboard', name: 'Dashboard (Service Hub)' },
-  { path: '/settings', name: 'Settings' },
-  { path: '/investor-relations', name: 'Investor Relations' },
-]
-
-const DATA_PAGES = [
-  { path: '/services/data/overview', name: 'Data Overview' },
-  { path: '/services/data/coverage', name: 'Data Coverage' },
-  { path: '/services/data/venues', name: 'Data Venues' },
-  { path: '/services/data/logs', name: 'Data Logs' },
-  { path: '/services/data/missing', name: 'Data Missing' },
-]
-
-const RESEARCH_PAGES = [
-  { path: '/services/research/overview', name: 'Research Overview' },
-  { path: '/services/research/quant', name: 'Quant Workspace' },
-  { path: '/services/research/ml', name: 'ML Dashboard' },
-  { path: '/services/research/ml/overview', name: 'ML Overview' },
-  { path: '/services/research/ml/experiments', name: 'ML Experiments' },
-  { path: '/services/research/ml/training', name: 'ML Training' },
-  { path: '/services/research/ml/features', name: 'ML Features' },
-  { path: '/services/research/ml/validation', name: 'ML Validation' },
-  { path: '/services/research/ml/registry', name: 'ML Registry' },
-  { path: '/services/research/ml/monitoring', name: 'ML Monitoring' },
-  { path: '/services/research/ml/deploy', name: 'ML Deploy' },
-  { path: '/services/research/ml/governance', name: 'ML Governance' },
-  { path: '/services/research/ml/config', name: 'ML Config' },
-  { path: '/services/research/strategy/overview', name: 'Strategy Overview' },
-  { path: '/services/research/strategy/backtests', name: 'Strategy Backtests' },
-  { path: '/services/research/strategy/candidates', name: 'Strategy Candidates' },
-  { path: '/services/research/strategy/compare', name: 'Strategy Compare' },
-  { path: '/services/research/strategy/handoff', name: 'Strategy Handoff' },
-  { path: '/services/research/strategy/heatmap', name: 'Strategy Heatmap' },
-  { path: '/services/research/strategy/results', name: 'Strategy Results' },
-]
-
-const TRADING_PAGES = [
-  { path: '/services/trading/overview', name: 'Trading Overview (Command Center)' },
-  { path: '/services/trading/terminal', name: 'Trading Terminal' },
-  { path: '/services/trading/positions', name: 'Trading Positions' },
-  { path: '/services/trading/orders', name: 'Trading Orders' },
-  { path: '/services/trading/book', name: 'Book Trade' },
-  { path: '/services/trading/accounts', name: 'Trading Accounts' },
-  { path: '/services/trading/pnl', name: 'Trading P&L Breakdown' },
-  { path: '/services/trading/alerts', name: 'Trading Alerts' },
-  { path: '/services/trading/risk', name: 'Trading Risk' },
-  { path: '/services/trading/strategies', name: 'Trading Strategies' },
-  { path: '/services/trading/strategies/grid', name: 'Strategy Grid' },
-]
-
-const EXECUTION_PAGES = [
-  { path: '/services/execution/overview', name: 'Execution Overview' },
-  { path: '/services/execution/algos', name: 'Execution Algos' },
-  { path: '/services/execution/venues', name: 'Execution Venues' },
-  { path: '/services/execution/tca', name: 'Execution TCA' },
-  { path: '/services/execution/benchmarks', name: 'Execution Benchmarks' },
-  { path: '/services/execution/candidates', name: 'Execution Candidates' },
-  { path: '/services/execution/handoff', name: 'Execution Handoff' },
-]
-
-const OBSERVE_PAGES = [
-  { path: '/services/observe/risk', name: 'Observe Risk Dashboard' },
-  { path: '/services/observe/alerts', name: 'Observe Alerts' },
-  { path: '/services/observe/health', name: 'Observe System Health' },
-  { path: '/services/observe/news', name: 'Observe News' },
-  { path: '/services/observe/strategy-health', name: 'Observe Strategy Health' },
-]
-
-const MANAGE_PAGES = [
-  { path: '/services/manage/clients', name: 'Manage Clients' },
-  { path: '/services/manage/mandates', name: 'Manage Mandates' },
-  { path: '/services/manage/fees', name: 'Manage Fees' },
-  { path: '/services/manage/users', name: 'Manage Users' },
-  { path: '/services/manage/compliance', name: 'Manage Compliance' },
-]
-
-const REPORTS_PAGES = [
-  { path: '/services/reports/overview', name: 'Reports Overview' },
-  { path: '/services/reports/executive', name: 'Reports Executive' },
-  { path: '/services/reports/settlement', name: 'Reports Settlement' },
-  { path: '/services/reports/reconciliation', name: 'Reports Reconciliation' },
-  { path: '/services/reports/regulatory', name: 'Reports Regulatory' },
-]
-
-const OPS_PAGES = [
-  { path: '/admin', name: 'Admin' },
-  { path: '/admin/data', name: 'Admin Data' },
-  { path: '/config', name: 'Config' },
-  { path: '/devops', name: 'DevOps' },
-  { path: '/engagement', name: 'Engagement' },
-  { path: '/internal', name: 'Internal' },
-  { path: '/internal/data-etl', name: 'Internal Data ETL' },
-  { path: '/ops', name: 'Operations' },
-  { path: '/ops/jobs', name: 'Ops Jobs' },
-  { path: '/ops/services', name: 'Ops Services' },
-]
-
-const ALL_PAGES = [
-  ...PUBLIC_PAGES,
-  ...PLATFORM_PAGES,
-  ...DATA_PAGES,
-  ...RESEARCH_PAGES,
-  ...TRADING_PAGES,
-  ...EXECUTION_PAGES,
-  ...OBSERVE_PAGES,
-  ...MANAGE_PAGES,
-  ...REPORTS_PAGES,
-  ...OPS_PAGES,
-]
+const ALL_PAGES = ALL_TIER0_ROUTES
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
 

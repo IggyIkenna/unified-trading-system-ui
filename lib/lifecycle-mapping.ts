@@ -205,6 +205,11 @@ export const routeMappings: RouteMapping[] = [
   { path: "/services/reports/overview", label: "Reports", primaryStage: "report", lanes: ["capital", "compliance"], requiresAuth: true },
   { path: "/services/reports/executive", label: "Executive", primaryStage: "report", secondaryStage: "observe", lanes: ["capital", "strategy"], requiresAuth: true },
 
+  // INVESTOR RELATIONS — presentations, disaster recovery, security
+  { path: "/investor-relations", label: "Investor Relations", primaryStage: "report", lanes: ["capital", "compliance"], requiresAuth: true },
+  { path: "/investor-relations/board-presentation", label: "Board Presentation", primaryStage: "report", lanes: ["capital"], requiresAuth: true },
+  { path: "/investor-relations/disaster-recovery", label: "Disaster Recovery", primaryStage: "report", lanes: ["compliance"], requiresAuth: true },
+
   // Public/commercial routes (no auth required)
   { path: "/", label: "Home", primaryStage: "acquire", lanes: ["data"], requiresAuth: false },
   { path: "/services/data", label: "Data Service", primaryStage: "acquire", lanes: ["data"], requiresAuth: false },

@@ -16,6 +16,7 @@ export const ENTITLEMENTS = [
   "ml-full",
   "strategy-full",
   "reporting",
+  "investor-relations",
 ] as const
 
 export type Entitlement = (typeof ENTITLEMENTS)[number]

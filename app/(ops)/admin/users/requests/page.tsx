@@ -134,6 +134,7 @@ function RequestCard({
           <div className="flex gap-2 pt-2 border-t">
             <Button
               size="sm"
+              aria-label="Approve access request"
               onClick={() => onReview(request.id, "approve")}
               disabled={isPending}
             >

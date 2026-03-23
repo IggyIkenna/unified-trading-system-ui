@@ -6,6 +6,9 @@ import { chromium } from '@playwright/test'
  * eliminating cold-compile timeout flakes.
  */
 async function globalSetup() {
+  if (process.env.PLAYWRIGHT_SKIP_GLOBAL_SETUP === '1') {
+    return
+  }
   const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3100'
   const browser = await chromium.launch()
   const page = await browser.newPage()
@@ -23,8 +26,8 @@ async function globalSetup() {
   const routes = [
     '/', '/login', '/signup', '/contact', '/docs', '/demo', '/privacy', '/terms',
     '/health', '/dashboard', '/settings', '/investor-relations',
-    '/services/data/overview', '/services/data/coverage', '/services/data/venues',
-    '/services/data/logs', '/services/data/missing',
+    '/services/data', '/services/data/overview', '/services/data/coverage', '/services/data/venues',
+    '/services/data/logs', '/services/data/missing', '/services/data/markets/pnl',
     '/services/research/overview', '/services/research/ml', '/services/research/ml/overview',
     '/services/research/strategy/backtests', '/services/research/quant',
     '/services/trading/overview', '/services/trading/terminal', '/services/trading/positions',

@@ -346,6 +346,7 @@ export default function AlertsPage() {
                     size="sm"
                     className="gap-1 text-xs"
                     disabled={isBatchMode || acknowledgeMutation.isPending}
+                    aria-label="Acknowledge alert"
                     onClick={() => handleAcknowledge(alert)}
                   >
                     <Check className="size-3" />
@@ -448,6 +449,7 @@ export default function AlertsPage() {
                               size="sm"
                               className="gap-1.5"
                               disabled={isBatchMode || acknowledgeMutation.isPending}
+                              aria-label="Acknowledge alert"
                               onClick={() => handleAcknowledge(alert)}
                             >
                               <Check className="size-4" />

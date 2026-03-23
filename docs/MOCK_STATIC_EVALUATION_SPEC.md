@@ -4,6 +4,8 @@
 
 **[`MOCK_STATIC_BROWSER_AGENT_HANDBOOK.md`](./MOCK_STATIC_BROWSER_AGENT_HANDBOOK.md)** (extended Codex-aligned edition: instruments, features, PnL, risk, latency, subscriptions, margin, UI — self-contained, no repo access).
 
+**Repeatable full-platform Tier 0 checklist (env, five-track audit, Playwright, backlog):** [`END_TO_END_STATIC_TIER_ZERO_TESTING.md`](./END_TO_END_STATIC_TIER_ZERO_TESTING.md).
+
 Give them **that file** (or a PDF export) **plus** the preview URL. They do not need this shorter spec.
 
 ---

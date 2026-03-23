@@ -115,6 +115,18 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     internalOnly: false,
   },
 
+  // --- Investor Relations (board / shareholder / investor access) ---
+  {
+    key: "investor-relations",
+    label: "Investor Relations",
+    description: "Board presentations, disaster recovery playbook, security posture, and operational resilience documentation.",
+    href: "/investor-relations",
+    lifecycleStage: "report",
+    requiredEntitlements: ["investor-relations"],
+    icon: "Presentation",
+    internalOnly: false,
+  },
+
   // --- 1 Internal Service (admin only) ---
   {
     key: "admin",

@@ -1,3 +1,4 @@
+import { resetState as resetMockProvisioningState } from "./api/mock-provisioning-state"
 import { useFilterStore } from "./stores/filter-store"
 import { useAuthStore } from "./stores/auth-store"
 import { useUIPrefsStore } from "./stores/ui-prefs-store"
@@ -13,11 +14,14 @@ export function resetDemo() {
   useAuthStore.getState().reset()
   useUIPrefsStore.getState().reset()
 
+  // Stateful mock: admin users, access requests, etc. (`mock-provisioning-state` in localStorage)
+  resetMockProvisioningState()
+
   // Clear React Query cache
   const qc = getQueryClient()
   qc.clear()
 
-  // Clear localStorage
+  // Clear localStorage (auth + UI prefs; provisioning reset above rewrites its key)
   localStorage.removeItem("portal_user")
   localStorage.removeItem("portal_token")
   localStorage.removeItem("odum_user")

@@ -812,6 +812,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
               { key: "observe", label: "Observe", description: "Risk, alerts, health", internal_only: false },
               { key: "manage", label: "Manage", description: "Clients, mandates, compliance", internal_only: false },
               { key: "reports", label: "Reports", description: "P&L, settlement, regulatory", internal_only: false },
+              { key: "presentations", label: "Presentations", description: "Investor relations, pitch decks, fund materials", internal_only: false },
             ],
           },
           {
@@ -990,6 +991,49 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
               { key: "reconciliation", label: "Reconciliation", description: "Book reconciliation", internal_only: false },
               { key: "regulatory", label: "Regulatory", description: "MiFID/FCA reporting", internal_only: false },
               { key: "client-reporting", label: "Client Reporting", description: "Client-facing reports", internal_only: false },
+            ],
+          },
+        ],
+      },
+      {
+        key: "presentations", label: "Presentations & Investor Relations", description: "Pitch decks, fund materials, investor updates", icon: "Presentation",
+        categories: [
+          {
+            key: "decks", label: "Pitch Decks & Materials", description: "Presentation materials and fund documents",
+            permissions: [
+              { key: "pitch-deck", label: "Pitch Deck", description: "Main investor pitch deck", internal_only: false },
+              { key: "fund-factsheet", label: "Fund Factsheet", description: "Fund performance factsheet", internal_only: false },
+              { key: "strategy-overview", label: "Strategy Overview", description: "Strategy methodology", internal_only: false },
+              { key: "risk-framework", label: "Risk Framework", description: "Risk management framework", internal_only: false },
+              { key: "compliance-pack", label: "Compliance Pack", description: "Regulatory documentation", internal_only: false },
+              { key: "tech-architecture", label: "Tech Architecture", description: "Technology architecture", internal_only: true },
+            ],
+          },
+          {
+            key: "investor-portal", label: "Investor Portal", description: "Investor-facing portal and updates",
+            permissions: [
+              { key: "investor-dashboard", label: "Investor Dashboard", description: "Live investor performance", internal_only: false },
+              { key: "quarterly-letters", label: "Quarterly Letters", description: "Quarterly investor updates", internal_only: false },
+              { key: "monthly-reports", label: "Monthly Reports", description: "Monthly performance reports", internal_only: false },
+              { key: "nav-statements", label: "NAV Statements", description: "Net asset value statements", internal_only: false },
+              { key: "capital-calls", label: "Capital Calls & Distributions", description: "Capital call notices", internal_only: false },
+            ],
+          },
+          {
+            key: "meetings", label: "Meetings & Events", description: "Investor meetings and events",
+            permissions: [
+              { key: "annual-meeting", label: "Annual Meeting", description: "Annual investor meeting", internal_only: false },
+              { key: "quarterly-review", label: "Quarterly Review", description: "Quarterly review call", internal_only: false },
+              { key: "ad-hoc-meetings", label: "Ad-Hoc Meetings", description: "Request meeting with team", internal_only: false },
+              { key: "due-diligence", label: "Due Diligence", description: "DD materials and sessions", internal_only: false },
+            ],
+          },
+          {
+            key: "data-room", label: "Data Room", description: "Secure document sharing",
+            permissions: [
+              { key: "data-room-read", label: "Data Room (Read)", description: "Read access to data room", internal_only: false },
+              { key: "data-room-upload", label: "Data Room (Upload)", description: "Upload documents", internal_only: true },
+              { key: "data-room-admin", label: "Data Room (Admin)", description: "Manage data room", internal_only: true },
             ],
           },
         ],
