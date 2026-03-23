@@ -290,9 +290,67 @@ P1 (Required for institutional-grade mock):
 10. Surface Kelly/stake sizing language in sports strategy detail.
 P2 (Polish for institutional demo):
 11. Add Sports MM strategy (back/lay quoting) — currently completely absent.
-12. Implement /services/research/backtests and /services/research/features routes.
+12. Implement /services/research/backtests, /services/research/features, and /services/research/signals routes.
 13. Populate Stress Scenario dropdown with historical scenarios.
 14. Add correlation heatmap data.
 15. Fix /services/observe root redirect.
 16. Differentiate Client (Full) vs Client (Premium) entitlement visibility more clearly.
-17. Update handbook
+17. Update handbook.
+
+20. Supplementary Audit — Codex Extended Reference (2026-03-23)
+
+This section covers findings from the extended Codex strategy catalog that go beyond the base handbook. Items already fixed during Phase 1-2 of the hardening plan are marked FIXED.
+
+20.A Instrument ID Pattern — FIXED (Phase 2)
+Mock data now uses domain-correct instrument IDs (e.g. NBA:GAME:LAL-GSW, AAVE_V3:SUPPLY:USDT, POLYMARKET:BINARY:BTC-100K@YES) instead of generic crypto tickers. However, the VENUE:TYPE:ASSET compound key pattern from the Codex (e.g. HYPERLIQUID:PERPETUAL:ETH-USD) is not yet fully adopted — positions show instrument + venue as separate columns rather than a single compound key. A "canonical ID" secondary column or tooltip would complete this.
+
+20.B Feature Source Attribution — FAIL
+No screen attributes features to their logical pipeline source (features-delta-one vs features-onchain vs features-volatility). The Coverage Matrix shows coverage percentages but not feature lineage. The Research Features tab (currently 404) should become the primary home for feature lineage: pipeline source, last-published timestamp vs SLA, subscribed strategies, and current value.
+
+20.C Per-Strategy PnL Bucket Precision — PARTIALLY FIXED (Phase 2)
+taxonomy.ts PNL_FACTORS now includes 21 factors (up from 11): added staking_yield, borrow_cost, impermanent_loss, interest_accrual, arb_pnl, spread_earned, liquidation_penalty, rewards, gas, commission. The P&L waterfall component needs to render these per-strategy when present. Remaining gaps:
+- lst_depeg_pnl not yet a separate factor (folded into basis)
+- pre_game_pnl / halftime_pnl phase split not represented
+- Spread/inventory PnL for MM strategies not yet wired to the waterfall
+
+20.D Exposure Subscription Taxonomy — CRITICAL
+The Exposure tab shows "0 of 23 Risk Types" across five taxonomy groups (First Order, Second Order, Structural, Operational, Domain-Specific) — all empty. This is the single largest gap. Mock data must populate risk type entries for: aave_liquidation, delta, funding, borrow_cost, bankroll_dd, model_confidence_decay, adverse_selection, inventory_half_life, flash_liquidity, venue_protocol, regime, lst_depeg, suspension, and more.
+
+20.E Margin/Liquidation — PARTIAL
+- HF time series chart renders empty (no plotted data points)
+- Distance to Liquidation table has no rows
+- LTV (0.72) conflated with Health Factor (should be ~1.39 for 0.72 LTV)
+- Emergency exit threshold (HF 1.2) missing from chart
+- IBKR SPAN margin correctly shown for TradFi
+
+20.F Latency Story — PARTIAL
+System Health SLA table conflates batch pipeline freshness (12s/30s) with strategy-level execution latency (~5ms for MM). No per-strategy latency tier badge. Missing: co-location indicator, strategy-class latency SLA target.
+
+20.G Execution Orchestration — FAIL
+- No atomic flash bundle execution type in algo list
+- DEX venues absent from Execution Venue Matrix (only in Data Venue Health)
+- No mass-quote / LP instruction types in Orders tab (only 3 generic orders shown)
+- No quotes vs orders distinction for MM strategies
+
+20.H CeFi MM SLA Class — HIGH
+Features-service shows 12s/30s freshness but CeFi MM requires ~5ms feature-to-strategy. The System Health page creates an incorrect impression of platform timing characteristics. Need latency-class segmentation.
+
+20.I Prediction Market Gaps — MEDIUM
+- Kalshi entirely absent from venue registry, positions, model families
+- No FEATURE/TRADABLE/ARB_SURFACE domain classification
+- No binary YES/NO payoff display
+
+20.J Sports Risk Dimensions — HIGH
+No sports-specific risk types surfaced: suspension, bankroll_dd, line_move, void_rules, stake_limits, concurrent_bets, adverse_selection (for MM). Betfair suspension data type exists in Venue Health but not connected to strategy risk indicators.
+
+20.K Research Signals Route — FAIL
+/services/research/signals returns 404 despite being nav-linked. Should show signal definition, monitoring, and signal-to-strategy linkage.
+
+20.L Updated Extended Checklist
+After Phase 2 fixes (instrument IDs corrected, archetypes unified, PnL factors expanded):
+PASS: 0 | PARTIAL: 6 (6.1, 6.3, 7.1, 7.2, 8.1, 8.2) | FAIL: 12 (6.2, 6.4, 6.5, 7.3, 8.3, 9.1-9.5, §10, §11)
+
+20.M Three Architecturally Correct Surprises
+1. Term Structure tab with "DeFi/CeFi perpetuals classified as Overnight (8h funding settlement)" — correct conceptual framing
+2. Limits hierarchy (Company→Client→Account→Instrument→Strategy) with 6 levels — institutional-grade
+3. Execution Handoff with canary deployment (10% traffic for 24h) and deployment checklist — Build→Promote→Deploy lifecycle correctly represented

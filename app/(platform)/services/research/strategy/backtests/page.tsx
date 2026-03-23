@@ -340,7 +340,7 @@ export default function BacktestsPage() {
       venue: form.venue || tpl.venues[0],
       dateWindow: { start: form.dateStart, end: form.dateEnd },
       shard: "SHARD_1",
-      testingStage: "BACKTEST",
+      testingStage: "HISTORICAL",
       dataSource: "HISTORICAL_TICK",
       dataSnapshotId: `snap-${Date.now()}`,
       asOfDate: new Date().toISOString().slice(0, 10),
