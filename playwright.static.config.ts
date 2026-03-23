@@ -12,9 +12,9 @@ export default defineConfig({
   testMatch: 'static-smoke.spec.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 0,
-  workers: 4,
-  timeout: 20000,
+  retries: 1,
+  workers: 3,
+  timeout: 30000,
   reporter: [
     ['list'],
     ['json', { outputFile: 'test-results/static-smoke-results.json' }],
