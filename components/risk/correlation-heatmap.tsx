@@ -42,7 +42,7 @@ export function CorrelationHeatmap() {
               <Skeleton key={i} className="h-8 w-full" />
             ))}
           </div>
-        ) : correlationData && correlationData.labels.length > 0 ? (
+        ) : correlationData && correlationData.labels && correlationData.labels.length > 0 ? (
           <div className="overflow-x-auto">
             <div
               className="inline-grid gap-px bg-border"

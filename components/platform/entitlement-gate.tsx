@@ -23,8 +23,13 @@ export function EntitlementGate({ entitlement, serviceName, description, childre
   // Admin and internal users see everything
   if (isAdmin() || isInternal()) return <>{children}</>
 
-  // Check entitlement
-  if (hasEntitlement(entitlement)) return <>{children}</>
+  // Check entitlement (with hierarchy: -full implies -basic, data-pro implies data-basic)
+  const entitlementHierarchy: Record<string, string[]> = {
+    "data-basic": ["data-basic", "data-pro"],
+    "execution-basic": ["execution-basic", "execution-full"],
+  }
+  const acceptableEntitlements = entitlementHierarchy[entitlement] ?? [entitlement]
+  if (acceptableEntitlements.some(e => hasEntitlement(e as Entitlement))) return <>{children}</>
 
   // Show upgrade card
   return (
