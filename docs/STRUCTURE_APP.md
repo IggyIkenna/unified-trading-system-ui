@@ -1,6 +1,6 @@
 # app/ — Route Architecture
 
-Next.js 15 App Router. Three route groups. **Critical architectural change from Phase 2**: as of commit `8e536fc`, all platform content now lives under a single canonical tree at `app/(platform)/service/`. All legacy parallel routes (`/trading/*`, `/execution/*`, `/ml/*`, `/research/*`, `/strategy-platform/*`) have been deleted and replaced with permanent redirects in `next.config.mjs`.
+Next.js 15 App Router. Three route groups. **Critical architectural change from Phase 2**: as of commit `8e536fc`, all platform content now lives under a single canonical tree at `app/(platform)/services/`. All legacy parallel routes (`/trading/*`, `/execution/*`, `/ml/*`, `/research/*`, `/strategy-platform/*`) have been deleted and replaced with permanent redirects in `next.config.mjs`.
 
 ---
 
@@ -9,7 +9,7 @@ Next.js 15 App Router. Three route groups. **Critical architectural change from 
 | Group | URL prefix | Audience | Auth required |
 |---|---|---|---|
 | `(public)/` | `/`, `/login`, `/services/*`, etc. | Unauthenticated visitors | No |
-| `(platform)/` | `/dashboard`, `/service/*`, `/strategies/*`, etc. | Authenticated org users + internal | Yes |
+| `(platform)/` | `/dashboard`, `/services/*`, `/strategies/*`, etc. | Authenticated org users + internal | Yes |
 | `(ops)/` | `/admin`, `/devops`, `/compliance`, etc. | Internal operators only | Yes + role gate |
 
 ---
@@ -45,7 +45,7 @@ Next.js 15 App Router. Three route groups. **Critical architectural change from 
 
 Layout: `app/(platform)/layout.tsx` — RequireAuth + UnifiedShell (lifecycle nav).
 
-### Top-level pages (not under /service/)
+### Top-level pages (not under /services/)
 
 ```
 (platform)/
@@ -53,7 +53,7 @@ Layout: `app/(platform)/layout.tsx` — RequireAuth + UnifiedShell (lifecycle na
 ├── dashboard/page.tsx              Post-login dashboard (role-aware)
 ├── health/page.tsx                 System health summary
 ├── settings/page.tsx               User/org settings (added to fix 404)
-├── data/page.tsx                   → redirects to /service/data/overview
+├── data/page.tsx                   → redirects to /services/data/overview
 ├── strategies/
 │   ├── page.tsx                    Strategy list/grid
 │   ├── grid/page.tsx               Grid view
@@ -74,12 +74,12 @@ Layout: `app/(platform)/layout.tsx` — RequireAuth + UnifiedShell (lifecycle na
 
 ---
 
-## (platform)/service/ — The Canonical Content Tree
+## (platform)/services/ — The Canonical Content Tree
 
 **This is where all platform content lives.** Every domain has its real page.tsx here. Legacy routes in the old flat structure (`/trading/`, `/execution/`, `/ml/`, etc.) now permanently redirect here.
 
 ```
-service/
+services/
 ├── overview/page.tsx               Service hub — entry after login
 ├── [key]/page.tsx                  Dynamic: service detail by registry key
 ├── observe/
@@ -186,37 +186,37 @@ Internal-only. Hidden from client personas.
 
 ## Redirect Map (next.config.mjs)
 
-All old flat and parallel routes now permanently redirect to `/service/*`. Agents must NOT create new pages at these old paths — they will be overwritten by redirects.
+All old flat and parallel routes now permanently redirect to `/services/*`. Agents must NOT create new pages at these old paths — they will be overwritten by redirects.
 
 | Old URL | → Canonical URL |
 |---|---|
-| `/overview` | `/service/overview` |
-| `/data` | `/service/data/overview` |
-| `/trading` | `/service/trading/overview` |
-| `/trading/positions` | `/service/trading/positions` |
-| `/trading/risk` | `/service/trading/risk` |
-| `/trading/alerts` | `/service/trading/alerts` |
-| `/trading/markets` | `/service/data/markets` |
-| `/trading/markets/:path*` | `/service/data/markets/:path*` |
-| `/research` | `/service/research/overview` |
-| `/research/strategy/:path*` | `/service/research/strategy/:path*` |
-| `/research/ml/:path*` | `/service/research/ml/:path*` |
-| `/research/execution/:path*` | `/service/research/execution/:path*` |
-| `/ml` | `/service/research/ml` |
-| `/ml/:path*` | `/service/research/ml/:path*` |
-| `/positions` | `/service/trading/positions` |
-| `/risk` | `/service/trading/risk` |
-| `/alerts` | `/service/trading/alerts` |
-| `/strategy-platform` | `/service/research/strategy/backtests` |
-| `/strategy-platform/:path*` | `/service/research/strategy/:path*` |
-| `/execution` | `/service/execution/overview` |
-| `/execution/:path*` | `/service/execution/:path*` |
-| `/reports` | `/service/reports/overview` |
-| `/reports/:path*` | `/service/reports/:path*` |
-| `/markets` | `/service/data/markets` |
-| `/markets/pnl` | `/service/data/markets/pnl` |
-| `/executive` | `/service/reports/executive` |
-| `/quant` | `/service/research/quant` |
+| `/overview` | `/services/overview` |
+| `/data` | `/services/data/overview` |
+| `/trading` | `/services/trading/overview` |
+| `/trading/positions` | `/services/trading/positions` |
+| `/trading/risk` | `/services/trading/risk` |
+| `/trading/alerts` | `/services/trading/alerts` |
+| `/trading/markets` | `/services/data/markets` |
+| `/trading/markets/:path*` | `/services/data/markets/:path*` |
+| `/research` | `/services/research/overview` |
+| `/research/strategy/:path*` | `/services/research/strategy/:path*` |
+| `/research/ml/:path*` | `/services/research/ml/:path*` |
+| `/research/execution/:path*` | `/services/research/execution/:path*` |
+| `/ml` | `/services/research/ml` |
+| `/ml/:path*` | `/services/research/ml/:path*` |
+| `/positions` | `/services/trading/positions` |
+| `/risk` | `/services/trading/risk` |
+| `/alerts` | `/services/trading/alerts` |
+| `/strategy-platform` | `/services/research/strategy/backtests` |
+| `/strategy-platform/:path*` | `/services/research/strategy/:path*` |
+| `/execution` | `/services/execution/overview` |
+| `/execution/:path*` | `/services/execution/:path*` |
+| `/reports` | `/services/reports/overview` |
+| `/reports/:path*` | `/services/reports/:path*` |
+| `/markets` | `/services/data/markets` |
+| `/markets/pnl` | `/services/data/markets/pnl` |
+| `/executive` | `/services/reports/executive` |
+| `/quant` | `/services/research/quant` |
 
 ---
 
@@ -224,8 +224,8 @@ All old flat and parallel routes now permanently redirect to `/service/*`. Agent
 
 | Pattern | Example URL | Purpose |
 |---|---|---|
-| `service/[key]/page.tsx` | `/service/execution-service` | Service detail by registry key |
-| `service/research/ml/experiments/[id]/page.tsx` | `/service/research/ml/experiments/exp-42` | ML experiment detail |
+| `service/[key]/page.tsx` | `/services/execution-service` | Service detail by registry key |
+| `service/research/ml/experiments/[id]/page.tsx` | `/services/research/ml/experiments/exp-42` | ML experiment detail |
 | `strategies/[id]/page.tsx` | `/strategies/strat-001` | Strategy detail |
 | `client-portal/[org]/page.tsx` | `/client-portal/odum` | Org-scoped portal |
 
@@ -240,12 +240,12 @@ app/layout.tsx                          Root — providers, theme, fonts (lib/pr
 └── app/(ops)/layout.tsx                Ops shell — RequireAuth + internal/admin role gate
 ```
 
-No sub-layouts remain under `(platform)/service/` — the cleanup commit deleted all sub-layouts that existed in the legacy parallel trees.
+No sub-layouts remain under `(platform)/services/` — the cleanup commit deleted all sub-layouts that existed in the legacy parallel trees.
 
 ---
 
 ## Key Rule for Agents
 
-**When adding a new platform page**, always create it under `app/(platform)/service/<domain>/`. Never create new pages at the old flat paths (`/trading/`, `/execution/`, `/ml/`, etc.) — those paths are redirects and the files would be unreachable.
+**When adding a new platform page**, always create it under `app/(platform)/services/<domain>/`. Never create new pages at the old flat paths (`/trading/`, `/execution/`, `/ml/`, etc.) — those paths are redirects and the files would be unreachable.
 
 **When adding a new redirect** (e.g. for a renamed URL), edit `next.config.mjs` `redirects()` array only.

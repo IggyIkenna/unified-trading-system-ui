@@ -67,7 +67,7 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
     return Object.values(grouped).map(g => ({
       ...g,
       utilization: g.total > 0 ? Math.round((g.used / g.total) * 100) : 0,
-      trend: "stable" as const,
+      trend: "stable" as "up" | "down" | "stable",
       marginCallDistance: g.total > 0 ? Math.max(5, 30 - Math.round((g.used / g.total) * 30)) : 30,
       lastUpdate: new Date().toISOString(),
     }))

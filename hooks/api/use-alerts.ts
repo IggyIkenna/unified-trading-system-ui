@@ -1,17 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/hooks/use-auth"
-import type { ApiResponse } from "@/lib/api/typed-fetch"
+import { apiFetch } from "@/lib/api/fetch"
 import { typedFetch } from "@/lib/api/typed-fetch"
-
-/** Typed response: array of alert objects from client-reporting-api. */
-type AlertsResponse = ApiResponse<"/alerts/list">
 
 export function useAlerts() {
   const { user, token } = useAuth()
 
-  return useQuery<AlertsResponse>({
+  return useQuery({
     queryKey: ["alerts", user?.id],
-    queryFn: () => typedFetch<AlertsResponse>("/api/alerts/list", token),
+    queryFn: () => apiFetch("/api/alerts/list", token),
     enabled: !!user,
   })
 }
@@ -21,7 +18,7 @@ export function useAlertsSummary() {
 
   return useQuery({
     queryKey: ["alerts-summary", user?.id],
-    queryFn: () => typedFetch<unknown>("/api/alerts/summary", token),
+    queryFn: () => apiFetch("/api/alerts/summary", token),
     enabled: !!user,
   })
 }
@@ -32,7 +29,7 @@ export function useAcknowledgeAlert() {
 
   return useMutation({
     mutationFn: (alertId: string) =>
-      typedFetch<unknown>("/api/alerts/acknowledge", token, { method: "POST", body: JSON.stringify({ alertId }) }),
+      apiFetch("/api/alerts/acknowledge", token, { method: "POST", body: JSON.stringify({ alertId }) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] })
       queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })
@@ -46,7 +43,7 @@ export function useEscalateAlert() {
 
   return useMutation({
     mutationFn: (alertId: string) =>
-      typedFetch<unknown>("/api/alerts/escalate", token, { method: "POST", body: JSON.stringify({ alertId }) }),
+      apiFetch("/api/alerts/escalate", token, { method: "POST", body: JSON.stringify({ alertId }) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] })
       queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })
@@ -60,7 +57,7 @@ export function useResolveAlert() {
 
   return useMutation({
     mutationFn: (alertId: string) =>
-      typedFetch<unknown>("/api/alerts/resolve", token, { method: "POST", body: JSON.stringify({ alertId }) }),
+      apiFetch("/api/alerts/resolve", token, { method: "POST", body: JSON.stringify({ alertId }) }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["alerts"] })
       queryClient.invalidateQueries({ queryKey: ["alerts-summary"] })

@@ -71,6 +71,8 @@ This lifecycle guides service naming, navigation, and feature organization.
 | [UX_FLOW_SPEC.md](./UX_FLOW_SPEC.md) | Canonical user journeys |
 | [TESTING.md](./TESTING.md) | Testing strategy and utilities |
 | [QA_GATES.md](./QA_GATES.md) | Pre-deploy verification steps |
+| [docs/MOCK_STATIC_BROWSER_AGENT_HANDBOOK.md](docs/MOCK_STATIC_BROWSER_AGENT_HANDBOOK.md) | **Browser-only / static mock:** full strategy catalog, dependencies, UI verification (hand to external agents + PDF) |
+| [docs/MOCK_STATIC_EVALUATION_SPEC.md](docs/MOCK_STATIC_EVALUATION_SPEC.md) | Maintainer pointer: env, paths, link to handbook |
 | [COMPLIANCE_REFACTOR.md](./COMPLIANCE_REFACTOR.md) | FCA regulatory specification |
 
 ## References

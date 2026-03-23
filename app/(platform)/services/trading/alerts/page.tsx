@@ -152,8 +152,8 @@ const ALERT_EXPORT_COLUMNS: ExportColumn[] = [
 
 export default function AlertsPage() {
   const { data: alertsData, isLoading, isError, refetch } = useAlerts()
-  const allAlerts: Alert[] = (alertsData as Record<string, unknown>)?.data as Alert[]
-    ?? (alertsData as Record<string, unknown>)?.alerts as Alert[]
+  const allAlerts: Alert[] = (alertsData as unknown as Record<string, unknown>)?.data as Alert[]
+    ?? (alertsData as unknown as Record<string, unknown>)?.alerts as Alert[]
     ?? []
 
   const { scope } = useGlobalScope()

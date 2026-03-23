@@ -1,22 +1,22 @@
 # Service Completion Status
 
-Last updated: 2026-03-21 (routes updated to canonical `/service/` tree after commit `8e536fc`)
+Last updated: 2026-03-21 (routes updated to canonical `/services/` tree after commit `8e536fc`)
 
 ## Service Layer Completion Matrix
 
-All canonical routes now live under `app/(platform)/service/`. Old flat routes (`/trading/*`, `/research/*`, etc.) are permanent redirects — see `ROUTES.md` for the full redirect map.
+All canonical routes now live under `app/(platform)/services/`. Old flat routes (`/trading/*`, `/research/*`, etc.) are permanent redirects — see `ROUTES.md` for the full redirect map.
 
 | Service Area    | Canonical Route(s)                                                                                                  | Product Surface                                                                     | Admin/Ops                                              | Overall     |
 | --------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------ | ----------- |
-| **Data**        | `/service/data/overview`, `/service/data/coverage`, `/service/data/venues`, `/service/data/markets`, etc.          | ✅ Data status dashboard, instrument views, subscriptions                           | 🟡 `/admin/data` (basic), `/internal/data-etl` (basic) | ✅ COMPLETE |
-| **Research**    | `/service/research/overview`, `/service/research/strategy/*`, `/service/research/ml/*`, `/service/research/execution/*` | ✅ Strategy platform, ML models/experiments, execution research (algos, TCA)    | ❌ N/A                                                 | ✅ COMPLETE |
-| **Trading**     | `/service/trading/overview`, `/service/trading/positions`, `/service/trading/risk`, `/service/trading/alerts`       | ✅ Trading terminal, positions, risk, alerts, markets                               | ❌ N/A                                                 | ✅ COMPLETE |
-| **Reporting**   | `/service/reports/overview`, `/service/reports/executive`, `/service/reports/reconciliation`, etc.                  | ✅ Reports + executive dashboard                                                    | 🟡 `/manage/fees` exists                               | ✅ COMPLETE |
-| **Execution**   | `/service/execution/overview`, `/service/execution/tca`, `/service/execution/algos`, etc.                           | ✅ Execution analytics (live)                                                       | ❌ N/A                                                 | ✅ COMPLETE |
+| **Data**        | `/services/data/overview`, `/services/data/coverage`, `/services/data/venues`, `/services/data/markets`, etc.          | ✅ Data status dashboard, instrument views, subscriptions                           | 🟡 `/admin/data` (basic), `/internal/data-etl` (basic) | ✅ COMPLETE |
+| **Research**    | `/services/research/overview`, `/services/research/strategy/*`, `/services/research/ml/*`, `/services/research/execution/*` | ✅ Strategy platform, ML models/experiments, execution research (algos, TCA)    | ❌ N/A                                                 | ✅ COMPLETE |
+| **Trading**     | `/services/trading/overview`, `/services/trading/positions`, `/services/trading/risk`, `/services/trading/alerts`       | ✅ Trading terminal, positions, risk, alerts, markets                               | ❌ N/A                                                 | ✅ COMPLETE |
+| **Reporting**   | `/services/reports/overview`, `/services/reports/executive`, `/services/reports/reconciliation`, etc.                  | ✅ Reports + executive dashboard                                                    | 🟡 `/manage/fees` exists                               | ✅ COMPLETE |
+| **Execution**   | `/services/execution/overview`, `/services/execution/tca`, `/services/execution/algos`, etc.                           | ✅ Execution analytics (live)                                                       | ❌ N/A                                                 | ✅ COMPLETE |
 | **Admin**       | `/admin`                                                                                                            | ❌ Hidden                                                                           | ✅ Admin dashboard, user/client/fee management         | ✅ COMPLETE |
 | **DevOps**      | `/devops`                                                                                                           | ❌ Hidden                                                                           | ✅ Ported (17K lines from deployment-ui, 6-tab layout) | ✅ PORTED   |
 | **Compliance**  | `/compliance`                                                                                                       | 🟡 FCA info page (basic)                                                            | ❌ N/A                                                 | 🟡 BASIC    |
-| **Service Hub** | `/service/overview`, `/service/[key]`                                                                               | ✅ Service grid, activity feed, quick actions, health bar                           | ❌ N/A                                                 | ✅ COMPLETE |
+| **Service Hub** | `/services/overview`, `/services/[key]`                                                                               | ✅ Service grid, activity feed, quick actions, health bar                           | ❌ N/A                                                 | ✅ COMPLETE |
 | **Health**      | `/health`                                                                                                           | ✅ Service health dashboard                                                         | ❌ N/A                                                 | ✅ COMPLETE |
 
 ## Post-Login Hub Status (Service Hub — `/overview`)
@@ -28,15 +28,15 @@ All canonical routes now live under `app/(platform)/service/`. Old flat routes (
 | Quick actions                        | ✅ Complete |                                                             |
 | System health bar                    | ✅ Complete | `useServiceOverview()` hook wired                           |
 | Locked service upgrade modals        | ✅ Complete |                                                             |
-| Subscription page (`/service/[key]`) | ✅ Complete | Per-service subscription detail page                        |
+| Subscription page (`/services/[key]`) | ✅ Complete | Per-service subscription detail page                        |
 
 ## Infrastructure Status (PLANS_1 + PLANS_2 Complete)
 
 | Component                 | Status                      | Files                                                                  |
 | ------------------------- | --------------------------- | ---------------------------------------------------------------------- |
 | Route groups              | ✅ Done                     | `app/(public)/`, `app/(platform)/`, `app/(ops)/`                       |
-| Nested service routes     | ✅ Done                     | All under `app/(platform)/service/<domain>/`                           |
-| Old path redirects        | ✅ Done                     | All legacy flat routes redirect to `/service/*` — see `ROUTES.md`     |
+| Nested service routes     | ✅ Done                     | All under `app/(platform)/services/<domain>/`                           |
+| Old path redirects        | ✅ Done                     | All legacy flat routes redirect to `/services/*` — see `ROUTES.md`     |
 | Shell layouts             | ✅ Done                     | 3 layout.tsx files with auth gates                                     |
 | MSW handlers              | ✅ 16 handlers              | `lib/mocks/handlers/`                                                  |
 | React Query hooks         | ✅ 14 hooks                 | `hooks/api/`                                                           |

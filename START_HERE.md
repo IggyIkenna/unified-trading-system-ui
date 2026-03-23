@@ -46,7 +46,7 @@ Read: **[CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md)**
 
 Learn:
 - Next.js 15 App Router with three route groups `(public)`, `(platform)`, `(ops)`
-- The canonical content tree lives at `app/(platform)/service/`
+- The canonical content tree lives at `app/(platform)/services/`
 - Where to add new pages, components, hooks, types, mock handlers
 - State management: Zustand (global) + React Query (server data)
 
@@ -88,7 +88,7 @@ Scan: **[context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md)**
 Skim: **[.cursorrules](./.cursorrules)**
 
 Key rules:
-- All new platform pages go under `app/(platform)/service/<domain>/`
+- All new platform pages go under `app/(platform)/services/<domain>/`
 - Never create pages at old flat paths (`/trading/`, `/execution/`, etc.) — they are redirects
 - Components in `components/<domain>/` — kebab-case filenames
 - Domain types in `lib/<domain>-types.ts`, mock data in `lib/mocks/handlers/<domain>.ts`
@@ -100,7 +100,7 @@ Key rules:
 
 ### 1. Check Route Location (1 min)
 
-- Platform page? → `app/(platform)/service/<domain>/`
+- Platform page? → `app/(platform)/services/<domain>/`
 - Public page? → `app/(public)/`
 - Ops-only page? → `app/(ops)/`
 - Never create at `/trading/`, `/execution/`, `/research/`, `/ml/` — those are permanent redirects
@@ -125,7 +125,7 @@ Key rules:
 
 ### 5. Plan Architecture (5 min)
 
-- New page → which service domain? `/service/<domain>/`
+- New page → which service domain? `/services/<domain>/`
 - Reuse existing component from `components/<domain>/` or build new?
 - Which React Query hook from `hooks/api/`?
 - Which MSW handler in `lib/mocks/handlers/`?
@@ -157,7 +157,7 @@ Key rules:
 
 ### DO
 
-- Organize new platform pages under `app/(platform)/service/<domain>/`
+- Organize new platform pages under `app/(platform)/services/<domain>/`
 - Use shared components from `components/<domain>/` for consistency
 - Get configuration from `lib/config/` — no hardcoded values
 - Use React Query hooks from `hooks/api/` for data fetching
@@ -180,7 +180,7 @@ Key rules:
 ## Common Questions
 
 **Q: Where do I add a new platform page?**
-A: `app/(platform)/service/<domain>/` — never at the old flat paths.
+A: `app/(platform)/services/<domain>/` — never at the old flat paths.
 
 **Q: Where do I find what the backend API returns?**
 A: `context/api-contracts/openapi/` (specs) and `context/api-contracts/canonical-schemas/` (schemas)

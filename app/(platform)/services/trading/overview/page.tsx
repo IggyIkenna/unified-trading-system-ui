@@ -212,25 +212,25 @@ export default function OverviewPage() {
     let result = [...strategyPerformance]
     if (strategySearch) {
       const q = strategySearch.toLowerCase()
-      result = result.filter((s: Record<string, unknown>) =>
+      result = result.filter(s =>
         String(s.name ?? "").toLowerCase().includes(q) ||
         String(s.assetClass ?? "").toLowerCase().includes(q) ||
         String(s.archetype ?? "").toLowerCase().includes(q)
       )
     }
     if (assetClassFilter !== "all") {
-      result = result.filter((s: Record<string, unknown>) => s.assetClass === assetClassFilter)
+      result = result.filter(s => s.assetClass === assetClassFilter)
     }
     if (statusFilter !== "all") {
-      result = result.filter((s: Record<string, unknown>) => s.status === statusFilter)
+      result = result.filter(s => s.status === statusFilter)
     }
     const desc = strategySort.startsWith("-")
     const key = strategySort.replace("-", "") as string
-    result.sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
-      const av = Number(a[key]) || 0
-      const bv = Number(b[key]) || 0
+    result.sort((a, b) => {
+      const av = Number((a as unknown as Record<string, unknown>)[key]) || 0
+      const bv = Number((b as unknown as Record<string, unknown>)[key]) || 0
       if (key === "name") {
-        return desc ? String(b.name ?? "").localeCompare(String(a.name ?? "")) : String(a.name ?? "").localeCompare(String(b.name ?? ""))
+        return desc ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name)
       }
       return desc ? bv - av : av - bv
     })
@@ -241,7 +241,7 @@ export default function OverviewPage() {
   const groupedStrategies = React.useMemo(() => {
     const groups: Record<string, typeof filteredSortedStrategies> = {}
     const displayList = showAllStrategies ? filteredSortedStrategies : filteredSortedStrategies.slice(0, 15)
-    displayList.forEach((s: Record<string, unknown>) => {
+    displayList.forEach(s => {
       const ac = String(s.assetClass ?? "Other")
       if (!groups[ac]) groups[ac] = []
       groups[ac].push(s)
@@ -544,7 +544,7 @@ export default function OverviewPage() {
                       className="h-7 px-2 text-xs rounded-md border border-border bg-background"
                     >
                       <option value="all">All Classes</option>
-                      {[...new Set(strategyPerformance.map((s: Record<string, unknown>) => String(s.assetClass)))].sort().map(ac => (
+                      {[...new Set(strategyPerformance.map(s => String(s.assetClass)))].sort().map(ac => (
                         <option key={ac} value={ac}>{ac}</option>
                       ))}
                     </select>

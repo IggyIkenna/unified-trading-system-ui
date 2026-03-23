@@ -75,6 +75,9 @@ export const STRATEGY_ARCHETYPES = [
   "SPORTS_ARB",
   "PREDICTION_ARB",
   "YIELD",
+  "MOMENTUM",
+  "MEAN_REVERSION",
+  "STATISTICAL_ARB",
 ] as const
 export type StrategyArchetype = typeof STRATEGY_ARCHETYPES[number]
 
@@ -149,6 +152,24 @@ export const STRATEGY_ARCHETYPE_CONFIG: Record<StrategyArchetype, {
     shortLabel: "Yield",
     description: "Optimize lending yields across protocols",
     assetClasses: ["DeFi"],
+  },
+  "MOMENTUM": {
+    label: "Momentum",
+    shortLabel: "Mom",
+    description: "Trend-following momentum strategies",
+    assetClasses: ["CeFi", "TradFi"],
+  },
+  "MEAN_REVERSION": {
+    label: "Mean Reversion",
+    shortLabel: "MR",
+    description: "Fade extremes via z-scores, bands, or cointegration",
+    assetClasses: ["CeFi", "TradFi"],
+  },
+  "STATISTICAL_ARB": {
+    label: "Statistical Arbitrage",
+    shortLabel: "StatArb",
+    description: "Pairs trading and statistical relationships",
+    assetClasses: ["CeFi", "DeFi"],
   },
 }
 
@@ -518,6 +539,16 @@ export const PNL_FACTORS = [
   "fees",
   "rebates",
   "residual",
+  "staking_yield",
+  "borrow_cost",
+  "impermanent_loss",
+  "interest_accrual",
+  "arb_pnl",
+  "spread_earned",
+  "liquidation_penalty",
+  "rewards",
+  "gas",
+  "commission",
 ] as const
 export type PnLFactor = typeof PNL_FACTORS[number]
 
@@ -592,6 +623,66 @@ export const PNL_FACTOR_CONFIG: Record<PnLFactor, {
     description: "Unexplained P&L",
     color: "#64748b",
     isExpense: false,
+  },
+  staking_yield: {
+    label: "Staking Yield",
+    description: "LST staking rate appreciation",
+    color: "#10b981",
+    isExpense: false,
+  },
+  borrow_cost: {
+    label: "Borrow Cost",
+    description: "DeFi lending protocol borrow interest",
+    color: "#f43f5e",
+    isExpense: true,
+  },
+  impermanent_loss: {
+    label: "Impermanent Loss",
+    description: "AMM LP divergence loss vs HODL",
+    color: "#ef4444",
+    isExpense: true,
+  },
+  interest_accrual: {
+    label: "Interest Accrual",
+    description: "Lending protocol supply yield accrual",
+    color: "#06b6d4",
+    isExpense: false,
+  },
+  arb_pnl: {
+    label: "Arbitrage P&L",
+    description: "Cross-venue or cross-market arbitrage profit",
+    color: "#a855f7",
+    isExpense: false,
+  },
+  spread_earned: {
+    label: "Spread Earned",
+    description: "Market making bid-ask spread capture",
+    color: "#22d3ee",
+    isExpense: false,
+  },
+  liquidation_penalty: {
+    label: "Liquidation Penalty",
+    description: "DeFi protocol liquidation cost",
+    color: "#b91c1c",
+    isExpense: true,
+  },
+  rewards: {
+    label: "Protocol Rewards",
+    description: "Token incentives and airdrops",
+    color: "#84cc16",
+    isExpense: false,
+  },
+  gas: {
+    label: "Gas Costs",
+    description: "On-chain transaction gas fees",
+    color: "#78716c",
+    isExpense: true,
+  },
+  commission: {
+    label: "Commission",
+    description: "Exchange or bookmaker commission",
+    color: "#a8a29e",
+    isExpense: true,
   },
 }
 

@@ -36,7 +36,7 @@ eslint-rules/      Custom ESLint rules (2 rules: button handler, filter prop)
 
 ## Architecture: Single Canonical Route Tree
 
-**Critical (updated 2026-03-21):** All platform content now lives under `app/(platform)/service/`. Legacy flat routes (`/trading/*`, `/execution/*`, `/ml/*`, `/research/*`, `/strategy-platform/*`, etc.) are permanent redirects in `next.config.mjs` — there are no page files at those paths. See `docs/STRUCTURE_APP.md` for the full redirect map.
+**Critical (updated 2026-03-21):** All platform content now lives under `app/(platform)/services/`. Legacy flat routes (`/trading/*`, `/execution/*`, `/ml/*`, `/research/*`, `/strategy-platform/*`, etc.) are permanent redirects in `next.config.mjs` — there are no page files at those paths. See `docs/STRUCTURE_APP.md` for the full redirect map.
 
 ---
 
@@ -44,7 +44,7 @@ eslint-rules/      Custom ESLint rules (2 rules: button handler, filter prop)
 
 | Task | Where to go |
 |---|---|
-| Add a new platform page | `app/(platform)/service/<domain>/` — **only canonical location** |
+| Add a new platform page | `app/(platform)/services/<domain>/` — **only canonical location** |
 | Add a new redirect for renamed URL | `next.config.mjs` → `redirects()` array |
 | Add a reusable component | `components/<domain>/` — pick the closest domain |
 | Add a base UI primitive | `components/ui/` — shadcn/ui pattern |

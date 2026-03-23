@@ -27,7 +27,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     name: "ETH Basis Trade",
     description: "Captures funding rate differential between spot and perpetual futures",
     archetype: "BASIS_TRADE",
-    assetClasses: ["CRYPTO_CEFI", "CRYPTO_DEFI"],
+    assetClasses: ["CeFi", "DeFi"],
     signals: ["funding_rate", "basis_spread", "liquidity_score"],
     riskTypes: ["delta", "funding", "basis", "liquidity"],
     venues: ["BINANCE", "OKX", "DERIBIT", "HYPERLIQUID"],
@@ -42,7 +42,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     name: "BTC Market Making",
     description: "Provides liquidity on BTC perpetual markets with inventory management",
     archetype: "MARKET_MAKING",
-    assetClasses: ["CRYPTO_CEFI"],
+    assetClasses: ["CeFi"],
     signals: ["order_imbalance", "volatility_regime", "spread_pred"],
     riskTypes: ["delta", "gamma", "inventory", "adverse_selection"],
     venues: ["BINANCE", "OKX", "BYBIT"],
@@ -57,7 +57,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     name: "Cross-Exchange Statistical Arb",
     description: "Exploits mean-reversion in price differentials across exchanges",
     archetype: "STATISTICAL_ARB",
-    assetClasses: ["CRYPTO_CEFI"],
+    assetClasses: ["CeFi"],
     signals: ["price_deviation", "cointegration_score", "execution_prob"],
     riskTypes: ["execution", "latency", "correlation"],
     venues: ["BINANCE", "OKX", "BYBIT", "COINBASE"],
@@ -72,7 +72,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     name: "ETH Options Market Making",
     description: "Delta-neutral options market making with volatility surface management",
     archetype: "OPTIONS",
-    assetClasses: ["CRYPTO_CEFI"],
+    assetClasses: ["CeFi"],
     signals: ["iv_surface", "skew_signal", "vol_regime"],
     riskTypes: ["delta", "gamma", "vega", "theta", "volga", "vanna"],
     venues: ["DERIBIT"],
@@ -87,7 +87,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     name: "Multi-Asset Momentum",
     description: "Trend-following strategy across crypto and tradfi futures",
     archetype: "DIRECTIONAL",
-    assetClasses: ["CRYPTO_CEFI", "TRADFI_FUTURES"],
+    assetClasses: ["CeFi", "TradFi"],
     signals: ["trend_strength", "momentum_score", "regime_indicator"],
     riskTypes: ["delta", "drawdown", "correlation"],
     venues: ["BINANCE", "CME", "ICE"],
@@ -102,7 +102,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     name: "Aave Yield Optimizer",
     description: "Dynamic lending/borrowing optimization across Aave markets",
     archetype: "YIELD",
-    assetClasses: ["CRYPTO_DEFI"],
+    assetClasses: ["DeFi"],
     signals: ["utilization_rate", "yield_spread", "liquidation_risk"],
     riskTypes: ["protocol_risk", "liquidity", "interest_rate"],
     venues: ["AAVE_V3"],
@@ -117,7 +117,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     name: "Football Odds Arbitrage",
     description: "Cross-book arbitrage on football match outcomes",
     archetype: "ARBITRAGE",
-    assetClasses: ["SPORTS_BETTING"],
+    assetClasses: ["Sports"],
     signals: ["odds_deviation", "market_efficiency", "liquidity_score"],
     riskTypes: ["execution", "odds_movement", "book_limits"],
     venues: ["BETFAIR", "PINNACLE", "BET365"],
@@ -143,7 +143,7 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
     name: "ETH Basis Conservative",
     description: "Conservative parameters with lower leverage",
     archetype: "BASIS_TRADE",
-    assetClass: "CRYPTO_CEFI",
+    assetClass: "CeFi",
     parameters: {
       entry_threshold: 0.05,
       exit_threshold: 0.02,
@@ -180,7 +180,7 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
     name: "ETH Basis Aggressive",
     description: "Higher leverage with ML-enhanced entry timing",
     archetype: "BASIS_TRADE",
-    assetClass: "CRYPTO_CEFI",
+    assetClass: "CeFi",
     parameters: {
       entry_threshold: 0.03,
       exit_threshold: 0.01,
@@ -219,7 +219,7 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
     name: "BTC MM Tight Spread",
     description: "Tighter spreads with aggressive inventory skew",
     archetype: "MARKET_MAKING",
-    assetClass: "CRYPTO_CEFI",
+    assetClass: "CeFi",
     parameters: {
       base_spread: 0.0002,
       inventory_skew: 0.5,
@@ -257,7 +257,7 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
     name: "Stat Arb Multi-Pair",
     description: "Multi-pair cointegration with dynamic hedge ratios",
     archetype: "STATISTICAL_ARB",
-    assetClass: "CRYPTO_CEFI",
+    assetClass: "CeFi",
     parameters: {
       lookback_period: 168,
       entry_zscore: 2.0,
@@ -481,7 +481,7 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     venue: "MULTI",
     dateWindow: { start: "2024-06-01", end: "2024-09-30" },
     shard: "SHARD_1",
-    testingStage: "VALIDATION",
+    testingStage: "LIVE_MOCK",
     dataSource: "HISTORICAL_TICK",
     dataSnapshotId: "snap-2024-q3",
     asOfDate: "2024-10-05",
@@ -595,10 +595,11 @@ export const ARCHETYPE_OPTIONS = [
 ]
 
 export const ASSET_CLASS_OPTIONS = [
-  { value: "CRYPTO_CEFI", label: "Crypto CeFi", count: 8 },
-  { value: "CRYPTO_DEFI", label: "Crypto DeFi", count: 3 },
-  { value: "TRADFI_FUTURES", label: "TradFi Futures", count: 2 },
-  { value: "SPORTS_BETTING", label: "Sports Betting", count: 1 },
+  { value: "CeFi", label: "CeFi", count: 8 },
+  { value: "DeFi", label: "DeFi", count: 3 },
+  { value: "TradFi", label: "TradFi", count: 2 },
+  { value: "Sports", label: "Sports", count: 1 },
+  { value: "Prediction", label: "Prediction", count: 1 },
 ]
 
 export const VENUE_OPTIONS = [
@@ -611,7 +612,7 @@ export const VENUE_OPTIONS = [
 
 export const TESTING_STAGE_OPTIONS = [
   { value: "BACKTEST", label: "Backtest", count: 5 },
-  { value: "VALIDATION", label: "Validation", count: 2 },
-  { value: "PAPER", label: "Paper", count: 1 },
-  { value: "SHADOW", label: "Shadow", count: 1 },
+  { value: "LIVE_MOCK", label: "Validation", count: 2 },
+  { value: "LIVE_TESTNET", label: "Paper", count: 1 },
+  { value: "STAGING", label: "Shadow", count: 1 },
 ]

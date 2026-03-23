@@ -2,7 +2,7 @@
 
 **Updated 2026-03-21.** Reflects post-Phase 2 cleanup state (commit `8e536fc`).
 
-All platform content now lives under a single canonical tree: `app/(platform)/service/`.
+All platform content now lives under a single canonical tree: `app/(platform)/services/`.
 All legacy flat routes are permanent redirects in `next.config.mjs` — no page files exist at those paths.
 
 ---
@@ -12,7 +12,7 @@ All legacy flat routes are permanent redirects in `next.config.mjs` — no page 
 | Group | URL prefix | Audience |
 |---|---|---|
 | `(public)/` | `/`, `/login`, `/services/*`, etc. | Unauthenticated |
-| `(platform)/` | `/dashboard`, `/service/*`, `/strategies/*` | Authenticated |
+| `(platform)/` | `/dashboard`, `/services/*`, `/strategies/*` | Authenticated |
 | `(ops)/` | `/admin`, `/devops`, `/compliance`, etc. | Internal operators only |
 
 ---
@@ -56,7 +56,7 @@ All legacy flat routes are permanent redirects in `next.config.mjs` — no page 
 
 ---
 
-## Platform Service Routes — The Canonical Content Tree (`(platform)/service/`)
+## Platform Service Routes — The Canonical Content Tree (`(platform)/services/`)
 
 This is where all platform content lives.
 
@@ -64,91 +64,91 @@ This is where all platform content lives.
 
 | URL | Purpose |
 |---|---|
-| `/service/overview` | Service hub — entry after login |
-| `/service/[key]` | Dynamic: service detail by registry key |
+| `/services/overview` | Service hub — entry after login |
+| `/services/[key]` | Dynamic: service detail by registry key |
 
 ### Data Service
 
 | URL | Purpose |
 |---|---|
-| `/service/data/overview` | Data service home |
-| `/service/data/coverage` | Data coverage |
-| `/service/data/venues` | Venues |
-| `/service/data/markets` | Markets |
-| `/service/data/markets/pnl` | Market P&L |
-| `/service/data/logs` | Data logs |
-| `/service/data/missing` | Missing data tracker |
+| `/services/data/overview` | Data service home |
+| `/services/data/coverage` | Data coverage |
+| `/services/data/venues` | Venues |
+| `/services/data/markets` | Markets |
+| `/services/data/markets/pnl` | Market P&L |
+| `/services/data/logs` | Data logs |
+| `/services/data/missing` | Missing data tracker |
 
 ### Trading Service
 
 | URL | Purpose |
 |---|---|
-| `/service/trading/overview` | Trading service home |
-| `/service/trading/accounts` | Accounts |
-| `/service/trading/markets` | Markets |
-| `/service/trading/orders` | Orders |
-| `/service/trading/positions` | Positions |
-| `/service/trading/alerts` | Alerts |
-| `/service/trading/risk` | Risk |
+| `/services/trading/overview` | Trading service home |
+| `/services/trading/accounts` | Accounts |
+| `/services/trading/markets` | Markets |
+| `/services/trading/orders` | Orders |
+| `/services/trading/positions` | Positions |
+| `/services/trading/alerts` | Alerts |
+| `/services/trading/risk` | Risk |
 
 ### Execution Service
 
 | URL | Purpose |
 |---|---|
-| `/service/execution/overview` | Execution service home |
-| `/service/execution/tca` | Transaction cost analysis |
-| `/service/execution/venues` | Execution venues |
-| `/service/execution/algos` | Execution algorithms |
-| `/service/execution/benchmarks` | Benchmarks |
-| `/service/execution/candidates` | Candidates |
-| `/service/execution/handoff` | Handoff |
+| `/services/execution/overview` | Execution service home |
+| `/services/execution/tca` | Transaction cost analysis |
+| `/services/execution/venues` | Execution venues |
+| `/services/execution/algos` | Execution algorithms |
+| `/services/execution/benchmarks` | Benchmarks |
+| `/services/execution/candidates` | Candidates |
+| `/services/execution/handoff` | Handoff |
 
 ### Reports Service
 
 | URL | Purpose |
 |---|---|
-| `/service/reports/overview` | Reports service home |
-| `/service/reports/executive` | Executive report |
-| `/service/reports/reconciliation` | Reconciliation |
-| `/service/reports/regulatory` | Regulatory reports |
-| `/service/reports/settlement` | Settlement |
+| `/services/reports/overview` | Reports service home |
+| `/services/reports/executive` | Executive report |
+| `/services/reports/reconciliation` | Reconciliation |
+| `/services/reports/regulatory` | Regulatory reports |
+| `/services/reports/settlement` | Settlement |
 
 ### Research Service
 
 | URL | Purpose |
 |---|---|
-| `/service/research/overview` | Research service home |
-| `/service/research/quant` | Quant workspace |
-| `/service/research/strategy/overview` | Strategy platform home |
-| `/service/research/strategy/backtests` | Backtests |
-| `/service/research/strategy/candidates` | Candidates |
-| `/service/research/strategy/compare` | Compare strategies |
-| `/service/research/strategy/heatmap` | Heatmap |
-| `/service/research/strategy/handoff` | Handoff to trading |
-| `/service/research/strategy/results` | Results |
-| `/service/research/ml` | ML platform (redirects to overview) |
-| `/service/research/ml/overview` | ML platform home |
-| `/service/research/ml/config` | ML configuration |
-| `/service/research/ml/experiments` | Experiments list |
-| `/service/research/ml/experiments/[id]` | Experiment detail |
-| `/service/research/ml/features` | Feature store |
-| `/service/research/ml/training` | Training |
-| `/service/research/ml/deploy` | Deploy models |
-| `/service/research/ml/monitoring` | Model monitoring |
-| `/service/research/ml/governance` | Governance |
-| `/service/research/ml/registry` | Model registry |
-| `/service/research/ml/validation` | Validation |
-| `/service/research/execution/algos` | Execution analytics — algos |
-| `/service/research/execution/benchmarks` | Execution analytics — benchmarks |
-| `/service/research/execution/tca` | Execution analytics — TCA |
-| `/service/research/execution/venues` | Execution analytics — venues |
+| `/services/research/overview` | Research service home |
+| `/services/research/quant` | Quant workspace |
+| `/services/research/strategy/overview` | Strategy platform home |
+| `/services/research/strategy/backtests` | Backtests |
+| `/services/research/strategy/candidates` | Candidates |
+| `/services/research/strategy/compare` | Compare strategies |
+| `/services/research/strategy/heatmap` | Heatmap |
+| `/services/research/strategy/handoff` | Handoff to trading |
+| `/services/research/strategy/results` | Results |
+| `/services/research/ml` | ML platform (redirects to overview) |
+| `/services/research/ml/overview` | ML platform home |
+| `/services/research/ml/config` | ML configuration |
+| `/services/research/ml/experiments` | Experiments list |
+| `/services/research/ml/experiments/[id]` | Experiment detail |
+| `/services/research/ml/features` | Feature store |
+| `/services/research/ml/training` | Training |
+| `/services/research/ml/deploy` | Deploy models |
+| `/services/research/ml/monitoring` | Model monitoring |
+| `/services/research/ml/governance` | Governance |
+| `/services/research/ml/registry` | Model registry |
+| `/services/research/ml/validation` | Validation |
+| `/services/research/execution/algos` | Execution analytics — algos |
+| `/services/research/execution/benchmarks` | Execution analytics — benchmarks |
+| `/services/research/execution/tca` | Execution analytics — TCA |
+| `/services/research/execution/venues` | Execution analytics — venues |
 
 ### Observe
 
 | URL | Purpose |
 |---|---|
-| `/service/observe/news` | News feed |
-| `/service/observe/strategy-health` | Strategy health |
+| `/services/observe/news` | News feed |
+| `/services/observe/strategy-health` | Strategy health |
 
 ---
 
@@ -176,34 +176,34 @@ This is where all platform content lives.
 
 ## Permanent Redirects (do not create pages at these paths)
 
-All old flat and parallel routes redirect permanently to `/service/*`.
+All old flat and parallel routes redirect permanently to `/services/*`.
 
 | Old URL | → Canonical URL |
 |---|---|
-| `/overview` | `/service/overview` |
-| `/data` | `/service/data/overview` |
-| `/trading` | `/service/trading/overview` |
-| `/trading/positions` | `/service/trading/positions` |
-| `/trading/risk` | `/service/trading/risk` |
-| `/trading/alerts` | `/service/trading/alerts` |
-| `/trading/markets` | `/service/data/markets` |
-| `/trading/markets/:path*` | `/service/data/markets/:path*` |
-| `/research` | `/service/research/overview` |
-| `/research/strategy/:path*` | `/service/research/strategy/:path*` |
-| `/research/ml/:path*` | `/service/research/ml/:path*` |
-| `/research/execution/:path*` | `/service/research/execution/:path*` |
-| `/ml` | `/service/research/ml` |
-| `/ml/:path*` | `/service/research/ml/:path*` |
-| `/positions` | `/service/trading/positions` |
-| `/risk` | `/service/trading/risk` |
-| `/alerts` | `/service/trading/alerts` |
-| `/strategy-platform` | `/service/research/strategy/backtests` |
-| `/strategy-platform/:path*` | `/service/research/strategy/:path*` |
-| `/execution` | `/service/execution/overview` |
-| `/execution/:path*` | `/service/execution/:path*` |
-| `/reports` | `/service/reports/overview` |
-| `/reports/:path*` | `/service/reports/:path*` |
-| `/markets` | `/service/data/markets` |
-| `/markets/pnl` | `/service/data/markets/pnl` |
-| `/executive` | `/service/reports/executive` |
-| `/quant` | `/service/research/quant` |
+| `/overview` | `/services/overview` |
+| `/data` | `/services/data/overview` |
+| `/trading` | `/services/trading/overview` |
+| `/trading/positions` | `/services/trading/positions` |
+| `/trading/risk` | `/services/trading/risk` |
+| `/trading/alerts` | `/services/trading/alerts` |
+| `/trading/markets` | `/services/data/markets` |
+| `/trading/markets/:path*` | `/services/data/markets/:path*` |
+| `/research` | `/services/research/overview` |
+| `/research/strategy/:path*` | `/services/research/strategy/:path*` |
+| `/research/ml/:path*` | `/services/research/ml/:path*` |
+| `/research/execution/:path*` | `/services/research/execution/:path*` |
+| `/ml` | `/services/research/ml` |
+| `/ml/:path*` | `/services/research/ml/:path*` |
+| `/positions` | `/services/trading/positions` |
+| `/risk` | `/services/trading/risk` |
+| `/alerts` | `/services/trading/alerts` |
+| `/strategy-platform` | `/services/research/strategy/backtests` |
+| `/strategy-platform/:path*` | `/services/research/strategy/:path*` |
+| `/execution` | `/services/execution/overview` |
+| `/execution/:path*` | `/services/execution/:path*` |
+| `/reports` | `/services/reports/overview` |
+| `/reports/:path*` | `/services/reports/:path*` |
+| `/markets` | `/services/data/markets` |
+| `/markets/pnl` | `/services/data/markets/pnl` |
+| `/executive` | `/services/reports/executive` |
+| `/quant` | `/services/research/quant` |

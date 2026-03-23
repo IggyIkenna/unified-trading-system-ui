@@ -53,35 +53,74 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   const pausedCount = perf.filter(p => p.status === "paused" || p.status === "stopped").length
 
   // Generate one position per strategy (consistent with perf data)
-  const instruments = ["BTC-PERP", "ETH-PERP", "SOL-USDT", "BNB-USDT", "XRP-USDT", "DOGE-USDT", "ADA-USDT", "AVAX-USDT", "LINK-USDT", "DOT-USDT"]
-  const venues = ["Binance", "OKX", "Hyperliquid", "Deribit", "Bybit"]
-  const allPositions = perf.filter(p => p.status === "live").map((s, i) => ({
-    id: `pos-${i}`,
-    strategy_id: s.id,
-    strategy_name: s.name,
-    instrument: instruments[i % instruments.length],
-    side: (s.pnl >= 0 ? "LONG" : "SHORT") as "LONG" | "SHORT",
-    quantity: Math.abs(s.exposure) / (42000 / ((i % 5) + 1)),
-    entry_price: 42000 / ((i % 5) + 1),
-    current_price: 42000 / ((i % 5) + 1) * (1 + s.pnl / Math.max(s.nav, 1)),
-    pnl: s.pnl,
-    pnl_pct: s.nav > 0 ? (s.pnl / s.nav) * 100 : 0,
-    unrealized_pnl: s.pnl,
-    venue: venues[i % venues.length],
-    margin: s.exposure * 0.22,
-    leverage: Math.round(s.exposure / Math.max(s.nav * 0.3, 1)),
-    updated_at: new Date().toISOString(),
-    health_factor: s.assetClass === "DeFi" ? 1.45 : undefined,
-    // Dashboard VenueMargin fields
-    venueLabel: venues[i % venues.length],
-    used: s.exposure * 0.22,
-    available: s.nav - s.exposure * 0.22,
-    total: s.nav,
-    utilization: Math.round((s.exposure * 0.22 / Math.max(s.nav, 1)) * 100),
-    trend: (s.pnlChange > 1 ? "up" : s.pnlChange < -1 ? "down" : "stable") as "up" | "down" | "stable",
-    marginCallDistance: Math.max(5, 30 - Math.round((s.exposure * 0.22 / Math.max(s.nav, 1)) * 30)),
-    lastUpdate: new Date().toISOString(),
-  }))
+  // Map strategy names to domain-correct instruments and venues
+  function getStrategyInstrumentAndVenue(name: string): { instrument: string; venue: string } {
+    const n = name.toLowerCase()
+    // Sports strategies
+    if (n.includes("nba")) return { instrument: "NBA:GAME:LAL-GSW", venue: "betfair" }
+    if (n.includes("nfl")) return { instrument: "NFL:GAME:KC-SF", venue: "pinnacle" }
+    if (n.includes("football") && !n.includes("market")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "bet365" }
+    if (n.includes("epl")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "betfair" }
+    if (n.includes("la liga") || n.includes("laliga")) return { instrument: "LALIGA:MATCH:BAR-RMA", venue: "pinnacle" }
+    // Prediction market strategies
+    if (n.includes("prediction") && n.includes("cefi")) return { instrument: "POLYMARKET:BINARY:BTC-100K@YES", venue: "polymarket" }
+    if (n.includes("prediction")) return { instrument: "KALSHI:BINARY:FED-RATE-CUT@YES", venue: "kalshi" }
+    // DeFi strategies
+    if (n.includes("morpho")) return { instrument: "MORPHO:SUPPLY:USDC", venue: "morpho" }
+    if (n.includes("uniswap") || n.includes("uni v3") || n.includes("lp")) return { instrument: "UNISWAPV3:LP:ETH-USDC", venue: "uniswap" }
+    if (n.includes("aave") || n.includes("lending") && n.includes("aave")) return { instrument: "AAVE_V3:SUPPLY:USDT", venue: "aave" }
+    if (n.includes("recursive") || n.includes("staked basis")) return { instrument: "AAVE_V3:SUPPLY:WEETH", venue: "aave" }
+    if (n.includes("eth basis")) return { instrument: "ETH-PERP", venue: "hyperliquid" }
+    // CeFi strategies — match by asset name in strategy
+    if (n.includes("btc") && n.includes("basis")) return { instrument: "BTC-PERP", venue: "binance" }
+    if (n.includes("btc") && n.includes("market making")) return { instrument: "BTC-USDT", venue: "binance" }
+    if (n.includes("btc")) return { instrument: "BTC-PERP", venue: "binance" }
+    if (n.includes("eth") && n.includes("options")) return { instrument: "ETH-OPTIONS", venue: "deribit" }
+    if (n.includes("eth") && n.includes("momentum")) return { instrument: "ETH-PERP", venue: "binance" }
+    if (n.includes("eth") && n.includes("mean rev")) return { instrument: "ETH-USDT", venue: "okx" }
+    if (n.includes("eth")) return { instrument: "ETH-PERP", venue: "binance" }
+    if (n.includes("sol")) return { instrument: "SOL-PERP", venue: "binance" }
+    if (n.includes("doge")) return { instrument: "DOGE-USDT", venue: "binance" }
+    if (n.includes("avax")) return { instrument: "AVAX-PERP", venue: "binance" }
+    if (n.includes("link")) return { instrument: "LINK-PERP", venue: "hyperliquid" }
+    if (n.includes("arb") && n.includes("mean")) return { instrument: "ARB-USDT", venue: "okx" }
+    if (n.includes("spy")) return { instrument: "SPY", venue: "ibkr" }
+    if (n.includes("bond")) return { instrument: "TLT", venue: "ibkr" }
+    if (n.includes("multi-venue") || n.includes("arbitrage")) return { instrument: "BTC-USDT", venue: "binance" }
+    // Fallback
+    return { instrument: "BTC-PERP", venue: "binance" }
+  }
+
+  const allPositions = perf.filter(p => p.status === "live").map((s, i) => {
+    const { instrument, venue } = getStrategyInstrumentAndVenue(s.name)
+    const basePrice = instrument.includes("BTC") ? 42000 : instrument.includes("ETH") ? 3200 : instrument.includes("SOL") ? 145 : instrument.includes("SPY") ? 520 : instrument.includes("TLT") ? 92 : 1
+    return {
+      id: `pos-${i}`,
+      strategy_id: s.id,
+      strategy_name: s.name,
+      instrument,
+      side: (s.pnl >= 0 ? "LONG" : "SHORT") as "LONG" | "SHORT",
+      quantity: basePrice > 0 ? Math.abs(s.exposure) / basePrice : Math.abs(s.exposure),
+      entry_price: basePrice,
+      current_price: basePrice * (1 + s.pnl / Math.max(s.nav, 1)),
+      pnl: s.pnl,
+      pnl_pct: s.nav > 0 ? (s.pnl / s.nav) * 100 : 0,
+      unrealized_pnl: s.pnl,
+      venue,
+      margin: s.exposure * 0.22,
+      leverage: Math.round(s.exposure / Math.max(s.nav * 0.3, 1)),
+      updated_at: new Date().toISOString(),
+      health_factor: s.assetClass === "DeFi" ? 1.45 : undefined,
+      venueLabel: venue,
+      used: s.exposure * 0.22,
+      available: s.nav - s.exposure * 0.22,
+      total: s.nav,
+      utilization: Math.round((s.exposure * 0.22 / Math.max(s.nav, 1)) * 100),
+      trend: (s.pnlChange > 1 ? "up" : s.pnlChange < -1 ? "down" : "stable") as "up" | "down" | "stable",
+      marginCallDistance: Math.max(5, 30 - Math.round((s.exposure * 0.22 / Math.max(s.nav, 1)) * 30)),
+      lastUpdate: new Date().toISOString(),
+    }
+  })
 
   // Venue-level balance aggregation (from ACCOUNTS, consistent)
   const totalAccountBalance = ACCOUNTS.reduce((s, a) => s + a.balanceUSD, 0)
@@ -409,7 +448,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     ] })
   }
   if (route === "/api/risk/var-summary") {
-    return json({ portfolioVaR: 185000, cVar: 245000, marginalVaR: [{ asset: "BTC", mvar: 0.45 }, { asset: "ETH", mvar: 0.30 }] })
+    return json({ historical_var_99: 2100000, parametric_var_99: 1850000, cvar_99: 2450000, monte_carlo_var_99: 1920000, marginalVaR: [{ asset: "BTC", mvar: 0.45 }, { asset: "ETH", mvar: 0.30 }] })
   }
   if (route.startsWith("/api/risk/stress-test")) {
     return json({ scenario: "custom", pnlImpact: -1200000, positions: 24, worstPosition: { instrument: "BTC-PERP", loss: -450000 } })

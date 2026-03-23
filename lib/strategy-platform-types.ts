@@ -3,6 +3,11 @@
 // Institutional-grade strategy backtest and research operating system
 // =============================================================================
 
+// Taxonomy imports — SSOT for enums lives in taxonomy.ts
+import type { StrategyArchetype, AssetClass, TestingStage } from "./taxonomy"
+export type { StrategyArchetype, AssetClass, TestingStage }
+export { STRATEGY_ARCHETYPES, ASSET_CLASSES, TESTING_STAGES } from "./taxonomy"
+
 // Strategy lifecycle stages
 export const STRATEGY_LIFECYCLE_STAGES = [
   "DESIGN",
@@ -17,48 +22,6 @@ export const STRATEGY_LIFECYCLE_STAGES = [
 ] as const
 
 export type StrategyLifecycleStage = (typeof STRATEGY_LIFECYCLE_STAGES)[number]
-
-// Strategy archetypes
-export const STRATEGY_ARCHETYPES = [
-  "ARBITRAGE",
-  "MARKET_MAKING",
-  "DIRECTIONAL",
-  "YIELD",
-  "STATISTICAL_ARB",
-  "BASIS_TRADE",
-  "OPTIONS",
-  "SPORTS",
-  "PREDICTION_MARKET",
-] as const
-
-export type StrategyArchetype = (typeof STRATEGY_ARCHETYPES)[number]
-
-// Asset classes
-export const ASSET_CLASSES = [
-  "CRYPTO_CEFI",
-  "CRYPTO_DEFI",
-  "TRADFI_EQUITIES",
-  "TRADFI_FUTURES",
-  "TRADFI_OPTIONS",
-  "SPORTS_BETTING",
-  "PREDICTION_MARKETS",
-] as const
-
-export type AssetClass = (typeof ASSET_CLASSES)[number]
-
-// Testing stages
-export const TESTING_STAGES = [
-  "UNIT_TEST",
-  "INTEGRATION",
-  "BACKTEST",
-  "VALIDATION",
-  "PAPER",
-  "SHADOW",
-  "CANARY",
-  "FULL_LIVE",
-] as const
-
-export type TestingStage = (typeof TESTING_STAGES)[number]
 
 // Context type
 export type ContextType = "BATCH" | "LIVE"

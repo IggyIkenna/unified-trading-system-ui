@@ -1,12 +1,17 @@
 /**
- * AUTO-DERIVED from ui-reference-data.json (UAC-generated).
+ * AUTO-DERIVED from ui-reference-data.json.
+ *
+ * JSON is produced by unified-trading-pm/scripts/openapi/generate_ui_reference_data.py
+ * (default output: unified-api-contracts/openapi/ui-reference-data.json).
+ * Full pipeline index: unified-trading-pm/docs/ui-alignment-ssot.md
  *
  * This module re-exports typed constants so the rest of the UI can
  * import domain data without hand-maintaining venue lists, enum arrays,
  * or config schemas.
  *
- * Do NOT edit these exports by hand. Regenerate by copying the latest
- * ui-reference-data.json from unified-api-contracts/openapi/.
+ * Do NOT edit existing export mappings by hand when only JSON *values* change —
+ * copy a fresh ui-reference-data.json (see PM ui-alignment-ssot.md). If the
+ * generator adds new sections or keys the UI must expose, add exports here.
  *
  * NOTE: Some keys may be absent from older JSON versions. All accessors
  * use safe fallbacks to prevent runtime crashes.
