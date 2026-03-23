@@ -49,7 +49,7 @@ const REG_ACTIVITIES = [
   { id: "dealing_principal", label: "Dealing in Investments as Principal" },
   { id: "dealing_agent", label: "Dealing in Investments as Agent" },
   { id: "arranging", label: "Arranging Deals in Investments" },
-  { id: "managing", label: "Managing Investments (SMA only)" },
+  { id: "managing", label: "Managing Investments (SMA only — see Fund Management below for fund structures)" },
 ]
 const REG_ADDONS = [
   { id: "compliance", label: "Compliance Monitoring" },
