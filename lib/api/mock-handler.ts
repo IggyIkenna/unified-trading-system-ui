@@ -1605,6 +1605,24 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       admin_note: body.admin_note || "",
       reviewed_by: "admin@odum.internal",
     })
+    if (updated && action === "approve") {
+      const state = getProvisioningState()
+      const existing = state.users.find(u => u.email === updated.requester_email)
+      if (existing) {
+        const merged = [...new Set([...existing.product_slugs, ...updated.requested_entitlements])]
+        updateUser(existing.id, { product_slugs: merged })
+      } else {
+        addUser({
+          id: `user-${Date.now()}`, firebase_uid: `uid-${Date.now()}`,
+          name: updated.requester_name, email: updated.requester_email,
+          role: updated.requested_role || "client",
+          product_slugs: updated.requested_entitlements,
+          status: "active", provisioned_at: new Date().toISOString(),
+          last_modified: new Date().toISOString(),
+          services: { portal: "provisioned" },
+        })
+      }
+    }
     return updated ? json({ request: updated }) : json({ error: "not found" })
   }
   if (route === "/api/auth/provisioning/access-templates") {
