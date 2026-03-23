@@ -23,5 +23,12 @@ next-env.d.ts
 tsconfig.tsbuildinfo
 *.tsbuildinfo
 
+# Playwright test artifacts (machine-generated, never commit)
+test-results/
+playwright-report/
+
+# Local dev cache and logs (machine-generated, never commit)
+.local-dev-cache/
+
 # Claude Code worktrees
 .claude/
