@@ -38,7 +38,7 @@ const defaultFilter = {
   date: getToday(),
 }
 
-function mockRoute(path: string): Promise<Response> | null {
+function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // Strip query params for matching
   const route = path.split("?")[0]
 
@@ -340,7 +340,7 @@ function mockRoute(path: string): Promise<Response> | null {
     return json({ data: STRATEGY_ALERTS.map(a => ({
       id: a.id,
       severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
-      status: a.acknowledgedAt ? "acknowledged" : "active",
+      status: a.resolvedAt ? "resolved" : a.acknowledgedAt ? "acknowledged" : "active",
       title: a.message,
       description: a.message,
       source: "strategy-service",
@@ -360,7 +360,28 @@ function mockRoute(path: string): Promise<Response> | null {
     const unacked = STRATEGY_ALERTS.filter(a => !a.acknowledgedAt).length
     return json({ total: STRATEGY_ALERTS.length, critical: critCount, high: highCount, medium: medCount, warning: highCount, info: medCount, unacknowledged: unacked })
   }
+  // Acknowledge / escalate / resolve — mutate STRATEGY_ALERTS in place
   if (route === "/api/alerts/acknowledge" || route === "/api/alerts/escalate" || route === "/api/alerts/resolve") {
+    const action = route.split("/").pop() as string
+    // alertId from POST body
+    let alertId: string | undefined
+    try { alertId = opts?.body ? JSON.parse(opts.body as string).alertId : undefined } catch { /* noop */ }
+    const alert = alertId ? STRATEGY_ALERTS.find(a => a.id === alertId) : undefined
+    if (alert) {
+      if (action === "acknowledge") alert.acknowledgedAt = new Date().toISOString()
+      if (action === "resolve") { alert.acknowledgedAt = alert.acknowledgedAt ?? new Date().toISOString(); alert.resolvedAt = new Date().toISOString() }
+      if (action === "escalate") {
+        if (alert.severity === "info") alert.severity = "warning"
+        else if (alert.severity === "warning") alert.severity = "critical"
+      }
+    }
+    return json({ ok: true })
+  }
+  // Bell uses /api/alerts/{id}/acknowledge
+  if (route.match(/^\/api\/alerts\/[^/]+\/acknowledge$/)) {
+    const alertId = route.split("/")[3]
+    const alert = STRATEGY_ALERTS.find(a => a.id === alertId)
+    if (alert) alert.acknowledgedAt = new Date().toISOString()
     return json({ ok: true })
   }
 
@@ -555,7 +576,7 @@ export function installMockHandler(): void {
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url
     if (url.startsWith("/api/")) {
-      const mockResponse = mockRoute(url)
+      const mockResponse = mockRoute(url, init)
       if (mockResponse) {
         return mockResponse
       }

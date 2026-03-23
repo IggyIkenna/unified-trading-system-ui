@@ -191,7 +191,7 @@ export default function OverviewPage() {
   const strategyPerformance = React.useMemo(() => {
     let result = allStrategies
     if (context.strategyIds.length > 0) {
-      result = result.filter((s: Record<string, unknown>) => context.strategyIds.includes(s.id as string))
+      result = result.filter(s => context.strategyIds.includes(s.id))
     }
     return result
   }, [allStrategies, context.strategyIds])

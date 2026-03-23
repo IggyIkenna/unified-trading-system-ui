@@ -100,21 +100,23 @@ export function NotificationBell() {
           </div>
         ) : (
           recentAlerts.map(alert => (
-            <DropdownMenuItem key={alert.id} className="flex items-start gap-2 py-2" onSelect={(e) => e.preventDefault()}>
-              <span className={cn("mt-1.5 size-2 rounded-full shrink-0", severityColors[alert.severity])} />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm truncate">{alert.message}</p>
-                <p className="text-[10px] text-muted-foreground">{formatRelativeTime(alert.timestamp)}</p>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-6 shrink-0"
-                onClick={(e) => { e.stopPropagation(); ackMutation.mutate(alert.id) }}
-                title="Acknowledge"
-              >
-                <Check className="size-3" />
-              </Button>
+            <DropdownMenuItem key={alert.id} asChild>
+              <Link href="/services/trading/alerts" className="flex items-start gap-2 py-2">
+                <span className={cn("mt-1.5 size-2 rounded-full shrink-0", severityColors[alert.severity])} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm truncate">{alert.message}</p>
+                  <p className="text-[10px] text-muted-foreground">{formatRelativeTime(alert.timestamp)}</p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-6 shrink-0"
+                  onClick={(e) => { e.stopPropagation(); ackMutation.mutate(alert.id) }}
+                  title="Acknowledge"
+                >
+                  <Check className="size-3" />
+                </Button>
+              </Link>
             </DropdownMenuItem>
           ))
         )}

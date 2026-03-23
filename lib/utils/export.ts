@@ -110,9 +110,11 @@ export function exportTableToXlsx(
   data: readonly object[],
   columns: ExportColumn[],
   filename: string,
-): Promise<void> {
+): void {
   const sheetData = buildSheetData(data, columns)
-  return writeXlsxFile(sheetData, { fileName: xlsxFilename(filename) })
+  writeXlsxFile(sheetData, { fileName: xlsxFilename(filename) }).catch((err: unknown) => {
+    console.error('[export] Excel export failed:', err)
+  })
 }
 
 export function exportMultiSheetXlsx(
@@ -122,11 +124,13 @@ export function exportMultiSheetXlsx(
     columns: ExportColumn[]
   }[],
   filename: string,
-): Promise<void> {
+): void {
   const sheetDataArray = sheets.map((sheet) => buildSheetData(sheet.data, sheet.columns))
   const sheetNames = sheets.map((sheet) => sheet.name.slice(0, 31))
-  return writeXlsxFile(sheetDataArray, {
+  writeXlsxFile(sheetDataArray, {
     fileName: xlsxFilename(filename),
     sheets: sheetNames,
+  }).catch((err: unknown) => {
+    console.error('[export] Multi-sheet Excel export failed:', err)
   })
 }
