@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 import {
   Building2,
   Users,
   BarChart3,
   Coins,
   ChevronDown,
+  ChevronRight,
   Check,
   X,
   Trophy,
@@ -15,74 +16,73 @@ import {
   Radio,
   Calendar,
   AlertTriangle,
-} from "lucide-react"
+} from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 // Import centralized trading data
 import {
   ORGANIZATIONS as TRADING_ORGS,
   CLIENTS as TRADING_CLIENTS,
   STRATEGIES as TRADING_STRATEGIES,
-} from "@/lib/trading-data"
+} from "@/lib/trading-data";
 
 // Types for the hierarchy
 export interface Organization {
-  id: string
-  name: string
-  logo?: string
+  id: string;
+  name: string;
+  logo?: string;
 }
 
 export interface Client {
-  id: string
-  name: string
-  orgId: string
-  status: "active" | "onboarding" | "inactive"
+  id: string;
+  name: string;
+  orgId: string;
+  status: "active" | "onboarding" | "inactive";
 }
 
 export interface Strategy {
-  id: string
-  name: string
-  clientId: string
-  assetClass: string
-  strategyType: string
-  status: "live" | "paused" | "warning" | "stopped" | "error"
+  id: string;
+  name: string;
+  clientId: string;
+  assetClass: string;
+  strategyType: string;
+  status: "live" | "paused" | "warning" | "stopped" | "error";
 }
 
 export interface Underlying {
-  id: string
-  symbol: string
-  name: string
-  type: "crypto" | "equity" | "commodity" | "sport" | "event"
-  icon?: React.ReactNode
+  id: string;
+  symbol: string;
+  name: string;
+  type: "crypto" | "equity" | "commodity" | "sport" | "event";
+  icon?: React.ReactNode;
 }
 
 // Default demo data - now using centralized trading data
-const defaultOrganizations: Organization[] = TRADING_ORGS.map(o => ({
+const defaultOrganizations: Organization[] = TRADING_ORGS.map((o) => ({
   id: o.id,
   name: o.name,
-}))
+}));
 
-const defaultClients: Client[] = TRADING_CLIENTS.map(c => ({
+const defaultClients: Client[] = TRADING_CLIENTS.map((c) => ({
   id: c.id,
   name: c.name,
   orgId: c.orgId,
   status: c.status,
-}))
+}));
 
-const defaultStrategies: Strategy[] = TRADING_STRATEGIES.map(s => ({
+const defaultStrategies: Strategy[] = TRADING_STRATEGIES.map((s) => ({
   id: s.id,
   name: s.name,
   clientId: s.clientId,
   assetClass: s.assetClass,
   strategyType: s.archetype,
   status: s.status,
-}))
+}));
 
 const defaultUnderlyings: Underlying[] = [
   // Crypto
@@ -102,47 +102,47 @@ const defaultUnderlyings: Underlying[] = [
   // Prediction Events
   { id: "elections", symbol: "ELEC", name: "Elections", type: "event" },
   { id: "fed", symbol: "FED", name: "Fed Decisions", type: "event" },
-]
+];
 
 // Context state type - NOW WITH MULTI-SELECT (arrays) and Live/Batch mode
 export interface ContextState {
-  mode: "live" | "batch" // Live = real-time streaming, Batch = historical snapshot
-  asOfDatetime?: string // For batch mode - point-in-time snapshot (ISO datetime string)
-  organizationIds: string[] // One or many orgs
-  clientIds: string[] // Empty = All Clients, otherwise specific clients
-  strategyIds: string[] // Empty = All Strategies, otherwise specific strategies
-  underlyingIds: string[] // Empty = All Underlyings, otherwise specific underlyings
+  mode: "live" | "batch"; // Live = real-time streaming, Batch = historical snapshot
+  asOfDatetime?: string; // For batch mode - point-in-time snapshot (ISO datetime string)
+  organizationIds: string[]; // One or many orgs
+  clientIds: string[]; // Empty = All Clients, otherwise specific clients
+  strategyIds: string[]; // Empty = All Strategies, otherwise specific strategies
+  underlyingIds: string[]; // Empty = All Underlyings, otherwise specific underlyings
 }
 
 interface ContextBarProps {
-  organizations?: Organization[]
-  clients?: Client[]
-  strategies?: Strategy[]
-  underlyings?: Underlying[]
-  context: ContextState
-  onContextChange: (context: ContextState) => void
+  organizations?: Organization[];
+  clients?: Client[];
+  strategies?: Strategy[];
+  underlyings?: Underlying[];
+  context: ContextState;
+  onContextChange: (context: ContextState) => void;
   // Which levels are available for the current surface
   availableLevels?: {
-    organization?: boolean
-    client?: boolean
-    strategy?: boolean
-    underlying?: boolean
-  }
-  className?: string
+    organization?: boolean;
+    client?: boolean;
+    strategy?: boolean;
+    underlying?: boolean;
+  };
+  className?: string;
 }
 
 function getUnderlyingIcon(type: Underlying["type"]) {
   switch (type) {
     case "crypto":
-      return <Coins className="size-3.5" />
+      return <Coins className="size-3.5" />;
     case "equity":
-      return <TrendingUp className="size-3.5" />
+      return <TrendingUp className="size-3.5" />;
     case "sport":
-      return <Trophy className="size-3.5" />
+      return <Trophy className="size-3.5" />;
     case "event":
-      return <BarChart3 className="size-3.5" />
+      return <BarChart3 className="size-3.5" />;
     default:
-      return <Coins className="size-3.5" />
+      return <Coins className="size-3.5" />;
   }
 }
 
@@ -158,57 +158,66 @@ function MultiSelectDropdown<T extends { id: string }>({
   getGroupLabel,
   allLabel = "All",
   emptyMessage = "No items",
+  dropdownWidthClass = "w-72",
 }: {
-  label: string
-  icon: React.ReactNode
-  items: T[]
-  selectedIds: string[]
-  onSelectionChange: (ids: string[]) => void
-  renderItem: (item: T, isSelected: boolean) => React.ReactNode
-  groupBy?: (item: T) => string
-  getGroupLabel?: (group: string) => string
-  allLabel?: string
-  emptyMessage?: string
+  label: string;
+  icon: React.ReactNode;
+  items: T[];
+  selectedIds: string[];
+  onSelectionChange: (ids: string[]) => void;
+  renderItem: (item: T, isSelected: boolean) => React.ReactNode;
+  groupBy?: (item: T) => string;
+  getGroupLabel?: (group: string) => string;
+  allLabel?: string;
+  emptyMessage?: string;
+  dropdownWidthClass?: string;
 }) {
-  const [open, setOpen] = React.useState(false)
-  
-  const isAllSelected = selectedIds.length === 0
-  const selectedCount = selectedIds.length
-  
+  const [open, setOpen] = React.useState(false);
+  const [collapsedGroups, setCollapsedGroups] = React.useState<
+    Record<string, boolean>
+  >({});
+
+  const isAllSelected = selectedIds.length === 0;
+  const selectedCount = selectedIds.length;
+
   const toggleItem = (id: string) => {
     if (selectedIds.includes(id)) {
-      onSelectionChange(selectedIds.filter((i) => i !== id))
+      onSelectionChange(selectedIds.filter((i) => i !== id));
     } else {
-      onSelectionChange([...selectedIds, id])
+      onSelectionChange([...selectedIds, id]);
     }
-  }
-  
+  };
+
   const selectAll = () => {
-    onSelectionChange([])
-  }
-  
+    onSelectionChange([]);
+  };
+
   // Get display text
   const getDisplayText = () => {
-    if (isAllSelected) return allLabel
+    if (isAllSelected) return allLabel;
     if (selectedCount === 1) {
-      const item = items.find((i) => i.id === selectedIds[0])
-      return item ? (item as { name?: string; symbol?: string }).name || (item as { symbol?: string }).symbol || item.id : selectedIds[0]
+      const item = items.find((i) => i.id === selectedIds[0]);
+      return item
+        ? (item as { name?: string; symbol?: string }).name ||
+            (item as { symbol?: string }).symbol ||
+            item.id
+        : selectedIds[0];
     }
-    return `${selectedCount} selected`
-  }
-  
+    return `${selectedCount} selected`;
+  };
+
   // Group items if groupBy is provided
   const groupedItems = React.useMemo(() => {
-    if (!groupBy) return { default: items }
-    const groups: Record<string, T[]> = {}
+    if (!groupBy) return { default: items };
+    const groups: Record<string, T[]> = {};
     items.forEach((item) => {
-      const group = groupBy(item)
-      if (!groups[group]) groups[group] = []
-      groups[group].push(item)
-    })
-    return groups
-  }, [items, groupBy])
-  
+      const group = groupBy(item);
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(item);
+    });
+    return groups;
+  }, [items, groupBy]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -217,7 +226,9 @@ function MultiSelectDropdown<T extends { id: string }>({
           size="sm"
           className={cn(
             "h-6 gap-1 px-2 hover:bg-secondary text-xs",
-            !isAllSelected ? "text-foreground font-medium" : "text-muted-foreground"
+            !isAllSelected
+              ? "text-foreground font-medium"
+              : "text-muted-foreground",
           )}
         >
           {icon}
@@ -230,10 +241,15 @@ function MultiSelectDropdown<T extends { id: string }>({
           <ChevronDown className="size-3 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-72 p-0">
+      <PopoverContent
+        align="start"
+        className={cn(dropdownWidthClass, "p-0 max-h-[35vh] overflow-hidden")}
+      >
         <div className="p-2 border-b border-border">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">{label}</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              {label}
+            </span>
             {!isAllSelected && (
               <Button
                 variant="ghost"
@@ -246,8 +262,8 @@ function MultiSelectDropdown<T extends { id: string }>({
             )}
           </div>
         </div>
-        
-        <ScrollArea className="h-[280px]">
+
+        <div className="max-h-[35vh] overflow-y-auto overscroll-contain">
           <div className="p-1">
             {/* All option */}
             <div
@@ -257,65 +273,152 @@ function MultiSelectDropdown<T extends { id: string }>({
               onKeyDown={(e) => e.key === "Enter" && selectAll()}
               className={cn(
                 "w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
-                isAllSelected && "bg-secondary"
+                isAllSelected && "bg-secondary",
               )}
             >
               <span
                 className={cn(
                   "size-4 rounded border flex items-center justify-center shrink-0",
-                  isAllSelected ? "bg-primary border-primary" : "border-input"
+                  isAllSelected ? "bg-primary border-primary" : "border-input",
                 )}
               >
-                {isAllSelected && <Check className="size-3 text-primary-foreground" />}
+                {isAllSelected && (
+                  <Check className="size-3 text-primary-foreground" />
+                )}
               </span>
               <span className="text-muted-foreground">{allLabel}</span>
             </div>
-            
+
             <div className="h-px bg-border my-1" />
-            
+
             {items.length === 0 ? (
               <div className="px-2 py-4 text-center text-sm text-muted-foreground">
                 {emptyMessage}
               </div>
             ) : groupBy ? (
-              // Grouped items
-              Object.entries(groupedItems).map(([group, groupItems]) => (
-                <div key={group}>
-                  <div className="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                    {getGroupLabel ? getGroupLabel(group) : group}
-                  </div>
-                  {groupItems.map((item) => {
-                    const isSelected = selectedIds.includes(item.id)
-                    return (
-                      <div
-                        key={item.id}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => toggleItem(item.id)}
-                        onKeyDown={(e) => e.key === "Enter" && toggleItem(item.id)}
-                        className={cn(
-                          "w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
-                          isSelected && "bg-secondary"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "size-4 rounded border flex items-center justify-center shrink-0",
-                            isSelected ? "bg-primary border-primary" : "border-input"
-                          )}
+              // Grouped items (collapsible categories + scroll capped to viewport)
+              Object.entries(groupedItems)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([group, groupItems]) => {
+                  const groupIds = groupItems.map((i) => i.id);
+                  const allGroupSelected = groupIds.every((id) =>
+                    selectedIds.includes(id),
+                  );
+                  const someGroupSelected = groupIds.some((id) =>
+                    selectedIds.includes(id),
+                  );
+                  const toggleGroup = () => {
+                    if (allGroupSelected) {
+                      onSelectionChange(
+                        selectedIds.filter((id) => !groupIds.includes(id)),
+                      );
+                    } else {
+                      onSelectionChange([
+                        ...new Set([...selectedIds, ...groupIds]),
+                      ]);
+                    }
+                  };
+                  const isCollapsed = collapsedGroups[group] !== false;
+                  return (
+                    <div
+                      key={group}
+                      className="border-b border-border/50 pb-1 mb-1 last:border-0 last:pb-0 last:mb-0"
+                    >
+                      <div className="flex items-stretch gap-0.5">
+                        <button
+                          type="button"
+                          className="shrink-0 flex items-center justify-center px-1 rounded hover:bg-secondary/80 text-muted-foreground"
+                          aria-expanded={!isCollapsed}
+                          aria-label={
+                            isCollapsed
+                              ? `Expand ${group}`
+                              : `Collapse ${group}`
+                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCollapsedGroups((c) => ({
+                              ...c,
+                              [group]: !c[group],
+                            }));
+                          }}
                         >
-                          {isSelected && <Check className="size-3 text-primary-foreground" />}
-                        </span>
-                        {renderItem(item, isSelected)}
+                          <ChevronRight
+                            className={cn(
+                              "size-3.5 transition-transform duration-150",
+                              !isCollapsed && "rotate-90",
+                            )}
+                          />
+                        </button>
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={toggleGroup}
+                          onKeyDown={(e) => e.key === "Enter" && toggleGroup()}
+                          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded px-2 py-1 hover:bg-secondary/50"
+                        >
+                          <span
+                            className={cn(
+                              "size-3.5 flex shrink-0 items-center justify-center rounded border",
+                              allGroupSelected
+                                ? "border-primary bg-primary"
+                                : someGroupSelected
+                                  ? "border-primary bg-primary/50"
+                                  : "border-input",
+                            )}
+                          >
+                            {(allGroupSelected || someGroupSelected) && (
+                              <Check className="size-2.5 text-primary-foreground" />
+                            )}
+                          </span>
+                          <span className="truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                            {getGroupLabel ? getGroupLabel(group) : group}
+                          </span>
+                          <span className="ml-auto shrink-0 text-[10px] text-muted-foreground/50">
+                            {groupItems.length}
+                          </span>
+                        </div>
                       </div>
-                    )
-                  })}
-                </div>
-              ))
+                      {!isCollapsed &&
+                        groupItems.map((item) => {
+                          const isSelected = selectedIds.includes(item.id);
+                          return (
+                            <div
+                              key={item.id}
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => toggleItem(item.id)}
+                              onKeyDown={(e) =>
+                                e.key === "Enter" && toggleItem(item.id)
+                              }
+                              className={cn(
+                                "flex w-full cursor-pointer items-center gap-2 rounded py-1.5 pl-7 pr-2 text-sm hover:bg-secondary",
+                                isSelected && "bg-secondary",
+                              )}
+                            >
+                              <span
+                                className={cn(
+                                  "size-4 shrink-0 rounded border flex items-center justify-center",
+                                  isSelected
+                                    ? "bg-primary border-primary"
+                                    : "border-input",
+                                )}
+                              >
+                                {isSelected && (
+                                  <Check className="size-3 text-primary-foreground" />
+                                )}
+                              </span>
+                              {renderItem(item, isSelected)}
+                            </div>
+                          );
+                        })}
+                    </div>
+                  );
+                })
             ) : (
               // Ungrouped items
               items.map((item) => {
-                const isSelected = selectedIds.includes(item.id)
+                const isSelected = selectedIds.includes(item.id);
                 return (
                   <div
                     key={item.id}
@@ -325,27 +428,31 @@ function MultiSelectDropdown<T extends { id: string }>({
                     onKeyDown={(e) => e.key === "Enter" && toggleItem(item.id)}
                     className={cn(
                       "w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-secondary cursor-pointer",
-                      isSelected && "bg-secondary"
+                      isSelected && "bg-secondary",
                     )}
                   >
                     <span
                       className={cn(
                         "size-4 rounded border flex items-center justify-center shrink-0",
-                        isSelected ? "bg-primary border-primary" : "border-input"
+                        isSelected
+                          ? "bg-primary border-primary"
+                          : "border-input",
                       )}
                     >
-                      {isSelected && <Check className="size-3 text-primary-foreground" />}
+                      {isSelected && (
+                        <Check className="size-3 text-primary-foreground" />
+                      )}
                     </span>
                     {renderItem(item, isSelected)}
                   </div>
-                )
+                );
               })
             )}
           </div>
-        </ScrollArea>
+        </div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 export function ContextBar({
@@ -355,79 +462,96 @@ export function ContextBar({
   underlyings = defaultUnderlyings,
   context,
   onContextChange,
-  availableLevels = { organization: true, client: true, strategy: true, underlying: true },
+  availableLevels = {
+    organization: true,
+    client: true,
+    strategy: true,
+    underlying: true,
+  },
   className,
 }: ContextBarProps) {
   // Filtered lists based on hierarchy
   const filteredClients = React.useMemo(() => {
-    if (context.organizationIds.length === 0) return clients
-    return clients.filter((c) => context.organizationIds.includes(c.orgId))
-  }, [clients, context.organizationIds])
+    if (context.organizationIds.length === 0) return clients;
+    return clients.filter((c) => context.organizationIds.includes(c.orgId));
+  }, [clients, context.organizationIds]);
 
   const filteredStrategies = React.useMemo(() => {
-    let result = strategies
-    
+    let result = strategies;
+
     // Filter by organization
     if (context.organizationIds.length > 0) {
       const orgClientIds = clients
         .filter((c) => context.organizationIds.includes(c.orgId))
-        .map((c) => c.id)
-      result = result.filter((s) => orgClientIds.includes(s.clientId))
+        .map((c) => c.id);
+      result = result.filter((s) => orgClientIds.includes(s.clientId));
     }
-    
+
     // Filter by client
     if (context.clientIds.length > 0) {
-      result = result.filter((s) => context.clientIds.includes(s.clientId))
+      result = result.filter((s) => context.clientIds.includes(s.clientId));
     }
-    
-    return result
-  }, [strategies, clients, context.organizationIds, context.clientIds])
+
+    return result;
+  }, [strategies, clients, context.organizationIds, context.clientIds]);
 
   // Cascading underlying filter - only show underlyings available in filtered strategies
   const filteredUnderlyings = React.useMemo(() => {
     // Get underlyings used by the currently filtered strategies
-    const strategiesForUnderlyings = context.strategyIds.length > 0 
-      ? filteredStrategies.filter(s => context.strategyIds.includes(s.id))
-      : filteredStrategies
-    
+    const strategiesForUnderlyings =
+      context.strategyIds.length > 0
+        ? filteredStrategies.filter((s) => context.strategyIds.includes(s.id))
+        : filteredStrategies;
+
     // Extract unique underlying symbols from TRADING_STRATEGIES (which have underlyings array)
-    const usedUnderlyingSymbols = new Set<string>()
-    strategiesForUnderlyings.forEach(s => {
-      const tradingStrategy = TRADING_STRATEGIES.find(ts => ts.id === s.id)
+    const usedUnderlyingSymbols = new Set<string>();
+    strategiesForUnderlyings.forEach((s) => {
+      const tradingStrategy = TRADING_STRATEGIES.find((ts) => ts.id === s.id);
       if (tradingStrategy?.underlyings) {
-        tradingStrategy.underlyings.forEach(u => usedUnderlyingSymbols.add(u.toUpperCase()))
+        tradingStrategy.underlyings.forEach((u) =>
+          usedUnderlyingSymbols.add(u.toUpperCase()),
+        );
       }
-    })
-    
+    });
+
     // Filter underlyings to only those used
-    if (usedUnderlyingSymbols.size === 0) return underlyings
-    return underlyings.filter(u => usedUnderlyingSymbols.has(u.symbol.toUpperCase()))
-  }, [filteredStrategies, context.strategyIds, underlyings])
+    if (usedUnderlyingSymbols.size === 0) return underlyings;
+    return underlyings.filter((u) =>
+      usedUnderlyingSymbols.has(u.symbol.toUpperCase()),
+    );
+  }, [filteredStrategies, context.strategyIds, underlyings]);
 
   // Count active filters
   const activeFilters = [
-    context.organizationIds.length > 0 && context.organizationIds.length < organizations.length,
+    context.organizationIds.length > 0 &&
+      context.organizationIds.length < organizations.length,
     context.clientIds.length > 0,
     context.strategyIds.length > 0,
     context.underlyingIds.length > 0,
-  ].filter(Boolean).length
+  ].filter(Boolean).length;
 
   return (
     <div
       className={cn(
         "h-9 flex items-center gap-1 px-4 border-b border-border bg-[#111113] text-sm",
-        className
+        className,
       )}
     >
       {/* Live/Batch Mode Toggle */}
       <div className="flex items-center border border-border rounded-md overflow-hidden mr-3">
         <button
-          onClick={() => onContextChange({ ...context, mode: "live", asOfDatetime: undefined })}
+          onClick={() =>
+            onContextChange({
+              ...context,
+              mode: "live",
+              asOfDatetime: undefined,
+            })
+          }
           className={cn(
             "flex items-center gap-1.5 px-2 py-1 text-xs transition-colors",
             context.mode === "live"
               ? "bg-[var(--status-live)]/10 text-[var(--status-live)] font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary",
           )}
         >
           <Radio className="size-3" />
@@ -435,90 +559,121 @@ export function ContextBar({
         </button>
         <div className="w-px h-4 bg-border" />
         <button
-          onClick={() => onContextChange({ ...context, mode: "batch", asOfDatetime: new Date().toISOString().slice(0, 16) })}
+          onClick={() =>
+            onContextChange({
+              ...context,
+              mode: "batch",
+              asOfDatetime: new Date().toISOString().slice(0, 16),
+            })
+          }
           className={cn(
             "flex items-center gap-1.5 px-2 py-1 text-xs transition-colors",
             context.mode === "batch"
               ? "bg-[var(--surface-markets)]/10 text-[var(--surface-markets)] font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary",
           )}
         >
           <Calendar className="size-3" />
           As-Of
         </button>
       </div>
-      
+
       {/* Datetime Picker (Batch/As-Of mode only) */}
-      {context.mode === "batch" && (() => {
-        // Batch data validation - batch is T+1, available after 8am
-        const selectedDateTime = context.asOfDatetime ? new Date(context.asOfDatetime) : new Date()
-        const now = new Date()
-        const yesterday8am = new Date(now)
-        yesterday8am.setDate(yesterday8am.getDate() - 1)
-        yesterday8am.setHours(8, 0, 0, 0)
-        
-        const isDateTooRecent = selectedDateTime > yesterday8am
-        const isTodayBefore8am = now.getHours() < 8
-        const showWarning = isDateTooRecent || isTodayBefore8am
-        
-        return (
-          <div className="flex items-center gap-2 mr-3">
-            <div className={cn(
-              "flex items-center gap-1.5 px-2 py-1 border rounded-md",
-              showWarning ? "border-[var(--status-warning)] bg-[var(--status-warning)]/5" : "border-border"
-            )}>
-              <Calendar className={cn("size-3", showWarning ? "text-[var(--status-warning)]" : "text-muted-foreground")} />
-              <input
-                type="datetime-local"
-                value={context.asOfDatetime || new Date().toISOString().slice(0, 16)}
-                onChange={(e) => onContextChange({ ...context, asOfDatetime: e.target.value })}
-                className="bg-transparent text-xs border-none focus:outline-none w-36"
-              />
-            </div>
-            
-            {/* Warning for date too recent */}
-            {showWarning && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30">
-                <AlertTriangle className="size-3 text-[var(--status-warning)]" />
-                <span className="text-[10px] text-[var(--status-warning)]">
-                  Batch available T+1 after 8am
-                </span>
+      {context.mode === "batch" &&
+        (() => {
+          // Batch data validation - batch is T+1, available after 8am
+          const selectedDateTime = context.asOfDatetime
+            ? new Date(context.asOfDatetime)
+            : new Date();
+          const now = new Date();
+          const yesterday8am = new Date(now);
+          yesterday8am.setDate(yesterday8am.getDate() - 1);
+          yesterday8am.setHours(8, 0, 0, 0);
+
+          const isDateTooRecent = selectedDateTime > yesterday8am;
+          const isTodayBefore8am = now.getHours() < 8;
+          const showWarning = isDateTooRecent || isTodayBefore8am;
+
+          return (
+            <div className="flex items-center gap-2 mr-3">
+              <div
+                className={cn(
+                  "flex items-center gap-1.5 px-2 py-1 border rounded-md",
+                  showWarning
+                    ? "border-[var(--status-warning)] bg-[var(--status-warning)]/5"
+                    : "border-border",
+                )}
+              >
+                <Calendar
+                  className={cn(
+                    "size-3",
+                    showWarning
+                      ? "text-[var(--status-warning)]"
+                      : "text-muted-foreground",
+                  )}
+                />
+                <input
+                  type="datetime-local"
+                  value={
+                    context.asOfDatetime ||
+                    new Date().toISOString().slice(0, 16)
+                  }
+                  onChange={(e) =>
+                    onContextChange({
+                      ...context,
+                      asOfDatetime: e.target.value,
+                    })
+                  }
+                  className="bg-transparent text-xs border-none focus:outline-none w-36"
+                />
               </div>
-            )}
-            
-            {/* Quick shortcuts */}
-            <div className="flex items-center gap-1">
-              {[
-                { label: "Yest EOD", offset: "yesterday" },
-                { label: "2d ago", offset: "2days" },
-                { label: "1w ago", offset: "1week" },
-              ].map(({ label, offset }) => (
-                <button
-                  key={label}
-                  onClick={() => {
-                    let dt: Date = new Date()
-                    if (offset === "yesterday") {
-                      dt.setDate(dt.getDate() - 1)
-                      dt.setHours(23, 59, 0, 0)
-                    } else if (offset === "2days") {
-                      dt.setDate(dt.getDate() - 2)
-                      dt.setHours(23, 59, 0, 0)
-                    } else if (offset === "1week") {
-                      dt.setDate(dt.getDate() - 7)
-                      dt.setHours(23, 59, 0, 0)
-                    }
-                    onContextChange({ ...context, asOfDatetime: dt.toISOString().slice(0, 16) })
-                  }}
-                  className="px-1.5 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-secondary rounded"
-                >
-                  {label}
-                </button>
-              ))}
+
+              {/* Warning for date too recent */}
+              {showWarning && (
+                <div className="flex items-center gap-1 px-2 py-1 rounded bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30">
+                  <AlertTriangle className="size-3 text-[var(--status-warning)]" />
+                  <span className="text-[10px] text-[var(--status-warning)]">
+                    Batch available T+1 after 8am
+                  </span>
+                </div>
+              )}
+
+              {/* Quick shortcuts */}
+              <div className="flex items-center gap-1">
+                {[
+                  { label: "Yest EOD", offset: "yesterday" },
+                  { label: "2d ago", offset: "2days" },
+                  { label: "1w ago", offset: "1week" },
+                ].map(({ label, offset }) => (
+                  <button
+                    key={label}
+                    onClick={() => {
+                      let dt: Date = new Date();
+                      if (offset === "yesterday") {
+                        dt.setDate(dt.getDate() - 1);
+                        dt.setHours(23, 59, 0, 0);
+                      } else if (offset === "2days") {
+                        dt.setDate(dt.getDate() - 2);
+                        dt.setHours(23, 59, 0, 0);
+                      } else if (offset === "1week") {
+                        dt.setDate(dt.getDate() - 7);
+                        dt.setHours(23, 59, 0, 0);
+                      }
+                      onContextChange({
+                        ...context,
+                        asOfDatetime: dt.toISOString().slice(0, 16),
+                      });
+                    }}
+                    className="px-1.5 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-secondary rounded"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )
-      })()}
-      
+          );
+        })()}
+
       {/* Context Selectors */}
       <div className="flex items-center gap-1">
         {/* Organization - Multi-select */}
@@ -574,24 +729,31 @@ export function ContextBar({
                     className={cn(
                       "size-2 rounded-full",
                       client.status === "active" && "bg-[var(--status-live)]",
-                      client.status === "onboarding" && "bg-[var(--status-warning)]",
-                      client.status === "inactive" && "bg-[var(--status-idle)]"
+                      client.status === "onboarding" &&
+                        "bg-[var(--status-warning)]",
+                      client.status === "inactive" && "bg-[var(--status-idle)]",
                     )}
                   />
                   {client.name}
                 </span>
               )}
             />
-            
+
             {context.clientIds.length > 0 && (
               <button
-                onClick={() => onContextChange({ ...context, clientIds: [], strategyIds: [] })}
+                onClick={() =>
+                  onContextChange({
+                    ...context,
+                    clientIds: [],
+                    strategyIds: [],
+                  })
+                }
                 className="p-0.5 rounded hover:bg-secondary text-muted-foreground hover:text-foreground"
               >
                 <X className="size-3" />
               </button>
             )}
-            
+
             <span className="text-muted-foreground/30">/</span>
           </>
         )}
@@ -612,6 +774,7 @@ export function ContextBar({
               }
               allLabel="All Strategies"
               emptyMessage="No strategies for selection"
+              dropdownWidthClass="w-[36rem]"
               groupBy={(s) => s.assetClass}
               getGroupLabel={(group) => group}
               renderItem={(strategy) => (
@@ -621,7 +784,8 @@ export function ContextBar({
                       "size-2 rounded-full",
                       strategy.status === "live" && "bg-[var(--status-live)]",
                       strategy.status === "paused" && "bg-[var(--status-idle)]",
-                      strategy.status === "warning" && "bg-[var(--status-warning)]"
+                      strategy.status === "warning" &&
+                        "bg-[var(--status-warning)]",
                     )}
                   />
                   <span className="flex-1 truncate">{strategy.name}</span>
@@ -631,7 +795,7 @@ export function ContextBar({
                 </span>
               )}
             />
-            
+
             {context.strategyIds.length > 0 && (
               <button
                 onClick={() => onContextChange({ ...context, strategyIds: [] })}
@@ -640,7 +804,7 @@ export function ContextBar({
                 <X className="size-3" />
               </button>
             )}
-            
+
             <span className="text-muted-foreground/30">/</span>
           </>
         )}
@@ -661,25 +825,31 @@ export function ContextBar({
               }
               allLabel="All Underlyings"
               groupBy={(u) => u.type}
-              getGroupLabel={(type) => ({
-                crypto: "Crypto",
-                equity: "Equities",
-                sport: "Sports (Leagues)",
-                event: "Events",
-                commodity: "Commodities",
-              }[type] || type)}
+              getGroupLabel={(type) =>
+                ({
+                  crypto: "Crypto",
+                  equity: "Equities",
+                  sport: "Sports (Leagues)",
+                  event: "Events",
+                  commodity: "Commodities",
+                })[type] || type
+              }
               renderItem={(underlying) => (
                 <span className="flex items-center gap-2 flex-1">
                   {getUnderlyingIcon(underlying.type)}
                   <span className="font-mono">{underlying.symbol}</span>
-                  <span className="text-xs text-muted-foreground">{underlying.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {underlying.name}
+                  </span>
                 </span>
               )}
             />
-            
+
             {context.underlyingIds.length > 0 && (
               <button
-                onClick={() => onContextChange({ ...context, underlyingIds: [] })}
+                onClick={() =>
+                  onContextChange({ ...context, underlyingIds: [] })
+                }
                 className="p-0.5 rounded hover:bg-secondary text-muted-foreground hover:text-foreground"
               >
                 <X className="size-3" />
@@ -694,7 +864,10 @@ export function ContextBar({
 
       {/* Active Filters Count */}
       {activeFilters > 0 && (
-        <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium">
+        <Badge
+          variant="secondary"
+          className="h-5 px-1.5 text-[10px] font-medium"
+        >
           {activeFilters} filter{activeFilters > 1 ? "s" : ""} active
         </Badge>
       )}
@@ -719,7 +892,7 @@ export function ContextBar({
         </Button>
       )}
     </div>
-  )
+  );
 }
 
 // Hook to use context state with URL persistence
@@ -731,13 +904,13 @@ export function useContextState(initialState?: Partial<ContextState>) {
     clientIds: initialState?.clientIds || [],
     strategyIds: initialState?.strategyIds || [],
     underlyingIds: initialState?.underlyingIds || [],
-  })
+  });
 
-  return { context, setContext }
+  return { context, setContext };
 }
 
 // Export default data for use in pages
-export const DEFAULT_ORGANIZATIONS = defaultOrganizations
-export const DEFAULT_CLIENTS = defaultClients
-export const DEFAULT_STRATEGIES = defaultStrategies
-export const DEFAULT_UNDERLYINGS = defaultUnderlyings
+export const DEFAULT_ORGANIZATIONS = defaultOrganizations;
+export const DEFAULT_CLIENTS = defaultClients;
+export const DEFAULT_STRATEGIES = defaultStrategies;
+export const DEFAULT_UNDERLYINGS = defaultUnderlyings;

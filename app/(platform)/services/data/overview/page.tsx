@@ -1,101 +1,334 @@
-"use client"
+"use client";
 
 /**
- * /services/data/overview — Data service portal for SIGNED-IN users.
- * Shows data status, instrument coverage, freshness monitoring.
- * NOT a marketing page — user is already authenticated.
- *
- * Internal: sees full registry, all venues, all gaps
- * External: sees subscription-filtered registry
+ * /services/data/overview — Acquire tab landing page.
+ * Shows pipeline stage summaries (Instruments → Raw → Processed),
+ * per-category progress, active jobs, and alerts.
  */
 
-import * as React from "react"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { useAuth } from "@/hooks/use-auth"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Progress } from "@/components/ui/progress"
+import * as React from "react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
-  Database, Clock, AlertTriangle,
-  RefreshCw, Search, Globe, Activity,
-} from "lucide-react"
-import { ShardCatalogue, CATEGORY_COLORS } from "@/components/data/shard-catalogue"
-import { FreshnessHeatmap } from "@/components/data/freshness-heatmap"
-import { MOCK_SHARD_AVAILABILITY, MOCK_DATA_GAPS } from "@/lib/data-service-mock-data"
-import { DATA_CATEGORY_LABELS, type DataCategory } from "@/lib/data-service-types"
-import { PLATFORM_STATS } from "@/lib/config/platform-stats"
-import { useServiceHealth } from "@/hooks/api/use-service-status"
-import { useInstruments } from "@/hooks/api/use-instruments"
+  Database,
+  Activity,
+  RefreshCw,
+  CheckCircle2,
+  Clock,
+  ChevronRight,
+  Bell,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
+import {
+  MOCK_PIPELINE_STAGES,
+  MOCK_ACTIVE_JOBS,
+  MOCK_ALERTS,
+} from "@/lib/data-service-mock-data";
+import {
+  DATA_CATEGORY_LABELS,
+  type DataCategory,
+  type PipelineStageSummary,
+  type JobInfo,
+  type AlertItem,
+} from "@/lib/data-service-types";
+import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
 
-export default function PortalDataPage() {
-  const { user, isInternal, hasEntitlement } = useAuth()
-  const { data: healthData, isLoading: healthLoading } = useServiceHealth()
-  const { data: instrumentsData, isLoading: instrumentsLoading } = useInstruments()
+const STAGE_HREFS: Record<string, string> = {
+  instruments: "/services/data/instruments",
+  raw: "/services/data/raw",
+  processing: "/services/data/processing",
+};
 
-  const PIPELINE_SERVICES: any[] = (healthData as any)?.data ?? (healthData as any)?.services ?? []
+const STAGE_ICONS: Record<string, React.ReactNode> = {
+  instruments: <Database className="size-5" />,
+  raw: <Activity className="size-5" />,
+  processing: <Loader2 className="size-5" />,
+};
 
-  // Build venue-level aggregation from instruments (same source as Instrument Catalogue)
-  const VENUE_STATUS = React.useMemo(() => {
-    const instruments: any[] = (instrumentsData as any)?.instruments ?? []
-    const venueMap: Record<string, { venue: string; category: string; instruments: number; coverage: number; cloud: string; lastUpdate: string }> = {}
-    instruments.forEach((inst: any) => {
-      if (!venueMap[inst.venue]) {
-        venueMap[inst.venue] = { venue: inst.venue, category: inst.category, instruments: 0, coverage: 85 + Math.random() * 15, cloud: "GCP", lastUpdate: "2026-03-18" }
-      }
-      venueMap[inst.venue].instruments++
-    })
-    return Object.values(venueMap)
-  }, [instrumentsData])
+const JOB_STATUS_COLORS = {
+  running: "bg-emerald-500 animate-pulse",
+  queued: "bg-yellow-500",
+  completed: "bg-emerald-500",
+  failed: "bg-red-500",
+  cancelled: "bg-muted",
+};
 
-  const [search, setSearch] = React.useState("")
-  const [categoryFilter, setCategoryFilter] = React.useState<string>("all")
+function formatDuration(ms: number): string {
+  const h = Math.floor(ms / 3_600_000);
+  const m = Math.floor((ms % 3_600_000) / 60_000);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
 
-  if (healthLoading || instrumentsLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
-  if (!user) return null
+function etaLabel(job: JobInfo): string {
+  if (!job.estimatedCompletionAt) return "—";
+  const eta = new Date(job.estimatedCompletionAt);
+  const now = new Date();
+  const diffMs = eta.getTime() - now.getTime();
+  if (diffMs <= 0) return "Soon";
+  return formatDuration(diffMs);
+}
 
-  const isAdmin = isInternal()
-  const hasDataPro = hasEntitlement("data-pro")
+function StageCard({ stage }: { stage: PipelineStageSummary }) {
+  const pct = stage.completionPct;
+  const statusColor =
+    pct >= 95
+      ? "text-emerald-400"
+      : pct >= 80
+        ? "text-yellow-400"
+        : "text-red-400";
+  const borderColor =
+    pct >= 95
+      ? "border-emerald-500/20"
+      : pct >= 80
+        ? "border-yellow-500/20"
+        : "border-red-500/20";
 
-  // Filter venues by subscription
-  const filteredVenues = VENUE_STATUS.filter(v => {
-    if (isAdmin || hasDataPro) return true
-    return v.category === "cefi"
-  }).filter(v => {
-    if (categoryFilter !== "all") return v.category === categoryFilter
-    return true
-  }).filter(v => {
-    if (!search) return true
-    return v.venue.toLowerCase().includes(search.toLowerCase())
-  })
+  return (
+    <Link href={STAGE_HREFS[stage.stage]}>
+      <Card
+        className={cn(
+          "cursor-pointer hover:bg-accent/30 transition-colors",
+          borderColor,
+        )}
+      >
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              {STAGE_ICONS[stage.stage]}
+              <CardTitle className="text-sm font-medium">
+                {stage.label}
+              </CardTitle>
+            </div>
+            <ChevronRight className="size-4 text-muted-foreground" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-3">
+            <div className="flex items-end justify-between mb-1">
+              <span className={cn("text-3xl font-bold font-mono", statusColor)}>
+                {pct.toFixed(1)}%
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {stage.completedShards.toLocaleString()} /{" "}
+                {stage.totalShards.toLocaleString()} shards
+              </span>
+            </div>
+            <Progress value={pct} className="h-2" />
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            {stage.inProgressShards > 0 && (
+              <span className="flex items-center gap-1">
+                <span className="size-1.5 rounded-full bg-yellow-500 animate-pulse" />
+                {stage.inProgressShards} running
+              </span>
+            )}
+            {stage.failedShards > 0 && (
+              <span className="flex items-center gap-1 text-red-400">
+                <span className="size-1.5 rounded-full bg-red-500" />
+                {stage.failedShards} failed
+              </span>
+            )}
+            <span>
+              Updated{" "}
+              {new Date(stage.lastUpdated).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
 
-  const totalInstruments = filteredVenues.reduce((s, v) => s + v.instruments, 0)
-  const avgCoverage = filteredVenues.length > 0
-    ? Math.round(filteredVenues.reduce((s, v) => s + v.coverage, 0) / filteredVenues.length * 10) / 10
-    : 0
+function CategoryProgressRow({
+  cat,
+  stages,
+}: {
+  cat: DataCategory;
+  stages: PipelineStageSummary[];
+}) {
+  const label = DATA_CATEGORY_LABELS[cat];
+  const colorClass = CATEGORY_COLORS[cat];
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <Badge variant="outline" className={cn("text-xs", colorClass)}>
+          {label}
+        </Badge>
+        <div className="flex items-center gap-6 text-xs text-muted-foreground">
+          {stages.map((stage) => {
+            const catData = stage.byCategory.find((c) => c.category === cat);
+            if (!catData) return null;
+            const pct = catData.completionPct;
+            return (
+              <span
+                key={stage.stage}
+                className={cn(
+                  "font-mono",
+                  pct >= 95
+                    ? "text-emerald-400"
+                    : pct >= 80
+                      ? "text-yellow-400"
+                      : "text-red-400",
+                )}
+              >
+                {pct.toFixed(0)}%
+              </span>
+            );
+          })}
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {stages.map((stage) => {
+          const catData = stage.byCategory.find((c) => c.category === cat);
+          const pct = catData?.completionPct ?? 0;
+          return (
+            <div key={stage.stage} className="space-y-0.5">
+              <div className="text-[10px] text-muted-foreground">
+                {stage.label}
+              </div>
+              <Progress
+                value={pct}
+                className={cn(
+                  "h-1.5",
+                  pct >= 95
+                    ? "[&>div]:bg-emerald-500"
+                    : pct >= 80
+                      ? "[&>div]:bg-yellow-500"
+                      : "[&>div]:bg-red-500",
+                )}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ActiveJobRow({ job }: { job: JobInfo }) {
+  const eta = etaLabel(job);
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-border/50 last:border-0">
+      <div className="flex items-center gap-3 min-w-0">
+        <span
+          className={cn(
+            "size-2 rounded-full flex-shrink-0",
+            JOB_STATUS_COLORS[job.status],
+          )}
+        />
+        <div className="min-w-0">
+          <div className="text-sm font-medium truncate">
+            <Badge variant="secondary" className="text-[10px] mr-1.5">
+              {job.type}
+            </Badge>
+            {DATA_CATEGORY_LABELS[job.category]} · {job.venue}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {job.dateRange.start} → {job.dateRange.end} · {job.workersActive}/
+            {job.workersMax} workers
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+        <div className="text-right">
+          <div className="flex items-center gap-2">
+            <Progress value={job.progressPct} className="h-1.5 w-20" />
+            <span className="text-xs font-mono text-muted-foreground w-8">
+              {job.progressPct}%
+            </span>
+          </div>
+          {job.status === "running" && eta !== "—" && (
+            <div className="text-[10px] text-muted-foreground mt-0.5">
+              ETA {eta}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AlertRow({ alert }: { alert: AlertItem }) {
+  return (
+    <div
+      className={cn(
+        "flex items-start gap-3 py-2.5 border-b border-border/50 last:border-0",
+        !alert.read && "",
+      )}
+    >
+      <div
+        className={cn(
+          "size-1.5 rounded-full mt-2 flex-shrink-0",
+          alert.severity === "critical"
+            ? "bg-red-500"
+            : alert.severity === "warning"
+              ? "bg-amber-500"
+              : "bg-sky-500",
+        )}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span
+            className={cn(
+              "text-xs font-medium",
+              !alert.read && "font-semibold",
+            )}
+          >
+            {alert.title}
+          </span>
+          {!alert.read && <span className="size-1.5 rounded-full bg-primary" />}
+        </div>
+        <div className="text-xs text-muted-foreground mt-0.5 truncate">
+          {alert.message}
+        </div>
+        <div className="text-[10px] text-muted-foreground/60 mt-0.5">
+          {new Date(alert.timestamp).toLocaleString([], {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </div>
+      </div>
+      {alert.actionHref && (
+        <Link href={alert.actionHref} className="flex-shrink-0">
+          <ArrowRight className="size-3.5 text-muted-foreground hover:text-foreground" />
+        </Link>
+      )}
+    </div>
+  );
+}
+
+export default function AcquireOverviewPage() {
+  const stages = MOCK_PIPELINE_STAGES;
+  const jobs = MOCK_ACTIVE_JOBS;
+  const alerts = MOCK_ALERTS;
+
+  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
+  const unreadAlerts = alerts.filter((a) => !a.read).length;
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container px-4 py-8 md:px-6">
+      <div className="container px-4 py-8 md:px-6 max-w-7xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold">Data Status</h1>
+            <h1 className="text-2xl font-bold">Acquire</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {isAdmin ? "Full registry across all venues and asset classes" : `${user.org.name} — subscription-filtered view`}
+              Data pipeline — instruments → raw data → processed candles
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {!isAdmin && (
-              <Link href="/services/data-catalogue">
-                <Badge variant="outline" className="text-xs cursor-pointer hover:bg-accent">
-                  Manage Subscription
-                </Badge>
-              </Link>
-            )}
             <Button variant="outline" size="sm">
               <RefreshCw className="size-4 mr-2" />
               Refresh
@@ -103,227 +336,115 @@ export default function PortalDataPage() {
           </div>
         </div>
 
-        {/* KPI Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-sky-400">{filteredVenues.length}</div>
-              <div className="text-xs text-muted-foreground">Active Venues</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-emerald-400">{totalInstruments.toLocaleString()}</div>
-              <div className="text-xs text-muted-foreground">Instruments</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className={cn("text-2xl font-bold font-mono", avgCoverage >= 97 ? "text-emerald-400" : avgCoverage >= 90 ? "text-yellow-400" : "text-red-400")}>
-                {avgCoverage}%
+        {/* Pipeline Stage Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          {stages.map((stage) => (
+            <StageCard key={stage.stage} stage={stage} />
+          ))}
+        </div>
+
+        {/* Column headers for category breakdown */}
+        <Card className="mb-8">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium">
+                Category Breakdown
+              </CardTitle>
+              <div className="flex items-center gap-6 text-[10px] text-muted-foreground pr-2">
+                {stages.map((s) => (
+                  <span key={s.stage} className="w-[calc(33%-4px)]">
+                    {s.label}
+                  </span>
+                ))}
               </div>
-              <div className="text-xs text-muted-foreground">Avg Coverage</div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {categories.map((cat) => (
+              <CategoryProgressRow key={cat} cat={cat} stages={stages} />
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Active Jobs + Alerts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Active Jobs */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Clock className="size-4" />
+                  Active Jobs
+                  <Badge variant="secondary" className="text-xs">
+                    {
+                      jobs.filter(
+                        (j) => j.status === "running" || j.status === "queued",
+                      ).length
+                    }
+                  </Badge>
+                </CardTitle>
+                <Link href="/services/data/raw">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs">
+                    View All
+                    <ArrowRight className="ml-1 size-3" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {jobs.length === 0 ? (
+                <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
+                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  No active jobs
+                </div>
+              ) : (
+                <div>
+                  {jobs.slice(0, 5).map((job) => (
+                    <ActiveJobRow key={job.id} job={job} />
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
+
+          {/* Alerts */}
           <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-violet-400">{PLATFORM_STATS.assetClassCount}</div>
-              <div className="text-xs text-muted-foreground">Asset Classes</div>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium flex items-center gap-2">
+                  <Bell className="size-4" />
+                  Alerts
+                  {unreadAlerts > 0 && (
+                    <Badge variant="destructive" className="text-xs">
+                      {unreadAlerts} new
+                    </Badge>
+                  )}
+                </CardTitle>
+                <Link href="/services/data/gaps">
+                  <Button variant="ghost" size="sm" className="h-7 text-xs">
+                    View All
+                    <ArrowRight className="ml-1 size-3" />
+                  </Button>
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0">
+              {alerts.length === 0 ? (
+                <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground">
+                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  No alerts
+                </div>
+              ) : (
+                <div>
+                  {alerts.slice(0, 5).map((alert) => (
+                    <AlertRow key={alert.id} alert={alert} />
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
-
-        {/* Main Tabs */}
-        <Tabs defaultValue="status">
-          <TabsList className="mb-6">
-            <TabsTrigger value="status">
-              <Activity className="mr-2 size-4" />
-              Pipeline Status
-            </TabsTrigger>
-            <TabsTrigger value="venues">
-              <Globe className="mr-2 size-4" />
-              Venue Coverage
-            </TabsTrigger>
-            <TabsTrigger value="freshness">
-              <Clock className="mr-2 size-4" />
-              Data Freshness
-            </TabsTrigger>
-            <TabsTrigger value="catalogue">
-              <Database className="mr-2 size-4" />
-              Instrument Catalogue
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Pipeline Status */}
-          <TabsContent value="status">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Data Pipeline Status</h2>
-                <Badge variant="outline" className="text-xs">Last refreshed: just now</Badge>
-              </div>
-              <div className="space-y-2">
-                {PIPELINE_SERVICES.map((svc, i) => (
-                  <Card key={`${svc.name}-${svc.category}-${i}`}>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={cn("size-2.5 rounded-full",
-                            svc.status === "healthy" ? "bg-emerald-500" :
-                            svc.status === "degraded" ? "bg-yellow-500 animate-pulse" : "bg-red-500"
-                          )} />
-                          <span className="text-sm font-medium">{svc.name}</span>
-                          <Badge variant="secondary" className="text-[10px]">{svc.category}</Badge>
-                        </div>
-                        <div className="flex items-center gap-6 text-xs text-muted-foreground">
-                          <span>{svc.lastRun}</span>
-                          <div className="flex items-center gap-2">
-                            <Progress value={svc.coveragePct} className="h-1.5 w-20" />
-                            <span className={cn("font-mono", svc.coveragePct >= 99 ? "text-emerald-400" : svc.coveragePct >= 95 ? "text-yellow-400" : "text-red-400")}>
-                              {svc.coveragePct}%
-                            </span>
-                          </div>
-                          <span className="font-mono">
-                            {svc.shardsComplete}/{svc.shardsTotal}
-                            {svc.shardsFailed > 0 && <span className="text-red-400 ml-1">({svc.shardsFailed} failed)</span>}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {isAdmin && MOCK_DATA_GAPS.length > 0 && (
-                <Card className="border-amber-500/20 bg-amber-500/5">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <AlertTriangle className="size-4 text-amber-400" />
-                      Data Gaps ({MOCK_DATA_GAPS.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-1.5">
-                      {MOCK_DATA_GAPS.map((gap, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs">
-                          <span>{gap.venue} · {gap.dataType}</span>
-                          <span className="text-muted-foreground">{gap.daysAffected} missing days</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </TabsContent>
-
-          {/* Venue Coverage */}
-          <TabsContent value="venues">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="relative flex-1 max-w-xs">
-                  <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input placeholder="Search venues..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
-                </div>
-                <div className="flex gap-1.5 flex-wrap">
-                  <Button
-                    variant={categoryFilter === "all" ? "secondary" : "ghost"}
-                    size="sm"
-                    onClick={() => setCategoryFilter("all")}
-                    className="h-7 text-xs"
-                  >
-                    All
-                  </Button>
-                  {(Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map(cat => (
-                    <Button
-                      key={cat}
-                      variant={categoryFilter === cat ? "secondary" : "ghost"}
-                      size="sm"
-                      onClick={() => setCategoryFilter(cat === categoryFilter ? "all" : cat)}
-                      className={cn("h-7 text-xs", categoryFilter === cat && CATEGORY_COLORS[cat])}
-                    >
-                      {DATA_CATEGORY_LABELS[cat]}
-                    </Button>
-                  ))}
-                </div>
-                {!isAdmin && !hasDataPro && (
-                  <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-400">
-                    Filtered by subscription (CEFI only)
-                  </Badge>
-                )}
-              </div>
-              <div className="space-y-2">
-                {filteredVenues.map(v => (
-                  <Card key={v.venue}>
-                    <CardContent className="pt-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm font-semibold">{v.venue}</span>
-                          <Badge variant="secondary" className="text-[10px]">{DATA_CATEGORY_LABELS[v.category as DataCategory] ?? v.category}</Badge>
-                          <Badge variant="outline" className={cn("text-[10px]",
-                            v.cloud === "GCP" ? "text-blue-400 border-blue-400/30" : "text-orange-400 border-orange-400/30"
-                          )}>{v.cloud}</Badge>
-                        </div>
-                        <div className="flex items-center gap-6 text-xs">
-                          <span className="text-muted-foreground">{v.instruments} instruments</span>
-                          <span className="text-muted-foreground">{v.lastUpdate}</span>
-                          <div className="flex items-center gap-2">
-                            <Progress value={v.coverage} className="h-1.5 w-16" />
-                            <span className={cn("font-mono font-medium",
-                              v.coverage >= 98 ? "text-emerald-400" : v.coverage >= 95 ? "text-yellow-400" : "text-red-400"
-                            )}>{v.coverage}%</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* Data Freshness */}
-          <TabsContent value="freshness">
-            <div className="space-y-6">
-              <h2 className="text-lg font-semibold">Data Freshness Monitoring</h2>
-              {MOCK_SHARD_AVAILABILITY.map(shard => (
-                <Card key={`${shard.venue}-${shard.dataType}`} className="border-sky-500/20">
-                  <CardContent className="pt-5">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <span className="text-base font-semibold capitalize">{shard.venue}</span>
-                        <Badge variant="outline" className="text-xs">{shard.folder}</Badge>
-                        {shard.gcpCompletionPct > 0 && <Badge variant="outline" className="text-xs text-blue-400 border-blue-400/30">GCP</Badge>}
-                        {shard.awsCompletionPct > 0 && <Badge variant="outline" className="text-xs text-orange-400 border-orange-400/30">AWS</Badge>}
-                      </div>
-                      <div className="flex items-center gap-4 text-sm">
-                        <span className="text-muted-foreground">{shard.datesChecked} days</span>
-                        <span className="text-muted-foreground">{shard.datesMissing} gaps</span>
-                        <span className={cn("font-mono font-bold",
-                          shard.completionPct >= 96 ? "text-emerald-400" : shard.completionPct >= 90 ? "text-yellow-400" : "text-red-400"
-                        )}>{shard.completionPct}%</span>
-                      </div>
-                    </div>
-                    <FreshnessHeatmap dateMap={shard.byDate ?? {}} label={`${shard.dataType}`} cloud={shard.gcpCompletionPct > 0 ? "gcp" : "aws"} weeksToShow={13} />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          {/* Instrument Catalogue */}
-          <TabsContent value="catalogue">
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold">Instrument Catalogue</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {isAdmin
-                  ? "Full instrument registry across all venues and asset classes."
-                  : `Showing instruments available under your ${hasDataPro ? "Pro" : "Basic"} subscription.`}
-              </p>
-            </div>
-            <ShardCatalogue orgMode={isAdmin ? "admin" : "client"} activeSubscriptions={[]} />
-          </TabsContent>
-        </Tabs>
       </div>
     </div>
-  )
+  );
 }

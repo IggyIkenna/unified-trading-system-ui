@@ -23,7 +23,7 @@ import type {
   DataCategory,
   DataFolder,
   DataType,
-} from "./data-service-types"
+} from "./data-service-types";
 
 // ─── Organisations ────────────────────────────────────────────────────────────
 
@@ -62,77 +62,296 @@ export const MOCK_ORGS: DataOrg[] = [
     planTier: "institutional",
     monthlySpend: 0,
   },
-]
+];
 
-export const ADMIN_ORG = MOCK_ORGS[0]
-export const DEMO_ORG = MOCK_ORGS[3]
+export const ADMIN_ORG = MOCK_ORGS[0];
+export const DEMO_ORG = MOCK_ORGS[3];
 
 // ─── Instrument registry (subset — real symbols, real venues) ─────────────────
 
 export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // CeFi — Perpetuals
-  { instrumentKey: "binance:perpetuals:BTCUSDT", venue: "binance", category: "cefi", folder: "perpetuals", symbol: "BTCUSDT", baseCurrency: "BTC", quoteCurrency: "USDT", dataTypes: ["ohlcv", "trades", "book_snapshot_5", "funding_rates", "liquidations", "open_interest"], availableFrom: "2019-09-08" },
-  { instrumentKey: "binance:perpetuals:ETHUSDT", venue: "binance", category: "cefi", folder: "perpetuals", symbol: "ETHUSDT", baseCurrency: "ETH", quoteCurrency: "USDT", dataTypes: ["ohlcv", "trades", "book_snapshot_5", "funding_rates", "liquidations"], availableFrom: "2019-11-10" },
-  { instrumentKey: "bybit:perpetuals:SOLUSDT", venue: "bybit", category: "cefi", folder: "perpetuals", symbol: "SOLUSDT", baseCurrency: "SOL", quoteCurrency: "USDT", dataTypes: ["ohlcv", "trades", "funding_rates"], availableFrom: "2021-06-01" },
-  { instrumentKey: "bybit:perpetuals:BTCUSDT", venue: "bybit", category: "cefi", folder: "perpetuals", symbol: "BTCUSDT", baseCurrency: "BTC", quoteCurrency: "USDT", dataTypes: ["ohlcv", "trades", "book_snapshot_5", "funding_rates"], availableFrom: "2019-11-01" },
+  {
+    instrumentKey: "binance:perpetuals:BTCUSDT",
+    venue: "binance",
+    category: "cefi",
+    folder: "perpetuals",
+    symbol: "BTCUSDT",
+    baseCurrency: "BTC",
+    quoteCurrency: "USDT",
+    dataTypes: [
+      "ohlcv",
+      "trades",
+      "book_snapshot_5",
+      "funding_rates",
+      "liquidations",
+      "open_interest",
+    ],
+    availableFrom: "2019-09-08",
+  },
+  {
+    instrumentKey: "binance:perpetuals:ETHUSDT",
+    venue: "binance",
+    category: "cefi",
+    folder: "perpetuals",
+    symbol: "ETHUSDT",
+    baseCurrency: "ETH",
+    quoteCurrency: "USDT",
+    dataTypes: [
+      "ohlcv",
+      "trades",
+      "book_snapshot_5",
+      "funding_rates",
+      "liquidations",
+    ],
+    availableFrom: "2019-11-10",
+  },
+  {
+    instrumentKey: "bybit:perpetuals:SOLUSDT",
+    venue: "bybit",
+    category: "cefi",
+    folder: "perpetuals",
+    symbol: "SOLUSDT",
+    baseCurrency: "SOL",
+    quoteCurrency: "USDT",
+    dataTypes: ["ohlcv", "trades", "funding_rates"],
+    availableFrom: "2021-06-01",
+  },
+  {
+    instrumentKey: "bybit:perpetuals:BTCUSDT",
+    venue: "bybit",
+    category: "cefi",
+    folder: "perpetuals",
+    symbol: "BTCUSDT",
+    baseCurrency: "BTC",
+    quoteCurrency: "USDT",
+    dataTypes: ["ohlcv", "trades", "book_snapshot_5", "funding_rates"],
+    availableFrom: "2019-11-01",
+  },
   // CeFi — Options
-  { instrumentKey: "deribit:options:BTC-PERPETUAL", venue: "deribit", category: "cefi", folder: "options", symbol: "BTC-PERPETUAL", baseCurrency: "BTC", quoteCurrency: "USD", dataTypes: ["ohlcv", "trades", "greeks", "iv_surface", "book_snapshot_5"], availableFrom: "2018-01-01" },
-  { instrumentKey: "deribit:options:ETH-PERPETUAL", venue: "deribit", category: "cefi", folder: "options", symbol: "ETH-PERPETUAL", baseCurrency: "ETH", quoteCurrency: "USD", dataTypes: ["ohlcv", "trades", "greeks", "iv_surface"], availableFrom: "2019-01-01" },
+  {
+    instrumentKey: "deribit:options:BTC-PERPETUAL",
+    venue: "deribit",
+    category: "cefi",
+    folder: "options",
+    symbol: "BTC-PERPETUAL",
+    baseCurrency: "BTC",
+    quoteCurrency: "USD",
+    dataTypes: ["ohlcv", "trades", "greeks", "iv_surface", "book_snapshot_5"],
+    availableFrom: "2018-01-01",
+  },
+  {
+    instrumentKey: "deribit:options:ETH-PERPETUAL",
+    venue: "deribit",
+    category: "cefi",
+    folder: "options",
+    symbol: "ETH-PERPETUAL",
+    baseCurrency: "ETH",
+    quoteCurrency: "USD",
+    dataTypes: ["ohlcv", "trades", "greeks", "iv_surface"],
+    availableFrom: "2019-01-01",
+  },
   // CeFi — Spot
-  { instrumentKey: "coinbase:spot:BTC-USD", venue: "coinbase", category: "cefi", folder: "spot", symbol: "BTC-USD", baseCurrency: "BTC", quoteCurrency: "USD", dataTypes: ["ohlcv", "trades", "tick"], availableFrom: "2015-01-01" },
-  { instrumentKey: "okx:spot:ETH-USDT", venue: "okx", category: "cefi", folder: "spot", symbol: "ETH-USDT", baseCurrency: "ETH", quoteCurrency: "USDT", dataTypes: ["ohlcv", "trades"], availableFrom: "2018-01-01" },
+  {
+    instrumentKey: "coinbase:spot:BTC-USD",
+    venue: "coinbase",
+    category: "cefi",
+    folder: "spot",
+    symbol: "BTC-USD",
+    baseCurrency: "BTC",
+    quoteCurrency: "USD",
+    dataTypes: ["ohlcv", "trades", "tick"],
+    availableFrom: "2015-01-01",
+  },
+  {
+    instrumentKey: "okx:spot:ETH-USDT",
+    venue: "okx",
+    category: "cefi",
+    folder: "spot",
+    symbol: "ETH-USDT",
+    baseCurrency: "ETH",
+    quoteCurrency: "USDT",
+    dataTypes: ["ohlcv", "trades"],
+    availableFrom: "2018-01-01",
+  },
   // TradFi
-  { instrumentKey: "databento:futures:ES.c.0", venue: "databento", category: "tradfi", folder: "futures", symbol: "ES.c.0", dataTypes: ["ohlcv", "trades", "book_snapshot_5", "book_snapshot_25"], availableFrom: "2018-01-01" },
-  { instrumentKey: "databento:futures:NQ.c.0", venue: "databento", category: "tradfi", folder: "futures", symbol: "NQ.c.0", dataTypes: ["ohlcv", "trades", "book_snapshot_5"], availableFrom: "2018-01-01" },
-  { instrumentKey: "ibkr:equity:AAPL", venue: "ibkr", category: "tradfi", folder: "equity", symbol: "AAPL", dataTypes: ["ohlcv", "trades"], availableFrom: "2010-01-01" },
-  { instrumentKey: "fred:rates:DFF", venue: "fred", category: "tradfi", folder: "rates", symbol: "DFF", dataTypes: ["ohlcv"], availableFrom: "1954-07-01" },
+  {
+    instrumentKey: "databento:futures:ES.c.0",
+    venue: "databento",
+    category: "tradfi",
+    folder: "futures",
+    symbol: "ES.c.0",
+    dataTypes: ["ohlcv", "trades", "book_snapshot_5", "book_snapshot_25"],
+    availableFrom: "2018-01-01",
+  },
+  {
+    instrumentKey: "databento:futures:NQ.c.0",
+    venue: "databento",
+    category: "tradfi",
+    folder: "futures",
+    symbol: "NQ.c.0",
+    dataTypes: ["ohlcv", "trades", "book_snapshot_5"],
+    availableFrom: "2018-01-01",
+  },
+  {
+    instrumentKey: "ibkr:equity:AAPL",
+    venue: "ibkr",
+    category: "tradfi",
+    folder: "equity",
+    symbol: "AAPL",
+    dataTypes: ["ohlcv", "trades"],
+    availableFrom: "2010-01-01",
+  },
+  {
+    instrumentKey: "fred:rates:DFF",
+    venue: "fred",
+    category: "tradfi",
+    folder: "rates",
+    symbol: "DFF",
+    dataTypes: ["ohlcv"],
+    availableFrom: "1954-07-01",
+  },
   // DeFi
-  { instrumentKey: "uniswap_v3:pool_state:USDC-ETH-0.05", venue: "uniswap_v3", category: "defi", folder: "pool_state", symbol: "USDC-ETH-0.05", dataTypes: ["pool_state", "swap_events", "price_feeds"], availableFrom: "2021-05-05" },
-  { instrumentKey: "aave_v3:lending:USDC", venue: "aave_v3", category: "defi", folder: "lending", symbol: "USDC", dataTypes: ["lending_rates", "price_feeds"], availableFrom: "2023-01-01" },
-  { instrumentKey: "lido:staking:ETH", venue: "lido", category: "defi", folder: "staking", symbol: "stETH", dataTypes: ["staking_yields", "price_feeds"], availableFrom: "2020-12-18" },
+  {
+    instrumentKey: "uniswap_v3:pool_state:USDC-ETH-0.05",
+    venue: "uniswap_v3",
+    category: "defi",
+    folder: "pool_state",
+    symbol: "USDC-ETH-0.05",
+    dataTypes: ["pool_state", "swap_events", "price_feeds"],
+    availableFrom: "2021-05-05",
+  },
+  {
+    instrumentKey: "aave_v3:lending:USDC",
+    venue: "aave_v3",
+    category: "defi",
+    folder: "lending",
+    symbol: "USDC",
+    dataTypes: ["lending_rates", "price_feeds"],
+    availableFrom: "2023-01-01",
+  },
+  {
+    instrumentKey: "lido:staking:ETH",
+    venue: "lido",
+    category: "defi",
+    folder: "staking",
+    symbol: "stETH",
+    dataTypes: ["staking_yields", "price_feeds"],
+    availableFrom: "2020-12-18",
+  },
   // Onchain Perps
-  { instrumentKey: "hyperliquid:perpetuals:BTC-USD", venue: "hyperliquid", category: "onchain_perps", folder: "perpetuals", symbol: "BTC-USD", baseCurrency: "BTC", quoteCurrency: "USD", dataTypes: ["ohlcv", "trades", "funding_rates", "open_interest"], availableFrom: "2023-06-01" },
-  { instrumentKey: "hyperliquid:perpetuals:ETH-USD", venue: "hyperliquid", category: "onchain_perps", folder: "perpetuals", symbol: "ETH-USD", dataTypes: ["ohlcv", "trades", "funding_rates"], availableFrom: "2023-06-01" },
+  {
+    instrumentKey: "hyperliquid:perpetuals:BTC-USD",
+    venue: "hyperliquid",
+    category: "onchain_perps",
+    folder: "perpetuals",
+    symbol: "BTC-USD",
+    baseCurrency: "BTC",
+    quoteCurrency: "USD",
+    dataTypes: ["ohlcv", "trades", "funding_rates", "open_interest"],
+    availableFrom: "2023-06-01",
+  },
+  {
+    instrumentKey: "hyperliquid:perpetuals:ETH-USD",
+    venue: "hyperliquid",
+    category: "onchain_perps",
+    folder: "perpetuals",
+    symbol: "ETH-USD",
+    dataTypes: ["ohlcv", "trades", "funding_rates"],
+    availableFrom: "2023-06-01",
+  },
   // Prediction Markets
-  { instrumentKey: "polymarket:predictions:TRUMP_WIN_2024", venue: "polymarket", category: "prediction_market", folder: "predictions", symbol: "TRUMP_WIN_2024", dataTypes: ["odds", "settlement_prices"], availableFrom: "2024-01-01", availableTo: "2024-11-06" },
-  { instrumentKey: "kalshi:predictions:FED_RATE_JUL2025", venue: "kalshi", category: "prediction_market", folder: "predictions", symbol: "FED_RATE_JUL2025", dataTypes: ["odds", "settlement_prices"], availableFrom: "2024-12-01" },
+  {
+    instrumentKey: "polymarket:predictions:TRUMP_WIN_2024",
+    venue: "polymarket",
+    category: "prediction_market",
+    folder: "predictions",
+    symbol: "TRUMP_WIN_2024",
+    dataTypes: ["odds", "settlement_prices"],
+    availableFrom: "2024-01-01",
+    availableTo: "2024-11-06",
+  },
+  {
+    instrumentKey: "kalshi:predictions:FED_RATE_JUL2025",
+    venue: "kalshi",
+    category: "prediction_market",
+    folder: "predictions",
+    symbol: "FED_RATE_JUL2025",
+    dataTypes: ["odds", "settlement_prices"],
+    availableFrom: "2024-12-01",
+  },
   // Sports
-  { instrumentKey: "api_football:fixtures:EPL_2025", venue: "api_football", category: "sports", folder: "fixtures", symbol: "EPL_2025", dataTypes: ["odds", "game_events"], availableFrom: "2023-08-01" },
-  { instrumentKey: "api_football:fixtures:UCL_2025", venue: "api_football", category: "sports", folder: "fixtures", symbol: "UCL_2025", dataTypes: ["odds", "game_events"], availableFrom: "2023-09-01" },
-  { instrumentKey: "footystats:fixtures:EPL_2025", venue: "footystats", category: "sports", folder: "fixtures", symbol: "EPL_2025", dataTypes: ["odds", "game_events"], availableFrom: "2022-01-01" },
-  { instrumentKey: "footystats:fixtures:LA_LIGA_2025", venue: "footystats", category: "sports", folder: "fixtures", symbol: "LA_LIGA_2025", dataTypes: ["odds", "game_events"], availableFrom: "2022-01-01" },
-]
+  {
+    instrumentKey: "api_football:fixtures:EPL_2025",
+    venue: "api_football",
+    category: "sports",
+    folder: "fixtures",
+    symbol: "EPL_2025",
+    dataTypes: ["odds", "game_events"],
+    availableFrom: "2023-08-01",
+  },
+  {
+    instrumentKey: "api_football:fixtures:UCL_2025",
+    venue: "api_football",
+    category: "sports",
+    folder: "fixtures",
+    symbol: "UCL_2025",
+    dataTypes: ["odds", "game_events"],
+    availableFrom: "2023-09-01",
+  },
+  {
+    instrumentKey: "footystats:fixtures:EPL_2025",
+    venue: "footystats",
+    category: "sports",
+    folder: "fixtures",
+    symbol: "EPL_2025",
+    dataTypes: ["odds", "game_events"],
+    availableFrom: "2022-01-01",
+  },
+  {
+    instrumentKey: "footystats:fixtures:LA_LIGA_2025",
+    venue: "footystats",
+    category: "sports",
+    folder: "fixtures",
+    symbol: "LA_LIGA_2025",
+    dataTypes: ["odds", "game_events"],
+    availableFrom: "2022-01-01",
+  },
+];
 
 // ─── Catalogue entries (what we have in storage) ──────────────────────────────
 
 // Deterministic seeded random to avoid hydration mismatches
 function seededRandom(seed: number): number {
-  const x = Math.sin(seed * 9999) * 10000
-  return x - Math.floor(x)
+  const x = Math.sin(seed * 9999) * 10000;
+  return x - Math.floor(x);
 }
 
-function makeFreshnessMap(dayCount: number, completeness: number): DateFreshnessMap {
-  const map: DateFreshnessMap = {}
+function makeFreshnessMap(
+  dayCount: number,
+  completeness: number,
+): DateFreshnessMap {
+  const map: DateFreshnessMap = {};
   // Generate from today backwards so dates match the heatmap grid
-  const today = new Date()
-  const baseSeed = 42 + completeness // deterministic seed
+  const today = new Date();
+  const baseSeed = 42 + completeness; // deterministic seed
   for (let i = 0; i < dayCount; i++) {
-    const d = new Date(today)
-    d.setDate(d.getDate() - (dayCount - 1 - i))
-    const key = d.toISOString().split("T")[0]
+    const d = new Date(today);
+    d.setDate(d.getDate() - (dayCount - 1 - i));
+    const key = d.toISOString().split("T")[0];
     // Deterministic random based on day index
-    const rand = seededRandom(baseSeed + i)
-    let status: FreshnessStatus
+    const rand = seededRandom(baseSeed + i);
+    let status: FreshnessStatus;
     if (rand < completeness / 100) {
-      status = "complete"
+      status = "complete";
     } else if (rand < (completeness + 3) / 100) {
-      status = "partial"
+      status = "partial";
     } else {
-      status = "missing"
+      status = "missing";
     }
-    map[key] = status
+    map[key] = status;
   }
-  return map
+  return map;
 }
 
 export const MOCK_CATALOGUE: CatalogueEntry[] = [
@@ -281,7 +500,7 @@ export const MOCK_CATALOGUE: CatalogueEntry[] = [
     gcpCompleteness: 97,
     awsCompleteness: 0,
   },
-]
+];
 
 // ─── Subscriptions ────────────────────────────────────────────────────────────
 
@@ -370,7 +589,7 @@ export const MOCK_SUBSCRIPTIONS: DataSubscription[] = [
     gbUsedThisMonth: 14,
     gbLimitThisMonth: 50,
   },
-]
+];
 
 // ─── Query log ────────────────────────────────────────────────────────────────
 
@@ -446,40 +665,57 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     costCents: 420,
     status: "completed",
   },
-]
+];
 
 // ─── Shard availability (mock response for DataStatusTab equivalent) ──────────
 
 // Generate shard availability with stats matching the 90-day heatmap
 function makeShardAvailability(
-  category: DataCategory, venue: string, folder: DataFolder, dataType: DataType,
-  completeness: number, cloud: { gcp: number; aws: number }
+  category: DataCategory,
+  venue: string,
+  folder: DataFolder,
+  dataType: DataType,
+  completeness: number,
+  cloud: { gcp: number; aws: number },
 ): ShardAvailability {
-  const byDate = makeFreshnessMap(90, completeness)
-  const dates = Object.values(byDate)
-  const complete = dates.filter(s => s === "complete").length
-  const partial = dates.filter(s => s === "partial").length
-  const missing = dates.filter(s => s === "missing").length
-  const total = complete + partial + missing
+  const byDate = makeFreshnessMap(90, completeness);
+  const dates = Object.values(byDate);
+  const complete = dates.filter((s) => s === "complete").length;
+  const partial = dates.filter((s) => s === "partial").length;
+  const missing = dates.filter((s) => s === "missing").length;
+  const total = complete + partial + missing;
   return {
-    category, venue, folder, dataType,
+    category,
+    venue,
+    folder,
+    dataType,
     dateRange: { start: "last 90 days", end: "today" },
     datesChecked: total,
     datesFound: complete + partial,
     datesMissing: missing,
-    completionPct: total > 0 ? Math.round((complete / total) * 100 * 10) / 10 : 0,
+    completionPct:
+      total > 0 ? Math.round((complete / total) * 100 * 10) / 10 : 0,
     lastFreshnessDate: new Date().toISOString().split("T")[0],
     gcpCompletionPct: cloud.gcp,
     awsCompletionPct: cloud.aws,
     byDate,
-  }
+  };
 }
 
 export const MOCK_SHARD_AVAILABILITY: ShardAvailability[] = [
-  makeShardAvailability("cefi", "binance", "perpetuals", "ohlcv", 96, { gcp: 96, aws: 0 }),
-  makeShardAvailability("tradfi", "databento", "futures", "trades", 93, { gcp: 0, aws: 93 }),
-  makeShardAvailability("defi", "aave_v3", "lending", "pool_state", 91, { gcp: 91, aws: 88 }),
-]
+  makeShardAvailability("cefi", "binance", "perpetuals", "ohlcv", 96, {
+    gcp: 96,
+    aws: 0,
+  }),
+  makeShardAvailability("tradfi", "databento", "futures", "trades", 93, {
+    gcp: 0,
+    aws: 93,
+  }),
+  makeShardAvailability("defi", "aave_v3", "lending", "pool_state", 91, {
+    gcp: 91,
+    aws: 88,
+  }),
+];
 
 // ─── Admin summary stats ──────────────────────────────────────────────────────
 
@@ -500,40 +736,69 @@ export const ADMIN_SUMMARY = {
     prediction_market: 796,
     sports: 512,
   },
-}
+};
 
 // ─── ETL Pipeline Mock Data (Internal) ────────────────────────────────────────
 
-const ETL_STAGES: ETLStage[] = ["ingest", "validate", "normalise", "enrich", "store_gcp", "store_aws", "index"]
+const ETL_STAGES: ETLStage[] = [
+  "ingest",
+  "validate",
+  "normalise",
+  "enrich",
+  "store_gcp",
+  "store_aws",
+  "index",
+];
 
 // Deterministic stage status based on stage index and health baseline
-function mockStageStatus(stage: ETLStage, baseHealth: number, stageIndex: number = 0): ETLStageStatus {
+function mockStageStatus(
+  stage: ETLStage,
+  baseHealth: number,
+  stageIndex: number = 0,
+): ETLStageStatus {
   // Use deterministic values based on stage index
-  const seed = stageIndex * 7 + baseHealth * 100
-  const healthThreshold = seededRandom(seed)
-  const isHealthy = healthThreshold < baseHealth
-  const isDegraded = !isHealthy && seededRandom(seed + 1) < 0.7
-  
+  const seed = stageIndex * 7 + baseHealth * 100;
+  const healthThreshold = seededRandom(seed);
+  const isHealthy = healthThreshold < baseHealth;
+  const isDegraded = !isHealthy && seededRandom(seed + 1) < 0.7;
+
   // Fixed timestamps for consistency
-  const baseTime = new Date("2026-03-19T00:00:00Z").getTime()
-  const offset = Math.floor(seededRandom(seed + 2) * 3600000)
-  
+  const baseTime = new Date("2026-03-19T00:00:00Z").getTime();
+  const offset = Math.floor(seededRandom(seed + 2) * 3600000);
+
   return {
     stage,
     status: isHealthy ? "healthy" : isDegraded ? "degraded" : "failed",
     lastRun: new Date(baseTime - offset).toISOString(),
-    lastSuccess: isHealthy ? new Date(baseTime - offset).toISOString() : undefined,
+    lastSuccess: isHealthy
+      ? new Date(baseTime - offset).toISOString()
+      : undefined,
     lastError: !isHealthy ? "Connection timeout to upstream" : undefined,
     recordsProcessed: Math.floor(seededRandom(seed + 3) * 1000000),
     latencyMs: Math.floor(seededRandom(seed + 4) * 500) + 50,
     errorCount24h: isHealthy ? 0 : Math.floor(seededRandom(seed + 5) * 10) + 1,
-  }
+  };
 }
 
 export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   // CeFi pipelines
   {
-    config: { id: "etl-binance-perps", category: "cefi", venue: "binance", folder: "perpetuals", dataTypes: ["ohlcv", "trades", "book_snapshot_5", "funding_rates", "liquidations"], schedule: "realtime", enabled: true, priority: "critical" },
+    config: {
+      id: "etl-binance-perps",
+      category: "cefi",
+      venue: "binance",
+      folder: "perpetuals",
+      dataTypes: [
+        "ohlcv",
+        "trades",
+        "book_snapshot_5",
+        "funding_rates",
+        "liquidations",
+      ],
+      schedule: "realtime",
+      enabled: true,
+      priority: "critical",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.95, i)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -542,7 +807,16 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     alerts: [],
   },
   {
-    config: { id: "etl-binance-spot", category: "cefi", venue: "binance", folder: "spot", dataTypes: ["ohlcv", "trades"], schedule: "1m", enabled: true, priority: "high" },
+    config: {
+      id: "etl-binance-spot",
+      category: "cefi",
+      venue: "binance",
+      folder: "spot",
+      dataTypes: ["ohlcv", "trades"],
+      schedule: "1m",
+      enabled: true,
+      priority: "high",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.92, i + 10)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -550,15 +824,43 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     alerts: [],
   },
   {
-    config: { id: "etl-bybit-perps", category: "cefi", venue: "bybit", folder: "perpetuals", dataTypes: ["ohlcv", "trades", "funding_rates"], schedule: "realtime", enabled: true, priority: "critical" },
+    config: {
+      id: "etl-bybit-perps",
+      category: "cefi",
+      venue: "bybit",
+      folder: "perpetuals",
+      dataTypes: ["ohlcv", "trades", "funding_rates"],
+      schedule: "realtime",
+      enabled: true,
+      priority: "critical",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.88, i + 20)),
     overallStatus: "degraded",
     lastFullSync: "2026-03-18T23:45:00Z",
     dataLagMinutes: 15,
-    alerts: [{ id: "alert-1", pipelineId: "etl-bybit-perps", stage: "ingest", severity: "warning", message: "Elevated latency on WebSocket connection", timestamp: "2026-03-19T00:10:00Z", acknowledged: false }],
+    alerts: [
+      {
+        id: "alert-1",
+        pipelineId: "etl-bybit-perps",
+        stage: "ingest",
+        severity: "warning",
+        message: "Elevated latency on WebSocket connection",
+        timestamp: "2026-03-19T00:10:00Z",
+        acknowledged: false,
+      },
+    ],
   },
   {
-    config: { id: "etl-deribit-options", category: "cefi", venue: "deribit", folder: "options", dataTypes: ["ohlcv", "trades", "greeks", "iv_surface"], schedule: "1m", enabled: true, priority: "high" },
+    config: {
+      id: "etl-deribit-options",
+      category: "cefi",
+      venue: "deribit",
+      folder: "options",
+      dataTypes: ["ohlcv", "trades", "greeks", "iv_surface"],
+      schedule: "1m",
+      enabled: true,
+      priority: "high",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.94, i + 30)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -566,7 +868,16 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     alerts: [],
   },
   {
-    config: { id: "etl-coinbase-spot", category: "cefi", venue: "coinbase", folder: "spot", dataTypes: ["ohlcv", "trades", "tick"], schedule: "realtime", enabled: true, priority: "high" },
+    config: {
+      id: "etl-coinbase-spot",
+      category: "cefi",
+      venue: "coinbase",
+      folder: "spot",
+      dataTypes: ["ohlcv", "trades", "tick"],
+      schedule: "realtime",
+      enabled: true,
+      priority: "high",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.96, i + 40)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -575,7 +886,16 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   },
   // TradFi pipelines
   {
-    config: { id: "etl-databento-futures", category: "tradfi", venue: "databento", folder: "futures", dataTypes: ["ohlcv", "trades", "book_snapshot_5", "book_snapshot_25"], schedule: "realtime", enabled: true, priority: "critical" },
+    config: {
+      id: "etl-databento-futures",
+      category: "tradfi",
+      venue: "databento",
+      folder: "futures",
+      dataTypes: ["ohlcv", "trades", "book_snapshot_5", "book_snapshot_25"],
+      schedule: "realtime",
+      enabled: true,
+      priority: "critical",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.97, i + 50)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -583,15 +903,33 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     alerts: [],
   },
   {
-    config: { id: "etl-ibkr-equity", category: "tradfi", venue: "ibkr", folder: "equity", dataTypes: ["ohlcv", "trades"], schedule: "15m", enabled: true, priority: "normal" },
-    stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.90, i + 60)),
+    config: {
+      id: "etl-ibkr-equity",
+      category: "tradfi",
+      venue: "ibkr",
+      folder: "equity",
+      dataTypes: ["ohlcv", "trades"],
+      schedule: "15m",
+      enabled: true,
+      priority: "normal",
+    },
+    stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.9, i + 60)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-18T21:00:00Z",
     dataLagMinutes: 180, // market closed
     alerts: [],
   },
   {
-    config: { id: "etl-fred-rates", category: "tradfi", venue: "fred", folder: "rates", dataTypes: ["ohlcv"], schedule: "daily", enabled: true, priority: "low" },
+    config: {
+      id: "etl-fred-rates",
+      category: "tradfi",
+      venue: "fred",
+      folder: "rates",
+      dataTypes: ["ohlcv"],
+      schedule: "daily",
+      enabled: true,
+      priority: "low",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.99, i + 70)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-18T06:00:00Z",
@@ -600,7 +938,16 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   },
   // DeFi pipelines
   {
-    config: { id: "etl-uniswap-v3", category: "defi", venue: "uniswap_v3", folder: "pool_state", dataTypes: ["pool_state", "swap_events", "price_feeds"], schedule: "1m", enabled: true, priority: "high" },
+    config: {
+      id: "etl-uniswap-v3",
+      category: "defi",
+      venue: "uniswap_v3",
+      folder: "pool_state",
+      dataTypes: ["pool_state", "swap_events", "price_feeds"],
+      schedule: "1m",
+      enabled: true,
+      priority: "high",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.91, i + 80)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -608,7 +955,16 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     alerts: [],
   },
   {
-    config: { id: "etl-aave-v3", category: "defi", venue: "aave_v3", folder: "lending", dataTypes: ["lending_rates", "price_feeds"], schedule: "5m", enabled: true, priority: "normal" },
+    config: {
+      id: "etl-aave-v3",
+      category: "defi",
+      venue: "aave_v3",
+      folder: "lending",
+      dataTypes: ["lending_rates", "price_feeds"],
+      schedule: "5m",
+      enabled: true,
+      priority: "normal",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.93, i + 90)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -616,7 +972,16 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     alerts: [],
   },
   {
-    config: { id: "etl-lido-staking", category: "defi", venue: "lido", folder: "staking", dataTypes: ["staking_yields", "price_feeds"], schedule: "1h", enabled: true, priority: "normal" },
+    config: {
+      id: "etl-lido-staking",
+      category: "defi",
+      venue: "lido",
+      folder: "staking",
+      dataTypes: ["staking_yields", "price_feeds"],
+      schedule: "1h",
+      enabled: true,
+      priority: "normal",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.95, i + 100)),
     overallStatus: "healthy",
     lastFullSync: "2026-03-19T00:00:00Z",
@@ -625,36 +990,278 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   },
   // Onchain Perps
   {
-    config: { id: "etl-hyperliquid", category: "onchain_perps", venue: "hyperliquid", folder: "perpetuals", dataTypes: ["ohlcv", "trades", "funding_rates", "open_interest"], schedule: "realtime", enabled: true, priority: "high" },
+    config: {
+      id: "etl-hyperliquid",
+      category: "onchain_perps",
+      venue: "hyperliquid",
+      folder: "perpetuals",
+      dataTypes: ["ohlcv", "trades", "funding_rates", "open_interest"],
+      schedule: "realtime",
+      enabled: true,
+      priority: "high",
+    },
     stages: ETL_STAGES.map((s, i) => mockStageStatus(s, 0.89, i + 110)),
     overallStatus: "degraded",
     lastFullSync: "2026-03-18T23:30:00Z",
     dataLagMinutes: 30,
-    alerts: [{ id: "alert-2", pipelineId: "etl-hyperliquid", stage: "normalise", severity: "warning", message: "New instrument detected, schema update required", timestamp: "2026-03-19T00:05:00Z", acknowledged: false }],
+    alerts: [
+      {
+        id: "alert-2",
+        pipelineId: "etl-hyperliquid",
+        stage: "normalise",
+        severity: "warning",
+        message: "New instrument detected, schema update required",
+        timestamp: "2026-03-19T00:05:00Z",
+        acknowledged: false,
+      },
+    ],
   },
-]
+];
 
 export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
-  { venue: "binance", category: "cefi", label: "Binance", dataSource: "exchange_api", status: "active", folders: ["perpetuals", "spot", "futures"], instrumentCount: 1247, oldestData: "2019-09-08", newestData: "2026-03-19", dailyVolume: 85000000, etlPipelineId: "etl-binance-perps", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "bybit", category: "cefi", label: "Bybit", dataSource: "exchange_api", status: "active", folders: ["perpetuals", "spot"], instrumentCount: 634, oldestData: "2019-11-01", newestData: "2026-03-19", dailyVolume: 42000000, etlPipelineId: "etl-bybit-perps", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "degraded" },
-  { venue: "deribit", category: "cefi", label: "Deribit", dataSource: "exchange_api", status: "active", folders: ["options", "perpetuals"], instrumentCount: 2341, oldestData: "2018-01-01", newestData: "2026-03-19", dailyVolume: 12000000, etlPipelineId: "etl-deribit-options", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "coinbase", category: "cefi", label: "Coinbase", dataSource: "exchange_api", status: "active", folders: ["spot"], instrumentCount: 523, oldestData: "2015-01-01", newestData: "2026-03-19", dailyVolume: 18000000, etlPipelineId: "etl-coinbase-spot", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "okx", category: "cefi", label: "OKX", dataSource: "exchange_api", status: "active", folders: ["perpetuals", "spot", "options"], instrumentCount: 891, oldestData: "2018-01-01", newestData: "2026-03-19", dailyVolume: 35000000, etlPipelineId: "etl-okx", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "databento", category: "tradfi", label: "Databento", dataSource: "vendor", status: "active", folders: ["futures", "equity", "options"], instrumentCount: 8742, oldestData: "2018-01-01", newestData: "2026-03-19", dailyVolume: 250000000, etlPipelineId: "etl-databento-futures", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "ibkr", category: "tradfi", label: "Interactive Brokers", dataSource: "vendor", status: "active", folders: ["equity", "options"], instrumentCount: 12500, oldestData: "2010-01-01", newestData: "2026-03-18", dailyVolume: 45000000, etlPipelineId: "etl-ibkr-equity", lastHealthCheck: "2026-03-18T21:00:00Z", healthStatus: "healthy" },
-  { venue: "fred", category: "tradfi", label: "FRED", dataSource: "vendor", status: "active", folders: ["rates"], instrumentCount: 847, oldestData: "1954-07-01", newestData: "2026-03-18", dailyVolume: 847, etlPipelineId: "etl-fred-rates", lastHealthCheck: "2026-03-18T06:00:00Z", healthStatus: "healthy" },
-  { venue: "uniswap_v3", category: "defi", label: "Uniswap V3", dataSource: "onchain", status: "active", folders: ["pool_state", "swaps"], instrumentCount: 4521, oldestData: "2021-05-05", newestData: "2026-03-19", dailyVolume: 2800000, etlPipelineId: "etl-uniswap-v3", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "aave_v3", category: "defi", label: "Aave V3", dataSource: "onchain", status: "active", folders: ["lending"], instrumentCount: 127, oldestData: "2023-01-01", newestData: "2026-03-19", dailyVolume: 450000, etlPipelineId: "etl-aave-v3", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "lido", category: "defi", label: "Lido", dataSource: "onchain", status: "active", folders: ["staking"], instrumentCount: 12, oldestData: "2020-12-18", newestData: "2026-03-19", dailyVolume: 24000, etlPipelineId: "etl-lido-staking", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "healthy" },
-  { venue: "hyperliquid", category: "onchain_perps", label: "Hyperliquid", dataSource: "onchain", status: "active", folders: ["perpetuals"], instrumentCount: 147, oldestData: "2023-06-01", newestData: "2026-03-19", dailyVolume: 8500000, etlPipelineId: "etl-hyperliquid", lastHealthCheck: "2026-03-19T00:00:00Z", healthStatus: "degraded" },
-]
+  {
+    venue: "binance",
+    category: "cefi",
+    label: "Binance",
+    dataSource: "exchange_api",
+    status: "active",
+    folders: ["perpetuals", "spot", "futures"],
+    instrumentCount: 1247,
+    oldestData: "2019-09-08",
+    newestData: "2026-03-19",
+    dailyVolume: 85000000,
+    etlPipelineId: "etl-binance-perps",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "bybit",
+    category: "cefi",
+    label: "Bybit",
+    dataSource: "exchange_api",
+    status: "active",
+    folders: ["perpetuals", "spot"],
+    instrumentCount: 634,
+    oldestData: "2019-11-01",
+    newestData: "2026-03-19",
+    dailyVolume: 42000000,
+    etlPipelineId: "etl-bybit-perps",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "degraded",
+  },
+  {
+    venue: "deribit",
+    category: "cefi",
+    label: "Deribit",
+    dataSource: "exchange_api",
+    status: "active",
+    folders: ["options", "perpetuals"],
+    instrumentCount: 2341,
+    oldestData: "2018-01-01",
+    newestData: "2026-03-19",
+    dailyVolume: 12000000,
+    etlPipelineId: "etl-deribit-options",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "coinbase",
+    category: "cefi",
+    label: "Coinbase",
+    dataSource: "exchange_api",
+    status: "active",
+    folders: ["spot"],
+    instrumentCount: 523,
+    oldestData: "2015-01-01",
+    newestData: "2026-03-19",
+    dailyVolume: 18000000,
+    etlPipelineId: "etl-coinbase-spot",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "okx",
+    category: "cefi",
+    label: "OKX",
+    dataSource: "exchange_api",
+    status: "active",
+    folders: ["perpetuals", "spot", "options"],
+    instrumentCount: 891,
+    oldestData: "2018-01-01",
+    newestData: "2026-03-19",
+    dailyVolume: 35000000,
+    etlPipelineId: "etl-okx",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "databento",
+    category: "tradfi",
+    label: "Databento",
+    dataSource: "vendor",
+    status: "active",
+    folders: ["futures", "equity", "options"],
+    instrumentCount: 8742,
+    oldestData: "2018-01-01",
+    newestData: "2026-03-19",
+    dailyVolume: 250000000,
+    etlPipelineId: "etl-databento-futures",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "ibkr",
+    category: "tradfi",
+    label: "Interactive Brokers",
+    dataSource: "vendor",
+    status: "active",
+    folders: ["equity", "options"],
+    instrumentCount: 12500,
+    oldestData: "2010-01-01",
+    newestData: "2026-03-18",
+    dailyVolume: 45000000,
+    etlPipelineId: "etl-ibkr-equity",
+    lastHealthCheck: "2026-03-18T21:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "fred",
+    category: "tradfi",
+    label: "FRED",
+    dataSource: "vendor",
+    status: "active",
+    folders: ["rates"],
+    instrumentCount: 847,
+    oldestData: "1954-07-01",
+    newestData: "2026-03-18",
+    dailyVolume: 847,
+    etlPipelineId: "etl-fred-rates",
+    lastHealthCheck: "2026-03-18T06:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "uniswap_v3",
+    category: "defi",
+    label: "Uniswap V3",
+    dataSource: "onchain",
+    status: "active",
+    folders: ["pool_state", "swaps"],
+    instrumentCount: 4521,
+    oldestData: "2021-05-05",
+    newestData: "2026-03-19",
+    dailyVolume: 2800000,
+    etlPipelineId: "etl-uniswap-v3",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "aave_v3",
+    category: "defi",
+    label: "Aave V3",
+    dataSource: "onchain",
+    status: "active",
+    folders: ["lending"],
+    instrumentCount: 127,
+    oldestData: "2023-01-01",
+    newestData: "2026-03-19",
+    dailyVolume: 450000,
+    etlPipelineId: "etl-aave-v3",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "lido",
+    category: "defi",
+    label: "Lido",
+    dataSource: "onchain",
+    status: "active",
+    folders: ["staking"],
+    instrumentCount: 12,
+    oldestData: "2020-12-18",
+    newestData: "2026-03-19",
+    dailyVolume: 24000,
+    etlPipelineId: "etl-lido-staking",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "healthy",
+  },
+  {
+    venue: "hyperliquid",
+    category: "onchain_perps",
+    label: "Hyperliquid",
+    dataSource: "onchain",
+    status: "active",
+    folders: ["perpetuals"],
+    instrumentCount: 147,
+    oldestData: "2023-06-01",
+    newestData: "2026-03-19",
+    dailyVolume: 8500000,
+    etlPipelineId: "etl-hyperliquid",
+    lastHealthCheck: "2026-03-19T00:00:00Z",
+    healthStatus: "degraded",
+  },
+];
 
 export const MOCK_DATA_GAPS: DataGap[] = [
-  { id: "gap-1", category: "cefi", venue: "bybit", folder: "perpetuals", dataType: "trades", instrument: "SOLUSDT", gapStart: "2026-03-15", gapEnd: "2026-03-15", daysAffected: 1, severity: "medium", cause: "Exchange API maintenance", status: "backfilling", createdAt: "2026-03-15T12:00:00Z" },
-  { id: "gap-2", category: "defi", venue: "uniswap_v3", folder: "pool_state", dataType: "swap_events", gapStart: "2026-03-10", gapEnd: "2026-03-10", daysAffected: 1, severity: "low", cause: "RPC node timeout", status: "resolved", createdAt: "2026-03-10T08:00:00Z", resolvedAt: "2026-03-11T02:00:00Z" },
-  { id: "gap-3", category: "tradfi", venue: "databento", folder: "futures", dataType: "book_snapshot_25", gapStart: "2026-02-28", gapEnd: "2026-02-28", daysAffected: 1, severity: "high", cause: "Vendor outage", status: "open", createdAt: "2026-02-28T14:00:00Z" },
-  { id: "gap-4", category: "cefi", venue: "binance", folder: "perpetuals", dataType: "liquidations", gapStart: "2026-01-15", gapEnd: "2026-01-16", daysAffected: 2, severity: "medium", cause: "Schema change not detected", status: "resolved", createdAt: "2026-01-16T00:00:00Z", resolvedAt: "2026-01-17T06:00:00Z" },
-]
+  {
+    id: "gap-1",
+    category: "cefi",
+    venue: "bybit",
+    folder: "perpetuals",
+    dataType: "trades",
+    instrument: "SOLUSDT",
+    gapStart: "2026-03-15",
+    gapEnd: "2026-03-15",
+    daysAffected: 1,
+    severity: "medium",
+    cause: "Exchange API maintenance",
+    status: "backfilling",
+    createdAt: "2026-03-15T12:00:00Z",
+  },
+  {
+    id: "gap-2",
+    category: "defi",
+    venue: "uniswap_v3",
+    folder: "pool_state",
+    dataType: "swap_events",
+    gapStart: "2026-03-10",
+    gapEnd: "2026-03-10",
+    daysAffected: 1,
+    severity: "low",
+    cause: "RPC node timeout",
+    status: "resolved",
+    createdAt: "2026-03-10T08:00:00Z",
+    resolvedAt: "2026-03-11T02:00:00Z",
+  },
+  {
+    id: "gap-3",
+    category: "tradfi",
+    venue: "databento",
+    folder: "futures",
+    dataType: "book_snapshot_25",
+    gapStart: "2026-02-28",
+    gapEnd: "2026-02-28",
+    daysAffected: 1,
+    severity: "high",
+    cause: "Vendor outage",
+    status: "open",
+    createdAt: "2026-02-28T14:00:00Z",
+  },
+  {
+    id: "gap-4",
+    category: "cefi",
+    venue: "binance",
+    folder: "perpetuals",
+    dataType: "liquidations",
+    gapStart: "2026-01-15",
+    gapEnd: "2026-01-16",
+    daysAffected: 2,
+    severity: "medium",
+    cause: "Schema change not detected",
+    status: "resolved",
+    createdAt: "2026-01-16T00:00:00Z",
+    resolvedAt: "2026-01-17T06:00:00Z",
+  },
+];
 
 export const ETL_SUMMARY = {
   totalPipelines: 12,
@@ -668,33 +1275,817 @@ export const ETL_SUMMARY = {
   openGaps: 2,
   backfillingGaps: 1,
   alertsUnacknowledged: 2,
-}
+};
 
 // ─── Venue display metadata ───────────────────────────────────────────────────
 
-export const VENUE_DISPLAY: Record<string, { label: string; logo?: string; dataHistory: string }> = {
-  binance:       { label: "Binance",        dataHistory: "Sep 2019" },
-  bybit:         { label: "Bybit",          dataHistory: "Nov 2019" },
-  coinbase:      { label: "Coinbase",       dataHistory: "Jan 2015" },
-  okx:           { label: "OKX",            dataHistory: "Jan 2018" },
-  deribit:       { label: "Deribit",        dataHistory: "Jan 2018" },
-  upbit:         { label: "Upbit",          dataHistory: "Sep 2017" },
-  databento:     { label: "Databento",      dataHistory: "Jan 2018" },
-  tardis:        { label: "Tardis",         dataHistory: "Jan 2019" },
-  yahoo_finance: { label: "Yahoo Finance",  dataHistory: "Jan 2000" },
-  fred:          { label: "FRED",           dataHistory: "1954" },
-  ibkr:          { label: "IBKR",          dataHistory: "Jan 2010" },
-  ecb:           { label: "ECB",            dataHistory: "Jan 1999" },
-  uniswap_v3:    { label: "Uniswap V3",     dataHistory: "May 2021" },
-  uniswap_v4:    { label: "Uniswap V4",     dataHistory: "Jan 2025" },
-  aave_v3:       { label: "Aave V3",        dataHistory: "Jan 2023" },
-  curve:         { label: "Curve",          dataHistory: "Aug 2020" },
-  lido:          { label: "Lido",           dataHistory: "Dec 2020" },
-  morpho:        { label: "Morpho",         dataHistory: "Jun 2022" },
-  ethena:        { label: "Ethena",         dataHistory: "Feb 2024" },
-  hyperliquid:   { label: "Hyperliquid",    dataHistory: "Jun 2023" },
-  polymarket:    { label: "Polymarket",     dataHistory: "Jan 2024" },
-  kalshi:        { label: "Kalshi",         dataHistory: "Dec 2024" },
-  api_football:  { label: "API-Football",  dataHistory: "Aug 2023" },
-  footystats:    { label: "FootyStats",    dataHistory: "Jan 2022" },
-}
+export const VENUE_DISPLAY: Record<
+  string,
+  { label: string; logo?: string; dataHistory: string }
+> = {
+  binance: { label: "Binance", dataHistory: "Sep 2019" },
+  bybit: { label: "Bybit", dataHistory: "Nov 2019" },
+  coinbase: { label: "Coinbase", dataHistory: "Jan 2015" },
+  okx: { label: "OKX", dataHistory: "Jan 2018" },
+  deribit: { label: "Deribit", dataHistory: "Jan 2018" },
+  upbit: { label: "Upbit", dataHistory: "Sep 2017" },
+  databento: { label: "Databento", dataHistory: "Jan 2018" },
+  tardis: { label: "Tardis", dataHistory: "Jan 2019" },
+  yahoo_finance: { label: "Yahoo Finance", dataHistory: "Jan 2000" },
+  fred: { label: "FRED", dataHistory: "1954" },
+  ibkr: { label: "IBKR", dataHistory: "Jan 2010" },
+  ecb: { label: "ECB", dataHistory: "Jan 1999" },
+  uniswap_v3: { label: "Uniswap V3", dataHistory: "May 2021" },
+  uniswap_v4: { label: "Uniswap V4", dataHistory: "Jan 2025" },
+  aave_v3: { label: "Aave V3", dataHistory: "Jan 2023" },
+  curve: { label: "Curve", dataHistory: "Aug 2020" },
+  lido: { label: "Lido", dataHistory: "Dec 2020" },
+  morpho: { label: "Morpho", dataHistory: "Jun 2022" },
+  ethena: { label: "Ethena", dataHistory: "Feb 2024" },
+  hyperliquid: { label: "Hyperliquid", dataHistory: "Jun 2023" },
+  polymarket: { label: "Polymarket", dataHistory: "Jan 2024" },
+  kalshi: { label: "Kalshi", dataHistory: "Dec 2024" },
+  api_football: { label: "API-Football", dataHistory: "Aug 2023" },
+  footystats: { label: "FootyStats", dataHistory: "Jan 2022" },
+};
+
+// ─── Pipeline Stage Summaries ─────────────────────────────────────────────────
+
+export const MOCK_PIPELINE_STAGES: import("./data-service-types").PipelineStageSummary[] =
+  [
+    {
+      stage: "instruments",
+      label: "Instruments",
+      totalShards: 8_450,
+      completedShards: 8_112,
+      inProgressShards: 14,
+      failedShards: 3,
+      completionPct: 96.0,
+      lastUpdated: "2026-03-23T08:14:00Z",
+      byCategory: [
+        {
+          category: "cefi",
+          totalShards: 2_400,
+          completedShards: 2_400,
+          completionPct: 100,
+        },
+        {
+          category: "tradfi",
+          totalShards: 1_560,
+          completedShards: 1_520,
+          completionPct: 97.4,
+        },
+        {
+          category: "defi",
+          totalShards: 2_000,
+          completedShards: 1_870,
+          completionPct: 93.5,
+        },
+        {
+          category: "onchain_perps",
+          totalShards: 730,
+          completedShards: 730,
+          completionPct: 100,
+        },
+        {
+          category: "prediction_market",
+          totalShards: 570,
+          completedShards: 412,
+          completionPct: 72.3,
+        },
+        {
+          category: "sports",
+          totalShards: 1_190,
+          completedShards: 1_180,
+          completionPct: 99.2,
+        },
+      ],
+    },
+    {
+      stage: "raw",
+      label: "Raw Data",
+      totalShards: 142_000,
+      completedShards: 118_500,
+      inProgressShards: 84,
+      failedShards: 12,
+      completionPct: 83.5,
+      lastUpdated: "2026-03-23T08:02:00Z",
+      byCategory: [
+        {
+          category: "cefi",
+          totalShards: 52_000,
+          completedShards: 48_800,
+          completionPct: 93.8,
+        },
+        {
+          category: "tradfi",
+          totalShards: 34_000,
+          completedShards: 30_100,
+          completionPct: 88.5,
+        },
+        {
+          category: "defi",
+          totalShards: 28_000,
+          completedShards: 21_200,
+          completionPct: 75.7,
+        },
+        {
+          category: "onchain_perps",
+          totalShards: 9_800,
+          completedShards: 9_600,
+          completionPct: 98.0,
+        },
+        {
+          category: "prediction_market",
+          totalShards: 6_200,
+          completedShards: 2_400,
+          completionPct: 38.7,
+        },
+        {
+          category: "sports",
+          totalShards: 12_000,
+          completedShards: 6_400,
+          completionPct: 53.3,
+        },
+      ],
+    },
+    {
+      stage: "processing",
+      label: "Processed Data",
+      totalShards: 118_500,
+      completedShards: 94_200,
+      inProgressShards: 42,
+      failedShards: 8,
+      completionPct: 79.5,
+      lastUpdated: "2026-03-23T07:45:00Z",
+      byCategory: [
+        {
+          category: "cefi",
+          totalShards: 48_800,
+          completedShards: 46_000,
+          completionPct: 94.3,
+        },
+        {
+          category: "tradfi",
+          totalShards: 30_100,
+          completedShards: 27_200,
+          completionPct: 90.4,
+        },
+        {
+          category: "defi",
+          totalShards: 21_200,
+          completedShards: 13_800,
+          completionPct: 65.1,
+        },
+        {
+          category: "onchain_perps",
+          totalShards: 9_600,
+          completedShards: 9_100,
+          completionPct: 94.8,
+        },
+        {
+          category: "prediction_market",
+          totalShards: 2_400,
+          completedShards: 600,
+          completionPct: 25.0,
+        },
+        {
+          category: "sports",
+          totalShards: 6_400,
+          completedShards: 3_500,
+          completionPct: 54.7,
+        },
+      ],
+    },
+  ];
+
+// ─── Active Jobs ──────────────────────────────────────────────────────────────
+
+export const MOCK_ACTIVE_JOBS: import("./data-service-types").JobInfo[] = [
+  {
+    id: "job-dl-bin-0323",
+    type: "download",
+    status: "running",
+    category: "cefi",
+    venue: "binance",
+    dateRange: { start: "2026-03-18", end: "2026-03-23" },
+    shardsTotal: 6,
+    shardsCompleted: 4,
+    progressPct: 67,
+    startedAt: "2026-03-23T06:00:00Z",
+    estimatedCompletionAt: "2026-03-23T10:30:00Z",
+    workersActive: 3,
+    workersMax: 5,
+    forceFlag: false,
+  },
+  {
+    id: "job-dl-db-0323",
+    type: "download",
+    status: "running",
+    category: "tradfi",
+    venue: "databento",
+    dateRange: { start: "2026-03-15", end: "2026-03-23" },
+    shardsTotal: 9,
+    shardsCompleted: 2,
+    progressPct: 22,
+    startedAt: "2026-03-23T04:00:00Z",
+    estimatedCompletionAt: "2026-03-23T22:00:00Z",
+    workersActive: 2,
+    workersMax: 4,
+    forceFlag: false,
+  },
+  {
+    id: "job-proc-cefi-0322",
+    type: "process",
+    status: "running",
+    category: "cefi",
+    venue: "bybit",
+    dateRange: { start: "2026-03-20", end: "2026-03-22" },
+    shardsTotal: 3,
+    shardsCompleted: 2,
+    progressPct: 78,
+    startedAt: "2026-03-23T07:00:00Z",
+    estimatedCompletionAt: "2026-03-23T09:15:00Z",
+    workersActive: 2,
+    workersMax: 2,
+    forceFlag: false,
+  },
+  {
+    id: "job-backfill-defi-0301",
+    type: "backfill",
+    status: "queued",
+    category: "defi",
+    venue: "aave_v3",
+    dateRange: { start: "2026-02-28", end: "2026-03-05" },
+    shardsTotal: 6,
+    shardsCompleted: 0,
+    progressPct: 0,
+    startedAt: "2026-03-23T08:00:00Z",
+    workersActive: 0,
+    workersMax: 2,
+    forceFlag: false,
+  },
+];
+
+// ─── Job History ──────────────────────────────────────────────────────────────
+
+export const MOCK_JOB_HISTORY: import("./data-service-types").JobHistoryEntry[] =
+  [
+    {
+      jobType: "download",
+      category: "cefi",
+      venue: "binance",
+      avgDurationMs: 3_600_000,
+      p50DurationMs: 3_200_000,
+      p90DurationMs: 5_400_000,
+      successRate: 97.2,
+      lastRunAt: "2026-03-23T06:00:00Z",
+      runCount: 124,
+    },
+    {
+      jobType: "download",
+      category: "cefi",
+      venue: "bybit",
+      avgDurationMs: 2_800_000,
+      p50DurationMs: 2_600_000,
+      p90DurationMs: 4_200_000,
+      successRate: 98.1,
+      lastRunAt: "2026-03-22T18:00:00Z",
+      runCount: 98,
+    },
+    {
+      jobType: "download",
+      category: "tradfi",
+      venue: "databento",
+      avgDurationMs: 7_200_000,
+      p50DurationMs: 6_800_000,
+      p90DurationMs: 10_800_000,
+      successRate: 94.5,
+      lastRunAt: "2026-03-23T04:00:00Z",
+      runCount: 67,
+    },
+    {
+      jobType: "process",
+      category: "cefi",
+      venue: "binance",
+      avgDurationMs: 1_800_000,
+      p50DurationMs: 1_600_000,
+      p90DurationMs: 2_800_000,
+      successRate: 99.1,
+      lastRunAt: "2026-03-23T05:30:00Z",
+      runCount: 205,
+    },
+    {
+      jobType: "process",
+      category: "tradfi",
+      venue: "databento",
+      avgDurationMs: 2_400_000,
+      p50DurationMs: 2_200_000,
+      p90DurationMs: 3_600_000,
+      successRate: 97.8,
+      lastRunAt: "2026-03-22T22:00:00Z",
+      runCount: 142,
+    },
+    {
+      jobType: "backfill",
+      category: "defi",
+      venue: "uniswap_v3",
+      avgDurationMs: 10_800_000,
+      p50DurationMs: 9_600_000,
+      p90DurationMs: 18_000_000,
+      successRate: 88.0,
+      lastRunAt: "2026-03-20T12:00:00Z",
+      runCount: 25,
+    },
+  ];
+
+// ─── Alerts ───────────────────────────────────────────────────────────────────
+
+export const MOCK_ALERTS: import("./data-service-types").AlertItem[] = [
+  {
+    id: "alert-001",
+    type: "new_instruments",
+    severity: "info",
+    title: "12 new instruments on Binance",
+    message:
+      "12 new perpetual contracts were discovered on Binance during the 08:00 cron run.",
+    timestamp: "2026-03-23T08:14:00Z",
+    read: false,
+    venue: "binance",
+    category: "cefi",
+    actionHref: "/services/data/instruments",
+  },
+  {
+    id: "alert-002",
+    type: "download_failed",
+    severity: "warning",
+    title: "Databento download: 2 shards failed",
+    message:
+      "2 of 9 shards failed during the TradFi Databento download (Mar 21, Mar 22). Retrying.",
+    timestamp: "2026-03-23T07:42:00Z",
+    read: false,
+    venue: "databento",
+    category: "tradfi",
+    actionHref: "/services/data/raw",
+  },
+  {
+    id: "alert-003",
+    type: "gap_detected",
+    severity: "critical",
+    title: "BTC-PERP data gap: Mar 20",
+    message:
+      "Missing OHLCV data for BTC-PERP on Binance for 2026-03-20. Backfill queued.",
+    timestamp: "2026-03-23T06:30:00Z",
+    read: false,
+    venue: "binance",
+    category: "cefi",
+    actionHref: "/services/data/gaps",
+  },
+  {
+    id: "alert-004",
+    type: "job_completed",
+    severity: "info",
+    title: "Processing complete: OKX Mar 22",
+    message: "All 6 timeframes processed for OKX perpetuals on 2026-03-22.",
+    timestamp: "2026-03-23T05:15:00Z",
+    read: true,
+    venue: "okx",
+    category: "cefi",
+  },
+  {
+    id: "alert-005",
+    type: "data_stale",
+    severity: "warning",
+    title: "Sports data: 18h stale",
+    message:
+      "Football match data from api_football has not been updated in 18 hours.",
+    timestamp: "2026-03-22T14:00:00Z",
+    read: true,
+    venue: "api_football",
+    category: "sports",
+    actionHref: "/services/data/raw",
+  },
+];
+
+// ─── Corporate Actions ────────────────────────────────────────────────────────
+
+export const MOCK_CORPORATE_ACTIONS: import("./data-service-types").CorporateAction[] =
+  [
+    {
+      id: "ca-001",
+      venue: "databento",
+      symbol: "AAPL",
+      actionType: "split",
+      effectiveDate: "2020-08-31",
+      ratio: 4,
+      description: "Apple 4-for-1 stock split",
+      dataAdjusted: true,
+    },
+    {
+      id: "ca-002",
+      venue: "databento",
+      symbol: "TSLA",
+      actionType: "split",
+      effectiveDate: "2020-08-31",
+      ratio: 5,
+      description: "Tesla 5-for-1 stock split",
+      dataAdjusted: true,
+    },
+    {
+      id: "ca-003",
+      venue: "databento",
+      symbol: "AMZN",
+      actionType: "split",
+      effectiveDate: "2022-06-06",
+      ratio: 20,
+      description: "Amazon 20-for-1 stock split",
+      dataAdjusted: true,
+    },
+    {
+      id: "ca-004",
+      venue: "databento",
+      symbol: "GOOGL",
+      actionType: "split",
+      effectiveDate: "2022-07-15",
+      ratio: 20,
+      description: "Alphabet 20-for-1 stock split",
+      dataAdjusted: true,
+    },
+    {
+      id: "ca-005",
+      venue: "databento",
+      symbol: "NVDA",
+      actionType: "split",
+      effectiveDate: "2024-06-10",
+      ratio: 10,
+      description: "NVIDIA 10-for-1 stock split",
+      dataAdjusted: true,
+    },
+    {
+      id: "ca-006",
+      venue: "ibkr",
+      symbol: "FB",
+      newSymbol: "META",
+      actionType: "symbol_change",
+      effectiveDate: "2022-06-09",
+      description: "Facebook renamed to Meta Platforms",
+      dataAdjusted: true,
+    },
+  ];
+
+// ─── Instrument Counts per Venue (realistic) ──────────────────────────────────
+
+export const MOCK_INSTRUMENT_COUNTS: Record<
+  string,
+  {
+    total: number;
+    active: number;
+    category: import("./data-service-types").DataCategory;
+  }
+> = {
+  binance: { total: 412, active: 398, category: "cefi" },
+  bybit: { total: 284, active: 276, category: "cefi" },
+  okx: { total: 198, active: 192, category: "cefi" },
+  coinbase: { total: 87, active: 84, category: "cefi" },
+  deribit: { total: 2840, active: 2840, category: "cefi" }, // options
+  upbit: { total: 156, active: 149, category: "cefi" },
+  hyperliquid: { total: 64, active: 64, category: "onchain_perps" },
+  databento: { total: 4200, active: 4200, category: "tradfi" }, // CME + NASDAQ + ICE
+  ibkr: { total: 12500, active: 12100, category: "tradfi" }, // stocks
+  yahoo_finance: { total: 8400, active: 8200, category: "tradfi" },
+  fred: { total: 820_000, active: 820_000, category: "tradfi" }, // macro series
+  uniswap_v3: { total: 8920, active: 6400, category: "defi" },
+  uniswap_v4: { total: 1240, active: 1240, category: "defi" },
+  aave_v3: { total: 48, active: 42, category: "defi" },
+  curve: { total: 342, active: 298, category: "defi" },
+  balancer: { total: 287, active: 241, category: "defi" },
+  lido: { total: 3, active: 3, category: "defi" },
+  morpho: { total: 62, active: 62, category: "defi" },
+  polymarket: { total: 4200, active: 1840, category: "prediction_market" },
+  kalshi: { total: 1600, active: 890, category: "prediction_market" },
+  api_football: { total: 14_000, active: 2400, category: "sports" }, // all fixtures
+  footystats: { total: 11_500, active: 2100, category: "sports" },
+};
+
+// ─── Coverage Matrix Rows ─────────────────────────────────────────────────────
+
+export const MOCK_COVERAGE_ROWS: import("./data-service-types").CoverageRow[] =
+  [
+    {
+      venue: "binance",
+      category: "cefi",
+      date: "2026-03-22",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "complete", completionPct: 100 },
+      processing: { status: "complete", completionPct: 100 },
+      features: { status: "complete", completionPct: 89 },
+    },
+    {
+      venue: "binance",
+      category: "cefi",
+      date: "2026-03-21",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "complete", completionPct: 100 },
+      processing: { status: "complete", completionPct: 100 },
+      features: { status: "complete", completionPct: 92 },
+    },
+    {
+      venue: "binance",
+      category: "cefi",
+      date: "2026-03-20",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "partial", completionPct: 98 },
+      processing: { status: "complete", completionPct: 100 },
+      features: { status: "partial", completionPct: 71 },
+    },
+    {
+      venue: "binance",
+      category: "cefi",
+      date: "2026-03-19",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "complete", completionPct: 100 },
+      processing: { status: "partial", completionPct: 83 },
+      features: { status: "missing", completionPct: 0 },
+    },
+    {
+      venue: "databento",
+      category: "tradfi",
+      date: "2026-03-22",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "partial", completionPct: 94 },
+      processing: { status: "complete", completionPct: 100 },
+      features: { status: "missing", completionPct: 0 },
+    },
+    {
+      venue: "databento",
+      category: "tradfi",
+      date: "2026-03-21",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "complete", completionPct: 100 },
+      processing: { status: "complete", completionPct: 100 },
+      features: { status: "complete", completionPct: 95 },
+    },
+    {
+      venue: "aave_v3",
+      category: "defi",
+      date: "2026-03-22",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "complete", completionPct: 100 },
+      processing: { status: "partial", completionPct: 72 },
+      features: { status: "missing", completionPct: 0 },
+    },
+    {
+      venue: "aave_v3",
+      category: "defi",
+      date: "2026-03-21",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "partial", completionPct: 87 },
+      processing: { status: "missing", completionPct: 0 },
+      features: { status: "missing", completionPct: 0 },
+    },
+    {
+      venue: "api_football",
+      category: "sports",
+      date: "2026-03-22",
+      instruments: { status: "complete", completionPct: 100 },
+      rawData: { status: "partial", completionPct: 78 },
+      processing: { status: "missing", completionPct: 0 },
+      features: { status: "missing", completionPct: 0 },
+    },
+    {
+      venue: "polymarket",
+      category: "prediction_market",
+      date: "2026-03-22",
+      instruments: { status: "partial", completionPct: 44 },
+      rawData: { status: "partial", completionPct: 38 },
+      processing: { status: "missing", completionPct: 0 },
+      features: { status: "missing", completionPct: 0 },
+    },
+  ];
+
+// ─── Timeframe Processing Status ─────────────────────────────────────────────
+
+export const MOCK_TIMEFRAME_STATUS: import("./data-service-types").TimeframeStatus[] =
+  [
+    {
+      timeframe: "1m",
+      venue: "binance",
+      category: "cefi",
+      completionPct: 98.2,
+      totalDays: 2400,
+      completedDays: 2357,
+      pendingDays: 43,
+      lastProcessedDate: "2026-03-22",
+    },
+    {
+      timeframe: "5m",
+      venue: "binance",
+      category: "cefi",
+      completionPct: 97.8,
+      totalDays: 2400,
+      completedDays: 2347,
+      pendingDays: 53,
+      lastProcessedDate: "2026-03-22",
+    },
+    {
+      timeframe: "15m",
+      venue: "binance",
+      category: "cefi",
+      completionPct: 97.4,
+      totalDays: 2400,
+      completedDays: 2338,
+      pendingDays: 62,
+      lastProcessedDate: "2026-03-22",
+    },
+    {
+      timeframe: "1h",
+      venue: "binance",
+      category: "cefi",
+      completionPct: 99.1,
+      totalDays: 2400,
+      completedDays: 2378,
+      pendingDays: 22,
+      lastProcessedDate: "2026-03-22",
+    },
+    {
+      timeframe: "4h",
+      venue: "binance",
+      category: "cefi",
+      completionPct: 99.3,
+      totalDays: 2400,
+      completedDays: 2383,
+      pendingDays: 17,
+      lastProcessedDate: "2026-03-22",
+    },
+    {
+      timeframe: "1d",
+      venue: "binance",
+      category: "cefi",
+      completionPct: 99.8,
+      totalDays: 2400,
+      completedDays: 2395,
+      pendingDays: 5,
+      lastProcessedDate: "2026-03-22",
+    },
+    {
+      timeframe: "1m",
+      venue: "databento",
+      category: "tradfi",
+      completionPct: 91.2,
+      totalDays: 1560,
+      completedDays: 1423,
+      pendingDays: 137,
+      lastProcessedDate: "2026-03-21",
+    },
+    {
+      timeframe: "5m",
+      venue: "databento",
+      category: "tradfi",
+      completionPct: 91.0,
+      totalDays: 1560,
+      completedDays: 1420,
+      pendingDays: 140,
+      lastProcessedDate: "2026-03-21",
+    },
+    {
+      timeframe: "1h",
+      venue: "databento",
+      category: "tradfi",
+      completionPct: 93.5,
+      totalDays: 1560,
+      completedDays: 1459,
+      pendingDays: 101,
+      lastProcessedDate: "2026-03-21",
+    },
+    {
+      timeframe: "1d",
+      venue: "databento",
+      category: "tradfi",
+      completionPct: 95.8,
+      totalDays: 1560,
+      completedDays: 1495,
+      pendingDays: 65,
+      lastProcessedDate: "2026-03-22",
+    },
+  ];
+
+// ─── Enhanced Data Gaps (with severity multi-dimensions) ────────────────────
+
+export const MOCK_ENHANCED_GAPS: import("./data-service-types").DataGap[] = [
+  {
+    id: "gap-001",
+    category: "cefi",
+    venue: "binance",
+    folder: "perpetuals",
+    dataType: "ohlcv",
+    instrument: "BTC-PERP",
+    gapStart: "2026-03-20",
+    gapEnd: "2026-03-20",
+    daysAffected: 1,
+    severity: "critical",
+    cause: "API rate limit exceeded",
+    status: "backfilling",
+    createdAt: "2026-03-21T06:00:00Z",
+  },
+  {
+    id: "gap-002",
+    category: "cefi",
+    venue: "binance",
+    folder: "perpetuals",
+    dataType: "trades",
+    instrument: "ETH-PERP",
+    gapStart: "2026-03-19",
+    gapEnd: "2026-03-19",
+    daysAffected: 1,
+    severity: "high",
+    cause: "Provider downtime 2h window",
+    status: "open",
+    createdAt: "2026-03-20T08:00:00Z",
+  },
+  {
+    id: "gap-003",
+    category: "tradfi",
+    venue: "databento",
+    folder: "equity",
+    dataType: "ohlcv",
+    instrument: "AAPL",
+    gapStart: "2026-03-15",
+    gapEnd: "2026-03-17",
+    daysAffected: 3,
+    severity: "high",
+    cause: "Network timeout during batch download",
+    status: "backfilling",
+    createdAt: "2026-03-18T04:00:00Z",
+  },
+  {
+    id: "gap-004",
+    category: "defi",
+    venue: "aave_v3",
+    folder: "lending",
+    dataType: "lending_rates",
+    gapStart: "2026-02-28",
+    gapEnd: "2026-03-05",
+    daysAffected: 6,
+    severity: "medium",
+    cause: "RPC node sync issue",
+    status: "open",
+    createdAt: "2026-03-06T10:00:00Z",
+  },
+  {
+    id: "gap-005",
+    category: "sports",
+    venue: "api_football",
+    folder: "game_events",
+    dataType: "game_events",
+    gapStart: "2026-03-10",
+    gapEnd: "2026-03-12",
+    daysAffected: 3,
+    severity: "low",
+    cause: "API quota reset",
+    status: "resolved",
+    createdAt: "2026-03-13T09:00:00Z",
+    resolvedAt: "2026-03-14T12:00:00Z",
+  },
+  {
+    id: "gap-006",
+    category: "cefi",
+    venue: "okx",
+    folder: "spot",
+    dataType: "ohlcv",
+    gapStart: "2026-03-22",
+    gapEnd: "2026-03-22",
+    daysAffected: 1,
+    severity: "medium",
+    cause: "Scheduled maintenance window",
+    status: "open",
+    createdAt: "2026-03-23T00:15:00Z",
+  },
+  {
+    id: "gap-007",
+    category: "tradfi",
+    venue: "ibkr",
+    folder: "equity",
+    dataType: "trades",
+    instrument: "TSLA",
+    gapStart: "2026-01-15",
+    gapEnd: "2026-01-15",
+    daysAffected: 1,
+    severity: "low",
+    status: "wont_fix",
+    createdAt: "2026-01-16T08:00:00Z",
+  },
+  {
+    id: "gap-008",
+    category: "defi",
+    venue: "uniswap_v3",
+    folder: "pool_state",
+    dataType: "pool_state",
+    gapStart: "2026-03-18",
+    gapEnd: "2026-03-20",
+    daysAffected: 3,
+    severity: "medium",
+    cause: "RPC endpoint rotation",
+    status: "backfilling",
+    createdAt: "2026-03-21T11:00:00Z",
+  },
+];

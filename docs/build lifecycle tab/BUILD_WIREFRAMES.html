@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build / Research — Interactive Wireframes</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-tertiary: #1a1a28;
+  --bg-card: #15151f;
+  --border: #2a2a3a;
+  --border-active: #4f6ef7;
+  --text-primary: #e8e8ef;
+  --text-secondary: #8888a0;
+  --text-muted: #555570;
+  --accent-blue: #4f6ef7;
+  --accent-green: #00cc88;
+  --accent-amber: #ffaa00;
+  --accent-red: #ff4455;
+  --accent-purple: #a855f7;
+  --accent-cyan: #06b6d4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Top bar */
+.top-bar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.top-bar h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.top-bar .lifecycle-badge {
+  background: var(--accent-blue);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.top-bar .mode-toggle {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.mode-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.mode-btn:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+.mode-btn.active { background: var(--accent-blue); border-color: var(--accent-blue); color: white; }
+
+/* Main tabs */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  background: var(--bg-secondary);
+  border-bottom: 2px solid var(--border);
+  padding: 0 24px;
+}
+
+.tab {
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.tab:hover { color: var(--text-secondary); }
+.tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+
+.tab .tab-num {
+  font-size: 10px;
+  margin-right: 4px;
+  opacity: 0.5;
+}
+
+/* Content */
+.content {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Sub-tabs */
+.sub-tab-bar {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 3px;
+  margin-bottom: 20px;
+  width: fit-content;
+}
+
+.sub-tab {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.sub-tab:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
+.sub-tab.active { color: var(--text-primary); background: var(--bg-card); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.card-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Grid */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+.grid-sidebar { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
+
+/* Stat card */
+.stat {
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-delta {
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.stat-delta.up { color: var(--accent-green); }
+.stat-delta.down { color: var(--accent-red); }
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge-green { background: rgba(0,204,136,0.15); color: var(--accent-green); }
+.badge-amber { background: rgba(255,170,0,0.15); color: var(--accent-amber); }
+.badge-red { background: rgba(255,68,85,0.15); color: var(--accent-red); }
+.badge-blue { background: rgba(79,110,247,0.15); color: var(--accent-blue); }
+.badge-purple { background: rgba(168,85,247,0.15); color: var(--accent-purple); }
+
+/* Progress bar */
+.progress-bar {
+  height: 6px;
+  background: var(--bg-secondary);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.progress-fill.green { background: var(--accent-green); }
+.progress-fill.blue { background: var(--accent-blue); }
+.progress-fill.amber { background: var(--accent-amber); }
+
+/* Table */
+.table-container { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(42,42,58,0.5);
+  color: var(--text-secondary);
+}
+
+tr:hover td { background: rgba(79,110,247,0.03); }
+
+/* Button */
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+
+.btn-primary { background: var(--accent-blue); color: white; }
+.btn-primary:hover { background: #6080ff; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+.btn-outline:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+.btn-sm { padding: 5px 12px; font-size: 11px; }
+.btn-green { background: var(--accent-green); color: white; }
+.btn-green:hover { background: #00dd99; }
+
+/* Filters sidebar */
+.filter-group {
+  margin-bottom: 16px;
+}
+
+.filter-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 7px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Chart placeholder */
+.chart-placeholder {
+  background: var(--bg-tertiary);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  min-height: 200px;
+  position: relative;
+}
+
+.chart-placeholder svg { opacity: 0.3; }
+
+/* Pipeline flow arrows */
+.flow-connector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.flow-connector .arrow {
+  color: var(--accent-blue);
+  font-size: 16px;
+}
+
+/* Heatmap */
+.heatmap-row {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+/* Equity curve placeholder */
+.equity-curve {
+  position: relative;
+  height: 180px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.equity-line {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  height: 120px;
+}
+
+/* Navigation hint */
+.nav-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(79,110,247,0.08);
+  border: 1px solid rgba(79,110,247,0.2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--accent-blue);
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.15s;
+}
+
+.nav-hint:hover { background: rgba(79,110,247,0.14); }
+
+.nav-hint .arrow-icon { font-size: 14px; }
+
+/* Page description */
+.page-desc {
+  background: var(--bg-tertiary);
+  border-left: 3px solid var(--accent-blue);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.search-bar .search-icon { color: var(--text-muted); font-size: 14px; }
+
+/* Preset chips */
+.preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.preset-chip {
+  padding: 4px 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.preset-chip:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+/* Dependency tree */
+.dep-tree {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  line-height: 1.8;
+}
+
+.dep-tree .node { color: var(--accent-cyan); }
+.dep-tree .version { color: var(--accent-purple); font-size: 11px; }
+.dep-tree .connector { color: var(--text-muted); }
+
+/* Signal overlay legend */
+.signal-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.signal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.signal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* Comparison star */
+.star { color: var(--accent-amber); font-size: 11px; }
+
+/* Form group */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Candidate badge */
+.candidate-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: rgba(168,85,247,0.12);
+  border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--accent-purple);
+  font-weight: 600;
+}
+
+/* Tabs + sub-tabs scroll indicator */
+.scroll-hint { font-size: 10px; color: var(--text-muted); margin-left: 8px; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .grid-sidebar { grid-template-columns: 1fr; }
+}
+
+/* Section divider in content */
+.section-divider {
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* Version diff */
+.version-diff {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.version-diff .added { color: var(--accent-green); }
+.version-diff .removed { color: var(--accent-red); }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <span class="lifecycle-badge">Build</span>
+  <h1>Research & Backtesting</h1>
+  <div style="color:var(--text-muted);font-size:12px;margin-left:8px;">/ services / research</div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" onclick="setView('wireframe')">Wireframe</button>
+    <button class="mode-btn" onclick="setView('flow')">Navigation Flow</button>
+  </div>
+</div>
+
+<!-- Main Tab Bar -->
+<div class="tab-bar" id="mainTabs">
+  <div class="tab active" data-tab="features"><span class="tab-num">1</span>Features</div>
+  <div class="tab" data-tab="feature-etl"><span class="tab-num">2</span>Feature ETL</div>
+  <div class="tab" data-tab="models"><span class="tab-num">3</span>Models</div>
+  <div class="tab" data-tab="strategies"><span class="tab-num">4</span>Strategies</div>
+  <div class="tab" data-tab="execution"><span class="tab-num">5</span>Execution</div>
+  <div class="tab" data-tab="quant-workspace"><span class="tab-num">6</span>Quant Workspace</div>
+</div>
+
+<!-- ============================================================= -->
+<!-- TAB 1: FEATURES -->
+<!-- ============================================================= -->
+<div class="content tab-content" id="tab-features">
+  <div class="page-desc">
+    <strong>Feature Catalogue</strong> — Browse, define, configure, and version all features.
+    Features are computed indicators (EMA, RSI, funding rate, etc.) that feed ML models.
+    Every config change creates a new version. Features can depend on other features.
+  </div>
+
+  <div class="grid-sidebar">
+    <!-- Filters Sidebar -->
+    <div>
+      <div class="card" style="position:sticky;top:80px;">
+        <div class="card-title" style="margin-bottom:14px;">Filters</div>
+        <div class="filter-group">
+          <div class="filter-label">Shard</div>
+          <select class="filter-select"><option>All Shards</option><option>CeFi</option><option>DeFi</option><option>TradFi</option><option>Sports</option><option>Prediction</option></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Type</div>
+          <select class="filter-select"><option>All Types</option><option>Delta-One</option><option>Volatility</option><option>On-Chain</option><option>Sports</option><option>Calendar</option></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Group</div>
+          <select class="filter-select"><option>All Groups</option><option>Technical</option><option>Fundamental</option><option>Sentiment</option><option>Microstructure</option></select>
+        </div>
+        <div class="filter-group">
+          <div class="filter-label">Status</div>
+          <select class="filter-select"><option>All</option><option>Active</option><option>Stale</option><option>Not Computed</option></select>
+        </div>
+        <div class="section-divider"></div>
+        <div class="stat"><div class="stat-label">Total Features</div><div class="stat-value" style="font-size:28px;">847</div></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
+          CeFi: 312 &bull; DeFi: 198 &bull; TradFi: 156<br>Sports: 124 &bull; Prediction: 57
+        </div>
+        <div class="section-divider"></div>
+        <div class="filter-label" style="margin-bottom:8px;">Quick Presets</div>
+        <div class="preset-chips">
+          <span class="preset-chip">EMA-9</span>
+          <span class="preset-chip">EMA-21</span>
+          <span class="preset-chip">EMA-50</span>
+          <span class="preset-chip">EMA-200</span>
+          <span class="preset-chip">RSI-14</span>
+          <span class="preset-chip">MACD</span>
+          <span class="preset-chip">BB-20</span>
+          <span class="preset-chip">ATR-14</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Feature List -->
+    <div>
+      <div style="display:flex;gap:12px;margin-bottom:16px;">
+        <div class="search-bar" style="flex:1;">
+          <span class="search-icon">&#128269;</span>
+          <input type="text" placeholder="Search features by name, type, or symbol...">
+        </div>
+        <button class="btn btn-primary">+ New Feature</button>
+      </div>
+
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th><th>Type</th><th>Shard</th><th>Group</th><th>Version</th><th>Status</th><th>Models</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:rgba(79,110,247,0.05);">
+                <td><strong style="color:var(--text-primary)">funding_rate</strong><br><span style="font-size:10px;color:var(--text-muted)">Perpetual Funding Rate</span></td>
+                <td><span class="mono" style="font-size:11px">Delta-One</span></td>
+                <td><span class="badge badge-blue">CeFi</span></td>
+                <td>Technical</td>
+                <td class="mono" style="font-size:11px">v2.1</td>
+                <td><span class="badge badge-green">Active</span></td>
+                <td class="mono" style="font-size:11px">3</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--text-primary)">ema_50</strong><br><span style="font-size:10px;color:var(--text-muted)">50-Period EMA</span></td>
+                <td><span class="mono" style="font-size:11px">Delta-One</span></td>
+                <td><span class="badge badge-blue">CeFi</span></td>
+                <td>Technical</td>
+                <td class="mono" style="font-size:11px">v2.1</td>
+                <td><span class="badge badge-green">Active</span></td>
+                <td class="mono" style="font-size:11px">5</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--text-primary)">iv_surface</strong><br><span style="font-size:10px;color:var(--text-muted)">Implied Vol Surface</span></td>
+                <td><span class="mono" style="font-size:11px">Volatility</span></td>
+                <td><span class="badge badge-purple">TradFi</span></td>
+                <td>Risk</td>
+                <td class="mono" style="font-size:11px">v1.4</td>
+                <td><span class="badge badge-green">Active</span></td>
+                <td class="mono" style="font-size:11px">2</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--text-primary)">pool_tick_data</strong><br><span style="font-size:10px;color:var(--text-muted)">DEX Pool Tick Events</span></td>
+                <td><span class="mono" style="font-size:11px">On-Chain</span></td>
+                <td><span class="badge badge-green">DeFi</span></td>
+                <td>Microstructure</td>
+                <td class="mono" style="font-size:11px">v3.0</td>
+                <td><span class="badge badge-amber">Stale</span></td>
+                <td class="mono" style="font-size:11px">1</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--text-primary)">odds_movement</strong><br><span style="font-size:10px;color:var(--text-muted)">Pre-Match Odds Drift</span></td>
+                <td><span class="mono" style="font-size:11px">Sports</span></td>
+                <td><span class="badge badge-amber">Sports</span></td>
+                <td>Sentiment</td>
+                <td class="mono" style="font-size:11px">v1.1</td>
+                <td><span class="badge badge-green">Active</span></td>
+                <td class="mono" style="font-size:11px">2</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--text-primary)">macd_12_26_9</strong><br><span style="font-size:10px;color:var(--text-muted)">MACD Standard</span></td>
+                <td><span class="mono" style="font-size:11px">Delta-One</span></td>
+                <td><span class="badge badge-blue">CeFi</span></td>
+                <td>Technical</td>
+                <td class="mono" style="font-size:11px">v1.3</td>
+                <td><span class="badge badge-green">Active</span></td>
+                <td class="mono" style="font-size:11px">4</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Expanded Feature Detail -->
+      <div class="card" style="border-color:var(--accent-blue);border-width:1px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">funding_rate <span class="badge badge-green" style="margin-left:8px">v2.1</span></div>
+            <div class="card-subtitle">Perpetual Funding Rate &bull; Delta-One &bull; CeFi &bull; Technical</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm">Edit Config</button>
+            <button class="btn btn-outline btn-sm">Version History</button>
+            <button class="btn btn-outline btn-sm">Dependency Tree</button>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div>
+            <div class="filter-label">Configuration</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:6px;">
+              <div>Input: <span class="mono" style="color:var(--text-primary)">Candles (1H)</span></div>
+              <div style="margin-top:4px;">Symbols: <span class="mono" style="color:var(--text-primary)">BTC-PERP, ETH-PERP, SOL-PERP +139</span></div>
+              <div style="margin-top:4px;">Settlement: <span class="mono" style="color:var(--text-primary)">8h</span></div>
+              <div style="margin-top:4px;">Smoothing: <span class="mono" style="color:var(--text-primary)">EMA-3</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="filter-label">Consumed By Models</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:6px;">
+              <div>&bull; BTC Basis Model <span class="mono" style="font-size:10px;color:var(--accent-purple)">(v2.3)</span></div>
+              <div>&bull; ETH Funding Carry <span class="mono" style="font-size:10px;color:var(--accent-purple)">(v1.1)</span></div>
+              <div>&bull; Multi-Asset Momentum <span class="mono" style="font-size:10px;color:var(--accent-purple)">(v3.0)</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="filter-label">Computation Status</div>
+            <div style="margin-top:6px;">
+              <div style="font-size:12px;color:var(--text-secondary);">Last Computed: <span class="mono">14:00 UTC</span></div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">SLA: <span class="mono">&lt; 30s</span></div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Update: <span class="mono">Every 8h</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-hint" onclick="switchTab('feature-etl')">
+          <span class="arrow-icon">&#8594;</span> View computation jobs for this feature in <strong>Feature ETL</strong>
+        </div>
+      </div>
+
+      <!-- Dependency Tree Panel -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">Dependency Tree: macd_12_26_9</div>
+        <div class="dep-tree">
+          <span class="node">macd_12_26_9</span> <span class="version">(v1.3)</span><br>
+          <span class="connector">&nbsp;&nbsp;├── </span><span class="node">ema_12</span> <span class="version">(v2.0)</span> &larr; fast EMA<br>
+          <span class="connector">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── </span>raw candles (close)<br>
+          <span class="connector">&nbsp;&nbsp;├── </span><span class="node">ema_26</span> <span class="version">(v1.5)</span> &larr; slow EMA<br>
+          <span class="connector">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── </span>raw candles (close)<br>
+          <span class="connector">&nbsp;&nbsp;└── </span>signal_line: ema(macd_line, 9)
+        </div>
+        <div style="margin-top:10px;padding:8px 12px;background:rgba(255,170,0,0.08);border-radius:6px;font-size:11px;color:var(--accent-amber);">
+          &#9888; ema_12 updated v1.9 → v2.0 on 2026-03-20 &bull; macd auto-bumped v1.2 → v1.3 &bull; 2 models flagged for retraining
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- TAB 2: FEATURE ETL -->
+<!-- ============================================================= -->
+<div class="content tab-content" id="tab-feature-etl" style="display:none;">
+  <div class="page-desc">
+    <strong>Feature ETL Pipeline</strong> — Track computation progress, trigger jobs, monitor pipeline health.
+    This is the primary UI for feature computation (not deployment-ui). Spin up VMs and manage computes here.
+  </div>
+
+  <div class="grid-4">
+    <div class="stat"><div class="stat-label">Computed</div><div class="stat-value" style="color:var(--accent-green)">6,026</div><div class="stat-delta up">+234 today</div></div>
+    <div class="stat"><div class="stat-label">Remaining</div><div class="stat-value" style="color:var(--accent-amber)">2,244</div><div class="stat-delta">27.1% left</div></div>
+    <div class="stat"><div class="stat-label">Active Jobs</div><div class="stat-value" style="color:var(--accent-blue)">8</div><div class="stat-delta">3 VMs running</div></div>
+    <div class="stat"><div class="stat-label">Failed (24h)</div><div class="stat-value" style="color:var(--accent-red)">3</div><div class="stat-delta down">retry queued</div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header">
+      <div class="card-title">Pipeline Progress by Shard</div>
+      <button class="btn btn-outline btn-sm">Refresh</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>CeFi Features</span><span class="mono">2,456 / 3,000 &bull; 82%</span></div>
+        <div class="progress-bar"><div class="progress-fill green" style="width:82%"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>DeFi Features</span><span class="mono">1,340 / 2,000 &bull; 67%</span></div>
+        <div class="progress-bar"><div class="progress-fill blue" style="width:67%"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>TradFi Features</span><span class="mono">1,420 / 1,560 &bull; 91%</span></div>
+        <div class="progress-bar"><div class="progress-fill green" style="width:91%"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Sports Features</span><span class="mono">650 / 1,250 &bull; 52%</span></div>
+        <div class="progress-bar"><div class="progress-fill amber" style="width:52%"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Prediction Features</span><span class="mono">160 / 570 &bull; 28%</span></div>
+        <div class="progress-bar"><div class="progress-fill amber" style="width:28%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Active Jobs</div><button class="btn btn-green btn-sm">+ Trigger Compute</button></div>
+      <table>
+        <thead><tr><th>Feature Service</th><th>Shard</th><th>Progress</th><th>ETA</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td class="mono" style="font-size:11px">delta-one-service</td><td><span class="badge badge-blue">CeFi</span></td><td class="mono">78%</td><td class="mono">~12m</td><td><span class="badge badge-green">Running</span></td></tr>
+          <tr><td class="mono" style="font-size:11px">onchain-service</td><td><span class="badge badge-green">DeFi</span></td><td class="mono">45%</td><td class="mono">~28m</td><td><span class="badge badge-green">Running</span></td></tr>
+          <tr><td class="mono" style="font-size:11px">sports-service</td><td><span class="badge badge-amber">Sports</span></td><td class="mono">12%</td><td class="mono">~55m</td><td><span class="badge badge-blue">Starting</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Completion Heatmap</div><div style="font-size:11px;color:var(--text-muted)">Date &times; Feature Group</div></div>
+      <div class="chart-placeholder" style="min-height:160px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">Heatmap: darker = more complete</div>
+          <div class="heatmap-row" style="justify-content:center;">
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.9"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.8"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.6"></div>
+            <div class="heatmap-cell" style="background:var(--accent-amber);opacity:0.7"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.9"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.7"></div>
+            <div class="heatmap-cell" style="background:var(--accent-amber);opacity:0.5"></div>
+          </div>
+          <div class="heatmap-row" style="justify-content:center;">
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.7"></div>
+            <div class="heatmap-cell" style="background:var(--accent-amber);opacity:0.5"></div>
+            <div class="heatmap-cell" style="background:var(--accent-red);opacity:0.4"></div>
+            <div class="heatmap-cell" style="background:var(--accent-amber);opacity:0.6"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.8"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.6"></div>
+            <div class="heatmap-cell" style="background:var(--accent-red);opacity:0.3"></div>
+          </div>
+          <div class="heatmap-row" style="justify-content:center;">
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.9"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.9"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.7"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.9"></div>
+            <div class="heatmap-cell" style="background:var(--accent-green);opacity:0.9"></div>
+            <div class="heatmap-cell" style="background:var(--accent-amber);opacity:0.6"></div>
+            <div class="heatmap-cell" style="background:var(--accent-amber);opacity:0.5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- TAB 3: MODELS -->
+<!-- ============================================================= -->
+<div class="content tab-content" id="tab-models" style="display:none;">
+  <div class="page-desc">
+    <strong>ML Models</strong> — Configure, train, evaluate, and compare models.
+    Each model pins exact feature versions used for training. Training progress tracked via ETL pipeline view.
+  </div>
+
+  <div class="sub-tab-bar">
+    <div class="sub-tab active">Model Registry</div>
+    <div class="sub-tab">Training Jobs</div>
+    <div class="sub-tab">Evaluation</div>
+    <div class="sub-tab">Version History</div>
+  </div>
+
+  <div class="grid-4">
+    <div class="stat"><div class="stat-label">Model Families</div><div class="stat-value">12</div></div>
+    <div class="stat"><div class="stat-label">Active Models</div><div class="stat-value" style="color:var(--accent-green)">8</div></div>
+    <div class="stat"><div class="stat-label">Training Now</div><div class="stat-value" style="color:var(--accent-blue)">2</div></div>
+    <div class="stat"><div class="stat-label">Retrain Flagged</div><div class="stat-value" style="color:var(--accent-amber)">3</div><div class="stat-delta">stale features</div></div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header">
+      <div class="card-title">Model Registry</div>
+      <button class="btn btn-primary btn-sm">+ New Model Config</button>
+    </div>
+    <table>
+      <thead><tr><th>Model</th><th>Architecture</th><th>Shard</th><th>Version</th><th>Features</th><th>Accuracy</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--text-primary)">BTC Directional</strong></td>
+          <td class="mono" style="font-size:11px">XGBoost</td>
+          <td><span class="badge badge-blue">CeFi</span></td>
+          <td class="mono" style="font-size:11px">v4.0</td>
+          <td class="mono" style="font-size:11px">15 features</td>
+          <td class="mono" style="color:var(--accent-green)">67.2%</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--text-primary)">ETH Funding Carry</strong></td>
+          <td class="mono" style="font-size:11px">LSTM</td>
+          <td><span class="badge badge-blue">CeFi</span></td>
+          <td class="mono" style="font-size:11px">v1.1</td>
+          <td class="mono" style="font-size:11px">8 features</td>
+          <td class="mono" style="color:var(--accent-green)">72.1%</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--text-primary)">Match Outcome</strong></td>
+          <td class="mono" style="font-size:11px">LightGBM</td>
+          <td><span class="badge badge-amber">Sports</span></td>
+          <td class="mono" style="font-size:11px">v2.3</td>
+          <td class="mono" style="font-size:11px">22 features</td>
+          <td class="mono" style="color:var(--accent-green)">61.8%</td>
+          <td><span class="badge badge-amber">Retraining</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--text-primary)">DeFi Yield Pred</strong></td>
+          <td class="mono" style="font-size:11px">Transformer</td>
+          <td><span class="badge badge-green">DeFi</span></td>
+          <td class="mono" style="font-size:11px">v3.0</td>
+          <td class="mono" style="font-size:11px">18 features</td>
+          <td class="mono" style="color:var(--accent-amber)">58.4%</td>
+          <td><span class="badge badge-green">Active</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Model Detail Expanded -->
+  <div class="card" style="border-color:var(--accent-blue);">
+    <div class="card-header">
+      <div><div class="card-title">BTC Directional v4.0 <span class="badge badge-green">Active</span></div><div class="card-subtitle">XGBoost &bull; CeFi &bull; Trained 2026-03-18</div></div>
+      <div style="display:flex;gap:8px;"><button class="btn btn-outline btn-sm">Retrain</button><button class="btn btn-primary btn-sm">Use in Strategy &rarr;</button></div>
+    </div>
+    <div class="grid-3">
+      <div>
+        <div class="filter-label">Feature Version Linkage</div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-top:6px;line-height:1.8;">
+          <span class="mono" style="color:var(--accent-cyan)">ema_50</span> <span class="mono" style="font-size:10px;color:var(--accent-purple)">v2.1</span> <span class="badge badge-green" style="font-size:9px">current</span><br>
+          <span class="mono" style="color:var(--accent-cyan)">rsi_14</span> <span class="mono" style="font-size:10px;color:var(--accent-purple)">v1.3</span> <span class="badge badge-green" style="font-size:9px">current</span><br>
+          <span class="mono" style="color:var(--accent-cyan)">funding_rate</span> <span class="mono" style="font-size:10px;color:var(--accent-purple)">v2.1</span> <span class="badge badge-green" style="font-size:9px">current</span><br>
+          <span class="mono" style="color:var(--accent-cyan)">macd_12_26_9</span> <span class="mono" style="font-size:10px;color:var(--accent-red)">v1.2</span> <span class="badge badge-amber" style="font-size:9px">stale &rarr; v1.3</span>
+        </div>
+      </div>
+      <div>
+        <div class="filter-label">Hyperparameters</div>
+        <div class="mono" style="font-size:11px;color:var(--text-secondary);margin-top:6px;line-height:1.8;">
+          max_depth: 8<br>learning_rate: 0.05<br>n_estimators: 500<br>subsample: 0.8<br>colsample_bytree: 0.7
+        </div>
+      </div>
+      <div>
+        <div class="filter-label">Training Loss Curve</div>
+        <div class="chart-placeholder" style="min-height:120px;font-size:11px;">Loss &darr; over 500 epochs</div>
+      </div>
+    </div>
+    <div class="nav-hint" onclick="switchTab('strategies')">
+      <span class="arrow-icon">&#8594;</span> Run strategy backtest with this model in <strong>Strategies</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- TAB 4: STRATEGIES -->
+<!-- ============================================================= -->
+<div class="content tab-content" id="tab-strategies" style="display:none;">
+  <div class="page-desc">
+    <strong>Strategies</strong> — Configure strategy backtests to generate signals. Compare signals across strategies.
+    Signals are the output here; they feed into the Execution tab.
+  </div>
+
+  <div class="sub-tab-bar">
+    <div class="sub-tab active">New Strategy</div>
+    <div class="sub-tab">My Strategies</div>
+    <div class="sub-tab">Compare</div>
+    <div class="sub-tab">Templates</div>
+  </div>
+
+  <!-- New Strategy Config -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px;">Strategy Backtest Configuration</div>
+      <div class="form-group">
+        <div class="form-label">Model Selection</div>
+        <select class="form-input"><option>BTC Directional v4.0 (XGBoost)</option><option>ETH Funding Carry v1.1 (LSTM)</option><option>Match Outcome v2.3 (LightGBM)</option></select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Strategy Type</div>
+        <select class="form-input"><option>Momentum</option><option>Mean Reversion</option><option>Statistical Arbitrage</option><option>Carry</option></select>
+      </div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><div class="form-label">Signal Threshold</div><input class="form-input" value="0.65"></div>
+        <div class="form-group"><div class="form-label">Position Sizing</div><select class="form-input"><option>Fixed $10,000</option><option>Kelly Fraction</option><option>% of Portfolio</option></select></div>
+      </div>
+      <div class="grid-2" style="gap:12px;">
+        <div class="form-group"><div class="form-label">Start Date</div><input class="form-input" value="2026-01-01" type="date"></div>
+        <div class="form-group"><div class="form-label">End Date</div><input class="form-input" value="2026-03-23" type="date"></div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="filter-label" style="margin-bottom:8px;">Risk Constraints</div>
+      <div class="grid-3" style="gap:12px;">
+        <div class="form-group"><div class="form-label">Max Position</div><input class="form-input" value="$50,000"></div>
+        <div class="form-group"><div class="form-label">Max Drawdown</div><input class="form-input" value="15%"></div>
+        <div class="form-group"><div class="form-label">Max Daily Loss</div><input class="form-input" value="$5,000"></div>
+      </div>
+      <div class="section-divider"></div>
+      <div class="filter-label" style="margin-bottom:8px;">Backtest Mode</div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm">Single Instrument</button>
+        <button class="btn btn-outline btn-sm">Portfolio (Multi-Asset)</button>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:8px;">
+        <button class="btn btn-green" style="flex:1">Run Strategy Backtest</button>
+        <button class="btn btn-outline">Save Template</button>
+      </div>
+    </div>
+
+    <!-- Signal List Output -->
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Signal Output: BTC Momentum v4</div><div class="card-subtitle">130 signals &bull; 2026-01-01 → 2026-03-23</div></div>
+        <span class="badge badge-green">Complete</span>
+      </div>
+      <div class="grid-3" style="margin-bottom:14px;">
+        <div class="stat"><div class="stat-label">Total Signals</div><div class="stat-value" style="font-size:18px">130</div></div>
+        <div class="stat"><div class="stat-label">Hit Rate</div><div class="stat-value" style="font-size:18px;color:var(--accent-green)">62.3%</div></div>
+        <div class="stat"><div class="stat-label">Avg Confidence</div><div class="stat-value" style="font-size:18px">0.72</div></div>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Time</th><th>Signal</th><th>Instrument</th><th>Size</th><th>Confidence</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="mono" style="font-size:11px">Jan 02 08:00</td><td><span class="badge badge-green">LONG</span></td><td class="mono" style="font-size:11px">BTC-PERP</td><td class="mono">$10K</td><td class="mono">0.78</td></tr>
+          <tr><td>2</td><td class="mono" style="font-size:11px">Jan 02 14:00</td><td><span class="badge badge-red">CLOSE</span></td><td class="mono" style="font-size:11px">BTC-PERP</td><td class="mono">&mdash;</td><td class="mono">0.42</td></tr>
+          <tr><td>3</td><td class="mono" style="font-size:11px">Jan 03 02:00</td><td><span class="badge badge-amber">SHORT</span></td><td class="mono" style="font-size:11px">BTC-PERP</td><td class="mono">$10K</td><td class="mono">0.71</td></tr>
+          <tr><td colspan="6" style="text-align:center;color:var(--text-muted);font-size:11px;">... 127 more signals</td></tr>
+        </tbody>
+      </table>
+      <div class="nav-hint" onclick="switchTab('execution')">
+        <span class="arrow-icon">&#8594;</span> Send signals to <strong>Execution</strong> tab for execution backtest
+      </div>
+    </div>
+  </div>
+
+  <!-- Signal Comparison (Compare sub-tab) -->
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header"><div class="card-title">Signal Comparison</div><button class="btn btn-outline btn-sm">+ Add Strategy</button></div>
+    <div class="chart-placeholder" style="min-height:180px;">
+      <div style="text-align:center;">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">Price chart with signal overlays</div>
+        <div class="signal-legend">
+          <div class="signal-legend-item"><div class="signal-dot" style="background:var(--accent-blue)"></div>Strategy A (Momentum v4)</div>
+          <div class="signal-legend-item"><div class="signal-dot" style="background:var(--accent-green)"></div>Strategy B (Mean Rev v2)</div>
+          <div class="signal-legend-item"><div class="signal-dot" style="background:var(--accent-amber)"></div>Strategy C (Vol Regime)</div>
+        </div>
+      </div>
+    </div>
+    <table style="margin-top:12px;">
+      <thead><tr><th>Metric</th><th>A (Momentum v4)</th><th>B (Mean Rev v2)</th><th>C (Vol Regime)</th></tr></thead>
+      <tbody>
+        <tr><td>Total Signals</td><td class="mono">130</td><td class="mono">95</td><td class="mono">42</td></tr>
+        <tr><td>Hit Rate</td><td class="mono">62.3% <span class="star">&#9733;</span></td><td class="mono">58.1%</td><td class="mono">71.4% <span class="star">&#9733;</span></td></tr>
+        <tr><td>Avg Confidence</td><td class="mono">0.72</td><td class="mono">0.68</td><td class="mono">0.81 <span class="star">&#9733;</span></td></tr>
+        <tr><td>Signal Overlap</td><td class="mono">&mdash;</td><td class="mono">34% w/ A</td><td class="mono">12% w/ A</td></tr>
+      </tbody>
+    </table>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-primary btn-sm" onclick="switchTab('execution')">Send All to Execution &rarr;</button>
+      <button class="btn btn-outline btn-sm" onclick="switchTab('execution')">Send Best to Execution &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- TAB 5: EXECUTION -->
+<!-- ============================================================= -->
+<div class="content tab-content" id="tab-execution" style="display:none;">
+  <div class="page-desc">
+    <strong>Execution</strong> — Configure execution algo, run execution backtest, view TradingView-style results.
+    Compare execution quality across different algos. Mark best results as strategy candidates for Promote tab.
+  </div>
+
+  <div class="sub-tab-bar">
+    <div class="sub-tab active">New Backtest</div>
+    <div class="sub-tab">My Backtests</div>
+    <div class="sub-tab">Compare</div>
+    <div class="sub-tab">Templates</div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Execution Config -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px;">Execution Backtest Configuration</div>
+      <div style="padding:8px 12px;background:rgba(79,110,247,0.06);border-radius:6px;font-size:12px;margin-bottom:14px;">
+        Input: <strong>130 signals</strong> from "BTC Momentum v4 Strategy Backtest"
+      </div>
+      <div class="form-group">
+        <div class="form-label">Execution Algorithm</div>
+        <select class="form-input"><option>TWAP</option><option>VWAP</option><option>Iceberg</option><option>Aggressive Limit</option><option>Passive Limit</option><option>Market Only</option></select>
+      </div>
+      <div class="filter-label" style="margin:12px 0 6px;">TWAP Parameters</div>
+      <div class="grid-3" style="gap:12px;">
+        <div class="form-group"><div class="form-label">Window</div><input class="form-input" value="5 min"></div>
+        <div class="form-group"><div class="form-label">Slices</div><input class="form-input" value="10"></div>
+        <div class="form-group"><div class="form-label">Urgency</div><select class="form-input"><option>Medium</option><option>Low</option><option>High</option></select></div>
+      </div>
+      <div class="form-group"><div class="form-label">Order Type</div><select class="form-input"><option>Limit</option><option>Market</option><option>Limit-then-Market</option></select></div>
+      <div class="form-group"><div class="form-label">Venues</div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <span class="badge badge-green">&#10003; Binance</span>
+          <span class="badge badge-green">&#10003; Hyperliquid</span>
+          <span class="badge badge-green">&#10003; Deribit</span>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Slippage Model</div><select class="form-input"><option>Orderbook-based</option><option>Fixed BPS</option></select></div>
+      <div style="margin-top:16px;display:flex;gap:8px;">
+        <button class="btn btn-green" style="flex:1">Run Execution Backtest</button>
+        <button class="btn btn-outline">Save Config</button>
+      </div>
+    </div>
+
+    <!-- TradingView Results Preview -->
+    <div class="card">
+      <div class="card-header"><div class="card-title">Results: BTC Momentum v4 + TWAP</div><span class="badge badge-green">Complete</span></div>
+      <div class="sub-tab-bar" style="margin-bottom:14px;">
+        <div class="sub-tab active" style="font-size:11px;padding:5px 10px;">Overview</div>
+        <div class="sub-tab" style="font-size:11px;padding:5px 10px;">Performance</div>
+        <div class="sub-tab" style="font-size:11px;padding:5px 10px;">Trades</div>
+        <div class="sub-tab" style="font-size:11px;padding:5px 10px;">Execution</div>
+        <div class="sub-tab" style="font-size:11px;padding:5px 10px;">Config</div>
+      </div>
+
+      <div class="chart-placeholder" style="min-height:140px;margin-bottom:14px;">
+        Equity Curve &bull; Strategy vs Buy&Hold &bull; Drawdown shading
+      </div>
+
+      <div class="grid-2" style="gap:10px;">
+        <div class="stat"><div class="stat-label">Net Profit</div><div class="stat-value" style="font-size:18px;color:var(--accent-green)">$2,340</div><div class="stat-delta up">+23.4%</div></div>
+        <div class="stat"><div class="stat-label">Sharpe Ratio</div><div class="stat-value" style="font-size:18px">2.14</div></div>
+        <div class="stat"><div class="stat-label">Max Drawdown</div><div class="stat-value" style="font-size:18px;color:var(--accent-red)">-8.2%</div></div>
+        <div class="stat"><div class="stat-label">Win Rate</div><div class="stat-value" style="font-size:18px">62.3%</div></div>
+        <div class="stat"><div class="stat-label">Avg Slippage</div><div class="stat-value" style="font-size:18px">3.2 bps</div></div>
+        <div class="stat"><div class="stat-label">Fill Rate</div><div class="stat-value" style="font-size:18px;color:var(--accent-green)">98.5%</div></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <button class="btn btn-outline btn-sm" style="flex:1">Compare with Other Algos</button>
+        <button class="btn btn-primary btn-sm"><span class="candidate-marker" style="border:none;padding:0;background:none;color:white;font-size:11px;">&#9734; Mark as Candidate</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Execution Comparison -->
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header"><div class="card-title">Execution Quality Comparison</div><div class="card-subtitle">Same signals, different execution algos</div></div>
+    <table>
+      <thead><tr><th>Metric</th><th>TWAP</th><th>VWAP</th><th>Market Only</th></tr></thead>
+      <tbody>
+        <tr><td>Avg Slippage</td><td class="mono">2.1 bps</td><td class="mono">1.8 bps <span class="star">&#9733;</span></td><td class="mono">5.2 bps</td></tr>
+        <tr><td>Avg Fill Time</td><td class="mono">1.2s</td><td class="mono">2.4s</td><td class="mono">0.1s <span class="star">&#9733;</span></td></tr>
+        <tr><td>Fill Rate</td><td class="mono">98.5%</td><td class="mono">97.2%</td><td class="mono">100% <span class="star">&#9733;</span></td></tr>
+        <tr><td>Total Fees</td><td class="mono">$312</td><td class="mono">$298 <span class="star">&#9733;</span></td><td class="mono">$410</td></tr>
+        <tr><td>Impl. Shortfall</td><td class="mono">4.2 bps</td><td class="mono">3.8 bps <span class="star">&#9733;</span></td><td class="mono">8.1 bps</td></tr>
+        <tr style="font-weight:600;"><td>Net Profit</td><td class="mono" style="color:var(--accent-green)">$2,340 <span class="star">&#9733;</span></td><td class="mono" style="color:var(--accent-green)">$2,280</td><td class="mono" style="color:var(--accent-green)">$2,050</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;">
+      <button class="btn btn-primary btn-sm"><span>&#9734;</span> Mark TWAP Result as Strategy Candidate</button>
+      <span style="font-size:11px;color:var(--text-muted);margin-left:12px;">Candidate appears in Promote lifecycle tab</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- TAB 6: QUANT WORKSPACE -->
+<!-- ============================================================= -->
+<div class="content tab-content" id="tab-quant-workspace" style="display:none;">
+  <div class="page-desc">
+    <strong>Quant Workspace</strong> — Research KPI dashboard aggregating metrics across all features, models, strategies, and backtests.
+    High-level view of research pipeline productivity and quality.
+  </div>
+
+  <div class="grid-4">
+    <div class="stat"><div class="stat-label">Features Defined</div><div class="stat-value">847</div><div class="stat-delta up">72.9% computed</div></div>
+    <div class="stat"><div class="stat-label">Active Models</div><div class="stat-value" style="color:var(--accent-green)">8</div><div class="stat-delta">avg accuracy 64.7%</div></div>
+    <div class="stat"><div class="stat-label">Strategies Run (7d)</div><div class="stat-value" style="color:var(--accent-blue)">23</div><div class="stat-delta up">+8 vs last week</div></div>
+    <div class="stat"><div class="stat-label">Candidates Pending</div><div class="stat-value" style="color:var(--accent-purple)">4</div><div class="stat-delta">awaiting promotion</div></div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;">Research Pipeline Health</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;"><span>Feature Coverage</span><span class="mono">72.9%</span></div><div class="progress-bar"><div class="progress-fill green" style="width:73%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;"><span>Model Freshness</span><span class="mono">87.5%</span></div><div class="progress-bar"><div class="progress-fill green" style="width:87%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;"><span>Avg Strategy Hit Rate</span><span class="mono">62.3%</span></div><div class="progress-bar"><div class="progress-fill blue" style="width:62%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;"><span>Avg Execution Quality</span><span class="mono">95.8%</span></div><div class="progress-bar"><div class="progress-fill green" style="width:96%"></div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;">Data Readiness (from Acquire)</div>
+      <div class="grid-2" style="gap:10px;">
+        <div class="stat"><div class="stat-label">Instruments w/ Data</div><div class="stat-value" style="font-size:18px;color:var(--accent-green)">2,400</div></div>
+        <div class="stat"><div class="stat-label">Pending Download</div><div class="stat-value" style="font-size:18px;color:var(--accent-amber)">180</div></div>
+      </div>
+      <div class="nav-hint" style="margin-top:12px;font-size:11px;" onclick="alert('Navigate to Acquire/Data tab')">
+        <span class="arrow-icon">&#8594;</span> View full data pipeline in <strong>Acquire</strong> tab
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;">Best Performing Strategies (7d)</div>
+      <table>
+        <thead><tr><th>Strategy</th><th>Shard</th><th>Sharpe</th><th>P&L</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>BTC Momentum v4 + TWAP</td><td><span class="badge badge-blue">CeFi</span></td><td class="mono">2.14</td><td class="mono" style="color:var(--accent-green)">+$2,340</td><td><span class="candidate-marker">Candidate</span></td></tr>
+          <tr><td>ETH Carry v1 + VWAP</td><td><span class="badge badge-blue">CeFi</span></td><td class="mono">1.89</td><td class="mono" style="color:var(--accent-green)">+$1,870</td><td><span class="badge badge-green">Active</span></td></tr>
+          <tr><td>Match Over/Under v2</td><td><span class="badge badge-amber">Sports</span></td><td class="mono">1.62</td><td class="mono" style="color:var(--accent-green)">+$920</td><td><span class="badge badge-blue">Testing</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;">Stale Features Alert</div>
+      <table>
+        <thead><tr><th>Feature</th><th>Current</th><th>Latest</th><th>Models Affected</th></tr></thead>
+        <tbody>
+          <tr><td class="mono" style="font-size:11px">macd_12_26_9</td><td class="mono" style="color:var(--accent-red)">v1.2</td><td class="mono" style="color:var(--accent-green)">v1.3</td><td class="mono">2</td></tr>
+          <tr><td class="mono" style="font-size:11px">pool_tick_data</td><td class="mono" style="color:var(--accent-red)">v2.8</td><td class="mono" style="color:var(--accent-green)">v3.0</td><td class="mono">1</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- NAVIGATION FLOW VIEW -->
+<!-- ============================================================= -->
+<div class="content" id="flow-view" style="display:none;">
+  <div class="page-desc">
+    <strong>Navigation Flow</strong> — How users move between tabs and sub-views. Arrows show cross-tab navigation hints. Users can also jump freely to any tab at any time.
+  </div>
+
+  <div class="card" style="padding:30px;">
+    <div style="font-size:14px;font-weight:600;margin-bottom:20px;">Primary Pipeline Flow (left to right)</div>
+
+    <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+      <!-- Features -->
+      <div style="flex:1;min-width:180px;">
+        <div style="background:var(--bg-tertiary);border:2px solid var(--accent-cyan);border-radius:10px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--accent-cyan);margin-bottom:8px;">1. FEATURES</div>
+          <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+            &bull; Browse catalogue<br>
+            &bull; Configure params<br>
+            &bull; Apply presets<br>
+            &bull; View dependency tree<br>
+            &bull; Track versions
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+            <strong>Inputs:</strong> Processed data (Acquire)<br>
+            <strong>Outputs:</strong> Feature definitions
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;color:var(--accent-blue);font-size:24px;padding-top:40px;">&#8594;</div>
+
+      <!-- Feature ETL -->
+      <div style="flex:1;min-width:180px;">
+        <div style="background:var(--bg-tertiary);border:2px solid var(--accent-blue);border-radius:10px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--accent-blue);margin-bottom:8px;">2. FEATURE ETL</div>
+          <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+            &bull; Compute features<br>
+            &bull; Progress by shard<br>
+            &bull; Trigger jobs / VMs<br>
+            &bull; Completion heatmap<br>
+            &bull; Monitor pipeline
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+            <strong>Inputs:</strong> Feature definitions<br>
+            <strong>Outputs:</strong> Computed features
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;color:var(--accent-blue);font-size:24px;padding-top:40px;">&#8594;</div>
+
+      <!-- Models -->
+      <div style="flex:1;min-width:180px;">
+        <div style="background:var(--bg-tertiary);border:2px solid var(--accent-green);border-radius:10px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--accent-green);margin-bottom:8px;">3. MODELS</div>
+          <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+            &bull; Model registry<br>
+            &bull; Pin feature versions<br>
+            &bull; Train (ETL view)<br>
+            &bull; Evaluate accuracy<br>
+            &bull; Compare versions
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+            <strong>Inputs:</strong> Computed features<br>
+            <strong>Outputs:</strong> Trained models
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;color:var(--accent-blue);font-size:24px;padding-top:40px;">&#8594;</div>
+
+      <!-- Strategies -->
+      <div style="flex:1;min-width:180px;">
+        <div style="background:var(--bg-tertiary);border:2px solid var(--accent-amber);border-radius:10px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--accent-amber);margin-bottom:8px;">4. STRATEGIES</div>
+          <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+            &bull; Configure strategy<br>
+            &bull; Run signal backtest<br>
+            &bull; View signal list<br>
+            &bull; Compare strategies<br>
+            &bull; Single/Portfolio mode
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+            <strong>Inputs:</strong> Trained models<br>
+            <strong>Outputs:</strong> Signal list
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;color:var(--accent-blue);font-size:24px;padding-top:40px;">&#8594;</div>
+
+      <!-- Execution -->
+      <div style="flex:1;min-width:180px;">
+        <div style="background:var(--bg-tertiary);border:2px solid var(--accent-red);border-radius:10px;padding:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--accent-red);margin-bottom:8px;">5. EXECUTION</div>
+          <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+            &bull; Configure exec algo<br>
+            &bull; TradingView results<br>
+            &bull; 5 result sub-tabs<br>
+            &bull; Compare algos<br>
+            &bull; Mark candidates
+          </div>
+          <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+            <strong>Inputs:</strong> Signals<br>
+            <strong>Outputs:</strong> Trades / Candidates
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cross-tab navigation hints -->
+    <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:12px;">Cross-Tab Navigation Hints (clickable links in UI)</div>
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text-secondary);">
+        <div>&#8226; <strong>Features</strong> expanded row &rarr; "View computation jobs" &rarr; <span style="color:var(--accent-blue)">Feature ETL</span></div>
+        <div>&#8226; <strong>Models</strong> expanded row &rarr; "Use in Strategy" &rarr; <span style="color:var(--accent-amber)">Strategies</span> (pre-fills model)</div>
+        <div>&#8226; <strong>Strategies</strong> signal output &rarr; "Send to Execution" &rarr; <span style="color:var(--accent-red)">Execution</span> (pre-fills signals)</div>
+        <div>&#8226; <strong>Execution</strong> results &rarr; "Mark as Candidate" &rarr; appears in <span style="color:var(--accent-purple)">Promote lifecycle tab</span></div>
+        <div>&#8226; <strong>Quant Workspace</strong> &rarr; "Data Readiness" link &rarr; <span style="color:var(--accent-cyan)">Acquire lifecycle tab</span></div>
+        <div>&#8226; <strong>Quant Workspace</strong> &rarr; stale features alert &rarr; click feature name &rarr; <span style="color:var(--accent-cyan)">Features</span> tab detail</div>
+      </div>
+    </div>
+
+    <!-- Quant Workspace -->
+    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+      <div style="background:var(--bg-tertiary);border:2px solid var(--accent-purple);border-radius:10px;padding:14px;max-width:300px;">
+        <div style="font-size:12px;font-weight:700;color:var(--accent-purple);margin-bottom:8px;">6. QUANT WORKSPACE</div>
+        <div style="font-size:11px;color:var(--text-secondary);line-height:1.6;">
+          Cross-cutting KPI dashboard<br>
+          &bull; Feature coverage %<br>
+          &bull; Model health summary<br>
+          &bull; Best strategies (7d)<br>
+          &bull; Candidate pipeline<br>
+          &bull; Data readiness (Acquire)
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+          <strong>Reads from:</strong> All 5 tabs<br>
+          <strong>Links to:</strong> Acquire, Promote
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-tabs within each tab -->
+    <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:12px;">Sub-Tab Structure Within Each Tab</div>
+      <div class="grid-3" style="gap:12px;">
+        <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--accent-cyan);margin-bottom:6px;">Features</div>
+          <div style="font-size:11px;color:var(--text-muted);">Catalogue (grid) + expanded detail panel<br>No sub-tabs, uses expand/collapse</div>
+        </div>
+        <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--accent-blue);margin-bottom:6px;">Feature ETL</div>
+          <div style="font-size:11px;color:var(--text-muted);">Single view with progress bars + heatmap + active jobs</div>
+        </div>
+        <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--accent-green);margin-bottom:6px;">Models</div>
+          <div style="font-size:11px;color:var(--text-muted);">Registry | Training Jobs | Evaluation | Version History</div>
+        </div>
+        <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--accent-amber);margin-bottom:6px;">Strategies</div>
+          <div style="font-size:11px;color:var(--text-muted);">New Strategy | My Strategies | Compare | Templates</div>
+        </div>
+        <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--accent-red);margin-bottom:6px;">Execution</div>
+          <div style="font-size:11px;color:var(--text-muted);">New Backtest | My Backtests | Compare | Templates<br><em>Results: Overview | Perf | Trades | Exec | Config</em></div>
+        </div>
+        <div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--accent-purple);margin-bottom:6px;">Quant Workspace</div>
+          <div style="font-size:11px;color:var(--text-muted);">Single dashboard view with KPI cards + tables + alerts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const tabs = document.querySelectorAll('#mainTabs .tab');
+const contents = document.querySelectorAll('.tab-content');
+const flowView = document.getElementById('flow-view');
+let currentView = 'wireframe';
+
+function switchTab(tabId) {
+  if (currentView === 'flow') {
+    setView('wireframe');
+  }
+  tabs.forEach(t => t.classList.remove('active'));
+  contents.forEach(c => c.style.display = 'none');
+  flowView.style.display = 'none';
+
+  const targetTab = document.querySelector(`[data-tab="${tabId}"]`);
+  if (targetTab) targetTab.classList.add('active');
+
+  const targetContent = document.getElementById(`tab-${tabId}`);
+  if (targetContent) targetContent.style.display = 'block';
+
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.mode-btn')[0].classList.add('active');
+  currentView = 'wireframe';
+}
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+});
+
+function setView(view) {
+  currentView = view;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+
+  if (view === 'wireframe') {
+    document.querySelectorAll('.mode-btn')[0].classList.add('active');
+    flowView.style.display = 'none';
+    const activeTab = document.querySelector('#mainTabs .tab.active');
+    if (activeTab) {
+      const tabId = activeTab.dataset.tab;
+      contents.forEach(c => c.style.display = 'none');
+      document.getElementById(`tab-${tabId}`).style.display = 'block';
+    }
+  } else {
+    document.querySelectorAll('.mode-btn')[1].classList.add('active');
+    contents.forEach(c => c.style.display = 'none');
+    flowView.style.display = 'block';
+  }
+}
+
+// Sub-tab click behavior (visual only)
+document.querySelectorAll('.sub-tab').forEach(st => {
+  st.addEventListener('click', function() {
+    const bar = this.parentElement;
+    bar.querySelectorAll('.sub-tab').forEach(s => s.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

@@ -1,172 +1,293 @@
 "use client"
 
+/**
+ * /services/data/coverage — Cross-stage coverage matrix.
+ * User can select row/column dimensions to compare Instruments, Raw, Processed.
+ * Read-only Features column links to the Build tab.
+ */
+
 import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import {
-  CheckCircle2, AlertTriangle, XCircle, RefreshCw, Search,
-} from "lucide-react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
-import { MOCK_INSTRUMENTS, MOCK_VENUE_COVERAGE } from "@/lib/data-service-mock-data"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Download, ExternalLink, RefreshCw,
+} from "lucide-react"
+import {
+  DATA_CATEGORY_LABELS,
+  type DataCategory,
+  type CoverageStatus,
+  type CoverageRow,
+} from "@/lib/data-service-types"
+import { MOCK_COVERAGE_ROWS } from "@/lib/data-service-mock-data"
+import { CATEGORY_COLORS } from "@/components/data/shard-catalogue"
 
-type DataType = "tick" | "candle_1m" | "candle_5m" | "candle_1h" | "candle_1d" | "orderbook" | "trades" | "funding" | "features" | "ml_signals" | "strategy_signals" | "execution" | "risk" | "pnl"
-
-const DATA_TYPES: { key: DataType; label: string; category: "raw" | "processed" | "derived" }[] = [
-  { key: "tick", label: "Ticks", category: "raw" },
-  { key: "trades", label: "Trades", category: "raw" },
-  { key: "orderbook", label: "Book", category: "raw" },
-  { key: "funding", label: "Funding", category: "raw" },
-  { key: "candle_1m", label: "1m", category: "processed" },
-  { key: "candle_5m", label: "5m", category: "processed" },
-  { key: "candle_1h", label: "1h", category: "processed" },
-  { key: "candle_1d", label: "1d", category: "processed" },
-  { key: "features", label: "Features", category: "derived" },
-  { key: "ml_signals", label: "ML Signals", category: "derived" },
-  { key: "strategy_signals", label: "Strategy", category: "derived" },
-  { key: "execution", label: "Execution", category: "derived" },
-  { key: "risk", label: "Risk", category: "derived" },
-  { key: "pnl", label: "P&L", category: "derived" },
-]
-
-function getCoverage(seed: string): { pct: number; status: "complete" | "partial" | "missing" } {
-  let h = 0
-  for (let i = 0; i < seed.length; i++) h = Math.imul(31, h) + seed.charCodeAt(i) | 0
-  const r = ((h >>> 0) / 4294967296)
-  const pct = Math.min(100, Math.round(r * 40 + 60))
-  return { pct, status: pct >= 95 ? "complete" : pct >= 70 ? "partial" : "missing" }
+const STATUS_COLORS: Record<CoverageStatus, string> = {
+  complete:       "bg-emerald-500/80 text-emerald-900",
+  partial:        "bg-yellow-500/70 text-yellow-900",
+  missing:        "bg-red-500/30 text-red-400",
+  in_progress:    "bg-sky-500/50 text-sky-900",
+  not_applicable: "bg-muted/30 text-muted-foreground",
 }
 
-export default function CoverageMatrixPage() {
-  const [dataCategory, setDataCategory] = React.useState<"all" | "raw" | "processed" | "derived">("all")
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [venueFilter, setVenueFilter] = React.useState("all")
+const STATUS_LABELS: Record<CoverageStatus, string> = {
+  complete:       "Complete",
+  partial:        "Partial",
+  missing:        "Missing",
+  in_progress:    "Running",
+  not_applicable: "N/A",
+}
 
-  const venues = [...new Set(MOCK_INSTRUMENTS.map(i => i.venue))].sort()
-  const types = DATA_TYPES.filter(dt => dataCategory === "all" || dt.category === dataCategory)
+function CoverageCell({
+  status,
+  completionPct,
+  readOnly,
+  linkHref,
+}: {
+  status: CoverageStatus
+  completionPct?: number
+  readOnly?: boolean
+  linkHref?: string
+}) {
+  const inner = (
+    <div className={cn(
+      "flex flex-col items-center justify-center rounded p-1.5 min-h-[44px] text-xs font-medium transition-colors",
+      STATUS_COLORS[status],
+      readOnly && "opacity-70"
+    )}>
+      <span>{completionPct != null ? `${completionPct.toFixed(0)}%` : STATUS_LABELS[status]}</span>
+      {readOnly && <span className="text-[9px] opacity-70">Build</span>}
+    </div>
+  )
 
-  const instruments = React.useMemo(() => {
-    let result = MOCK_INSTRUMENTS
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter(i => i.instrumentKey.toLowerCase().includes(q) || i.symbol.toLowerCase().includes(q) || i.venue.toLowerCase().includes(q))
-    }
-    if (venueFilter !== "all") result = result.filter(i => i.venue === venueFilter)
-    return result
-  }, [searchQuery, venueFilter])
+  if (linkHref) {
+    return (
+      <Link href={linkHref} title="View in Build tab">
+        {inner}
+      </Link>
+    )
+  }
+  return inner
+}
 
-  const totalCells = instruments.length * types.length
-  const stats = React.useMemo(() => {
-    let complete = 0, partial = 0
-    instruments.forEach(inst => types.forEach(dt => {
-      const s = getCoverage(`${inst.instrumentKey}-${dt.key}`).status
-      if (s === "complete") complete++; else if (s === "partial") partial++
-    }))
-    return { complete, partial, missing: totalCells - complete - partial }
-  }, [instruments, types, totalCells])
+function exportToCsv(rows: CoverageRow[]) {
+  const headers = ["Venue", "Category", "Date", "Instruments %", "Raw Data %", "Processing %", "Features %"]
+  const csvRows = rows.map(r => [
+    r.venue,
+    r.category,
+    r.date,
+    r.instruments.completionPct ?? r.instruments.status,
+    r.rawData.completionPct ?? r.rawData.status,
+    r.processing.completionPct ?? r.processing.status,
+    r.features.completionPct ?? r.features.status,
+  ])
+  const csv = [headers, ...csvRows].map(r => r.join(",")).join("\n")
+  const blob = new Blob([csv], { type: "text/csv" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `coverage-${new Date().toISOString().split("T")[0]}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+export default function CoveragePage() {
+  const [groupBy, setGroupBy] = React.useState<"venue" | "category">("venue")
+  const [filterCategory, setFilterCategory] = React.useState<DataCategory | "all">("all")
+
+  const filteredRows = MOCK_COVERAGE_ROWS.filter(row =>
+    filterCategory === "all" || row.category === filterCategory
+  )
+
+  const sortedRows = React.useMemo(() => {
+    const rows = [...filteredRows]
+    rows.sort((a, b) =>
+      groupBy === "venue"
+        ? a.venue.localeCompare(b.venue) || a.date.localeCompare(b.date)
+        : a.category.localeCompare(b.category) || a.venue.localeCompare(b.venue)
+    )
+    return rows
+  }, [filteredRows, groupBy])
+
+  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]
+
+  // Summary stats
+  const totalCells = filteredRows.length
+  const completeCells = filteredRows.filter(r => r.rawData.status === "complete").length
+  const missingCells = filteredRows.filter(r => r.rawData.status === "missing").length
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">Coverage Matrix</h2>
-          <p className="text-sm text-muted-foreground">{instruments.length} instruments × {types.length} data types</p>
-        </div>
-        <Button variant="outline" size="sm" className="gap-1.5"><RefreshCw className="size-3.5" /> Refresh</Button>
-      </div>
-
-      <div className="grid grid-cols-4 gap-4">
-        <Card><CardContent className="p-4 text-center"><p className="text-2xl font-semibold text-emerald-400">{stats.complete}</p><p className="text-xs text-muted-foreground">Complete ({Math.round(stats.complete / Math.max(totalCells, 1) * 100)}%)</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><p className="text-2xl font-semibold text-amber-400">{stats.partial}</p><p className="text-xs text-muted-foreground">Partial</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><p className="text-2xl font-semibold text-rose-400">{stats.missing}</p><p className="text-xs text-muted-foreground">Missing</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><p className="text-2xl font-semibold">{instruments.length}</p><p className="text-xs text-muted-foreground">Instruments</p></CardContent></Card>
-      </div>
-
-      <div className="flex items-center gap-3 flex-wrap">
-        <Tabs value={dataCategory} onValueChange={(v) => setDataCategory(v as typeof dataCategory)}>
-          <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="raw">Raw (Ticks, Trades, Book)</TabsTrigger>
-            <TabsTrigger value="processed">Processed (Candles)</TabsTrigger>
-            <TabsTrigger value="derived">Derived (Features, Signals, Risk, P&L)</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <div className="flex items-center gap-2 ml-auto">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-            <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="h-8 w-40 pl-8 pr-3 text-xs rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary" />
+    <div className="min-h-screen bg-background">
+      <div className="container px-4 py-8 md:px-6 max-w-7xl">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">Coverage</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Cross-stage completeness — Instruments → Raw → Processing → Features
+            </p>
           </div>
-          <select value={venueFilter} onChange={(e) => setVenueFilter(e.target.value)} className="h-8 px-2 text-xs rounded-md border border-border bg-background">
-            <option value="all">All Venues</option>
-            {venues.map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => exportToCsv(filteredRows)}>
+              <Download className="size-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button variant="outline" size="sm">
+              <RefreshCw className="size-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <Card>
-        <CardContent className="p-0 overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="text-xs">
-                <TableHead className="sticky left-0 bg-card z-10 min-w-[180px]">Instrument</TableHead>
-                <TableHead className="sticky left-[180px] bg-card z-10">Venue</TableHead>
-                {types.map(dt => (
-                  <TableHead key={dt.key} className="text-center min-w-[60px]">
-                    <div className="flex flex-col items-center">
-                      <span className="text-[10px]">{dt.label}</span>
-                      <span className={cn("text-[8px]", dt.category === "raw" ? "text-sky-400" : dt.category === "processed" ? "text-violet-400" : "text-amber-400")}>{dt.category}</span>
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {instruments.slice(0, 30).map((inst) => (
-                <TableRow key={inst.instrumentKey} className="text-xs">
-                  <TableCell className="sticky left-0 bg-card z-10 font-mono font-medium text-[11px]">{inst.symbol}</TableCell>
-                  <TableCell className="sticky left-[180px] bg-card z-10 text-muted-foreground text-[11px]">{inst.venue}</TableCell>
-                  {types.map(dt => {
-                    const cov = getCoverage(`${inst.instrumentKey}-${dt.key}`)
-                    return (
-                      <TableCell key={dt.key} className="text-center p-1">
-                        <div className={cn("size-6 rounded flex items-center justify-center mx-auto text-[9px] font-mono",
-                          cov.status === "complete" ? "bg-emerald-500/20 text-emerald-400" :
-                          cov.status === "partial" ? "bg-amber-500/20 text-amber-400" :
-                          "bg-rose-500/20 text-rose-400"
-                        )}>
-                          {cov.pct}
-                        </div>
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {instruments.length > 30 && <div className="p-3 text-center text-xs text-muted-foreground border-t">Showing 30 of {instruments.length}</div>}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm">Coverage by Venue</CardTitle></CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {MOCK_VENUE_COVERAGE.map(vc => (
-              <div key={vc.venue} className="flex items-center gap-4">
-                <span className="text-sm font-medium w-28">{vc.venue}</span>
-                <Progress value={85} className="flex-1 h-2" />
-                <span className="text-xs font-mono w-12 text-right">85%</span>
-                <Badge variant="outline" className="text-[10px]">{vc.instrumentCount} inst</Badge>
+        {/* KPIs */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <Card>
+            <CardContent className="pt-4">
+              <div className="text-2xl font-bold font-mono text-foreground">{totalCells}</div>
+              <div className="text-xs text-muted-foreground">Venue-date combinations</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-4">
+              <div className="text-2xl font-bold font-mono text-emerald-400">{completeCells}</div>
+              <div className="text-xs text-muted-foreground">Fully covered</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-4">
+              <div className={cn("text-2xl font-bold font-mono", missingCells > 0 ? "text-red-400" : "text-muted-foreground")}>
+                {missingCells}
               </div>
-            ))}
+              <div className="text-xs text-muted-foreground">Missing raw data</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Group by:</span>
+            <Select value={groupBy} onValueChange={v => setGroupBy(v as "venue" | "category")}>
+              <SelectTrigger className="h-8 w-32 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="venue">Venue</SelectItem>
+                <SelectItem value="category">Category</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Category:</span>
+            <Select value={filterCategory} onValueChange={v => setFilterCategory(v as DataCategory | "all")}>
+              <SelectTrigger className="h-8 w-40 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat} value={cat}>{DATA_CATEGORY_LABELS[cat]}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="flex items-center gap-4 text-[10px] text-muted-foreground mb-4 flex-wrap">
+          {(Object.entries(STATUS_LABELS) as [CoverageStatus, string][]).map(([status, label]) => (
+            <span key={status} className="flex items-center gap-1.5">
+              <span className={cn("size-3 rounded", STATUS_COLORS[status])} />
+              {label}
+            </span>
+          ))}
+        </div>
+
+        {/* Coverage Matrix Table */}
+        <Card>
+          <CardContent className="pt-4 px-0 overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">Venue</th>
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">Category</th>
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">Date</th>
+                  <th className="text-center px-3 py-2 font-medium text-muted-foreground w-24">Instruments</th>
+                  <th className="text-center px-3 py-2 font-medium text-muted-foreground w-24">Raw Data</th>
+                  <th className="text-center px-3 py-2 font-medium text-muted-foreground w-24">Processing</th>
+                  <th className="text-center px-3 py-2 font-medium text-sky-400/70 w-24">
+                    Features
+                    <span className="ml-1 text-[9px]">(Build)</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedRows.map((row, i) => (
+                  <tr
+                    key={`${row.venue}-${row.date}-${i}`}
+                    className="border-b border-border/50 hover:bg-accent/20 transition-colors"
+                  >
+                    <td className="px-4 py-1.5 font-medium capitalize">
+                      {row.venue.replace(/_/g, " ")}
+                    </td>
+                    <td className="px-4 py-1.5">
+                      <Badge variant="outline" className={cn("text-[10px]", CATEGORY_COLORS[row.category])}>
+                        {DATA_CATEGORY_LABELS[row.category]}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-1.5 font-mono text-muted-foreground">{row.date}</td>
+                    <td className="px-3 py-1.5">
+                      <CoverageCell
+                        status={row.instruments.status}
+                        completionPct={row.instruments.completionPct}
+                      />
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <CoverageCell
+                        status={row.rawData.status}
+                        completionPct={row.rawData.completionPct}
+                      />
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <CoverageCell
+                        status={row.processing.status}
+                        completionPct={row.processing.completionPct}
+                      />
+                    </td>
+                    <td className="px-3 py-1.5">
+                      <CoverageCell
+                        status={row.features.status}
+                        completionPct={row.features.completionPct}
+                        readOnly
+                        linkHref="/services/research/features"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+
+        {/* Build Tab note */}
+        <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+          <ExternalLink className="size-3.5" />
+          Features column is read-only here.
+          <Link href="/services/research/features" className="text-sky-400 hover:underline">
+            Go to Build → Features
+          </Link>
+          to manage feature calculation.
+        </div>
+      </div>
     </div>
   )
 }

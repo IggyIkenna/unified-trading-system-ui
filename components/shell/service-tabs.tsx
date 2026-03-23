@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * ServiceTabs — Row 2 navigation.
@@ -6,42 +6,54 @@
  * Each service defines its own tab set. Tabs support entitlement-based FOMO locking.
  */
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Lock } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Lock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export interface ServiceTab {
-  label: string
-  href: string
+  label: string;
+  href: string;
   /** Match pathname prefix for active state (defaults to href) */
-  matchPrefix?: string
+  matchPrefix?: string;
   /** Entitlement required to access this tab (undefined = always accessible) */
-  requiredEntitlement?: string
+  requiredEntitlement?: string;
 }
 
 interface ServiceTabsProps {
-  tabs: ServiceTab[]
+  tabs: ServiceTab[];
   /** Optional right-side slot for Live/As-Of toggle or other controls */
-  rightSlot?: React.ReactNode
+  rightSlot?: React.ReactNode;
   /** User's current entitlements — used for FOMO locking */
-  entitlements?: readonly string[]
-  className?: string
+  entitlements?: readonly string[];
+  className?: string;
 }
 
-export function ServiceTabs({ tabs, rightSlot, entitlements, className }: ServiceTabsProps) {
-  const pathname = usePathname() || ""
-  const hasWildcard = entitlements?.includes("*") ?? true
+export function ServiceTabs({
+  tabs,
+  rightSlot,
+  entitlements,
+  className,
+}: ServiceTabsProps) {
+  const pathname = usePathname() || "";
+  const hasWildcard = entitlements?.includes("*") ?? true;
 
   return (
     <div className={cn("border-b border-border bg-card/30", className)}>
       <div className="flex items-center justify-between px-6">
-        <nav className="flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]" aria-label="Service sections">
+        <nav
+          className="flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]"
+          aria-label="Service sections"
+        >
           {tabs.map((tab) => {
-            const matchPath = tab.matchPrefix || tab.href
-            const isActive = pathname === tab.href || pathname.startsWith(matchPath + "/")
-            const isLocked = tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement)
+            const matchPath = tab.matchPrefix || tab.href;
+            const isActive =
+              pathname === tab.href || pathname.startsWith(matchPath + "/");
+            const isLocked =
+              tab.requiredEntitlement &&
+              !hasWildcard &&
+              !entitlements?.includes(tab.requiredEntitlement);
 
             if (isLocked) {
               return (
@@ -53,7 +65,7 @@ export function ServiceTabs({ tabs, rightSlot, entitlements, className }: Servic
                   {tab.label}
                   <Lock className="size-3" />
                 </span>
-              )
+              );
             }
 
             return (
@@ -64,12 +76,12 @@ export function ServiceTabs({ tabs, rightSlot, entitlements, className }: Servic
                   "px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
                   isActive
                     ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
                 )}
               >
                 {tab.label}
               </Link>
-            )
+            );
           })}
         </nav>
 
@@ -80,28 +92,63 @@ export function ServiceTabs({ tabs, rightSlot, entitlements, className }: Servic
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // ── Acquire (Data Science / ETL) ─────────────────────────────────────────────
 export const DATA_TABS: ServiceTab[] = [
-  { label: "Pipeline Status", href: "/services/data/overview" },
-  { label: "Coverage Matrix", href: "/services/data/coverage" },
-  { label: "Missing Data", href: "/services/data/missing" },
-  { label: "Venue Health", href: "/services/data/venues" },
-  { label: "ETL Logs", href: "/services/data/logs" },
-]
+  { label: "Overview", href: "/services/data/overview" },
+  { label: "Instruments", href: "/services/data/instruments" },
+  { label: "Raw Data", href: "/services/data/raw" },
+  { label: "Processing", href: "/services/data/processing" },
+  { label: "Coverage", href: "/services/data/coverage" },
+  { label: "Gaps & Quality", href: "/services/data/gaps" },
+];
 
 // ── Build (Quant Developer) ──────────────────────────────────────────────────
 export const BUILD_TABS: ServiceTab[] = [
   { label: "Research Hub", href: "/services/research/overview" },
-  { label: "Features", href: "/services/research/ml/features", requiredEntitlement: "ml-full" },
-  { label: "ML Models", href: "/services/research/ml", matchPrefix: "/services/research/ml", requiredEntitlement: "ml-full" },
-  { label: "Strategies", href: "/services/research/strategy/backtests", matchPrefix: "/services/research/strategy", requiredEntitlement: "strategy-full" },
-  { label: "Backtests", href: "/services/research/strategy/compare", requiredEntitlement: "strategy-full" },
-  { label: "Signals", href: "/services/research/ml/validation", requiredEntitlement: "ml-full" },
-  { label: "Quant Workspace", href: "/services/research/quant", requiredEntitlement: "strategy-full" },
-]
+  { label: "Features", href: "/services/research/features" },
+  {
+    label: "ML Models",
+    href: "/services/research/ml",
+    matchPrefix: "/services/research/ml",
+    requiredEntitlement: "ml-full",
+  },
+  {
+    label: "Strategies",
+    href: "/services/research/strategy/overview",
+    matchPrefix: "/services/research/strategy",
+    requiredEntitlement: "strategy-full",
+  },
+  { label: "Signals", href: "/services/research/signals" },
+  { label: "Quant Workspace", href: "/services/research/quant" },
+];
+
+// ML sub-tabs — shown inside ML section pages
+export const ML_SUB_TABS: ServiceTab[] = [
+  { label: "Overview", href: "/services/research/ml/overview" },
+  { label: "Experiments", href: "/services/research/ml/experiments" },
+  { label: "Training", href: "/services/research/ml/training" },
+  { label: "Registry", href: "/services/research/ml/registry" },
+  { label: "Features", href: "/services/research/ml/features" },
+  { label: "Validation", href: "/services/research/ml/validation" },
+  { label: "Deploy", href: "/services/research/ml/deploy" },
+  { label: "Monitoring", href: "/services/research/ml/monitoring" },
+  { label: "Governance", href: "/services/research/ml/governance" },
+  { label: "Config", href: "/services/research/ml/config" },
+];
+
+// Strategy sub-tabs — shown inside Strategy section pages
+export const STRATEGY_SUB_TABS: ServiceTab[] = [
+  { label: "Overview", href: "/services/research/strategy/overview" },
+  { label: "Backtests", href: "/services/research/strategy/backtests" },
+  { label: "Compare", href: "/services/research/strategy/compare" },
+  { label: "Results", href: "/services/research/strategy/results" },
+  { label: "Heatmap", href: "/services/research/strategy/heatmap" },
+  { label: "Candidates", href: "/services/research/strategy/candidates" },
+  { label: "Handoff", href: "/services/research/strategy/handoff" },
+];
 
 // ── Promote (Trader + Risk Review) ───────────────────────────────────────────
 export const PROMOTE_TABS: ServiceTab[] = [
@@ -109,7 +156,7 @@ export const PROMOTE_TABS: ServiceTab[] = [
   { label: "Execution Analysis", href: "/services/execution/tca" },
   { label: "Risk Review", href: "/services/trading/risk" },
   { label: "Approval Status", href: "/services/research/strategy/handoff" },
-]
+];
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────
 export const TRADING_TABS: ServiceTab[] = [
@@ -127,7 +174,7 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "Book Trade", href: "/services/trading/book" },
   { label: "Accounts", href: "/services/trading/accounts" },
   { label: "P&L Breakdown", href: "/services/trading/pnl" },
-]
+];
 
 // ── Observe (Risk / Ops) ─────────────────────────────────────────────────────
 export const OBSERVE_TABS: ServiceTab[] = [
@@ -136,7 +183,7 @@ export const OBSERVE_TABS: ServiceTab[] = [
   { label: "News", href: "/services/observe/news" },
   { label: "Strategy Health", href: "/services/observe/strategy-health" },
   { label: "System Health", href: "/services/observe/health" },
-]
+];
 
 // ── Manage (Back Office) ─────────────────────────────────────────────────────
 export const MANAGE_TABS: ServiceTab[] = [
@@ -145,7 +192,7 @@ export const MANAGE_TABS: ServiceTab[] = [
   { label: "Fees", href: "/services/manage/fees" },
   { label: "Users", href: "/services/manage/users" },
   { label: "Compliance", href: "/services/manage/compliance" },
-]
+];
 
 // ── Report (Executive) ───────────────────────────────────────────────────────
 export const REPORTS_TABS: ServiceTab[] = [
@@ -154,7 +201,7 @@ export const REPORTS_TABS: ServiceTab[] = [
   { label: "Settlement", href: "/services/reports/settlement" },
   { label: "Reconciliation", href: "/services/reports/reconciliation" },
   { label: "Regulatory", href: "/services/reports/regulatory" },
-]
+];
 
 // ── Admin/Ops (Internal Operations) ─────────────────────────────────────────
 export const ADMIN_TABS: ServiceTab[] = [
@@ -162,13 +209,13 @@ export const ADMIN_TABS: ServiceTab[] = [
   { label: "Access Requests", href: "/admin/users/requests" },
   { label: "Onboard", href: "/admin/users/onboard" },
   { label: "Catalogue", href: "/admin/users/catalogue" },
-]
+];
 
 // Alias — user management IS the admin section
-export const USER_MGMT_TABS = ADMIN_TABS
+export const USER_MGMT_TABS = ADMIN_TABS;
 
 // ── Legacy aliases (for backward compatibility during transition) ─────────────
-export const RESEARCH_TABS = BUILD_TABS
+export const RESEARCH_TABS = BUILD_TABS;
 export const EXECUTE_TABS: ServiceTab[] = [
   { label: "Analytics", href: "/services/execution/overview" },
   { label: "Algos", href: "/services/execution/algos" },
@@ -177,14 +224,14 @@ export const EXECUTE_TABS: ServiceTab[] = [
   { label: "Benchmarks", href: "/services/execution/benchmarks" },
   { label: "Candidates", href: "/services/execution/candidates" },
   { label: "Handoff", href: "/services/execution/handoff" },
-]
+];
 
 // Legacy alias
-export const EXECUTION_TABS = EXECUTE_TABS
+export const EXECUTION_TABS = EXECUTE_TABS;
 
 // ── Live/As-Of visibility per service ────────────────────────────────────────
 export const LIVE_ASOF_VISIBLE: Record<string, boolean> = {
-  acquire: true,
+  acquire: false,
   build: true,
   promote: false,
   run: true,
@@ -192,4 +239,4 @@ export const LIVE_ASOF_VISIBLE: Record<string, boolean> = {
   observe: true,
   manage: false,
   report: false,
-}
+};
