@@ -12,7 +12,11 @@ export interface OnboardingApplication {
   applicant_email: string
   org_name: string
   desired_product_slugs: string[]
-  subscription_tier: "basic" | "professional" | "institutional" | "enterprise"
+  subscription_tier: string
+  engagement_type: "ar" | "advisor" | null
+  regulated_activities: string[]
+  fund_structure_requested: "crypto_spot" | "derivatives_tradfi" | "both" | null
+  pod_registration_status: "not_required" | "pending" | "submitted" | "registered" | null
   status: "draft" | "submitted" | "in_review" | "approved" | "rejected"
   submitted_at: string | null
   reviewer_id: string | null
@@ -25,7 +29,7 @@ export interface OnboardingApplication {
 export interface DocumentArtifact {
   id: string
   application_id: string
-  doc_type: "proof_of_address" | "identity" | "management_agreement" | "invoice_or_tax" | "other"
+  doc_type: "proof_of_address" | "identity" | "source_of_funds" | "wealth_declaration" | "management_agreement" | "other"
   file_name: string
   uploaded_at: string
   review_status: "pending" | "accepted" | "rejected"
@@ -46,8 +50,12 @@ function defaultState(): OnboardingState {
         applicant_name: "New Fund Manager",
         applicant_email: "fm@gammainvestments.com",
         org_name: "Gamma Investments",
-        desired_product_slugs: ["data-pro", "execution-full", "strategy-full"],
-        subscription_tier: "institutional",
+        desired_product_slugs: ["ar", "dealing_principal", "managing", "compliance", "reporting"],
+        subscription_tier: "standard",
+        engagement_type: "ar",
+        regulated_activities: ["dealing_principal", "managing"],
+        fund_structure_requested: "derivatives_tradfi",
+        pod_registration_status: "pending",
         status: "submitted",
         submitted_at: "2026-03-18T14:00:00Z",
         reviewer_id: null,
@@ -62,8 +70,12 @@ function defaultState(): OnboardingState {
         applicant_name: "DeFi Desk Lead",
         applicant_email: "lead@deltaprotocol.io",
         org_name: "Delta Protocol",
-        desired_product_slugs: ["data-pro", "execution-full"],
-        subscription_tier: "professional",
+        desired_product_slugs: ["advisor", "dealing_principal", "arranging", "aml"],
+        subscription_tier: "standard",
+        engagement_type: "advisor",
+        regulated_activities: ["dealing_principal", "arranging"],
+        fund_structure_requested: "crypto_spot",
+        pod_registration_status: "not_required",
         status: "in_review",
         submitted_at: "2026-03-15T09:00:00Z",
         reviewer_id: "admin",

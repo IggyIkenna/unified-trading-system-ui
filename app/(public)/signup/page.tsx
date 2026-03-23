@@ -162,9 +162,17 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
 
   function handleSubmit() {
     const id = `onb-${Date.now().toString(36)}`, now = new Date().toISOString()
+    const engType = selOpts.has("ar") ? "ar" as const : selOpts.has("advisor") ? "advisor" as const : null
+    const regActs = ["dealing_principal", "dealing_agent", "arranging", "managing"].filter(a => selOpts.has(a))
+    const hasFundCrypto = selOpts.has("fund_crypto_spot")
+    const hasFundDeriv = selOpts.has("fund_derivatives")
+    const fundReq = hasFundCrypto && hasFundDeriv ? "both" as const : hasFundDeriv ? "derivatives_tradfi" as const : hasFundCrypto ? "crypto_spot" as const : null
+    const podStatus = hasFundDeriv ? "pending" as const : "not_required" as const
     const app: OnboardingApplication = {
       id, applicant_user_id: `uid-${Date.now()}`, applicant_name: name, applicant_email: email,
       org_name: company, desired_product_slugs: [...selOpts], subscription_tier: "standard",
+      engagement_type: engType, regulated_activities: regActs,
+      fund_structure_requested: fundReq, pod_registration_status: podStatus,
       status: "submitted", submitted_at: now, reviewer_id: null, review_note: "",
       correlation_id: `corr-${id}`, created_at: now, updated_at: now,
     }
