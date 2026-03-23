@@ -368,34 +368,6 @@ export function LifecycleNav({
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <Zap className="mr-2 size-4" />
-                Switch Persona
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-56">
-                {(user ? [
-                  { id: "admin", label: "Admin", desc: "Full system access", role: "admin" },
-                  { id: "internal-trader", label: "Internal Trader", desc: "Platform + wildcard", role: "internal" },
-                  { id: "client-full", label: "Client (Full)", desc: "Alpha Capital — all services", role: "client" },
-                  { id: "client-premium", label: "Client (Premium)", desc: "Vertex Partners — data + execution + strategy", role: "client" },
-                  { id: "client-data-only", label: "Client (Basic)", desc: "Beta Fund — data only", role: "client" },
-                ] : []).map((p) => (
-                  <DropdownMenuItem
-                    key={p.id}
-                    onClick={() => switchPersonaViaLogin(p.id)}
-                    className={user?.id === p.id ? "bg-primary/10" : ""}
-                  >
-                    <div className="flex flex-col">
-                      <span className="text-sm">{p.label}</span>
-                      <span className="text-[10px] text-muted-foreground">{p.desc}</span>
-                    </div>
-                    {user?.id === p.id && <Check className="ml-auto size-4 text-primary" />}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive"
               onClick={() => {
