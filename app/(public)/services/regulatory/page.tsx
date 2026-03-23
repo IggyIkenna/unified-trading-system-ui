@@ -103,15 +103,15 @@ export default function RegulatoryServicePage() {
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Managing Investments <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge></div>
+                  <div className="font-medium">Managing Investments <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge> <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0">EU Licensed Affiliate</Badge></div>
                   <div className="text-sm text-muted-foreground">Discretionary portfolio management</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-400/5 border border-emerald-400/20">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Fund Structure — Crypto Spot <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">In-House</Badge></div>
-                  <div className="text-sm text-muted-foreground">Pure crypto spot fund vehicles housed entirely in-house. Crypto spot is unregulated — no additional licensing required.</div>
+                  <div className="font-medium">Fund Structure — Crypto Spot <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">In-House</Badge> <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0">EU Licensed Affiliate</Badge></div>
+                  <div className="text-sm text-muted-foreground">Pure crypto spot fund vehicles housed entirely in-house.</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
@@ -202,7 +202,7 @@ export default function RegulatoryServicePage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Unregulated — no additional licensing needed
+                  Streamlined setup with full platform support
                 </div>
                 <div className="border-t border-border my-2" />
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Derivatives &amp; TradFi — EU Affiliate</div>

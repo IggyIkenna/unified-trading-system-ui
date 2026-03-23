@@ -1,23 +1,36 @@
 "use client"
 
-import React, { Suspense } from "react"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
+import type { DocumentArtifact, OnboardingApplication } from "@/lib/api/mock-onboarding-state"
 import { addApplication, addDocument } from "@/lib/api/mock-onboarding-state"
-import { addRequest } from "@/lib/api/mock-provisioning-state"
-import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state"
 import type { MockAccessRequest } from "@/lib/api/mock-provisioning-state"
+import { addRequest } from "@/lib/api/mock-provisioning-state"
 import {
-  Database, Brain, Zap, Briefcase, Shield, Layers, ArrowRight, ArrowLeft,
-  CheckCircle2, Calendar, Mail, Sparkles, Upload, FileText, Check, Download,
+  ArrowLeft,
+  ArrowRight,
+  Brain,
+  Briefcase,
+  Calendar,
+  Check,
+  CheckCircle2,
+  Database,
+  Download,
+  FileText,
+  Layers,
+  Mail,
+  Shield,
+  Sparkles, Upload,
+  Zap,
 } from "lucide-react"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import React, { Suspense } from "react"
 
 const SERVICES = [
   { id: "data", name: "Data Access", icon: Database, color: "text-sky-400", price: "From £250/mo", desc: "Market data across 128 venues, 5 asset classes" },
@@ -39,12 +52,12 @@ const REG_ACTIVITIES = [
   { id: "managing", label: "Managing Investments (SMA only)" },
 ]
 const REG_ADDONS = [
-  { id: "compliance", label: "Compliance Monitoring", price: "£1,000/mo" },
-  { id: "aml", label: "AML Monitoring", price: "£1,000/mo" },
-  { id: "reporting", label: "P&L & Client Reporting", price: "£1,000/mo" },
+  { id: "compliance", label: "Compliance Monitoring" },
+  { id: "aml", label: "AML Monitoring" },
+  { id: "reporting", label: "P&L & Client Reporting" },
 ]
 const REG_FUND_OPTS = [
-  { id: "fund_crypto_spot", label: "Crypto Spot Fund (in-house, unregulated)" },
+  { id: "fund_crypto_spot", label: "Crypto Spot Fund (in-house)" },
   { id: "fund_derivatives", label: "Derivatives & TradFi Fund (EU-licensed affiliate)" },
 ]
 const INV_OPTS = [
@@ -110,9 +123,8 @@ function StepIndicator({ current, onNavigate }: { current: number; onNavigate: (
           <React.Fragment key={label}>
             {i > 0 && <div className={`h-px w-6 sm:w-10 ${done ? "bg-emerald-500" : "bg-border"}`} />}
             <button type="button" disabled={!done || current === 5} onClick={() => done && onNavigate(num)}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                done ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 cursor-pointer"
-                  : active ? "bg-primary/10 text-primary ring-1 ring-primary/30" : "text-muted-foreground"}`}>
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${done ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 cursor-pointer"
+                : active ? "bg-primary/10 text-primary ring-1 ring-primary/30" : "text-muted-foreground"}`}>
               {done ? <Check className="size-3" /> : <span className="text-[10px]">{num}</span>}
               <span className="hidden sm:inline">{label}</span>
             </button>
@@ -244,12 +256,9 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                 <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Add-on Services (optional)</Label>
                 <p className="text-xs text-muted-foreground">If you don&apos;t select a service, you&apos;ll need to provide proof of your own coverage.</p>
                 {REG_ADDONS.map(a => (
-                  <label key={a.id} className="flex items-center justify-between rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <Checkbox checked={selOpts.has(a.id)} onCheckedChange={() => toggle(a.id)} />
-                      <span className="text-sm">{a.label}</span>
-                    </div>
-                    <Badge variant="outline" className="text-[10px]">{a.price}</Badge>
+                  <label key={a.id} className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors">
+                    <Checkbox checked={selOpts.has(a.id)} onCheckedChange={() => toggle(a.id)} />
+                    <span className="text-sm">{a.label}</span>
                   </label>
                 ))}
               </div>
@@ -420,8 +429,8 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
                     {docs[slot.key]
                       ? <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">Uploaded</Badge>
                       : <Badge variant="outline" className={`text-[10px] ${isReq(slot) ? "border-amber-500/30 text-amber-400" : ""}`}>
-                          {isReq(slot) ? "Still needed" : "Optional"}
-                        </Badge>}
+                        {isReq(slot) ? "Still needed" : "Optional"}
+                      </Badge>}
                   </div>
                 ))}
               </div>
