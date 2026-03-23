@@ -60,7 +60,7 @@ export function DebugFooter() {
     localStorage.removeItem("portal_user")
     localStorage.removeItem("portal_token")
     localStorage.removeItem("odum_user")
-    router.push(`/login?persona=${personaId}`)
+    window.location.href = `/login?persona=${personaId}`
   }
 
   const personas = [
