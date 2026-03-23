@@ -54,7 +54,7 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
       {scope.mode === "batch" && (
         <>
           <div className={cn(
-            "flex items-center gap-1.5 px-2 py-1 border rounded-md",
+            "hidden sm:flex items-center gap-1.5 px-2 py-1 border rounded-md",
             showWarning ? "border-amber-500 bg-amber-500/5" : "border-border"
           )}>
             <Calendar className={cn("size-3", showWarning ? "text-amber-500" : "text-muted-foreground")} />
@@ -73,7 +73,7 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
             </div>
           )}
 
-          <div className="flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1">
             {[
               { label: "Yest", offset: -1 },
               { label: "2d", offset: -2 },

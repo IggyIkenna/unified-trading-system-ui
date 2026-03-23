@@ -189,10 +189,11 @@ export function LifecycleRail({
               }
             >
               <StageIndicator status={status} platform={platform} />
-              {stage}
+              <span className="hidden md:inline">{stage}</span>
+              <span className="md:hidden text-[9px]">{i + 1}</span>
             </button>
             {i < stages.length - 1 && (
-              <ChevronRight className="size-3 text-muted-foreground/30 flex-shrink-0" />
+              <ChevronRight className="size-3 text-muted-foreground/30 flex-shrink-0 hidden sm:block" />
             )}
           </React.Fragment>
         )
