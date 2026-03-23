@@ -58,7 +58,7 @@ const REG_ADDONS = [
 ]
 const REG_FUND_OPTS = [
   { id: "fund_crypto_spot", label: "Crypto Spot Fund (in-house)" },
-  { id: "fund_derivatives", label: "Derivatives & TradFi Fund (EU-licensed affiliate)" },
+  { id: "fund_derivatives", label: "Derivatives & TradFi Fund (EU-regulated)" },
 ]
 const INV_OPTS = [
   { id: "sma", label: "Separately Managed Account" }, { id: "fund_access", label: "Fund Access" },

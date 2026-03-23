@@ -100,22 +100,22 @@ export default function RegulatoryServicePage() {
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Managing Investments <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge> <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0">EU Licensed Affiliate</Badge></div>
+                  <div className="font-medium">Managing Investments <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge> <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0">EU Regulated</Badge></div>
                   <div className="text-sm text-muted-foreground">Discretionary portfolio management</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-400/5 border border-emerald-400/20">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Fund Structure — Crypto Spot <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">In-House</Badge> <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0">EU Licensed Affiliate</Badge></div>
+                  <div className="font-medium">Fund Structure — Crypto Spot <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">In-House</Badge> <Badge variant="outline" className="ml-1 text-[10px] px-1.5 py-0">EU Regulated</Badge></div>
                   <div className="text-sm text-muted-foreground">Pure crypto spot fund vehicles housed entirely in-house.</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
                 <CheckCircle2 className="size-5 text-primary shrink-0" />
                 <div>
-                  <div className="font-medium">Fund Structure — Derivatives &amp; TradFi <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">EU Licensed Affiliate</Badge></div>
-                  <div className="text-sm text-muted-foreground">Crypto derivatives, options, futures, and traditional markets require our EU-licensed affiliate partner POD. Combined with our FCA umbrella for UK + EU coverage.</div>
+                  <div className="font-medium">Fund Structure — Derivatives &amp; TradFi <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">EU Regulated</Badge></div>
+                  <div className="text-sm text-muted-foreground">Crypto derivatives, options, futures, and traditional markets. Managed by us under combined UK + EU regulatory coverage.</div>
                 </div>
               </div>
             </CardContent>
@@ -187,9 +187,9 @@ export default function RegulatoryServicePage() {
             <Card className="border-primary/30 bg-primary/5">
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2 border-primary/40 text-primary">Fund Structure</Badge>
-                <CardTitle>Fund Partnership</CardTitle>
+                <CardTitle>Fund Management</CardTitle>
                 <div className="text-2xl font-bold">Contact Us</div>
-                <CardDescription>Two paths depending on asset class — crypto spot in-house, everything else via EU-licensed affiliate</CardDescription>
+                <CardDescription>Two paths depending on asset class — we manage both under full regulatory coverage</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Crypto Spot — In-House</div>
@@ -205,7 +205,7 @@ export default function RegulatoryServicePage() {
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Derivatives &amp; TradFi — EU Affiliate</div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Crypto derivatives, options, futures via EU-licensed affiliate
+                  Crypto derivatives, options, futures — EU-regulated fund vehicles
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
@@ -355,10 +355,10 @@ export default function RegulatoryServicePage() {
               <Card className="border-primary/20 bg-primary/5">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Fund Structure</CardTitle>
-                  <CardDescription className="text-xs">Partner with our affiliate POD to set up a fund</CardDescription>
+                  <CardDescription className="text-xs">We set up and manage fund vehicles for your strategies</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Fund structuring via our affiliate partner POD</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Regulated fund vehicle setup and administration</div>
                   <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Launch regulated fund vehicles for your strategies</div>
                   <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Client distribution through our network</div>
                   <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Combined with our regulatory umbrella for full coverage</div>
