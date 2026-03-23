@@ -44,6 +44,9 @@ const defaultFilter = {
 }
 
 function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
+  // Pass through to real Next.js API routes that need server-side execution (file I/O)
+  if (path.startsWith("/api/onboarding/")) return null
+
   // Strip query params for matching
   const route = path.split("?")[0]
 
