@@ -115,6 +115,10 @@ export const PROMOTE_TABS: ServiceTab[] = [
 export const TRADING_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/trading/overview" },
   { label: "Terminal", href: "/services/trading/terminal" },
+  { label: "DeFi Ops", href: "/services/trading/defi" },
+  { label: "Sports", href: "/services/trading/sports" },
+  { label: "Bundles", href: "/services/trading/bundles" },
+  { label: "Instructions", href: "/services/trading/instructions" },
   { label: "Positions", href: "/services/trading/positions" },
   { label: "Orders", href: "/services/trading/orders" },
   { label: "Alerts", href: "/services/trading/alerts" },
@@ -157,6 +161,11 @@ export const ADMIN_TABS: ServiceTab[] = [
   { label: "DevOps", href: "/devops" },
   { label: "Jobs", href: "/ops/jobs" },
   { label: "Services", href: "/ops/services" },
+  { label: "User Management", href: "/admin/users" },
+  { label: "Onboard User", href: "/admin/users/onboard" },
+  { label: "Access Templates", href: "/admin/users/templates" },
+  { label: "Provider Health", href: "/admin/users/health-checks" },
+  { label: "Access Requests", href: "/admin/users/requests" },
   { label: "Operations", href: "/ops" },
 ]
 

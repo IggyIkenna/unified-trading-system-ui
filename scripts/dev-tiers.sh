@@ -195,7 +195,7 @@ if [ "$TIER" = "1" ] || [ "$TIER" = "2" ]; then
 
   # auth-api (port 8200)
   start_process "auth-api" "$WORKSPACE/auth-api" \
-    env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local \
+    env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local WORKFLOW_EXECUTION_ENABLED=false \
     .venv/bin/python -m uvicorn auth_api.app:app --host 0.0.0.0 --port 8200
 
   # client-reporting-api (port 8014)

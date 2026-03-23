@@ -65,7 +65,7 @@ export const EXECUTION_MODES: Record<ExecutionMode, ExecutionModeConfig> = {
 export interface Instrument {
   key: string
   venue: string
-  type: "SPOT_ASSET" | "Perp" | "aToken" | "debtToken" | "LP NFT" | "Option" | "Future" | "Exchange Odds" | "Fixed Odds"
+  type: "SPOT_ASSET" | "Perp" | "aToken" | "debtToken" | "LP NFT" | "Option" | "Future" | "Exchange Odds" | "Fixed Odds" | "LST" | "Supply"
   role: string
 }
 
@@ -143,6 +143,17 @@ export interface TestingStageStatus {
   stage: TestingStage
   status: "done" | "pending" | "blocked" | "in_progress"
   notes?: string
+}
+
+// =============================================================================
+// KELLY SIZING
+// =============================================================================
+
+export interface KellySizing {
+  fraction: number
+  maxStakePct: number
+  edgeThreshold: number
+  bankrollDrawdownLimit: number
 }
 
 // =============================================================================
@@ -248,6 +259,9 @@ export interface Strategy {
   
   // Instruction Types - operations used by this strategy (critique 1.7)
   instructionTypes: string[]
+
+  // Kelly Criterion Sizing (sports strategies)
+  kellySizing?: KellySizing
 }
 
 // =============================================================================
@@ -948,8 +962,14 @@ id: "SPORTS_NFL_ARB_SCE_GAME",
     },
     sparklineData: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
     instructionTypes: ["TRADE"],
+    kellySizing: {
+      fraction: 0.5,
+      maxStakePct: 5,
+      edgeThreshold: 0.02,
+      bankrollDrawdownLimit: 20,
+    },
   },
-  
+
   // ============================================
   // BTC Basis Trade (CeFi version)
   // ============================================
@@ -1410,6 +1430,12 @@ id: "DEFI_AAVE_LEND_EVT_1D",
     performance: { pnlTotal: 245000, pnlMTD: 32000, sharpe: 2.4, maxDrawdown: 8.2, returnPct: 18.4, positions: 0, netExposure: 800000 },
     sparklineData: [10, 12, 11, 15, 14, 18, 17, 20, 19, 23, 22, 25],
     instructionTypes: ["TRADE"],
+    kellySizing: {
+      fraction: 0.5,
+      maxStakePct: 5,
+      edgeThreshold: 0.02,
+      bankrollDrawdownLimit: 20,
+    },
   },
 
   // Morpho Lending
@@ -3009,6 +3035,247 @@ id: "DEFI_AAVE_LEND_EVT_1D",
     performance: { pnlTotal: 195000, pnlMTD: 32000, sharpe: 1.5, maxDrawdown: 14.2, returnPct: 20.8, positions: 1, netExposure: 1200000 },
     sparklineData: [6, 10, 8, 14, 12, 18, 16, 22, 20, 26, 24, 28],
     instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // Sports Market Making (Betfair EPL)
+  // ============================================
+  {
+    id: "SPORTS_BETFAIR_MM_EVT_TICK",
+    name: "Betfair EPL Market Making",
+    description: "Back/lay quoting on Betfair exchange for EPL matches. Sub-second feature-to-strategy with tick-level rebalancing.",
+    strategyIdPattern: "SPORTS_BETFAIR_MM_EVT_TICK",
+    clientId: "sports-desk",
+    assetClass: "Sports",
+    strategyType: "Sports MM",
+    archetype: "MARKET_MAKING",
+    executionMode: "EVT",
+    status: "development",
+    version: "0.1.0",
+    instruments: [
+      { key: "BETFAIR:EXCHANGE:EPL_MATCH", venue: "Betfair", type: "Exchange Odds", role: "Back/lay quoting" },
+    ],
+    featuresConsumed: [
+      { name: "best_back", source: "features-sports", sla: "100ms", usedFor: "Best available back price" },
+      { name: "best_lay", source: "features-sports", sla: "100ms", usedFor: "Best available lay price" },
+      { name: "suspension_flag", source: "features-sports", sla: "100ms", usedFor: "Market suspension detection (goal/VAR)" },
+      { name: "sharp_calibration", source: "features-sports", sla: "1s", usedFor: "Fair value calibration from sharp books" },
+    ],
+    dataArchitecture: {
+      rawDataSource: "Betfair Streaming API",
+      processedData: ["best_back", "best_lay", "suspension_flag", "sharp_calibration"],
+      interval: "Tick-driven",
+      lowestGranularity: "Sub-second",
+      executionMode: "event_driven",
+    },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "spread_pnl", label: "Spread P&L", settlementType: "PER_FILL", description: "Captured back-lay spread", color: "#4ade80" },
+        { id: "greening_pnl", label: "Greening P&L", settlementType: "REALIZED", description: "Profit locked by greening across outcomes", color: "#22d3ee" },
+        { id: "inventory_pnl", label: "Inventory P&L", settlementType: "MARK_TO_MARKET", description: "MTM on unhedged inventory", color: "#60a5fa" },
+        { id: "commission", label: "Commission", settlementType: "PER_FILL", description: "Betfair commission on net winnings", color: "#ef4444" },
+      ],
+      formula: "total_pnl = spread_pnl + greening_pnl + inventory_pnl - commission",
+    },
+    riskProfile: {
+      targetReturn: "20-35%",
+      targetSharpe: "3.0+",
+      maxDrawdown: "5%",
+      maxLeverage: "1x",
+      capitalScalability: "$1M per market",
+    },
+    latencyProfile: {
+      dataToSignal: "50ms p50 / 200ms p99",
+      signalToInstruction: "10ms p50 / 50ms p99",
+      instructionToFill: "100ms p50 / 500ms p99",
+      endToEnd: "~160ms p50 / ~750ms p99",
+      coLocationNeeded: false,
+    },
+    riskSubscriptions: [
+      { riskType: "suspension", subscribed: true, threshold: "CRITICAL", action: "Pause all quoting on goal/VAR/red card" },
+      { riskType: "adverse_selection", subscribed: true, threshold: "Fill rate vs sharp move", action: "Widen spread or pull quotes" },
+      { riskType: "inventory", subscribed: true, threshold: "Max exposure across outcomes", action: "Skew quotes to flatten" },
+      { riskType: "venue_protocol", subscribed: true, threshold: "API disconnect / rate limit", action: "Cancel all open orders" },
+    ],
+    testingStatus: [
+      { stage: "MOCK", status: "in_progress", notes: "MockBetfairFeed under development" },
+      { stage: "HISTORICAL", status: "pending" },
+      { stage: "LIVE_MOCK", status: "pending" },
+      { stage: "LIVE_TESTNET", status: "pending" },
+      { stage: "STAGING", status: "pending" },
+      { stage: "LIVE_REAL", status: "pending" },
+    ],
+    configParams: [
+      { key: "spread_ticks", value: "2", description: "Minimum spread in ticks" },
+      { key: "max_exposure_per_outcome", value: "5000", description: "Max GBP per outcome" },
+      { key: "greening_threshold_pct", value: "0.8", description: "Green at 80% of target profit" },
+      { key: "suspension_cooldown_ms", value: "5000", description: "Wait 5s after suspension lifts" },
+    ],
+    venues: ["BETFAIR"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["TRADE"],
+  },
+
+  // ============================================
+  // DeFi Staked Basis (LST + short perp)
+  // ============================================
+  {
+    id: "DEFI_ETH_STAKED_BASIS_SCE_1H",
+    name: "ETH Staked Basis (weETH + Short Perp)",
+    description: "Long weETH (liquid staking token) for staking yield, short ETH perpetual on Hyperliquid for delta hedge. Captures LST yield + funding rate spread.",
+    strategyIdPattern: "DEFI_ETH_STAKED_BASIS_SCE_1H",
+    clientId: "delta-one",
+    assetClass: "DeFi",
+    strategyType: "Staked Basis",
+    archetype: "BASIS_TRADE",
+    executionMode: "SCE",
+    status: "development",
+    version: "0.1.0",
+    instruments: [
+      { key: "WALLET:LST:WEETH", venue: "Wallet", type: "LST", role: "Staking yield (long leg)" },
+      { key: "HYPERLIQUID:PERPETUAL:ETH-USD", venue: "Hyperliquid", type: "Perp", role: "Delta hedge (short leg)" },
+    ],
+    featuresConsumed: [
+      { name: "lst_eth_exchange_rate", source: "features-onchain", sla: "60s", usedFor: "LST appreciation rate, rebalance trigger" },
+      { name: "funding_rate", source: "features-delta-one", sla: "10s", usedFor: "Funding yield component" },
+      { name: "eth_spot_price", source: "market-tick-data", sla: "1s", usedFor: "Delta calculation, position sizing" },
+    ],
+    dataArchitecture: {
+      rawDataSource: "On-chain + Hyperliquid API",
+      processedData: ["lst_eth_exchange_rate", "funding_rate", "eth_spot_price"],
+      interval: "Time-driven (candle-based)",
+      lowestGranularity: "1H",
+      executionMode: "same_candle_exit",
+    },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "staking_yield_pnl", label: "Staking Yield", settlementType: "LST_YIELD", description: "weETH exchange rate appreciation", color: "#4ade80" },
+        { id: "funding_pnl", label: "Funding P&L", settlementType: "FUNDING_8H", description: "Short perp funding payments received", color: "#60a5fa" },
+        { id: "lst_depeg_pnl", label: "LST Depeg P&L", settlementType: "MARK_TO_MARKET", description: "MTM from weETH/ETH peg deviation", color: "#fbbf24" },
+        { id: "trading_pnl", label: "Trading P&L", settlementType: "REALIZED", description: "Entry/exit execution P&L", color: "#a78bfa" },
+        { id: "fees_gas", label: "Fees & Gas", settlementType: "PER_FILL", description: "DEX swap fees + on-chain gas", color: "#ef4444" },
+      ],
+      formula: "total_pnl = staking_yield + funding_pnl + lst_depeg_pnl + trading_pnl - fees_gas",
+    },
+    riskProfile: {
+      targetReturn: "10-18%",
+      targetSharpe: "2.0+",
+      maxDrawdown: "8%",
+      maxLeverage: "1x",
+      capitalScalability: "$10M",
+    },
+    latencyProfile: {
+      dataToSignal: "1s p50 / 5s p99",
+      signalToInstruction: "50ms p50 / 200ms p99",
+      instructionToFill: "2s p50 / 15s p99",
+      endToEnd: "~3s p50 / ~20s p99",
+      coLocationNeeded: false,
+    },
+    riskSubscriptions: [
+      { riskType: "delta", subscribed: true, threshold: "2% drift", action: "Adjust perp size to re-hedge" },
+      { riskType: "funding", subscribed: true, threshold: "Negative funding sustained >24h", action: "Evaluate exit" },
+      { riskType: "protocol_risk", subscribed: true, threshold: "weETH depeg > 2%", action: "Emergency exit LST position" },
+      { riskType: "liquidity", subscribed: true, threshold: "weETH DEX liquidity < $1M", action: "Reduce position size" },
+    ],
+    testingStatus: [
+      { stage: "MOCK", status: "pending" },
+      { stage: "HISTORICAL", status: "pending" },
+      { stage: "LIVE_MOCK", status: "pending" },
+      { stage: "LIVE_TESTNET", status: "pending" },
+      { stage: "STAGING", status: "pending" },
+      { stage: "LIVE_REAL", status: "pending" },
+    ],
+    configParams: [
+      { key: "initial_capital", value: "500000", description: "Starting capital in USDT" },
+      { key: "min_staking_apy", value: "0.03", description: "Min staking APY to enter" },
+      { key: "min_funding_rate", value: "0.0001", description: "Min funding rate threshold" },
+      { key: "max_depeg_pct", value: "0.02", description: "Max acceptable depeg before exit" },
+      { key: "hedge_ratio", value: "1.0", description: "Delta hedge ratio" },
+    ],
+    venues: ["WALLET", "HYPERLIQUID"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["SWAP", "TRADE"],
+  },
+
+  // ============================================
+  // DeFi Aave V3 Pure Supply (USDC)
+  // ============================================
+  {
+    id: "DEFI_AAVE_SUPPLY_USDC_SCE_1H",
+    name: "Aave V3 USDC Supply",
+    description: "Pure supply of USDC to Aave V3 for lending yield. No perp leg, no leverage. Monitor utilization and APY for optimal capital deployment.",
+    strategyIdPattern: "DEFI_AAVE_SUPPLY_USDC_SCE_1H",
+    clientId: "defi-desk",
+    assetClass: "DeFi",
+    strategyType: "Lending",
+    archetype: "YIELD",
+    executionMode: "SCE",
+    status: "development",
+    version: "0.1.0",
+    instruments: [
+      { key: "AAVE_V3:SUPPLY:USDC", venue: "Aave V3", type: "Supply", role: "Supplied USDC earning interest" },
+    ],
+    featuresConsumed: [
+      { name: "aave_supply_apy", source: "features-onchain", sla: "60s", usedFor: "Yield monitoring, entry/exit decision" },
+      { name: "aave_utilization", source: "features-onchain", sla: "60s", usedFor: "Pool utilization rate" },
+      { name: "liquidity_index", source: "features-onchain", sla: "60s", usedFor: "Interest accrual tracking" },
+    ],
+    dataArchitecture: {
+      rawDataSource: "On-chain (Aave V3 pool)",
+      processedData: ["aave_supply_apy", "aave_utilization", "liquidity_index"],
+      interval: "Time-driven",
+      lowestGranularity: "1H",
+      executionMode: "same_candle_exit",
+    },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        { id: "interest_accrual", label: "Interest Accrual", settlementType: "AAVE_INDEX", description: "USDC supply interest via liquidity index", color: "#4ade80" },
+        { id: "gas", label: "Gas Cost", settlementType: "PER_FILL", description: "Supply/withdraw transaction gas", color: "#ef4444" },
+      ],
+      formula: "total_pnl = aUSDC_balance * liquidity_index_delta - gas_costs",
+    },
+    riskProfile: {
+      targetReturn: "4-8%",
+      targetSharpe: "4.0+",
+      maxDrawdown: "1%",
+      maxLeverage: "1x",
+      capitalScalability: "$50M",
+    },
+    latencyProfile: {
+      dataToSignal: "1s p50 / 5s p99",
+      signalToInstruction: "100ms p50 / 500ms p99",
+      instructionToFill: "15s p50 / 60s p99",
+      endToEnd: "~16s p50 / ~65s p99",
+      coLocationNeeded: false,
+    },
+    riskSubscriptions: [
+      { riskType: "protocol_risk", subscribed: true, threshold: "Aave governance / exploit", action: "Withdraw all" },
+      { riskType: "liquidity", subscribed: true, threshold: "Utilization > 95% (withdraw queue)", action: "Monitor, reduce if sustained" },
+      { riskType: "depeg", subscribed: true, threshold: "USDC depeg > 0.5%", action: "Evaluate exit to diversify stables" },
+    ],
+    testingStatus: [
+      { stage: "MOCK", status: "pending" },
+      { stage: "HISTORICAL", status: "pending" },
+      { stage: "LIVE_MOCK", status: "pending" },
+      { stage: "LIVE_TESTNET", status: "pending" },
+      { stage: "STAGING", status: "pending" },
+      { stage: "LIVE_REAL", status: "pending" },
+    ],
+    configParams: [
+      { key: "initial_capital", value: "1000000", description: "Starting capital in USDC" },
+      { key: "min_supply_apy", value: "0.03", description: "Min 3% APY to stay supplied" },
+      { key: "max_utilization", value: "0.95", description: "Withdraw if utilization exceeds 95%" },
+      { key: "rebalance_interval_hours", value: "24", description: "Check rebalance every 24h" },
+    ],
+    venues: ["AAVE_V3_ETH"],
+    performance: { pnlTotal: 0, pnlMTD: 0, sharpe: 0, maxDrawdown: 0, returnPct: 0, positions: 0, netExposure: 0 },
+    sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    instructionTypes: ["LEND"],
   },
 ]
   

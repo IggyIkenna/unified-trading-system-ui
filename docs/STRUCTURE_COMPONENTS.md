@@ -19,6 +19,10 @@ All reusable React components. Organised into 11 subfolders by domain. As of com
 | `ml/` | 2 | ML loss curves, ML navigation |
 | `execution-platform/` | 1 | Execution platform navigation |
 | `strategy-platform/` | 1 | Strategy platform navigation |
+| `chat/` | 5 | Chat widget — SSE-streaming AI assistant (public, client, internal tiers) |
+| `research/` | 1 | Strategy creation wizard |
+| `reports/` | 2 | Report generation and scheduling modals |
+| `risk/` | 1 | Correlation heatmap visualisation |
 | `marketing/` | 6 | Landing page visualisations, galaxy canvas, architecture diagrams |
 
 ---
@@ -206,6 +210,45 @@ Used exclusively in `app/(ops)/devops/`. Talk to the deployment-api backend (see
 |---|---|
 | `loss-curves.tsx` | Training loss / validation loss charts |
 | `ml-nav.tsx` | Navigation menu for ML sub-pages |
+
+---
+
+## chat/ — Chat Widget Components (5 files)
+
+AI-powered chat assistant with SSE streaming. Three tiers: public (no auth), client (external org), internal (operator).
+
+| File | Purpose |
+|---|---|
+| `chat-widget.tsx` | Core chat widget — floating panel with minimise/expand, tier-aware |
+| `chat-widget-connected.tsx` | Auth-aware wrapper — resolves tier from auth context |
+| `chat-widget-public.tsx` | Public-tier wrapper — no auth needed |
+| `chat-messages.tsx` | Message list renderer with streaming indicator |
+| `chat-input.tsx` | Chat text input with send button |
+
+---
+
+## research/ — Research Components (1 file)
+
+| File | Purpose |
+|---|---|
+| `strategy-wizard.tsx` | Multi-step strategy creation wizard — archetype selection, parameters, backtest launch |
+
+---
+
+## reports/ — Report Components (2 files)
+
+| File | Purpose |
+|---|---|
+| `generate-report-modal.tsx` | Modal to generate ad-hoc reports (P&L attribution, regulatory, settlement) |
+| `schedule-report-modal.tsx` | Modal to schedule recurring report delivery |
+
+---
+
+## risk/ — Risk Components (1 file)
+
+| File | Purpose |
+|---|---|
+| `correlation-heatmap.tsx` | Colour-coded correlation matrix heatmap for portfolio positions |
 
 ---
 

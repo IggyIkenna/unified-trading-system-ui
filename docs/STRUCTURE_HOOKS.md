@@ -15,6 +15,9 @@ hooks/
 ├── api/                     React Query data-fetching hooks (one per domain)
 │   ├── use-alerts.ts
 │   ├── use-audit.ts
+│   ├── use-chat.ts
+│   ├── use-manage.ts
+│   ├── use-news.ts
 │   ├── use-deployments.ts
 │   ├── use-instruments.ts
 │   ├── use-market-data.ts
@@ -99,6 +102,9 @@ Query keys follow `[domain, ...params]` pattern. Invalidation is domain-scoped.
 | Risk | `use-risk.ts` | `useRiskSummary()`, `useRiskExposures()` |
 | Service status | `use-service-status.ts` | `useServiceStatus()`, `useAllServicesStatus()` |
 | Strategies | `use-strategies.ts` | `useStrategies()`, `useStrategy()`, `usePromoteStrategy()` |
+| Chat | `use-chat.ts` | `useChat()` |
+| Management | `use-manage.ts` | `useMandates()`, `useFeeSchedules()`, `useDocuments()`, `useGenerateReport()`, `useScheduledReports()` |
+| News | `use-news.ts` | `useNewsFeed()` |
 | Trading | `use-trading.ts` | `useTradingAccounts()`, `useTradingActivity()` |
 
 ### How hooks connect to MSW mocks

@@ -68,6 +68,8 @@ const nextConfig = {
       // Misc legacy flat routes (direct, no double-hop)
       { source: "/executive", destination: "/services/reports/executive", permanent: true },
       { source: "/quant", destination: "/services/research/quant", permanent: true },
+      // Observe service — root redirect
+      { source: "/services/observe", destination: "/services/observe/health", permanent: false },
     ]
   },
 }

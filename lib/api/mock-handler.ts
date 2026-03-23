@@ -292,37 +292,77 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Execution ---
   if (route === "/api/execution/orders") {
-    // Map execution-platform mock shape to OrderRecord shape with edge/instant P&L
-    const liveStrategies = perf.filter(s => s.status === "live")
-    return json(MOCK_RECENT_ORDERS.map((o, i) => {
-      const strategy = liveStrategies[i % liveStrategies.length]
-      const fillPrice = o.avgPrice ?? o.limitPrice ?? 0
-      const markPrice = fillPrice * (1 + (i % 3 === 0 ? -0.002 : 0.003))
-      const side = o.side.toUpperCase()
-      const edgeBps = side === "BUY"
-        ? ((markPrice - fillPrice) / fillPrice) * 10000
-        : ((fillPrice - markPrice) / fillPrice) * 10000
-      const instantPnl = side === "BUY"
-        ? (markPrice - fillPrice) * (o.filledQty ?? 0) / fillPrice
-        : (fillPrice - markPrice) * (o.filledQty ?? 0) / fillPrice
+    // Generate 24 TCA-enriched orders across venues and algos
+    const tcaVenues = ["binance", "okx", "hyperliquid", "deribit"]
+    const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"]
+    const tcaInstruments = ["BTC-PERP", "ETH-PERP", "SOL-PERP", "BTC-USDT", "ETH-USDT", "DOGE-USDT", "AVAX-PERP", "LINK-PERP"]
+    const tcaOrders = Array.from({ length: 24 }, (_, i) => {
+      const instrument = tcaInstruments[i % tcaInstruments.length]
+      const venue = tcaVenues[i % tcaVenues.length]
+      const algo = tcaAlgos[i % tcaAlgos.length]
+      const side = i % 3 === 0 ? "SELL" : "BUY"
+      const basePrice = instrument.includes("BTC") ? 42000 : instrument.includes("ETH") ? 3200 : instrument.includes("SOL") ? 145 : instrument.includes("DOGE") ? 0.18 : instrument.includes("AVAX") ? 38 : instrument.includes("LINK") ? 16 : 100
+      const arrivalPrice = basePrice * (1 + (Math.sin(i * 0.7) * 0.002))
+      const slippageBps = parseFloat(((Math.sin(i * 1.3) * 3) + 1.5).toFixed(1))
+      const avgFillPrice = arrivalPrice * (1 + slippageBps / 10000 * (side === "BUY" ? 1 : -1))
+      const quantity = instrument.includes("BTC") ? 0.5 + i * 0.1 : instrument.includes("ETH") ? 2 + i * 0.5 : 10 + i * 5
+      const fillRate = parseFloat((95 + Math.random() * 5).toFixed(1))
+      const durationMs = 500 + Math.round(Math.random() * 4500)
+      const marketImpact = parseFloat((slippageBps * 0.4).toFixed(1))
+      const timingCost = parseFloat((slippageBps * 0.25).toFixed(1))
+      const totalCost = parseFloat((Math.abs(slippageBps) + marketImpact * 0.3).toFixed(1))
+      const vwap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.001)
+      const twap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.0008)
       return {
-        order_id: o.id,
-        instrument: o.instrument,
+        id: `ord-tca-${i + 1}`,
+        order_id: `ord-tca-${i + 1}`,
+        instrument,
+        venue,
+        algo,
         side,
-        type: o.algo ?? "MARKET",
-        price: fillPrice,
-        mark_price: Math.round(markPrice * 100) / 100,
-        quantity: o.quantity,
-        filled: o.filledQty ?? 0,
-        status: o.status.toUpperCase(),
-        venue: o.venue,
-        strategy_id: strategy?.id ?? "",
-        strategy_name: strategy?.name ?? "",
-        edge_bps: Math.round(edgeBps * 10) / 10,
-        instant_pnl: Math.round(instantPnl),
-        created_at: o.createdAt,
+        type: algo,
+        quantity,
+        price: arrivalPrice,
+        avgPrice: parseFloat(avgFillPrice.toFixed(4)),
+        filled: Math.round(quantity * fillRate / 100 * 100) / 100,
+        status: "FILLED",
+        fillRate,
+        durationMs,
+        strategy_id: `strat-${i % 6}`,
+        strategy_name: `Strategy ${i % 6}`,
+        edge_bps: parseFloat((-slippageBps).toFixed(1)),
+        instant_pnl: Math.round((avgFillPrice - arrivalPrice) * quantity * (side === "SELL" ? -1 : 1)),
+        created_at: new Date(Date.now() - i * 1800000).toISOString(),
+        tca: {
+          slippage: slippageBps,
+          marketImpact,
+          timingCost,
+          totalCost,
+          arrivalPrice: parseFloat(arrivalPrice.toFixed(4)),
+          vwap: parseFloat(vwap.toFixed(4)),
+          twap: parseFloat(twap.toFixed(4)),
+          implementationShortfall: parseFloat((slippageBps + marketImpact).toFixed(1)),
+        },
       }
-    }))
+    })
+    return json({
+      data: tcaOrders,
+      tcaBreakdown: [
+        { name: "Spread Cost", value: 1.8, color: "#3b82f6" },
+        { name: "Market Impact", value: 1.2, color: "#8b5cf6" },
+        { name: "Timing Cost", value: 0.6, color: "#f59e0b" },
+        { name: "Fees", value: 0.8, color: "#6b7280" },
+      ],
+      executionTimeline: Array.from({ length: 20 }, (_, i) => ({
+        time: new Date(Date.now() - (20 - i) * 3600000).toISOString(),
+        slippage: parseFloat((1.5 + Math.sin(i * 0.5) * 2).toFixed(1)),
+        volume: Math.round(500000 + Math.random() * 2000000),
+      })),
+      slippageDistribution: [
+        { range: "<-2bps", count: 3 }, { range: "-2 to 0", count: 5 }, { range: "0 to 2", count: 8 },
+        { range: "2 to 4", count: 5 }, { range: "4 to 6", count: 2 }, { range: ">6bps", count: 1 },
+      ],
+    })
   }
   if (route === "/api/execution/algos") {
     return json({ data: MOCK_EXECUTION_ALGOS })
@@ -442,9 +482,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   if (route === "/api/risk/stress") {
     return json({ scenarios: [
-      { name: "Market Crash -20%", multiplier: -0.2, pnlImpact: -2400000, varImpact: -3100000, positionsBreaching: 12, largestLoss: "BTC-PERP: -$850K" },
-      { name: "Vol Spike +50%", multiplier: 1.5, pnlImpact: -800000, varImpact: -1200000, positionsBreaching: 5, largestLoss: "ETH-PERP: -$320K" },
-      { name: "Rate Hike 100bp", multiplier: 0.01, pnlImpact: -350000, varImpact: -500000, positionsBreaching: 3, largestLoss: "SOL-PERP: -$120K" },
+      { id: "covid-crash", name: "COVID Crash (Mar 2020)", description: "60% equity drawdown, crypto -50%", multiplier: -0.5, pnlImpact: -3200000, varImpact: -4200000, positionsBreaching: 18, largestLoss: "BTC-PERP: -$1.2M" },
+      { id: "btc-may-2021", name: "BTC Flash Crash (May 2021)", description: "BTC -35% in 24h, cascading liquidations", multiplier: -0.35, pnlImpact: -1800000, varImpact: -2500000, positionsBreaching: 14, largestLoss: "BTC-PERP: -$850K" },
+      { id: "ftx-collapse", name: "FTX Collapse (Nov 2022)", description: "Exchange failure, liquidity crisis", multiplier: -0.4, pnlImpact: -2600000, varImpact: -3400000, positionsBreaching: 16, largestLoss: "ETH-PERP: -$720K" },
+      { id: "rate-hike", name: "Fed Rate Shock (+200bp)", description: "Aggressive tightening, duration risk", multiplier: 0.02, pnlImpact: -900000, varImpact: -1300000, positionsBreaching: 8, largestLoss: "TLT: -$380K" },
+      { id: "market-crash-20", name: "Market Crash -20%", description: "Broad market selloff across all asset classes", multiplier: -0.2, pnlImpact: -2400000, varImpact: -3100000, positionsBreaching: 12, largestLoss: "BTC-PERP: -$850K" },
+      { id: "vol-spike", name: "Vol Spike +50%", description: "Volatility surge, option gamma squeeze", multiplier: 1.5, pnlImpact: -800000, varImpact: -1200000, positionsBreaching: 5, largestLoss: "ETH-PERP: -$320K" },
     ] })
   }
   if (route === "/api/risk/var-summary") {
@@ -457,14 +500,74 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json({ regime: "normal", current: "normal", confidence: 0.78, indicators: { vix: 18.5, btcVol: 42, corrIndex: 0.65 } })
   }
   if (route === "/api/risk/correlation-matrix") {
-    const assets = ["BTC", "ETH", "SOL", "BNB"]
-    return json({ assets, matrix: assets.map((_, i) => assets.map((_, j) => i === j ? 1 : 0.3 + Math.random() * 0.5)) })
+    return json({
+      labels: ["BTC", "ETH", "SOL", "SPY", "TLT"],
+      matrix: [
+        [1, 0.85, 0.72, 0.35, -0.15],
+        [0.85, 1, 0.78, 0.32, -0.12],
+        [0.72, 0.78, 1, 0.28, -0.10],
+        [0.35, 0.32, 0.28, 1, -0.45],
+        [-0.15, -0.12, -0.10, -0.45, 1],
+      ],
+    })
   }
   if (route === "/api/risk/venue-circuit-breakers") {
     return json(["Binance", "OKX", "Hyperliquid", "Deribit"].map(v => ({ venue: v, status: "armed", tripCount: 0, lastTrip: null })))
   }
   if (route === "/api/risk/circuit-breaker" || route === "/api/risk/kill-switch") {
     return json({ ok: true })
+  }
+  if (route === "/api/risk/exposure-types") {
+    return json({
+      riskTypes: [
+        { id: "delta", name: "Delta", category: "first_order", currentValue: 12.5, threshold: 25, unit: "notional_pct", status: "OK", subscribedStrategies: ["CEFI_BTC_MM", "DEFI_ETH_BASIS", "TRADFI_SPY_ML"] },
+        { id: "gamma", name: "Gamma", category: "second_order", currentValue: 0.45, threshold: 1.0, unit: "notional_pct", status: "OK", subscribedStrategies: ["CEFI_ETH_OPT_MM"] },
+        { id: "vega", name: "Vega", category: "second_order", currentValue: 85000, threshold: 200000, unit: "usd", status: "OK", subscribedStrategies: ["CEFI_ETH_OPT_MM"] },
+        { id: "theta", name: "Theta", category: "second_order", currentValue: -2400, threshold: -5000, unit: "usd_per_day", status: "OK", subscribedStrategies: ["CEFI_ETH_OPT_MM"] },
+        { id: "funding", name: "Funding Rate", category: "first_order", currentValue: 0.012, threshold: -0.01, unit: "pct_8h", status: "OK", subscribedStrategies: ["DEFI_ETH_BASIS", "DEFI_ETH_STAKED_BASIS"] },
+        { id: "basis", name: "Basis Spread", category: "first_order", currentValue: 0.15, threshold: 0.5, unit: "pct", status: "OK", subscribedStrategies: ["DEFI_ETH_BASIS"] },
+        { id: "aave_liquidation", name: "Aave Health Factor", category: "structural", currentValue: 1.45, threshold: 1.2, unit: "ratio", status: "WARNING", subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"] },
+        { id: "protocol_risk", name: "Protocol Risk (LST Depeg)", category: "structural", currentValue: 0.3, threshold: 2.0, unit: "pct_deviation", status: "OK", subscribedStrategies: ["DEFI_ETH_STAKED_BASIS", "DEFI_ETH_RECURSIVE_BASIS"] },
+        { id: "liquidity", name: "Liquidity", category: "structural", currentValue: 15000000, threshold: 5000000, unit: "usd", status: "OK", subscribedStrategies: ["DEFI_ETH_BASIS", "CEFI_BTC_MM"] },
+        { id: "venue_protocol", name: "Venue Protocol Risk", category: "operational", currentValue: 0, threshold: 1, unit: "incidents", status: "OK", subscribedStrategies: ["ALL"] },
+        { id: "concentration", name: "Concentration", category: "operational", currentValue: 35, threshold: 50, unit: "pct", status: "OK", subscribedStrategies: ["CEFI_BTC_MM"] },
+        { id: "adverse_selection", name: "Adverse Selection", category: "domain_specific", currentValue: 12, threshold: 25, unit: "pct_toxic", status: "OK", subscribedStrategies: ["CEFI_BTC_MM"] },
+        { id: "bankroll_dd", name: "Bankroll Drawdown", category: "domain_specific", currentValue: 4.2, threshold: 20, unit: "pct", status: "OK", subscribedStrategies: ["SPORTS_NFL_ARB", "SPORTS_NBA_ML"] },
+        { id: "suspension", name: "Market Suspension", category: "domain_specific", currentValue: 0, threshold: 1, unit: "active_suspensions", status: "OK", subscribedStrategies: ["SPORTS_BETFAIR_MM"] },
+        { id: "model_confidence", name: "Model Confidence Decay", category: "domain_specific", currentValue: 0.82, threshold: 0.6, unit: "score", status: "OK", subscribedStrategies: ["TRADFI_SPY_ML", "SPORTS_NBA_ML"] },
+        { id: "borrow_cost", name: "Borrow Cost (WETH APR)", category: "first_order", currentValue: 3.2, threshold: 8.0, unit: "pct_annual", status: "OK", subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"] },
+        { id: "flash_liquidity", name: "Flash Loan Availability", category: "structural", currentValue: 50000000, threshold: 10000000, unit: "usd", status: "OK", subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"] },
+        { id: "regime", name: "Market Regime", category: "structural", currentValue: 0.78, threshold: 0.4, unit: "normal_prob", status: "OK", subscribedStrategies: ["TRADFI_BOND_MR"] },
+      ],
+      totalTypes: 23,
+      populatedTypes: 18,
+    })
+  }
+  if (route === "/api/risk/defi-health") {
+    return json({
+      currentHF: 1.45,
+      currentLTV: 0.69,
+      thresholds: { deleverage: 1.5, emergency: 1.2, liquidation: 1.0 },
+      timeSeries: [
+        { timestamp: "2026-03-16T00:00:00Z", hf: 1.82 },
+        { timestamp: "2026-03-17T00:00:00Z", hf: 1.75 },
+        { timestamp: "2026-03-18T00:00:00Z", hf: 1.68 },
+        { timestamp: "2026-03-19T00:00:00Z", hf: 1.55 },
+        { timestamp: "2026-03-20T00:00:00Z", hf: 1.48 },
+        { timestamp: "2026-03-21T00:00:00Z", hf: 1.42 },
+        { timestamp: "2026-03-22T00:00:00Z", hf: 1.45 },
+      ],
+      distanceToLiquidation: [
+        { venue: "Aave V3 (Ethereum)", healthFactor: 1.45, distancePct: 31, status: "warning" },
+        { venue: "Morpho (Ethereum)", healthFactor: 1.72, distancePct: 42, status: "ok" },
+      ],
+      collateralDebt: {
+        totalCollateral: 2850000,
+        totalDebt: 1965000,
+        netEquity: 885000,
+        leverage: 3.22,
+      },
+    })
   }
 
   // --- Analytics / Strategy ---
@@ -489,7 +592,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
 
   // --- ML ---
-  if (route === "/api/ml/model-families") return json(MODEL_FAMILIES)
+  if (route === "/api/ml/model-families") {
+    // Enrich with activeExperiments and deployedVersions counts
+    const enriched = MODEL_FAMILIES.map((fam, i) => ({
+      ...fam,
+      activeExperiments: [3, 1, 2, 1, 4, 2][i] ?? 1,
+      deployedVersions: [2, 1, 1, 1, 2, 1][i] ?? 1,
+    }))
+    return json({ data: enriched, families: enriched })
+  }
   if (route === "/api/ml/experiments") return json(EXPERIMENTS)
   if (route.match(/\/api\/ml\/experiments\/[^/]+$/)) return json(EXPERIMENTS[0])
   if (route === "/api/ml/training-runs") return json(TRAINING_RUNS)
@@ -505,12 +616,71 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/ml/config") return json({ hyperparameters: {}, featureFlags: {} })
 
   // --- Reports ---
-  if (route === "/api/reporting/reports") return json([])
-  if (route === "/api/reporting/settlements") return json([])
+  if (route === "/api/reporting/reports") {
+    // Build per-client portfolio summary that sums to $45.2M AUM
+    const clientAums = [12500000, 9800000, 7600000, 5400000, 3900000, 2800000, 1500000, 900000, 500000, 200000, 60000, 40000]
+    const portfolioSummary = CLIENTS.slice(0, 12).map((c, i) => ({
+      clientId: c.id,
+      name: c.name,
+      aum: clientAums[i] ?? 500000,
+      mtdReturn: parseFloat((1.0 + Math.sin(i * 0.8) * 3.5).toFixed(1)),
+      ytdReturn: parseFloat((6 + Math.sin(i * 0.5) * 8).toFixed(1)),
+    }))
+    // Force average mtdReturn ≈ 3.2%
+    const avgMtd = portfolioSummary.reduce((s, c) => s + c.mtdReturn, 0) / portfolioSummary.length
+    const mtdDelta = 3.2 - avgMtd
+    portfolioSummary.forEach(c => { c.mtdReturn = parseFloat((c.mtdReturn + mtdDelta).toFixed(1)) })
+    return json({
+      data: Array.from({ length: 47 }, (_, i) => ({
+        id: `rpt-${i + 1}`,
+        clientId: portfolioSummary[i % portfolioSummary.length].clientId,
+        type: ["daily-pnl", "risk-summary", "execution-quality", "regulatory-mifid", "settlement-summary"][i % 5],
+        name: `${["Daily PnL", "Risk Summary", "Execution Quality", "MiFID II", "Settlement"][i % 5]} Report`,
+        status: i < 40 ? "delivered" : "pending",
+        generatedAt: new Date(Date.now() - i * 86400000).toISOString(),
+        format: i % 3 === 0 ? "pdf" : "xlsx",
+      })),
+      portfolioSummary,
+      invoices: CLIENTS.slice(0, 5).map((c, i) => ({
+        id: `inv-${i + 1}`,
+        clientId: c.id,
+        amount: 5000 + i * 2500,
+        status: i < 3 ? "paid" : "pending",
+        dueDate: new Date(Date.now() + (30 - i * 7) * 86400000).toISOString().split("T")[0],
+      })),
+    })
+  }
+  if (route === "/api/reporting/settlements") {
+    return json({
+      settlements: CLIENTS.slice(0, 6).flatMap((c, ci) =>
+        Array.from({ length: 3 }, (_, i) => ({
+          id: `stl-${ci * 3 + i + 1}`,
+          clientId: c.id,
+          amount: 50000 + Math.round((ci * 30000 + i * 80000)),
+          currency: "USD",
+          status: (["pending", "confirming", "settled"] as const)[i % 3],
+          settledAt: i === 2 ? new Date(Date.now() - i * 86400000).toISOString() : null,
+          venue: ["binance", "okx", "deribit"][i % 3],
+        }))
+      ),
+      accountBalances: ACCOUNTS.map(a => ({
+        venue: a.venue,
+        currency: "USD",
+        balance: a.balanceUSD,
+        available: a.marginAvailable,
+        locked: a.marginUsed,
+      })),
+      recentTransfers: [
+        { time: new Date(Date.now() - 120000).toISOString(), from: "Binance", to: "OKX", amount: "$250,000", status: "confirmed" as const, confirmations: "12/12", txHash: "0xabc...def" },
+        { time: new Date(Date.now() - 3600000).toISOString(), from: "OKX", to: "Deribit", amount: "$180,000", status: "settled" as const, confirmations: "6/6", txHash: "0x123...456" },
+        { time: new Date(Date.now() - 600000).toISOString(), from: "Hyperliquid", to: "Binance", amount: "$320,000", status: "confirming" as const, confirmations: "4/12", txHash: "0x789...abc" },
+      ],
+    })
+  }
   if (route === "/api/reporting/reconciliation") return json({ breaks: [], total: 0 })
   if (route === "/api/reporting/regulatory") return json([])
   if (route === "/api/reporting/pnl-attribution") return json({ factors: [], total: 0 })
-  if (route === "/api/reporting/executive-summary") return json({ aum: 45000000, pnlMtd: 1200000, sharpe: 2.1, strategies: 12 })
+  if (route === "/api/reporting/executive-summary") return json({ aum: 45200000, pnlMtd: 1446400, sharpe: 2.1, strategies: 12 })
   if (route === "/api/reporting/invoices") return json([])
   if (route.startsWith("/api/reporting/reconciliation/")) return json({ ok: true })
   if (route === "/api/reporting/generate") return json({ ok: true, reportId: "rpt-mock-001" })
@@ -518,31 +688,56 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Service Status ---
   if (route === "/api/service-status/health") {
+    const now = new Date().toISOString()
     return json({
-      status: "healthy",
-      services: [
-        { name: "instruments-service", freshness: 5, sla: 30, status: "live" },
-        { name: "market-tick-data-service", freshness: 2, sla: 10, status: "live" },
-        { name: "features-service", freshness: 12, sla: 30, status: "live" },
-        { name: "strategy-service", freshness: 8, sla: 30, status: "live" },
-        { name: "execution-service", freshness: 1, sla: 5, status: "live" },
-        { name: "risk-monitoring-service", freshness: 25, sla: 30, status: "warning" },
-        { name: "alerting-service", freshness: 3, sla: 10, status: "live" },
-        { name: "position-monitor", freshness: 45, sla: 30, status: "critical" },
+      data: [
+        { name: "instruments-service", tier: "core", category: "data", status: "healthy", coveragePct: 99.2, lastRun: "5s ago", shardsComplete: 48, shardsTotal: 48, shardsFailed: 0, latencyP50: 8, latencyP99: 28, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.4.12", cpuPct: 15, memoryPct: 30, connections: 12, queueDepth: 0 },
+        { name: "market-tick-data-service", tier: "core", category: "data", status: "healthy", coveragePct: 98.8, lastRun: "2s ago", shardsComplete: 120, shardsTotal: 122, shardsFailed: 0, latencyP50: 5, latencyP99: 22, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.3.8", cpuPct: 45, memoryPct: 55, connections: 64, queueDepth: 1 },
+        { name: "features-service", tier: "core", category: "data", status: "healthy", coveragePct: 97.5, lastRun: "12s ago", shardsComplete: 95, shardsTotal: 98, shardsFailed: 1, latencyP50: 22, latencyP99: 85, errorRate: 0.3, lastHealthCheck: now, uptime: "99.95%", version: "0.2.9", cpuPct: 58, memoryPct: 62, connections: 18, queueDepth: 4 },
+        { name: "strategy-service", tier: "critical", category: "trading", status: "healthy", coveragePct: 100, lastRun: "8s ago", shardsComplete: 24, shardsTotal: 24, shardsFailed: 0, latencyP50: 18, latencyP99: 62, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.5.1", cpuPct: 28, memoryPct: 41, connections: 22, queueDepth: 0, requiredForTier: "Tier 1" },
+        { name: "execution-service", tier: "critical", category: "trading", status: "healthy", coveragePct: 100, lastRun: "1s ago", shardsComplete: 16, shardsTotal: 16, shardsFailed: 0, latencyP50: 12, latencyP99: 45, errorRate: 0.1, lastHealthCheck: now, uptime: "99.98%", version: "0.6.3", cpuPct: 34, memoryPct: 52, connections: 48, queueDepth: 3, requiredForTier: "Tier 1" },
+        { name: "risk-monitoring-service", tier: "critical", category: "risk", status: "warning", coveragePct: 95.0, lastRun: "25s ago", shardsComplete: 18, shardsTotal: 20, shardsFailed: 2, latencyP50: 35, latencyP99: 180, errorRate: 1.2, lastHealthCheck: now, uptime: "99.7%", version: "0.3.4", cpuPct: 72, memoryPct: 68, connections: 31, queueDepth: 12, requiredForTier: "Tier 1", lastError: "Upstream timeout from position-monitor" },
+        { name: "alerting-service", tier: "support", category: "ops", status: "healthy", coveragePct: 100, lastRun: "3s ago", shardsComplete: 8, shardsTotal: 8, shardsFailed: 0, latencyP50: 10, latencyP99: 38, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.4.5", cpuPct: 12, memoryPct: 22, connections: 6, queueDepth: 0 },
+        { name: "position-monitor-service", tier: "support", category: "risk", status: "healthy", coveragePct: 99.5, lastRun: "4s ago", shardsComplete: 32, shardsTotal: 32, shardsFailed: 0, latencyP50: 20, latencyP99: 65, errorRate: 0.2, lastHealthCheck: now, uptime: "99.95%", version: "0.2.1", cpuPct: 38, memoryPct: 45, connections: 14, queueDepth: 2 },
+        { name: "features-onchain-service", tier: "core", category: "data", status: "healthy", coveragePct: 96.8, lastRun: "15s ago", shardsComplete: 28, shardsTotal: 30, shardsFailed: 0, latencyP50: 30, latencyP99: 120, errorRate: 0.5, lastHealthCheck: now, uptime: "99.9%", version: "0.1.7", cpuPct: 40, memoryPct: 48, connections: 8, queueDepth: 2 },
+        { name: "ml-inference-service", tier: "core", category: "ml", status: "healthy", coveragePct: 99.0, lastRun: "6s ago", shardsComplete: 10, shardsTotal: 10, shardsFailed: 0, latencyP50: 15, latencyP99: 55, errorRate: 0, lastHealthCheck: now, uptime: "99.97%", version: "0.2.4", cpuPct: 65, memoryPct: 72, connections: 10, queueDepth: 0 },
+        { name: "reporting-service", tier: "support", category: "ops", status: "healthy", coveragePct: 100, lastRun: "10s ago", shardsComplete: 4, shardsTotal: 4, shardsFailed: 0, latencyP50: 25, latencyP99: 95, errorRate: 0, lastHealthCheck: now, uptime: "99.98%", version: "0.3.2", cpuPct: 20, memoryPct: 35, connections: 8, queueDepth: 0 },
+        { name: "deployment-service", tier: "support", category: "ops", status: "healthy", coveragePct: 100, lastRun: "30s ago", shardsComplete: 2, shardsTotal: 2, shardsFailed: 0, latencyP50: 40, latencyP99: 150, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.5.0", cpuPct: 8, memoryPct: 18, connections: 3, queueDepth: 0 },
       ],
     })
   }
   if (route === "/api/service-status/feature-freshness") {
+    const now = new Date().toISOString()
+    const fiveMinAgo = new Date(Date.now() - 300000).toISOString()
+    const tenMinAgo = new Date(Date.now() - 600000).toISOString()
     return json({
-      features: [
-        { name: "order_imbalance", freshness: "fresh", lastUpdated: new Date().toISOString() },
-        { name: "funding_rate", freshness: "fresh", lastUpdated: new Date().toISOString() },
-        { name: "volatility_regime", freshness: "stale", lastUpdated: new Date(Date.now() - 300000).toISOString() },
+      data: [
+        { service: "features-service", freshness: 8, sla: 30, status: "healthy", region: "asia-northeast1", lastUpdate: now },
+        { service: "features-service", freshness: 12, sla: 30, status: "healthy", region: "us-central1", lastUpdate: now },
+        { service: "features-onchain-service", freshness: 25, sla: 30, status: "healthy", region: "asia-northeast1", lastUpdate: fiveMinAgo },
+        { service: "market-tick-data-service", freshness: 2, sla: 10, status: "healthy", region: "asia-northeast1", lastUpdate: now },
+        { service: "market-tick-data-service", freshness: 5, sla: 10, status: "healthy", region: "us-central1", lastUpdate: now },
+        { service: "instruments-service", freshness: 15, sla: 60, status: "healthy", region: "Global", lastUpdate: fiveMinAgo },
+        { service: "ml-inference-service", freshness: 45, sla: 30, status: "degraded", region: "asia-northeast1", lastUpdate: tenMinAgo },
+        { service: "position-monitor", freshness: 120, sla: 30, status: "unhealthy", region: "asia-northeast1", lastUpdate: tenMinAgo },
       ],
     })
   }
   if (route === "/api/service-status/activity") {
-    return json({ events: [], totalToday: 142 })
+    const now = new Date().toISOString()
+    return json({
+      data: [
+        { id: "log-001", service: "execution-service", severity: "info", message: "Order batch processed: 24 orders filled", timestamp: now, correlationId: "corr-a1b2c3" },
+        { id: "log-002", service: "risk-and-exposure-service", severity: "warn", message: "Position limit 85% utilized for strategy trend-follow-v3", timestamp: new Date(Date.now() - 60000).toISOString(), correlationId: "corr-d4e5f6" },
+        { id: "log-003", service: "position-monitor", severity: "error", message: "Connection pool exhausted — reconnecting", timestamp: new Date(Date.now() - 120000).toISOString(), correlationId: "corr-g7h8i9" },
+        { id: "log-004", service: "strategy-service", severity: "info", message: "Signal generated: momentum_breakout LONG BTC-USDT", timestamp: new Date(Date.now() - 180000).toISOString(), correlationId: "corr-j0k1l2" },
+        { id: "log-005", service: "alerting-service", severity: "info", message: "Telegram notification sent: daily PnL summary", timestamp: new Date(Date.now() - 300000).toISOString() },
+        { id: "log-006", service: "features-service", severity: "info", message: "Feature batch published: 12 features, avg latency 8ms", timestamp: new Date(Date.now() - 420000).toISOString() },
+        { id: "log-007", service: "position-monitor", severity: "critical", message: "Health check failed 3 consecutive times", timestamp: new Date(Date.now() - 600000).toISOString(), correlationId: "corr-m3n4o5" },
+        { id: "log-008", service: "market-tick-data-service", severity: "info", message: "WebSocket reconnected to Binance after 2s gap", timestamp: new Date(Date.now() - 900000).toISOString() },
+      ],
+      totalToday: 142,
+    })
   }
   if (route === "/api/service-status/services") {
     return json([
@@ -597,6 +792,130 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Chat ---
   if (route.startsWith("/api/chat")) return json({ message: "Mock mode — chat unavailable" })
+
+  // --- Provisioning (user lifecycle management) ---
+  const provisioningUsers = [
+    {
+      id: "usr-001", email: "admin@odum.io", displayName: "Alice Chen", role: "admin",
+      status: "active", createdAt: "2025-09-01T00:00:00Z", lastLogin: "2026-03-23T08:15:00Z",
+      services: { github: "active", slack: "active", gcp: "active", trading: "active" },
+    },
+    {
+      id: "usr-002", email: "trader@odum.io", displayName: "Bob Kim", role: "trader",
+      status: "active", createdAt: "2025-10-15T00:00:00Z", lastLogin: "2026-03-23T07:42:00Z",
+      services: { github: "active", slack: "active", gcp: "active", trading: "active" },
+    },
+    {
+      id: "usr-003", email: "ops@odum.io", displayName: "Carol Tanaka", role: "ops",
+      status: "active", createdAt: "2025-11-20T00:00:00Z", lastLogin: "2026-03-22T18:30:00Z",
+      services: { github: "active", slack: "active", gcp: "active", trading: "inactive" },
+    },
+    {
+      id: "usr-004", email: "client-full@partner.com", displayName: "Dave Okoye", role: "client-full",
+      status: "active", createdAt: "2026-01-10T00:00:00Z", lastLogin: "2026-03-23T06:00:00Z",
+      services: { github: "inactive", slack: "active", gcp: "inactive", trading: "active" },
+    },
+    {
+      id: "usr-005", email: "client-basic@partner.com", displayName: "Eve Park", role: "client-basic",
+      status: "active", createdAt: "2026-02-01T00:00:00Z", lastLogin: "2026-03-21T14:10:00Z",
+      services: { github: "inactive", slack: "inactive", gcp: "inactive", trading: "active" },
+    },
+  ]
+
+  const provisioningTemplates = [
+    {
+      id: "tmpl-001", name: "Engineering", description: "Full dev access: GitHub, Slack, GCP, trading (read-only)",
+      roles: ["trader", "ops"], permissions: ["github:write", "slack:channels", "gcp:viewer", "trading:read"],
+      createdAt: "2025-08-01T00:00:00Z",
+    },
+    {
+      id: "tmpl-002", name: "Operations", description: "Ops access: Slack, GCP monitoring, trading execution",
+      roles: ["ops"], permissions: ["slack:channels", "gcp:monitoring", "trading:execute"],
+      createdAt: "2025-08-15T00:00:00Z",
+    },
+  ]
+
+  const provisioningRequests = [
+    {
+      id: "req-001", userId: "usr-006", userEmail: "new-hire@odum.io", templateId: "tmpl-001",
+      templateName: "Engineering", type: "onboard", status: "pending",
+      requestedBy: "admin@odum.io", requestedAt: "2026-03-22T10:00:00Z",
+      reviewedBy: null, reviewedAt: null, reason: "New engineering hire starting Monday",
+    },
+    {
+      id: "req-002", userId: "usr-003", userEmail: "ops@odum.io", templateId: null,
+      templateName: null, type: "modify", status: "pending",
+      requestedBy: "admin@odum.io", requestedAt: "2026-03-22T14:30:00Z",
+      reviewedBy: null, reviewedAt: null, reason: "Add trading execution permissions for ops role",
+    },
+    {
+      id: "req-003", userId: "usr-004", userEmail: "client-full@partner.com", templateId: null,
+      templateName: null, type: "modify", status: "approved",
+      requestedBy: "admin@odum.io", requestedAt: "2026-03-20T09:00:00Z",
+      reviewedBy: "admin@odum.io", reviewedAt: "2026-03-20T11:00:00Z", reason: "Upgrade to full client access",
+    },
+  ]
+
+  if (route === "/api/auth/provisioning/users") {
+    return json({ data: provisioningUsers, total: provisioningUsers.length })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && !route.includes("onboard")) {
+    const userId = route.split("/").pop()
+    const user = provisioningUsers.find(u => u.id === userId)
+    return json({ data: user ?? provisioningUsers[0] })
+  }
+  if (route === "/api/auth/provisioning/users/onboard") {
+    return json({
+      data: {
+        id: "usr-007", email: "new-user@odum.io", displayName: "New User", role: "trader",
+        status: "provisioning", createdAt: new Date().toISOString(), lastLogin: null,
+        services: { github: "provisioning", slack: "provisioning", gcp: "provisioning", trading: "inactive" },
+      },
+    })
+  }
+  if (route === "/api/auth/provisioning/access-templates") {
+    return json({ data: provisioningTemplates, total: provisioningTemplates.length })
+  }
+  if (route === "/api/auth/provisioning/access-requests") {
+    if (opts?.method === "POST") {
+      return json({
+        data: {
+          id: "req-004", userId: "usr-003", userEmail: "ops@odum.io", templateId: null,
+          templateName: null, type: "modify", status: "pending",
+          requestedBy: "admin@odum.io", requestedAt: new Date().toISOString(),
+          reviewedBy: null, reviewedAt: null, reason: "New access request",
+        },
+      })
+    }
+    return json({ data: provisioningRequests, total: provisioningRequests.length })
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
+    const reqId = route.split("/").at(-2)
+    const existing = provisioningRequests.find(r => r.id === reqId)
+    return json({
+      data: {
+        ...existing ?? provisioningRequests[0],
+        status: "approved",
+        reviewedBy: "admin@odum.io",
+        reviewedAt: new Date().toISOString(),
+      },
+    })
+  }
+  if (route === "/api/auth/provisioning/admin/health-checks") {
+    return json({
+      data: {
+        timestamp: new Date().toISOString(),
+        checks: [
+          { service: "github", status: "healthy", latencyMs: 45, message: "API reachable" },
+          { service: "slack", status: "healthy", latencyMs: 32, message: "API reachable" },
+          { service: "gcp-iam", status: "healthy", latencyMs: 68, message: "IAM API reachable" },
+          { service: "firebase-auth", status: "healthy", latencyMs: 25, message: "Auth API reachable" },
+          { service: "secret-manager", status: "healthy", latencyMs: 40, message: "Secrets accessible" },
+        ],
+        allHealthy: true,
+      },
+    })
+  }
 
   // --- Health ---
   if (route === "/api/health") return json({ status: "healthy", mock: true })

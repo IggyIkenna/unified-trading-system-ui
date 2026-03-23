@@ -117,6 +117,13 @@ function useHealthChecks() {
       { name: "unified-trading-api", description: "Trading system gateway (port 8030)", group: "API Gateways", required: true },
       { name: "auth-api", description: "SSO & token issuance (port 8200)", group: "Auth & Security", required: false },
       { name: "client-reporting-api", description: "Client reports & invoicing (port 8014)", group: "API Gateways", required: false },
+      { name: "execution-results-api", description: "Execution results & backtests (port 8006)", group: "API Gateways", required: false },
+      { name: "deployment-api", description: "Deployment & infra management (port 8004)", group: "API Gateways", required: false },
+      { name: "config-api", description: "Onboarding & config (port 8005)", group: "API Gateways", required: false },
+      { name: "trading-analytics-api", description: "P&L attribution & settlements (port 8012)", group: "API Gateways", required: false },
+      { name: "batch-audit-api", description: "Batch jobs & audit trail (port 8013)", group: "API Gateways", required: false },
+      { name: "ml-training-api", description: "ML model training & registry (port 8011)", group: "API Gateways", required: false },
+      { name: "market-data-api", description: "Market data & candles (port 8007)", group: "API Gateways", required: false },
       { name: "GET /positions/active", description: "Positions domain", group: "API Domains", required: true },
       { name: "GET /execution/orders", description: "Execution domain", group: "API Domains", required: true },
       { name: "GET /analytics/pnl", description: "Analytics domain", group: "API Domains", required: true },
@@ -127,6 +134,7 @@ function useHealthChecks() {
       { name: "GET /service-status/health", description: "Service status domain", group: "API Domains", required: false },
       { name: "GET /users/organizations", description: "Users domain", group: "API Domains", required: false },
       { name: "GET /market-data/candles", description: "Market data domain", group: "API Domains", required: false },
+      { name: "GET /reporting/reports", description: "Client reporting domain", group: "API Domains", required: false },
       { name: "WebSocket /ws", description: "Real-time data channel", group: "WebSocket", required: false },
     ]
 
@@ -184,19 +192,32 @@ function useHealthChecks() {
     }
     setChecks([...results])
 
-    // Check client-reporting-api
-    const reportingCheck = await checkEndpoint("/api/reporting/health")
-    results[2] = {
-      ...results[2],
-      status: reportingCheck.ok ? "ok" : "down",
-      latencyMs: reportingCheck.latencyMs,
-      detail: reportingCheck.ok
-        ? null
-        : `${reportingCheck.detail}\n${getStartupHint("client-reporting-api", tier)}`,
+    // Check all remaining gateways in parallel (indices 2-9)
+    const gatewayChecks = [
+      { idx: 2, url: "/api/reporting/health", name: "client-reporting-api" },
+      { idx: 3, url: "/api/execution/health", name: "execution-results-api" },
+      { idx: 4, url: "/api/deployment/health", name: "deployment-api" },
+      { idx: 5, url: "/api/config/health", name: "config-api" },
+      { idx: 6, url: "/api/analytics/health", name: "trading-analytics-api" },
+      { idx: 7, url: "/api/audit/health", name: "batch-audit-api" },
+      { idx: 8, url: "/api/ml/health", name: "ml-training-api" },
+      { idx: 9, url: "/api/market-data/health", name: "market-data-api" },
+    ]
+    const gwResults = await Promise.all(gatewayChecks.map(g => checkEndpoint(g.url)))
+    for (let i = 0; i < gwResults.length; i++) {
+      const gw = gwResults[i]
+      const g = gatewayChecks[i]
+      results[g.idx] = {
+        ...results[g.idx],
+        status: gw.ok ? "ok" : "down",
+        latencyMs: gw.latencyMs,
+        detail: gw.ok ? null : `${gw.detail}\n${getStartupHint(g.name, tier)}`,
+      }
     }
     setChecks([...results])
 
-    // Check domain endpoints in parallel
+    // Check domain endpoints in parallel (indices 10+)
+    const gatewayCount = 10 // indices 0-9 are gateways
     const domainUrls = [
       "/api/positions/active",
       "/api/execution/orders",
@@ -208,12 +229,13 @@ function useHealthChecks() {
       "/api/service-status/health",
       "/api/users/organizations",
       "/api/market-data/candles?instrument=BTC-USDT&venue=binance&interval=1h&limit=1",
+      "/api/reporting/reports",
     ]
 
     const domainResults = await Promise.all(domainUrls.map(url => checkEndpoint(url)))
     for (let i = 0; i < domainResults.length; i++) {
       const dr = domainResults[i]
-      const idx = i + 3
+      const idx = i + gatewayCount
       results[idx] = {
         ...results[idx],
         status: dr.ok ? "ok" : "degraded",

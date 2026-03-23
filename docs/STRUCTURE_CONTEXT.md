@@ -41,6 +41,8 @@ context/
 │   │   └── domain/                  Per-service schemas: execution_service/, risk_service/, ...
 │   └── schema_registry.json         Machine-readable index of every schema type
 │
+├── codex/                           Coding standards and architecture docs (source: unified-trading-codex)
+│
 └── pm/                              Project management artefacts (source: unified-trading-pm)
     ├── docs/                        Dev environment, CI/CD, cloud mode patterns
     ├── plans-active/                Current active work plans
