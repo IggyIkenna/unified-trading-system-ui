@@ -4,7 +4,7 @@ import * as React from "react"
 import dynamic from "next/dynamic"
 import type { Step, CallBackProps } from "react-joyride"
 
-const Joyride = dynamic(() => import("react-joyride").then(mod => mod.default), { ssr: false })
+const Joyride = dynamic(() => import("react-joyride").then(mod => mod.Joyride), { ssr: false })
 
 const TOUR_STEPS: Step[] = [
   {
