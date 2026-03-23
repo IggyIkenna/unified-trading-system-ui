@@ -16,7 +16,7 @@ import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onb
 import type { MockAccessRequest } from "@/lib/api/mock-provisioning-state"
 import {
   Database, Brain, Zap, Briefcase, Shield, Layers, ArrowRight, ArrowLeft,
-  CheckCircle2, Calendar, Mail, Sparkles, Upload, FileText, Check,
+  CheckCircle2, Calendar, Mail, Sparkles, Upload, FileText, Check, Download,
 } from "lucide-react"
 
 const SERVICES = [
@@ -37,14 +37,13 @@ const INV_OPTS = [
   { id: "sma", label: "Separately Managed Account" }, { id: "fund_access", label: "Fund Access" },
   { id: "strategy", label: "Strategy Allocation" }, { id: "discretionary", label: "Full Discretionary" },
 ]
-interface DocSlot { key: string; label: string; required: boolean | "investment_only" }
+interface DocSlot { key: string; label: string; required: boolean | "investment_only"; template?: string }
 const DOC_SLOTS: DocSlot[] = [
   { key: "proof_of_address", label: "Proof of Address (utility bill, bank statement)", required: true },
   { key: "identity", label: "Identity Document (passport, national ID)", required: true },
-  { key: "source_of_funds", label: "Source of Funds Declaration", required: true },
-  { key: "wealth_declaration", label: "Wealth Self-Declaration", required: "investment_only" },
+  { key: "source_of_funds", label: "Source of Funds Declaration", required: true, template: "source-of-funds-declaration" },
+  { key: "wealth_declaration", label: "Wealth Self-Declaration", required: "investment_only", template: "wealth-self-declaration" },
   { key: "management_agreement", label: "Management Agreement (if applicable)", required: false },
-  { key: "invoice_or_tax", label: "Invoicing / Tax Documents (W-9, etc.)", required: false },
 ]
 const STEP_LABELS = ["Your Details", "Requirements", "Documents", "Review", "Submitted"]
 
@@ -181,20 +180,34 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
               {DOC_SLOTS.map(slot => {
                 const req = isReq(slot), uploaded = !!docs[slot.key]
                 return (
-                  <div key={slot.key} className="flex items-center justify-between rounded-lg border p-3 gap-3">
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <FileText className="size-4 text-muted-foreground shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-sm truncate">{slot.label}</p>
-                        {uploaded && <p className="text-xs text-emerald-400 truncate">{docs[slot.key]}</p>}
+                  <div key={slot.key} className="rounded-lg border p-3 space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <FileText className="size-4 text-muted-foreground shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm truncate">{slot.label}</p>
+                          {uploaded && <p className="text-xs text-emerald-400 truncate">{docs[slot.key]}</p>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant={uploaded ? "default" : "outline"} className={`text-[10px] ${uploaded ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : ""}`}>
+                          {uploaded ? "Uploaded" : req ? "Required" : "Optional"}
+                        </Badge>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Badge variant={uploaded ? "default" : "outline"} className={`text-[10px] ${uploaded ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : ""}`}>
-                        {uploaded ? "Uploaded" : req ? "Required" : "Optional"}
-                      </Badge>
-                      <Button variant="outline" size="sm" className="relative" asChild>
-                        <label className="cursor-pointer"><Upload className="size-3 mr-1" />{uploaded ? "Replace" : "Upload"}
+                    <div className="flex items-center gap-2">
+                      {slot.template && (
+                        <Button variant="ghost" size="sm" className="text-xs" onClick={() => {
+                          const a = document.createElement("a")
+                          a.href = `/templates/${slot.template}.pdf`
+                          a.download = `${slot.template}.pdf`
+                          a.click()
+                        }}>
+                          <Download className="size-3 mr-1" />Download Template
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" className="relative text-xs" asChild>
+                        <label className="cursor-pointer"><Upload className="size-3 mr-1" />{uploaded ? "Replace" : slot.template ? "Upload Signed" : "Upload"}
                           <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={e => { if (e.target.files?.[0]) setDocs(p => ({ ...p, [slot.key]: e.target.files![0].name })) }} />
                         </label>
                       </Button>
