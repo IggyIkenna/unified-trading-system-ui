@@ -76,34 +76,34 @@ export default function RegulatoryServicePage() {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Regulated Activities Available</CardTitle>
-              <CardDescription>Activities you can conduct as our Appointed Representative</CardDescription>
+              <CardDescription>Activities you can conduct under our UK and EU regulatory coverage</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Dealing in Investments as Principal</div>
+                  <div className="font-medium">Dealing in Investments as Principal <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge></div>
                   <div className="text-sm text-muted-foreground">Trade your own capital across regulated markets</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Dealing in Investments as Agent</div>
+                  <div className="font-medium">Dealing in Investments as Agent <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge></div>
                   <div className="text-sm text-muted-foreground">Execute trades on behalf of clients</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Arranging Deals in Investments</div>
+                  <div className="font-medium">Arranging Deals in Investments <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge></div>
                   <div className="text-sm text-muted-foreground">Introduce clients and arrange transactions</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
-                  <div className="font-medium">Managing Investments</div>
+                  <div className="font-medium">Managing Investments <Badge variant="outline" className="ml-2 text-[10px] px-1.5 py-0">UK — FCA</Badge></div>
                   <div className="text-sm text-muted-foreground">Discretionary portfolio management</div>
                 </div>
               </div>
