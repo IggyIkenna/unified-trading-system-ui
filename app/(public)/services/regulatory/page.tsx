@@ -1,21 +1,18 @@
 "use client"
 
-import * as React from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  Shield,
-  ArrowRight,
-  FileText,
-  Users,
-  Clock,
-  CheckCircle2,
-  Scale,
-  Building2,
   AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  Scale,
+  Shield,
+  Users
 } from "lucide-react"
+import Link from "next/link"
 
 export default function RegulatoryServicePage() {
   return (
@@ -131,8 +128,7 @@ export default function RegulatoryServicePage() {
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">Appointed Representative</Badge>
                 <CardTitle>AR Setup</CardTitle>
-                <div className="text-2xl font-bold">GBP 10,000</div>
-                <CardDescription>One-time onboarding fee + GBP 5k/mo supervision</CardDescription>
+                <CardDescription>Operate under our FCA authorisation as an Appointed Representative</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -161,8 +157,7 @@ export default function RegulatoryServicePage() {
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">Strategic Advisor</Badge>
                 <CardTitle>Advisory Engagement</CardTitle>
-                <div className="text-2xl font-bold">GBP 5,000</div>
-                <CardDescription>One-time setup fee + GBP 4k/mo subscription</CardDescription>
+                <CardDescription>Contracted advisory role under our regulatory supervision</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -270,7 +265,7 @@ export default function RegulatoryServicePage() {
               <div>
                 <h4 className="font-medium text-amber-400">Professional Clients Only</h4>
                 <p className="text-sm text-muted-foreground mt-1">
-                  All Odum Research services are available exclusively to Professional Clients 
+                  All Odum Research services are available exclusively to Professional Clients
                   and Eligible Counterparties. Retail client business is not permitted.
                 </p>
               </div>
