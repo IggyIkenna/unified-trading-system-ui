@@ -1169,6 +1169,40 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         ],
       },
       {
+        key: "regulatory-onboarding", label: "Regulatory & Onboarding", description: "Client onboarding, regulatory umbrella, fund structures", icon: "Shield",
+        categories: [
+          {
+            key: "onboarding", label: "Client Onboarding", description: "Onboarding programme access",
+            permissions: [
+              { key: "regulatory-umbrella", label: "Regulatory Umbrella (AR)", description: "FCA Appointed Representative services", internal_only: false },
+              { key: "investment-management", label: "Investment Management", description: "FCA-authorised investment management", internal_only: false },
+              { key: "fund-structure", label: "Fund Structure (POD)", description: "Fund vehicle setup via affiliate partner", internal_only: false },
+              { key: "advisory-engagement", label: "Advisory Engagement", description: "Strategic advisory role under supervision", internal_only: false },
+            ],
+          },
+          {
+            key: "documents", label: "Document Types", description: "Required onboarding documents",
+            permissions: [
+              { key: "proof-of-address", label: "Proof of Address", description: "Utility bill, bank statement", internal_only: false },
+              { key: "identity", label: "Identity Document", description: "Passport, national ID", internal_only: false },
+              { key: "source-of-funds", label: "Source of Funds", description: "Wealth origin declaration", internal_only: false },
+              { key: "wealth-declaration", label: "Wealth Self-Declaration", description: "Net worth self-certification", internal_only: false },
+              { key: "management-agreement", label: "Management Agreement", description: "Signed advisory/management agreement", internal_only: false },
+              { key: "invoice-or-tax", label: "Invoicing / Tax", description: "W-9, VAT registration, invoice templates", internal_only: false },
+            ],
+          },
+          {
+            key: "tiers", label: "Subscription Tiers", description: "Service tier levels",
+            permissions: [
+              { key: "tier-basic", label: "Basic", description: "Essential compliance and reporting", internal_only: false },
+              { key: "tier-professional", label: "Professional", description: "Full compliance + execution", internal_only: false },
+              { key: "tier-institutional", label: "Institutional", description: "Multi-strategy + fund admin", internal_only: false },
+              { key: "tier-enterprise", label: "Enterprise", description: "Custom engagement + dedicated support", internal_only: false },
+            ],
+          },
+        ],
+      },
+      {
         key: "presentations", label: "Presentations & Investor Relations", description: "Pitch decks, fund materials, investor updates", icon: "Presentation",
         categories: [
           {

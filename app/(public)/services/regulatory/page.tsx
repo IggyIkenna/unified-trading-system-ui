@@ -112,7 +112,7 @@ export default function RegulatoryServicePage() {
 
           {/* Engagement Options */}
           <h3 className="text-xl font-semibold mb-4">Engagement Options</h3>
-          <div className="grid gap-4 md:grid-cols-2 mb-8">
+          <div className="grid gap-4 md:grid-cols-3 mb-8">
             <Card className="border-emerald-400/30">
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">Appointed Representative</Badge>
@@ -170,6 +170,36 @@ export default function RegulatoryServicePage() {
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
                   Revenue sharing models
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/30 bg-primary/5">
+              <CardHeader>
+                <Badge variant="outline" className="w-fit mb-2 border-primary/40 text-primary">Fund Structure</Badge>
+                <CardTitle>Fund Partnership</CardTitle>
+                <div className="text-2xl font-bold">Contact Us</div>
+                <CardDescription>Partner with our affiliate POD to launch a fund vehicle</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  Fund structuring via affiliate partner
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  Regulated fund vehicle setup
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  Client distribution through our network
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  Combined with regulatory umbrella
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="size-4 text-emerald-400" />
+                  Full compliance coverage included
                 </div>
               </CardContent>
             </Card>
