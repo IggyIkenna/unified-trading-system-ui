@@ -1,15 +1,16 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import { Sparkles, Lock } from "lucide-react"
 
 /**
  * Staging auth gate — wraps the entire app when NEXT_PUBLIC_STAGING_AUTH=true.
- * Simple username/password check stored in localStorage.
- * Does NOT replace the app's persona/entitlement auth system.
+ * The landing page (/) is always accessible. Everything else requires
+ * a simple username/password stored in localStorage.
  *
- * IMPORTANT: When staging auth is disabled (local dev), this component
- * renders children immediately without blocking SSR or hydration.
+ * This is a temporary gate while real OAuth is being built.
+ * Does NOT replace the app's persona/entitlement auth system.
  */
 
 const STAGING_USER = "odum"
@@ -18,11 +19,9 @@ const STORAGE_KEY = "staging-authenticated"
 
 const IS_STAGING = process.env.NEXT_PUBLIC_STAGING_AUTH === "true"
 
-/**
- * Outer wrapper — if staging auth is disabled, just pass through children.
- * This avoids useState/useEffect entirely for the non-staging case,
- * which means SSR sends full HTML and hydration works immediately.
- */
+// Public pages that don't require the staging password
+const PUBLIC_PATHS = ["/"]
+
 export function StagingGate({ children }: { children: React.ReactNode }) {
   if (!IS_STAGING) {
     return <>{children}</>
@@ -32,6 +31,7 @@ export function StagingGate({ children }: { children: React.ReactNode }) {
 
 /** Inner component — only mounted when staging auth is enabled */
 function StagingAuthWall({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname() || ""
   const [authenticated, setAuthenticated] = React.useState(false)
   const [checking, setChecking] = React.useState(true)
   const [username, setUsername] = React.useState("")
@@ -57,6 +57,8 @@ function StagingAuthWall({ children }: { children: React.ReactNode }) {
   }
 
   if (checking) return null
+  // Landing page is always accessible
+  if (PUBLIC_PATHS.includes(pathname)) return <>{children}</>
   if (authenticated) return <>{children}</>
 
   return (
