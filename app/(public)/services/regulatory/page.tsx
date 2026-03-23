@@ -367,6 +367,20 @@ export default function RegulatoryServicePage() {
         </div>
       </section>
 
+      {/* Compliance nudge */}
+      <section className="border-t border-border">
+        <div className="container px-4 py-12 md:px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              If you&apos;re managing capital, executing trades, or advising on investments — however you describe it internally — those are regulated activities.
+              The line between software and advice is thinner than most people think, and the consequences of getting it wrong are real.
+              Getting properly authorised doesn&apos;t have to be complicated or expensive. We&apos;ve built the infrastructure to make it straightforward.
+              Better to do it right from day one than to find out the hard way.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* CTAs */}
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
