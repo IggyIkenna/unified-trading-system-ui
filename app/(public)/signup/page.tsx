@@ -280,13 +280,22 @@ function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "invest
               </div>
               <div className="space-y-2">
                 <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Fund Structure (optional bolt-on)</Label>
-                <p className="text-xs text-muted-foreground">Bolt on a fund vehicle to any engagement above.</p>
+                <p className="text-xs text-muted-foreground">Bolt on a fund vehicle to any engagement above. Requires Managing Investments.</p>
                 {REG_FUND_OPTS.map(f => (
                   <label key={f.id} className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors">
-                    <Checkbox checked={selOpts.has(f.id)} onCheckedChange={() => toggle(f.id)} />
+                    <Checkbox checked={selOpts.has(f.id)} onCheckedChange={() => {
+                      setSelOpts(p => {
+                        const n = new Set(p)
+                        if (n.has(f.id)) { n.delete(f.id) } else { n.add(f.id); n.add("managing") }
+                        return n
+                      })
+                    }} />
                     <span className="text-sm">{f.label}</span>
                   </label>
                 ))}
+                {(selOpts.has("fund_crypto_spot") || selOpts.has("fund_derivatives")) && !selOpts.has("managing") && (
+                  <p className="text-xs text-amber-400">Managing Investments is required for fund structures and has been selected above.</p>
+                )}
               </div>
               <div className="flex justify-between pt-2">
                 <BackBtn to={1} /><NextBtn disabled={!selOpts.has("ar") && !selOpts.has("advisor")} onClick={() => setStep(3)} />
