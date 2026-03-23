@@ -20,7 +20,17 @@ import {
 } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { TrendingUp, TrendingDown, Loader2, CheckCircle2, XCircle, PenLine, AlertTriangle, ShieldCheck, ShieldX } from "lucide-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Switch } from "@/components/ui/switch"
+import { Slider } from "@/components/ui/slider"
+import { TrendingUp, TrendingDown, Loader2, CheckCircle2, XCircle, PenLine, AlertTriangle, ShieldCheck, ShieldX, LayoutGrid } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { usePlaceOrder, usePreTradeCheck } from "@/hooks/api/use-orders"
 import { useAuth } from "@/hooks/use-auth"
@@ -33,6 +43,427 @@ const VENUES = [
 const ALGOS = [
   "MARKET", "TWAP", "VWAP", "ICEBERG", "SOR", "BEST_PRICE", "BENCHMARK_FILL",
 ] as const
+
+const DEFAULT_QUOTE_INSTRUMENTS = [
+  { symbol: "BTC/USDT", venue: "Binance", bidPrice: 67250.00, askPrice: 67280.00, bidSize: 0.5, askSize: 0.5 },
+  { symbol: "ETH/USDT", venue: "Binance", bidPrice: 3420.50, askPrice: 3422.80, bidSize: 5.0, askSize: 5.0 },
+  { symbol: "SOL/USDT", venue: "OKX", bidPrice: 142.30, askPrice: 142.55, bidSize: 50.0, askSize: 50.0 },
+  { symbol: "BTC/USDT", venue: "OKX", bidPrice: 67248.00, askPrice: 67282.00, bidSize: 0.25, askSize: 0.25 },
+  { symbol: "ETH/USDT", venue: "OKX", bidPrice: 3419.80, askPrice: 3423.10, bidSize: 10.0, askSize: 10.0 },
+] as const
+
+type RefreshInterval = "manual" | "100ms" | "500ms" | "1s"
+
+interface QuoteRow {
+  id: string
+  symbol: string
+  venue: string
+  bidPrice: string
+  bidSize: string
+  askPrice: string
+  askSize: string
+  skewBps: number
+  active: boolean
+}
+
+interface QuoteStatus {
+  quotesOutstanding: number
+  fillRate: number
+  pnlFromSpread: number
+  inventory: Record<string, number>
+}
+
+function buildInitialQuotes(): QuoteRow[] {
+  return DEFAULT_QUOTE_INSTRUMENTS.map((inst, idx) => ({
+    id: `quote-${idx}`,
+    symbol: inst.symbol,
+    venue: inst.venue,
+    bidPrice: inst.bidPrice.toFixed(2),
+    bidSize: inst.bidSize.toFixed(4),
+    askPrice: inst.askPrice.toFixed(2),
+    askSize: inst.askSize.toFixed(4),
+    skewBps: 0,
+    active: true,
+  }))
+}
+
+function computeSpread(bidPrice: string, askPrice: string): string {
+  const bid = parseFloat(bidPrice) || 0
+  const ask = parseFloat(askPrice) || 0
+  if (bid <= 0 || ask <= 0) return "—"
+  const mid = (bid + ask) / 2
+  const spreadBps = ((ask - bid) / mid) * 10000
+  return spreadBps.toFixed(1)
+}
+
+function MassQuotePanel() {
+  const { token } = useAuth()
+  const placeOrder = usePlaceOrder()
+
+  const [quotes, setQuotes] = React.useState<QuoteRow[]>(buildInitialQuotes)
+  const [refreshInterval, setRefreshInterval] = React.useState<RefreshInterval>("manual")
+  const [maxPositionPerInstrument, setMaxPositionPerInstrument] = React.useState("100")
+  const [inventorySkew, setInventorySkew] = React.useState(false)
+  const [quoteStatus, setQuoteStatus] = React.useState<QuoteStatus>({
+    quotesOutstanding: 0,
+    fillRate: 0,
+    pnlFromSpread: 0,
+    inventory: {},
+  })
+  const [submitting, setSubmitting] = React.useState(false)
+  const [lastAction, setLastAction] = React.useState<"quoted" | "cancelled" | null>(null)
+  const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const activeQuotes = quotes.filter((q) => q.active)
+
+  const updateQuote = (id: string, field: keyof QuoteRow, value: string | number | boolean) => {
+    setQuotes((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, [field]: value } : q))
+    )
+  }
+
+  const handleSkewChange = (id: string, bps: number) => {
+    setQuotes((prev) =>
+      prev.map((q) => {
+        if (q.id !== id) return q
+        const bid = parseFloat(q.bidPrice) || 0
+        const ask = parseFloat(q.askPrice) || 0
+        if (bid <= 0 || ask <= 0) return { ...q, skewBps: bps }
+        const mid = (bid + ask) / 2
+        const oldBps = q.skewBps
+        const deltaBps = bps - oldBps
+        const adjustment = mid * (deltaBps / 10000)
+        return {
+          ...q,
+          skewBps: bps,
+          bidPrice: (bid + adjustment).toFixed(2),
+          askPrice: (ask + adjustment).toFixed(2),
+        }
+      })
+    )
+  }
+
+  const handleQuoteAll = async () => {
+    setSubmitting(true)
+    setLastAction(null)
+    const active = quotes.filter((q) => q.active)
+    const promises = active.flatMap((q) => {
+      const bidQty = parseFloat(q.bidSize) || 0
+      const askQty = parseFloat(q.askSize) || 0
+      const bidPx = parseFloat(q.bidPrice) || 0
+      const askPx = parseFloat(q.askPrice) || 0
+      const orders = []
+      if (bidQty > 0 && bidPx > 0) {
+        orders.push(
+          placeOrder.mutateAsync({
+            instrument: q.symbol,
+            side: "buy" as const,
+            order_type: "limit" as const,
+            quantity: bidQty,
+            price: bidPx,
+            venue: q.venue,
+            reason: "mass-quote",
+          })
+        )
+      }
+      if (askQty > 0 && askPx > 0) {
+        orders.push(
+          placeOrder.mutateAsync({
+            instrument: q.symbol,
+            side: "sell" as const,
+            order_type: "limit" as const,
+            quantity: askQty,
+            price: askPx,
+            venue: q.venue,
+            reason: "mass-quote",
+          })
+        )
+      }
+      return orders
+    })
+    try {
+      await Promise.all(promises)
+      setQuoteStatus((prev) => ({
+        ...prev,
+        quotesOutstanding: prev.quotesOutstanding + promises.length,
+      }))
+      setLastAction("quoted")
+    } catch {
+      // individual order errors are handled by the mutation
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleCancelAll = () => {
+    setQuoteStatus({
+      quotesOutstanding: 0,
+      fillRate: 0,
+      pnlFromSpread: 0,
+      inventory: {},
+    })
+    setLastAction("cancelled")
+  }
+
+  // Auto-refresh interval
+  React.useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    if (refreshInterval === "manual") return
+
+    const ms = refreshInterval === "100ms" ? 100 : refreshInterval === "500ms" ? 500 : 1000
+    intervalRef.current = setInterval(() => {
+      // Simulate quote refresh — in production this would re-fetch prices
+      setQuotes((prev) =>
+        prev.map((q) => {
+          if (!q.active) return q
+          const bid = parseFloat(q.bidPrice) || 0
+          const ask = parseFloat(q.askPrice) || 0
+          if (bid <= 0) return q
+          const jitter = bid * 0.00001 * (Math.random() - 0.5)
+          return {
+            ...q,
+            bidPrice: (bid + jitter).toFixed(2),
+            askPrice: (ask + jitter).toFixed(2),
+          }
+        })
+      )
+    }, ms)
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [refreshInterval])
+
+  return (
+    <div className="space-y-4">
+      {/* Global Controls */}
+      <div className="space-y-3 p-3 rounded-lg border bg-muted/30">
+        <p className="text-xs font-medium">Global Controls</p>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            size="sm"
+            className="bg-emerald-600 hover:bg-emerald-700"
+            onClick={handleQuoteAll}
+            disabled={submitting || activeQuotes.length === 0}
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="size-3.5 mr-1.5 animate-spin" />
+                Quoting...
+              </>
+            ) : (
+              <>
+                <LayoutGrid className="size-3.5 mr-1.5" />
+                Quote All ({activeQuotes.length})
+              </>
+            )}
+          </Button>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={handleCancelAll}
+            disabled={quoteStatus.quotesOutstanding === 0}
+          >
+            <XCircle className="size-3.5 mr-1.5" />
+            Cancel All
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground">Refresh Interval</label>
+            <Select value={refreshInterval} onValueChange={(v) => setRefreshInterval(v as RefreshInterval)}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="manual">Manual</SelectItem>
+                <SelectItem value="100ms">100ms</SelectItem>
+                <SelectItem value="500ms">500ms</SelectItem>
+                <SelectItem value="1s">1s</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <label className="text-[10px] text-muted-foreground">Max Position / Instrument</label>
+            <Input
+              type="number"
+              className="h-8 text-xs font-mono"
+              value={maxPositionPerInstrument}
+              onChange={(e) => setMaxPositionPerInstrument(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] text-muted-foreground">Inventory Skew (auto-adjust spread)</label>
+          <Switch checked={inventorySkew} onCheckedChange={setInventorySkew} />
+        </div>
+      </div>
+
+      {/* Status Feedback */}
+      {lastAction === "quoted" && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+          <CheckCircle2 className="size-3.5 text-emerald-500" />
+          <span className="text-xs text-emerald-500">Quotes submitted successfully</span>
+        </div>
+      )}
+      {lastAction === "cancelled" && (
+        <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
+          <AlertTriangle className="size-3.5 text-amber-500" />
+          <span className="text-xs text-amber-600 dark:text-amber-400">All quotes cancelled</span>
+        </div>
+      )}
+
+      {/* Quote Grid */}
+      <div className="space-y-2">
+        <p className="text-xs font-medium">Quote Grid</p>
+        <div className="space-y-3">
+          {quotes.map((q) => (
+            <div
+              key={q.id}
+              className={cn(
+                "p-3 rounded-lg border space-y-2 transition-opacity",
+                !q.active && "opacity-50"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-medium">{q.symbol}</span>
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">{q.venue}</Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] px-1.5 py-0 font-mono"
+                  >
+                    {computeSpread(q.bidPrice, q.askPrice)} bps
+                  </Badge>
+                  <Switch
+                    checked={q.active}
+                    onCheckedChange={(checked) => updateQuote(q.id, "active", checked)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-[10px] text-emerald-500">Bid Price</label>
+                  <Input
+                    type="number"
+                    className="h-7 text-xs font-mono"
+                    value={q.bidPrice}
+                    onChange={(e) => updateQuote(q.id, "bidPrice", e.target.value)}
+                    disabled={!q.active}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-rose-500">Ask Price</label>
+                  <Input
+                    type="number"
+                    className="h-7 text-xs font-mono"
+                    value={q.askPrice}
+                    onChange={(e) => updateQuote(q.id, "askPrice", e.target.value)}
+                    disabled={!q.active}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-emerald-500">Bid Size</label>
+                  <Input
+                    type="number"
+                    className="h-7 text-xs font-mono"
+                    value={q.bidSize}
+                    onChange={(e) => updateQuote(q.id, "bidSize", e.target.value)}
+                    disabled={!q.active}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] text-rose-500">Ask Size</label>
+                  <Input
+                    type="number"
+                    className="h-7 text-xs font-mono"
+                    value={q.askSize}
+                    onChange={(e) => updateQuote(q.id, "askSize", e.target.value)}
+                    disabled={!q.active}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] text-muted-foreground">Skew</label>
+                  <span className="text-[10px] font-mono text-muted-foreground">
+                    {q.skewBps > 0 ? "+" : ""}{q.skewBps} bps
+                  </span>
+                </div>
+                <Slider
+                  min={-5}
+                  max={5}
+                  step={0.5}
+                  value={[q.skewBps]}
+                  onValueChange={([val]) => handleSkewChange(q.id, val)}
+                  disabled={!q.active}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Status Panel */}
+      <div className="space-y-2 p-3 rounded-lg border bg-muted/30">
+        <p className="text-xs font-medium">Status</p>
+        <div className="grid grid-cols-2 gap-1 text-xs">
+          <span className="text-muted-foreground">Quotes Outstanding</span>
+          <span className="font-mono text-right">{quoteStatus.quotesOutstanding}</span>
+          <span className="text-muted-foreground">Fill Rate</span>
+          <span className="font-mono text-right">{quoteStatus.fillRate.toFixed(1)}%</span>
+          <span className="text-muted-foreground">PnL from Spread</span>
+          <span className={cn(
+            "font-mono text-right",
+            quoteStatus.pnlFromSpread >= 0 ? "text-emerald-500" : "text-rose-500"
+          )}>
+            ${quoteStatus.pnlFromSpread.toFixed(2)}
+          </span>
+        </div>
+      </div>
+
+      {/* Inventory Table */}
+      <div className="space-y-2">
+        <p className="text-xs font-medium">Inventory</p>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-[10px] h-7">Instrument</TableHead>
+              <TableHead className="text-[10px] h-7 text-right">Net Position</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Object.keys(quoteStatus.inventory).length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={2} className="text-xs text-muted-foreground text-center py-3">
+                  No inventory
+                </TableCell>
+              </TableRow>
+            ) : (
+              Object.entries(quoteStatus.inventory).map(([symbol, position]) => (
+                <TableRow key={symbol}>
+                  <TableCell className="font-mono text-xs">{symbol}</TableCell>
+                  <TableCell className={cn(
+                    "font-mono text-xs text-right",
+                    position > 0 ? "text-emerald-500" : position < 0 ? "text-rose-500" : ""
+                  )}>
+                    {position > 0 ? "+" : ""}{position.toFixed(4)}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  )
+}
 
 interface ComplianceCheckResult {
   name: string
@@ -69,6 +500,7 @@ export function ManualTradingPanel({
   const preTradeCheck = usePreTradeCheck()
 
   const [open, setOpen] = React.useState(false)
+  const [panelMode, setPanelMode] = React.useState<"single" | "mass-quote">("single")
   const [side, setSide] = React.useState<"buy" | "sell">("buy")
   const [orderType, setOrderType] = React.useState<"limit" | "market">("limit")
   const [instrument, setInstrument] = React.useState(defaultInstrument)
@@ -172,6 +604,7 @@ export function ManualTradingPanel({
     setComplianceResult(null)
     setComplianceUnavailable(false)
     setComplianceLoading(false)
+    setPanelMode("single")
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -187,12 +620,34 @@ export function ManualTradingPanel({
           Manual Trade
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[440px] overflow-y-auto">
+      <SheetContent className={cn(
+        "overflow-y-auto",
+        panelMode === "mass-quote" ? "w-[480px] sm:w-[520px]" : "w-[400px] sm:w-[440px]"
+      )}>
         <SheetHeader>
-          <SheetTitle>Manual Trade Entry</SheetTitle>
+          <SheetTitle>
+            {panelMode === "single" ? "Manual Trade Entry" : "Mass Quote"}
+          </SheetTitle>
         </SheetHeader>
 
         <div className="space-y-4 mt-6">
+          {/* Panel Mode Toggle */}
+          <Tabs value={panelMode} onValueChange={(v) => setPanelMode(v as "single" | "mass-quote")}>
+            <TabsList className="w-full">
+              <TabsTrigger value="single" className="flex-1">Single Order</TabsTrigger>
+              <TabsTrigger value="mass-quote" className="flex-1 gap-1.5">
+                <LayoutGrid className="size-3" />
+                Mass Quote
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {panelMode === "mass-quote" && <MassQuotePanel />}
+
+          {/* Single Order Mode */}
+          {panelMode === "single" && (
+          <>
+
           {/* Instrument */}
           <div className="space-y-1.5">
             <label className="text-xs text-muted-foreground">Instrument</label>
@@ -571,6 +1026,9 @@ export function ManualTradingPanel({
               </Button>
             )}
           </div>
+
+          </>
+          )}
 
           {/* Client Badge */}
           {user && (

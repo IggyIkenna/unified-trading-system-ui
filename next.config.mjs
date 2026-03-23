@@ -20,9 +20,12 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // Admin — redirects to user management (the only admin function)
+      { source: "/admin", destination: "/admin/users", permanent: false },
       // Dashboard (formerly Service Hub)
       { source: "/overview", destination: "/dashboard", permanent: true },
       // Removed routes — redirect to dashboard
+      { source: "/services", destination: "/dashboard", permanent: true },
       { source: "/services/overview", destination: "/dashboard", permanent: true },
       { source: "/portal", destination: "/dashboard", permanent: true },
       { source: "/portal/:path*", destination: "/dashboard", permanent: true },

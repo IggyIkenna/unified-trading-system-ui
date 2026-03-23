@@ -2,67 +2,98 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Users, UserPlus, Search, ChevronRight } from "lucide-react"
-import { useProvisionedUsers } from "@/hooks/api/use-user-management"
-import type { ProvisionedPerson, ProvisioningStatus } from "@/lib/types/user-management"
+import { UserPlus, Search } from "lucide-react"
+import { useProvisionedUsers, useAccessRequests } from "@/hooks/api/use-user-management"
+import type { ProvisionedPerson } from "@/lib/types/user-management"
 
-function statusVariant(s: ProvisioningStatus) {
-  if (s === "provisioned") return "default" as const
-  if (s === "failed") return "destructive" as const
-  if (s === "pending") return "secondary" as const
-  return "outline" as const
+const ENTITLEMENT_SHORT: Record<string, string> = {
+  "data-basic": "Data",
+  "data-pro": "Data Pro",
+  "execution-basic": "Execution",
+  "execution-full": "Execution Full",
+  "ml-full": "ML",
+  "strategy-full": "Strategy",
+  "reporting": "Reports",
 }
 
 export default function AdminUsersPage() {
   const { data, isLoading } = useProvisionedUsers()
+  const pendingRequests = useAccessRequests("pending")
   const [search, setSearch] = React.useState("")
+
+  const pendingByEmail = React.useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const req of pendingRequests.data?.requests ?? []) {
+      map[req.requester_email] = (map[req.requester_email] ?? 0) + 1
+    }
+    return map
+  }, [pendingRequests.data])
 
   const users = React.useMemo(() => {
     const all = data?.users ?? []
     if (!search) return all
     const q = search.toLowerCase()
     return all.filter(
-      (u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+      (u) =>
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        u.role.toLowerCase().includes(q)
     )
   }, [data, search])
 
+  const internal = users.filter((u) =>
+    ["admin", "collaborator", "operations", "accounting"].includes(u.role)
+  )
+  const external = users.filter(
+    (u) => !["admin", "collaborator", "operations", "accounting"].includes(u.role)
+  )
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 py-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Users className="h-6 w-6" /> User Management
-          </h1>
-          <p className="text-muted-foreground">Manage user lifecycle — onboard, modify, offboard</p>
+          <h1 className="text-xl font-semibold">Users</h1>
+          <p className="text-sm text-muted-foreground">
+            {data?.total ?? 0} users across {new Set(users.map((u) => u.role)).size} roles
+          </p>
         </div>
         <Link href="/admin/users/onboard">
-          <Button><UserPlus className="h-4 w-4 mr-2" /> Onboard User</Button>
+          <Button size="sm">
+            <UserPlus className="h-4 w-4 mr-1" /> Onboard
+          </Button>
         </Link>
       </div>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search users..."
+          placeholder="Search by name, email, or role..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
+          className="pl-9 h-9 text-sm"
         />
       </div>
 
       {isLoading ? (
-        <div className="text-muted-foreground">Loading users...</div>
+        <div className="text-muted-foreground text-sm">Loading...</div>
       ) : (
-        <div className="grid gap-3">
-          {users.map((user) => (
-            <UserRow key={user.firebase_uid} user={user} />
-          ))}
-          {users.length === 0 && (
-            <p className="text-muted-foreground text-center py-8">No users found.</p>
+        <div className="space-y-8">
+          {internal.length > 0 && (
+            <UserSection
+              title="Internal"
+              users={internal}
+              pendingByEmail={pendingByEmail}
+            />
+          )}
+          {external.length > 0 && (
+            <UserSection
+              title="External"
+              users={external}
+              pendingByEmail={pendingByEmail}
+            />
           )}
         </div>
       )}
@@ -70,32 +101,92 @@ export default function AdminUsersPage() {
   )
 }
 
-function UserRow({ user }: { user: ProvisionedPerson }) {
-  const serviceEntries = Object.entries(user.services) as [string, ProvisioningStatus][]
+function UserSection({
+  title,
+  users,
+  pendingByEmail,
+}: {
+  title: string
+  users: ProvisionedPerson[]
+  pendingByEmail: Record<string, number>
+}) {
   return (
-    <Link href={`/admin/users/${user.firebase_uid}`}>
-      <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-        <CardContent className="flex items-center justify-between py-4">
-          <div className="space-y-1">
-            <div className="font-medium">{user.name}</div>
-            <div className="text-sm text-muted-foreground">{user.email}</div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge variant={user.status === "active" ? "default" : "secondary"}>
-              {user.status}
-            </Badge>
-            <Badge variant="outline">{user.role}</Badge>
-            <div className="flex gap-1">
-              {serviceEntries.map(([svc, status]) => (
-                <Badge key={svc} variant={statusVariant(status)} className="text-xs">
-                  {svc.slice(0, 3)}
-                </Badge>
-              ))}
-            </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+    <div>
+      <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3">
+        {title} ({users.length})
+      </h2>
+      <div className="border rounded-lg overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/50">
+            <tr className="text-left">
+              <th className="py-2 px-4 font-medium">Name</th>
+              <th className="py-2 px-4 font-medium">Email</th>
+              <th className="py-2 px-4 font-medium">Role</th>
+              <th className="py-2 px-4 font-medium">Access</th>
+              <th className="py-2 px-4 font-medium">Status</th>
+              <th className="py-2 px-4 font-medium w-8"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {users.map((user) => {
+              const pending = pendingByEmail[user.email] ?? 0
+              return (
+                <tr key={user.firebase_uid} className="hover:bg-muted/30">
+                  <td className="py-2.5 px-4">
+                    <Link
+                      href={`/admin/users/${user.firebase_uid}`}
+                      className="font-medium hover:underline"
+                    >
+                      {user.name}
+                    </Link>
+                  </td>
+                  <td className="py-2.5 px-4 text-muted-foreground">{user.email}</td>
+                  <td className="py-2.5 px-4">
+                    <Badge variant="outline" className="text-xs">
+                      {user.role}
+                    </Badge>
+                  </td>
+                  <td className="py-2.5 px-4">
+                    <div className="flex gap-1 flex-wrap">
+                      {user.product_slugs.map((slug) => (
+                        <Badge key={slug} variant="secondary" className="text-xs">
+                          {ENTITLEMENT_SHORT[slug] ?? slug}
+                        </Badge>
+                      ))}
+                      {user.product_slugs.length === 0 && (
+                        <span className="text-xs text-muted-foreground">—</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-4">
+                    <div className="flex items-center gap-1.5">
+                      <Badge
+                        variant={user.status === "active" ? "default" : "secondary"}
+                        className="text-xs"
+                      >
+                        {user.status}
+                      </Badge>
+                      {pending > 0 && (
+                        <Badge variant="destructive" className="text-xs">
+                          {pending} pending
+                        </Badge>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-2.5 px-4">
+                    <Link
+                      href={`/admin/users/${user.firebase_uid}`}
+                      className="text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      View
+                    </Link>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
   )
 }

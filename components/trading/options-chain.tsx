@@ -4,7 +4,10 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import {
   Table,
   TableBody,
@@ -18,7 +21,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { ChevronDown, ChevronRight } from "lucide-react"
+import { ChevronDown, ChevronRight, Plus, Trash2, Layers, Send, DollarSign } from "lucide-react"
 import { useOptionsChain } from "@/hooks/api/use-market-data"
 
 // ---------- Types ----------
@@ -27,6 +30,7 @@ interface OptionGreeks {
   delta: number
   gamma: number
   theta: number
+  vega: number
 }
 
 interface OptionLeg {
@@ -103,6 +107,7 @@ function generateMockExpiry(
 
     const gamma = 0.001 * Math.exp(-0.5 * i * i / 4)
     const theta = -(spotPrice * baseIv) / (2 * Math.sqrt(daysToExpiry / 365) * 365) * gamma * 10000
+    const vega = spotPrice * Math.sqrt(daysToExpiry / 365) * gamma * 100
 
     rows.push({
       strike,
@@ -111,7 +116,7 @@ function generateMockExpiry(
         ask: callMid + spread / 2,
         last: callMid + (Math.random() - 0.5) * spread * 0.5,
         iv: baseIv + (Math.random() - 0.5) * 0.02,
-        greeks: { delta: callDelta, gamma, theta },
+        greeks: { delta: callDelta, gamma, theta, vega },
         volume: Math.floor(Math.random() * 500 + 10),
         openInterest: Math.floor(Math.random() * 5000 + 100),
       },
@@ -120,7 +125,7 @@ function generateMockExpiry(
         ask: putMid + spread / 2,
         last: putMid + (Math.random() - 0.5) * spread * 0.5,
         iv: baseIv + 0.01 + (Math.random() - 0.5) * 0.02,
-        greeks: { delta: putDelta, gamma, theta: theta * 0.9 },
+        greeks: { delta: putDelta, gamma, theta: theta * 0.9, vega: vega * 0.95 },
         volume: Math.floor(Math.random() * 400 + 10),
         openInterest: Math.floor(Math.random() * 4000 + 100),
       },
@@ -168,8 +173,8 @@ function fmtInt(n: number): string {
 
 // ---------- Sub-components ----------
 
-const CALL_HEADS = ["Bid", "Ask", "Last", "IV", "Delta", "Gamma", "Theta", "Vol", "OI"] as const
-const PUT_HEADS = ["OI", "Vol", "Theta", "Gamma", "Delta", "IV", "Last", "Ask", "Bid"] as const
+const CALL_HEADS = ["Bid", "Ask", "Last", "IV", "Delta", "Gamma", "Theta", "Vega", "Vol", "OI"] as const
+const PUT_HEADS = ["OI", "Vol", "Vega", "Theta", "Gamma", "Delta", "IV", "Last", "Ask", "Bid"] as const
 
 function OptionCells({
   leg,
@@ -199,6 +204,7 @@ function OptionCells({
     fmtNum(leg.greeks.delta, 3),
     fmtNum(leg.greeks.gamma, 4),
     fmtNum(leg.greeks.theta, 2),
+    fmtNum(leg.greeks.vega, 2),
     fmtInt(leg.volume),
     fmtInt(leg.openInterest),
   ]
@@ -318,6 +324,496 @@ function ExpirySection({
   )
 }
 
+// ---------- Multi-Leg Builder Types ----------
+
+interface SpreadLeg {
+  id: string
+  strike: number
+  expiry: string
+  side: "call" | "put"
+  direction: "buy" | "sell"
+  quantity: number
+}
+
+interface SpreadTemplate {
+  name: string
+  description: string
+  buildLegs: (atmStrike: number, tickSize: number, expiry: string) => Omit<SpreadLeg, "id">[]
+}
+
+const SPREAD_TEMPLATES: SpreadTemplate[] = [
+  {
+    name: "Bull Call Spread",
+    description: "Buy lower strike call, sell higher strike call",
+    buildLegs: (atm, tick, expiry) => [
+      { strike: atm, expiry, side: "call", direction: "buy", quantity: 1 },
+      { strike: atm + tick * 2, expiry, side: "call", direction: "sell", quantity: 1 },
+    ],
+  },
+  {
+    name: "Bear Put Spread",
+    description: "Buy higher strike put, sell lower strike put",
+    buildLegs: (atm, tick, expiry) => [
+      { strike: atm + tick, expiry, side: "put", direction: "buy", quantity: 1 },
+      { strike: atm - tick, expiry, side: "put", direction: "sell", quantity: 1 },
+    ],
+  },
+  {
+    name: "Iron Condor",
+    description: "Sell OTM call spread + sell OTM put spread (4 legs)",
+    buildLegs: (atm, tick, expiry) => [
+      { strike: atm - tick * 2, expiry, side: "put", direction: "buy", quantity: 1 },
+      { strike: atm - tick, expiry, side: "put", direction: "sell", quantity: 1 },
+      { strike: atm + tick, expiry, side: "call", direction: "sell", quantity: 1 },
+      { strike: atm + tick * 2, expiry, side: "call", direction: "buy", quantity: 1 },
+    ],
+  },
+  {
+    name: "Straddle",
+    description: "Buy ATM call + ATM put (same strike)",
+    buildLegs: (atm, _tick, expiry) => [
+      { strike: atm, expiry, side: "call", direction: "buy", quantity: 1 },
+      { strike: atm, expiry, side: "put", direction: "buy", quantity: 1 },
+    ],
+  },
+  {
+    name: "Strangle",
+    description: "Buy OTM call + OTM put (different strikes)",
+    buildLegs: (atm, tick, expiry) => [
+      { strike: atm + tick, expiry, side: "call", direction: "buy", quantity: 1 },
+      { strike: atm - tick, expiry, side: "put", direction: "buy", quantity: 1 },
+    ],
+  },
+]
+
+// ---------- Multi-Leg Builder Component ----------
+
+function MultiLegBuilder({
+  chain,
+  onSubmitBundle,
+  onClose,
+}: {
+  chain: OptionsChainResponse
+  onSubmitBundle?: (legs: SpreadLeg[]) => void
+  onClose: () => void
+}) {
+  const [legs, setLegs] = React.useState<SpreadLeg[]>([])
+
+  const spotPrice = chain.spotPrice
+  const firstExpiry = chain.expiries[0]
+  const ticks: Record<string, number> = { BTC: 1000, ETH: 50, SPY: 5 }
+  const tickSize = ticks[chain.underlying] ?? 1
+  const atmStrike = firstExpiry
+    ? firstExpiry.rows.reduce((closest, row) =>
+        Math.abs(row.strike - spotPrice) < Math.abs(closest.strike - spotPrice) ? row : closest,
+      ).strike
+    : spotPrice
+
+  // Available strikes from all expiries
+  const availableStrikes = React.useMemo(() => {
+    const strikes = new Set<number>()
+    for (const exp of chain.expiries) {
+      for (const row of exp.rows) {
+        strikes.add(row.strike)
+      }
+    }
+    return Array.from(strikes).sort((a, b) => a - b)
+  }, [chain.expiries])
+
+  const availableExpiries = React.useMemo(
+    () => chain.expiries.map((e) => e.expiry),
+    [chain.expiries],
+  )
+
+  const addLeg = () => {
+    if (legs.length >= 4) return
+    setLegs([
+      ...legs,
+      {
+        id: `leg-${Date.now()}`,
+        strike: atmStrike,
+        expiry: availableExpiries[0] ?? "",
+        side: "call",
+        direction: "buy",
+        quantity: 1,
+      },
+    ])
+  }
+
+  const removeLeg = (id: string) => {
+    setLegs(legs.filter((l) => l.id !== id))
+  }
+
+  const updateLeg = (id: string, updates: Partial<SpreadLeg>) => {
+    setLegs(legs.map((l) => (l.id === id ? { ...l, ...updates } : l)))
+  }
+
+  const applyTemplate = (template: SpreadTemplate) => {
+    const expiry = availableExpiries[0] ?? ""
+    const newLegs = template.buildLegs(atmStrike, tickSize, expiry).map((l, i) => ({
+      ...l,
+      id: `leg-${Date.now()}-${i}`,
+    }))
+    setLegs(newLegs)
+  }
+
+  // Look up option data for a leg
+  const lookupOption = (leg: SpreadLeg): OptionLeg | null => {
+    const expiryGroup = chain.expiries.find((e) => e.expiry === leg.expiry)
+    if (!expiryGroup) return null
+    const row = expiryGroup.rows.find((r) => r.strike === leg.strike)
+    if (!row) return null
+    return leg.side === "call" ? row.call : row.put
+  }
+
+  // Combined Greeks
+  const combinedGreeks = React.useMemo(() => {
+    let delta = 0, gamma = 0, theta = 0, vega = 0
+    for (const leg of legs) {
+      const opt = lookupOption(leg)
+      if (!opt) continue
+      const sign = leg.direction === "buy" ? 1 : -1
+      const qty = leg.quantity
+      delta += opt.greeks.delta * sign * qty
+      gamma += opt.greeks.gamma * sign * qty
+      theta += opt.greeks.theta * sign * qty
+      vega += opt.greeks.vega * sign * qty
+    }
+    return { delta, gamma, theta, vega }
+  }, [legs, chain])
+
+  // P&L profile estimate
+  const pnlProfile = React.useMemo(() => {
+    if (legs.length === 0) return { maxProfit: 0, maxLoss: 0, breakevens: [] as number[] }
+
+    // Net premium: sum of (direction * mid price * quantity)
+    let netPremium = 0
+    for (const leg of legs) {
+      const opt = lookupOption(leg)
+      if (!opt) continue
+      const mid = (opt.bid + opt.ask) / 2
+      const sign = leg.direction === "buy" ? -1 : 1 // buy = pay, sell = receive
+      netPremium += mid * sign * leg.quantity
+    }
+
+    // Compute P&L at various underlying prices
+    const strikes = legs.map((l) => l.strike).sort((a, b) => a - b)
+    const minStrike = (strikes[0] ?? spotPrice) - tickSize * 3
+    const maxStrike = (strikes[strikes.length - 1] ?? spotPrice) + tickSize * 3
+    const step = (maxStrike - minStrike) / 100
+    const pnlPoints: number[] = []
+
+    for (let price = minStrike; price <= maxStrike; price += step) {
+      let expPnl = netPremium
+      for (const leg of legs) {
+        const sign = leg.direction === "buy" ? 1 : -1
+        const intrinsic =
+          leg.side === "call"
+            ? Math.max(price - leg.strike, 0)
+            : Math.max(leg.strike - price, 0)
+        expPnl += intrinsic * sign * leg.quantity
+      }
+      pnlPoints.push(expPnl)
+    }
+
+    const maxProfit = Math.max(...pnlPoints)
+    const maxLoss = Math.min(...pnlPoints)
+
+    // Find breakevens (zero crossings)
+    const breakevens: number[] = []
+    for (let i = 1; i < pnlPoints.length; i++) {
+      if ((pnlPoints[i - 1] <= 0 && pnlPoints[i] >= 0) || (pnlPoints[i - 1] >= 0 && pnlPoints[i] <= 0)) {
+        const price = minStrike + i * step
+        breakevens.push(Math.round(price * 100) / 100)
+      }
+    }
+
+    return {
+      maxProfit: maxProfit === Infinity ? Infinity : Math.round(maxProfit * 100) / 100,
+      maxLoss: Math.round(maxLoss * 100) / 100,
+      breakevens,
+    }
+  }, [legs, chain, spotPrice, tickSize])
+
+  return (
+    <div className="border-t border-border">
+      <div className="px-3 py-2 bg-muted/30">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Layers className="size-4" />
+            <span className="text-sm font-medium">Multi-Leg Builder</span>
+            <Badge variant="outline" className="text-[10px]">
+              {legs.length}/4 legs
+            </Badge>
+          </div>
+          <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </div>
+
+      <div className="px-3 py-3 space-y-3">
+        {/* Templates */}
+        <div className="space-y-1.5">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Templates</p>
+          <div className="flex flex-wrap gap-1">
+            {SPREAD_TEMPLATES.map((t) => (
+              <Button
+                key={t.name}
+                variant="outline"
+                size="sm"
+                className="h-6 px-2 text-[10px]"
+                onClick={() => applyTemplate(t)}
+                title={t.description}
+              >
+                {t.name}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Leg entries */}
+        {legs.length > 0 && (
+          <div className="space-y-2">
+            {legs.map((leg, i) => {
+              const opt = lookupOption(leg)
+              return (
+                <div key={leg.id} className="p-2 rounded-md border space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                      Leg {i + 1}
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0 hover:text-rose-400"
+                      onClick={() => removeLeg(leg.id)}
+                    >
+                      <Trash2 className="size-3" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {/* Strike */}
+                    <div className="space-y-0.5">
+                      <label className="text-[9px] text-muted-foreground">Strike</label>
+                      <Select
+                        value={String(leg.strike)}
+                        onValueChange={(v) => updateLeg(leg.id, { strike: Number(v) })}
+                      >
+                        <SelectTrigger className="h-6 text-[10px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableStrikes.map((s) => (
+                            <SelectItem key={s} value={String(s)}>
+                              {s.toLocaleString()}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {/* Expiry */}
+                    <div className="space-y-0.5">
+                      <label className="text-[9px] text-muted-foreground">Expiry</label>
+                      <Select
+                        value={leg.expiry}
+                        onValueChange={(v) => updateLeg(leg.id, { expiry: v })}
+                      >
+                        <SelectTrigger className="h-6 text-[10px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableExpiries.map((e) => (
+                            <SelectItem key={e} value={e}>
+                              {e}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {/* Put/Call */}
+                    <div className="space-y-0.5">
+                      <label className="text-[9px] text-muted-foreground">Type</label>
+                      <div className="grid grid-cols-2 gap-0.5">
+                        <Button
+                          variant={leg.side === "call" ? "default" : "outline"}
+                          size="sm"
+                          className={cn(
+                            "h-6 text-[9px] px-1",
+                            leg.side === "call" && "bg-emerald-600 hover:bg-emerald-700",
+                          )}
+                          onClick={() => updateLeg(leg.id, { side: "call" })}
+                        >
+                          C
+                        </Button>
+                        <Button
+                          variant={leg.side === "put" ? "default" : "outline"}
+                          size="sm"
+                          className={cn(
+                            "h-6 text-[9px] px-1",
+                            leg.side === "put" && "bg-rose-600 hover:bg-rose-700",
+                          )}
+                          onClick={() => updateLeg(leg.id, { side: "put" })}
+                        >
+                          P
+                        </Button>
+                      </div>
+                    </div>
+                    {/* Buy/Sell */}
+                    <div className="space-y-0.5">
+                      <label className="text-[9px] text-muted-foreground">Dir</label>
+                      <div className="grid grid-cols-2 gap-0.5">
+                        <Button
+                          variant={leg.direction === "buy" ? "default" : "outline"}
+                          size="sm"
+                          className={cn(
+                            "h-6 text-[9px] px-1",
+                            leg.direction === "buy" && "bg-emerald-600 hover:bg-emerald-700",
+                          )}
+                          onClick={() => updateLeg(leg.id, { direction: "buy" })}
+                        >
+                          B
+                        </Button>
+                        <Button
+                          variant={leg.direction === "sell" ? "default" : "outline"}
+                          size="sm"
+                          className={cn(
+                            "h-6 text-[9px] px-1",
+                            leg.direction === "sell" && "bg-rose-600 hover:bg-rose-700",
+                          )}
+                          onClick={() => updateLeg(leg.id, { direction: "sell" })}
+                        >
+                          S
+                        </Button>
+                      </div>
+                    </div>
+                    {/* Quantity */}
+                    <div className="space-y-0.5">
+                      <label className="text-[9px] text-muted-foreground">Qty</label>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={leg.quantity}
+                        onChange={(e) =>
+                          updateLeg(leg.id, { quantity: Math.max(1, parseInt(e.target.value) || 1) })
+                        }
+                        className="h-6 text-[10px] font-mono px-1.5"
+                      />
+                    </div>
+                  </div>
+                  {/* Leg mid price */}
+                  {opt && (
+                    <div className="flex items-center justify-between text-[9px] text-muted-foreground">
+                      <span>
+                        Mid: {((opt.bid + opt.ask) / 2).toFixed(2)} | IV: {(opt.iv * 100).toFixed(1)}%
+                      </span>
+                      <span className={leg.direction === "buy" ? "text-rose-400" : "text-emerald-400"}>
+                        {leg.direction === "buy" ? "-" : "+"}
+                        {(((opt.bid + opt.ask) / 2) * leg.quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Add leg button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full text-xs"
+          onClick={addLeg}
+          disabled={legs.length >= 4}
+        >
+          <Plus className="size-3 mr-1.5" />
+          Add Leg {legs.length >= 4 ? "(max 4)" : ""}
+        </Button>
+
+        {/* Combined P&L and Greeks */}
+        {legs.length > 0 && (
+          <>
+            <Separator />
+            <div className="space-y-2">
+              {/* Combined Greeks */}
+              <div className="p-2 rounded-md border bg-muted/10">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
+                  Combined Greeks
+                </p>
+                <div className="grid grid-cols-4 gap-2 text-[10px]">
+                  <div className="text-center">
+                    <span className="text-muted-foreground block">Delta</span>
+                    <span className="font-mono font-medium">{combinedGreeks.delta.toFixed(3)}</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-muted-foreground block">Gamma</span>
+                    <span className="font-mono font-medium">{combinedGreeks.gamma.toFixed(4)}</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-muted-foreground block">Theta</span>
+                    <span className="font-mono font-medium">{combinedGreeks.theta.toFixed(2)}</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-muted-foreground block">Vega</span>
+                    <span className="font-mono font-medium">{combinedGreeks.vega.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* P&L Profile */}
+              <div className="p-2 rounded-md border bg-muted/10">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1">
+                  <DollarSign className="size-3" />
+                  P&L Profile (at expiry)
+                </p>
+                <div className="grid grid-cols-2 gap-1 text-[10px]">
+                  <span className="text-muted-foreground">Max Profit</span>
+                  <span className="font-mono text-emerald-400 text-right">
+                    {pnlProfile.maxProfit === Infinity
+                      ? "Unlimited"
+                      : `$${pnlProfile.maxProfit.toLocaleString()}`}
+                  </span>
+                  <span className="text-muted-foreground">Max Loss</span>
+                  <span className="font-mono text-rose-400 text-right">
+                    ${pnlProfile.maxLoss.toLocaleString()}
+                  </span>
+                  <span className="text-muted-foreground">Breakeven(s)</span>
+                  <span className="font-mono text-right">
+                    {pnlProfile.breakevens.length > 0
+                      ? pnlProfile.breakevens.map((b) => `$${b.toLocaleString()}`).join(", ")
+                      : "--"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <Button
+              className="w-full text-xs h-8"
+              disabled={legs.length === 0}
+              onClick={() => onSubmitBundle?.(legs)}
+            >
+              <Send className="size-3 mr-1.5" />
+              Submit Multi-Leg ({legs.length} leg{legs.length !== 1 ? "s" : ""})
+            </Button>
+          </>
+        )}
+
+        {/* Empty state */}
+        {legs.length === 0 && (
+          <div className="text-center py-4 text-xs text-muted-foreground">
+            Select a template above or add legs manually
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ---------- Main component ----------
 
 export function OptionsChain({
@@ -327,6 +823,7 @@ export function OptionsChain({
   className,
 }: OptionsChainProps) {
   const [underlying, setUnderlying] = React.useState(initialUnderlying)
+  const [showSpreadBuilder, setShowSpreadBuilder] = React.useState(false)
   const { data, isLoading, isError } = useOptionsChain(underlying, venue)
 
   // Determine decimal precision by underlying
@@ -351,6 +848,15 @@ export function OptionsChain({
             </Badge>
           </CardTitle>
           <div className="flex items-center gap-2">
+            <Button
+              variant={showSpreadBuilder ? "secondary" : "outline"}
+              size="sm"
+              className="h-7 px-2 text-xs"
+              onClick={() => setShowSpreadBuilder(!showSpreadBuilder)}
+            >
+              <Layers className="size-3 mr-1" />
+              Build Spread
+            </Button>
             <Select value={underlying} onValueChange={setUnderlying}>
               <SelectTrigger className="h-7 w-24 text-xs">
                 <SelectValue />
@@ -385,6 +891,14 @@ export function OptionsChain({
       </CardHeader>
 
       <CardContent className="pt-0 px-0">
+        {/* Multi-Leg Builder Panel */}
+        {showSpreadBuilder && (
+          <MultiLegBuilder
+            chain={chain}
+            onClose={() => setShowSpreadBuilder(false)}
+          />
+        )}
+
         {/* Legend */}
         <div className="flex items-center gap-4 px-3 py-1.5 border-b border-border text-[10px] text-muted-foreground">
           <div className="flex items-center gap-1">
@@ -419,4 +933,4 @@ export function OptionsChain({
 }
 
 export { generateMockOptionsChain }
-export type { OptionsChainResponse, ExpiryGroup, OptionsRow, OptionLeg }
+export type { OptionsChainResponse, ExpiryGroup, OptionsRow, OptionLeg, OptionGreeks, SpreadLeg }

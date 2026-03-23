@@ -6,15 +6,40 @@ import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Edit, UserMinus, RefreshCw } from "lucide-react"
-import { useProvisionedUser, useUserWorkflows, useReprovisionUser } from "@/hooks/api/use-user-management"
-import type { ProvisioningStatus } from "@/lib/types/user-management"
+import {
+  ArrowLeft, Edit, UserMinus, RefreshCw,
+  CheckCircle2, XCircle, Clock, Mail, Github,
+} from "lucide-react"
+import {
+  useProvisionedUser, useUserWorkflows, useReprovisionUser,
+  useAccessRequests, useReviewRequest,
+} from "@/hooks/api/use-user-management"
+import type { ProvisioningStatus, AccessRequest } from "@/lib/types/user-management"
 
-function statusVariant(s: ProvisioningStatus) {
-  if (s === "provisioned") return "default" as const
-  if (s === "failed") return "destructive" as const
-  if (s === "pending") return "secondary" as const
-  return "outline" as const
+const SERVICE_LABELS: Record<string, string> = {
+  github: "GitHub",
+  slack: "Slack",
+  microsoft365: "Microsoft 365",
+  gcp: "GCP IAM",
+  aws: "AWS IAM",
+  portal: "Portal",
+}
+
+const ENTITLEMENT_LABELS: Record<string, string> = {
+  "data-basic": "Data (Basic)",
+  "data-pro": "Data (Pro)",
+  "execution-basic": "Execution (Basic)",
+  "execution-full": "Execution (Full)",
+  "ml-full": "ML & Backtesting",
+  "strategy-full": "Strategy Platform",
+  "reporting": "Reporting & Analytics",
+}
+
+function statusBadge(s: ProvisioningStatus) {
+  if (s === "provisioned") return <Badge variant="default">Provisioned</Badge>
+  if (s === "failed") return <Badge variant="destructive">Failed</Badge>
+  if (s === "pending") return <Badge variant="secondary">Pending</Badge>
+  return <Badge variant="outline">N/A</Badge>
 }
 
 export default function UserDetailPage() {
@@ -23,84 +48,196 @@ export default function UserDetailPage() {
   const { data, isLoading } = useProvisionedUser(params.id)
   const workflows = useUserWorkflows(params.id)
   const reprovision = useReprovisionUser()
+  const allRequests = useAccessRequests()
+  const review = useReviewRequest()
 
   if (isLoading) return <div className="p-6 text-muted-foreground">Loading...</div>
   const user = data?.user
   if (!user) return <div className="p-6">User not found.</div>
 
+  const isInternal = ["admin", "collaborator", "operations", "accounting"].includes(user.role)
+  const userRequests = (allRequests.data?.requests ?? []).filter(
+    (r) => r.requester_email === user.email
+  )
+  const pendingRequests = userRequests.filter((r) => r.status === "pending")
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="px-6 py-6 space-y-6 max-w-4xl">
+      {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => router.push("/admin/users")}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">{user.name}</h1>
-          <p className="text-muted-foreground">{user.email}</p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Mail className="h-3 w-3" /> {user.email}
+            {user.github_handle && <><Github className="h-3 w-3 ml-2" /> {user.github_handle}</>}
+          </div>
         </div>
-        <div className="ml-auto flex gap-2">
+        <div className="flex gap-2">
           <Link href={`/admin/users/${params.id}/modify`}>
-            <Button variant="outline"><Edit className="h-4 w-4 mr-2" /> Modify</Button>
+            <Button variant="outline" size="sm"><Edit className="h-4 w-4 mr-1" /> Modify</Button>
           </Link>
           <Link href={`/admin/users/${params.id}/offboard`}>
-            <Button variant="destructive"><UserMinus className="h-4 w-4 mr-2" /> Offboard</Button>
+            <Button variant="destructive" size="sm"><UserMinus className="h-4 w-4 mr-1" /> Offboard</Button>
           </Link>
-          <Button
-            variant="outline"
-            onClick={() => reprovision.mutate(params.id)}
-            disabled={reprovision.isPending}
-          >
-            <RefreshCw className="h-4 w-4 mr-2" /> Reprovision
-          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      {/* Status strip */}
+      <div className="flex gap-2 flex-wrap">
+        <Badge variant={user.status === "active" ? "default" : "secondary"}>{user.status}</Badge>
+        <Badge variant={isInternal ? "default" : "outline"}>{isInternal ? "Internal" : "External"}</Badge>
+        <Badge variant="outline">{user.role}</Badge>
+        {pendingRequests.length > 0 && (
+          <Badge variant="destructive">{pendingRequests.length} pending request(s)</Badge>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Service Access (what apps/entitlements they have) */}
         <Card>
-          <CardHeader><CardTitle>Profile</CardTitle></CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div><span className="text-muted-foreground">Role:</span> <Badge variant="outline">{user.role}</Badge></div>
-            <div><span className="text-muted-foreground">Status:</span> <Badge variant={user.status === "active" ? "default" : "secondary"}>{user.status}</Badge></div>
-            <div><span className="text-muted-foreground">GitHub:</span> {user.github_handle || "—"}</div>
-            <div><span className="text-muted-foreground">Products:</span> {user.product_slugs.join(", ") || "—"}</div>
-            <div><span className="text-muted-foreground">Template:</span> {user.access_template?.name || "None"}</div>
-            <div><span className="text-muted-foreground">Provisioned:</span> {user.provisioned_at}</div>
+          <CardHeader><CardTitle className="text-base">Service Access</CardTitle></CardHeader>
+          <CardContent className="space-y-2">
+            {user.product_slugs.length > 0 ? (
+              user.product_slugs.map((slug) => (
+                <div key={slug} className="flex items-center justify-between">
+                  <span className="text-sm">{ENTITLEMENT_LABELS[slug] ?? slug}</span>
+                  <Badge variant="default">Active</Badge>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No service entitlements granted.</p>
+            )}
           </CardContent>
         </Card>
 
+        {/* Internal: Slack/GitHub/M365/GCP/AWS provisioning status */}
+        {isInternal && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">Internal Provisioning</CardTitle>
+                <Button
+                  variant="ghost" size="sm"
+                  onClick={() => reprovision.mutate(params.id)}
+                  disabled={reprovision.isPending}
+                >
+                  <RefreshCw className="h-3 w-3 mr-1" /> Reprovision
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {(Object.entries(user.services) as [string, ProvisioningStatus][]).map(([svc, status]) => (
+                <div key={svc} className="flex items-center justify-between">
+                  <span className="text-sm">{SERVICE_LABELS[svc] ?? svc}</span>
+                  {statusBadge(status)}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* External: just portal */}
+        {!isInternal && (
+          <Card>
+            <CardHeader><CardTitle className="text-base">Portal Access</CardTitle></CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Portal</span>
+                {statusBadge(user.services.portal)}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                External users access services through the portal.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Access Requests for this user — approve/deny inline */}
+      {userRequests.length > 0 && (
         <Card>
-          <CardHeader><CardTitle>Services</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {(Object.entries(user.services) as [string, ProvisioningStatus][]).map(([svc, status]) => (
-              <div key={svc} className="flex items-center justify-between">
-                <span className="capitalize text-sm">{svc}</span>
-                <Badge variant={statusVariant(status)}>{status}</Badge>
+          <CardHeader><CardTitle className="text-base">Access Requests</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            {userRequests.map((req) => (
+              <RequestRow
+                key={req.id}
+                request={req}
+                onApprove={() => review.mutate({ id: req.id, action: "approve", admin_note: "Approved" })}
+                onDeny={() => review.mutate({ id: req.id, action: "deny", admin_note: "Denied" })}
+                isPending={review.isPending}
+              />
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Workflow History (only if there are any) */}
+      {(workflows.data?.runs?.length ?? 0) > 0 && (
+        <Card>
+          <CardHeader><CardTitle className="text-base">Provisioning History</CardTitle></CardHeader>
+          <CardContent>
+            {workflows.data?.runs.map((run) => (
+              <div key={run.id} className="flex items-center justify-between py-2 border-b last:border-0 text-sm">
+                <span className="font-medium">{run.run_type}</span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline">{run.status}</Badge>
+                  <span className="text-xs text-muted-foreground">{run.created_at}</span>
+                </div>
               </div>
             ))}
           </CardContent>
         </Card>
-      </div>
+      )}
+    </div>
+  )
+}
 
-      <Card>
-        <CardHeader><CardTitle>Workflow History</CardTitle></CardHeader>
-        <CardContent>
-          {workflows.data?.runs.length === 0 && (
-            <p className="text-muted-foreground text-sm">No workflow runs.</p>
-          )}
-          {workflows.data?.runs.map((run) => (
-            <div key={run.id} className="flex items-center justify-between py-2 border-b last:border-0">
-              <div className="text-sm">
-                <span className="font-medium">{run.run_type}</span>
-                <span className="text-muted-foreground ml-2">{run.workflow_name}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{run.status}</Badge>
-                <span className="text-xs text-muted-foreground">{run.created_at}</span>
-              </div>
-            </div>
+function RequestRow({
+  request,
+  onApprove,
+  onDeny,
+  isPending,
+}: {
+  request: AccessRequest
+  onApprove: () => void
+  onDeny: () => void
+  isPending: boolean
+}) {
+  const icon = request.status === "pending"
+    ? <Clock className="h-4 w-4 text-yellow-500" />
+    : request.status === "approved"
+      ? <CheckCircle2 className="h-4 w-4 text-green-500" />
+      : <XCircle className="h-4 w-4 text-red-500" />
+
+  return (
+    <div className="flex items-start justify-between py-2 border-b last:border-0">
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          {icon}
+          <span className="text-sm font-medium capitalize">{request.status}</span>
+          <span className="text-xs text-muted-foreground">{request.created_at.split("T")[0]}</span>
+        </div>
+        <div className="flex gap-1 flex-wrap">
+          {request.requested_entitlements.map((e) => (
+            <Badge key={e} variant="outline" className="text-xs">
+              {ENTITLEMENT_LABELS[e] ?? e}
+            </Badge>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+        {request.reason && <p className="text-xs text-muted-foreground">{request.reason}</p>}
+        {request.admin_note && (
+          <p className="text-xs italic text-muted-foreground">Admin: {request.admin_note}</p>
+        )}
+      </div>
+      {request.status === "pending" && (
+        <div className="flex gap-1">
+          <Button size="sm" variant="default" onClick={onApprove} disabled={isPending}>Approve</Button>
+          <Button size="sm" variant="destructive" onClick={onDeny} disabled={isPending}>Deny</Button>
+        </div>
+      )}
     </div>
   )
 }

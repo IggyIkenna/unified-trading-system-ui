@@ -796,123 +796,132 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- Provisioning (user lifecycle management) ---
   const provisioningUsers = [
     {
-      id: "usr-001", email: "admin@odum.io", displayName: "Alice Chen", role: "admin",
-      status: "active", createdAt: "2025-09-01T00:00:00Z", lastLogin: "2026-03-23T08:15:00Z",
-      services: { github: "active", slack: "active", gcp: "active", trading: "active" },
+      id: "admin", firebase_uid: "admin-uid", name: "Admin", email: "admin@odum.internal",
+      role: "admin", github_handle: "odum-admin", product_slugs: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
+      status: "active", provisioned_at: "2026-01-10T09:00:00Z", last_modified: "2026-03-20T12:00:00Z",
+      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
     },
     {
-      id: "usr-002", email: "trader@odum.io", displayName: "Bob Kim", role: "trader",
-      status: "active", createdAt: "2025-10-15T00:00:00Z", lastLogin: "2026-03-23T07:42:00Z",
-      services: { github: "active", slack: "active", gcp: "active", trading: "active" },
+      id: "internal-trader", firebase_uid: "trader-uid", name: "Internal Trader", email: "trader@odum.internal",
+      role: "collaborator", github_handle: "odum-trader", product_slugs: ["data-pro", "execution-full", "strategy-full"],
+      status: "active", provisioned_at: "2026-01-12T09:00:00Z", last_modified: "2026-03-18T15:00:00Z",
+      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
     },
     {
-      id: "usr-003", email: "ops@odum.io", displayName: "Carol Tanaka", role: "ops",
-      status: "active", createdAt: "2025-11-20T00:00:00Z", lastLogin: "2026-03-22T18:30:00Z",
-      services: { github: "active", slack: "active", gcp: "active", trading: "inactive" },
+      id: "ops-user", firebase_uid: "ops-uid", name: "Ops Manager", email: "ops@odum.internal",
+      role: "operations", slack_handle: "ops-mgr", product_slugs: ["reporting"],
+      status: "active", provisioned_at: "2026-02-05T09:00:00Z", last_modified: "2026-03-15T10:00:00Z",
+      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
     },
     {
-      id: "usr-004", email: "client-full@partner.com", displayName: "Dave Okoye", role: "client-full",
-      status: "active", createdAt: "2026-01-10T00:00:00Z", lastLogin: "2026-03-23T06:00:00Z",
-      services: { github: "inactive", slack: "active", gcp: "inactive", trading: "active" },
+      id: "client-full", firebase_uid: "client-full-uid", name: "Portfolio Manager", email: "pm@alphacapital.com",
+      role: "client", product_slugs: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
+      status: "active", provisioned_at: "2026-02-20T09:00:00Z", last_modified: "2026-03-10T12:00:00Z",
+      services: { github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable", gcp: "not_applicable", aws: "not_applicable", portal: "provisioned" },
     },
     {
-      id: "usr-005", email: "client-basic@partner.com", displayName: "Eve Park", role: "client-basic",
-      status: "active", createdAt: "2026-02-01T00:00:00Z", lastLogin: "2026-03-21T14:10:00Z",
-      services: { github: "inactive", slack: "inactive", gcp: "inactive", trading: "active" },
+      id: "client-data-only", firebase_uid: "client-basic-uid", name: "Data Analyst", email: "analyst@betafund.com",
+      role: "client", product_slugs: ["data-basic"],
+      status: "active", provisioned_at: "2026-03-01T09:00:00Z", last_modified: "2026-03-01T09:00:00Z",
+      services: { github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable", gcp: "not_applicable", aws: "not_applicable", portal: "provisioned" },
+    },
+    {
+      id: "client-premium", firebase_uid: "client-premium-uid", name: "CIO", email: "cio@vertex.com",
+      role: "client", product_slugs: ["data-pro", "execution-full", "strategy-full"],
+      status: "active", provisioned_at: "2026-02-15T09:00:00Z", last_modified: "2026-03-05T09:00:00Z",
+      services: { github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable", gcp: "not_applicable", aws: "not_applicable", portal: "provisioned" },
     },
   ]
 
-  const provisioningTemplates = [
-    {
-      id: "tmpl-001", name: "Engineering", description: "Full dev access: GitHub, Slack, GCP, trading (read-only)",
-      roles: ["trader", "ops"], permissions: ["github:write", "slack:channels", "gcp:viewer", "trading:read"],
-      createdAt: "2025-08-01T00:00:00Z",
-    },
-    {
-      id: "tmpl-002", name: "Operations", description: "Ops access: Slack, GCP monitoring, trading execution",
-      roles: ["ops"], permissions: ["slack:channels", "gcp:monitoring", "trading:execute"],
-      createdAt: "2025-08-15T00:00:00Z",
-    },
-  ]
-
+  // Matches auth-api MockStateStore access_requests seed
   const provisioningRequests = [
     {
-      id: "req-001", userId: "usr-006", userEmail: "new-hire@odum.io", templateId: "tmpl-001",
-      templateName: "Engineering", type: "onboard", status: "pending",
-      requestedBy: "admin@odum.io", requestedAt: "2026-03-22T10:00:00Z",
-      reviewedBy: null, reviewedAt: null, reason: "New engineering hire starting Monday",
+      id: "req-001", requester_email: "newtrader@vertex.com", requester_name: "New Trader",
+      org_id: "vertex", requested_entitlements: ["execution-full", "ml-full"],
+      reason: "Need execution and ML access for Q2 strategy deployment",
+      status: "pending", admin_note: "", reviewed_by: "",
+      created_at: "2026-03-22T14:00:00Z", updated_at: "2026-03-22T14:00:00Z",
     },
     {
-      id: "req-002", userId: "usr-003", userEmail: "ops@odum.io", templateId: null,
-      templateName: null, type: "modify", status: "pending",
-      requestedBy: "admin@odum.io", requestedAt: "2026-03-22T14:30:00Z",
-      reviewedBy: null, reviewedAt: null, reason: "Add trading execution permissions for ops role",
+      id: "req-002", requester_email: "analyst@betafund.com", requester_name: "Beta Researcher",
+      org_id: "beta", requested_entitlements: ["data-pro", "strategy-full"],
+      reason: "Upgrading from data-basic to run backtests",
+      status: "pending", admin_note: "", reviewed_by: "",
+      created_at: "2026-03-21T10:00:00Z", updated_at: "2026-03-21T10:00:00Z",
     },
     {
-      id: "req-003", userId: "usr-004", userEmail: "client-full@partner.com", templateId: null,
-      templateName: null, type: "modify", status: "approved",
-      requestedBy: "admin@odum.io", requestedAt: "2026-03-20T09:00:00Z",
-      reviewedBy: "admin@odum.io", reviewedAt: "2026-03-20T11:00:00Z", reason: "Upgrade to full client access",
+      id: "req-003", requester_email: "ops@alphacapital.com", requester_name: "Alpha Ops Manager",
+      org_id: "acme", requested_entitlements: ["reporting"], requested_role: "operations",
+      reason: "Need reporting access for compliance audit",
+      status: "approved", admin_note: "Approved — compliance requirement", reviewed_by: "admin@odum.internal",
+      created_at: "2026-03-19T09:00:00Z", updated_at: "2026-03-20T11:00:00Z",
     },
   ]
 
   if (route === "/api/auth/provisioning/users") {
-    return json({ data: provisioningUsers, total: provisioningUsers.length })
+    return json({ users: provisioningUsers, total: provisioningUsers.length })
   }
-  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && !route.includes("onboard")) {
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && !route.includes("onboard") && !route.includes("quota")) {
     const userId = route.split("/").pop()
-    const user = provisioningUsers.find(u => u.id === userId)
-    return json({ data: user ?? provisioningUsers[0] })
+    const user = provisioningUsers.find(u => u.firebase_uid === userId || u.id === userId)
+    return json({ user: user ?? provisioningUsers[0] })
   }
   if (route === "/api/auth/provisioning/users/onboard") {
+    const body = opts?.body ? JSON.parse(opts.body as string) : {}
+    const newUser = {
+      id: (body.email ?? "new").split("@")[0], firebase_uid: `uid-${Date.now()}`,
+      name: body.name ?? "New User", email: body.email ?? "new@example.com",
+      role: body.role ?? "collaborator", product_slugs: body.product_slugs ?? [],
+      status: "active", provisioned_at: new Date().toISOString(), last_modified: new Date().toISOString(),
+      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
+    }
     return json({
-      data: {
-        id: "usr-007", email: "new-user@odum.io", displayName: "New User", role: "trader",
-        status: "provisioning", createdAt: new Date().toISOString(), lastLogin: null,
-        services: { github: "provisioning", slack: "provisioning", gcp: "provisioning", trading: "inactive" },
-      },
+      user: newUser,
+      provisioning_steps: [
+        { service: "github", label: "GitHub", status: "success", message: "GitHub org/team mappings processed." },
+        { service: "slack", label: "Slack", status: "success", message: "Slack invite processed." },
+        { service: "microsoft365", label: "Microsoft 365", status: "success", message: "M365 user created." },
+        { service: "gcp", label: "GCP IAM", status: "success", message: "GCP IAM binding upserted." },
+        { service: "aws", label: "AWS IAM", status: "success", message: "AWS breakglass disabled." },
+        { service: "portal", label: "Portal", status: "success", message: "Portal provisioning processed." },
+      ],
     })
   }
+  if (route === "/api/auth/provisioning/users/quota-check") {
+    return json({ quota: { ok: true, checks: [], message: "" } })
+  }
   if (route === "/api/auth/provisioning/access-templates") {
-    return json({ data: provisioningTemplates, total: provisioningTemplates.length })
+    return json({ templates: [], total: 0 })
   }
   if (route === "/api/auth/provisioning/access-requests") {
     if (opts?.method === "POST") {
+      const body = opts.body ? JSON.parse(opts.body as string) : {}
       return json({
-        data: {
-          id: "req-004", userId: "usr-003", userEmail: "ops@odum.io", templateId: null,
-          templateName: null, type: "modify", status: "pending",
-          requestedBy: "admin@odum.io", requestedAt: new Date().toISOString(),
-          reviewedBy: null, reviewedAt: null, reason: "New access request",
+        request: {
+          id: `req-${Date.now()}`, requester_email: "you@example.com", requester_name: "You",
+          org_id: "", requested_entitlements: body.requested_entitlements ?? [],
+          reason: body.reason ?? "", status: "pending", admin_note: "", reviewed_by: "",
+          created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
         },
       })
     }
-    return json({ data: provisioningRequests, total: provisioningRequests.length })
+    // Support ?status= filter
+    const urlObj = new URL(route, "http://localhost")
+    const statusFilter = urlObj.searchParams.get("status")
+    const filtered = statusFilter ? provisioningRequests.filter(r => r.status === statusFilter) : provisioningRequests
+    return json({ requests: filtered, total: filtered.length })
   }
   if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
     const reqId = route.split("/").at(-2)
+    const body = opts?.body ? JSON.parse(opts.body as string) : {}
     const existing = provisioningRequests.find(r => r.id === reqId)
     return json({
-      data: {
-        ...existing ?? provisioningRequests[0],
-        status: "approved",
-        reviewedBy: "admin@odum.io",
-        reviewedAt: new Date().toISOString(),
-      },
-    })
-  }
-  if (route === "/api/auth/provisioning/admin/health-checks") {
-    return json({
-      data: {
-        timestamp: new Date().toISOString(),
-        checks: [
-          { service: "github", status: "healthy", latencyMs: 45, message: "API reachable" },
-          { service: "slack", status: "healthy", latencyMs: 32, message: "API reachable" },
-          { service: "gcp-iam", status: "healthy", latencyMs: 68, message: "IAM API reachable" },
-          { service: "firebase-auth", status: "healthy", latencyMs: 25, message: "Auth API reachable" },
-          { service: "secret-manager", status: "healthy", latencyMs: 40, message: "Secrets accessible" },
-        ],
-        allHealthy: true,
+      request: {
+        ...(existing ?? provisioningRequests[0]),
+        status: body.action === "deny" ? "denied" : "approved",
+        admin_note: body.admin_note ?? "",
+        reviewed_by: "admin@odum.internal",
+        updated_at: new Date().toISOString(),
       },
     })
   }

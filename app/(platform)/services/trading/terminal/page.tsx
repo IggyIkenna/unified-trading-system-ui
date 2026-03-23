@@ -12,6 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
   ArrowUpDown,
   ArrowLeft,
   TrendingUp,
@@ -22,9 +27,16 @@ import {
   Radio,
   Database,
   AlertTriangle,
+  ChevronDown,
+  ChevronRight,
+  Shield,
+  Zap,
+  Target,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { STRATEGIES } from "@/lib/strategy-registry"
+import type { Strategy } from "@/lib/strategy-registry"
 import { useStrategyPerformance } from "@/hooks/api/use-strategies"
 import { useBalances } from "@/hooks/api/use-positions"
 import dynamic from "next/dynamic"
@@ -194,6 +206,70 @@ export default function TradingPage() {
   const [chartType, setChartType] = React.useState<"candles" | "line" | "depth" | "options">("candles")
   const [activeIndicators, setActiveIndicators] = React.useState<Set<string>>(new Set())
   const [tradesTab, setTradesTab] = React.useState<"market" | "own">("market")
+  const [linkedStrategyId, setLinkedStrategyId] = React.useState<string | null>(null)
+  const [constraintsOpen, setConstraintsOpen] = React.useState(false)
+
+  // Look up the linked strategy from the registry
+  const linkedStrategy: Strategy | null = React.useMemo(() => {
+    if (!linkedStrategyId) return null
+    return STRATEGIES.find((s) => s.id === linkedStrategyId) ?? null
+  }, [linkedStrategyId])
+
+  // When a strategy is linked, auto-populate instrument and side bias
+  React.useEffect(() => {
+    if (!linkedStrategy) return
+    // Auto-populate instrument from strategy's first instrument
+    const firstInst = linkedStrategy.instruments[0]
+    if (firstInst) {
+      // Try to match the strategy instrument key to an available instrument symbol
+      const matchedInstrument = instruments.find((i) => {
+        const instKey = firstInst.key.toLowerCase()
+        const sym = i.symbol.toLowerCase()
+        return instKey.includes(sym.replace("/", "")) || sym.includes(instKey.split(":").pop()?.split("@")[0] ?? "")
+      })
+      if (matchedInstrument) {
+        setSelectedInstrument(matchedInstrument)
+        setLivePrice(matchedInstrument.midPrice)
+        setPriceChange(matchedInstrument.change)
+      }
+    }
+    // Auto-populate side bias from strategy archetype
+    const longArchetypes = ["BASIS_TRADE", "YIELD", "DIRECTIONAL", "ML_DIRECTIONAL", "MOMENTUM", "RECURSIVE_STAKED_BASIS"]
+    const shortArchetypes = ["MEAN_REVERSION"]
+    if (longArchetypes.includes(linkedStrategy.archetype)) {
+      setOrderSide("buy")
+    } else if (shortArchetypes.includes(linkedStrategy.archetype)) {
+      setOrderSide("sell")
+    }
+  }, [linkedStrategy, instruments])
+
+  // Strategy constraint validation warnings
+  const strategyWarnings: string[] = React.useMemo(() => {
+    if (!linkedStrategy) return []
+    const warnings: string[] = []
+    const size = parseFloat(orderSize)
+    // Check max position from risk profile (parse maxLeverage as a multiplier hint for sizing)
+    const maxLeverage = parseFloat(linkedStrategy.riskProfile.maxLeverage.replace("x", "")) || 1
+    const maxDrawdown = parseFloat(linkedStrategy.riskProfile.maxDrawdown.replace("%", "")) || 100
+    if (size > 0 && maxLeverage <= 1 && size > 10) {
+      warnings.push(`Size ${size} may exceed conservative position limits for a ${linkedStrategy.riskProfile.maxLeverage} leverage strategy`)
+    }
+    // Check venue restrictions
+    if (linkedStrategy.venues.length > 0 && selectedInstrument) {
+      const venueMatch = linkedStrategy.venues.some(
+        (v) => v.toLowerCase().includes(selectedInstrument.venue.toLowerCase()) ||
+               selectedInstrument.venue.toLowerCase().includes(v.toLowerCase().split("-")[0])
+      )
+      if (!venueMatch) {
+        warnings.push(`Venue "${selectedInstrument.venue}" is not in strategy's allowed venues: ${linkedStrategy.venues.join(", ")}`)
+      }
+    }
+    // Check order type vs execution mode
+    if (linkedStrategy.executionMode === "HUF" && orderType === "market") {
+      warnings.push("HUF strategies typically use limit orders for tighter spread control")
+    }
+    return warnings
+  }, [linkedStrategy, orderSize, selectedInstrument, orderType])
 
   // API data: candles and order book (must be after useState declarations to avoid TS block-scoping errors)
   const { data: candlesApiData } = useCandles(
@@ -1065,24 +1141,162 @@ export default function TradingPage() {
                 )}
                 
                 {/* Strategy Link */}
-                {filteredStrategies.length > 0 && (
-                  <div className="pt-2 border-t border-border">
-                    <label className="text-xs text-muted-foreground">Link to Strategy</label>
-                    <Select>
-                      <SelectTrigger className="h-8 text-xs mt-1">
-                        <SelectValue placeholder="Manual trade" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="manual">Manual trade</SelectItem>
-                        {filteredStrategies.map((s) => (
-                          <SelectItem key={s.id} value={s.id}>
-                            {s.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
+                <div className="pt-2 border-t border-border space-y-2">
+                  <label className="text-xs text-muted-foreground">Link to Strategy</label>
+                  <Select
+                    value={linkedStrategyId ?? "manual"}
+                    onValueChange={(v) => setLinkedStrategyId(v === "manual" ? null : v)}
+                  >
+                    <SelectTrigger className="h-8 text-xs mt-1">
+                      <SelectValue placeholder="Manual trade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Manual trade</SelectItem>
+                      {STRATEGIES.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          <div className="flex items-center gap-1.5">
+                            <span>{s.name}</span>
+                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-3.5">{s.assetClass}</Badge>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Constraint badges when strategy linked */}
+                  {linkedStrategy && (
+                    <div className="space-y-2">
+                      {/* Quick constraint badges */}
+                      <div className="flex flex-wrap gap-1">
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                          <Target className="size-2.5 mr-0.5" />
+                          {linkedStrategy.archetype.replace(/_/g, " ")}
+                        </Badge>
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                          <Zap className="size-2.5 mr-0.5" />
+                          {linkedStrategy.executionMode}
+                        </Badge>
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                          Max {linkedStrategy.riskProfile.maxLeverage} leverage
+                        </Badge>
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                          DD {linkedStrategy.riskProfile.maxDrawdown}
+                        </Badge>
+                        {linkedStrategy.venues.length > 0 && (
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                            {linkedStrategy.venues.length} venue{linkedStrategy.venues.length > 1 ? "s" : ""}
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Inline warnings */}
+                      {strategyWarnings.map((w, i) => (
+                        <div key={i} className="flex items-start gap-1.5 text-[10px] text-amber-400">
+                          <AlertTriangle className="size-3 shrink-0 mt-0.5" />
+                          <span>{w}</span>
+                        </div>
+                      ))}
+
+                      {/* Risk subscriptions panel */}
+                      {linkedStrategy.riskSubscriptions.length > 0 && (
+                        <div className="p-2 rounded-md border bg-muted/20">
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                            <Shield className="size-3" />
+                            Risk Subscriptions
+                          </p>
+                          <div className="space-y-1">
+                            {linkedStrategy.riskSubscriptions.map((rs, i) => (
+                              <div key={i} className="flex items-center justify-between text-[10px]">
+                                <span className={cn(
+                                  "font-medium",
+                                  rs.subscribed ? "text-emerald-400" : "text-muted-foreground"
+                                )}>
+                                  {rs.riskType}
+                                </span>
+                                {rs.threshold && (
+                                  <span className="text-muted-foreground font-mono">{rs.threshold}</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Collapsible strategy constraints detail */}
+                      <Collapsible open={constraintsOpen} onOpenChange={setConstraintsOpen}>
+                        <CollapsibleTrigger className="flex items-center gap-1.5 w-full text-[10px] text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                          {constraintsOpen ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
+                          <span className="uppercase tracking-wider">Strategy Constraints</span>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <div className="mt-1.5 p-2 rounded-md border bg-muted/10 space-y-2 text-[10px]">
+                            {/* Archetype & Execution */}
+                            <div className="grid grid-cols-2 gap-1">
+                              <span className="text-muted-foreground">Archetype</span>
+                              <span className="font-mono text-right">{linkedStrategy.archetype.replace(/_/g, " ")}</span>
+                              <span className="text-muted-foreground">Execution Mode</span>
+                              <span className="font-mono text-right">{linkedStrategy.executionMode}</span>
+                              <span className="text-muted-foreground">Status</span>
+                              <span className={cn(
+                                "font-mono text-right",
+                                linkedStrategy.status === "live" ? "text-emerald-400" :
+                                linkedStrategy.status === "paused" ? "text-amber-400" : "text-muted-foreground"
+                              )}>
+                                {linkedStrategy.status}
+                              </span>
+                            </div>
+                            {/* Latency Profile */}
+                            <div className="border-t pt-1.5">
+                              <p className="text-muted-foreground mb-1">Latency Profile</p>
+                              <div className="grid grid-cols-2 gap-0.5">
+                                <span className="text-muted-foreground">Data-to-Signal</span>
+                                <span className="font-mono text-right">{linkedStrategy.latencyProfile.dataToSignal}</span>
+                                <span className="text-muted-foreground">Signal-to-Instruction</span>
+                                <span className="font-mono text-right">{linkedStrategy.latencyProfile.signalToInstruction}</span>
+                                <span className="text-muted-foreground">End-to-End</span>
+                                <span className="font-mono text-right">{linkedStrategy.latencyProfile.endToEnd}</span>
+                              </div>
+                            </div>
+                            {/* Risk Limits */}
+                            <div className="border-t pt-1.5">
+                              <p className="text-muted-foreground mb-1">Risk Limits</p>
+                              <div className="grid grid-cols-2 gap-0.5">
+                                <span className="text-muted-foreground">Target Return</span>
+                                <span className="font-mono text-right">{linkedStrategy.riskProfile.targetReturn}</span>
+                                <span className="text-muted-foreground">Target Sharpe</span>
+                                <span className="font-mono text-right">{linkedStrategy.riskProfile.targetSharpe}</span>
+                                <span className="text-muted-foreground">Max Drawdown</span>
+                                <span className="font-mono text-right">{linkedStrategy.riskProfile.maxDrawdown}</span>
+                                <span className="text-muted-foreground">Max Leverage</span>
+                                <span className="font-mono text-right">{linkedStrategy.riskProfile.maxLeverage}</span>
+                                <span className="text-muted-foreground">Capital Scalability</span>
+                                <span className="font-mono text-right">{linkedStrategy.riskProfile.capitalScalability}</span>
+                              </div>
+                            </div>
+                            {/* Venues */}
+                            <div className="border-t pt-1.5">
+                              <p className="text-muted-foreground mb-1">Allowed Venues</p>
+                              <div className="flex flex-wrap gap-1">
+                                {linkedStrategy.venues.map((v) => (
+                                  <Badge key={v} variant="secondary" className="text-[8px] px-1 py-0">{v}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                            {/* Allowed Order Types */}
+                            <div className="border-t pt-1.5">
+                              <p className="text-muted-foreground mb-1">Instruction Types</p>
+                              <div className="flex flex-wrap gap-1">
+                                {linkedStrategy.instructionTypes.map((t) => (
+                                  <Badge key={t} variant="outline" className="text-[8px] px-1 py-0">{t}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
             </div>

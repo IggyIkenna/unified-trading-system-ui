@@ -8,6 +8,7 @@ import { defineConfig, devices } from '@playwright/test'
  * Run: npx playwright test --config playwright.static.config.ts
  */
 export default defineConfig({
+  globalSetup: './e2e/warmup.setup.ts',
   testDir: './e2e',
   testMatch: 'static-smoke.spec.ts',
   fullyParallel: true,

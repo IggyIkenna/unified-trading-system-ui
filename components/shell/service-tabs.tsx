@@ -156,18 +156,13 @@ export const REPORTS_TABS: ServiceTab[] = [
 
 // ── Admin/Ops (Internal Operations) ─────────────────────────────────────────
 export const ADMIN_TABS: ServiceTab[] = [
-  { label: "Admin Dashboard", href: "/admin" },
-  { label: "Config", href: "/config" },
-  { label: "DevOps", href: "/devops" },
-  { label: "Jobs", href: "/ops/jobs" },
-  { label: "Services", href: "/ops/services" },
-  { label: "User Management", href: "/admin/users" },
-  { label: "Onboard User", href: "/admin/users/onboard" },
-  { label: "Access Templates", href: "/admin/users/templates" },
-  { label: "Provider Health", href: "/admin/users/health-checks" },
+  { label: "Users", href: "/admin/users" },
   { label: "Access Requests", href: "/admin/users/requests" },
-  { label: "Operations", href: "/ops" },
+  { label: "Onboard", href: "/admin/users/onboard" },
 ]
+
+// Alias — user management IS the admin section
+export const USER_MGMT_TABS = ADMIN_TABS
 
 // ── Legacy aliases (for backward compatibility during transition) ─────────────
 export const RESEARCH_TABS = BUILD_TABS

@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation"
 import * as React from "react"
 
 /**
- * Ops shell — admin-only operations pages.
- * Requires auth + role = "admin". Internal traders and clients get 403.
+ * Admin shell — admin-only. User management + access control.
+ * Requires auth + role = "admin". Everyone else gets 403.
  */
 export default function OpsLayout({
   children,
@@ -18,12 +18,12 @@ export default function OpsLayout({
 }) {
   return (
     <RequireAuth>
-      <OpsShellInner>{children}</OpsShellInner>
+      <AdminShellInner>{children}</AdminShellInner>
     </RequireAuth>
   )
 }
 
-function OpsShellInner({ children }: { children: React.ReactNode }) {
+function AdminShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
   const router = useRouter()
 
@@ -31,7 +31,7 @@ function OpsShellInner({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     if (user && !isAuthorized) {
-      router.replace("/trading")
+      router.replace("/dashboard")
     }
   }, [user, isAuthorized, router])
 
