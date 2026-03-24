@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Sparkles, Lock, ArrowRight, Loader2 } from "lucide-react"
+import { Lock, ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -59,13 +59,11 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
       <header className="border-b border-border">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-primary">
-              <Sparkles className="size-5 text-primary-foreground" />
-            </div>
+            <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
             <span className="text-lg font-semibold">Odum Research</span>
           </Link>
           <Button variant="outline" size="sm" asChild>
-            <Link href="/contact">Get Access</Link>
+            <Link href="/signup">Get Access</Link>
           </Button>
         </div>
       </header>

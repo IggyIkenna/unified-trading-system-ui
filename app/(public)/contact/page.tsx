@@ -120,18 +120,28 @@ function ContactPageContent() {
     // Build message based on action
     if (actionParam === "demo") {
       message = serviceConfig.demoMessage;
+      // If multiple services selected, mention them
+      if (services.length > 1) {
+        const additionalServices = services
+          .slice(1)
+          .map((s) => SERVICE_CONFIG[s]?.label)
+          .filter(Boolean);
+        if (additionalServices.length > 0) {
+          message += `\n\nI'm also interested in: ${additionalServices.join(", ")}.`;
+        }
+      }
     } else if (actionParam && ACTION_CONFIG[actionParam]) {
       message = serviceConfig.demoMessage + ACTION_CONFIG[actionParam].suffix;
-    }
-
-    // If multiple services selected, mention them
-    if (services.length > 1) {
-      const additionalServices = services
-        .slice(1)
+    } else {
+      // General inquiry — list all selected services naturally
+      const allLabels = services
         .map((s) => SERVICE_CONFIG[s]?.label)
         .filter(Boolean);
-      if (additionalServices.length > 0) {
-        message += `\n\nI'm also interested in: ${additionalServices.join(", ")}.`;
+      if (allLabels.length === 1) {
+        message = `I'm interested in ${allLabels[0]}. I'd like to learn more about pricing and how it works.`;
+      } else {
+        const lines = allLabels.map((l) => `I'm interested in ${l}.`);
+        message = lines.join("\n") + "\n\nI'd like to learn more about pricing and how these services work together.";
       }
     }
 

@@ -42,6 +42,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirebaseDb, getFirebaseStorage } from "@/lib/auth/firebase-config";
 import React, { Suspense } from "react";
 
 const SERVICES = [
@@ -123,7 +126,7 @@ const REG_ADDONS = [
   { id: "reporting", label: "P&L & Client Reporting" },
 ];
 const REG_FUND_OPTS = [
-  { id: "fund_crypto_spot", label: "Crypto Spot Fund" },
+  { id: "fund_crypto_spot", label: "Crypto Spot Fund (UK FCA)" },
   {
     id: "fund_derivatives",
     label: "Derivatives & Traditional Markets Fund (EU-regulated)",
@@ -135,6 +138,7 @@ const INV_OPTS = [
   { id: "strategy", label: "Strategy Allocation" },
   { id: "discretionary", label: "Full Discretionary" },
 ];
+type ApplicantType = "individual" | "company";
 interface DeclarationField {
   id: string;
   label: string;
@@ -146,6 +150,7 @@ interface DocSlot {
   label: string;
   required: boolean | "investment_only";
   declaration?: DeclarationField[];
+  applicantType?: ApplicantType;
 }
 const SOF_FIELDS: DeclarationField[] = [
   {
@@ -188,16 +193,18 @@ const WEALTH_FIELDS: DeclarationField[] = [
     multiline: true,
   },
 ];
-const DOC_SLOTS: DocSlot[] = [
+const INDIVIDUAL_DOC_SLOTS: DocSlot[] = [
   {
     key: "proof_of_address",
     label: "Proof of Address (utility bill, bank statement)",
     required: true,
+    applicantType: "individual",
   },
   {
     key: "identity",
     label: "Identity Document (passport, national ID)",
     required: true,
+    applicantType: "individual",
   },
   {
     key: "source_of_funds",
@@ -218,6 +225,67 @@ const DOC_SLOTS: DocSlot[] = [
   },
 ];
 
+const COMPANY_DOC_SLOTS: DocSlot[] = [
+  {
+    key: "incorporation",
+    label: "Certificate of Incorporation",
+    required: true,
+    applicantType: "company",
+  },
+  {
+    key: "company_activities",
+    label: "Brief Description of Company Activities",
+    required: true,
+    applicantType: "company",
+    declaration: [
+      {
+        id: "activities",
+        label: "Primary business activities",
+        placeholder: "e.g. Proprietary trading in crypto derivatives",
+        multiline: true,
+      },
+      {
+        id: "website",
+        label: "Company website (optional)",
+        placeholder: "e.g. https://example.com",
+      },
+    ],
+  },
+  {
+    key: "ubo_identity",
+    label: "Identity Documents for all UBOs (>25% ownership)",
+    required: true,
+    applicantType: "company",
+  },
+  {
+    key: "ubo_proof_of_address",
+    label: "Proof of Address for all UBOs (>25% ownership)",
+    required: true,
+    applicantType: "company",
+  },
+  {
+    key: "source_of_funds",
+    label: "Source of Funds Declaration",
+    required: true,
+    declaration: SOF_FIELDS,
+  },
+  {
+    key: "wealth_declaration",
+    label: "Wealth Self-Declaration",
+    required: "investment_only",
+    declaration: WEALTH_FIELDS,
+  },
+  {
+    key: "management_agreement",
+    label: "Management Agreement (if applicable)",
+    required: false,
+  },
+];
+
+function getDocSlots(applicantType: ApplicantType): DocSlot[] {
+  return applicantType === "company" ? COMPANY_DOC_SLOTS : INDIVIDUAL_DOC_SLOTS;
+}
+
 function generateDeclarationHtml(
   title: string,
   applicantName: string,
@@ -233,6 +301,9 @@ function generateDeclarationHtml(
   });
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
 <style>body{font-family:Georgia,serif;max-width:700px;margin:40px auto;padding:20px;color:#111;line-height:1.6}
+.logo-header{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #ddd}
+.logo-header img{height:48px;width:auto}
+.logo-header .company-name{font-size:14px;color:#555;font-weight:600;letter-spacing:1px}
 h1{font-size:18px;text-transform:uppercase;border-bottom:2px solid #111;padding-bottom:8px}
 .field{margin:16px 0}.field-label{font-weight:bold;font-size:13px;color:#555;margin-bottom:2px}
 .field-value{font-size:15px;padding:4px 0;border-bottom:1px solid #ddd}
@@ -241,6 +312,7 @@ h1{font-size:18px;text-transform:uppercase;border-bottom:2px solid #111;padding-
 .sig-line{border-bottom:1px solid #111;min-height:40px;display:flex;align-items:flex-end;padding-bottom:4px;font-style:italic;font-size:18px}
 .sig-label{font-size:11px;color:#555;margin-top:4px}
 @media print{body{margin:0;padding:20px}}</style></head><body>
+<div class="logo-header"><img src="${typeof window !== "undefined" ? window.location.origin : ""}/images/odum-logo.png" alt="Odum Research" crossorigin="anonymous" /><div class="company-name">Odum Research Ltd</div></div>
 <h1>${title}</h1><p style="color:#555;font-size:13px">Date: ${date}</p>
 <p>I, <strong>${applicantName}</strong>, of <strong>${company}</strong>, hereby declare the following:</p>
 ${fields.map((f) => `<div class="field"><div class="field-label">${f.label}</div><div class="field-value">${answers[f.id] || "<em>Not provided</em>"}</div></div>`).join("")}
@@ -252,14 +324,14 @@ ${fields.map((f) => `<div class="field"><div class="field-label">${f.label}</div
 </body></html>`;
 }
 
-function downloadDeclaration(
+async function generateDeclarationPdfBlob(
   title: string,
   applicantName: string,
   company: string,
   fields: DeclarationField[],
   answers: Record<string, string>,
   signature: string,
-) {
+): Promise<Blob> {
   const html = generateDeclarationHtml(
     title,
     applicantName,
@@ -268,11 +340,54 @@ function downloadDeclaration(
     answers,
     signature,
   );
-  const blob = new Blob([html], { type: "text/html" });
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.left = "-9999px";
+  iframe.style.width = "794px";
+  iframe.style.height = "1123px";
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument!;
+  doc.open();
+  doc.write(html);
+  doc.close();
+  await new Promise((r) => setTimeout(r, 200));
+  const { default: html2canvas } = await import("html2canvas");
+  const { jsPDF } = await import("jspdf");
+  const canvas = await html2canvas(doc.body, {
+    scale: 2,
+    useCORS: true,
+    width: 794,
+    windowWidth: 794,
+  });
+  document.body.removeChild(iframe);
+  const imgData = canvas.toDataURL("image/png");
+  const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pdfW = pdf.internal.pageSize.getWidth();
+  const pdfH = (canvas.height * pdfW) / canvas.width;
+  pdf.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
+  return pdf.output("blob");
+}
+
+async function downloadDeclaration(
+  title: string,
+  applicantName: string,
+  company: string,
+  fields: DeclarationField[],
+  answers: Record<string, string>,
+  signature: string,
+) {
+  const blob = await generateDeclarationPdfBlob(
+    title,
+    applicantName,
+    company,
+    fields,
+    answers,
+    signature,
+  );
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${title.toLowerCase().replace(/\s+/g, "-")}-${company.toLowerCase().replace(/\s+/g, "-")}.html`;
+  a.download = `${title.toLowerCase().replace(/\s+/g, "-")}-${company.toLowerCase().replace(/\s+/g, "-")}.pdf`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -390,6 +505,7 @@ function OnboardingWizard({
   const [signatures, setSignatures] = React.useState<Record<string, string>>(
     {},
   );
+  const [applicantType, setApplicantType] = React.useState<ApplicantType>("individual");
   const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null);
   const [appId, setAppId] = React.useState("");
   const [draftId] = React.useState(
@@ -417,6 +533,7 @@ function OnboardingWizard({
           draftId,
           orgSlug: company.toLowerCase().replace(/\s+/g, "-"),
           service: serviceType,
+          applicantType,
           name,
           email,
           company,
@@ -434,6 +551,7 @@ function OnboardingWizard({
     step,
     draftId,
     serviceType,
+    applicantType,
     name,
     email,
     company,
@@ -447,32 +565,40 @@ function OnboardingWizard({
 
   const orgSlug = company.toLowerCase().replace(/\s+/g, "-") || "unknown";
 
-  async function uploadFile(file: File, docType: string) {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("org_id", orgSlug);
-    form.append("application_id", draftId);
-    form.append("doc_type", docType);
+  async function uploadFileToStorage(file: File | Blob, docType: string, fileName: string) {
+    const storage = getFirebaseStorage();
+    if (!storage) {
+      console.warn("Firebase Storage not configured — skipping upload");
+      return { ok: true, storage_path: `local/${docType}/${fileName}`, download_url: "", file_name: fileName };
+    }
+    const storagePath = `onboarding-docs/${orgSlug}/${draftId}/${docType}-${fileName}`;
+    const storageRef = ref(storage, storagePath);
     try {
-      const res = await fetch("/api/onboarding/upload", {
-        method: "POST",
-        body: form,
-      });
-      const data = await res.json();
-      return data.ok ? data : null;
+      await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(storageRef);
+      return { ok: true, storage_path: storagePath, download_url: downloadUrl, file_name: fileName };
     } catch {
       return null;
     }
   }
 
-  async function uploadDeclarationHtml(
+  async function uploadDeclarationPdf(
     docType: string,
-    html: string,
-    fileName: string,
+    title: string,
+    fields: DeclarationField[],
+    answers: Record<string, string>,
+    sig: string,
   ) {
-    const blob = new Blob([html], { type: "text/html" });
-    const file = new File([blob], fileName, { type: "text/html" });
-    return uploadFile(file, docType);
+    const pdfBlob = await generateDeclarationPdfBlob(
+      title,
+      name,
+      company,
+      fields,
+      answers,
+      sig,
+    );
+    const fileName = `${docType}-${orgSlug}.pdf`;
+    return uploadFileToStorage(pdfBlob, docType, fileName);
   }
 
   const toggle = (id: string) =>
@@ -484,10 +610,11 @@ function OnboardingWizard({
   const isReq = (s: DocSlot) =>
     s.required === true ||
     (s.required === "investment_only" && serviceType === "investment");
+  const docSlots = getDocSlots(applicantType);
   const uploadedCount = Object.values(docs).filter(Boolean).length;
-  const reqDocs = DOC_SLOTS.filter(isReq);
+  const reqDocs = docSlots.filter(isReq);
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const ids = newOnboardingSubmitIds();
     const id = ids.applicationId;
     const now = ids.nowIso;
@@ -515,6 +642,42 @@ function OnboardingWizard({
     const podStatus = hasFundDeriv
       ? ("pending" as const)
       : ("not_required" as const);
+
+    // Write to Firebase Firestore
+    const db = getFirebaseDb();
+    try {
+      if (!db) {
+        console.warn("Firebase Firestore not configured — skipping write");
+      } else {
+      await addDoc(collection(db, "onboarding_applications"), {
+        application_id: id,
+        applicant_type: applicantType,
+        full_name: name,
+        email,
+        organisation: company,
+        phone: phone || null,
+        expected_aum: expectedAum || null,
+        service_type: serviceType,
+        engagement_type: engType,
+        regulated_activities: regActs,
+        fund_structure_requested: fundReq,
+        pod_registration_status: podStatus,
+        desired_product_slugs: [...selOpts],
+        documents: Object.entries(docs).map(([key, fileName]) => ({
+          doc_type: key,
+          file_name: fileName,
+          storage_path: `onboarding-docs/${orgSlug}/${draftId}/${key}-${fileName}`,
+        })),
+        status: "submitted",
+        submitted_at: serverTimestamp(),
+        created_at: serverTimestamp(),
+      });
+      }
+    } catch (err) {
+      console.error("Failed to write to Firestore:", err);
+    }
+
+    // Also keep local mock state for UI continuity
     const app: OnboardingApplication = {
       id,
       applicant_user_id: ids.applicantUserId,
@@ -572,6 +735,7 @@ function OnboardingWizard({
         draftId,
         orgSlug,
         service: serviceType,
+        applicantType,
         name,
         email,
         company,
@@ -629,6 +793,7 @@ function OnboardingWizard({
                     <Button
                       size="sm"
                       onClick={() => {
+                        setApplicantType(resumeDraft.applicantType || "individual");
                         setName(resumeDraft.name || "");
                         setEmail(resumeDraft.email || "");
                         setCompany(resumeDraft.company || "");
@@ -661,6 +826,29 @@ function OnboardingWizard({
                   </div>
                 </div>
               )}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Applicant Type
+                </Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {(
+                    [
+                      { id: "individual" as const, label: "Individual", desc: "Personal application" },
+                      { id: "company" as const, label: "Company / Organisation", desc: "Corporate application" },
+                    ] as const
+                  ).map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setApplicantType(opt.id)}
+                      className={`text-left rounded-lg border p-3 transition-colors ${applicantType === opt.id ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "hover:bg-accent/30"}`}
+                    >
+                      <span className="text-sm font-medium">{opt.label}</span>
+                      <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs">Full Name *</Label>
@@ -682,7 +870,7 @@ function OnboardingWizard({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Company / Organisation *</Label>
+                  <Label className="text-xs">{applicantType === "company" ? "Company / Organisation *" : "Company (optional)"}</Label>
                   <Input
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
@@ -902,7 +1090,7 @@ function OnboardingWizard({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {DOC_SLOTS.map((slot) => {
+              {docSlots.map((slot) => {
                 const req = isReq(slot),
                   uploaded = !!docs[slot.key];
                 const isDecl = !!slot.declaration;
@@ -1035,19 +1223,12 @@ function OnboardingWizard({
                                   !signatures[slot.key]?.trim()
                                 }
                                 onClick={async () => {
-                                  const html = generateDeclarationHtml(
+                                  await uploadDeclarationPdf(
+                                    slot.key,
                                     slot.label,
-                                    name,
-                                    company,
                                     slot.declaration!,
                                     declAnswers,
                                     signatures[slot.key] || "",
-                                  );
-                                  const fileName = `${slot.key}-${orgSlug}.html`;
-                                  await uploadDeclarationHtml(
-                                    slot.key,
-                                    html,
-                                    fileName,
                                   );
                                   setDocs((p) => ({
                                     ...p,
@@ -1067,7 +1248,7 @@ function OnboardingWizard({
                                   !declFieldsFilled ||
                                   !signatures[slot.key]?.trim()
                                 }
-                                onClick={() =>
+                                onClick={async () =>
                                   downloadDeclaration(
                                     slot.label,
                                     name,
@@ -1132,7 +1313,7 @@ function OnboardingWizard({
                               onChange={async (e) => {
                                 const f = e.target.files?.[0];
                                 if (!f) return;
-                                await uploadFile(f, slot.key);
+                                await uploadFileToStorage(f, slot.key, f.name);
                                 setDocs((p) => ({ ...p, [slot.key]: f.name }));
                               }}
                             />
@@ -1205,7 +1386,7 @@ function OnboardingWizard({
                 <h3 className="text-sm font-semibold">
                   Documents ({uploadedCount} uploaded)
                 </h3>
-                {DOC_SLOTS.map((slot) => (
+                {docSlots.map((slot) => (
                   <div
                     key={slot.key}
                     className="flex items-center justify-between text-sm"

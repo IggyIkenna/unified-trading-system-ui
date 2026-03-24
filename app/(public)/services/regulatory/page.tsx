@@ -173,6 +173,12 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
+                      UK — FCA
+                    </Badge>{" "}
+                    <Badge
+                      variant="outline"
+                      className="ml-1 text-[10px] px-1.5 py-0"
+                    >
                       EU Regulated
                     </Badge>
                   </div>

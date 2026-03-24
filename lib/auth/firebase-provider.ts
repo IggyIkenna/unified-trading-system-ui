@@ -4,7 +4,7 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
 } from "firebase/auth"
 import type { User as FirebaseUser } from "firebase/auth"
-import { firebaseAuth } from "./firebase-config"
+import { getFirebaseAuth } from "./firebase-config"
 import type { AuthProvider, AuthUser } from "./types"
 import type { Entitlement } from "@/lib/config/auth"
 import { ALL_ENTITLEMENTS } from "@/lib/config/auth"
@@ -32,8 +32,10 @@ export class FirebaseAuthProvider implements AuthProvider {
 
   async login(email: string, password?: string): Promise<AuthUser | null> {
     if (!password) return null
+    const auth = getFirebaseAuth()
+    if (!auth) return null
     try {
-      const credential = await signInWithEmailAndPassword(firebaseAuth, email, password)
+      const credential = await signInWithEmailAndPassword(auth, email, password)
       this.user = firebaseUserToAuthUser(credential.user)
       this.cachedToken = await credential.user.getIdToken()
       return this.user
@@ -43,13 +45,16 @@ export class FirebaseAuthProvider implements AuthProvider {
   }
 
   async logout(): Promise<void> {
-    await signOut(firebaseAuth)
+    const auth = getFirebaseAuth()
+    if (auth) await signOut(auth)
     this.user = null
     this.cachedToken = null
   }
 
   async getToken(): Promise<string | null> {
-    const currentUser = firebaseAuth.currentUser
+    const auth = getFirebaseAuth()
+    if (!auth) return null
+    const currentUser = auth.currentUser
     if (!currentUser) return null
     this.cachedToken = await currentUser.getIdToken()
     return this.cachedToken
@@ -70,7 +75,9 @@ export class FirebaseAuthProvider implements AuthProvider {
   }
 
   onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void {
-    return firebaseOnAuthStateChanged(firebaseAuth, (fbUser) => {
+    const auth = getFirebaseAuth()
+    if (!auth) return () => {}
+    return firebaseOnAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
         this.user = firebaseUserToAuthUser(fbUser)
         fbUser.getIdToken().then((t: string) => {

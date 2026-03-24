@@ -16,8 +16,6 @@ import {
   Lock,
 } from "lucide-react";
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
-import { PlatformArchitectureGrid } from "@/components/marketing/platform-architecture-grid";
-import { OperatingModelStages } from "@/components/marketing/operating-model-stages";
 import { PLATFORM_STATS } from "@/lib/config/platform-stats";
 
 import {
@@ -289,53 +287,6 @@ export default function ServicesLandingPage() {
         </div>
       </section>
 
-      {/* Platform Lifecycle Section */}
-      <section className="relative border-b border-border bg-card/30">
-        <div className="container px-4 py-16 md:px-6">
-          <div className="mx-auto max-w-3xl text-center mb-12">
-            <Badge variant="secondary" className="mb-3">
-              Operating Model
-            </Badge>
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-              One Lifecycle. End to End.
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              From data ingestion through execution to regulatory reporting -
-              the same lifecycle governs internal operations and client access.
-            </p>
-          </div>
-
-          {/* Interactive lifecycle stages with hover detail panels */}
-          <OperatingModelStages />
-        </div>
-      </section>
-
-      {/* Domain Lanes Section - Parallel Rails Over Lifecycle Spine */}
-      <section className="relative border-b border-border">
-        <div className="container px-4 py-16 md:px-6">
-          <div className="mx-auto max-w-3xl text-center mb-12">
-            <Badge variant="secondary" className="mb-3">
-              Platform Architecture
-            </Badge>
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-              How Data, Signals, Execution, and Capital Flow Together
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Each lane flows through the lifecycle with varying intensity at
-              each stage.
-            </p>
-          </div>
-
-          {/* Interactive architecture grid with hover tooltips */}
-          <PlatformArchitectureGrid />
-
-          <p className="text-center text-xs text-muted-foreground mt-8 max-w-lg mx-auto">
-            The same underlying platform powers both internal operations and
-            client access.
-          </p>
-        </div>
-      </section>
-
       {/* Market Galaxy Visualization */}
       <section className="relative border-b border-border bg-gradient-to-b from-background to-card/30">
         <div className="container px-4 py-12 md:px-6">
@@ -468,103 +419,6 @@ export default function ServicesLandingPage() {
             <span className="text-rose-400">Predictions</span>
           </p>
         </div>
-      </section>
-
-      {/* Entry Points Section */}
-      <section className="container px-4 py-16 md:px-6">
-        <div className="mx-auto max-w-3xl text-center mb-12">
-          <Badge variant="secondary" className="mb-3">
-            Client Access
-          </Badge>
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Enter At Any Stage
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Clients enter at the lifecycle stage that fits their operating
-            model. Execution workflows integrate with existing research
-            pipelines.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-5xl mx-auto">
-          {[
-            {
-              name: "Data",
-              stages: ["Acquire"],
-              desc: "Normalised feeds across all asset classes",
-            },
-            {
-              name: "Research",
-              stages: ["Acquire", "Build"],
-              desc: "Data plus backtesting and simulation",
-            },
-            {
-              name: "Execution",
-              stages: ["Promote", "Run", "Observe"],
-              desc: "Integrate existing signals into our execution stack",
-              execBoundary: true,
-            },
-            {
-              name: "Full Platform",
-              stages: ["Acquire", "Build", "Promote", "Run", "Observe"],
-              desc: "End-to-end infrastructure access",
-            },
-            {
-              name: "Managed",
-              stages: ["Manage", "Report"],
-              desc: "Discretionary capital management",
-              execBoundary: true,
-            },
-          ].map((entry) => (
-            <div
-              key={entry.name}
-              className="flex flex-col p-4 rounded-lg border border-border bg-card hover:border-primary/30 transition-colors"
-            >
-              <div className="font-semibold text-sm mb-2">{entry.name}</div>
-              <div className="flex flex-wrap gap-1 mb-3">
-                {entry.stages.map((s) => (
-                  <span
-                    key={s}
-                    className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-              <div className="text-xs text-muted-foreground flex-1">
-                {entry.desc}
-              </div>
-              {entry.execBoundary && (
-                <div className="mt-3 text-[10px] text-emerald-500 flex items-center gap-1">
-                  <Lock className="size-3" />
-                  Connects at execution boundary
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <p className="text-center text-sm text-muted-foreground mt-8">
-          Don&apos;t see exactly what you need? Our infrastructure is modular —
-          we design{" "}
-          <Link href="/contact" className="text-primary hover:underline">
-            custom solutions
-          </Link>{" "}
-          tailored to your requirements.
-        </p>
-        <p className="text-center text-xs text-muted-foreground mt-2">
-          <Link
-            href="/services/engagement"
-            className="text-primary hover:underline"
-          >
-            View engagement models
-          </Link>{" "}
-          or{" "}
-          <Link href="/contact" className="text-primary hover:underline">
-            contact us
-          </Link>{" "}
-          to discuss.
-        </p>
       </section>
 
       {/* Commercial Offerings */}

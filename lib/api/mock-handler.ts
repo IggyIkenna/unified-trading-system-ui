@@ -3509,14 +3509,42 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   ) {
     const reqId = route.split("/").at(-2);
     const body = opts?.body ? JSON.parse(opts.body as string) : {};
-    const newStatus = body.action === "deny" ? "denied" : "approved";
+    const action = body.action as "approve" | "deny";
+    const newStatus = action === "deny" ? "denied" : "approved";
     const updated = updateRequest(reqId ?? "", {
       status: newStatus,
       admin_note: body.admin_note ?? "",
       reviewed_by: "admin@odum.internal",
     });
+    if (updated && action === "approve") {
+      const state = getProvisioningState();
+      const existing = state.users.find(
+        (u) => u.email === updated.requester_email,
+      );
+      if (existing) {
+        const merged = [
+          ...new Set([
+            ...existing.product_slugs,
+            ...updated.requested_entitlements,
+          ]),
+        ];
+        updateUser(existing.id, { product_slugs: merged });
+      } else {
+        addUser({
+          id: `user-${Date.now()}`,
+          firebase_uid: `uid-${Date.now()}`,
+          name: updated.requester_name,
+          email: updated.requester_email,
+          role: updated.requested_role || "client",
+          product_slugs: updated.requested_entitlements,
+          status: "active",
+          provisioned_at: new Date().toISOString(),
+          last_modified: new Date().toISOString(),
+          services: { portal: "provisioned" },
+        });
+      }
+    }
     if (updated) return json({ request: updated });
-    // Fallback if request not found
     return json({
       request: {
         id: reqId,

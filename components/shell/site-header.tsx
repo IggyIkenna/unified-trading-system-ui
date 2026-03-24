@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 const NAV_ITEMS = [
   { href: "/", label: "Platform" },
-  { href: "/services/engagement", label: "Engagement Models" },
+  { href: "/signup", label: "Get Started" },
   { href: "/docs", label: "Documentation" },
   { href: "/investor-relations", label: "Investor Relations" },
   { href: "/contact", label: "Contact" },
