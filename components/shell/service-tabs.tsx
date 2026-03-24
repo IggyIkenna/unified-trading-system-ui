@@ -6,11 +6,10 @@
  * Each service defines its own tab set. Tabs support entitlement-based FOMO locking.
  */
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Lock } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export interface ServiceTab {
   label: string;
@@ -100,6 +99,7 @@ export const DATA_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/data/overview" },
   { label: "Instruments", href: "/services/data/instruments" },
   { label: "Raw Data", href: "/services/data/raw" },
+  { label: "Events", href: "/services/data/events" },
   { label: "Processing", href: "/services/data/processing" },
   { label: "Coverage", href: "/services/data/coverage" },
   { label: "Gaps & Quality", href: "/services/data/gaps" },

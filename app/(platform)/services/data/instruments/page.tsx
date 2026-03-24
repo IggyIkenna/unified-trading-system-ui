@@ -2,8 +2,8 @@
 
 /**
  * /services/data/instruments — Instrument catalogue and discovery.
- * Shows instruments grouped by category → venue, with counts,
- * corporate actions timeline (TradFi), new instrument alerts.
+ * Shows instruments grouped by category → venue, with counts and new instrument alerts.
+ * Corporate actions have moved to the Events tab.
  */
 
 import * as React from "react";
@@ -18,7 +18,6 @@ import {
   Bell,
   TrendingUp,
   RefreshCw,
-  GitBranch,
 } from "lucide-react";
 import {
   DATA_CATEGORY_LABELS,
@@ -29,29 +28,8 @@ import {
 import {
   MOCK_INSTRUMENT_COUNTS,
   MOCK_ALERTS,
-  MOCK_CORPORATE_ACTIONS,
 } from "@/lib/data-service-mock-data";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
-
-const CORPORATE_ACTION_LABELS: Record<string, string> = {
-  split: "Stock Split",
-  reverse_split: "Reverse Split",
-  symbol_change: "Symbol Change",
-  delisting: "Delisting",
-  spinoff: "Spin-off",
-  dividend: "Special Dividend",
-  merger: "Merger",
-};
-
-const CORPORATE_ACTION_COLORS: Record<string, string> = {
-  split: "text-emerald-400 border-emerald-400/30",
-  reverse_split: "text-red-400 border-red-400/30",
-  symbol_change: "text-sky-400 border-sky-400/30",
-  delisting: "text-red-400 border-red-400/30",
-  spinoff: "text-violet-400 border-violet-400/30",
-  dividend: "text-amber-400 border-amber-400/30",
-  merger: "text-orange-400 border-orange-400/30",
-};
 
 // Sparkline component (simple inline bars representing growth)
 function GrowthSparkline({ value }: { value: number }) {
@@ -78,60 +56,6 @@ function GrowthSparkline({ value }: { value: number }) {
   );
 }
 
-function CorporateActionsTimeline({ venue }: { venue: string }) {
-  const actions = MOCK_CORPORATE_ACTIONS.filter((a) => a.venue === venue);
-  if (actions.length === 0) return null;
-
-  return (
-    <div className="px-8 py-3 bg-violet-500/5 border-t border-violet-500/10">
-      <div className="flex items-center gap-2 mb-2">
-        <GitBranch className="size-3.5 text-violet-400" />
-        <span className="text-xs font-medium text-violet-400">
-          Corporate Actions
-        </span>
-      </div>
-      <div className="space-y-1.5">
-        {actions.map((action) => (
-          <div key={action.id} className="flex items-center gap-3 text-xs">
-            <span className="text-muted-foreground font-mono w-24 flex-shrink-0">
-              {action.effectiveDate}
-            </span>
-            <Badge
-              variant="outline"
-              className={cn(
-                "text-[10px] h-4",
-                CORPORATE_ACTION_COLORS[action.actionType],
-              )}
-            >
-              {CORPORATE_ACTION_LABELS[action.actionType]}
-            </Badge>
-            <span className="font-mono font-medium">{action.symbol}</span>
-            {action.ratio && (
-              <span className="text-muted-foreground">{action.ratio}:1</span>
-            )}
-            {action.newSymbol && (
-              <span className="text-muted-foreground">
-                → {action.newSymbol}
-              </span>
-            )}
-            <span className="text-muted-foreground truncate">
-              {action.description}
-            </span>
-            {action.dataAdjusted && (
-              <Badge
-                variant="outline"
-                className="text-[10px] h-4 text-emerald-400 border-emerald-400/30 ml-auto flex-shrink-0"
-              >
-                Adjusted
-              </Badge>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function VenueInstrumentRow({
   venue,
   category,
@@ -142,7 +66,6 @@ function VenueInstrumentRow({
   const [expanded, setExpanded] = React.useState(false);
   const counts = MOCK_INSTRUMENT_COUNTS[venue];
   const folders = FOLDERS_BY_CATEGORY[category];
-  const isTradFi = category === "tradfi";
 
   return (
     <div>
@@ -221,9 +144,6 @@ function VenueInstrumentRow({
           </div>
         </div>
       )}
-
-      {/* Corporate actions for TradFi venues */}
-      {expanded && isTradFi && <CorporateActionsTimeline venue={venue} />}
     </div>
   );
 }

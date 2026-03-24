@@ -745,8 +745,16 @@
       "file": "app/(public)/contact/page.tsx",
       "lines": 355
     },
-    { "route": "/docs", "file": "app/(public)/docs/page.tsx", "lines": 766 },
-    { "route": "/demo", "file": "app/(public)/demo/page.tsx", "lines": 178 },
+    {
+      "route": "/docs",
+      "file": "app/(public)/docs/page.tsx",
+      "lines": 766
+    },
+    {
+      "route": "/demo",
+      "file": "app/(public)/demo/page.tsx",
+      "lines": 178
+    },
     {
       "route": "/demo/preview",
       "file": "app/(public)/demo/preview/page.tsx",
@@ -757,7 +765,11 @@
       "file": "app/(public)/privacy/page.tsx",
       "lines": 47
     },
-    { "route": "/terms", "file": "app/(public)/terms/page.tsx", "lines": 51 },
+    {
+      "route": "/terms",
+      "file": "app/(public)/terms/page.tsx",
+      "lines": 51
+    },
     {
       "route": "/investor-relations",
       "file": "app/(public)/investor-relations/page.tsx",

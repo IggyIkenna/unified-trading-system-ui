@@ -574,6 +574,70 @@ export interface CorporateAction {
   dataAdjusted: boolean;
 }
 
+// ─── Economic Events (from features-calendar-service) ─────────────────────────
+
+export type EconomicEventImportance = "high" | "medium" | "low";
+
+export type EconomicEventType =
+  | "fomc"
+  | "nfp"
+  | "cpi"
+  | "gdp"
+  | "pce"
+  | "initial_claims"
+  | "election"
+  | "other_macro";
+
+export interface EconomicEvent {
+  id: string;
+  eventType: EconomicEventType;
+  label: string;
+  date: string; // YYYY-MM-DD
+  time?: string; // HH:MM UTC
+  importance: EconomicEventImportance;
+  country: string;
+  forecast?: number | null;
+  actual?: number | null;
+  previous?: number | null;
+  unit?: string;
+  surprise?: number | null; // (actual - forecast) / |forecast| — null before release
+  description: string;
+}
+
+// ─── Market Structure Events ───────────────────────────────────────────────────
+
+export type MarketStructureEventType =
+  | "options_expiry"
+  | "futures_expiry"
+  | "halving"
+  | "network_upgrade"
+  | "exchange_halt"
+  | "liquidity_event";
+
+export interface MarketStructureEvent {
+  id: string;
+  eventType: MarketStructureEventType;
+  label: string;
+  date: string;
+  time?: string;
+  venue?: string;
+  asset?: string;
+  description: string;
+  importance: EconomicEventImportance;
+}
+
+// ─── Calendar / Holiday Events ─────────────────────────────────────────────────
+
+export interface CalendarHoliday {
+  id: string;
+  date: string;
+  label: string;
+  region: string; // "US" | "UK" | "EU" | "JP" | "global"
+  affectedVenues: string[];
+  isPartialClose: boolean;
+  closeTime?: string; // UTC if partial
+}
+
 // ─── Deploy Request ───────────────────────────────────────────────────────────
 
 export interface DeployRequest {
