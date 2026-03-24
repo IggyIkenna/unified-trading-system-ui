@@ -124,6 +124,7 @@ interface SelectedInstrument {
   expiry?: string;
   putCall?: "C" | "P";
   price: number;
+  lastPrice?: number;
   delta?: number;
   gamma?: number;
   theta?: number;

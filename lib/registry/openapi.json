@@ -5096,7 +5096,7 @@
         ],
         "summary": "Health",
         "description": "Liveness probe.",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -5130,7 +5130,7 @@
         ],
         "summary": "Readiness",
         "description": "Readiness probe.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -7457,7 +7457,7 @@
         ],
         "summary": "Health",
         "description": "Standard Cloud Run liveness probe.",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__3",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -7482,7 +7482,7 @@
         ],
         "summary": "Readiness",
         "description": "Runtime readiness with tier detection.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__3",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -7507,7 +7507,7 @@
         ],
         "summary": "Version",
         "description": "Return service version information.",
-        "operationId": "version_version_get",
+        "operationId": "version_version_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -13060,7 +13060,7 @@
     "/client-reporting-api/health": {
       "get": {
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__4",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -13114,7 +13114,7 @@
         ],
         "summary": "Login",
         "description": "Authenticate with email + password, receive JWT.",
-        "operationId": "login_auth_login_post",
+        "operationId": "login_auth_login_post__2",
         "requestBody": {
           "content": {
             "application/json": {
@@ -15349,7 +15349,7 @@
       "get": {
         "summary": "Health",
         "description": "Liveness probe \u2014 always returns ok when the process is alive.\n\nIn mock mode includes per-venue data freshness from mock data.",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__5",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -15373,7 +15373,7 @@
       "get": {
         "summary": "Readiness Check",
         "description": "Readiness probe \u2014 returns 503 if service is not ready to handle requests.",
-        "operationId": "readiness_check_readiness_get",
+        "operationId": "readiness_check_readiness_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -15882,7 +15882,7 @@
       "get": {
         "summary": "Metrics",
         "description": "Prometheus metrics endpoint.",
-        "operationId": "metrics_metrics_get",
+        "operationId": "metrics_metrics_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -15901,7 +15901,7 @@
     "/alerting-service/health": {
       "get": {
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__6",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -15925,7 +15925,7 @@
       "get": {
         "summary": "Readiness",
         "description": "Readiness probe \u2014 checks config is loaded and service is ready.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__4",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -16739,7 +16739,7 @@
       "get": {
         "summary": "Health",
         "description": "Liveness probe \u2014 returns 200 when the process is running.",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__7",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -16792,7 +16792,7 @@
       "get": {
         "summary": "Readiness",
         "description": "Readiness probe \u2014 verifies critical subsystems are initialised.\n\nChecks:\n- Auth and limiter are wired (startup event has completed).\nRaises 503 if the service is not ready to handle requests.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__5",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17032,7 +17032,7 @@
       "get": {
         "summary": "Root",
         "description": "Service info.",
-        "operationId": "root__get",
+        "operationId": "root__get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17058,7 +17058,7 @@
       "get": {
         "summary": "Health",
         "description": "Health check.\n\nReturns service health plus data_freshness showing the last snapshot write timestamp\n(ISO-8601 UTC) or 'none' when no snapshot has been written in this process lifetime.",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__8",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17091,7 +17091,7 @@
       "get": {
         "summary": "Readiness",
         "description": "Readiness probe \u2014 confirms config loaded and service is ready to serve.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__6",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17478,7 +17478,7 @@
       "get": {
         "summary": "Get Var",
         "description": "Compute VaR, CVaR, and optional Stress VaR for a returns series.\n\nPhase 1: caller supplies `returns[]` in query params.\nPhase 2: fetch from position-monitor returns history.\n\nArgs:\n    client_id: Client identifier (logged with event).\n    confidence: Confidence level in (0, 1). Default 0.99.\n    horizon_days: Holding period. Default 1-day.\n    scenario: Optional stress scenario name.\n    returns: Daily P&L returns as decimals (e.g. -0.02 for -2%).\n\nReturns:\n    VaRResponse with var, cvar, stress_var, confidence, horizon_days, scenario.",
-        "operationId": "get_var_risk_var_get",
+        "operationId": "get_var_risk_var_get__2",
         "parameters": [
           {
             "name": "client_id",
@@ -18039,7 +18039,7 @@
       "get": {
         "summary": "Metrics",
         "description": "Prometheus metrics endpoint.",
-        "operationId": "metrics_metrics_get",
+        "operationId": "metrics_metrics_get__3",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -18061,7 +18061,7 @@
       "get": {
         "summary": "Root",
         "description": "Root endpoint - service info.",
-        "operationId": "root__get",
+        "operationId": "root__get__3",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -18087,7 +18087,7 @@
       "get": {
         "summary": "Readiness",
         "description": "Readiness probe \u2014 confirms service initialized and ready to serve.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__7",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20106,7 +20106,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__9",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20126,7 +20126,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__8",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20146,7 +20146,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__10",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20166,7 +20166,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__9",
         "responses": {
           "200": {
             "description": "Successful Response",

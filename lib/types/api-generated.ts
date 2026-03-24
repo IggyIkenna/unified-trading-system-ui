@@ -1946,7 +1946,7 @@ export interface paths {
          * Health
          * @description Liveness probe.
          */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1966,7 +1966,7 @@ export interface paths {
          * Readiness
          * @description Readiness probe.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2853,7 +2853,7 @@ export interface paths {
          * Health
          * @description Standard Cloud Run liveness probe.
          */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2873,7 +2873,7 @@ export interface paths {
          * Readiness
          * @description Runtime readiness with tier detection.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2893,7 +2893,7 @@ export interface paths {
          * Version
          * @description Return service version information.
          */
-        get: operations["version_version_get"];
+        get: operations["version_version_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4894,7 +4894,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4936,7 +4936,7 @@ export interface paths {
          * Login
          * @description Authenticate with email + password, receive JWT.
          */
-        post: operations["login_auth_login_post"];
+        post: operations["login_auth_login_post__2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5596,7 +5596,7 @@ export interface paths {
          *
          *     In mock mode includes per-venue data freshness from mock data.
          */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5616,7 +5616,7 @@ export interface paths {
          * Readiness Check
          * @description Readiness probe — returns 503 if service is not ready to handle requests.
          */
-        get: operations["readiness_check_readiness_get"];
+        get: operations["readiness_check_readiness_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5755,7 +5755,7 @@ export interface paths {
          * Metrics
          * @description Prometheus metrics endpoint.
          */
-        get: operations["metrics_metrics_get"];
+        get: operations["metrics_metrics_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5772,7 +5772,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5792,7 +5792,7 @@ export interface paths {
          * Readiness
          * @description Readiness probe — checks config is loaded and service is ready.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6124,7 +6124,7 @@ export interface paths {
          * Health
          * @description Liveness probe — returns 200 when the process is running.
          */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6171,7 +6171,7 @@ export interface paths {
          *     - Auth and limiter are wired (startup event has completed).
          *     Raises 503 if the service is not ready to handle requests.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6277,7 +6277,7 @@ export interface paths {
          * Root
          * @description Service info.
          */
-        get: operations["root__get"];
+        get: operations["root__get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6300,7 +6300,7 @@ export interface paths {
          *     Returns service health plus data_freshness showing the last snapshot write timestamp
          *     (ISO-8601 UTC) or 'none' when no snapshot has been written in this process lifetime.
          */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6320,7 +6320,7 @@ export interface paths {
          * Readiness
          * @description Readiness probe — confirms config loaded and service is ready to serve.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6477,7 +6477,7 @@ export interface paths {
          *     Returns:
          *         VaRResponse with var, cvar, stress_var, confidence, horizon_days, scenario.
          */
-        get: operations["get_var_risk_var_get"];
+        get: operations["get_var_risk_var_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6715,7 +6715,7 @@ export interface paths {
          * Metrics
          * @description Prometheus metrics endpoint.
          */
-        get: operations["metrics_metrics_get"];
+        get: operations["metrics_metrics_get__3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6735,7 +6735,7 @@ export interface paths {
          * Root
          * @description Root endpoint - service info.
          */
-        get: operations["root__get"];
+        get: operations["root__get__3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6755,7 +6755,7 @@ export interface paths {
          * Readiness
          * @description Readiness probe — confirms service initialized and ready to serve.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -7374,7 +7374,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -7391,7 +7391,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -7408,7 +7408,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -7425,7 +7425,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -13437,7 +13437,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -13459,7 +13459,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -15009,7 +15009,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__3: {
         parameters: {
             query?: never;
             header?: never;
@@ -15031,7 +15031,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__3: {
         parameters: {
             query?: never;
             header?: never;
@@ -15053,7 +15053,7 @@ export interface operations {
             };
         };
     };
-    version_version_get: {
+    version_version_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -18183,7 +18183,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__4: {
         parameters: {
             query?: never;
             header?: never;
@@ -18227,7 +18227,7 @@ export interface operations {
             };
         };
     };
-    login_auth_login_post: {
+    login_auth_login_post__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -19286,7 +19286,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__5: {
         parameters: {
             query?: never;
             header?: never;
@@ -19308,7 +19308,7 @@ export interface operations {
             };
         };
     };
-    readiness_check_readiness_get: {
+    readiness_check_readiness_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -19538,7 +19538,7 @@ export interface operations {
             };
         };
     };
-    metrics_metrics_get: {
+    metrics_metrics_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -19558,7 +19558,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__6: {
         parameters: {
             query?: never;
             header?: never;
@@ -19580,7 +19580,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__4: {
         parameters: {
             query?: never;
             header?: never;
@@ -20068,7 +20068,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__7: {
         parameters: {
             query?: never;
             header?: never;
@@ -20110,7 +20110,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__5: {
         parameters: {
             query?: never;
             header?: never;
@@ -20242,7 +20242,7 @@ export interface operations {
             };
         };
     };
-    root__get: {
+    root__get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -20264,7 +20264,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__8: {
         parameters: {
             query?: never;
             header?: never;
@@ -20286,7 +20286,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__6: {
         parameters: {
             query?: never;
             header?: never;
@@ -20534,7 +20534,7 @@ export interface operations {
             };
         };
     };
-    get_var_risk_var_get: {
+    get_var_risk_var_get__2: {
         parameters: {
             query: {
                 /** @description Client identifier */
@@ -20860,7 +20860,7 @@ export interface operations {
             };
         };
     };
-    metrics_metrics_get: {
+    metrics_metrics_get__3: {
         parameters: {
             query?: never;
             header?: never;
@@ -20880,7 +20880,7 @@ export interface operations {
             };
         };
     };
-    root__get: {
+    root__get__3: {
         parameters: {
             query?: never;
             header?: never;
@@ -20902,7 +20902,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__7: {
         parameters: {
             query?: never;
             header?: never;
@@ -21941,7 +21941,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__9: {
         parameters: {
             query?: never;
             header?: never;
@@ -21961,7 +21961,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__8: {
         parameters: {
             query?: never;
             header?: never;
@@ -21981,7 +21981,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__10: {
         parameters: {
             query?: never;
             header?: never;
@@ -22001,7 +22001,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__9: {
         parameters: {
             query?: never;
             header?: never;

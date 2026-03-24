@@ -15,7 +15,7 @@ export interface AuthState {
   loading: boolean
   login: (personaId: string) => Promise<boolean>
   loginByEmail: (email: string, password: string) => Promise<boolean>
-  switchPersona: (personaId: string) => void
+  switchPersona: (personaId: string) => Promise<void>
   logout: () => Promise<void>
   hasEntitlement: (entitlement: Entitlement) => boolean
   isAdmin: () => boolean
@@ -88,8 +88,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 
   const switchPersona = React.useCallback(
-    (personaId: string) => {
-      login(personaId)
+    async (personaId: string) => {
+      await login(personaId)
     },
     [login],
   )

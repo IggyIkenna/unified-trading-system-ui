@@ -73,7 +73,7 @@ export class FirebaseAuthProvider implements AuthProvider {
     return firebaseOnAuthStateChanged(firebaseAuth, (fbUser) => {
       if (fbUser) {
         this.user = firebaseUserToAuthUser(fbUser)
-        fbUser.getIdToken().then((t) => {
+        fbUser.getIdToken().then((t: string) => {
           this.cachedToken = t
         })
         callback(this.user)

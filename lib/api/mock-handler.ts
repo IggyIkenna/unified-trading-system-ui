@@ -760,11 +760,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           coverage: 85 + Math.random() * 15,
         };
       venueMap[inst.venue].instruments++;
-      const entitlement = RESTRICTED_BASES.includes(inst.baseCurrency)
-        ? ("restricted" as const)
-        : DEFI_CATEGORIES.includes(inst.category)
-          ? ("delayed" as const)
-          : ("live" as const);
+      const baseCur = inst.baseCurrency;
+      const entitlement =
+        baseCur && RESTRICTED_BASES.includes(baseCur)
+          ? ("restricted" as const)
+          : DEFI_CATEGORIES.includes(inst.category)
+            ? ("delayed" as const)
+            : ("live" as const);
       return { ...inst, entitlement };
     });
     return json({
@@ -804,17 +806,20 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     };
     const enrichedCatalogue = MOCK_CATALOGUE.map((entry) => {
       const inst = entry.instrument;
-      const entitlement = RESTRICTED_BASES.includes(inst.baseCurrency)
-        ? ("restricted" as const)
-        : DEFI_CATEGORIES.includes(inst.category)
-          ? ("delayed" as const)
-          : ("live" as const);
-      const symData = SYMBOLOGY_MAP[inst.baseCurrency];
+      const baseCur = inst.baseCurrency;
+      const entitlement =
+        baseCur && RESTRICTED_BASES.includes(baseCur)
+          ? ("restricted" as const)
+          : DEFI_CATEGORIES.includes(inst.category)
+            ? ("delayed" as const)
+            : ("live" as const);
+      const symData = baseCur ? SYMBOLOGY_MAP[baseCur] : undefined;
       const symbology = {
         internal: inst.instrumentKey,
         bloomberg: symData?.bloomberg ?? null,
         reuters: symData?.reuters ?? null,
-        coingecko: symData?.coingecko ?? inst.baseCurrency.toLowerCase(),
+        coingecko:
+          symData?.coingecko ?? (baseCur ? baseCur.toLowerCase() : "unknown"),
       };
       return { ...entry, entitlement, symbology };
     });
@@ -3631,6 +3636,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       org_name: body.org_name ?? "New Organisation",
       desired_product_slugs: body.desired_product_slugs ?? [],
       subscription_tier: body.subscription_tier ?? "basic",
+      engagement_type: null,
+      regulated_activities: [],
+      fund_structure_requested: null,
+      pod_registration_status: null,
       status: "draft",
       submitted_at: null,
       reviewer_id: null,

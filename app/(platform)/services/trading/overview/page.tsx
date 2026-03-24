@@ -295,7 +295,7 @@ export default function OverviewPage() {
     let result = allStrategies;
     if (context.organizationIds.length > 0) {
       result = result.filter((s) => {
-        const orgHint = (s as Record<string, unknown>).orgId as
+        const orgHint = (s as unknown as Record<string, unknown>).orgId as
           | string
           | undefined;
         return orgHint ? context.organizationIds.includes(orgHint) : true;
@@ -303,7 +303,7 @@ export default function OverviewPage() {
     }
     if (context.clientIds.length > 0) {
       result = result.filter((s) => {
-        const clientHint = (s as Record<string, unknown>).clientId as
+        const clientHint = (s as unknown as Record<string, unknown>).clientId as
           | string
           | undefined;
         return clientHint ? context.clientIds.includes(clientHint) : true;

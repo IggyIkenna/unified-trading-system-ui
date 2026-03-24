@@ -762,11 +762,6 @@
         "access_mode": "rest_polling",
         "data_types": []
       },
-      "base_url": null,
-      "ws_url": null,
-      "access_mode": "rest_polling",
-      "data_types": []
-    },
     "bitget": {
       "base_url": null,
       "ws_url": null,
@@ -851,9 +846,9 @@
       "access_mode": "rest_polling",
       "data_types": []
     }
-  }
-},
-"uac_enums": {
+    }
+  },
+  "uac_enums": {
   "OrderSide": [
     "buy",
     "sell"

@@ -440,8 +440,10 @@ export function LifecycleNav({
             <DropdownMenuItem
               className="text-destructive"
               onClick={() => {
-                doLogout();
-                window.location.href = "/login";
+                void (async () => {
+                  await doLogout();
+                  window.location.href = "/login";
+                })();
               }}
             >
               <LogOut className="mr-2 size-4" />

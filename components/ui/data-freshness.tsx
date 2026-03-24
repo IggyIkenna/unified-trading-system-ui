@@ -10,8 +10,8 @@ interface DataFreshnessProps {
   asOfDate?: string;
 }
 
-function getSecondsAgo(date: Date): number {
-  return Math.floor((Date.now() - date.getTime()) / 1000);
+function getSecondsAgo(referenceMs: number, date: Date): number {
+  return Math.floor((referenceMs - date.getTime()) / 1000);
 }
 
 function getStalenessColor(seconds: number): string {

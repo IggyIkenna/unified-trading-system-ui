@@ -1415,12 +1415,8 @@ export default function StrategyDetailPage({
               )}
 
               {/* Recursive Staked Basis (DeFi subset) */}
-<<<<<<< HEAD
               {(arch === "recursive-staked-basis" ||
                 arch === "RECURSIVE_STAKED_BASIS") && (
-=======
-              {(arch === "recursive-staked-basis" || arch === "RECURSIVE_STAKED_BASIS") && (
->>>>>>> origin/main
                 <>
                   <div>
                     <span className="text-muted-foreground text-[10px]">

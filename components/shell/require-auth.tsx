@@ -142,7 +142,7 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
                 {PERSONAS.map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => switchPersona(p.id)}
+                    onClick={() => void switchPersona(p.id)}
                     className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
                   >
                     <div className="flex-1 min-w-0">
