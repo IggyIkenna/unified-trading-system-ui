@@ -335,7 +335,7 @@ export default function ExperimentsPage() {
         ),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [compareSet, modelFamilies],
   );
 

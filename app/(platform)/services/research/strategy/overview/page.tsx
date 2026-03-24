@@ -1,18 +1,5 @@
 "use client";
 
-import * as React from "react";
-import {
-  Activity,
-  AlertTriangle,
-  BarChart3,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  FlaskConical,
-  Play,
-  Target,
-  TrendingUp,
-} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,20 +28,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import {
-  useStrategyBacktests,
-  useStrategyTemplates,
-  useStrategyCandidates,
-  useCreateBacktest,
-} from "@/hooks/api/use-strategies";
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  FlaskConical,
+  Play,
+  Target,
+  TrendingUp,
+} from "lucide-react";
+import * as React from "react";
+
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useCreateBacktest,
+  useStrategyBacktests,
+  useStrategyCandidates,
+  useStrategyTemplates,
+} from "@/hooks/api/use-strategies";
+import { newOptimisticBacktestIds } from "@/lib/demo-ids";
 import type {
   BacktestRun,
+  StrategyAlert,
+  StrategyCandidate,
   StrategyConfig,
   StrategyTemplate,
-  StrategyCandidate,
-  StrategyAlert,
 } from "@/lib/strategy-platform-types";
 
 // ---------------------------------------------------------------------------
@@ -118,6 +119,26 @@ function fmtPct(v: number) {
 
 function fmtNum(v: number, decimals = 2) {
   return v.toFixed(decimals);
+}
+
+type OverviewSortField = "sharpe" | "return" | "drawdown";
+
+function StrategyOverviewSortIcon({
+  field,
+  currentField,
+  dir,
+}: {
+  field: OverviewSortField;
+  currentField: OverviewSortField;
+  dir: "asc" | "desc";
+}) {
+  if (currentField !== field)
+    return <ChevronDown className="size-3 opacity-30" />;
+  return dir === "desc" ? (
+    <ChevronDown className="size-3" />
+  ) : (
+    <ChevronUp className="size-3" />
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -219,24 +240,15 @@ export default function StrategyOverviewPage() {
     }
   }
 
-  function SortIcon({ field }: { field: string }) {
-    if (sortField !== field)
-      return <ChevronDown className="size-3 opacity-30" />;
-    return sortDir === "desc" ? (
-      <ChevronDown className="size-3" />
-    ) : (
-      <ChevronUp className="size-3" />
-    );
-  }
-
   function handleSubmitBacktest() {
     if (!form.templateId) return;
     const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId);
     if (!tpl) return;
 
+    const ids = newOptimisticBacktestIds();
     const newBt: BacktestRun = {
-      id: `bt-new-${Date.now()}`,
-      configId: `cfg-new-${Date.now()}`,
+      id: ids.id,
+      configId: ids.configId,
       configVersion: "1.0.0",
       templateId: tpl.id,
       templateName: tpl.name,
@@ -249,14 +261,14 @@ export default function StrategyOverviewPage() {
       shard: "SHARD_1",
       testingStage: "HISTORICAL",
       dataSource: "HISTORICAL_TICK",
-      dataSnapshotId: `snap-${Date.now()}`,
-      asOfDate: new Date().toISOString().slice(0, 10),
+      dataSnapshotId: ids.dataSnapshotId,
+      asOfDate: ids.asOfDate,
       metrics: null,
       startedAt: null,
       completedAt: null,
       durationMs: null,
       codeCommitHash: "head",
-      configHash: `cfg-hash-${Date.now()}`,
+      configHash: ids.configHash,
       liveAnalogId: null,
       driftScore: null,
     };
@@ -463,7 +475,12 @@ export default function StrategyOverviewPage() {
                         onClick={() => handleSort("sharpe")}
                       >
                         <span className="flex items-center gap-1">
-                          Sharpe <SortIcon field="sharpe" />
+                          Sharpe{" "}
+                          <StrategyOverviewSortIcon
+                            field="sharpe"
+                            currentField={sortField}
+                            dir={sortDir}
+                          />
                         </span>
                       </TableHead>
                       <TableHead
@@ -471,7 +488,12 @@ export default function StrategyOverviewPage() {
                         onClick={() => handleSort("return")}
                       >
                         <span className="flex items-center gap-1">
-                          Return <SortIcon field="return" />
+                          Return{" "}
+                          <StrategyOverviewSortIcon
+                            field="return"
+                            currentField={sortField}
+                            dir={sortDir}
+                          />
                         </span>
                       </TableHead>
                       <TableHead
@@ -479,7 +501,12 @@ export default function StrategyOverviewPage() {
                         onClick={() => handleSort("drawdown")}
                       >
                         <span className="flex items-center gap-1">
-                          Max DD <SortIcon field="drawdown" />
+                          Max DD{" "}
+                          <StrategyOverviewSortIcon
+                            field="drawdown"
+                            currentField={sortField}
+                            dir={sortDir}
+                          />
                         </span>
                       </TableHead>
                     </TableRow>

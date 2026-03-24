@@ -1,10 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -12,7 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DollarSign, RefreshCw } from "lucide-react";
+import { mock01 } from "@/lib/deterministic-mock";
+import { cn } from "@/lib/utils";
+import { DollarSign } from "lucide-react";
+import * as React from "react";
 
 interface OrderBookLevel {
   price: number;
@@ -486,7 +487,10 @@ export function OrderBookWithDepth({
 
   const spread = asks[0]?.price - bids[0]?.price || 0;
   const spreadBps = (spread / midPrice) * 10000;
-  const lastPrice = midPrice + (Math.random() - 0.5) * spread;
+  const symbolSalt = symbol
+    .split("")
+    .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const lastPrice = midPrice + (mock01(0, symbolSalt) - 0.5) * spread;
 
   return (
     <div className={cn("grid grid-cols-1 lg:grid-cols-2 gap-4", className)}>

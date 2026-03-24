@@ -1,33 +1,28 @@
 "use client";
 
-import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  ArrowRight,
+  Check,
   ChevronLeft,
   ChevronRight,
-  Database,
-  LineChart,
-  Zap,
-  Shield,
-  Briefcase,
-  Layers,
-  Check,
   Circle,
-  ArrowRight,
-  TrendingUp,
-  Bot,
-  GitBranch,
-  Users,
+  Database,
   Globe,
-  Play,
-  Pause,
+  Layers,
+  LineChart,
   Maximize2,
+  Pause,
+  Play,
+  Shield,
+  TrendingUp
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
+import * as React from "react";
 
 // Venue list for scrolling display - color-coded by asset class
 const VENUE_LIST = [
@@ -623,6 +618,16 @@ export default function PresentationPage() {
     setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1));
   const prevSlide = () => setCurrentSlide((prev) => Math.max(prev - 1, 0));
 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight" || e.key === " ") nextSlide();
@@ -643,19 +648,9 @@ export default function PresentationPage() {
     }
   }, [isAutoPlay]);
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
-  };
-
   // Each slide has a different shape based on `type`. Cast to a permissive record
   // to allow type-specific property access in render branches.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const slide = slides[currentSlide] as Record<string, any>;
 
   return (

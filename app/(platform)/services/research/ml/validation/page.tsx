@@ -1,27 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  GitCompare,
-  TrendingUp,
-  TrendingDown,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Target,
-  BarChart3,
-  LineChart,
-  Activity,
-  Layers,
-  Filter,
-  Download,
-  RefreshCw,
-  ChevronRight,
-  Clock,
-  Zap,
-} from "lucide-react";
+import { ApiError } from "@/components/ui/api-error";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -29,9 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Select,
   SelectContent,
@@ -39,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -48,28 +26,40 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useValidationResults } from "@/hooks/api/use-ml-models";
+import { mock01 } from "@/lib/deterministic-mock";
 import {
-  LineChart as RechartsLine,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  ScatterChart,
-  Scatter,
-  ReferenceLine,
+  Activity,
+  AlertTriangle,
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  Download,
+  GitCompare,
+  Layers,
+  LineChart,
+  RefreshCw,
+  Target,
+  Zap
+} from "lucide-react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import {
   Area,
   AreaChart,
-  Cell,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart as RechartsLine,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
 } from "recharts";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useValidationResults } from "@/hooks/api/use-ml-models";
-import { ApiError } from "@/components/ui/api-error";
-import { EmptyState } from "@/components/ui/empty-state";
 
 // Default validation results used when API returns no data
 const DEFAULT_VALIDATION_RESULTS = {
@@ -299,10 +289,10 @@ export default function ValidationPage() {
       (rawData as any)?.timeSeries ??
       Array.from({ length: 60 }, (_, i) => ({
         date: new Date(2026, 0, 1 + i).toISOString().split("T")[0],
-        championPnL: Math.random() * 0.02 - 0.005 + i * 0.0003,
-        challengerPnL: Math.random() * 0.02 - 0.004 + i * 0.00035,
-        championSharpe: 2.2 + Math.random() * 0.4,
-        challengerSharpe: 2.3 + Math.random() * 0.5,
+        championPnL: mock01(i, 31) * 0.02 - 0.005 + i * 0.0003,
+        challengerPnL: mock01(i, 32) * 0.02 - 0.004 + i * 0.00035,
+        championSharpe: 2.2 + mock01(i, 33) * 0.4,
+        challengerSharpe: 2.3 + mock01(i, 34) * 0.5,
       })),
     [rawData],
   );
@@ -707,7 +697,7 @@ export default function ValidationPage() {
                     {Object.entries(champion.metrics).map(([key, value]) => {
                       const challValue =
                         challenger.metrics[
-                          key as keyof typeof challenger.metrics
+                        key as keyof typeof challenger.metrics
                         ];
                       const diff = challValue - (value as number);
                       const pctDiff = (diff / Math.abs(value as number)) * 100;

@@ -1,18 +1,9 @@
 "use client";
 
-import * as React from "react";
-import {
-  Filter,
-  FlaskConical,
-  Play,
-  Plus,
-  Search,
-  Star,
-  X,
-} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/ui/data-table";
 import {
   Dialog,
   DialogContent,
@@ -31,23 +22,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { type ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/ui/data-table";
-
 import {
-  useStrategyBacktests,
-  useCreateBacktest,
-  useStrategyTemplates,
-} from "@/hooks/api/use-strategies";
-import { Skeleton } from "@/components/ui/skeleton";
+  Filter,
+  FlaskConical,
+  Play,
+  Plus,
+  Search,
+  Star,
+  X,
+} from "lucide-react";
+import * as React from "react";
+
+import { StrategyWizard } from "@/components/research/strategy-wizard";
 import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
-import { StrategyWizard } from "@/components/research/strategy-wizard";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useCreateBacktest,
+  useStrategyBacktests,
+  useStrategyTemplates,
+} from "@/hooks/api/use-strategies";
+import { newOptimisticBacktestIds } from "@/lib/demo-ids";
 import type {
   BacktestRun,
-  StrategyArchetype,
-  StrategyTemplate,
+  StrategyTemplate
 } from "@/lib/strategy-platform-types";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
 import type { ExportColumn } from "@/lib/utils/export";
 
 // ---------------------------------------------------------------------------
@@ -238,154 +238,151 @@ export default function BacktestsPage() {
     });
   }
 
-  const backtestColumns: ColumnDef<BacktestRun, unknown>[] = React.useMemo(
-    () => [
-      {
-        id: "star",
-        header: "",
-        enableSorting: false,
-        cell: ({ row }) => {
-          const bt = row.original;
-          if (bt.status !== "completed") return null;
-          return (
-            <button
-              onClick={() => toggleCandidate(bt.id)}
-              className="p-0.5 rounded hover:bg-muted"
-              title={
-                candidateBasket.has(bt.id)
-                  ? "Remove from basket"
-                  : "Add to candidate basket"
-              }
-            >
-              <Star
-                className={`size-3.5 ${candidateBasket.has(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
-              />
-            </button>
-          );
-        },
-      },
-      {
-        accessorKey: "templateName",
-        header: "Strategy",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <span className="font-medium text-sm">
-            {row.original.templateName}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "instrument",
-        header: "Instrument",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <span className="text-muted-foreground text-xs font-mono">
-            {row.original.instrument}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "venue",
-        header: "Venue",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <span className="text-muted-foreground text-xs">
-            {row.original.venue}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "status",
-        header: "Status",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <Badge
-            variant="outline"
-            className={backtestStatusColor(row.original.status)}
+  const backtestColumns: ColumnDef<BacktestRun, unknown>[] = [
+    {
+      id: "star",
+      header: "",
+      enableSorting: false,
+      cell: ({ row }) => {
+        const bt = row.original;
+        if (bt.status !== "completed") return null;
+        return (
+          <button
+            onClick={() => toggleCandidate(bt.id)}
+            className="p-0.5 rounded hover:bg-muted"
+            title={
+              candidateBasket.has(bt.id)
+                ? "Remove from basket"
+                : "Add to candidate basket"
+            }
           >
-            {row.original.status === "running"
-              ? `${row.original.progress}%`
-              : row.original.status}
-          </Badge>
-        ),
+            <Star
+              className={`size-3.5 ${candidateBasket.has(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+            />
+          </button>
+        );
       },
-      {
-        id: "sharpe",
-        header: "Sharpe",
-        accessorFn: (row) => row.metrics?.sharpe ?? -Infinity,
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {row.original.metrics ? fmtNum(row.original.metrics.sharpe) : "--"}
-          </span>
-        ),
-      },
-      {
-        id: "return",
-        header: "Return",
-        accessorFn: (row) => row.metrics?.totalReturn ?? -Infinity,
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {row.original.metrics
-              ? fmtPct(row.original.metrics.totalReturn)
-              : "--"}
-          </span>
-        ),
-      },
-      {
-        id: "drawdown",
-        header: "Max DD",
-        accessorFn: (row) => row.metrics?.maxDrawdown ?? Infinity,
-        cell: ({ row }) => (
-          <span className="font-mono text-sm text-red-400">
-            {row.original.metrics
-              ? fmtPct(row.original.metrics.maxDrawdown)
-              : "--"}
-          </span>
-        ),
-      },
-      {
-        id: "sortino",
-        header: "Sortino",
-        accessorFn: (row) => row.metrics?.sortino ?? -Infinity,
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {row.original.metrics ? fmtNum(row.original.metrics.sortino) : "--"}
-          </span>
-        ),
-      },
-      {
-        id: "hitRate",
-        header: "Hit Rate",
-        accessorFn: (row) => row.metrics?.hitRate ?? -Infinity,
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {row.original.metrics ? fmtPct(row.original.metrics.hitRate) : "--"}
-          </span>
-        ),
-      },
-      {
-        id: "window",
-        header: "Window",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <span className="text-muted-foreground text-xs">
-            {row.original.dateWindow.start} - {row.original.dateWindow.end}
-          </span>
-        ),
-      },
-    ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [candidateBasket],
-  );
+    },
+    {
+      accessorKey: "templateName",
+      header: "Strategy",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="font-medium text-sm">
+          {row.original.templateName}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "instrument",
+      header: "Instrument",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-muted-foreground text-xs font-mono">
+          {row.original.instrument}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "venue",
+      header: "Venue",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-muted-foreground text-xs">
+          {row.original.venue}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <Badge
+          variant="outline"
+          className={backtestStatusColor(row.original.status)}
+        >
+          {row.original.status === "running"
+            ? `${row.original.progress}%`
+            : row.original.status}
+        </Badge>
+      ),
+    },
+    {
+      id: "sharpe",
+      header: "Sharpe",
+      accessorFn: (row) => row.metrics?.sharpe ?? -Infinity,
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">
+          {row.original.metrics ? fmtNum(row.original.metrics.sharpe) : "--"}
+        </span>
+      ),
+    },
+    {
+      id: "return",
+      header: "Return",
+      accessorFn: (row) => row.metrics?.totalReturn ?? -Infinity,
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">
+          {row.original.metrics
+            ? fmtPct(row.original.metrics.totalReturn)
+            : "--"}
+        </span>
+      ),
+    },
+    {
+      id: "drawdown",
+      header: "Max DD",
+      accessorFn: (row) => row.metrics?.maxDrawdown ?? Infinity,
+      cell: ({ row }) => (
+        <span className="font-mono text-sm text-red-400">
+          {row.original.metrics
+            ? fmtPct(row.original.metrics.maxDrawdown)
+            : "--"}
+        </span>
+      ),
+    },
+    {
+      id: "sortino",
+      header: "Sortino",
+      accessorFn: (row) => row.metrics?.sortino ?? -Infinity,
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">
+          {row.original.metrics ? fmtNum(row.original.metrics.sortino) : "--"}
+        </span>
+      ),
+    },
+    {
+      id: "hitRate",
+      header: "Hit Rate",
+      accessorFn: (row) => row.metrics?.hitRate ?? -Infinity,
+      cell: ({ row }) => (
+        <span className="font-mono text-sm">
+          {row.original.metrics ? fmtPct(row.original.metrics.hitRate) : "--"}
+        </span>
+      ),
+    },
+    {
+      id: "window",
+      header: "Window",
+      enableSorting: false,
+      cell: ({ row }) => (
+        <span className="text-muted-foreground text-xs">
+          {row.original.dateWindow.start} - {row.original.dateWindow.end}
+        </span>
+      ),
+    },
+  ];
 
   function handleSubmitBacktest() {
     if (!form.templateId) return;
     const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId);
     if (!tpl) return;
 
+    const ids = newOptimisticBacktestIds();
     const newBt: BacktestRun = {
-      id: `bt-new-${Date.now()}`,
-      configId: `cfg-new-${Date.now()}`,
+      id: ids.id,
+      configId: ids.configId,
       configVersion: "1.0.0",
       templateId: tpl.id,
       templateName: tpl.name,
@@ -398,14 +395,14 @@ export default function BacktestsPage() {
       shard: "SHARD_1",
       testingStage: "HISTORICAL",
       dataSource: "HISTORICAL_TICK",
-      dataSnapshotId: `snap-${Date.now()}`,
-      asOfDate: new Date().toISOString().slice(0, 10),
+      dataSnapshotId: ids.dataSnapshotId,
+      asOfDate: ids.asOfDate,
       metrics: null,
       startedAt: null,
       completedAt: null,
       durationMs: null,
       codeCommitHash: "head",
-      configHash: `cfg-hash-${Date.now()}`,
+      configHash: ids.configHash,
       liveAnalogId: null,
       driftScore: null,
     };

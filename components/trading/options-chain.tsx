@@ -1,10 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -22,21 +25,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { useOptionsChain } from "@/hooks/api/use-market-data";
+import { cn } from "@/lib/utils";
 import {
   ChevronDown,
   ChevronRight,
-  Plus,
-  Trash2,
-  Layers,
-  Send,
   DollarSign,
+  Layers,
+  Plus,
+  Send,
+  Trash2,
 } from "lucide-react";
-import { useOptionsChain } from "@/hooks/api/use-market-data";
+import * as React from "react";
 
 // ---------- Types ----------
 
@@ -308,7 +308,7 @@ function ExpirySection({
   // Find ATM strike (closest to spot)
   const atmStrike = group.rows.reduce((closest, row) =>
     Math.abs(row.strike - group.spotPrice) <
-    Math.abs(closest.strike - group.spotPrice)
+      Math.abs(closest.strike - group.spotPrice)
       ? row
       : closest,
   ).strike;
@@ -548,10 +548,10 @@ function MultiLegBuilder({
   const tickSize = ticks[chain.underlying] ?? 1;
   const atmStrike = firstExpiry
     ? firstExpiry.rows.reduce((closest, row) =>
-        Math.abs(row.strike - spotPrice) < Math.abs(closest.strike - spotPrice)
-          ? row
-          : closest,
-      ).strike
+      Math.abs(row.strike - spotPrice) < Math.abs(closest.strike - spotPrice)
+        ? row
+        : closest,
+    ).strike
     : spotPrice;
 
   // Available strikes from all expiries
@@ -575,7 +575,7 @@ function MultiLegBuilder({
     setLegs([
       ...legs,
       {
-        id: `leg-${Date.now()}`,
+        id: `leg-${legs.length}-${atmStrike}-${availableExpiries[0] ?? "x"}`,
         strike: atmStrike,
         expiry: availableExpiries[0] ?? "",
         side: "call",
@@ -599,7 +599,7 @@ function MultiLegBuilder({
       .buildLegs(atmStrike, tickSize, expiry)
       .map((l, i) => ({
         ...l,
-        id: `leg-${Date.now()}-${i}`,
+        id: `leg-${l.strike}-${l.side}-${l.expiry}-${i}`,
       }));
     setLegs(newLegs);
   };
@@ -613,41 +613,44 @@ function MultiLegBuilder({
     return leg.side === "call" ? row.call : row.put;
   };
 
-  // Combined Greeks
-  const combinedGreeks = React.useMemo(() => {
-    let delta = 0,
-      gamma = 0,
-      theta = 0,
-      vega = 0;
-    for (const leg of legs) {
-      const opt = lookupOption(leg);
-      if (!opt) continue;
-      const sign = leg.direction === "buy" ? 1 : -1;
-      const qty = leg.quantity;
-      delta += opt.greeks.delta * sign * qty;
-      gamma += opt.greeks.gamma * sign * qty;
-      theta += opt.greeks.theta * sign * qty;
-      vega += opt.greeks.vega * sign * qty;
-    }
-    return { delta, gamma, theta, vega };
-  }, [legs, chain]);
+  let combinedDelta = 0;
+  let combinedGamma = 0;
+  let combinedTheta = 0;
+  let combinedVega = 0;
+  for (const leg of legs) {
+    const opt = lookupOption(leg);
+    if (!opt) continue;
+    const sign = leg.direction === "buy" ? 1 : -1;
+    const qty = leg.quantity;
+    combinedDelta += opt.greeks.delta * sign * qty;
+    combinedGamma += opt.greeks.gamma * sign * qty;
+    combinedTheta += opt.greeks.theta * sign * qty;
+    combinedVega += opt.greeks.vega * sign * qty;
+  }
+  const combinedGreeks = {
+    delta: combinedDelta,
+    gamma: combinedGamma,
+    theta: combinedTheta,
+    vega: combinedVega,
+  };
 
-  // P&L profile estimate
-  const pnlProfile = React.useMemo(() => {
-    if (legs.length === 0)
-      return { maxProfit: 0, maxLoss: 0, breakevens: [] as number[] };
-
-    // Net premium: sum of (direction * mid price * quantity)
+  let pnlProfile: {
+    maxProfit: number;
+    maxLoss: number;
+    breakevens: number[];
+  };
+  if (legs.length === 0) {
+    pnlProfile = { maxProfit: 0, maxLoss: 0, breakevens: [] };
+  } else {
     let netPremium = 0;
     for (const leg of legs) {
       const opt = lookupOption(leg);
       if (!opt) continue;
       const mid = (opt.bid + opt.ask) / 2;
-      const sign = leg.direction === "buy" ? -1 : 1; // buy = pay, sell = receive
+      const sign = leg.direction === "buy" ? -1 : 1;
       netPremium += mid * sign * leg.quantity;
     }
 
-    // Compute P&L at various underlying prices
     const strikes = legs.map((l) => l.strike).sort((a, b) => a - b);
     const minStrike = (strikes[0] ?? spotPrice) - tickSize * 3;
     const maxStrike = (strikes[strikes.length - 1] ?? spotPrice) + tickSize * 3;
@@ -670,7 +673,6 @@ function MultiLegBuilder({
     const maxProfit = Math.max(...pnlPoints);
     const maxLoss = Math.min(...pnlPoints);
 
-    // Find breakevens (zero crossings)
     const breakevens: number[] = [];
     for (let i = 1; i < pnlPoints.length; i++) {
       if (
@@ -682,13 +684,13 @@ function MultiLegBuilder({
       }
     }
 
-    return {
+    pnlProfile = {
       maxProfit:
         maxProfit === Infinity ? Infinity : Math.round(maxProfit * 100) / 100,
       maxLoss: Math.round(maxLoss * 100) / 100,
       breakevens,
     };
-  }, [legs, chain, spotPrice, tickSize]);
+  }
 
   return (
     <div className="border-t border-border">
@@ -813,7 +815,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.side === "call" &&
-                              "bg-emerald-600 hover:bg-emerald-700",
+                            "bg-emerald-600 hover:bg-emerald-700",
                           )}
                           onClick={() => updateLeg(leg.id, { side: "call" })}
                         >
@@ -825,7 +827,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.side === "put" &&
-                              "bg-rose-600 hover:bg-rose-700",
+                            "bg-rose-600 hover:bg-rose-700",
                           )}
                           onClick={() => updateLeg(leg.id, { side: "put" })}
                         >
@@ -847,7 +849,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.direction === "buy" &&
-                              "bg-emerald-600 hover:bg-emerald-700",
+                            "bg-emerald-600 hover:bg-emerald-700",
                           )}
                           onClick={() =>
                             updateLeg(leg.id, { direction: "buy" })
@@ -863,7 +865,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.direction === "sell" &&
-                              "bg-rose-600 hover:bg-rose-700",
+                            "bg-rose-600 hover:bg-rose-700",
                           )}
                           onClick={() =>
                             updateLeg(leg.id, { direction: "sell" })
@@ -991,8 +993,8 @@ function MultiLegBuilder({
                   <span className="font-mono text-right">
                     {pnlProfile.breakevens.length > 0
                       ? pnlProfile.breakevens
-                          .map((b) => `$${b.toLocaleString()}`)
-                          .join(", ")
+                        .map((b) => `$${b.toLocaleString()}`)
+                        .join(", ")
                       : "--"}
                   </span>
                 </div>
@@ -1151,10 +1153,5 @@ export function OptionsChain({
 
 export { generateMockOptionsChain };
 export type {
-  OptionsChainResponse,
-  ExpiryGroup,
-  OptionsRow,
-  OptionLeg,
-  OptionGreeks,
-  SpreadLeg,
+  ExpiryGroup, OptionGreeks, OptionLeg, OptionsChainResponse, OptionsRow, SpreadLeg
 };

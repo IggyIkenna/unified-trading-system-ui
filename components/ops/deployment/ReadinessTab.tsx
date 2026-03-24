@@ -1,32 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import {
-  CheckCircle2,
-  AlertCircle,
-  Clock,
-  MinusCircle,
-  ChevronDown,
-  ChevronRight,
-  ShieldAlert,
-  Calendar,
-  RefreshCw,
-  Terminal,
-  Info,
-  Search,
-} from "lucide-react";
-import { useServiceChecklist } from "@/hooks/deployment/useServices";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useServiceChecklist } from "@/hooks/deployment/useServices";
+import type { ChecklistCategory, ChecklistItem } from "@/lib/types/deployment";
 import { cn } from "@/lib/utils";
-import type { ChecklistItem, ChecklistCategory } from "@/lib/types/deployment";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Info,
+  MinusCircle,
+  RefreshCw,
+  Search,
+  ShieldAlert,
+  Terminal,
+} from "lucide-react";
+import { useState } from "react";
 
 interface ReadinessTabProps {
   serviceName?: string;
@@ -369,7 +369,7 @@ function ChecklistItemRow({ item }: ChecklistItemRowProps) {
       className={cn(
         "rounded-lg border border-transparent transition-colors",
         hasDetails &&
-          "cursor-pointer hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-tertiary)]",
+        "cursor-pointer hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-tertiary)]",
         item.blocking && item.status !== "done" && "status-error",
       )}
       onClick={() => hasDetails && setExpanded(!expanded)}
@@ -475,8 +475,8 @@ function VenueCoverageCard() {
             </p>
             <p className="mt-2">
               This catches API adapter failures (rate limits, auth errors, empty
-              responses) where a venue's API returned no data—issues that file
-              existence checks would miss.
+              responses) where a venue&apos;s API returned no data—issues that
+              file existence checks would miss.
             </p>
           </div>
         </div>

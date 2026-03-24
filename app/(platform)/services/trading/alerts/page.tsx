@@ -1,13 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { toast } from "sonner";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  FilterBar,
+  type FilterDefinition,
+} from "@/components/platform/filter-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import { DataFreshness } from "@/components/ui/data-freshness";
+import { DataTable } from "@/components/ui/data-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -15,8 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DataTable } from "@/components/ui/data-table";
-import { type ColumnDef } from "@tanstack/react-table";
 import {
   Sheet,
   SheetContent,
@@ -25,51 +31,45 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  AlertTriangle,
-  AlertCircle,
-  Bell,
-  Check,
-  CheckCircle2,
-  Clock,
-  Download,
-  Search,
-  ChevronRight,
-  XCircle,
-  Pause,
-  Square,
-  Power,
-  ArrowUpCircle,
-  RefreshCw,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  useAcknowledgeAlert,
+  useAlerts,
+  useEscalateAlert,
+  useResolveAlert,
+} from "@/hooks/api/use-alerts";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { cn } from "@/lib/utils";
 import {
   exportTableToCsv,
   exportTableToXlsx,
   type ExportColumn,
 } from "@/lib/utils/export";
+import { type ColumnDef } from "@tanstack/react-table";
 import {
-  useAlerts,
-  useAcknowledgeAlert,
-  useEscalateAlert,
-  useResolveAlert,
-} from "@/hooks/api/use-alerts";
-import {
-  FilterBar,
-  type FilterDefinition,
-} from "@/components/platform/filter-bar";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+  AlertCircle,
+  AlertTriangle,
+  ArrowUpCircle,
+  Bell,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  Download,
+  Pause,
+  Power,
+  RefreshCw,
+  Search,
+  Square,
+  XCircle,
+} from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
 
 type AlertSeverity = "critical" | "high" | "medium" | "low" | "info";
 type AlertStatus = "active" | "acknowledged" | "resolved" | "muted";
@@ -205,7 +205,7 @@ export default function AlertsPage() {
       }
       return true;
     });
-  }, [allAlerts, filter, severityFilter, searchQuery]);
+  }, [allAlerts, filter, severityFilter, searchQuery, scope.strategyIds]);
 
   // FilterBar definitions
   const alertFilterDefs: FilterDefinition[] = React.useMemo(
@@ -275,146 +275,185 @@ export default function AlertsPage() {
     setSeverityFilter("all");
   }, []);
 
-  const alertColumns: ColumnDef<Alert, unknown>[] = React.useMemo(
-    () => [
-      {
-        accessorKey: "severity",
-        header: "Severity",
-        cell: ({ row }) => {
-          const alert = row.original;
-          return (
-            <Badge
-              variant="outline"
-              className={cn("gap-1", getSeverityColor(alert.severity))}
-            >
-              {getSeverityIcon(alert.severity)}
-              <span className="hidden sm:inline">
-                {alert.severity.charAt(0).toUpperCase() +
-                  alert.severity.slice(1)}
-              </span>
-            </Badge>
-          );
+  const handleAcknowledge = React.useCallback(
+    (alert: Alert) => {
+      acknowledgeMutation.mutate(alert.id, {
+        onSuccess: () => toast.success("Alert acknowledged"),
+        onError: () => toast.error("Failed to acknowledge alert"),
+      });
+    },
+    [acknowledgeMutation],
+  );
+
+  const handleEscalate = React.useCallback(
+    (alert: Alert) => {
+      escalateMutation.mutate(alert.id, {
+        onSuccess: () => {
+          const nextSeverity =
+            alert.severity === "low"
+              ? "medium"
+              : alert.severity === "medium"
+                ? "high"
+                : alert.severity === "high"
+                  ? "critical"
+                  : "critical";
+          toast.success(`Alert escalated to ${nextSeverity}`);
         },
+        onError: () => toast.error("Failed to escalate alert"),
+      });
+    },
+    [escalateMutation],
+  );
+
+  const handleResolve = React.useCallback(
+    (alert: Alert) => {
+      resolveMutation.mutate(alert.id, {
+        onSuccess: () => toast.success("Alert resolved"),
+        onError: () => toast.error("Failed to resolve alert"),
+      });
+    },
+    [resolveMutation],
+  );
+
+  const alertColumns: ColumnDef<Alert, unknown>[] = [
+    {
+      accessorKey: "severity",
+      header: "Severity",
+      cell: ({ row }) => {
+        const alert = row.original;
+        return (
+          <Badge
+            variant="outline"
+            className={cn("gap-1", getSeverityColor(alert.severity))}
+          >
+            {getSeverityIcon(alert.severity)}
+            <span className="hidden sm:inline">
+              {alert.severity.charAt(0).toUpperCase() +
+                alert.severity.slice(1)}
+            </span>
+          </Badge>
+        );
       },
-      {
-        accessorKey: "title",
-        header: "Alert",
-        cell: ({ row }) => {
-          const alert = row.original;
-          return (
-            <div className="flex flex-col">
-              <span className="font-medium">{alert.title}</span>
-              <span className="text-xs text-muted-foreground">
-                {alert.description}
-              </span>
-            </div>
-          );
-        },
+    },
+    {
+      accessorKey: "title",
+      header: "Alert",
+      cell: ({ row }) => {
+        const alert = row.original;
+        return (
+          <div className="flex flex-col">
+            <span className="font-medium">{alert.title}</span>
+            <span className="text-xs text-muted-foreground">
+              {alert.description}
+            </span>
+          </div>
+        );
       },
-      {
-        accessorKey: "entity",
-        header: "Entity",
-        cell: ({ row }) => {
-          const alert = row.original;
-          return (
-            <div className="flex flex-col">
-              <span className="text-primary hover:underline cursor-pointer">
-                {alert.entity}
-              </span>
-              <span className="text-xs text-muted-foreground capitalize">
-                {alert.entityType}
-              </span>
-            </div>
-          );
-        },
+    },
+    {
+      accessorKey: "entity",
+      header: "Entity",
+      cell: ({ row }) => {
+        const alert = row.original;
+        return (
+          <div className="flex flex-col">
+            <span className="text-primary hover:underline cursor-pointer">
+              {alert.entity}
+            </span>
+            <span className="text-xs text-muted-foreground capitalize">
+              {alert.entityType}
+            </span>
+          </div>
+        );
       },
-      {
-        accessorKey: "value",
-        header: "Value / Threshold",
-        cell: ({ row }) => {
-          const alert = row.original;
-          return alert.value && alert.threshold ? (
-            <div className="flex flex-col">
-              <span className="font-mono font-medium">{alert.value}</span>
-              <span className="text-xs text-muted-foreground font-mono">
-                / {alert.threshold}
-              </span>
-            </div>
-          ) : (
-            <span className="text-muted-foreground">-</span>
-          );
-        },
+    },
+    {
+      accessorKey: "value",
+      header: "Value / Threshold",
+      cell: ({ row }) => {
+        const alert = row.original;
+        return alert.value && alert.threshold ? (
+          <div className="flex flex-col">
+            <span className="font-mono font-medium">{alert.value}</span>
+            <span className="text-xs text-muted-foreground font-mono">
+              / {alert.threshold}
+            </span>
+          </div>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
       },
-      {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-          const alert = row.original;
-          return (
-            <Badge
-              variant="outline"
-              className={cn("capitalize", getStatusColor(alert.status))}
-            >
-              {alert.status === "active" && <Clock className="size-3 mr-1" />}
-              {alert.status === "resolved" && <Check className="size-3 mr-1" />}
-              {alert.status}
-            </Badge>
-          );
-        },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const alert = row.original;
+        return (
+          <Badge
+            variant="outline"
+            className={cn("capitalize", getStatusColor(alert.status))}
+          >
+            {alert.status === "active" && <Clock className="size-3 mr-1" />}
+            {alert.status === "resolved" && <Check className="size-3 mr-1" />}
+            {alert.status}
+          </Badge>
+        );
       },
-      {
-        accessorKey: "timestamp",
-        header: "Time",
-        cell: ({ row }) => (
-          <span className="text-sm text-muted-foreground">
-            {row.original.timestamp}
-          </span>
-        ),
-      },
-      {
-        id: "actions",
-        header: "Actions",
-        enableSorting: false,
-        enableHiding: false,
-        cell: ({ row }) => {
-          const alert = row.original;
-          return (
-            <div className="flex items-center justify-end gap-1">
-              {alert.status === "active" && (
-                <>
-                  <BatchGuardButton isBatch={isBatchMode}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="gap-1 text-xs"
-                      disabled={isBatchMode || acknowledgeMutation.isPending}
-                      aria-label="Acknowledge alert"
-                      onClick={() => handleAcknowledge(alert)}
-                    >
-                      <Check className="size-3" />
-                      <span className="hidden lg:inline">Ack</span>
-                    </Button>
-                  </BatchGuardButton>
-                  <BatchGuardButton isBatch={isBatchMode}>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="gap-1 text-xs"
-                      disabled={
-                        isBatchMode ||
-                        escalateMutation.isPending ||
-                        alert.severity === "critical"
-                      }
-                      onClick={() => handleEscalate(alert)}
-                    >
-                      <ArrowUpCircle className="size-3" />
-                      <span className="hidden lg:inline">Escalate</span>
-                    </Button>
-                  </BatchGuardButton>
-                </>
-              )}
-              {(alert.status === "active" ||
-                alert.status === "acknowledged") && (
+    },
+    {
+      accessorKey: "timestamp",
+      header: "Time",
+      cell: ({ row }) => (
+        <span className="text-sm text-muted-foreground">
+          {row.original.timestamp}
+        </span>
+      ),
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      enableSorting: false,
+      enableHiding: false,
+      cell: ({ row }) => {
+        const alert = row.original;
+        return (
+          <div className="flex items-center justify-end gap-1">
+            {alert.status === "active" && (
+              <>
+                <BatchGuardButton isBatch={isBatchMode}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1 text-xs"
+                    disabled={isBatchMode || acknowledgeMutation.isPending}
+                    aria-label="Acknowledge alert"
+                    onClick={() => handleAcknowledge(alert)}
+                  >
+                    <Check className="size-3" />
+                    <span className="hidden lg:inline">Ack</span>
+                  </Button>
+                </BatchGuardButton>
+                <BatchGuardButton isBatch={isBatchMode}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-1 text-xs"
+                    disabled={
+                      isBatchMode ||
+                      escalateMutation.isPending ||
+                      alert.severity === "critical"
+                    }
+                    onClick={() => handleEscalate(alert)}
+                  >
+                    <ArrowUpCircle className="size-3" />
+                    <span className="hidden lg:inline">Escalate</span>
+                  </Button>
+                </BatchGuardButton>
+              </>
+            )}
+            {(alert.status === "active" ||
+              alert.status === "acknowledged") && (
                 <BatchGuardButton isBatch={isBatchMode}>
                   <Button
                     variant="ghost"
@@ -428,105 +467,105 @@ export default function AlertsPage() {
                   </Button>
                 </BatchGuardButton>
               )}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="gap-1">
-                    <ChevronRight className="size-3" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px]">
-                  <SheetHeader>
-                    <SheetTitle className="flex items-center gap-2">
-                      {getSeverityIcon(alert.severity)}
-                      {alert.title}
-                    </SheetTitle>
-                    <SheetDescription>{alert.description}</SheetDescription>
-                  </SheetHeader>
-                  <div className="mt-6 space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">
-                          Severity
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "gap-1",
-                            getSeverityColor(alert.severity),
-                          )}
-                        >
-                          {getSeverityIcon(alert.severity)}
-                          {alert.severity.charAt(0).toUpperCase() +
-                            alert.severity.slice(1)}
-                        </Badge>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-1">
+                  <ChevronRight className="size-3" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-[400px] sm:w-[540px]">
+                <SheetHeader>
+                  <SheetTitle className="flex items-center gap-2">
+                    {getSeverityIcon(alert.severity)}
+                    {alert.title}
+                  </SheetTitle>
+                  <SheetDescription>{alert.description}</SheetDescription>
+                </SheetHeader>
+                <div className="mt-6 space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Severity
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">
-                          Status
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "capitalize",
-                            getStatusColor(alert.status),
-                          )}
-                        >
-                          {alert.status}
-                        </Badge>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "gap-1",
+                          getSeverityColor(alert.severity),
+                        )}
+                      >
+                        {getSeverityIcon(alert.severity)}
+                        {alert.severity.charAt(0).toUpperCase() +
+                          alert.severity.slice(1)}
+                      </Badge>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Status
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">
-                          Entity
-                        </div>
-                        <div className="text-sm font-medium">
-                          {alert.entity}
-                        </div>
-                        <div className="text-xs text-muted-foreground capitalize">
-                          {alert.entityType}
-                        </div>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "capitalize",
+                          getStatusColor(alert.status),
+                        )}
+                      >
+                        {alert.status}
+                      </Badge>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Entity
                       </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground mb-1">
-                          Source
-                        </div>
-                        <div className="text-sm font-medium">
-                          {alert.source}
-                        </div>
+                      <div className="text-sm font-medium">
+                        {alert.entity}
                       </div>
+                      <div className="text-xs text-muted-foreground capitalize">
+                        {alert.entityType}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Source
+                      </div>
+                      <div className="text-sm font-medium">
+                        {alert.source}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Time
+                      </div>
+                      <div className="text-sm font-mono">
+                        {alert.timestamp}
+                      </div>
+                    </div>
+                    {alert.value && alert.threshold && (
                       <div>
                         <div className="text-xs text-muted-foreground mb-1">
-                          Time
+                          Value / Threshold
                         </div>
                         <div className="text-sm font-mono">
-                          {alert.timestamp}
+                          {alert.value} / {alert.threshold}
                         </div>
                       </div>
-                      {alert.value && alert.threshold && (
-                        <div>
-                          <div className="text-xs text-muted-foreground mb-1">
-                            Value / Threshold
-                          </div>
-                          <div className="text-sm font-mono">
-                            {alert.value} / {alert.threshold}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    {alert.recommendedAction && (
-                      <Card className="bg-muted/30">
-                        <CardContent className="p-4">
-                          <div className="text-xs text-muted-foreground mb-1">
-                            Recommended Action
-                          </div>
-                          <div className="text-sm">
-                            {alert.recommendedAction}
-                          </div>
-                        </CardContent>
-                      </Card>
                     )}
-                    {/* Detail sheet action buttons */}
-                    {(alert.status === "active" ||
-                      alert.status === "acknowledged") && (
+                  </div>
+                  {alert.recommendedAction && (
+                    <Card className="bg-muted/30">
+                      <CardContent className="p-4">
+                        <div className="text-xs text-muted-foreground mb-1">
+                          Recommended Action
+                        </div>
+                        <div className="text-sm">
+                          {alert.recommendedAction}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  {/* Detail sheet action buttons */}
+                  {(alert.status === "active" ||
+                    alert.status === "acknowledged") && (
                       <div className="flex gap-2 pt-2">
                         {alert.status === "active" && (
                           <>
@@ -577,21 +616,14 @@ export default function AlertsPage() {
                         </BatchGuardButton>
                       </div>
                     )}
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
-          );
-        },
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        );
       },
-    ],
-    [
-      isBatchMode,
-      acknowledgeMutation.isPending,
-      escalateMutation.isPending,
-      resolveMutation.isPending,
-    ],
-  );
+    },
+  ];
 
   const criticalCount = allAlerts.filter(
     (a) => a.severity === "critical" && a.status === "active",
@@ -600,37 +632,6 @@ export default function AlertsPage() {
     (a) => a.severity === "high" && a.status === "active",
   ).length;
   const activeCount = allAlerts.filter((a) => a.status === "active").length;
-
-  function handleAcknowledge(alert: Alert) {
-    acknowledgeMutation.mutate(alert.id, {
-      onSuccess: () => toast.success("Alert acknowledged"),
-      onError: () => toast.error("Failed to acknowledge alert"),
-    });
-  }
-
-  function handleEscalate(alert: Alert) {
-    escalateMutation.mutate(alert.id, {
-      onSuccess: () => {
-        const nextSeverity =
-          alert.severity === "low"
-            ? "medium"
-            : alert.severity === "medium"
-              ? "high"
-              : alert.severity === "high"
-                ? "critical"
-                : "critical";
-        toast.success(`Alert escalated to ${nextSeverity}`);
-      },
-      onError: () => toast.error("Failed to escalate alert"),
-    });
-  }
-
-  function handleResolve(alert: Alert) {
-    resolveMutation.mutate(alert.id, {
-      onSuccess: () => toast.success("Alert resolved"),
-      onError: () => toast.error("Failed to resolve alert"),
-    });
-  }
 
   if (isLoading) {
     return (

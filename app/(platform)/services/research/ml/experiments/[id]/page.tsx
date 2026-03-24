@@ -1,68 +1,67 @@
 "use client";
 
-import * as React from "react";
-import { useParams } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EntityLink } from "@/components/trading/entity-link";
 import { LossCurves } from "@/components/ml/loss-curves";
+import { EntityLink } from "@/components/trading/entity-link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Beaker,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ArrowUpRight,
-  GitBranch,
-  Database,
-  Cpu,
-  BarChart3,
-  TrendingUp,
-  Activity,
-  AlertTriangle,
-  Play,
-  Pause,
-  Copy,
-  Settings,
-  FileJson,
-  Layers,
-} from "lucide-react";
-import Link from "next/link";
-import {
-  useExperimentDetail,
-  useModelFamilies,
   useDatasets,
+  useExperimentDetail,
   useFeatureProvenance,
+  useModelFamilies,
   useModelVersions,
 } from "@/hooks/api/use-ml-models";
+import { mockRange } from "@/lib/deterministic-mock";
 import type {
-  ExperimentMetrics,
-  Experiment,
-  ModelFamily,
   DatasetSnapshot,
+  Experiment,
+  ExperimentMetrics,
   FeatureSetVersion,
+  ModelFamily,
   ModelVersion,
 } from "@/lib/ml-types";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  BarChart,
+  Activity,
+  AlertTriangle,
+  ArrowUpRight,
+  BarChart3,
+  Beaker,
+  CheckCircle2,
+  Clock,
+  Copy,
+  Cpu,
+  Database,
+  GitBranch,
+  Layers,
+  Pause,
+  RefreshCw,
+  Settings,
+  TrendingUp,
+  XCircle
+} from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import * as React from "react";
+import {
   Bar,
-  RadarChart,
-  PolarGrid,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
   PolarAngleAxis,
+  PolarGrid,
   PolarRadiusAxis,
   Radar,
+  RadarChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 // Context badge component
@@ -635,7 +634,7 @@ export default function ExperimentDetailPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {regimePerformance.map((regime) => (
+                      {regimePerformance.map((regime, ri) => (
                         <tr
                           key={regime.regime}
                           className="border-b border-border/50"
@@ -655,7 +654,7 @@ export default function ExperimentDetailPage() {
                             {regime.drawdown}%
                           </td>
                           <td className="py-3 px-4 text-right font-mono text-muted-foreground">
-                            {Math.floor(Math.random() * 500 + 200)}
+                            {Math.floor(mockRange(200, 700, ri, 41))}
                           </td>
                         </tr>
                       ))}

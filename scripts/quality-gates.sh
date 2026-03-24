@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Next.js 16+ removed the `next lint` subcommand; `npx next lint` is parsed as
+# `next` with project directory "lint" and fails with "Invalid project directory".
+# Use package.json "lint" (eslint .) instead.
+
 CI_MODE=false
 RUN_SMOKE=true
+SKIP_TYPECHECK=false
 
 for arg in "$@"; do
   case "$arg" in
@@ -12,16 +17,23 @@ for arg in "$@"; do
     --no-smoke)
       RUN_SMOKE=false
       ;;
+    --skip-typecheck)
+      SKIP_TYPECHECK=true
+      ;;
   esac
 done
 
 echo "=== Quality Gates (unified-trading-system-ui) ==="
 
 echo "--- Lint ---"
-npx next lint
+npm run lint
 
-echo "--- Typecheck ---"
-npx tsc --noEmit
+if [[ "$SKIP_TYPECHECK" == "true" ]]; then
+  echo "--- Typecheck --- skipped (--skip-typecheck)"
+else
+  echo "--- Typecheck ---"
+  npx tsc --noEmit
+fi
 
 echo "--- Unit tests with coverage ---"
 npx jest --coverage --maxWorkers=2

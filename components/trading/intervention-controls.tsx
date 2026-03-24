@@ -1,8 +1,6 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -12,25 +10,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Slider } from "@/components/ui/slider";
+import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { cn } from "@/lib/utils";
 import {
+  AlertOctagon,
+  CheckCircle2,
   Pause,
   Play,
-  TrendingDown,
-  AlertOctagon,
-  Shield,
-  Clock,
-  CheckCircle2,
-  XCircle,
   RefreshCw,
+  Shield,
+  TrendingDown
 } from "lucide-react";
+import * as React from "react";
 
 interface InterventionControlsProps {
   scope: {
@@ -53,6 +51,7 @@ export function InterventionControls({
   onResumeAll,
   className,
 }: InterventionControlsProps) {
+  const nowMs = useTickingNowMs(1000);
   const [showReduceDialog, setShowReduceDialog] = React.useState(false);
   const [showFlattenDialog, setShowFlattenDialog] = React.useState(false);
   const [reducePercent, setReducePercent] = React.useState(50);
@@ -142,7 +141,7 @@ export function InterventionControls({
               className={cn(
                 "gap-1.5",
                 isPaused &&
-                  "bg-[var(--status-warning)] hover:bg-[var(--status-warning)]/90",
+                "bg-[var(--status-warning)] hover:bg-[var(--status-warning)]/90",
               )}
               onClick={isPaused ? handleResumeAll : handlePauseAll}
               disabled={isProcessing}
@@ -399,8 +398,7 @@ export function InterventionControls({
           <CheckCircle2 className="size-3 text-[var(--status-live)]" />
           {lastAction.type}
           <span className="text-[10px]">
-            ({Math.round((Date.now() - lastAction.timestamp.getTime()) / 1000)}s
-            ago)
+            ({Math.round((nowMs - lastAction.timestamp.getTime()) / 1000)}s ago)
           </span>
         </div>
       )}

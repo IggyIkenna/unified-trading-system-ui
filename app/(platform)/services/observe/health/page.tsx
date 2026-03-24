@@ -1,20 +1,31 @@
 "use client";
 
-import * as React from "react";
-import { StatusBadge } from "@/components/trading/status-badge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
+import { DataFreshness } from "@/components/ui/data-freshness";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -23,13 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
   TooltipContent,
@@ -37,43 +42,37 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Activity,
-  Server,
-  Clock,
-  Zap,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
-  RefreshCw,
-  ExternalLink,
-  Database,
-  Cpu,
-  MemoryStick,
-  Search,
-  FileText,
-  ArrowRight,
-  AlertCircle,
-  Download,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  useFeatureFreshness,
+  useServiceActivity,
+  useServiceHealth,
+} from "@/hooks/api/use-service-status";
+import { useTickingNowMs } from "@/hooks/use-ticking-now";
+import { cn } from "@/lib/utils";
 import {
   exportTableToCsv,
   exportTableToXlsx,
   type ExportColumn,
 } from "@/lib/utils/export";
-import { cn } from "@/lib/utils";
-import {
-  useServiceHealth,
-  useFeatureFreshness,
-  useServiceActivity,
-} from "@/hooks/api/use-service-status";
 import { useQueryClient } from "@tanstack/react-query";
-import { DataFreshness } from "@/components/ui/data-freshness";
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  Cpu,
+  Database,
+  Download,
+  ExternalLink,
+  FileText,
+  MemoryStick,
+  RefreshCw,
+  Search,
+  Server,
+  XCircle
+} from "lucide-react";
+import * as React from "react";
 
 type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "idle";
 
@@ -256,9 +255,9 @@ function ServiceCard({ service }: { service: Service }) {
               "p-4 rounded-lg border cursor-pointer transition-colors hover:bg-muted/30",
               service.status === "healthy" && "border-[var(--status-live)]/30",
               service.status === "degraded" &&
-                "border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5",
+              "border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5",
               service.status === "unhealthy" &&
-                "border-[var(--status-error)]/30",
+              "border-[var(--status-error)]/30",
               service.status === "idle" && "border-muted-foreground/30",
             )}
           >
@@ -431,8 +430,8 @@ function DependencyDag() {
 
   const filteredNodes = searchTerm
     ? DEPENDENCY_GRAPH.filter((n) =>
-        n.name.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
+      n.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    )
     : DEPENDENCY_GRAPH;
 
   return (
@@ -643,6 +642,7 @@ function LogsViewer() {
   const [severityFilter, setSeverityFilter] = React.useState<string>("all");
   const [serviceFilter, setServiceFilter] = React.useState("");
   const [timeRange, setTimeRange] = React.useState<string>("all");
+  const wallNow = useTickingNowMs(5000);
 
   const logs: LogEntry[] = React.useMemo(() => {
     const raw = (activityData as Record<string, unknown>)?.data as
@@ -669,13 +669,13 @@ function LogsViewer() {
       )
         return false;
       if (timeRange !== "all") {
-        const cutoff = Date.now() - getTimeRangeMs(timeRange);
+        const cutoff = wallNow - getTimeRangeMs(timeRange);
         const logTime = new Date(l.timestamp).getTime();
         if (logTime < cutoff) return false;
       }
       return true;
     });
-  }, [logs, severityFilter, serviceFilter, timeRange]);
+  }, [logs, severityFilter, serviceFilter, timeRange, wallNow]);
 
   if (isError) {
     return (
@@ -1259,12 +1259,12 @@ export default function HealthPage() {
                                     className={cn(
                                       "h-2",
                                       utilization <= 100 &&
-                                        "[&>div]:bg-[var(--status-live)]",
+                                      "[&>div]:bg-[var(--status-live)]",
                                       utilization > 100 &&
-                                        utilization <= 200 &&
-                                        "[&>div]:bg-[var(--status-warning)]",
+                                      utilization <= 200 &&
+                                      "[&>div]:bg-[var(--status-warning)]",
                                       utilization > 200 &&
-                                        "[&>div]:bg-[var(--status-error)]",
+                                      "[&>div]:bg-[var(--status-error)]",
                                     )}
                                   />
                                 ) : (

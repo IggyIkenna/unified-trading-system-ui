@@ -1,17 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  Cloud,
-  ChevronRight,
-  Loader2,
-  FolderOpen,
-  CheckCircle2,
-  AlertTriangle,
-  RefreshCw,
-} from "lucide-react";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -20,10 +10,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  listDirectories,
   discoverConfigs,
   getConfigBuckets,
+  listDirectories,
 } from "@/hooks/deployment/_api-stub";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronRight,
+  Cloud,
+  FolderOpen,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 interface CloudConfigBrowserProps {
   serviceName: string;
@@ -267,8 +267,8 @@ export function CloudConfigBrowser({
         !loadingDirectories &&
         currentDirectories.length === 0 && (
           <div className="text-sm text-[var(--color-text-muted)] p-2 bg-[var(--color-bg-tertiary)] rounded">
-            No subdirectories here - click "Discover Configs" to find config
-            files at this level
+            No subdirectories here — click &quot;Discover Configs&quot; to find
+            config files at this level
           </div>
         )}
 
@@ -300,25 +300,22 @@ export function CloudConfigBrowser({
       {/* Discovery Result */}
       {discoveredCount !== null && (
         <div
-          className={`flex items-center gap-2 p-2 rounded ${
-            discoveredCount >= 10000 ? "status-warning" : "status-success"
-          }`}
+          className={`flex items-center gap-2 p-2 rounded ${discoveredCount >= 10000 ? "status-warning" : "status-success"
+            }`}
         >
           <CheckCircle2
-            className={`h-4 w-4 ${
-              discoveredCount >= 10000
+            className={`h-4 w-4 ${discoveredCount >= 10000
                 ? "text-[var(--color-accent-amber)]"
                 : "text-[var(--color-accent-green)]"
-            }`}
+              }`}
           />
           <span className="text-sm text-[var(--color-text-secondary)]">
             Found{" "}
             <span
-              className={`font-bold ${
-                discoveredCount >= 10000
+              className={`font-bold ${discoveredCount >= 10000
                   ? "text-[var(--color-accent-amber)]"
                   : "text-[var(--color-accent-green)]"
-              }`}
+                }`}
             >
               {discoveredCount >= 10000
                 ? `${discoveredCount}+`

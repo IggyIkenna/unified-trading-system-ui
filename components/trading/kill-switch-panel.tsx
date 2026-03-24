@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -19,28 +20,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { cn } from "@/lib/utils";
 import {
-  AlertOctagon,
-  Shield,
-  Clock,
-  Users,
-  Building2,
-  BarChart3,
-  Wallet,
-  Radio,
-  CheckCircle2,
-  XCircle,
-  Timer,
-  Zap,
-  TrendingDown,
-  Ban,
   Activity,
+  AlertOctagon,
+  Ban,
+  Clock,
+  Shield,
+  Timer,
+  TrendingDown,
+  Users,
+  Zap
 } from "lucide-react";
+import * as React from "react";
 
 // Exit playbook types
 const EXIT_PLAYBOOKS = [
@@ -88,6 +83,9 @@ const EXIT_PLAYBOOKS = [
   },
 ] as const;
 
+/** Static demo anchor — avoids module-scope Date.now() for lint purity. */
+const DEMO_KILL_SWITCH_ARMED_AT_MS = 1_735_689_600_000;
+
 // Mock active kill switches
 const ACTIVE_KILL_SWITCHES = [
   {
@@ -101,7 +99,7 @@ const ACTIVE_KILL_SWITCHES = [
     venue: "all",
     instrument: "all",
     playbook: "STOP_NEW_ONLY",
-    armedAt: new Date(Date.now() - 14 * 60 * 1000), // 14 minutes ago
+    armedAt: new Date(DEMO_KILL_SWITCH_ARMED_AT_MS),
     armedBy: "risk-manager@odum.io",
     autoResumeMinutes: 30,
     autoResumeEnabled: true,
@@ -145,6 +143,7 @@ interface KillSwitchPanelProps {
 }
 
 export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
+  const nowMs = useTickingNowMs(1000);
   const [open, setOpen] = React.useState(false);
   const [entityLevel, setEntityLevel] = React.useState<"firm" | "client">(
     "firm",
@@ -203,10 +202,10 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
             {ACTIVE_KILL_SWITCHES.map((ks) => {
               const minutesRemaining = ks.autoResumeEnabled
                 ? Math.max(
-                    0,
-                    ks.autoResumeMinutes -
-                      Math.floor((Date.now() - ks.armedAt.getTime()) / 60000),
-                  )
+                  0,
+                  ks.autoResumeMinutes -
+                  Math.floor((nowMs - ks.armedAt.getTime()) / 60000),
+                )
                 : null;
 
               return (
@@ -236,9 +235,7 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Clock className="size-3" />
                       Armed{" "}
-                      {Math.floor(
-                        (Date.now() - ks.armedAt.getTime()) / 60000,
-                      )}{" "}
+                      {Math.floor((nowMs - ks.armedAt.getTime()) / 60000)}{" "}
                       min ago
                     </div>
                     <div className="flex items-center gap-1 text-muted-foreground">
@@ -384,9 +381,9 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                           className={cn(
                             "size-4",
                             pb.severity === "critical" &&
-                              "text-[var(--status-error)]",
+                            "text-[var(--status-error)]",
                             pb.severity === "high" &&
-                              "text-[var(--status-warning)]",
+                            "text-[var(--status-warning)]",
                             pb.severity === "medium" && "text-blue-500",
                             pb.severity === "low" && "text-muted-foreground",
                           )}

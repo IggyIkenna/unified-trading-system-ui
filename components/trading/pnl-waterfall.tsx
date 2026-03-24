@@ -1,9 +1,8 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { type PnLBreakdownData } from "@/lib/strategy-registry";
 import { formatCurrency } from "@/lib/reference-data";
+import { type PnLBreakdownData } from "@/lib/strategy-registry";
+import { cn } from "@/lib/utils";
 
 interface PnLWaterfallProps {
   data: PnLBreakdownData;
@@ -23,23 +22,32 @@ export function PnLWaterfall({
   );
   const scale = 100 / maxAbsValue;
 
-  let runningTotal = 0;
-  const bars = data.components.map((comp) => {
+  const bars = data.components.reduce<
+    Array<
+      (typeof data.components)[number] & {
+        startX: number;
+        width: number;
+        runningTotal: number;
+      }
+    >
+  >((acc, comp) => {
+    const runningTotal =
+      acc.length === 0 ? 0 : acc[acc.length - 1].runningTotal;
     const startX = comp.value >= 0 ? runningTotal : runningTotal + comp.value;
     const width = Math.abs(comp.value) * scale;
-    const bar = {
+    const nextRunning = runningTotal + comp.value;
+    acc.push({
       ...comp,
       startX: startX * scale,
       width,
-      runningTotal: runningTotal + comp.value,
-    };
-    runningTotal = bar.runningTotal;
-    return bar;
-  });
+      runningTotal: nextRunning,
+    });
+    return acc;
+  }, []);
 
   return (
     <div className={cn("space-y-3", className)}>
-      {bars.map((bar, idx) => (
+      {bars.map((bar) => (
         <div key={bar.componentId} className="flex items-center gap-3">
           {showLabels && (
             <div className="w-32 text-xs text-muted-foreground truncate">
@@ -257,11 +265,13 @@ export function PnLDonut({ data, size = 120, className }: PnLDonutProps) {
         />
 
         {/* Positive segments (top half) */}
-        {positiveComponents.map((comp) => {
+        {positiveComponents.map((comp, i) => {
           const pct = comp.value / positiveTotal;
           const dashArray = `${pct * circumference * 0.5} ${circumference}`;
+          const positiveOffset = positiveComponents
+            .slice(0, i)
+            .reduce((s, c) => s + c.value / positiveTotal, 0);
           const rotation = -90 + positiveOffset * 180;
-          positiveOffset += pct;
 
           return (
             <circle
@@ -280,11 +290,13 @@ export function PnLDonut({ data, size = 120, className }: PnLDonutProps) {
         })}
 
         {/* Negative segments (bottom half) */}
-        {negativeComponents.map((comp) => {
+        {negativeComponents.map((comp, i) => {
           const pct = Math.abs(comp.value) / negativeTotal;
           const dashArray = `${pct * circumference * 0.5} ${circumference}`;
+          const negativeOffset = negativeComponents
+            .slice(0, i)
+            .reduce((s, c) => s + Math.abs(c.value) / negativeTotal, 0);
           const rotation = 90 + negativeOffset * 180;
-          negativeOffset += pct;
 
           return (
             <circle

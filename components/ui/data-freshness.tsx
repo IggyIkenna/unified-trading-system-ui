@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { cn } from "@/lib/utils";
 
 interface DataFreshnessProps {
@@ -32,20 +32,11 @@ export function DataFreshness({
   isBatch = false,
   asOfDate,
 }: DataFreshnessProps) {
-  const [secondsAgo, setSecondsAgo] = useState<number>(
-    lastUpdated ? getSecondsAgo(lastUpdated) : 0,
-  );
-
-  useEffect(() => {
-    if (!lastUpdated || isBatch || isWebSocket) return;
-
-    setSecondsAgo(getSecondsAgo(lastUpdated));
-    const interval = setInterval(() => {
-      setSecondsAgo(getSecondsAgo(lastUpdated));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [lastUpdated, isBatch, isWebSocket]);
+  const nowMs = useTickingNowMs(1000);
+  const secondsAgo =
+    lastUpdated && !isBatch && !isWebSocket
+      ? getSecondsAgo(nowMs, lastUpdated)
+      : 0;
 
   // Batch mode: show "As of {date}" badge
   if (isBatch) {

@@ -72,7 +72,7 @@ function getNodePosition(angle: number, cx: number, cy: number, r: number) {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export function MarketGalaxy({
   className,
   showStats = true,

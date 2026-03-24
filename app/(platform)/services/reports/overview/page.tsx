@@ -1,43 +1,19 @@
 "use client";
 
-import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { EntityLink } from "@/components/trading/entity-link";
-import { PnLValue, PnLChange } from "@/components/trading/pnl-value";
+import { GenerateReportModal } from "@/components/reports/generate-report-modal";
+import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
 import {
-  useContextState,
-  type ContextState,
+  useContextState
 } from "@/components/trading/context-bar";
-import {
-  CLIENTS,
-  ORGANIZATIONS,
-  STRATEGIES,
-  getFilteredStrategies,
-  type FilterContext,
-} from "@/lib/trading-data";
-import {
-  FileText,
-  Download,
-  Calendar,
-  TrendingUp,
-  DollarSign,
-  CheckCircle2,
-  Clock,
-  Send,
-  Users,
-  BarChart3,
-  ArrowRight,
-  Receipt,
-  Wallet,
-  Info,
-  Vault,
-  AlertCircle,
-  Loader2,
-} from "lucide-react";
+import { EntityLink } from "@/components/trading/entity-link";
+import { PnLChange, PnLValue } from "@/components/trading/pnl-value";
+import { ApiError } from "@/components/ui/api-error";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -46,13 +22,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReports, useSettlements } from "@/hooks/api/use-reports";
-import { Skeleton } from "@/components/ui/skeleton";
-import { GenerateReportModal } from "@/components/reports/generate-report-modal";
-import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
-import { ApiError } from "@/components/ui/api-error";
-import { Printer, CalendarClock } from "lucide-react";
+import {
+  CLIENTS,
+  type FilterContext
+} from "@/lib/trading-data";
+import {
+  AlertCircle,
+  ArrowRight,
+  BarChart3,
+  Calendar,
+  CalendarClock,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  Download,
+  FileText,
+  Loader2,
+  Printer,
+  Receipt,
+  Send,
+  TrendingUp,
+  Users,
+  Vault,
+  Wallet
+} from "lucide-react";
+import * as React from "react";
 
 type TransferStatus =
   | "confirming"
@@ -131,31 +127,31 @@ export default function ReportsPage() {
   const reports = React.useMemo(() => {
     if (relevantClientIds.length === 0) return allReports;
     return allReports.filter((r) => relevantClientIds.includes(r.clientId));
-  }, [relevantClientIds]);
+  }, [relevantClientIds, allReports]);
 
   const settlements = React.useMemo(() => {
     if (relevantClientIds.length === 0) return allSettlements;
     return allSettlements.filter((s) => relevantClientIds.includes(s.clientId));
-  }, [relevantClientIds]);
+  }, [relevantClientIds, allSettlements]);
 
   const portfolioSummary = React.useMemo(() => {
     if (relevantClientIds.length === 0) return allPortfolioSummary;
     return allPortfolioSummary.filter((p) =>
       relevantClientIds.includes(p.clientId),
     );
-  }, [relevantClientIds]);
+  }, [relevantClientIds, allPortfolioSummary]);
 
   const invoices = React.useMemo(() => {
     if (relevantClientIds.length === 0) return allInvoices;
     return allInvoices.filter((i) => relevantClientIds.includes(i.clientId));
-  }, [relevantClientIds]);
+  }, [relevantClientIds, allInvoices]);
 
   // Calculate totals from filtered data
   const totalAum = portfolioSummary.reduce((sum, p) => sum + p.aum, 0);
   const avgMtdReturn =
     portfolioSummary.length > 0
       ? portfolioSummary.reduce((sum, p) => sum + p.mtdReturn, 0) /
-        portfolioSummary.length
+      portfolioSummary.length
       : 0;
   const pendingSettlement = settlements
     .filter((s) => s.status !== "settled")
@@ -448,13 +444,12 @@ export default function ReportsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`size-10 rounded-lg flex items-center justify-center ${
-                          report.status === "ready"
+                        className={`size-10 rounded-lg flex items-center justify-center ${report.status === "ready"
                             ? "bg-[var(--status-live)]/10"
                             : report.status === "sent"
                               ? "bg-primary/10"
                               : "bg-muted"
-                        }`}
+                          }`}
                       >
                         <FileText
                           className="size-5"
@@ -603,11 +598,10 @@ export default function ReportsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <Receipt
-                        className={`size-5 ${
-                          invoice.status === "paid"
+                        className={`size-5 ${invoice.status === "paid"
                             ? "text-[var(--status-live)]"
                             : "text-[var(--status-warning)]"
-                        }`}
+                          }`}
                       />
                       <div>
                         <p className="font-medium font-mono">{invoice.id}</p>
@@ -762,7 +756,7 @@ export default function ReportsPage() {
                       <Badge
                         variant={
                           transfer.status === "settled" ||
-                          transfer.status === "confirmed"
+                            transfer.status === "confirmed"
                             ? "default"
                             : transfer.status === "confirming"
                               ? "secondary"
@@ -772,7 +766,7 @@ export default function ReportsPage() {
                         }
                         className={
                           transfer.status === "settled" ||
-                          transfer.status === "confirmed"
+                            transfer.status === "confirmed"
                             ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
                             : transfer.status === "confirming"
                               ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"

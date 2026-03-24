@@ -1,29 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Database,
-  GitBranch,
-  Clock,
-  Search,
-  Filter,
-  Download,
-  RefreshCw,
-  ChevronRight,
-  Activity,
-  Zap,
-  AlertTriangle,
-  CheckCircle2,
-  Layers,
-  Box,
-  ArrowRight,
-  Eye,
-  Code,
-  FileText,
-  BarChart3,
-} from "lucide-react";
+import { ApiError } from "@/components/ui/api-error";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -31,9 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DataTable } from "@/components/ui/data-table";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -42,25 +21,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { type ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/ui/data-table";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-} from "recharts";
-import { useFeatureProvenance } from "@/hooks/api/use-ml-models";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError } from "@/components/ui/api-error";
-import { EmptyState } from "@/components/ui/empty-state";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { useFeatureProvenance } from "@/hooks/api/use-ml-models";
+import { mock01 } from "@/lib/deterministic-mock";
 import type { ExportColumn } from "@/lib/utils/export";
+import { type ColumnDef } from "@tanstack/react-table";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  Box,
+  CheckCircle2,
+  ChevronRight,
+  Code,
+  Database,
+  FileText,
+  GitBranch,
+  Layers,
+  Search,
+  Zap
+} from "lucide-react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 const featureExportColumns: ExportColumn[] = [
   { key: "name", header: "Name" },
@@ -266,10 +249,10 @@ export default function FeatureProvenancePage() {
       (featuresData as any)?.history ??
       Array.from({ length: 30 }, (_, i) => ({
         date: new Date(2026, 2, i + 1).toISOString().split("T")[0],
-        funding_rate_8h: 0.0001 + Math.random() * 0.0003,
-        oi_change_1h: (Math.random() - 0.5) * 0.04,
-        volume_imbalance: (Math.random() - 0.5) * 0.3,
-        basis_spread: 0.06 + Math.random() * 0.04,
+        funding_rate_8h: 0.0001 + mock01(i, 21) * 0.0003,
+        oi_change_1h: (mock01(i, 22) - 0.5) * 0.04,
+        volume_imbalance: (mock01(i, 23) - 0.5) * 0.3,
+        basis_spread: 0.06 + mock01(i, 24) * 0.04,
       })),
     [featuresData],
   );
@@ -334,7 +317,7 @@ export default function FeatureProvenancePage() {
     ? featureCatalog.find((f: any) => f.id === selectedFeature)
     : null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const featureCatalogColumns: ColumnDef<any, unknown>[] = useMemo(
     () => [
       {
@@ -415,33 +398,30 @@ export default function FeatureProvenancePage() {
     [],
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const usageMatrixColumns: ColumnDef<any, unknown>[] = useMemo(
-    () => [
-      {
-        accessorKey: "model",
-        header: "Model",
-        enableSorting: false,
-        cell: ({ row }: { row: { original: { model: string } } }) => (
-          <span className="font-medium">{row.original.model}</span>
+
+  const usageMatrixColumns: ColumnDef<any, unknown>[] = [
+    {
+      accessorKey: "model",
+      header: "Model",
+      enableSorting: false,
+      cell: ({ row }: { row: { original: { model: string } } }) => (
+        <span className="font-medium">{row.original.model}</span>
+      ),
+    },
+    ...featureCatalog.slice(0, 6).map((f: { id: string; name: string }) => ({
+      accessorKey: f.id,
+      header: () => <span className="text-xs">{f.name.split(" ")[0]}</span>,
+      enableSorting: false,
+      cell: ({ row }: { row: { original: Record<string, boolean> } }) =>
+        row.original[f.id] ? (
+          <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" />
+        ) : (
+          <span className="text-muted-foreground text-center block">
+            &mdash;
+          </span>
         ),
-      },
-      ...featureCatalog.slice(0, 6).map((f: { id: string; name: string }) => ({
-        accessorKey: f.id,
-        header: () => <span className="text-xs">{f.name.split(" ")[0]}</span>,
-        enableSorting: false,
-        cell: ({ row }: { row: { original: Record<string, boolean> } }) =>
-          row.original[f.id] ? (
-            <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" />
-          ) : (
-            <span className="text-muted-foreground text-center block">
-              &mdash;
-            </span>
-          ),
-      })),
-    ],
-    [featureCatalog],
-  );
+    })),
+  ];
 
   if (isLoading)
     return (
@@ -736,9 +716,9 @@ export default function FeatureProvenancePage() {
                                 {i <
                                   selectedFeatureData.lineage.transformations
                                     .length -
-                                    1 && (
-                                  <ArrowRight className="size-3 mx-1 text-muted-foreground" />
-                                )}
+                                  1 && (
+                                    <ArrowRight className="size-3 mx-1 text-muted-foreground" />
+                                  )}
                               </span>
                             ),
                           )}

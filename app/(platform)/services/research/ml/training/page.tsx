@@ -1,31 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ApiError } from "@/components/ui/api-error";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { EntityLink } from "@/components/trading/entity-link";
-import {
-  Cpu,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Play,
-  Pause,
-  RotateCcw,
-  Terminal,
-  HardDrive,
-  Activity,
-  Layers,
-  Download,
-  MoreHorizontal,
-  AlertTriangle,
-  Trash2,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,22 +11,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
-import { useTrainingRuns, useExperiments } from "@/hooks/api/use-ml-models";
-import type { TrainingRun, Experiment } from "@/lib/ml-types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useExperiments, useTrainingRuns } from "@/hooks/api/use-ml-models";
+import { useTickingNowMs } from "@/hooks/use-ticking-now";
+import type { Experiment, TrainingRun } from "@/lib/ml-types";
 import {
-  LineChart,
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Cpu,
+  Download,
+  HardDrive,
+  Layers,
+  MoreHorizontal,
+  Pause,
+  RefreshCw,
+  RotateCcw,
+  Terminal,
+  Trash2,
+  XCircle
+} from "lucide-react";
+import * as React from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
 } from "recharts";
 
 // Context badge
@@ -232,11 +230,11 @@ export default function TrainingRunsPage() {
     ? experiments.find((e) => e.id === activeRun.experimentId)
     : null;
 
+  const wallClockMs = useTickingNowMs(1000);
+
   const resourceData = React.useMemo(() => generateResourceData(), []);
-  const lossData = React.useMemo(
-    () => generateLossData(activeRun?.currentEpoch || 50),
-    [activeRun?.currentEpoch],
-  );
+  const lossEpoch = activeRun?.currentEpoch ?? 50;
+  const lossData = generateLossData(lossEpoch);
 
   const runningJobs = trainingRuns.filter(
     (r) => r.status === "training" || r.status === "validating",
@@ -396,11 +394,10 @@ export default function TrainingRunsPage() {
                       return (
                         <div
                           key={run.id}
-                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                            selectedRun === run.id
+                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedRun === run.id
                               ? "border-primary bg-primary/5"
                               : "border-border hover:bg-muted/30"
-                          }`}
+                            }`}
                           onClick={() => setSelectedRun(run.id)}
                         >
                           <div className="flex items-center justify-between mb-2">
@@ -773,16 +770,16 @@ export default function TrainingRunsPage() {
                       <div>
                         <div className="text-sm font-mono">
                           {Math.floor(
-                            (Date.now() -
+                            (wallClockMs -
                               new Date(activeRun.startedAt).getTime()) /
-                              3600000,
+                            3600000,
                           )}
                           h{" "}
                           {Math.floor(
-                            ((Date.now() -
+                            ((wallClockMs -
                               new Date(activeRun.startedAt).getTime()) %
                               3600000) /
-                              60000,
+                            60000,
                           )}
                           m
                         </div>

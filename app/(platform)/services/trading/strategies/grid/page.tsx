@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   DimensionalGrid,
   type DimensionDef,
@@ -9,8 +8,9 @@ import {
 import { PromoteFlowModal } from "@/components/trading/promote-flow-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Rocket, Download, Grid3X3 } from "lucide-react";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { Download, Grid3X3, Rocket } from "lucide-react";
+import * as React from "react";
 
 // Default backtest result data
 const DEFAULT_BACKTEST_RESULTS = [
@@ -272,10 +272,10 @@ export default function StrategyGridPage() {
               <div className="space-y-1">
                 <p className="text-sm font-medium">Promotion Flow</p>
                 <p className="text-xs text-muted-foreground">
-                  Select the best-performing configs, then click "Promote to
-                  Live" to generate a cross-link to Operations Hub. The deploy
-                  form will be pre-filled with your selected configurations for
-                  review.
+                  Select the best-performing configs, then click &quot;Promote
+                  to Live&quot; to generate a cross-link to Operations Hub. The
+                  deploy form will be pre-filled with your selected
+                  configurations for review.
                 </p>
               </div>
             </div>

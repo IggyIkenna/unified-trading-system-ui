@@ -1,30 +1,30 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import {
-  Activity,
-  RefreshCw,
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-  Database,
-  Rocket,
-  Code,
-  Wrench,
-  Loader2,
-  AlertTriangle,
-} from "lucide-react";
-import * as api from "@/hooks/deployment/_api-stub";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import * as api from "@/hooks/deployment/_api-stub";
 import type { ServiceStatus } from "@/lib/types/deployment";
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle2,
+  Code,
+  Database,
+  Loader2,
+  RefreshCw,
+  Rocket,
+  Wrench,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 interface ServiceStatusTabProps {
   serviceName: string;
@@ -361,25 +361,25 @@ export function ServiceStatusTab({ serviceName }: ServiceStatusTabProps) {
                           </div>
                           {status.details.deployment.used_force !==
                             undefined && (
-                            <div>
-                              <span className="text-[var(--color-text-muted)]">
-                                Force:
-                              </span>{" "}
-                              <Badge
-                                variant="outline"
-                                className="text-xs"
-                                style={{
-                                  color: status.details.deployment.used_force
-                                    ? "var(--color-accent-green)"
-                                    : "var(--color-accent-red)",
-                                }}
-                              >
-                                {status.details.deployment.used_force
-                                  ? "YES"
-                                  : "NO"}
-                              </Badge>
-                            </div>
-                          )}
+                              <div>
+                                <span className="text-[var(--color-text-muted)]">
+                                  Force:
+                                </span>{" "}
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs"
+                                  style={{
+                                    color: status.details.deployment.used_force
+                                      ? "var(--color-accent-green)"
+                                      : "var(--color-accent-red)",
+                                  }}
+                                >
+                                  {status.details.deployment.used_force
+                                    ? "YES"
+                                    : "NO"}
+                                </Badge>
+                              </div>
+                            )}
                           {status.api?.gcs_fuse?.active !== undefined && (
                             <div>
                               <span className="text-[var(--color-text-muted)]">
@@ -405,7 +405,7 @@ export function ServiceStatusTab({ serviceName }: ServiceStatusTabProps) {
                               Tag:
                             </span>{" "}
                             <span className="text-[var(--color-text-secondary)] italic">
-                              "{status.details.deployment.tag}"
+                              &ldquo;{status.details.deployment.tag}&rdquo;
                             </span>
                           </div>
                         )}
@@ -419,11 +419,11 @@ export function ServiceStatusTab({ serviceName }: ServiceStatusTabProps) {
                               {status.details.deployment.total_shards} completed
                               {(status.details.deployment.failed_shards ?? 0) >
                                 0 && (
-                                <span className="text-[var(--color-accent-red)] ml-2">
-                                  ({status.details.deployment.failed_shards}{" "}
-                                  failed)
-                                </span>
-                              )}
+                                  <span className="text-[var(--color-accent-red)] ml-2">
+                                    ({status.details.deployment.failed_shards}{" "}
+                                    failed)
+                                  </span>
+                                )}
                             </span>
                           </div>
                         )}

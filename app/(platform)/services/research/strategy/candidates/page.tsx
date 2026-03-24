@@ -299,7 +299,7 @@ export default function CandidatesPage() {
           ),
         },
       ],
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+       
       [BACKTEST_RUNS, promotionTargets],
     );
 

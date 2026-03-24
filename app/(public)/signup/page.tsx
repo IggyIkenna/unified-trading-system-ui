@@ -20,6 +20,8 @@ import type {
 import { addApplication, addDocument } from "@/lib/api/mock-onboarding-state";
 import type { MockAccessRequest } from "@/lib/api/mock-provisioning-state";
 import { addRequest } from "@/lib/api/mock-provisioning-state";
+import { newOnboardingSubmitIds } from "@/lib/demo-ids";
+import { mock01 } from "@/lib/deterministic-mock";
 import {
   ArrowLeft,
   ArrowRight,
@@ -306,13 +308,12 @@ function StepIndicator({
               type="button"
               disabled={!done || current === 5}
               onClick={() => done && onNavigate(num)}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                done
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${done
                   ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 cursor-pointer"
                   : active
                     ? "bg-primary/10 text-primary ring-1 ring-primary/30"
                     : "text-muted-foreground"
-              }`}
+                }`}
             >
               {done ? (
                 <Check className="size-3" />
@@ -325,6 +326,37 @@ function StepIndicator({
         );
       })}
     </div>
+  );
+}
+
+function OnboardingBackBtn({
+  to,
+  onStep,
+}: {
+  to: number;
+  onStep: (n: number) => void;
+}) {
+  return (
+    <Button variant="ghost" onClick={() => onStep(to)}>
+      <ArrowLeft className="mr-2 size-4" />
+      Back
+    </Button>
+  );
+}
+
+function OnboardingNextBtn({
+  disabled,
+  onClick,
+  label = "Continue",
+}: {
+  disabled?: boolean;
+  onClick: () => void;
+  label?: string;
+}) {
+  return (
+    <Button disabled={disabled} onClick={onClick}>
+      {label} <ArrowRight className="ml-2 size-4" />
+    </Button>
   );
 }
 
@@ -360,8 +392,10 @@ function OnboardingWizard({
   );
   const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null);
   const [appId, setAppId] = React.useState("");
-  const draftId = React.useRef(`draft-${Date.now().toString(36)}`).current;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [draftId] = React.useState(
+    () => `draft-${Math.floor(mock01(0, 0x4e3b) * 1e12).toString(36)}`,
+  );
+
   const [resumeDraft, setResumeDraft] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -454,8 +488,9 @@ function OnboardingWizard({
   const reqDocs = DOC_SLOTS.filter(isReq);
 
   function handleSubmit() {
-    const id = `onb-${Date.now().toString(36)}`,
-      now = new Date().toISOString();
+    const ids = newOnboardingSubmitIds();
+    const id = ids.applicationId;
+    const now = ids.nowIso;
     const engType = selOpts.has("ar")
       ? ("ar" as const)
       : selOpts.has("advisor")
@@ -482,7 +517,7 @@ function OnboardingWizard({
       : ("not_required" as const);
     const app: OnboardingApplication = {
       id,
-      applicant_user_id: `uid-${Date.now()}`,
+      applicant_user_id: ids.applicantUserId,
       applicant_name: name,
       applicant_email: email,
       org_name: company,
@@ -504,7 +539,7 @@ function OnboardingWizard({
     for (const [key, fileName] of Object.entries(docs)) {
       if (!fileName) continue;
       const doc: DocumentArtifact = {
-        id: `doc-${Date.now().toString(36)}-${key}`,
+        id: ids.docId(key),
         application_id: id,
         doc_type: key as DocumentArtifact["doc_type"],
         file_name: fileName,
@@ -515,7 +550,7 @@ function OnboardingWizard({
       addDocument(doc);
     }
     const req: MockAccessRequest = {
-      id: `req-${Date.now().toString(36)}`,
+      id: ids.accessRequestId,
       requester_email: email,
       requester_name: name,
       org_id: company.toLowerCase().replace(/\s+/g, "-"),
@@ -551,26 +586,6 @@ function OnboardingWizard({
       }),
     );
   }
-
-  const BackBtn = ({ to }: { to: number }) => (
-    <Button variant="ghost" onClick={() => setStep(to)}>
-      <ArrowLeft className="mr-2 size-4" />
-      Back
-    </Button>
-  );
-  const NextBtn = ({
-    disabled,
-    onClick,
-    label = "Continue",
-  }: {
-    disabled?: boolean;
-    onClick: () => void;
-    label?: string;
-  }) => (
-    <Button disabled={disabled} onClick={onClick}>
-      {label} <ArrowRight className="ml-2 size-4" />
-    </Button>
-  );
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
@@ -700,7 +715,7 @@ function OnboardingWizard({
                 />
               </div>
               <div className="flex justify-end pt-2">
-                <NextBtn
+                <OnboardingNextBtn
                   disabled={!name || !email || !company}
                   onClick={() => setStep(2)}
                 />
@@ -826,7 +841,7 @@ function OnboardingWizard({
                   )}
               </div>
               <div className="flex justify-between items-center pt-4 border-t">
-                <BackBtn to={1} />
+                <OnboardingBackBtn onStep={setStep} to={1} />
                 <div className="flex items-center gap-3">
                   <Link
                     href="/contact?service=regulatory"
@@ -835,7 +850,7 @@ function OnboardingWizard({
                     Feeling overwhelmed? Just get in touch — we&apos;ll walk you
                     through it.
                   </Link>
-                  <NextBtn
+                  <OnboardingNextBtn
                     disabled={!selOpts.has("ar") && !selOpts.has("advisor")}
                     onClick={() => setStep(3)}
                   />
@@ -868,8 +883,8 @@ function OnboardingWizard({
                 ))}
               </div>
               <div className="flex justify-between pt-2">
-                <BackBtn to={1} />
-                <NextBtn
+                <OnboardingBackBtn onStep={setStep} to={1} />
+                <OnboardingNextBtn
                   disabled={selOpts.size === 0}
                   onClick={() => setStep(3)}
                 />
@@ -1004,7 +1019,7 @@ function OnboardingWizard({
                               />
                               {signatures[slot.key] &&
                                 signatures[slot.key].toLowerCase() !==
-                                  name.toLowerCase() && (
+                                name.toLowerCase() && (
                                   <p className="text-xs text-amber-400">
                                     Signature should match your full name:{" "}
                                     {name}
@@ -1133,7 +1148,7 @@ function OnboardingWizard({
                 back anytime.
               </p>
               <div className="flex justify-between items-center pt-4 border-t">
-                <BackBtn to={2} />
+                <OnboardingBackBtn onStep={setStep} to={2} />
                 <div className="flex items-center gap-3">
                   <Link
                     href="/contact?service=regulatory"
@@ -1145,7 +1160,7 @@ function OnboardingWizard({
                     <Button variant="outline" onClick={() => setStep(4)}>
                       Skip for now
                     </Button>
-                    <NextBtn onClick={() => setStep(4)} />
+                    <OnboardingNextBtn onClick={() => setStep(4)} />
                   </div>
                 </div>
               </div>
@@ -1216,7 +1231,7 @@ function OnboardingWizard({
                 ))}
               </div>
               <div className="flex justify-between pt-2">
-                <BackBtn to={3} />
+                <OnboardingBackBtn onStep={setStep} to={3} />
                 <Button onClick={handleSubmit}>
                   Submit Application <ArrowRight className="ml-2 size-4" />
                 </Button>

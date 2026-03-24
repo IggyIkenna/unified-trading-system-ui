@@ -1,8 +1,7 @@
 "use client";
 
-import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
   Activity,
@@ -172,14 +171,6 @@ interface CircuitBreakerGridProps {
 }
 
 export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
-  const [now, setNow] = React.useState(Date.now());
-
-  // Update every second for cooldown timers
-  React.useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <Card className={className}>
       <CardHeader className="pb-3">
@@ -228,8 +219,8 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
                         "font-mono",
                         cb.errorRate > 10 && "text-[var(--status-error)]",
                         cb.errorRate > 5 &&
-                          cb.errorRate <= 10 &&
-                          "text-[var(--status-warning)]",
+                        cb.errorRate <= 10 &&
+                        "text-[var(--status-warning)]",
                       )}
                     >
                       {cb.errorRate}% ({cb.errorWindow}-event window)

@@ -1,18 +1,5 @@
 "use client";
 
-import * as React from "react";
-import {
-  ArrowUpDown,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-  Crown,
-  GitCompare,
-  Layers,
-  Rocket,
-  Shield,
-  X,
-} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,15 +27,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import {
-  useModelVersions,
-  useModelFamilies,
-  useMLDeployments,
-} from "@/hooks/api/use-ml-models";
-import { Skeleton } from "@/components/ui/skeleton";
+  ArrowUpDown,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Crown,
+  GitCompare,
+  Layers,
+  Rocket,
+  Shield,
+  X,
+} from "lucide-react";
+import * as React from "react";
+
 import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useMLDeployments,
+  useModelFamilies,
+  useModelVersions,
+} from "@/hooks/api/use-ml-models";
 import type { ModelVersion } from "@/lib/ml-types";
 
 // ---------------------------------------------------------------------------
@@ -89,6 +89,24 @@ function fmtLatency(v: number) {
 }
 
 type SortField = "accuracy" | "sharpe" | "maxDrawdown" | "latencyP50";
+
+function RegistrySortIcon({
+  field,
+  currentField,
+  dir,
+}: {
+  field: SortField;
+  currentField: SortField;
+  dir: "asc" | "desc";
+}) {
+  if (currentField !== field)
+    return <ArrowUpDown className="size-3 opacity-30" />;
+  return dir === "desc" ? (
+    <ChevronDown className="size-3" />
+  ) : (
+    <ChevronUp className="size-3" />
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Page
@@ -168,16 +186,6 @@ export default function RegistryPage() {
         field === "maxDrawdown" || field === "latencyP50" ? "asc" : "desc",
       );
     }
-  }
-
-  function SortIcon({ field }: { field: SortField }) {
-    if (sortField !== field)
-      return <ArrowUpDown className="size-3 opacity-30" />;
-    return sortDir === "desc" ? (
-      <ChevronDown className="size-3" />
-    ) : (
-      <ChevronUp className="size-3" />
-    );
   }
 
   function toggleCompare(id: string) {
@@ -434,7 +442,12 @@ export default function RegistryPage() {
                     onClick={() => handleSort("accuracy")}
                   >
                     <span className="flex items-center gap-1">
-                      Accuracy <SortIcon field="accuracy" />
+                      Accuracy{" "}
+                      <RegistrySortIcon
+                        field="accuracy"
+                        currentField={sortField}
+                        dir={sortDir}
+                      />
                     </span>
                   </TableHead>
                   <TableHead
@@ -442,7 +455,12 @@ export default function RegistryPage() {
                     onClick={() => handleSort("sharpe")}
                   >
                     <span className="flex items-center gap-1">
-                      Sharpe <SortIcon field="sharpe" />
+                      Sharpe{" "}
+                      <RegistrySortIcon
+                        field="sharpe"
+                        currentField={sortField}
+                        dir={sortDir}
+                      />
                     </span>
                   </TableHead>
                   <TableHead
@@ -450,7 +468,12 @@ export default function RegistryPage() {
                     onClick={() => handleSort("maxDrawdown")}
                   >
                     <span className="flex items-center gap-1">
-                      Max DD <SortIcon field="maxDrawdown" />
+                      Max DD{" "}
+                      <RegistrySortIcon
+                        field="maxDrawdown"
+                        currentField={sortField}
+                        dir={sortDir}
+                      />
                     </span>
                   </TableHead>
                   <TableHead
@@ -458,7 +481,12 @@ export default function RegistryPage() {
                     onClick={() => handleSort("latencyP50")}
                   >
                     <span className="flex items-center gap-1">
-                      Latency P50 <SortIcon field="latencyP50" />
+                      Latency P50{" "}
+                      <RegistrySortIcon
+                        field="latencyP50"
+                        currentField={sortField}
+                        dir={sortDir}
+                      />
                     </span>
                   </TableHead>
                   <TableHead className="text-xs text-muted-foreground">
@@ -678,7 +706,7 @@ export default function RegistryPage() {
                       const values = compareVersions.map(
                         (v) =>
                           v.metrics[
-                            metric.key as keyof typeof v.metrics
+                          metric.key as keyof typeof v.metrics
                           ] as number,
                       );
                       const best = metric.lower

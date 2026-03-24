@@ -7,19 +7,16 @@
  * Uses real model families and training params from lib/ml-mock-data.ts.
  */
 
-import * as React from "react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -27,27 +24,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
-  Target,
-  Layers,
-  Brain,
-  Grid3X3,
-  Play,
-  BarChart3,
-  ChevronRight,
-  Check,
-  AlertCircle,
-  Loader2,
-} from "lucide-react";
-import {
-  useModelFamilies,
   useFeatureProvenance,
+  useModelFamilies,
 } from "@/hooks/api/use-ml-models";
-import { Skeleton } from "@/components/ui/skeleton";
+import { mock01 } from "@/lib/deterministic-mock";
+import { cn } from "@/lib/utils";
+import {
+  BarChart3,
+  Brain,
+  Check,
+  ChevronRight,
+  Grid3X3,
+  Layers,
+  Loader2,
+  Play,
+  Target
+} from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
 // Workflow steps
 const STEPS = [
@@ -734,9 +732,9 @@ export default function MLConfigPage() {
                         ((gridEpochsMax - gridEpochsMin) * ((i * 3) % 10)) / 10,
                       );
                     const batch = gridBatchSizes[i % gridBatchSizes.length];
-                    const acc = (0.55 + Math.random() * 0.2).toFixed(3);
-                    const sharpe = (0.5 + Math.random() * 2.5).toFixed(2);
-                    const loss = (0.2 + Math.random() * 0.5).toFixed(3);
+                    const acc = (0.55 + mock01(i, 11) * 0.2).toFixed(3);
+                    const sharpe = (0.5 + mock01(i, 12) * 2.5).toFixed(2);
+                    const loss = (0.2 + mock01(i, 13) * 0.5).toFixed(3);
                     const best = i === 2;
                     return (
                       <tr

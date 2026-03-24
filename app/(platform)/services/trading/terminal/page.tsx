@@ -1,18 +1,28 @@
 "use client";
 
-import * as React from "react";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { CalendarEventFeed } from "@/components/trading/calendar-event-feed";
+import type { IndicatorOverlay } from "@/components/trading/candlestick-chart";
+import { CandlestickChart } from "@/components/trading/candlestick-chart";
+import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
 import {
-  OrderBookWithDepth,
-  OrderBook,
   DepthChart,
   generateMockOrderBook,
+  OrderBook
 } from "@/components/trading/order-book";
-import { CandlestickChart } from "@/components/trading/candlestick-chart";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 import {
   Select,
   SelectContent,
@@ -20,44 +30,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAlerts } from "@/hooks/api/use-alerts";
+import { useInstruments } from "@/hooks/api/use-instruments";
 import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
+  useCandles,
+  useOrderBook,
+  useTickers,
+} from "@/hooks/api/use-market-data";
+import { useBalances, usePositions } from "@/hooks/api/use-positions";
+import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { useTickingNowMs } from "@/hooks/use-ticking-now";
+import { useWebSocket } from "@/hooks/use-websocket";
+import { mock01, mockRange } from "@/lib/deterministic-mock";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import type { Strategy } from "@/lib/strategy-registry";
+import { STRATEGIES } from "@/lib/strategy-registry";
+import { cn } from "@/lib/utils";
+import { bollingerBands, ema, sma } from "@/lib/utils/indicators";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  ArrowUpDown,
-  ArrowLeft,
-  TrendingUp,
-  TrendingDown,
-  RefreshCw,
-  Settings,
-  Maximize2,
-  Radio,
-  Database,
   AlertTriangle,
   ChevronDown,
   ChevronRight,
+  Database,
+  Maximize2,
+  Radio,
+  RefreshCw,
+  Settings,
   Shield,
-  Zap,
   Target,
+  TrendingDown,
+  TrendingUp,
+  Zap
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { STRATEGIES } from "@/lib/strategy-registry";
-import type { Strategy } from "@/lib/strategy-registry";
-import { useStrategyPerformance } from "@/hooks/api/use-strategies";
-import { useBalances } from "@/hooks/api/use-positions";
 import dynamic from "next/dynamic";
-import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
-import { BatchLiveRail } from "@/components/platform/batch-live-rail";
-import { CalendarEventFeed } from "@/components/trading/calendar-event-feed";
+import * as React from "react";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from "recharts";
 
 const OptionsChain = dynamic(
   () =>
@@ -87,31 +106,6 @@ const VolSurfaceChart = dynamic(
     ),
   },
 );
-import {
-  useTickers,
-  useCandles,
-  useOrderBook,
-} from "@/hooks/api/use-market-data";
-import { useInstruments } from "@/hooks/api/use-instruments";
-import { usePositions } from "@/hooks/api/use-positions";
-import { useAlerts } from "@/hooks/api/use-alerts";
-import { useWebSocket } from "@/hooks/use-websocket";
-import { sma, ema, bollingerBands } from "@/lib/utils/indicators";
-import type { IndicatorOverlay } from "@/components/trading/candlestick-chart";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  ComposedChart,
-  Line,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 
 // Strategy to instrument mapping - loaded from API where available
 const strategyInstruments: Record<string, string> = {
@@ -302,6 +296,12 @@ export default function TradingPage() {
   const [selectedInstrument, setSelectedInstrument] = React.useState(
     instruments[0],
   );
+  const [livePrice, setLivePrice] = React.useState(
+    instruments[0]?.midPrice ?? 0,
+  );
+  const [priceChange, setPriceChange] = React.useState(
+    instruments[0]?.change ?? 0,
+  );
   const [selectedAccount, setSelectedAccount] = React.useState<{
     id: string;
     name: string;
@@ -474,12 +474,6 @@ export default function TradingPage() {
     }>
   >([]);
 
-  // Live price state for animation
-  const [livePrice, setLivePrice] = React.useState(selectedInstrument.midPrice);
-  const [priceChange, setPriceChange] = React.useState(
-    selectedInstrument.change,
-  );
-
   // Reset price when instrument changes
   React.useEffect(() => {
     setLivePrice(selectedInstrument.midPrice);
@@ -548,13 +542,13 @@ export default function TradingPage() {
     const newTrades = Array.from({ length: 12 }, (_, i) => {
       const now = new Date();
       now.setSeconds(now.getSeconds() - i * 2);
-      const side = Math.random() > 0.5 ? "buy" : "sell";
+      const side = mock01(i, 11) > 0.5 ? "buy" : "sell";
       const price =
         selectedInstrument.midPrice +
-        (Math.random() - 0.5) * priceVariation * 2;
-      const size = Math.random() * 0.5 + 0.01;
+        (mock01(i, 12) - 0.5) * priceVariation * 2;
+      const size = mockRange(0.01, 0.51, i, 13);
       return {
-        id: `trade-${Date.now()}-${i}`,
+        id: `trade-mock-${selectedInstrument.symbol}-${i}`,
         time: now.toLocaleTimeString("en-US", {
           hour12: false,
           timeZone: "UTC",
@@ -602,17 +596,22 @@ export default function TradingPage() {
 
   // Tick counter for order book and depth chart updates
   const [tickCount, setTickCount] = React.useState(0);
+  const wallClockMs = useTickingNowMs(1000);
 
   const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true";
+
+  const mockPriceTickRef = React.useRef(0);
 
   // Animate price updates and increment tick
   // Brownian motion with slight upward drift (trending market)
   React.useEffect(() => {
     if (isMockMode) return;
     const interval = setInterval(() => {
+      mockPriceTickRef.current += 1;
+      const t = mockPriceTickRef.current;
       setLivePrice((prev: number) => {
         const volatility =
-          (Math.random() - 0.5) * selectedInstrument.midPrice * 0.0002;
+          (mock01(t, 51) - 0.5) * selectedInstrument.midPrice * 0.0002;
         const drift = selectedInstrument.midPrice * 0.00001;
         return prev + volatility + drift;
       });
@@ -627,19 +626,24 @@ export default function TradingPage() {
     livePriceRef.current = livePrice;
   }, [livePrice]);
 
+  const liveTradeSeqRef = React.useRef(0);
+
   React.useEffect(() => {
     if (!isClient || isMockMode) return;
 
     const interval = setInterval(() => {
       const currentPrice = livePriceRef.current;
       setRecentTrades((prev) => {
+        liveTradeSeqRef.current += 1;
+        const s = liveTradeSeqRef.current;
         const now = new Date();
-        const side = Math.random() > 0.5 ? "buy" : "sell";
+        const side = mock01(s, 61) > 0.5 ? "buy" : "sell";
         const priceVariation = currentPrice * 0.0002;
-        const price = currentPrice + (Math.random() - 0.5) * priceVariation * 2;
-        const size = Math.random() * 0.5 + 0.01;
+        const price =
+          currentPrice + (mock01(s, 62) - 0.5) * priceVariation * 2;
+        const size = mockRange(0.01, 0.51, s, 63);
         const newTrade = {
-          id: Date.now().toString(),
+          id: `live-${s}`,
           time: now.toLocaleTimeString("en-US", {
             hour12: false,
             timeZone: "UTC",
@@ -722,7 +726,7 @@ export default function TradingPage() {
               : timeframe === "15m"
                 ? 900
                 : 3600;
-        const nowUnix = Math.floor(Date.now() / 1000);
+        const nowUnix = Math.floor(wallClockMs / 1000);
         const candleBoundary = last.time + intervalSeconds;
 
         if (nowUnix >= candleBoundary) {
@@ -766,6 +770,7 @@ export default function TradingPage() {
     tickCount,
     livePrice,
     isClient,
+    wallClockMs,
   ]);
 
   // Compute indicator overlays from candle close prices
@@ -1402,7 +1407,7 @@ export default function TradingPage() {
                               className={cn(
                                 "h-4 px-1 text-[9px]",
                                 trade.status === "filled" &&
-                                  "text-emerald-400 border-emerald-400/30",
+                                "text-emerald-400 border-emerald-400/30",
                               )}
                             >
                               {trade.status}
@@ -1438,7 +1443,7 @@ export default function TradingPage() {
                       className={cn(
                         "w-full",
                         orderSide === "buy" &&
-                          "bg-emerald-600 hover:bg-emerald-700",
+                        "bg-emerald-600 hover:bg-emerald-700",
                       )}
                       onClick={() => setOrderSide("buy")}
                     >

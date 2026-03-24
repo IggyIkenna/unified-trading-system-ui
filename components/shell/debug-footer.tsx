@@ -1,9 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
-import { resetDemo } from "@/lib/reset-demo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +8,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/use-auth";
+import { resetDemo } from "@/lib/reset-demo";
 import { cn } from "@/lib/utils";
-import { RotateCcw, User, ChevronUp, Bug } from "lucide-react";
+import { Bug, ChevronUp, RotateCcw, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import * as React from "react";
 
 /**
  * Debug Footer — ONLY visible in mock mode.
@@ -24,6 +24,9 @@ export function DebugFooter() {
   const { user } = useAuth();
   const router = useRouter();
   const [mockMode, setMockMode] = React.useState(false);
+  const [pendingPersona, setPendingPersona] = React.useState<string | null>(
+    null,
+  );
 
   React.useEffect(() => {
     // Check env var first
@@ -56,11 +59,10 @@ export function DebugFooter() {
   };
 
   const handleSwitchPersona = (personaId: string) => {
-    // Clear auth state, redirect to login with persona pre-selected
     localStorage.removeItem("portal_user");
     localStorage.removeItem("portal_token");
     localStorage.removeItem("odum_user");
-    window.location.href = `/login?persona=${personaId}`;
+    setPendingPersona(personaId);
   };
 
   const personas = [
