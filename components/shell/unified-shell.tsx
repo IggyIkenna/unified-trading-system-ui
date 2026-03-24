@@ -74,7 +74,12 @@ export function UnifiedShell({
   }
 
   return (
-    <div className={cn("min-h-screen bg-background", className)}>
+    <div
+      className={cn(
+        "h-screen flex flex-col bg-background overflow-hidden",
+        className,
+      )}
+    >
       <CommandPalette open={cmdkOpen} onOpenChange={setCmdkOpen} />
       <LifecycleNav
         orgName={orgName}
@@ -84,7 +89,10 @@ export function UnifiedShell({
       />
       <RuntimeModeStrip />
       <Breadcrumbs />
-      <main className="pb-10">{children}</main>
+      {/* flex-1 + min-h-0 so pages that use h-full get a proper bounded height.
+          overflow-auto lets normal pages still scroll; pages that manage their own
+          scroll (like the feature finder) set overflow-hidden on their root. */}
+      <main className="flex-1 min-h-0 overflow-auto">{children}</main>
       <DebugFooter />
       <GuidedTour />
       <ChatWidgetConnected />
