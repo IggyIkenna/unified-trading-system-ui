@@ -94,14 +94,6 @@ export function LifecycleNav({
     logout: doLogout,
   } = useAuth();
 
-  // Persona switch redirects to login page for proper JWT re-issue
-  const switchPersonaViaLogin = React.useCallback((personaId: string) => {
-    localStorage.removeItem("portal_user");
-    localStorage.removeItem("portal_token");
-    localStorage.removeItem("odum_user");
-    window.location.href = `/login?persona=${personaId}`;
-  }, []);
-
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true);
 
@@ -324,86 +316,13 @@ export function LifecycleNav({
         {/* Notifications — real alert count + dropdown */}
         <NotificationBell />
 
-        {/* Org switcher */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
-              <Building2 className="size-3.5" />
-              <span className="hidden sm:inline max-w-24 truncate">
-                {orgName}
-              </span>
-              <ChevronDown className="size-3" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-64">
-            <DropdownMenuLabel>Switch Organisation</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {isInternal() && (
-              <>
-                <DropdownMenuItem
-                  className="flex items-center justify-between"
-                  onClick={() => switchPersonaViaLogin("admin")}
-                >
-                  <div>
-                    <div className="text-sm">Odum Research</div>
-                    <div className="text-[10px] text-muted-foreground">
-                      Internal · All services
-                    </div>
-                  </div>
-                  {user?.org?.id === "odum-internal" && (
-                    <Check className="size-4 text-primary" />
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] text-muted-foreground">
-                  View as Client
-                </DropdownMenuLabel>
-              </>
-            )}
-            <DropdownMenuItem
-              className="flex items-center justify-between"
-              onClick={() => switchPersonaViaLogin("client-full")}
-            >
-              <div>
-                <div className="text-sm">Alpha Capital</div>
-                <div className="text-[10px] text-muted-foreground">
-                  Full Suite · 12 strategies
-                </div>
-              </div>
-              {user?.org?.id === "acme" && (
-                <Check className="size-4 text-primary" />
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="flex items-center justify-between"
-              onClick={() => switchPersonaViaLogin("client-premium")}
-            >
-              <div>
-                <div className="text-sm">Vertex Partners</div>
-                <div className="text-[10px] text-muted-foreground">
-                  Data + Execution + Strategy
-                </div>
-              </div>
-              {user?.org?.id === "vertex" && (
-                <Check className="size-4 text-primary" />
-              )}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="flex items-center justify-between"
-              onClick={() => switchPersonaViaLogin("client-data-only")}
-            >
-              <div>
-                <div className="text-sm">Beta Fund</div>
-                <div className="text-[10px] text-muted-foreground">
-                  Data Basic · CEFI only
-                </div>
-              </div>
-              {user?.org?.id === "beta" && (
-                <Check className="size-4 text-primary" />
-              )}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Org display */}
+        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs pointer-events-none">
+          <Building2 className="size-3.5" />
+          <span className="hidden sm:inline max-w-24 truncate">
+            {orgName}
+          </span>
+        </Button>
 
         {/* User menu */}
         <DropdownMenu>
