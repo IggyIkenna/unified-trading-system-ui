@@ -27,14 +27,14 @@
   <text x="40" y="64" class="subtitle">Domain data flows from services via APIs (or direct) to UIs.</text>
   <rect x="50" y="70" width="1300" height="32" fill="#f8fafc" stroke="#e2e8f0" rx="6" />
   <text x="62" y="92" class="section">BATCH flows</text>
-  <rect x="401" y="102" width="181" height="36" class="svc" />
-  <text x="491" y="124" text-anchor="middle" class="label">pnl-attribution-service</text>
-  <line x1="582" y1="120" x2="622" y2="120" class="arrow" />
-  <rect x="634" y="102" width="160" height="36" class="api" />
-  <text x="714" y="124" text-anchor="middle" class="label">client-reporting-api</text>
-  <line x1="794" y1="120" x2="834" y2="120" class="arrow" />
-  <rect x="846" y="102" width="153" height="36" class="ui-box" />
-  <text x="922" y="124" text-anchor="middle" class="label">client-reporting-ui</text>
+  <rect x="380" y="102" width="181" height="36" class="svc" />
+  <text x="470" y="124" text-anchor="middle" class="label">pnl-attribution-service</text>
+  <line x1="561" y1="120" x2="601" y2="120" class="arrow" />
+  <rect x="613" y="102" width="160" height="36" class="api" />
+  <text x="693" y="124" text-anchor="middle" class="label">client-reporting-api</text>
+  <line x1="773" y1="120" x2="813" y2="120" class="arrow" />
+  <rect x="825" y="102" width="195" height="36" class="ui-box" />
+  <text x="922" y="124" text-anchor="middle" class="label">unified-trading-system-ui</text>
   <rect x="408" y="154" width="139" height="36" class="svc" />
   <text x="477" y="176" text-anchor="middle" class="label">execution-service</text>
   <line x1="547" y1="172" x2="587" y2="172" class="arrow" />
@@ -43,28 +43,22 @@
   <line x1="766" y1="172" x2="806" y2="172" class="arrow" />
   <rect x="818" y="154" width="174" height="36" class="ui-box" />
   <text x="905" y="176" text-anchor="middle" class="label">execution-analytics-ui</text>
-  <rect x="305" y="206" width="230" height="36" class="svc" />
-  <text x="420" y="228" text-anchor="middle" class="label">market-data-processing-service</text>
-  <line x1="535" y1="224" x2="575" y2="224" class="arrow" />
-  <rect x="587" y="206" width="125" height="36" class="api" />
-  <text x="649" y="228" text-anchor="middle" class="label">market-data-api</text>
-  <line x1="712" y1="224" x2="752" y2="224" class="arrow" />
-  <rect x="764" y="206" width="160" height="36" class="ui-box" />
-  <text x="844" y="228" text-anchor="middle" class="label">trading-analytics-ui</text>
-  <line x1="924" y1="224" x2="964" y2="224" class="arrow" />
-  <rect x="976" y="206" width="118" height="36" class="ui-box" />
-  <text x="1035" y="228" text-anchor="middle" class="label">batch-audit-ui</text>
-  <rect x="305" y="258" width="251" height="36" class="svc" />
-  <text x="430" y="280" text-anchor="middle" class="label">batch-live-reconciliation-service</text>
-  <line x1="556" y1="276" x2="596" y2="276" class="arrow" />
-  <rect x="608" y="258" width="125" height="36" class="api" />
-  <text x="670" y="280" text-anchor="middle" class="label">batch-audit-api</text>
-  <line x1="733" y1="276" x2="773" y2="276" class="arrow" />
-  <rect x="785" y="258" width="118" height="36" class="ui-box" />
-  <text x="844" y="280" text-anchor="middle" class="label">batch-audit-ui</text>
-  <line x1="903" y1="276" x2="943" y2="276" class="arrow" />
-  <rect x="955" y="258" width="139" height="36" class="ui-box" />
-  <text x="1024" y="280" text-anchor="middle" class="label">logs-dashboard-ui</text>
+  <rect x="373" y="206" width="230" height="36" class="svc" />
+  <text x="488" y="228" text-anchor="middle" class="label">market-data-processing-service</text>
+  <line x1="603" y1="224" x2="643" y2="224" class="arrow" />
+  <rect x="655" y="206" width="125" height="36" class="api" />
+  <text x="717" y="228" text-anchor="middle" class="label">market-data-api</text>
+  <line x1="780" y1="224" x2="820" y2="224" class="arrow" />
+  <rect x="832" y="206" width="195" height="36" class="ui-box" />
+  <text x="929" y="228" text-anchor="middle" class="label">unified-trading-system-ui</text>
+  <rect x="348" y="258" width="251" height="36" class="svc" />
+  <text x="473" y="280" text-anchor="middle" class="label">batch-live-reconciliation-service</text>
+  <line x1="599" y1="276" x2="639" y2="276" class="arrow" />
+  <rect x="651" y="258" width="153" height="36" class="api" />
+  <text x="727" y="280" text-anchor="middle" class="label">unified-trading-api</text>
+  <line x1="804" y1="276" x2="844" y2="276" class="arrow" />
+  <rect x="856" y="258" width="195" height="36" class="ui-box" />
+  <text x="953" y="280" text-anchor="middle" class="label">unified-trading-system-ui</text>
   <rect x="443" y="310" width="160" height="36" class="svc" />
   <text x="523" y="332" text-anchor="middle" class="label">ml-inference-service</text>
   <line x1="603" y1="328" x2="643" y2="328" class="arrow" />
@@ -104,39 +98,30 @@
   <text x="932" y="540" text-anchor="middle" class="label">settlement-ui</text>
   <rect x="50" y="594" width="1300" height="32" fill="#f8fafc" stroke="#e2e8f0" rx="6" />
   <text x="62" y="616" class="section">LIVE flows</text>
-  <rect x="401" y="626" width="181" height="36" class="svc" />
-  <text x="491" y="648" text-anchor="middle" class="label">pnl-attribution-service</text>
-  <line x1="582" y1="644" x2="622" y2="644" class="arrow" />
-  <rect x="634" y="626" width="160" height="36" class="api" />
-  <text x="714" y="648" text-anchor="middle" class="label">client-reporting-api</text>
-  <line x1="794" y1="644" x2="834" y2="644" class="arrow" />
-  <rect x="846" y="626" width="153" height="36" class="ui-box" />
-  <text x="922" y="648" text-anchor="middle" class="label">client-reporting-ui</text>
-  <rect x="189" y="678" width="139" height="36" class="svc" />
-  <text x="258" y="700" text-anchor="middle" class="label">execution-service</text>
-  <line x1="328" y1="696" x2="368" y2="696" class="arrow" />
-  <rect x="380" y="678" width="167" height="36" class="api" />
-  <text x="463" y="700" text-anchor="middle" class="label">execution-results-api</text>
-  <line x1="547" y1="696" x2="587" y2="696" class="arrow" />
-  <rect x="599" y="678" width="174" height="36" class="ui-box" />
-  <text x="686" y="700" text-anchor="middle" class="label">execution-analytics-ui</text>
-  <line x1="773" y1="696" x2="813" y2="696" class="arrow" />
-  <rect x="825" y="678" width="160" height="36" class="ui-box" />
-  <text x="905" y="700" text-anchor="middle" class="label">trading-analytics-ui</text>
-  <line x1="985" y1="696" x2="1025" y2="696" class="arrow" />
-  <rect x="1037" y="678" width="174" height="36" class="ui-box" />
-  <text x="1124" y="700" text-anchor="middle" class="label">live-health-monitor-ui</text>
-  <rect x="305" y="730" width="230" height="36" class="svc" />
-  <text x="420" y="752" text-anchor="middle" class="label">market-data-processing-service</text>
-  <line x1="535" y1="748" x2="575" y2="748" class="arrow" />
-  <rect x="587" y="730" width="125" height="36" class="api" />
-  <text x="649" y="752" text-anchor="middle" class="label">market-data-api</text>
-  <line x1="712" y1="748" x2="752" y2="748" class="arrow" />
-  <rect x="764" y="730" width="160" height="36" class="ui-box" />
-  <text x="844" y="752" text-anchor="middle" class="label">trading-analytics-ui</text>
-  <line x1="924" y1="748" x2="964" y2="748" class="arrow" />
-  <rect x="976" y="730" width="118" height="36" class="ui-box" />
-  <text x="1035" y="752" text-anchor="middle" class="label">batch-audit-ui</text>
+  <rect x="380" y="626" width="181" height="36" class="svc" />
+  <text x="470" y="648" text-anchor="middle" class="label">pnl-attribution-service</text>
+  <line x1="561" y1="644" x2="601" y2="644" class="arrow" />
+  <rect x="613" y="626" width="160" height="36" class="api" />
+  <text x="693" y="648" text-anchor="middle" class="label">client-reporting-api</text>
+  <line x1="773" y1="644" x2="813" y2="644" class="arrow" />
+  <rect x="825" y="626" width="195" height="36" class="ui-box" />
+  <text x="922" y="648" text-anchor="middle" class="label">unified-trading-system-ui</text>
+  <rect x="397" y="678" width="139" height="36" class="svc" />
+  <text x="466" y="700" text-anchor="middle" class="label">execution-service</text>
+  <line x1="536" y1="696" x2="576" y2="696" class="arrow" />
+  <rect x="588" y="678" width="167" height="36" class="api" />
+  <text x="671" y="700" text-anchor="middle" class="label">execution-results-api</text>
+  <line x1="755" y1="696" x2="795" y2="696" class="arrow" />
+  <rect x="807" y="678" width="195" height="36" class="ui-box" />
+  <text x="904" y="700" text-anchor="middle" class="label">unified-trading-system-ui</text>
+  <rect x="373" y="730" width="230" height="36" class="svc" />
+  <text x="488" y="752" text-anchor="middle" class="label">market-data-processing-service</text>
+  <line x1="603" y1="748" x2="643" y2="748" class="arrow" />
+  <rect x="655" y="730" width="125" height="36" class="api" />
+  <text x="717" y="752" text-anchor="middle" class="label">market-data-api</text>
+  <line x1="780" y1="748" x2="820" y2="748" class="arrow" />
+  <rect x="832" y="730" width="195" height="36" class="ui-box" />
+  <text x="929" y="752" text-anchor="middle" class="label">unified-trading-system-ui</text>
   <rect x="443" y="782" width="160" height="36" class="svc" />
   <text x="523" y="804" text-anchor="middle" class="label">ml-inference-service</text>
   <line x1="603" y1="800" x2="643" y2="800" class="arrow" />
@@ -190,9 +175,9 @@
   <line x1="825" y1="1112" x2="865" y2="1112" class="arrow" />
   <rect x="877" y="1094" width="111" height="36" class="ui-box" />
   <text x="932" y="1116" text-anchor="middle" class="label">settlement-ui</text>
-  <rect x="521" y="1146" width="132" height="36" class="svc" />
-  <text x="587" y="1168" text-anchor="middle" class="label">alerting-service</text>
-  <line x1="653" y1="1164" x2="693" y2="1164" class="arrow" />
-  <rect x="705" y="1146" width="174" height="36" class="ui-box" />
-  <text x="792" y="1168" text-anchor="middle" class="label">live-health-monitor-ui</text>
+  <rect x="510" y="1146" width="132" height="36" class="svc" />
+  <text x="576" y="1168" text-anchor="middle" class="label">alerting-service</text>
+  <line x1="642" y1="1164" x2="682" y2="1164" class="arrow" />
+  <rect x="694" y="1146" width="195" height="36" class="ui-box" />
+  <text x="791" y="1168" text-anchor="middle" class="label">unified-trading-system-ui</text>
 </svg>

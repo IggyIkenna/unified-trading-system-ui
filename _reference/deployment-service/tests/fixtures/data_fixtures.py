@@ -110,10 +110,10 @@ def sample_venue_config():
             "DEFI": {
                 "description": "Decentralized Finance",
                 "venues": [
-                    "UNISWAPV2-ETH",
-                    "UNISWAPV3-ETH",
+                    "UNISWAPV2-ETHEREUM",
+                    "UNISWAPV3-ETHEREUM",
                     "UNISWAPV3-BASE",
-                    "AAVE_V3_ETH",
+                    "AAVEV3_ETHEREUM",
                     "LIDO-ETH",
                 ],
                 "data_types": [
@@ -160,15 +160,15 @@ def sample_data_type_validation_config():
         },
         "DEFI": {
             "venues": {
-                "UNISWAPV2-ETH": {
+                "UNISWAPV2-ETHEREUM": {
                     "data_types": ["swaps", "liquidity"],
                     "instrument_types": ["pool"],
                 },
-                "UNISWAPV3-ETH": {
+                "UNISWAPV3-ETHEREUM": {
                     "data_types": ["swaps", "liquidity"],
                     "instrument_types": ["pool"],
                 },
-                "AAVE_V3_ETH": {
+                "AAVEV3_ETHEREUM": {
                     "data_types": ["oracle_prices"],
                     "instrument_types": ["a_token", "debt_token"],
                 },
@@ -269,7 +269,7 @@ def sample_dimension_weighted_data():
     """Sample data for dimension-weighted completion calculations."""
     return {
         "venue_with_data_types": {
-            "UNISWAPV3-ETH": {
+            "UNISWAPV3-ETHEREUM": {
                 "data_types": {
                     "liquidity": {
                         "dates_found": 30,
@@ -289,14 +289,14 @@ def sample_dimension_weighted_data():
         },
         "category_aggregation": {
             "venues": {
-                "UNISWAPV2-ETH": {
+                "UNISWAPV2-ETHEREUM": {
                     "dates_found": 30,
                     "dates_expected_venue": 30,
                     "_dim_weighted_found": 60,
                     "_dim_weighted_expected": 60,
                     "is_expected": True,
                 },
-                "UNISWAPV3-ETH": {
+                "UNISWAPV3-ETHEREUM": {
                     "dates_found": 30,
                     "dates_expected_venue": 30,
                     "_dim_weighted_found": 32,

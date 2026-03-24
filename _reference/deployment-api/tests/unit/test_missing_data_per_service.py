@@ -28,7 +28,7 @@ def build_instruments_response(venues_with_data, all_dates, category="CEFI"):
     expected_venues = {
         "TRADFI": ["CME", "CBOE", "NASDAQ", "NYSE", "ICE", "FX"],
         "CEFI": ["BINANCE-SPOT", "BINANCE-FUTURES", "DERIBIT", "BYBIT", "OKX"],
-        "DEFI": ["UNISWAPV2-ETH", "UNISWAPV3-ETH"],
+        "DEFI": ["UNISWAPV2-ETHEREUM", "UNISWAPV3-ETHEREUM"],
     }
 
     venues_expected = expected_venues.get(category, list(venues_with_data.keys()))

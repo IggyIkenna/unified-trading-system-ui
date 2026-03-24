@@ -78,10 +78,10 @@ thresholds.
 
 **SOR is ON by default for the swap leg only.**
 
-| Leg                      | SOR? | Allowed Venues                               | SSOT                 |
-| ------------------------ | ---- | -------------------------------------------- | -------------------- |
-| Step 1 (USDT→weETH swap) | YES  | `UNISWAPV3-ETH`, `CURVE-ETH`, `BALANCER-ETH` | `defi_base.py:84-86` |
-| Step 3 (Short perp)      | NO   | Hyperliquid only (CLOB, no alternative)      | —                    |
+| Leg                      | SOR? | Allowed Venues                                         | SSOT                 |
+| ------------------------ | ---- | ------------------------------------------------------ | -------------------- |
+| Step 1 (USDT→weETH swap) | YES  | `UNISWAPV3-ETHEREUM`, `CURVE-ETHEREUM`, `BALANCER-ETH` | `defi_base.py:84-86` |
+| Step 3 (Short perp)      | NO   | Hyperliquid only (CLOB, no alternative)                | —                    |
 
 SOR picks the best price across DEX venues for the USDT→weETH swap. May route multi-hop (USDT→WETH→weETH) for better
 pricing. The `allowed_venues` list is passed in `StrategyInstruction` to execution-service, which handles the actual

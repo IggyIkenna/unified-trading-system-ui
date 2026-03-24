@@ -76,10 +76,10 @@ the highest funding rate above threshold.
 
 **SOR is ON by default for the swap leg only.**
 
-| Leg                    | SOR? | Allowed Venues                               | SSOT                 |
-| ---------------------- | ---- | -------------------------------------------- | -------------------- |
-| Step 1 (USDT→ETH swap) | YES  | `UNISWAPV3-ETH`, `CURVE-ETH`, `BALANCER-ETH` | `defi_base.py:84-86` |
-| Step 3 (Short perp)    | NO   | Hyperliquid only (CLOB, no alternative)      | —                    |
+| Leg                    | SOR? | Allowed Venues                                         | SSOT                 |
+| ---------------------- | ---- | ------------------------------------------------------ | -------------------- |
+| Step 1 (USDT→ETH swap) | YES  | `UNISWAPV3-ETHEREUM`, `CURVE-ETHEREUM`, `BALANCER-ETH` | `defi_base.py:84-86` |
+| Step 3 (Short perp)    | NO   | Hyperliquid only (CLOB, no alternative)                | —                    |
 
 SOR picks the best price across DEX venues for the same ERC-20 token on the same chain. The `allowed_venues` list is
 passed in `StrategyInstruction` to execution-service, which handles the actual routing. Strategy-service does NOT pick

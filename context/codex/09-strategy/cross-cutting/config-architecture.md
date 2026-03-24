@@ -215,7 +215,7 @@ StrategyInstruction(
     max_slippage_bps=30,
     benchmark_price=Decimal("3500"),
     benchmark_type="TWAP",
-    allowed_venues=["UNISWAPV3-ETH", "CURVE-ETH"],  # SOR hint
+    allowed_venues=["UNISWAPV3-ETHEREUM", "CURVE-ETHEREUM"],  # SOR hint
     stop_loss_price=Decimal("3400"),
     # --- Execution preference hints ---
     order_type=OrderType.LIMIT,    # prefer limit, execution may override
@@ -410,7 +410,7 @@ data from the venue. Some venues don't support the cancel/replace pattern needed
 
 > **TODO — CODIFY:** No machine-readable mapping of algo → supported venues exists. Should be a YAML registry in
 > execution-service config: `algo_venue_compatibility.yaml` with entries like `TWAP: [BINANCE, DERIBIT, HYPERLIQUID]`,
-> `SOR: [UNISWAPV3-ETH, CURVE-ETH, BALANCER-ETH]`. The router should validate algo+venue before dispatching. Currently
+> `SOR: [UNISWAPV3-ETHEREUM, CURVE-ETHEREUM, BALANCER-ETH]`. The router should validate algo+venue before dispatching. Currently
 > algo availability is implicit in code (algo just fails if venue doesn't support required operations).
 
 **Layer 5 — Strategy typical flow (documented in strategy docs):** Each strategy doc describes the "usual" execution

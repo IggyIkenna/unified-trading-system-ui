@@ -10,7 +10,7 @@
       "service": "pnl-attribution-service",
       "data_source": "gcs",
       "api": "client-reporting-api",
-      "ui": "client-reporting-ui"
+      "ui": "unified-trading-system-ui"
     },
     {
       "id": "client-reporting-live",
@@ -19,7 +19,7 @@
       "service": "pnl-attribution-service",
       "data_source": "pubsub",
       "api": "client-reporting-api",
-      "ui": "client-reporting-ui"
+      "ui": "unified-trading-system-ui"
     },
     {
       "id": "execution-results",
@@ -37,11 +37,7 @@
       "service": "execution-service",
       "data_source": "pubsub",
       "api": "execution-results-api",
-      "ui": [
-        "execution-analytics-ui",
-        "trading-analytics-ui",
-        "live-health-monitor-ui"
-      ]
+      "ui": "unified-trading-system-ui"
     },
     {
       "id": "market-data",
@@ -50,7 +46,7 @@
       "service": "market-data-processing-service",
       "data_source": "gcs",
       "api": "market-data-api",
-      "ui": ["trading-analytics-ui", "batch-audit-ui"]
+      "ui": "unified-trading-system-ui"
     },
     {
       "id": "market-data-live",
@@ -59,7 +55,7 @@
       "service": "market-data-processing-service",
       "data_source": "pubsub",
       "api": "market-data-api",
-      "ui": ["trading-analytics-ui", "batch-audit-ui"]
+      "ui": "unified-trading-system-ui"
     },
     {
       "id": "batch-audit",
@@ -67,8 +63,9 @@
       "mode": "batch",
       "service": "batch-live-reconciliation-service",
       "data_source": "gcs",
-      "api": "batch-audit-api",
-      "ui": ["batch-audit-ui", "logs-dashboard-ui"]
+      "api": "unified-trading-api",
+      "ui": "unified-trading-system-ui",
+      "note": "batch-audit-api and logs-dashboard-ui archived; audit surfaces via consolidated API/UI"
     },
     {
       "id": "ml-inference",
@@ -189,8 +186,8 @@
       "service": "alerting-service",
       "data_source": "pubsub",
       "api": null,
-      "ui": "live-health-monitor-ui",
-      "note": "Alerts tab, SSE stream"
+      "ui": "unified-trading-system-ui",
+      "note": "Alerts tab, SSE stream; live-health-monitor-ui archived"
     }
   ]
 }

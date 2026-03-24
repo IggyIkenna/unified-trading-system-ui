@@ -127,7 +127,7 @@ Venues are defined in `venues.yaml` and are the canonical list:
 
 ### DEFI Venues
 
-`UNISWAPV2-ETH`, `UNISWAPV3-ETH`, `UNISWAPV4-ETH`, `CURVE-ETH`, `AAVE_V3_ETH`, `MORPHO-ETHEREUM`, `LIDO`, `ETHERFI`,
+`UNISWAPV2-ETHEREUM`, `UNISWAPV3-ETHEREUM`, `UNISWAPV4-ETHEREUM`, `CURVE-ETHEREUM`, `AAVEV3_ETHEREUM`, `MORPHO-ETHEREUM`, `LIDO`, `ETHERFI`,
 `ETHENA`
 
 ---
@@ -157,16 +157,16 @@ Used by market-tick-data-service and market-data-processing-service:
 
 Determined by venue (from `venues.yaml`):
 
-| Venue           | Instrument Types          |
-| --------------- | ------------------------- |
-| BINANCE-SPOT    | SPOT_PAIR                 |
-| BINANCE-FUTURES | PERPETUAL, FUTURE         |
-| DERIBIT         | PERPETUAL, FUTURE, OPTION |
-| CME             | FUTURE, OPTION            |
-| NASDAQ, NYSE    | EQUITY, ETF               |
-| UNISWAPV3-ETH   | POOL                      |
-| AAVE_V3_ETH     | POOL                      |
-| LIDO, ETHERFI   | LST                       |
+| Venue              | Instrument Types          |
+| ------------------ | ------------------------- |
+| BINANCE-SPOT       | SPOT_PAIR                 |
+| BINANCE-FUTURES    | PERPETUAL, FUTURE         |
+| DERIBIT            | PERPETUAL, FUTURE, OPTION |
+| CME                | FUTURE, OPTION            |
+| NASDAQ, NYSE       | EQUITY, ETF               |
+| UNISWAPV3-ETHEREUM | POOL                      |
+| AAVEV3_ETHEREUM    | POOL                      |
+| LIDO, ETHERFI      | LST                       |
 
 ### timeframe
 

@@ -12,13 +12,13 @@ leverage. PnL comes entirely from Aave liquidity index growth as borrowers pay i
 ```
 Start:  WALLET:SPOT_ASSET:USDT  (100% USDT)
 
-Step 1 - LEND:  USDT --> aUSDT   (supply to AAVE_V3_ETH)
+Step 1 - LEND:  USDT --> aUSDT   (supply to AAVEV3_ETHEREUM)
                 You send USDT to Aave Pool contract.
                 Aave mints aUSDT to your wallet.
                 Records entry_liquidity_index.
 
 Wallet after deploy:
-  - AAVE_V3_ETH:A_TOKEN:AUSDT@ETHEREUM = initial_amount (but growing via index)
+  - AAVEV3_ETHEREUM:A_TOKEN:AUSDT@ETHEREUM = initial_amount (but growing via index)
 
 On exit:
 Step 2 - WITHDRAW: aUSDT --> USDT  (burn aUSDT, receive USDT + accrued interest)
@@ -26,10 +26,10 @@ Step 2 - WITHDRAW: aUSDT --> USDT  (burn aUSDT, receive USDT + accrued interest)
 
 ## Instruments
 
-| Instrument Key                       | Venue   | Type   | Role                   |
-| ------------------------------------ | ------- | ------ | ---------------------- |
-| `WALLET:SPOT_ASSET:USDT`             | Wallet  | Spot   | Initial capital        |
-| `AAVE_V3_ETH:A_TOKEN:AUSDT@ETHEREUM` | Aave V3 | aToken | Yield-bearing position |
+| Instrument Key                           | Venue   | Type   | Role                   |
+| ---------------------------------------- | ------- | ------ | ---------------------- |
+| `WALLET:SPOT_ASSET:USDT`                 | Wallet  | Spot   | Initial capital        |
+| `AAVEV3_ETHEREUM:A_TOKEN:AUSDT@ETHEREUM` | Aave V3 | aToken | Yield-bearing position |
 
 ## Data Architecture
 
@@ -50,7 +50,7 @@ Step 2 - WITHDRAW: aUSDT --> USDT  (burn aUSDT, receive USDT + accrued interest)
 
 The supply token is a factory parameter (`supply_token="USDT"`) set once at initialisation:
 
-- Instrument: `AAVE_V3_ETH:A_TOKEN:A{supply_token}@ETHEREUM`
+- Instrument: `AAVEV3_ETHEREUM:A_TOKEN:A{supply_token}@ETHEREUM`
 
 There is **no dynamic token selection** — the strategy does NOT compare USDT vs USDC vs DAI supply APYs and pick the
 best one. This is a gap: a "lending SOR" could select the highest-yielding stablecoin that meets utilization and

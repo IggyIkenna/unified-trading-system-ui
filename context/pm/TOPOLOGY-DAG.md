@@ -12,9 +12,10 @@
 contract:** `unified-trading-codex/04-architecture/PROTOCOL-INJECTION.md` **Cross-refs:**
 `05-infrastructure/unified-libraries/INTERNAL_DEPENDENCY_GRAPH.md` · `05-infrastructure/UI-DEPENDENCY-MATRIX.md`
 
-**Last Updated:** 2026-03-06 (moved to PM; topology-dag-pm-ssot plan; CloudTarget deleted from UDC/UTL) **Previous
-update:** 2026-02-28 (auth: kill-switch + OAuth client_id → Secret Manager; service-local auth.py; ConfigReloader moved
-UCI→UTS)
+**Last Updated:** 2026-03-24 (consolidated active UI/API surface: unified-trading-system-ui + deployment-ui;
+unified-trading-api + auth-api + market-data-api + client-reporting-api + deployment-api; legacy split UIs in
+workspace-root `archive/`). **Previous update:** 2026-03-06 (moved to PM; topology-dag-pm-ssot plan; CloudTarget deleted
+from UDC/UTL)
 
 > **Version labels in this diagram are semantic milestone targets (the "what 1.0 means architecturally"), not current
 > semver.** For actual pinned versions of every package, see `unified-trading-pm/workspace-manifest.json` (the SSOT).
@@ -119,37 +120,21 @@ flowchart TB
     %% ─────────────────────────────────────────────────────────────────
     %% API SERVICES
     %% ─────────────────────────────────────────────────────────────────
-    subgraph APIS["🔌 API Services  (FastAPI + SSE)"]
-        ERA["execution-results-api\nFills · execution results\nSSE /events/fills\n⚠️ P0: dict-Any at boundary"]
-        MDA["market-data-api\nSSE /stream/orderbook · /stream/candles"]
-        CRS["client-reporting-api\nPnL reports · portfolio summaries\nper-client JWT auth"]
-        STRAPI["strategy-api  ⟪planned⟫\nBacktest results · signal configs\nSSE /stream/signals\nPort :8004"]
+    subgraph APIS["🔌 API Services  (FastAPI + SSE · active 2026-03)"]
+        UTRAPI["unified-trading-api\nConsolidated domain gateway · SSE where exposed\nDev :8030 · SSOT: ui-api-mapping.json\nNote: execution-results-api / strategy-api surfaces absorbed or retired — use this API + services"]
+        AUTHAPI["auth-api\nJWT · OAuth · persona / user lifecycle\nDev :8200\nRepo at workspace root (may be absent from manifest clone lists — still part of dev stack)"]
+        MDA["market-data-api\nSSE /stream/orderbook · /stream/candles\nDev :8016"]
+        CRS["client-reporting-api\nPnL reports · portfolio summaries · per-client JWT\nDev :8014"]
+        DEPAPI2["deployment-api v0.1\nthin FastAPI ← deployment-service\nGoogleOAuthMiddleware on writes · post-deploy triggers\nDev :8004"]
     end
 
     %% ─────────────────────────────────────────────────────────────────
-    %% UIs — React/TypeScript apps  (11 repos)
+    %% UIs — primary consolidated stack (legacy multi-UI → archive/)
     %% ─────────────────────────────────────────────────────────────────
-    subgraph UIS["🖥️ UIs — React / TypeScript  (REST + SSE)"]
+    subgraph UIS["🖥️ UIs — consolidated  (split UIs live under workspace-root archive/)"]
         direction LR
-        subgraph UI_T["Trading & Monitoring"]
-            TAUI["trading-analytics-ui\nSSE fills · PnL dashboard\n→ execution-results-api :8002"]
-            LHMU["live-health-monitor-ui\nSSE health · manual trading control\n→ deployment-api :8001"]
-        end
-        subgraph UI_B["Batch Research  (3-tier)"]
-            MLUI["ml-training-ui\nTrain models · deploy batch→live\nView features + candle plots\n→ deployment-api :8001 + market-data-api :8003\nGoogleOAuth gated"]
-            STUI["strategy-ui\nStrategy backtest · parameter tuning\n→ strategy-api :8004  ⟪planned⟫"]
-            EXANI["execution-analytics-ui\nExecution backtest · TCA · alpha\n→ execution-results-api :8002 + market-data-api :8003\n⚠️ extract from execution-service/visualizer-ui"]
-        end
-        subgraph UI_D["Ops · Deployment"]
-            DEPUI["deployment-ui  ⟪planned standalone⟫\nBatch vs live deployment selection\n→ deployment-api :8001\nGoogleOAuth gated"]
-            BAUI["batch-audit-ui\n→ deployment-api :8001"]
-            LGUI["logs-dashboard-ui\n→ deployment-api :8001"]
-        end
-        subgraph UI_C["Client · Reporting · Ops"]
-            OBUI["onboarding-ui\nclient wizard · API key CRUD → SM\n→ deployment-api :8001\nGoogleOAuth ADMIN gated"]
-            CRUI["client-reporting-ui\n→ client-reporting-api :8003\nper-client JWT"]
-            SETU["settlement-ui\n→ execution-results-api :8002\n⟪empty — not yet built⟫"]
-        end
+        SYSUI["unified-trading-system-ui\nPrimary console · domain + reporting + trading flows\nDev :3000 (client-reporting stack) · :5174 (unified-trading stack)\n→ unified-trading-api · client-reporting-api · market-data-api · auth-api\nSSOT ports: scripts/dev/ui-api-mapping.json"]
+        DEPUI["deployment-ui\nDeploy / ops · batch vs live selection\nDev :5183 → deployment-api :8004"]
     end
 
     %% ─────────────────────────────────────────────────────────────────
@@ -172,7 +157,6 @@ flowchart TB
     %% ─────────────────────────────────────────────────────────────────
     subgraph DEPLOY["🚀 Deployment"]
         DEPENG["deployment-service v0.1\nPython orchestrator + CLI + Terraform\nshard_builder · catalog · config_loader\nbackends/ (cloud_run · aws_batch · vm)\nconfigs/runtime-topology.yaml (SSOT)\nLayer 2: verify_infra.py"]
-        DEPAPI2["deployment-api v0.1\nthin FastAPI ← deployment-service\nGoogleOAuthMiddleware on writes\ntriggers Layer 2+3 post-deploy"]
     end
 
     subgraph INTTEST["🧪 Integration Tests (above all tiers)"]
@@ -240,20 +224,18 @@ flowchart TB
     %% API + UI EDGES
     %% ═════════════════════════════════════════════════════════════════
 
-    EXEC --> ERA
+    EXEC --> UTRAPI
+    STR --> UTRAPI
+    MLTR --> UTRAPI
     MTDH & MDPS --> MDA
     PNL & RAE & PBM --> CRS
     DEPENG --> DEPAPI2
 
-    DEPAPI2 --> LHMU & BAUI & LGUI & OBUI & DEPUI
-    DEPAPI2 --> MLUI & STUI
-    ERA --> TAUI & EXANI & SETU
-    MDA --> EXANI & MLUI
-    STR --> STRAPI
-    STRAPI --> STUI
-    CRS --> CRUI
-    MLTR --> MLUI
-    PNL & RAE & ALT --> LHMU
+    DEPAPI2 --> DEPUI & SYSUI
+    UTRAPI --> SYSUI
+    CRS --> SYSUI
+    MDA --> SYSUI
+    SYSUI -.->|"login · tokens"| AUTHAPI
 
     %% ═════════════════════════════════════════════════════════════════
     %% DATA FLOW (dashed)
@@ -271,7 +253,7 @@ flowchart TB
     CB -.->|"build → push"| AR
     DEPENG -.->|"orchestrates"| CB & CR & STORE
     DEPAPI2 -.->|"post-deploy trigger"| SIT
-    CR -.->|"hosts"| EXEC & STR & MLTR & MLIN & PNL & RAE & DEPAPI2
+    CR -.->|"hosts"| EXEC & STR & MLTR & MLIN & PNL & RAE & DEPAPI2 & UTRAPI & AUTHAPI & MDA & CRS
 
     %% ═════════════════════════════════════════════════════════════════
     %% STYLES
@@ -297,11 +279,9 @@ flowchart TB
     class UDC tier3
     class IS,MTDH,MDPS,FCS,FDS,FVS,FOS,FCIS,FMTS,MLTR,MLIN,STR,EXEC,PNL,PBM,RAE,ALT svc
     class FSS svc
-    class SVS future
-    class ERA,MDA,CRS,STRAPI apiSvc
-    class DEPENG,DEPAPI2 deploy
-    class TAUI,LHMU,STUI,EXANI,BAUI,MLUI,LGUI,OBUI,CRUI,SETU ui
-    class DEPUI future
+    class UTRAPI,AUTHAPI,MDA,CRS,DEPAPI2 apiSvc
+    class DEPENG deploy
+    class SYSUI,DEPUI ui
     class STORE,PS,SM,AR,CR,CB,BQ,REDIS infra
     class SIT inttest
     class CODEX,PM devops
@@ -311,14 +291,13 @@ flowchart TB
 
 ## UI Routing: Dev vs Production
 
-UIs use `VITE_API_URL` injected at build time. In development, UIs call local APIs directly. In production, routing goes
-through Cloud Run URLs.
+UIs use `VITE_*` base URLs injected at build time. **Port SSOT:** `unified-trading-pm/scripts/dev/ui-api-mapping.json`.
+In production, each API is a separate Cloud Run service URL.
 
-| UI Group                                                                                                                     | Dev (`localhost`)               | Prod (Cloud Run)                            |
-| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------------------- |
-| Ops UIs: `deployment-ui`, `live-health-monitor-ui`, `batch-audit-ui`, `logs-dashboard-ui`, `ml-training-ui`, `onboarding-ui` | `:8001` (deployment-api)        | `deployment-api-<hash>-uc.a.run.app`        |
-| Trading UIs: `trading-analytics-ui`, `strategy-ui`, `execution-analytics-ui`, `settlement-ui`                                | `:8002` (execution-results-api) | `execution-results-api-<hash>-uc.a.run.app` |
-| Client UIs: `client-reporting-ui`                                                                                            | `:8003` (client-reporting-api)  | `client-reporting-<hash>-uc.a.run.app`      |
+| Stack                                                        | UI dev (`localhost`)                                                   | API dev (`localhost`)                                                                                                   | Prod (pattern)                                        |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| **Deployment** — `deployment-ui` + `deployment-api`          | `:5183`                                                                | `:8004` (`deployment-api`)                                                                                              | `deployment-api-<hash>-*.run.app`                     |
+| **Unified console** — `unified-trading-system-ui` + gateways | `:3000` (client-reporting pairing) · `:5174` (unified-trading pairing) | `:8030` (`unified-trading-api`) · `:8200` (`auth-api`) · `:8014` (`client-reporting-api`) · `:8016` (`market-data-api`) | Per-service Cloud Run URLs (see deployment manifests) |
 
 ---
 

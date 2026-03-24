@@ -668,7 +668,7 @@ todos:
         No machine-readable mapping of which execution algos work on which venues.
         Create algo_venue_compatibility.yaml in execution-service/config/:
         TWAP: [BINANCE, DERIBIT, HYPERLIQUID], VWAP: [BINANCE, DERIBIT], etc.
-        SOR: [UNISWAPV3-ETH, CURVE-ETH, BALANCER-ETH].
+        SOR: [UNISWAPV3-ETHEREUM, CURVE-ETHEREUM, BALANCER-ETH].
         Router validates algo+venue before dispatching.
         Repos: execution-service (config YAML + router validation).
     status: done

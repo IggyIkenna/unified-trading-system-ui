@@ -57,6 +57,7 @@ import { useBalances } from "@/hooks/api/use-positions";
 import dynamic from "next/dynamic";
 import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
+import { CalendarEventFeed } from "@/components/trading/calendar-event-feed";
 
 const OptionsChain = dynamic(
   () =>
@@ -1831,6 +1832,11 @@ export default function TradingPage() {
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
+
+        {/* Calendar Event Feed — collapsible bottom panel */}
+        <div className="px-4 pb-4 mt-2">
+          <CalendarEventFeed />
+        </div>
       </main>
     </div>
   );

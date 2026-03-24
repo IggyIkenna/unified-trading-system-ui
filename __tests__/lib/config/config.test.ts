@@ -1,6 +1,6 @@
 import { SERVICE_ENDPOINTS } from "@/lib/config/api";
-import { COMPANY, BRAND_COLORS, FONTS, USP } from "@/lib/config/branding";
 import { ENTITLEMENTS, SUBSCRIPTION_TIERS } from "@/lib/config/auth";
+import { BRAND_COLORS, COMPANY, FONTS, USP } from "@/lib/config/branding";
 import { SERVICE_REGISTRY, getVisibleServices } from "@/lib/config/services";
 
 describe("lib/config/api", () => {
@@ -68,9 +68,9 @@ describe("lib/config/auth", () => {
 });
 
 describe("lib/config/services", () => {
-  it("exports SERVICE_REGISTRY with 9 services", () => {
+  it("exports SERVICE_REGISTRY with 10 services", () => {
     expect(Array.isArray(SERVICE_REGISTRY)).toBe(true);
-    expect(SERVICE_REGISTRY.length).toBe(9);
+    expect(SERVICE_REGISTRY.length).toBe(10);
   });
 
   it("each service has required fields", () => {

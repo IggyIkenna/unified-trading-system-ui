@@ -24,7 +24,20 @@ export const metadata: Metadata = {
   title: "Odum Research - Unified Trading Infrastructure",
   description:
     "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
-  generator: "v0 Trading Platform",
+  metadataBase: new URL("https://odum-research.co.uk"),
+  openGraph: {
+    title: "Odum Research",
+    description:
+      "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
+    siteName: "Odum Research",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Odum Research",
+    description:
+      "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
+  },
   icons: {
     icon: [
       {

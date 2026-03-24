@@ -2627,8 +2627,8 @@
       "subcategory": "LENDING",
       "domain": "defi",
       "asset_classes": ["A_TOKEN"],
-      "venues": ["AAVE_V3_ETH"],
-      "instruments": ["AAVE_V3_ETH:A_TOKEN:AUSDT@ETHEREUM"],
+      "venues": ["AAVEV3_ETHEREUM"],
+      "instruments": ["AAVEV3_ETHEREUM:A_TOKEN:AUSDT@ETHEREUM"],
       "data_sources": {
         "features": ["features-onchain-service"],
         "market_data_processed": true,
@@ -2681,8 +2681,8 @@
       "venues": [
         "WALLET",
         "HYPERLIQUID",
-        "UNISWAPV3-ETH",
-        "CURVE-ETH",
+        "UNISWAPV3-ETHEREUM",
+        "CURVE-ETHEREUM",
         "BALANCER-ETH"
       ],
       "instruments": [
@@ -2741,8 +2741,8 @@
       "venues": [
         "ETHERFI",
         "HYPERLIQUID",
-        "UNISWAPV3-ETH",
-        "CURVE-ETH",
+        "UNISWAPV3-ETHEREUM",
+        "CURVE-ETHEREUM",
         "BALANCER-ETH"
       ],
       "instruments": [
@@ -2798,10 +2798,10 @@
       "subcategory": "RECURSIVE_STAKED_BASIS",
       "domain": "defi",
       "asset_classes": ["A_TOKEN", "DEBT_TOKEN", "PERPETUAL"],
-      "venues": ["AAVE_V3_ETH", "HYPERLIQUID", "MORPHO-ETHEREUM"],
+      "venues": ["AAVEV3_ETHEREUM", "HYPERLIQUID", "MORPHO-ETHEREUM"],
       "instruments": [
-        "AAVE_V3_ETH:A_TOKEN:AWEETH@ETHEREUM",
-        "AAVE_V3_ETH:DEBT_TOKEN:DEBTWETH@ETHEREUM",
+        "AAVEV3_ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
+        "AAVEV3_ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM",
         "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID"
       ],
       "data_sources": {

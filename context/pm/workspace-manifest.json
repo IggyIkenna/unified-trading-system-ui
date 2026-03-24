@@ -2,8 +2,8 @@
   "$schema": "https://json-schema.org/draft-07/schema",
   "title": "Unified Trading System \u2014 Workspace Manifest v2",
   "description": "SSOT for all repos: types, dependencies, doc standards, merge order. Drives CI/CD, completeness checkers, service doc rollout, and quickmerge cascade.",
-  "lastUpdated": "2026-03-13",
-  "notes": "Updated 2026-03-13: ci_status sweep \u2014 promoted 4 BASELINE_RECORDED\u2192VALIDATED after QG pass; 15 marked FAILING with root cause. Updated 2026-03-10: Added unified-admin-ui (npm workspace monorepo, packages/core, TypeScript strict, 60th repo). Updated 2026-03-10: Added batch-audit-api and batch-live-reconciliation-service (T+1 r",
+  "lastUpdated": "2026-03-24T07:11:19Z",
+  "notes": "Updated 2026-03-24: Archive-only sweep — legacy split UIs, standalone APIs (incl. config/trading-analytics/ml-* -api), npm UI-kit/workspace repos, experimental services, and scratch/root data trees exist only under workspace-root archive/ (see archive/README.md). Manifest repositories = active surface only. | Prior: Archived odum-research-website, logs-dashboard-ui, live-health-monitor-ui, batch-audit-api; removed from manifest. | Prior: Active surface: unified-trading-system-ui + deployment-ui + unified-trading-api + auth-api + deployment-api + domain APIs (see ui-api-mapping). | Prior: 2026-03-13 ci_status sweep \u2014 promoted 4 BASELINE_RECORDED\u2192VALIDATED; 15 FAILING. 2026-03-10 unified-admin-ui (npm monorepo) packa...",
   "previousPath": ".cursor/plans/code_optimizations_and_ci_cd_alignment/DEPENDENCY-MATRIX-CANONICAL.json",
   "doc_standards": {
     "service-canonical": {
@@ -67,7 +67,6 @@
   },
   "versions": {
     "_note": "All versions reset to 0.x.x (2026-02-28). Nothing was stable under the old CI/CD \u2014 versions >=1.0.0 were aspirational. 1.0.0 will be set by GitHub Action on first successful main merge per repo. 0.x.y preserves relative evolution (e.g. UTL 0.2.2 reflects more history than AC 0.1.0).",
-    "batch-audit-api": "0.1.0",
     "batch-live-reconciliation-service": "0.1.0",
     "deployment-api": "0.1.1",
     "deployment-service": "0.1.1",
@@ -82,13 +81,8 @@
     "instruments-service": "0.1.117",
     "market-tick-data-service": "0.3.1",
     "matching-engine-library": "0.1.57",
-    "ml-inference-api": "0.1.0",
-    "ml-training-api": "0.1.0",
-    "odum-research-website": "0.1.0",
     "pnl-attribution-service": "0.1.0",
     "system-integration-tests": "0.2.0",
-    "trading-analytics-api": "0.1.0",
-    "unified-admin-ui": "0.1.0",
     "unified-api-contracts": "0.2.38",
     "unified-cloud-interface": "0.11.39",
     "unified-config-interface": "0.2.1",
@@ -108,10 +102,7 @@
     "unified-trade-execution-interface": "0.1.42",
     "unified-trading-codex": "1.0.0",
     "unified-trading-library": "0.3.191",
-    "unified-trading-pm": "1.2.0",
-    "unified-trading-ui-auth": "0.2.1",
-    "unified-trading-ui-kit": "0.1.0",
-    "config-api": "0.1.0"
+    "unified-trading-pm": "1.2.0"
   },
   "repositories": {
     "alerting-service": {
@@ -174,75 +165,6 @@
       "role": "service",
       "tags": ["alerting", "cross-domain", "standard"]
     },
-    "batch-audit-api": {
-      "type": "api-service",
-      "arch_tier": "api",
-      "doc_standard": "service-canonical",
-      "codex_sections": ["04-architecture", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "pyproject.toml",
-      "status": "active",
-      "cluster": "api-services",
-      "serves_ui": ["batch-audit-ui", "logs-dashboard-ui"],
-      "notes": "Audit trail, data health, compliance, and batch job monitoring API for batch-audit-ui. Also serves logs-dashboard-ui for audit log queries.",
-      "github_url": "https://github.com/IggyIkenna/batch-audit-api",
-      "completion_path": "cefi",
-      "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "service_declaration": {
-        "mode": "live",
-        "capabilities_needed": ["data_source", "event_bus"],
-        "protocol_default_set": "gcp_live"
-      },
-      "semver_rules_ref": "api",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "api",
-      "tags": ["analytics", "cefi", "monitoring", "standard"]
-    },
-    "batch-audit-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "monitoring",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["03-observability", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/batch-audit-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["analytics", "cefi", "monitoring", "standard"]
-    },
     "batch-live-reconciliation-service": {
       "type": "batch-service",
       "arch_tier": "service",
@@ -301,9 +223,9 @@
       "version_source": "pyproject.toml",
       "status": "active",
       "cluster": "api-services",
-      "serves_ui": ["client-reporting-ui"],
+      "serves_ui": ["unified-trading-system-ui"],
       "proxies_service": "pnl-attribution-service",
-      "notes": "FastAPI + OAuth middleware. Client-facing reporting API. Aggregates PnL, positions, fills for external clients.",
+      "notes": "FastAPI + OAuth middleware. Client-facing reporting API. Aggregates PnL, positions, fills for external clients. Standalone client-reporting-ui archived under workspace-root archive/; reporting surfaces use unified-trading-system-ui.",
       "github_url": "https://github.com/IggyIkenna/client-reporting-api",
       "completion_path": "cefi",
       "dependencies": [
@@ -348,30 +270,6 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "api",
-      "tags": ["analytics", "cefi", "standard"]
-    },
-    "client-reporting-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "analytics",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["01-domain", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/client-reporting-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
       "tags": ["analytics", "cefi", "standard"]
     },
     "deployment-api": {
@@ -498,7 +396,7 @@
       "status": "scaffolded",
       "version": "0.1.0",
       "description": "Deployment management UI \u2014 orchestrator status, shard progress, Cloud Build logs, IBKR Gateway config UI",
-      "dependencies": ["deployment-api"],
+      "dependencies": [],
       "cluster": "devops-ui",
       "completion_path": "cefi",
       "notes": "UI split from unified-trading-deployment-v3 per ui-service-separation rule. React/TypeScript. Scaffolded 2026-02-28. After four-way split: depends on deployment-api.",
@@ -570,87 +468,6 @@
       "tier": 2,
       "role": "library",
       "tags": ["cross-domain", "execution", "important"]
-    },
-    "execution-analytics-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "analytics",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["01-domain", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/execution-analytics-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["analytics", "cefi", "execution", "standard"]
-    },
-    "execution-results-api": {
-      "type": "api-service",
-      "arch_tier": "api",
-      "doc_standard": "service-canonical",
-      "codex_sections": ["04-architecture", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "pyproject.toml",
-      "status": "active",
-      "cluster": "api-services",
-      "serves_ui": [
-        "trading-analytics-ui",
-        "live-health-monitor-ui",
-        "execution-analytics-ui"
-      ],
-      "proxies_service": "execution-service",
-      "notes": "FastAPI + OAuth middleware. HTTP boundary between execution-service and UIs. P0: replace dict[str, Any] at all API boundaries with TypedDict/Pydantic (p0-exec-results-api-types).",
-      "github_url": "https://github.com/IggyIkenna/execution-results-api",
-      "completion_path": "cefi",
-      "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": 66,
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "service_declaration": {
-        "mode": "live",
-        "capabilities_needed": ["data_source", "event_bus", "cache"],
-        "protocol_default_set": "gcp_live"
-      },
-      "semver_rules_ref": "api",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "api",
-      "tags": ["cefi", "execution", "standard"]
     },
     "execution-service": {
       "type": "service",
@@ -782,6 +599,11 @@
           "name": "unified-feature-calculator-library",
           "version": ">=0.1.0,<1.0.0",
           "required": true
+        },
+        {
+          "name": "unified-features-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
         }
       ],
       "ci_status": "LOCAL_PASS",
@@ -802,7 +624,8 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["cefi", "feature-computation", "standard"]
+      "tags": ["cefi", "feature-computation", "standard"],
+      "internal_dependencies": ["unified-features-interface"]
     },
     "features-commodity-service": {
       "type": "service",
@@ -838,6 +661,11 @@
           "name": "unified-internal-contracts",
           "version": ">=0.1.0,<1.0.0",
           "required": true
+        },
+        {
+          "name": "unified-features-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
         }
       ],
       "github_url": "https://github.com/IggyIkenna/features-commodity-service",
@@ -857,7 +685,8 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["feature-computation", "standard", "tradfi"]
+      "tags": ["feature-computation", "standard", "tradfi"],
+      "internal_dependencies": ["unified-features-interface"]
     },
     "features-cross-instrument-service": {
       "type": "service",
@@ -899,6 +728,11 @@
           "name": "unified-feature-calculator-library",
           "version": ">=0.1.0,<1.0.0",
           "required": true
+        },
+        {
+          "name": "unified-features-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
         }
       ],
       "ci_status": "FAILING",
@@ -917,7 +751,8 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["cefi", "feature-computation", "standard"]
+      "tags": ["cefi", "feature-computation", "standard"],
+      "internal_dependencies": ["unified-features-interface"]
     },
     "features-delta-one-service": {
       "type": "service",
@@ -951,6 +786,11 @@
           "name": "unified-internal-contracts",
           "version": ">=0.1.0,<1.0.0",
           "required": true
+        },
+        {
+          "name": "unified-features-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
         }
       ],
       "ci_status": "FAILING",
@@ -971,7 +811,8 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["cefi", "feature-computation", "standard"]
+      "tags": ["cefi", "feature-computation", "standard"],
+      "internal_dependencies": ["unified-features-interface"]
     },
     "features-multi-timeframe-service": {
       "type": "service",
@@ -1012,6 +853,11 @@
           "name": "unified-internal-contracts",
           "version": ">=0.1.0,<1.0.0",
           "required": true
+        },
+        {
+          "name": "unified-features-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
         }
       ],
       "github_url": "https://github.com/IggyIkenna/features-multi-timeframe-service",
@@ -1031,7 +877,8 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["cefi", "feature-computation", "standard"]
+      "tags": ["cefi", "feature-computation", "standard"],
+      "internal_dependencies": ["unified-features-interface"]
     },
     "features-onchain-service": {
       "type": "service",
@@ -1152,6 +999,11 @@
           "name": "unified-feature-orchestration-library",
           "version": ">=0.1.0,<1.0.0",
           "required": true
+        },
+        {
+          "name": "unified-features-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
         }
       ],
       "ci_status": "LOCAL_PASS",
@@ -1170,7 +1022,8 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["feature-computation", "sports", "standard"]
+      "tags": ["feature-computation", "sports", "standard"],
+      "internal_dependencies": ["unified-features-interface"]
     },
     "features-volatility-service": {
       "type": "service",
@@ -1209,6 +1062,11 @@
           "name": "unified-feature-calculator-library",
           "version": ">=0.1.0,<1.0.0",
           "required": true
+        },
+        {
+          "name": "unified-features-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
         }
       ],
       "ci_status": "FAILING",
@@ -1229,7 +1087,8 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["cefi", "feature-computation", "standard"]
+      "tags": ["cefi", "feature-computation", "standard"],
+      "internal_dependencies": ["unified-features-interface"]
     },
     "ibkr-gateway-infra": {
       "type": "infrastructure",
@@ -1238,7 +1097,13 @@
       "codex_sections": ["05-infrastructure"],
       "version": "0.1.0",
       "version_source": "version-file",
-      "dependencies": [],
+      "dependencies": [
+        {
+          "name": "unified-config-interface",
+          "version": ">=0.1.0,<1.0.0",
+          "required": true
+        }
+      ],
       "status": "active",
       "completion_path": "tradfi",
       "notes": "Terraform + scripts for IBKR Gateway VM setup, SSH tunnel, startup. IaC for TradFi execution connectivity. 2026-03-05: Added scripts/ (quickmerge, setup, quality-gates), .github/workflows/ (quality-gates, version-bump), VERSION file, .pre-commit-config.yaml.",
@@ -1258,7 +1123,8 @@
         "unified-reference-data-interface",
         "unified-trade-execution-interface"
       ],
-      "tags": ["standard", "tradfi"]
+      "tags": ["standard", "tradfi"],
+      "internal_dependencies": ["unified-config-interface"]
     },
     "instruments-service": {
       "type": "service",
@@ -1335,55 +1201,6 @@
       "role": "service",
       "tags": ["cross-domain", "data-ingestion", "standard"]
     },
-    "live-health-monitor-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "hybrid",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["03-observability", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "notes": "Hybrid: monitoring dashboard + manual trading control (calls execution-service /manual/instruction)",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/live-health-monitor-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["cefi", "monitoring", "standard"]
-    },
-    "logs-dashboard-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "monitoring",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["03-observability", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/logs-dashboard-ui",
-      "completion_path": "infrastructure",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["cross-domain", "monitoring", "standard"]
-    },
     "market-data-api": {
       "type": "api-service",
       "arch_tier": "api",
@@ -1393,7 +1210,7 @@
       "version_source": "pyproject.toml",
       "status": "active",
       "cluster": "api-services",
-      "serves_ui": ["trading-analytics-ui", "batch-audit-ui"],
+      "serves_ui": [],
       "proxies_service": "market-data-processing-service",
       "notes": "FastAPI + OAuth middleware. Exposes processed market data to UIs. SSE endpoint for live price streaming.",
       "github_url": "https://github.com/IggyIkenna/market-data-api",
@@ -1632,52 +1449,6 @@
       "role": "library",
       "tags": ["cross-domain", "execution", "important"]
     },
-    "ml-inference-api": {
-      "type": "api-service",
-      "arch_tier": "api",
-      "doc_standard": "service-canonical",
-      "codex_sections": ["04-architecture", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "pyproject.toml",
-      "status": "active",
-      "cluster": "api-services",
-      "serves_ui": ["ml-training-ui"],
-      "proxies_service": "ml-inference-service",
-      "notes": "FastAPI service fronting ml-inference-service \u2014 model registry and prediction reads.",
-      "github_url": "https://github.com/IggyIkenna/ml-inference-api",
-      "completion_path": "ml",
-      "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "service_declaration": {
-        "mode": "live",
-        "capabilities_needed": ["data_source", "event_bus", "cache"],
-        "protocol_default_set": "gcp_live"
-      },
-      "semver_rules_ref": "api",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "api",
-      "tags": ["cross-domain", "ml-inference", "standard"]
-    },
     "ml-inference-service": {
       "type": "service",
       "arch_tier": "service",
@@ -1741,47 +1512,6 @@
       "tier": 3,
       "role": "service",
       "tags": ["cefi", "ml-inference", "standard"]
-    },
-    "ml-training-api": {
-      "type": "api-service",
-      "arch_tier": "api",
-      "doc_standard": "service-canonical",
-      "codex_sections": ["04-architecture", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "pyproject.toml",
-      "status": "active",
-      "cluster": "api-services",
-      "serves_ui": ["ml-training-ui"],
-      "proxies_service": "ml-training-service",
-      "notes": "REST API fronting the ml-training-service 3-phase batch pipeline.",
-      "github_url": "https://github.com/IggyIkenna/ml-training-api",
-      "completion_path": "ml",
-      "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "testing_level": "integration",
-      "skipped_gates": [],
-      "service_declaration": {
-        "mode": "live",
-        "capabilities_needed": ["data_source", "event_bus"],
-        "protocol_default_set": "gcp_live"
-      },
-      "semver_rules_ref": "api",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "api",
-      "tags": ["cross-domain", "ml-training", "standard"]
     },
     "ml-training-service": {
       "type": "service",
@@ -1851,81 +1581,6 @@
       "tier": 3,
       "role": "service",
       "tags": ["cefi", "ml-training", "standard"]
-    },
-    "ml-training-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "control",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/ml-training-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["cefi", "ml-training", "standard"]
-    },
-    "onboarding-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "control",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["01-domain", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/onboarding-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "ci_failure_reason": "Function coverage 60.46% < 70% threshold",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["cefi", "onboarding", "standard"]
-    },
-    "odum-research-website": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "control",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["01-domain"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": ["unified-trading-pm"],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/odum-research-website",
-      "cluster": "website",
-      "completion_path": "infrastructure",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["website", "infrastructure", "standard"],
-      "notes": "Odum Research corporate website \u2014 presentations portal with Firebase Auth, Firestore, GCS proxy. Migrated from datadodo/odum_website. PM dependency for presentation content."
     },
     "pnl-attribution-service": {
       "type": "service",
@@ -2106,31 +1761,6 @@
       "role": "service",
       "tags": ["cefi", "risk", "standard"]
     },
-    "settlement-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "control",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["01-domain", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "notes": "Settlement UI \u2014 empty directory, not yet implemented.",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/settlement-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["cefi", "execution", "standard"]
-    },
     "strategy-service": {
       "type": "service",
       "arch_tier": "service",
@@ -2205,32 +1835,6 @@
       "semver_policy": "agent",
       "tier": 3,
       "role": "service",
-      "tags": ["cefi", "execution", "standard"]
-    },
-    "strategy-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "control",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["01-domain", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "status": "active",
-      "cluster": "api-services",
-      "notes": "Strategy configuration and deployment UI. Calls strategy-service via FastAPI. OAuth (TRADER role).",
-      "github_url": "https://github.com/IggyIkenna/strategy-ui",
-      "completion_path": "cefi",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
       "tags": ["cefi", "execution", "standard"]
     },
     "system-integration-tests": {
@@ -2354,113 +1958,6 @@
       "role": "service",
       "tags": ["execution", "standard", "tradfi"]
     },
-    "trading-analytics-api": {
-      "type": "api-service",
-      "arch_tier": "api",
-      "doc_standard": "service-canonical",
-      "codex_sections": ["04-architecture", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "pyproject.toml",
-      "status": "active",
-      "cluster": "api-services",
-      "serves_ui": ["trading-analytics-ui"],
-      "proxies_service": "execution-service",
-      "notes": "Aggregated analytics API for trading-analytics-ui \u2014 trades, slippage, signals, predictions, risk.",
-      "github_url": "https://github.com/IggyIkenna/trading-analytics-api",
-      "completion_path": "cefi",
-      "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "service_declaration": {
-        "mode": "live",
-        "capabilities_needed": ["data_source", "event_bus"],
-        "protocol_default_set": "gcp_live"
-      },
-      "semver_rules_ref": "api",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "api",
-      "tags": ["analytics", "cefi", "standard"]
-    },
-    "trading-analytics-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "ui_type": "analytics",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["01-domain", "06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/trading-analytics-ui",
-      "completion_path": "cefi",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "ci_failure_reason": "Statement coverage 68.37% < 70% threshold",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["analytics", "cefi", "standard"]
-    },
-    "unified-admin-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "status": "active",
-      "version": "0.1.0",
-      "description": "npm workspace monorepo \u2014 shared packages/core (@unified-admin/core) with components, hooks, auth, api-client. Centralises UI boilerplate from 11 existing UI repos.",
-      "dependencies": ["unified-trading-ui-kit"],
-      "cluster": "admin-ui",
-      "completion_path": "core",
-      "notes": "Created 2026-03-10. npm workspaces (Node 22 LTS). TypeScript strict mode, ESLint zero-warnings, Vitest >80% coverage, Playwright smoke. No Python tooling (no uv, no basedpyright, no pytest). Repo count: 59 -> 60.",
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": 100,
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "doc_standard": "ui-canonical",
-      "version_source": "package.json",
-      "codex_sections": ["05-infrastructure"],
-      "github_url": "https://github.com/IggyIkenna/unified-admin-ui",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["config", "cross-domain", "standard"]
-    },
     "unified-api-contracts": {
       "type": "library",
       "arch_tier": "0",
@@ -2474,7 +1971,7 @@
       "artifact_registry": "asia-northeast1-python.pkg.dev/central-element-323112/unified-libraries/unified-api-contracts",
       "cloud_build_trigger": "unified-api-contracts-build",
       "status": "active",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 85,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "unit",
@@ -2942,7 +2439,7 @@
       "cloud_build_trigger": "unified-reference-data-interface-build",
       "status": "active",
       "notes": "REST-only reference data: instrument definitions, options chains, expiry calendars, corporate actions. Phase 8 of io_interface plan.",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 87,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -3050,7 +2547,7 @@
       "codex_sections": [],
       "version": "1.0.0",
       "version_source": "manual",
-      "dependencies": ["unified-trading-pm"],
+      "dependencies": [],
       "notes": "Standards & codex repo. Coding standards, architecture docs, quality gate templates. Depends on PM for workspace-manifest.json, setup.sh template, cursor rules. CI infrastructure dep for ALL repos.",
       "ci_status": "LOCAL_PASS",
       "coverage_pct": 0,
@@ -3133,7 +2630,7 @@
       "dependencies": [],
       "completion_path": "all",
       "notes": "Pure root (L0). Contains workspace SSOT, CI/CD templates, cursor rules, AI plans. CI infrastructure dep for ALL repos \u2014 cloned alongside target repo in quality-gates.yml.",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 93,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "none",
@@ -3148,59 +2645,6 @@
       "tier": null,
       "role": "infrastructure",
       "tags": ["config", "cross-domain", "standard"]
-    },
-    "unified-trading-ui-auth": {
-      "type": "library",
-      "arch_tier": "ui",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["06-coding-standards"],
-      "version": "0.2.1",
-      "version_source": "package.json",
-      "status": "active",
-      "description": "Shared Google OAuth auth library for all Unified Trading UIs. Provides GoogleAuth, RequireAuth, authFetch, useAuthToken.",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "infra_primitives": [
-        "GoogleAuth",
-        "RequireAuth",
-        "authFetch",
-        "useAuthToken"
-      ],
-      "github_url": "https://github.com/IggyIkenna/unified-trading-ui-auth",
-      "completion_path": "core",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "library",
-      "tags": ["cross-domain", "onboarding", "standard"]
-    },
-    "unified-trading-ui-kit": {
-      "type": "library",
-      "arch_tier": "ui",
-      "doc_standard": "ui-canonical",
-      "codex_sections": ["06-coding-standards"],
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "none",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/unified-trading-ui-kit",
-      "completion_path": "core",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "library",
-      "tags": ["cross-domain", "onboarding", "standard"]
     },
     "unified-features-interface": {
       "type": "interface",
@@ -3314,63 +2758,6 @@
       "notes": "Unified sports reference data interface (UAC Citadel Architecture Phase 8)",
       "tags": ["cross-domain", "important", "sports"]
     },
-    "config-api": {
-      "github_url": "https://github.com/IggyIkenna/config-api",
-      "type": "api",
-      "arch_tier": "api",
-      "tier": 3,
-      "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.11.39,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.48,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "serves_ui": [
-        "onboarding-ui",
-        "settlement-ui",
-        "strategy-ui",
-        "unified-admin-ui"
-      ],
-      "tags": ["config", "standard"]
-    },
-    "user-management-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "status": "active",
-      "version": "0.1.0",
-      "version_source": "package.json",
-      "tier": 3,
-      "role": "ui",
-      "doc_standard": "ui-canonical",
-      "testing_level": "unit",
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "github_url": "https://github.com/IggyIkenna/user-management-ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "merge_level": 11,
-      "cluster": "admin-ui",
-      "dependencies": ["unified-admin-ui", "unified-trading-ui-kit"],
-      "codex_sections": ["01-domain", "06-coding-standards"],
-      "tags": ["admin", "user-management", "standard"]
-    },
     "unified-trading-api": {
       "github_url": "https://github.com/IggyIkenna/unified-trading-api",
       "type": "api",
@@ -3411,6 +2798,31 @@
       "serves_ui": ["unified-trading-system-ui"],
       "notes": "Consolidated FastAPI gateway serving all domain data for the Unified Trading System UI.",
       "tags": ["gateway", "trading", "api"]
+    },
+    "unified-trading-system-ui": {
+      "type": "ui",
+      "arch_tier": "ui",
+      "ui_type": "trading",
+      "doc_standard": "ui-canonical",
+      "codex_sections": ["06-coding-standards"],
+      "version": "0.1.0",
+      "version_source": "package.json",
+      "dependencies": [],
+      "ci_status": "LOCAL_PASS",
+      "coverage_pct": "N/A",
+      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
+      "testing_level": "unit",
+      "skipped_gates": [],
+      "status": "active",
+      "github_url": "https://github.com/IggyIkenna/unified-trading-system-ui",
+      "completion_path": "cefi",
+      "semver_rules_ref": "ui",
+      "sit_level": "standard",
+      "semver_policy": "agent",
+      "tier": 3,
+      "role": "ui",
+      "notes": "Canonical Next.js trading UI. Legacy split UIs archived under workspace-root archive/.",
+      "tags": ["cross-domain", "trading", "standard"]
     }
   },
   "topologicalOrder": {
@@ -3508,16 +2920,10 @@
         "level": 9,
         "description": "Operational services + API gateways",
         "repos": [
-          "batch-audit-api",
           "client-reporting-api",
-          "execution-results-api",
           "market-data-api",
-          "ml-inference-api",
-          "ml-training-api",
           "position-balance-monitor-service",
-          "risk-and-exposure-service",
-          "trading-analytics-api",
-          "config-api"
+          "risk-and-exposure-service"
         ]
       },
       {
@@ -3526,30 +2932,13 @@
         "repos": [
           "batch-live-reconciliation-service",
           "deployment-api",
-          "deployment-service",
-          "unified-trading-ui-kit"
+          "deployment-service"
         ]
       },
       {
         "level": 11,
         "description": "UI applications",
-        "repos": [
-          "batch-audit-ui",
-          "client-reporting-ui",
-          "deployment-ui",
-          "execution-analytics-ui",
-          "live-health-monitor-ui",
-          "logs-dashboard-ui",
-          "ml-training-ui",
-          "onboarding-ui",
-          "settlement-ui",
-          "strategy-ui",
-          "trading-analytics-ui",
-          "unified-admin-ui",
-          "unified-trading-ui-auth",
-          "odum-research-website",
-          "user-management-ui"
-        ]
+        "repos": ["deployment-ui", "unified-trading-system-ui"]
       },
       {
         "level": 12,
@@ -3820,25 +3209,19 @@
         "alerting-service"
       ],
       "required_api_services": [
-        "execution-results-api",
-        "market-data-api",
-        "client-reporting-api"
+        "unified-trading-api",
+        "deployment-api",
+        "auth-api",
+        "client-reporting-api",
+        "market-data-api"
       ],
-      "required_uis": [
-        "trading-analytics-ui",
-        "live-health-monitor-ui",
-        "onboarding-ui",
-        "client-reporting-ui"
-      ],
+      "required_uis": ["unified-trading-system-ui", "deployment-ui"],
       "not_required": [
         "features-sports-service",
         "unified-sports-execution-interface",
         "features-onchain-service (optional DeFi)",
         "unified-defi-execution-interface (optional DeFi)",
-        "strategy-ui (optional)",
-        "settlement-ui (optional)",
-        "execution-analytics-ui (optional)",
-        "batch-audit-ui (optional)"
+        "Legacy split UIs, standalone APIs, npm UI-kit/workspace repos, experimental services, and scratch data trees — archived under workspace-root archive/ only (see archive/README.md). Not part of the active 1 UI + consolidated API surface."
       ]
     },
     "defi": {

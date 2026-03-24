@@ -71,3 +71,4 @@ export {
   type VolSmileLine,
   type VolSmilePoint,
 } from "./vol-surface-chart";
+export { CalendarEventFeed } from "./calendar-event-feed";

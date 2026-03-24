@@ -1,5 +1,5 @@
 /**
- * Service registry — defines the 9 platform services, their lifecycle stages,
+ * Service registry — defines the 10 platform services, their lifecycle stages,
  * entitlements, and routing.
  *
  * SSOT: CITADEL_VISION_2026_03_22.md § Service Architecture

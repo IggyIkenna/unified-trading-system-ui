@@ -57,7 +57,7 @@ class TestDimensionWeightedCompletion:
     def test_venue_completion_reflects_all_data_types(self, sample_venue_breakdown_uniswap):
         """Test that venue completion accounts for all expected data types.
 
-        Bug: UNISWAPV3-ETH showed 100% because liquidity had 30/30 dates,
+        Bug: UNISWAPV3-ETHEREUM showed 100% because liquidity had 30/30 dates,
         but swaps only had 2/30 dates. The union was 30 dates → 100%.
         Fix: venue completion = (30 + 2) / (30 + 30) = 53.3%
         """
@@ -136,14 +136,14 @@ class TestDimensionWeightedCompletion:
     def test_category_aggregation_uses_dimension_weighted_values(self):
         """Test that category completion uses dimension-weighted venue values."""
         venues = {
-            "UNISWAPV2-ETH": {
+            "UNISWAPV2-ETHEREUM": {
                 "dates_found": 30,  # Raw union (old)
                 "dates_expected_venue": 30,
                 "_dim_weighted_found": 60,  # Both data types complete
                 "_dim_weighted_expected": 60,
                 "is_expected": True,
             },
-            "UNISWAPV3-ETH": {
+            "UNISWAPV3-ETHEREUM": {
                 "dates_found": 30,  # Raw union (old)
                 "dates_expected_venue": 30,
                 "_dim_weighted_found": 32,  # liquidity=30, swaps=2

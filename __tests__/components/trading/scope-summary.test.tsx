@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
 import { ScopeSummary } from "@/components/trading/scope-summary";
+import { render, screen } from "@testing-library/react";
 
 describe("ScopeSummary", () => {
   const defaultProps = {
@@ -18,9 +18,9 @@ describe("ScopeSummary", () => {
     expect(container).toBeTruthy();
   });
 
-  it("shows All Strategies when no filters selected", () => {
+  it("shows total strategy count when no filters selected", () => {
     render(<ScopeSummary {...defaultProps} />);
-    expect(screen.getByText(/all strategies/i)).toBeInTheDocument();
+    expect(screen.getByText(/17 strategies/i)).toBeInTheDocument();
   });
 
   it("shows organization name when single org is selected", () => {

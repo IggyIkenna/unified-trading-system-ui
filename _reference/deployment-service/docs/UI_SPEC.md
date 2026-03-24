@@ -286,7 +286,7 @@ All dropdowns are validated against config files to prevent invalid selections.
    - Venues are filtered based on selected category
    - CEFI venues: BINANCE-SPOT, BINANCE-FUTURES, DERIBIT, BYBIT, OKX, UPBIT, COINBASE, HYPERLIQUID, ASTER
    - TRADFI venues: CME, CBOE, NASDAQ, NYSE, ICE
-   - DEFI venues: LIDO, ETHERFI, ETHENA, MORPHO-ETHEREUM, AAVE_V3_ETH, etc.
+   - DEFI venues: LIDO, ETHERFI, ETHENA, MORPHO-ETHEREUM, AAVEV3_ETHEREUM, etc.
 4. **The dropdown IS the building block for the CLI command** - selections build the command automatically
 
 ### Pre-Deploy Checklist Validation
@@ -1127,7 +1127,7 @@ New tab **"Data Status"** in the Monitor section, or as a dedicated top-level ta
 │ CEFI     │ DERIBIT       │ 2019-01-01 │ 2019-01-01 │ 100%     │ 0 days  ✓   │
 │ CEFI     │ COINBASE      │ 2017-01-01 │ 2020-03-15 │ 85.2%    │ 156 days ⚠️ │
 │ TRADFI   │ CME           │ 2020-01-01 │ 2020-01-01 │ 100%     │ 0 days  ✓   │
-│ DEFI     │ CURVE-ETH     │ 2020-08-01 │ 2023-05-15 │ 45.0%    │ 1034 days ❌│
+│ DEFI     │ CURVE-ETHEREUM     │ 2020-08-01 │ 2023-05-15 │ 45.0%    │ 1034 days ❌│
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1236,7 +1236,7 @@ New tab **"Service Status"** at the top level, showing all services at a glance.
 │                                                                             │
 │ 📊 Data Updated        2026-01-29 16:00 UTC   ← GCS file metadata           │
 │    └── CEFI/BINANCE-SPOT: 2026-01-29 (last file modified)                   │
-│    └── DEFI/CURVE-ETH: 2026-01-28 (1 day behind)                           │
+│    └── DEFI/CURVE-ETHEREUM: 2026-01-28 (1 day behind)                           │
 │                                                                             │
 │ 🚀 Deployment Run      2026-01-29 19:00 UTC   ← 3 hours AFTER data update   │
 │    └── ID: instruments-service-20260129-190000-a1b2c3                       │
@@ -1452,7 +1452,7 @@ GET /api/services/{service}/status
     "data_last_updated": "2026-01-29T16:00:00Z",
     "data_last_updated_by_venue": {
       "CEFI/BINANCE-SPOT": "2026-01-29T16:00:00Z",
-      "DEFI/CURVE-ETH": "2026-01-28T12:00:00Z"
+      "DEFI/CURVE-ETHEREUM": "2026-01-28T12:00:00Z"
     },
     "last_deployment_completed": "2026-01-29T19:00:00Z",
     "last_deployment_started": "2026-01-29T18:30:00Z",

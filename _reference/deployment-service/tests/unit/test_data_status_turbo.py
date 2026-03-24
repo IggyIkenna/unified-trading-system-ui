@@ -393,7 +393,7 @@ class TestDimensionWeightedCompletion:
     def test_venue_completion_reflects_all_data_types(self):
         """Test that venue completion accounts for all expected data types.
 
-        Bug: UNISWAPV3-ETH showed 100% because liquidity had 30/30 dates,
+        Bug: UNISWAPV3-ETHEREUM showed 100% because liquidity had 30/30 dates,
         but swaps only had 2/30 dates. The union was 30 dates → 100%.
         Fix: venue completion = (30 + 2) / (30 + 30) = 53.3%
         """
@@ -487,14 +487,14 @@ class TestDimensionWeightedCompletion:
     def test_category_aggregation_uses_dimension_weighted_values(self):
         """Test that category completion uses dimension-weighted venue values."""
         venues = {
-            "UNISWAPV2-ETH": {
+            "UNISWAPV2-ETHEREUM": {
                 "dates_found": 30,  # Raw union (old)
                 "dates_expected_venue": 30,
                 "_dim_weighted_found": 60,  # Both data types complete
                 "_dim_weighted_expected": 60,
                 "is_expected": True,
             },
-            "UNISWAPV3-ETH": {
+            "UNISWAPV3-ETHEREUM": {
                 "dates_found": 30,  # Raw union (old)
                 "dates_expected_venue": 30,
                 "_dim_weighted_found": 32,  # liquidity=30, swaps=2
@@ -1270,19 +1270,19 @@ class TestDefiVenueExtraction:
 
     def test_venue_is_directory_in_defi_structure(self):
         """Test that DEFI venues are directories, not in filenames."""
-        # DEFI path: .../data_type=liquidity/instrument_type=pool/venue=UNISWAPV2-ETH/file.parquet
-        sample_path = "raw_tick_data/by_date/day=2026-01-01/data_type=liquidity/instrument_type=pool/venue=UNISWAPV2-ETH/UNISWAPV2-ETH:POOL:DAI-USDC@ETHEREUM.parquet"
+        # DEFI path: .../data_type=liquidity/instrument_type=pool/venue=UNISWAPV2-ETHEREUM/file.parquet
+        sample_path = "raw_tick_data/by_date/day=2026-01-01/data_type=liquidity/instrument_type=pool/venue=UNISWAPV2-ETHEREUM/UNISWAPV2-ETHEREUM:POOL:DAI-USDC@ETHEREUM.parquet"
         parts = sample_path.split("/")
 
-        # Venue is in the 6th part (index 5): venue=UNISWAPV2-ETH
+        # Venue is in the 6th part (index 5): venue=UNISWAPV2-ETHEREUM
         venue_part = parts[5]
         assert venue_part.startswith("venue=")
-        assert venue_part.split("=", 1)[1] == "UNISWAPV2-ETH"
+        assert venue_part.split("=", 1)[1] == "UNISWAPV2-ETHEREUM"
 
     def test_venue_vs_underlying_detection(self):
         """Test distinguishing venues from underlyings in directory names.
 
-        Venues: UNISWAPV2-ETH, BINANCE-FUTURES, DERIBIT
+        Venues: UNISWAPV2-ETHEREUM, BINANCE-FUTURES, DERIBIT
         Underlyings: BTC-USD, ETH-USDT (short asset-quote pairs)
         """
 
@@ -1304,7 +1304,7 @@ class TestDefiVenueExtraction:
             return is_underlying
 
         # Test venues (should NOT be underlyings)
-        assert not is_underlying("UNISWAPV2-ETH")
+        assert not is_underlying("UNISWAPV2-ETHEREUM")
         assert not is_underlying("BINANCE-FUTURES")
         assert not is_underlying("DERIBIT")  # No dash
 
@@ -1327,13 +1327,13 @@ class TestDefiVenueExtraction:
         structure = {
             "data_type=liquidity/": {
                 "pool/": {
-                    "UNISWAPV2-ETH/": ["file1.parquet"],
-                    "UNISWAPV3-ETH/": ["file2.parquet"],
+                    "UNISWAPV2-ETHEREUM/": ["file1.parquet"],
+                    "UNISWAPV3-ETHEREUM/": ["file2.parquet"],
                 }
             },
             "data_type=swaps/": {
                 "pool/": {
-                    "UNISWAPV2-ETH/": ["file3.parquet"],
+                    "UNISWAPV2-ETHEREUM/": ["file3.parquet"],
                 }
             },
         }
@@ -1346,7 +1346,7 @@ class TestDefiVenueExtraction:
                     venue = l3.rstrip("/")
                     venues_found.add(venue)
 
-        assert venues_found == {"UNISWAPV2-ETH", "UNISWAPV3-ETH"}
+        assert venues_found == {"UNISWAPV2-ETHEREUM", "UNISWAPV3-ETHEREUM"}
 
 
 class TestExpectedMissingCalculation:

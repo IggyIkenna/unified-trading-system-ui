@@ -3,7 +3,7 @@
 Fast GCS Reorganization Script for DEFI - Parallel moves using gsutil.
 Moves files from flat structure to venue-based subfolders.
 
-DeFi venues: UNISWAPV2-ETH, UNISWAPV3-ETH, UNISWAPV4-ETH, AAVE_V3_ETH, MORPHO-ETHEREUM, LIDO, ETHERFI, ETHENA
+DeFi venues: UNISWAPV2-ETHEREUM, UNISWAPV3-ETHEREUM, UNISWAPV4-ETHEREUM, AAVEV3_ETHEREUM, MORPHO-ETHEREUM, LIDO, ETHERFI, ETHENA
 
 Usage: python reorganize_gcs_defi.py [--dry-run] [--workers 20] [--start-date 2023-05-23]
 """
@@ -27,10 +27,10 @@ BASE_PREFIX = "raw_tick_data/by_date"
 
 # Known DeFi venues (extracted from venues.yaml)
 DEFI_VENUES = [
-    "UNISWAPV2-ETH",
-    "UNISWAPV3-ETH",
-    "UNISWAPV4-ETH",
-    "AAVE_V3_ETH",
+    "UNISWAPV2-ETHEREUM",
+    "UNISWAPV3-ETHEREUM",
+    "UNISWAPV4-ETHEREUM",
+    "AAVEV3_ETHEREUM",
     "MORPHO-ETHEREUM",
     "LIDO",
     "ETHERFI",
@@ -66,8 +66,8 @@ def extract_venue_from_filename(filename):
     Extract venue from DeFi instrument_key.
 
     Examples:
-    - UNISWAPV2-ETH:POOL:USDC-USDT@ETHEREUM.parquet -> UNISWAPV2-ETH
-    - AAVE_V3_ETH:A_TOKEN:USDC@ETHEREUM.parquet -> AAVE_V3_ETH
+    - UNISWAPV2-ETHEREUM:POOL:USDC-USDT@ETHEREUM.parquet -> UNISWAPV2-ETHEREUM
+    - AAVEV3_ETHEREUM:A_TOKEN:USDC@ETHEREUM.parquet -> AAVEV3_ETHEREUM
     - LIDO:LST:stETH@ETHEREUM.parquet -> LIDO
     """
     base = filename.replace(".parquet", "")

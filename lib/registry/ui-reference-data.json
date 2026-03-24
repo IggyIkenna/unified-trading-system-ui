@@ -16,13 +16,14 @@
       "BYBIT-SPOT": "cefi",
       "BYBIT-FUTURES": "cefi",
       "COINBASE-SPOT": "cefi",
-      "HYPERLIQUID": "cefi",
       "DERIBIT": "cefi",
+      "HYPERLIQUID": "cefi",
       "ASTER": "cefi",
       "UPBIT": "cefi",
       "NASDAQ": "tradfi",
       "NYSE": "tradfi",
       "CME": "tradfi",
+      "CFE": "tradfi",
       "CBOT": "tradfi",
       "NYMEX": "tradfi",
       "COMEX": "tradfi",
@@ -30,227 +31,489 @@
       "CBOE": "tradfi",
       "XNAS": "tradfi",
       "XNYS": "tradfi",
-      "UNISWAPV2-ETH": "defi",
-      "UNISWAPV3-ETH": "defi",
-      "UNISWAPV4-ETH": "defi",
-      "CURVE-ETH": "defi",
+      "UNISWAPV2-ETHEREUM": "defi",
+      "UNISWAPV3-ETHEREUM": "defi",
+      "UNISWAPV4-ETHEREUM": "defi",
+      "CURVE-ETHEREUM": "defi",
+      "BALANCER-ETH": "defi",
       "AERODROME-BASE": "defi",
-      "AAVE_V3": "defi",
-      "AAVE_V3_ETH": "defi",
+      "AAVEV3-ETHEREUM": "defi",
       "MORPHO-ETHEREUM": "defi",
-      "EULER-PLASMA": "defi",
-      "FLUID-PLASMA": "defi",
-      "AAVE-PLASMA": "defi",
-      "LIDO": "defi",
-      "ETHERFI": "defi",
-      "ETHENA": "defi",
-      "HARDROCKBET": "sports",
-      "DRAFTKINGS": "sports",
-      "ONEXBET": "sports",
-      "FOOTYSTATS": "sports",
-      "TIPICO": "sports",
-      "REBET": "sports",
-      "MRGREEN": "sports",
-      "SOCCER_FOOTBALL_INFO": "sports",
-      "KALSHI": "sports",
-      "SHARPAPI": "sports",
-      "POLYMARKET": "sports",
-      "BETUS": "sports",
-      "BOVADA": "sports",
-      "MYBOOKIEAG": "sports",
-      "BET365": "sports",
-      "FLIFF": "sports",
-      "NORDICBET": "sports",
-      "BETRIGHT": "sports",
-      "CODERE": "sports",
-      "BETFAIR": "sports",
-      "MATCHBOOK": "sports",
-      "ODDSJAM": "sports",
-      "NEDS": "sports",
-      "VIRGINBET": "sports",
-      "PINNACLE": "sports",
-      "LEOVEGAS": "sports",
-      "NOVIG": "sports",
-      "BETSSON": "sports",
-      "SPORTSBET_AU": "sports",
-      "PROPHETX": "sports",
-      "TRANSFERMARKT": "sports",
-      "BETFRED": "sports",
-      "GROSVENOR": "sports",
-      "UNIBET": "sports",
-      "BETVICTOR": "sports",
-      "MARATHONBET": "sports",
-      "PARIONSSPORT": "sports",
-      "SVENSKASPEL": "sports",
-      "BETCLIC": "sports",
-      "SMARKETS": "sports",
-      "WILLIAMHILL": "sports",
-      "API_FOOTBALL": "sports",
+      "EULER-ETHEREUM": "defi",
+      "FLUID-ETHEREUM": "defi",
+      "LIDO-ETHEREUM": "defi",
+      "ETHERFI-ETHEREUM": "defi",
+      "ETHENA-ETHEREUM": "defi",
       "NETBET": "sports",
-      "SKYBET": "sports",
-      "BETR_DFS": "sports",
-      "BET888SPORT": "sports",
-      "CASUMO": "sports",
-      "FANDUEL": "sports",
-      "SUPRABETS": "sports",
-      "METABET": "sports",
-      "GTBETS": "sports",
-      "EVERYGAME": "sports",
-      "LOWVIG": "sports",
-      "UNDERDOG": "sports",
-      "OPTICODDS": "sports",
-      "SBOBET": "sports",
-      "BETOPENLY": "sports",
-      "DRAFTKINGS_PICK6": "sports",
-      "UNDERSTAT": "sports",
-      "ODDS_API": "sports",
-      "LIVESCOREBET": "sports",
-      "FANATICS": "sports",
-      "WINAMAX": "sports",
+      "SVENSKASPEL": "sports",
+      "GROSVENOR": "sports",
+      "TRANSFERMARKT": "sports",
+      "MATCHBOOK": "sports",
       "BETMGM": "sports",
-      "ATG": "sports",
-      "LADBROKES": "sports",
-      "BETWAY": "sports",
-      "OPEN_METEO": "sports",
-      "BWIN": "sports",
       "BETANYSPORTS": "sports",
-      "PRIZEPICKS": "sports",
-      "DABBLE": "sports",
-      "BETR_AU": "sports",
-      "BETRIVERS": "sports",
-      "TAB": "sports",
-      "PLAYUP": "sports",
-      "PMU": "sports",
-      "POINTSBET": "sports",
-      "ODDS_ENGINE": "sports",
-      "BETDAQ": "sports",
-      "PADDYPOWER": "sports",
-      "BETPARX": "sports",
-      "ESPNBET": "sports",
-      "BALLYBET": "sports",
+      "SUPRABETS": "sports",
       "TABTOUCH": "sports",
-      "BETONLINEAG": "sports",
-      "CORAL": "sports",
+      "BETWAY": "sports",
+      "BETOPENLY": "sports",
+      "ODDS_ENGINE": "sports",
       "COOLBET": "sports",
+      "BET888SPORT": "sports",
+      "BETSSON": "sports",
+      "FOOTYSTATS": "sports",
+      "MARATHONBET": "sports",
+      "ESPNBET": "sports",
+      "PMU": "sports",
+      "EVERYGAME": "sports",
+      "BETONLINEAG": "sports",
+      "PRIZEPICKS": "sports",
+      "SOCCER_FOOTBALL_INFO": "sports",
+      "PARIONSSPORT": "sports",
+      "VIRGINBET": "sports",
+      "ONEXBET": "sports",
+      "GTBETS": "sports",
+      "LIVESCOREBET": "sports",
+      "BETR_DFS": "sports",
+      "DRAFTKINGS": "sports",
+      "METABET": "sports",
+      "BETRIVERS": "sports",
+      "ODDS_API": "sports",
+      "POLYMARKET": "sports",
       "BOYLESPORTS": "sports",
-      "CAESARS": "sports"
+      "BETCLIC": "sports",
+      "BETFAIR": "sports",
+      "WILLIAMHILL": "sports",
+      "CASUMO": "sports",
+      "SBOBET": "sports",
+      "DRAFTKINGS_PICK6": "sports",
+      "TIPICO": "sports",
+      "BETVICTOR": "sports",
+      "BETFRED": "sports",
+      "BETR_AU": "sports",
+      "REBET": "sports",
+      "UNDERDOG": "sports",
+      "BETRIGHT": "sports",
+      "NOVIG": "sports",
+      "BALLYBET": "sports",
+      "UNIBET": "sports",
+      "UNDERSTAT": "sports",
+      "NORDICBET": "sports",
+      "FANATICS": "sports",
+      "SKYBET": "sports",
+      "API_FOOTBALL": "sports",
+      "BETDAQ": "sports",
+      "NEDS": "sports",
+      "MRGREEN": "sports",
+      "SMARKETS": "sports",
+      "HARDROCKBET": "sports",
+      "WINAMAX": "sports",
+      "OPTICODDS": "sports",
+      "MYBOOKIEAG": "sports",
+      "SHARPAPI": "sports",
+      "ODDSJAM": "sports",
+      "SPORTSBET_AU": "sports",
+      "BOVADA": "sports",
+      "BETPARX": "sports",
+      "CODERE": "sports",
+      "BET365": "sports",
+      "CORAL": "sports",
+      "ATG": "sports",
+      "LOWVIG": "sports",
+      "BWIN": "sports",
+      "POINTSBET": "sports",
+      "OPEN_METEO": "sports",
+      "PROPHETX": "sports",
+      "TAB": "sports",
+      "BETUS": "sports",
+      "LEOVEGAS": "sports",
+      "FANDUEL": "sports",
+      "CAESARS": "sports",
+      "PINNACLE": "sports",
+      "PADDYPOWER": "sports",
+      "LADBROKES": "sports",
+      "PLAYUP": "sports",
+      "KALSHI": "sports",
+      "DABBLE": "sports",
+      "FLIFF": "sports"
     },
     "instrument_types_by_venue": {
-      "BINANCE-SPOT": ["SPOT"],
-      "COINBASE-SPOT": ["SPOT"],
-      "OKX-SPOT": ["SPOT"],
-      "OKX-FUTURES": ["OPTION", "FUTURE", "PERPETUAL"],
-      "OKX": ["OPTION", "SPOT", "FUTURE", "PERPETUAL"],
-      "BYBIT-SPOT": ["SPOT"],
-      "BYBIT-FUTURES": ["PERPETUAL", "FUTURE"],
-      "BYBIT": ["SPOT", "FUTURE", "PERPETUAL"],
-      "UPBIT": ["SPOT"],
-      "BINANCE-FUTURES": ["PERPETUAL", "FUTURE"],
-      "DERIBIT": ["OPTION", "FUTURE", "PERPETUAL"],
-      "HYPERLIQUID": ["PERPETUAL"],
-      "ASTER": ["PERPETUAL"],
-      "NASDAQ": ["INDEX", "EQUITY", "ETF"],
-      "NYSE": ["INDEX", "EQUITY", "ETF"],
-      "CME": ["OPTION", "BOND", "FUTURE", "INDEX"],
-      "CBOT": ["OPTION", "BOND", "FUTURE"],
-      "NYMEX": ["OPTION", "COMMODITY", "FUTURE"],
-      "COMEX": ["OPTION", "COMMODITY", "FUTURE"],
-      "ICE": ["OPTION", "COMMODITY", "FUTURE"],
-      "CBOE": ["OPTION", "INDEX", "EQUITY", "ETF"],
-      "XNAS": ["EQUITY", "ETF"],
-      "XNYS": ["EQUITY", "ETF"],
-      "UNISWAPV2-ETH": ["POOL"],
-      "UNISWAPV3-ETH": ["POOL"],
-      "UNISWAPV4-ETH": ["POOL"],
-      "CURVE-ETH": ["POOL"],
-      "AERODROME-BASE": ["POOL"],
-      "AAVE_V3": ["LENDING"],
-      "AAVE_V3_ETH": ["LENDING"],
-      "MORPHO-ETHEREUM": ["LENDING"],
-      "EULER-PLASMA": ["LENDING"],
-      "FLUID-PLASMA": ["LENDING"],
-      "AAVE-PLASMA": ["LENDING"],
-      "LIDO": ["STAKING"],
-      "ETHERFI": ["STAKING"],
-      "ETHENA": ["STAKING"],
-      "BETFAIR": ["EXCHANGE_ODDS"],
-      "MATCHBOOK": ["EXCHANGE_ODDS"],
-      "BETDAQ": ["EXCHANGE_ODDS"],
-      "SMARKETS": ["EXCHANGE_ODDS"],
-      "PROPHETX": ["PREDICTION_MARKET"],
-      "BETOPENLY": ["PREDICTION_MARKET"],
-      "KALSHI": ["PREDICTION_MARKET"],
-      "NOVIG": ["PREDICTION_MARKET"],
-      "POLYMARKET": ["PREDICTION_MARKET"],
-      "PINNACLE": ["FIXED_ODDS"],
-      "ONEXBET": ["FIXED_ODDS"],
-      "EVERYGAME": ["FIXED_ODDS"],
-      "HARDROCKBET": ["FIXED_ODDS"],
-      "DRAFTKINGS": ["FIXED_ODDS"],
-      "TIPICO": ["FIXED_ODDS"],
-      "LOWVIG": ["FIXED_ODDS"],
-      "REBET": ["FIXED_ODDS"],
-      "MRGREEN": ["FIXED_ODDS"],
-      "SBOBET": ["FIXED_ODDS"],
-      "BETUS": ["FIXED_ODDS"],
-      "BOVADA": ["FIXED_ODDS"],
-      "MYBOOKIEAG": ["FIXED_ODDS"],
-      "BET365": ["FIXED_ODDS"],
-      "FLIFF": ["FIXED_ODDS"],
-      "NORDICBET": ["FIXED_ODDS"],
-      "LIVESCOREBET": ["FIXED_ODDS"],
-      "FANATICS": ["FIXED_ODDS"],
-      "WINAMAX": ["FIXED_ODDS"],
-      "BETMGM": ["FIXED_ODDS"],
-      "CODERE": ["FIXED_ODDS"],
-      "ATG": ["FIXED_ODDS"],
-      "BETRIGHT": ["FIXED_ODDS"],
-      "LADBROKES": ["FIXED_ODDS"],
-      "BETWAY": ["FIXED_ODDS"],
-      "NEDS": ["FIXED_ODDS"],
-      "VIRGINBET": ["FIXED_ODDS"],
-      "BWIN": ["FIXED_ODDS"],
-      "LEOVEGAS": ["FIXED_ODDS"],
-      "BETANYSPORTS": ["FIXED_ODDS"],
-      "BETSSON": ["FIXED_ODDS"],
-      "SPORTSBET_AU": ["FIXED_ODDS"],
-      "DABBLE": ["FIXED_ODDS"],
-      "BETR_AU": ["FIXED_ODDS"],
-      "BETRIVERS": ["FIXED_ODDS"],
-      "BETFRED": ["FIXED_ODDS"],
-      "GROSVENOR": ["FIXED_ODDS"],
-      "TAB": ["FIXED_ODDS"],
-      "UNIBET": ["FIXED_ODDS"],
-      "PLAYUP": ["FIXED_ODDS"],
-      "BETVICTOR": ["FIXED_ODDS"],
-      "PMU": ["FIXED_ODDS"],
-      "MARATHONBET": ["FIXED_ODDS"],
-      "PARIONSSPORT": ["FIXED_ODDS"],
-      "POINTSBET": ["FIXED_ODDS"],
-      "PADDYPOWER": ["FIXED_ODDS"],
-      "BETCLIC": ["FIXED_ODDS"],
-      "BETPARX": ["FIXED_ODDS"],
-      "SVENSKASPEL": ["FIXED_ODDS"],
-      "WILLIAMHILL": ["FIXED_ODDS"],
-      "NETBET": ["FIXED_ODDS"],
-      "ESPNBET": ["FIXED_ODDS"],
-      "BALLYBET": ["FIXED_ODDS"],
-      "SKYBET": ["FIXED_ODDS"],
-      "TABTOUCH": ["FIXED_ODDS"],
-      "BET888SPORT": ["FIXED_ODDS"],
-      "BETONLINEAG": ["FIXED_ODDS"],
-      "CORAL": ["FIXED_ODDS"],
-      "FANDUEL": ["FIXED_ODDS"],
-      "CASUMO": ["FIXED_ODDS"],
-      "COOLBET": ["FIXED_ODDS"],
-      "SUPRABETS": ["FIXED_ODDS"],
-      "BOYLESPORTS": ["FIXED_ODDS"],
-      "CAESARS": ["FIXED_ODDS"],
-      "GTBETS": ["FIXED_ODDS"],
-      "DRAFTKINGS_PICK6": ["PROP"],
-      "UNDERDOG": ["PROP"],
-      "BETR_DFS": ["PROP"],
-      "PRIZEPICKS": ["PROP"]
+      "BINANCE-SPOT": [
+        "SPOT"
+      ],
+      "COINBASE-SPOT": [
+        "SPOT"
+      ],
+      "OKX-SPOT": [
+        "SPOT"
+      ],
+      "OKX-FUTURES": [
+        "PERPETUAL",
+        "FUTURE",
+        "OPTION"
+      ],
+      "OKX": [
+        "PERPETUAL",
+        "FUTURE",
+        "OPTION",
+        "SPOT"
+      ],
+      "BYBIT-SPOT": [
+        "SPOT"
+      ],
+      "BYBIT-FUTURES": [
+        "PERPETUAL",
+        "FUTURE"
+      ],
+      "BYBIT": [
+        "PERPETUAL",
+        "FUTURE",
+        "SPOT"
+      ],
+      "UPBIT": [
+        "SPOT"
+      ],
+      "BINANCE-FUTURES": [
+        "PERPETUAL",
+        "FUTURE"
+      ],
+      "DERIBIT": [
+        "PERPETUAL",
+        "FUTURE",
+        "OPTION"
+      ],
+      "HYPERLIQUID": [
+        "PERPETUAL"
+      ],
+      "ASTER": [
+        "PERPETUAL"
+      ],
+      "NASDAQ": [
+        "EQUITY",
+        "ETF",
+        "INDEX"
+      ],
+      "NYSE": [
+        "EQUITY",
+        "ETF",
+        "INDEX"
+      ],
+      "CME": [
+        "BOND",
+        "INDEX",
+        "FUTURE",
+        "OPTION"
+      ],
+      "CFE": [
+        "INDEX",
+        "FUTURE",
+        "OPTION"
+      ],
+      "CBOT": [
+        "BOND",
+        "FUTURE",
+        "OPTION"
+      ],
+      "NYMEX": [
+        "COMMODITY",
+        "FUTURE",
+        "OPTION"
+      ],
+      "COMEX": [
+        "COMMODITY",
+        "FUTURE",
+        "OPTION"
+      ],
+      "ICE": [
+        "COMMODITY",
+        "FUTURE",
+        "OPTION"
+      ],
+      "CBOE": [
+        "EQUITY",
+        "ETF",
+        "INDEX",
+        "OPTION"
+      ],
+      "XNAS": [
+        "EQUITY",
+        "ETF"
+      ],
+      "XNYS": [
+        "EQUITY",
+        "ETF"
+      ],
+      "UNISWAPV2-ETHEREUM": [
+        "POOL"
+      ],
+      "UNISWAPV3-ETHEREUM": [
+        "POOL"
+      ],
+      "UNISWAPV4-ETHEREUM": [
+        "POOL"
+      ],
+      "CURVE-ETHEREUM": [
+        "POOL"
+      ],
+      "BALANCER-ETH": [
+        "POOL"
+      ],
+      "AERODROME-BASE": [
+        "POOL"
+      ],
+      "AAVEV3-ETHEREUM": [
+        "LENDING"
+      ],
+      "MORPHO-ETHEREUM": [
+        "LENDING"
+      ],
+      "EULER-ETHEREUM": [
+        "LENDING"
+      ],
+      "FLUID-ETHEREUM": [
+        "LENDING"
+      ],
+      "LIDO-ETHEREUM": [
+        "STAKING"
+      ],
+      "ETHERFI-ETHEREUM": [
+        "STAKING"
+      ],
+      "ETHENA-ETHEREUM": [
+        "STAKING"
+      ],
+      "BETDAQ": [
+        "EXCHANGE_ODDS"
+      ],
+      "SMARKETS": [
+        "EXCHANGE_ODDS"
+      ],
+      "BETFAIR": [
+        "EXCHANGE_ODDS"
+      ],
+      "MATCHBOOK": [
+        "EXCHANGE_ODDS"
+      ],
+      "POLYMARKET": [
+        "PREDICTION_MARKET"
+      ],
+      "KALSHI": [
+        "PREDICTION_MARKET"
+      ],
+      "BETOPENLY": [
+        "PREDICTION_MARKET"
+      ],
+      "NOVIG": [
+        "PREDICTION_MARKET"
+      ],
+      "PROPHETX": [
+        "PREDICTION_MARKET"
+      ],
+      "PINNACLE": [
+        "FIXED_ODDS"
+      ],
+      "ONEXBET": [
+        "FIXED_ODDS"
+      ],
+      "NETBET": [
+        "FIXED_ODDS"
+      ],
+      "SVENSKASPEL": [
+        "FIXED_ODDS"
+      ],
+      "BETR_AU": [
+        "FIXED_ODDS"
+      ],
+      "REBET": [
+        "FIXED_ODDS"
+      ],
+      "GROSVENOR": [
+        "FIXED_ODDS"
+      ],
+      "BETMGM": [
+        "FIXED_ODDS"
+      ],
+      "BETANYSPORTS": [
+        "FIXED_ODDS"
+      ],
+      "SUPRABETS": [
+        "FIXED_ODDS"
+      ],
+      "TABTOUCH": [
+        "FIXED_ODDS"
+      ],
+      "BETWAY": [
+        "FIXED_ODDS"
+      ],
+      "BETRIGHT": [
+        "FIXED_ODDS"
+      ],
+      "BALLYBET": [
+        "FIXED_ODDS"
+      ],
+      "UNIBET": [
+        "FIXED_ODDS"
+      ],
+      "NORDICBET": [
+        "FIXED_ODDS"
+      ],
+      "FANATICS": [
+        "FIXED_ODDS"
+      ],
+      "SKYBET": [
+        "FIXED_ODDS"
+      ],
+      "COOLBET": [
+        "FIXED_ODDS"
+      ],
+      "BET888SPORT": [
+        "FIXED_ODDS"
+      ],
+      "BETSSON": [
+        "FIXED_ODDS"
+      ],
+      "MARATHONBET": [
+        "FIXED_ODDS"
+      ],
+      "ESPNBET": [
+        "FIXED_ODDS"
+      ],
+      "PMU": [
+        "FIXED_ODDS"
+      ],
+      "EVERYGAME": [
+        "FIXED_ODDS"
+      ],
+      "MRGREEN": [
+        "FIXED_ODDS"
+      ],
+      "NEDS": [
+        "FIXED_ODDS"
+      ],
+      "BETONLINEAG": [
+        "FIXED_ODDS"
+      ],
+      "HARDROCKBET": [
+        "FIXED_ODDS"
+      ],
+      "WINAMAX": [
+        "FIXED_ODDS"
+      ],
+      "MYBOOKIEAG": [
+        "FIXED_ODDS"
+      ],
+      "PARIONSSPORT": [
+        "FIXED_ODDS"
+      ],
+      "SPORTSBET_AU": [
+        "FIXED_ODDS"
+      ],
+      "BOVADA": [
+        "FIXED_ODDS"
+      ],
+      "BETPARX": [
+        "FIXED_ODDS"
+      ],
+      "VIRGINBET": [
+        "FIXED_ODDS"
+      ],
+      "BET365": [
+        "FIXED_ODDS"
+      ],
+      "CORAL": [
+        "FIXED_ODDS"
+      ],
+      "TIPICO": [
+        "FIXED_ODDS"
+      ],
+      "LOWVIG": [
+        "FIXED_ODDS"
+      ],
+      "CODERE": [
+        "FIXED_ODDS"
+      ],
+      "BWIN": [
+        "FIXED_ODDS"
+      ],
+      "GTBETS": [
+        "FIXED_ODDS"
+      ],
+      "ATG": [
+        "FIXED_ODDS"
+      ],
+      "LIVESCOREBET": [
+        "FIXED_ODDS"
+      ],
+      "POINTSBET": [
+        "FIXED_ODDS"
+      ],
+      "TAB": [
+        "FIXED_ODDS"
+      ],
+      "DRAFTKINGS": [
+        "FIXED_ODDS"
+      ],
+      "BETUS": [
+        "FIXED_ODDS"
+      ],
+      "BETRIVERS": [
+        "FIXED_ODDS"
+      ],
+      "LEOVEGAS": [
+        "FIXED_ODDS"
+      ],
+      "FANDUEL": [
+        "FIXED_ODDS"
+      ],
+      "CAESARS": [
+        "FIXED_ODDS"
+      ],
+      "PADDYPOWER": [
+        "FIXED_ODDS"
+      ],
+      "BOYLESPORTS": [
+        "FIXED_ODDS"
+      ],
+      "BETCLIC": [
+        "FIXED_ODDS"
+      ],
+      "LADBROKES": [
+        "FIXED_ODDS"
+      ],
+      "WILLIAMHILL": [
+        "FIXED_ODDS"
+      ],
+      "CASUMO": [
+        "FIXED_ODDS"
+      ],
+      "SBOBET": [
+        "FIXED_ODDS"
+      ],
+      "DABBLE": [
+        "FIXED_ODDS"
+      ],
+      "PLAYUP": [
+        "FIXED_ODDS"
+      ],
+      "BETVICTOR": [
+        "FIXED_ODDS"
+      ],
+      "BETFRED": [
+        "FIXED_ODDS"
+      ],
+      "FLIFF": [
+        "FIXED_ODDS"
+      ],
+      "PRIZEPICKS": [
+        "PROP"
+      ],
+      "BETR_DFS": [
+        "PROP"
+      ],
+      "UNDERDOG": [
+        "PROP"
+      ],
+      "DRAFTKINGS_PICK6": [
+        "PROP"
+      ]
     },
     "instrument_type_folder_map": {
       "PERPETUAL": "perpetuals",
@@ -301,10 +564,11 @@
     ],
     "dex_venues": [
       "AERODROME-BASE",
-      "CURVE-ETH",
-      "UNISWAPV2-ETH",
-      "UNISWAPV3-ETH",
-      "UNISWAPV4-ETH"
+      "BALANCER-ETH",
+      "CURVE-ETHEREUM",
+      "UNISWAPV2-ETHEREUM",
+      "UNISWAPV3-ETHEREUM",
+      "UNISWAPV4-ETHEREUM"
     ],
     "sports_venues": [
       "API_FOOTBALL",
@@ -399,14 +663,12 @@
       "WINAMAX"
     ],
     "zero_alpha_venues": [
-      "AAVE-PLASMA",
-      "AAVE_V3",
-      "AAVE_V3_ETH",
-      "ETHENA",
-      "ETHERFI",
-      "EULER-PLASMA",
-      "FLUID-PLASMA",
-      "LIDO",
+      "AAVEV3-ETHEREUM",
+      "ETHENA-ETHEREUM",
+      "ETHERFI-ETHEREUM",
+      "EULER-ETHEREUM",
+      "FLUID-ETHEREUM",
+      "LIDO-ETHEREUM",
       "MORPHO-ETHEREUM"
     ],
     "endpoint_registry": {
@@ -500,1451 +762,1629 @@
         "access_mode": "rest_polling",
         "data_types": []
       },
-      "bitstamp": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "bitget": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "kucoin": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "mexc": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "huobi": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "dydx": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "odds_api": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "api_football": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "betfair": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "pinnacle": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "ibkr": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "streaming_websocket",
-        "data_types": []
-      },
-      "upbit": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "defillama": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "open_meteo": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      },
-      "coingecko": {
-        "base_url": null,
-        "ws_url": null,
-        "access_mode": "rest_polling",
-        "data_types": []
-      }
-    }
-  },
-  "uac_enums": {
-    "OrderSide": ["buy", "sell"],
-    "OrderType": [
-      "market",
-      "limit",
-      "stop",
-      "stop_limit",
-      "trailing_stop",
-      "twap",
-      "vwap"
-    ],
-    "OrderStatus": [
-      "pending",
-      "open",
-      "partially_filled",
-      "filled",
-      "cancelled",
-      "rejected",
-      "expired"
-    ],
-    "TimeInForce": ["GTC", "IOC", "FOK", "GTD", "POST_ONLY"],
-    "ExecutionStatus": [
-      "pending",
-      "submitted",
-      "partial",
-      "completed",
-      "failed",
-      "cancelled",
-      "timeout"
-    ],
-    "OperationType": [
-      "BUY",
-      "SELL",
-      "SWAP",
-      "LEND",
-      "BORROW",
-      "REPAY",
-      "WITHDRAW",
-      "DEPOSIT",
-      "REBALANCE",
-      "ADD_LIQUIDITY",
-      "REMOVE_LIQUIDITY",
-      "COLLECT_FEES"
-    ],
-    "InstrumentType": [
-      "SPOT_PAIR",
-      "PERPETUAL",
-      "PERP",
-      "FUTURE",
-      "OPTION",
-      "LST",
-      "A_TOKEN",
-      "INDEX",
-      "BOND",
-      "EQUITY",
-      "ETF",
-      "COMMODITY",
-      "CURRENCY",
-      "CDS",
-      "SPOT_ASSET",
-      "YIELD_BEARING",
-      "DEBT_TOKEN",
-      "POOL",
-      "LENDING",
-      "STAKING",
-      "PREDICTION_MARKET",
-      "EXCHANGE_ODDS",
-      "FIXED_ODDS",
-      "PROP"
-    ],
-    "InstructionType": [
-      "TRADE",
-      "SWAP",
-      "ZERO_ALPHA",
-      "PREDICTION_BET",
-      "SPORTS_BET",
-      "SPORTS_EXCHANGE_ORDER",
-      "FUTURES_ROLL",
-      "OPTIONS_COMBO",
-      "ADD_LIQUIDITY",
-      "REMOVE_LIQUIDITY",
-      "COLLECT_FEES"
-    ],
-    "MarketState": [
-      "normal",
-      "halted",
-      "auction",
-      "pre_market",
-      "post_market",
-      "closed"
-    ],
-    "Sport": [
-      "FOOTBALL",
-      "BASKETBALL",
-      "BASEBALL",
-      "HOCKEY",
-      "TENNIS",
-      "CRICKET",
-      "RUGBY",
-      "GOLF",
-      "MMA",
-      "BOXING",
-      "MOTORSPORT",
-      "AMERICAN_FOOTBALL",
-      "HANDBALL",
-      "VOLLEYBALL",
-      "TABLE_TENNIS",
-      "DARTS",
-      "SNOOKER",
-      "ESPORTS",
-      "SOCCER"
-    ],
-    "OddsFormat": ["decimal", "american", "fractional"],
-    "OddsType": [
-      "h2h",
-      "over_under",
-      "asian_handicap",
-      "both_teams_score",
-      "correct_score",
-      "outright",
-      "half_time_result",
-      "first_half_over_under",
-      "corners",
-      "cards",
-      "player_props",
-      "draw_no_bet",
-      "double_chance",
-      "goal_scorer"
-    ],
-    "BetStatus": [
-      "pending",
-      "placed",
-      "partially_matched",
-      "matched",
-      "settled_win",
-      "settled_loss",
-      "settled_void",
-      "cancelled",
-      "rejected"
-    ],
-    "BetSide": ["back", "lay"],
-    "OptionType": ["call", "put"],
-    "FeeType": ["maker", "taker", "other"],
-    "CloudProvider": ["gcp", "aws"],
-    "ComputeTarget": ["cloud_service", "cloud_job", "vm"],
-    "ScalingMode": ["always_on", "auto_scale", "scale_to_zero", "manual"],
-    "VenueCategory": ["exchange", "bookmaker_api", "scraper"],
-    "AlternativeDataType": [
-      "sentiment",
-      "satellite",
-      "options_flow",
-      "dark_pool",
-      "social_media",
-      "news_flow",
-      "web_traffic",
-      "blockchain_metrics",
-      "insider_transactions"
-    ],
-    "RiskType": [
-      "delta",
-      "vega",
-      "theta",
-      "rho",
-      "funding",
-      "basis",
-      "carry",
-      "fx",
-      "liquidity",
-      "gamma",
-      "volga",
-      "vanna",
-      "slide",
-      "duration",
-      "convexity",
-      "spread",
-      "concentration",
-      "venue_protocol",
-      "correlation",
-      "edge_decay",
-      "market_suspension",
-      "protocol_risk",
-      "impermanent_loss"
-    ],
-    "RiskCategory": [
-      "first_order",
-      "second_order",
-      "structural",
-      "operational",
-      "domain_specific"
-    ],
-    "SignalSource": ["arbitrage", "ml_model"],
-    "BookmakerCategory": [
-      "exchange",
-      "bookmaker_api",
-      "aggregator",
-      "streaming_api",
-      "scraper"
-    ],
-    "MatchPeriod": [
-      "pre_match",
-      "1H",
-      "HT",
-      "2H",
-      "ET1",
-      "ET2",
-      "PEN",
-      "FT",
-      "abandoned",
-      "postponed"
-    ],
-    "OutcomeType": ["home", "draw", "away", "over", "under", "yes", "no"],
-    "MarketStatus": ["active", "suspended", "closed", "settled"],
-    "PredictionMarketCategory": [
-      "politics",
-      "financial",
-      "sports",
-      "crypto",
-      "weather",
-      "entertainment",
-      "other"
-    ]
-  },
-  "uic_enums": {
-    "AlertType": [
-      "PRE_TRADE_REJECTION",
-      "RISK_WARNING",
-      "RISK_CRITICAL",
-      "EXPOSURE_BREACH",
-      "MARGIN_WARNING",
-      "LIQUIDATION_RISK",
-      "DRAWDOWN_LIMIT",
-      "CONCENTRATION_LIMIT"
-    ],
-    "AssetClass": ["crypto", "equity", "fx", "commodity", "fixed_income"],
-    "BenchmarkType": ["ORACLE", "TWAP", "ARRIVAL", "VWAP", "CLOSE"],
-    "BookType": ["L0_TOB", "L1_MBP", "L2_MBP", "AMM", "ALPHA_ZERO"],
-    "CloudProvider": ["gcp", "aws", "local"],
-    "ComputeType": ["cloud_run", "vm", "batch", "ec2"],
-    "CorrelationRegime": ["low", "normal", "high", "crisis"],
-    "CustomRiskEvaluationMethod": [
-      "rate_sensitivity",
-      "scenario_pnl",
-      "threshold_breach"
-    ],
-    "DataMode": ["mock", "real"],
-    "DataSourceConstraint": ["DATABENTO_ONLY", "ANY"],
-    "DataType": [
-      "trades",
-      "book_snapshot_5",
-      "derivative_ticker",
-      "liquidations",
-      "ohlcv_1m",
-      "ohlcv_15m",
-      "ohlcv_24h",
-      "tbbo",
-      "swaps",
-      "rate_indices",
-      "oracle_prices",
-      "options_chain",
-      "futures_chain",
-      "sports_arbitrage",
-      "sports_odds_snapshot",
-      "sports_odds_movement"
-    ],
-    "DeploymentStatus": [
-      "pending",
-      "running",
-      "completed",
-      "failed",
-      "cancelled",
-      "timed_out"
-    ],
-    "DurationBucket": ["overnight", "1w", "1m", "3m", "6m", "1y", "2y+"],
-    "EmergencyExitType": [
-      "market_close",
-      "atomic_unwind",
-      "deleverage_sequence",
-      "delta_hedge",
-      "stop_new_only",
-      "hedge_cross_venue",
-      "fast_unwind",
-      "slow_unwind",
-      "hybrid_unwind"
-    ],
-    "EnvironmentMode": ["dev", "development", "staging", "prod", "production"],
-    "ErrorCategory": [
-      "rate_limit",
-      "authentication",
-      "authorization",
-      "not_found",
-      "validation",
-      "validation_error",
-      "timeout",
-      "network",
-      "server_error",
-      "data_quality",
-      "dependency",
-      "unknown",
-      "infrastructure",
-      "application",
-      "data",
-      "execution",
-      "compliance",
-      "configuration"
-    ],
-    "ErrorRecoveryStrategy": [
-      "retry",
-      "retry_with_backoff",
-      "fallback",
-      "fail_fast",
-      "skip",
-      "alert",
-      "dead_letter"
-    ],
-    "ErrorSeverity": ["low", "medium", "high", "critical"],
-    "EventSeverity": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-    "ExecutionMode": ["AGGRESSIVE", "PASSIVE", "NEUTRAL", "TWAP", "VWAP"],
-    "ExecutionOrderType": [
-      "MARKET",
-      "LIMIT",
-      "STOP_LIMIT",
-      "STOP_MARKET",
-      "TWAP",
-      "VWAP"
-    ],
-    "ExecutionPositionSide": ["LONG", "SHORT", "NEUTRAL"],
-    "ExecutionPositionType": [
-      "SPOT",
-      "SPOT_ASSET",
-      "PERPETUAL",
-      "FUTURE",
-      "A_TOKEN",
-      "DEBT_TOKEN",
-      "LST",
-      "YIELD_BEARING",
-      "LP_POSITION",
-      "POOL"
-    ],
-    "FactorType": [
-      "momentum",
-      "value",
-      "quality",
-      "size",
-      "volatility",
-      "carry",
-      "liquidity",
-      "macro",
-      "crypto_beta",
-      "defi_yield",
-      "sentiment",
-      "technical"
-    ],
-    "FeeType": ["exchange", "prime_broker", "clearing"],
-    "GasCostAction": [
-      "SWAP",
-      "SUPPLY",
-      "BORROW",
-      "STAKE",
-      "UNSTAKE",
-      "WITHDRAW",
-      "REPAY",
-      "LIQUIDATE"
-    ],
-    "InstructionType": [
-      "TRADE",
-      "SWAP",
-      "ZERO_ALPHA",
-      "OPTIONS_COMBO",
-      "FUTURES_ROLL",
-      "PREDICTION_BET",
-      "SPORTS_BET",
-      "SPORTS_EXCHANGE"
-    ],
-    "InstrumentOverrideAction": ["inject", "expire", "delist"],
-    "InstrumentStatus": ["active", "halted", "expired", "delisted"],
-    "InstrumentType": ["spot", "perp", "futures", "option"],
-    "InternalPubSubTopic": [
-      "fill-events-{venue}",
-      "order-requests",
-      "execution-results",
-      "position-updates",
-      "positions",
-      "risk-alerts",
-      "margin-warnings",
-      "market-ticks",
-      "order-book-updates",
-      "derivative-tickers",
-      "liquidations",
-      "feature-updates",
-      "strategy-signals",
-      "ml-predictions",
-      "service-lifecycle-events",
-      "health-alerts",
-      "circuit-breaker-events",
-      "aggregated-positions",
-      "portfolio-views",
-      "risk-group-updates",
-      "eod-settlement"
-    ],
-    "LegStatus": [
-      "PENDING",
-      "SUBMITTED",
-      "PARTIALLY_FILLED",
-      "FILLED",
-      "CANCELLED",
-      "FAILED"
-    ],
-    "LifecycleEventType": [
-      "STARTED",
-      "VALIDATION_STARTED",
-      "VALIDATION_COMPLETED",
-      "DATA_INGESTION_STARTED",
-      "DATA_INGESTION_COMPLETED",
-      "PROCESSING_STARTED",
-      "PROCESSING_COMPLETED",
-      "STOPPED",
-      "FAILED",
-      "DATA_BROADCAST",
-      "PERSISTENCE_STARTED",
-      "PERSISTENCE_COMPLETED",
-      "AUTH_SUCCESS",
-      "AUTH_FAILURE",
-      "CONFIG_CHANGED",
-      "SECRET_ACCESSED",
-      "DATA_READY",
-      "PREDICTIONS_READY",
-      "STRATEGY_SIGNALS_READY",
-      "QG_PASSED",
-      "QG_FAILED",
-      "DEPLOYMENT_STARTED",
-      "DEPLOYMENT_COMPLETED",
-      "DEPLOYMENT_FAILED",
-      "DEPLOYMENT_ROLLED_BACK",
-      "WORKFLOW_TRIGGERED",
-      "VERSION_BUMPED",
-      "CASCADE_DISPATCHED",
-      "SIT_STARTED",
-      "SIT_PASSED",
-      "SIT_FAILED",
-      "SERVICE_ERROR",
-      "ADAPTER_FETCH_FAILED",
-      "CIRCUIT_OPEN",
-      "CIRCUIT_HALF_OPEN",
-      "CIRCUIT_CLOSED",
-      "DEAD_LETTERED",
-      "AGENT_INVESTIGATION_TRIGGERED",
-      "AGENT_INVESTIGATION_COMPLETED",
-      "AGENT_FIX_APPLIED",
-      "AGENT_FIX_FAILED"
-    ],
-    "LogLevel": ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-    "ManualExecutionMode": ["execute", "record_only"],
-    "MarginType": ["linear", "inverse", "quanto"],
-    "MarketCategory": ["CEFI", "TRADFI", "DEFI", "SPORTS", "PREDICTION"],
-    "MarketState": [
-      "normal",
-      "halted",
-      "auction",
-      "pre_market",
-      "post_market",
-      "closed"
-    ],
-    "MatchingFeeType": ["asymmetric", "symmetric", "pool", "lending", "none"],
-    "MessagingScope": ["in_process", "same_vm", "cross_vm"],
-    "MessagingTopic": [
-      "fill-events-{venue}",
-      "order-requests",
-      "execution-results",
-      "position-updates",
-      "positions",
-      "risk-alerts",
-      "margin-warnings",
-      "market-ticks",
-      "order-book-updates",
-      "derivative-tickers",
-      "liquidations",
-      "feature-updates",
-      "strategy-signals",
-      "ml-predictions",
-      "service-lifecycle-events",
-      "health-alerts",
-      "circuit-breaker-events"
-    ],
-    "MockScenario": [
-      "default",
-      "stress",
-      "empty",
-      "normal",
-      "heavy",
-      "light",
-      "big_ranges",
-      "bust",
-      "no_system_overload",
-      "missing_data",
-      "delayed_data",
-      "bad_schema",
-      "error_storm",
-      "flash_crash",
-      "high_latency"
-    ],
-    "ModelType": [
-      "lightgbm",
-      "xgboost",
-      "random_forest",
-      "neural_net",
-      "linear",
-      "ensemble",
-      "catboost",
-      "huber",
-      "poisson_glm",
-      "ridge"
-    ],
-    "MultiLegExecutionMode": ["SEQUENTIAL", "LEADER_FOLLOWER", "PARALLEL"],
-    "OHLCVSource": ["NATIVE_CANDLE", "COMPUTED_FROM_TICKS"],
-    "OperationType": [
-      "LEND",
-      "BORROW",
-      "WITHDRAW",
-      "REPAY",
-      "STAKE",
-      "UNSTAKE",
-      "SWAP",
-      "TRADE",
-      "TRANSFER",
-      "FLASH_BORROW",
-      "FLASH_REPAY",
-      "ADD_LIQUIDITY",
-      "REMOVE_LIQUIDITY",
-      "COLLECT_FEES",
-      "BET",
-      "CANCEL_BET",
-      "SPORTS_EXCHANGE",
-      "OPTIONS_COMBO",
-      "FUTURES_ROLL",
-      "PREDICTION_BET",
-      "SPORTS_BET",
-      "SPORTS_EXCHANGE_ORDER"
-    ],
-    "OperationalMode": ["live", "manual", "backtest", "paper"],
-    "OptionType": ["call", "put"],
-    "OrderType": ["LIMIT", "IOC", "FOK", "MAX_SLIPPAGE", "MARKET"],
-    "Permission": [
-      "trade:view",
-      "trade:execute",
-      "trade:cancel",
-      "position:view",
-      "position:close",
-      "market_data:view",
-      "market_data:subscribe",
-      "deploy:view",
-      "deploy:trigger",
-      "deploy:rollback",
-      "config:view",
-      "config:edit",
-      "user:view",
-      "user:manage",
-      "user:role_assign",
-      "audit:view",
-      "audit:export",
-      "risk:view",
-      "risk:override",
-      "system:health_view",
-      "system:admin"
-    ],
-    "PhaseMode": ["phase1", "phase2", "phase3"],
-    "PositionSide": ["LONG", "SHORT", "FLAT", "NEUTRAL"],
-    "PredictionMarketUseCase": [
-      "binary_outcome",
-      "multi_outcome",
-      "conditional"
-    ],
-    "ReconciliationAction": ["accept", "reject", "investigate"],
-    "RegimeState": [
-      "HIGH_VOL_TRENDING",
-      "LOW_VOL_MEAN_REVERTING",
-      "CRISIS",
-      "TRENDING",
-      "MEAN_REVERTING",
-      "VOLATILE",
-      "UNKNOWN"
-    ],
-    "RiskAggregationLevel": [
-      "company",
-      "client",
-      "account",
-      "strategy",
-      "underlying",
-      "instrument"
-    ],
-    "RiskStatus": ["OK", "WARNING", "CRITICAL"],
-    "RuntimeMode": ["live", "batch"],
-    "ServiceExecutionStatus": [
-      "PENDING",
-      "VALIDATED",
-      "SUBMITTED",
-      "COMPLETED_SUCCESS",
-      "COMPLETED_FAILED",
-      "COMPLETED_PARTIAL",
-      "REVERTED",
-      "TIMEOUT",
-      "CANCELLED",
-      "REJECTED",
-      "REJECTED_MARKET_HALTED",
-      "REJECTED_AUCTION_ONLY",
-      "REJECTED_CIRCUIT_BREAKER"
-    ],
-    "ServiceMode": ["batch", "live"],
-    "SettlementType": [
-      "funding_8h",
-      "funding_continuous",
-      "seasonal_weekly",
-      "aave_index",
-      "staking_yield",
-      "lst_yield",
-      "transaction_fee",
-      "gas_rebate",
-      "liquidation",
-      "lp_fee",
-      "flash_loan_fee"
-    ],
-    "StrategyType": [
-      "MOMENTUM",
-      "MEAN_REVERSION",
-      "TREND_FOLLOWING",
-      "BASIS_TRADE",
-      "STAT_ARB",
-      "CROSS_VENUE_ARB",
-      "YIELD_OPTIMIZATION",
-      "DEX_ARB",
-      "FLASH_LOAN_ARB",
-      "LIQUIDITY_PROVISION",
-      "MARKET_MAKING",
-      "SPORTS_VALUE_BET",
-      "SPORTS_ML",
-      "SPORTS_ARB",
-      "SPORTS_HALFTIME_ML",
-      "PREDICTION_ARB"
-    ],
-    "StressScenarioType": [
-      "GFC_2008",
-      "COVID_2020",
-      "CRYPTO_BLACK_THURSDAY_2020"
-    ],
-    "TargetType": [
-      "direction",
-      "return",
-      "volatility",
-      "regime",
-      "spread",
-      "signal",
-      "swing_high",
-      "swing_low",
-      "cross_venue_spread",
-      "clv",
-      "xg",
-      "ht_delta",
-      "clv_meta",
-      "xg_meta"
-    ],
-    "TestingStage": [
-      "MOCK",
-      "HISTORICAL",
-      "LIVE_MOCK",
-      "LIVE_TESTNET",
-      "STAGING",
-      "LIVE_REAL"
-    ],
-    "TestnetMode": ["mainnet", "testnet"],
-    "Timeframe": [
-      "15s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "4h",
-      "24h",
-      "1d"
-    ],
-    "TrainingPhase": [
-      "feature_selection",
-      "hyperparameter_tuning",
-      "base_results",
-      "meta_learning",
-      "meta_results",
-      "cross_pipeline"
-    ],
-    "TriggerEventType": [
-      "FEATURE_UPDATE",
-      "ODDS_CHANGE",
-      "PRICE_CROSS",
-      "VOLATILITY_REGIME_CHANGE",
-      "RISK_ALERT",
-      "POSITION_UPDATE",
-      "ML_PREDICTION",
-      "MARKET_TICK",
-      "CUSTOM"
-    ],
-    "UrgencyLevel": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
-    "UserRole": ["viewer", "operator", "admin", "super_admin"],
-    "VMEventType": [
-      "VM_PREEMPTED",
-      "VM_DELETED",
-      "VM_QUOTA_EXHAUSTED",
-      "VM_ZONE_UNAVAILABLE",
-      "VM_TIMEOUT",
-      "CONTAINER_OOM",
-      "CLOUD_RUN_REVISION_FAILED",
-      "JOB_RETRY",
-      "JOB_STARTED",
-      "JOB_COMPLETED",
-      "JOB_FAILED",
-      "JOB_CANCELLED",
-      "LIVE_HEALTH_CHECK_PASSED",
-      "LIVE_HEALTH_CHECK_FAILED",
-      "LIVE_ROLLBACK_EXECUTED"
-    ],
-    "VaRMethod": [
-      "historical",
-      "parametric",
-      "monte_carlo",
-      "filtered_historical"
-    ],
-    "VenueCategory": ["cefi", "tradfi", "defi", "onchain_perps"]
-  },
-  "config_schemas": {
-    "UnifiedCloudConfig": {
-      "source": "unified-config-interface",
-      "fields": {
-        "service_name": {
-          "type": "<class 'str'>",
-          "default": "'base-service'",
-          "required": false
-        },
-        "project_id": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "environment": {
-          "type": "<class 'str'>",
-          "default": "'development'",
-          "required": false
-        },
-        "tardis_base_url": {
-          "type": "<class 'str'>",
-          "default": "'https://api.tardis.dev/v1'",
-          "required": false
-        },
-        "tardis_datasets_url": {
-          "type": "<class 'str'>",
-          "default": "'https://datasets.tardis.dev/v1'",
-          "required": false
-        },
-        "tardis_timeout": {
-          "type": "<class 'int'>",
-          "default": "30",
-          "required": false
-        },
-        "tardis_max_retries": {
-          "type": "<class 'int'>",
-          "default": "3",
-          "required": false
-        },
-        "databento_timeout": {
-          "type": "<class 'int'>",
-          "default": "60",
-          "required": false
-        },
-        "thegraph_gateway_url": {
-          "type": "<class 'str'>",
-          "default": "'https://gateway.thegraph.com/api'",
-          "required": false
-        },
-        "thegraph_studio_url": {
-          "type": "<class 'str'>",
-          "default": "'https://api.studio.thegraph.com/query'",
-          "required": false
-        },
-        "thegraph_timeout": {
-          "type": "<class 'int'>",
-          "default": "30",
-          "required": false
-        },
-        "alchemy_default_chain": {
-          "type": "<class 'str'>",
-          "default": "'ETHEREUM'",
-          "required": false
-        },
-        "alchemy_timeout": {
-          "type": "<class 'int'>",
-          "default": "30",
-          "required": false
-        },
-        "enable_csv_sampling": {
-          "type": "<class 'bool'>",
-          "default": "False",
-          "required": false
-        },
-        "csv_sample_size": {
-          "type": "<class 'int'>",
-          "default": "20000",
-          "required": false
-        },
-        "csv_sample_dir": {
-          "type": "<class 'str'>",
-          "default": "'data/samples'",
-          "required": false
-        },
-        "cloud_provider": {
-          "type": "<class 'str'>",
-          "default": "'gcp'",
-          "required": false
-        },
-        "cloud_mock_mode": {
-          "type": "<class 'bool'>",
-          "default": "False",
-          "required": false
-        },
-        "fork_mode": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "testnet_mode": {
-          "type": "<class 'bool'>",
-          "default": "False",
-          "required": false
-        },
-        "defi_rpc_url": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "data_mode": {
-          "type": "<class 'str'>",
-          "default": "'real'",
-          "required": false
-        },
-        "runtime_mode": {
-          "type": "<class 'str'>",
-          "default": "'live'",
-          "required": false
-        },
-        "phase_mode": {
-          "type": "<class 'str'>",
-          "default": "'phase3'",
-          "required": false
-        },
-        "testing_stage": {
-          "type": "<class 'str'>",
-          "default": "'MOCK'",
-          "required": false
-        },
-        "enabled_categories": {
-          "type": "list[str]",
-          "default": "['CEFI', 'TRADFI', 'DEFI']",
-          "required": false
-        },
-        "otel_exporter_otlp_endpoint": {
-          "type": "<class 'str'>",
-          "default": "'http://localhost:4317'",
-          "required": false
-        },
-        "disable_auth": {
-          "type": "<class 'bool'>",
-          "default": "False",
-          "required": false
-        },
-        "api_key": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "secrets_cloud_provider": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "storage_cloud_provider": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "gcp_project_id": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "google_application_credentials_path": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "gcs_region": {
-          "type": "<class 'str'>",
-          "default": "'us-central1'",
-          "required": false
-        },
-        "gcs_location": {
-          "type": "<class 'str'>",
-          "default": "'US'",
-          "required": false
-        },
-        "aws_account_id": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "aws_region": {
-          "type": "<class 'str'>",
-          "default": "'us-east-1'",
-          "required": false
-        },
-        "aws_profile": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "instruments_s3_bucket_cefi": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "instruments_s3_bucket_tradfi": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "instruments_s3_bucket_defi": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "market_data_s3_bucket_cefi": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "market_data_s3_bucket_tradfi": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "market_data_s3_bucket_defi": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "features_s3_bucket": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "execution_s3_bucket": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "ml_models_s3_bucket": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "athena_database": {
-          "type": "<class 'str'>",
-          "default": "'default'",
-          "required": false
-        },
-        "athena_workgroup": {
-          "type": "<class 'str'>",
-          "default": "'primary'",
-          "required": false
-        },
-        "athena_output_location": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "gcs_bucket": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "instruments_gcs_bucket": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "instruments_bigquery_dataset": {
-          "type": "<class 'str'>",
-          "default": "'instruments'",
-          "required": false
-        },
-        "market_data_gcs_bucket": {
-          "type": "<class 'str'>",
-          "default": "'market-data-tick'",
-          "required": false
-        },
-        "market_data_bigquery_dataset": {
-          "type": "<class 'str'>",
-          "default": "'market_tick_data'",
-          "required": false
-        },
-        "features_gcs_bucket": {
-          "type": "<class 'str'>",
-          "default": "'features-data'",
-          "required": false
-        },
-        "execution_gcs_bucket": {
-          "type": "<class 'str'>",
-          "default": "''",
-          "required": false
-        },
-        "execution_bigquery_dataset": {
-          "type": "<class 'str'>",
-          "default": "'execution'",
-          "required": false
-        },
-        "market_data_gcs_bucket_test": {
-          "type": "<class 'str'>",
-          "default": "'market-data-tick-test'",
-          "required": false
-        },
-        "bigquery_dataset": {
-          "type": "<class 'str'>",
-          "default": "'market_data'",
-          "required": false
-        },
-        "bigquery_location": {
-          "type": "<class 'str'>",
-          "default": "'US'",
-          "required": false
-        },
-        "tardis_api_key": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "databento_api_key": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "the_graph_api_key": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "alchemy_api_key": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "aavescan_api_key": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "use_secret_manager": {
-          "type": "<class 'bool'>",
-          "default": "True",
-          "required": false
-        },
-        "tardis_secret_name": {
-          "type": "<class 'str'>",
-          "default": "'tardis-api-key'",
-          "required": false
-        },
-        "tardis_full_secret_name": {
-          "type": "<class 'str'>",
-          "default": "'tardis-api-key-full'",
-          "required": false
-        },
-        "databento_secret_name": {
-          "type": "<class 'str'>",
-          "default": "'databento-api-key'",
-          "required": false
-        },
-        "thegraph_secret_name": {
-          "type": "<class 'str'>",
-          "default": "'thegraph-api-key'",
-          "required": false
-        },
-        "alchemy_secret_name": {
-          "type": "<class 'str'>",
-          "default": "'alchemy-api-key'",
-          "required": false
-        },
-        "aavescan_secret_name": {
-          "type": "<class 'str'>",
-          "default": "'aavescan-api-key'",
-          "required": false
-        },
-        "ibkr_gateway_host": {
-          "type": "<class 'str'>",
-          "default": "'127.0.0.1'",
-          "required": false
-        },
-        "ibkr_gateway_port": {
-          "type": "<class 'int'>",
-          "default": "4001",
-          "required": false
-        },
-        "ibkr_client_id_base": {
-          "type": "<class 'int'>",
-          "default": "1",
-          "required": false
-        },
-        "ibkr_credentials_secret_name": {
-          "type": "<class 'str'>",
-          "default": "'ibkr-account-credentials'",
-          "required": false
-        },
-        "service_auth_token": {
-          "type": "str | None",
-          "default": null,
-          "required": false
-        },
-        "log_level": {
-          "type": "<class 'str'>",
-          "default": "'INFO'",
-          "required": false
-        },
-        "enable_debug": {
-          "type": "<class 'bool'>",
-          "default": "False",
-          "required": false
-        },
-        "testing_mode": {
-          "type": "<class 'bool'>",
-          "default": "False",
-          "required": false
-        }
-      }
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "validation_constants": {
-      "valid_algorithms": [
-        "TWAP",
-        "VWAP",
-        "ICEBERG",
-        "ADAPTIVE_TWAP",
-        "ALMGREN_CHRISS",
-        "POV_DYNAMIC",
-        "HYBRID_OPTIMAL",
-        "PASSIVE_AGGRESSIVE_HYBRID",
-        "SMART_ORDER_ROUTER",
-        "SOR_TWAP",
-        "SWAP_TWAP",
-        "MAX_SLIPPAGE",
-        "BENCHMARK_FILL"
-      ],
-      "valid_categories": ["cefi", "tradfi", "defi"],
-      "valid_modes": ["SCE", "HUF"],
-      "valid_timeframes": ["1M", "5M", "15M", "30M", "1H", "4H", "8H", "24H"],
-      "valid_book_types": [
-        "L1_MBP",
-        "L2_MBP",
-        "AMM",
-        "LENDING_POOL",
-        "STAKING_POOL"
-      ],
-      "valid_instruction_types": [
-        "TRADE",
-        "SWAP",
-        "LEND",
-        "BORROW",
-        "STAKE",
-        "UNSTAKE",
-        "TRANSFER",
-        "WITHDRAW",
-        "REPAY"
-      ]
-    }
-  },
-  "operational_modes": {
-    "mode_axes": {
-      "ui_data": {
-        "env_var": "VITE_MOCK_API",
-        "mock_value": "true",
-        "real_value": "false",
-        "controls": "Client-side mock data vs API calls"
-      },
-      "ui_auth": {
-        "env_var": "VITE_SKIP_AUTH",
-        "mock_value": "true",
-        "real_value": "false",
-        "controls": "OAuth login requirement"
-      },
-      "api_data": {
-        "env_var": "CLOUD_MOCK_MODE",
-        "mock_value": "true",
-        "real_value": "false",
-        "controls": "Sample data vs real cloud"
-      },
-      "api_auth": {
-        "env_var": "DISABLE_AUTH",
-        "mock_value": "true",
-        "real_value": "unset",
-        "controls": "Token validation"
-      },
-      "mock_state": {
-        "env_var": "MOCK_STATE_MODE",
-        "mock_value": "interactive",
-        "real_value": "deterministic",
-        "controls": "Stateful vs stateless mock"
-      }
+    "bitget": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "presets": {
-      "ci": "CI smoke tests, deterministic, no cache persistence",
-      "mock": "Local dev/UAT (default), interactive state, persists to .local-dev-cache/",
-      "api-real": "Test APIs against real cloud data",
-      "real": "Staging-like, needs credentials + OAuth"
+    "kucoin": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "testing_stages": [
-      "MOCK",
-      "HISTORICAL",
-      "LIVE_MOCK",
-      "LIVE_TESTNET",
-      "STAGING",
-      "LIVE_REAL"
-    ],
-    "runtime_modes": ["LIVE", "BATCH"],
-    "cloud_providers": ["GCP", "AWS", "LOCAL"]
-  },
-  "service_port_registry": {
-    "deployment": {
-      "ui": "deployment-ui",
-      "ui_port": 5183,
-      "api": "deployment-api",
-      "api_port": 8004,
-      "api_module": "deployment_api"
+    "mexc": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "onboarding": {
-      "ui": "onboarding-ui",
-      "ui_port": 5173,
-      "api": "config-api",
-      "api_port": 8005,
-      "api_module": "config_api"
+    "huobi": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "execution-analytics": {
-      "ui": "execution-analytics-ui",
-      "ui_port": 5174,
-      "api": "execution-results-api",
-      "api_port": 8006,
-      "api_module": "execution_results_api"
+    "dydx": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "strategy": {
-      "ui": "strategy-ui",
-      "ui_port": 5175,
-      "api": "execution-results-api",
-      "api_port": 8006,
-      "api_module": "execution_results_api",
-      "$note": "Strategy UI fetches /api/strategies/* from execution-results-api. Backtest runs use a separate local Python process (port 5001), not an API service."
+    "odds_api": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "settlement": {
-      "ui": "settlement-ui",
-      "ui_port": 5176,
-      "api": "trading-analytics-api",
-      "api_port": 8012,
-      "api_module": "trading_analytics_api",
-      "$note": "Settlement routes live in trading-analytics-api (/settlement/* and /settlements/*). No separate settlement-api needed."
+    "api_football": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "live-health-monitor": {
-      "ui": "live-health-monitor-ui",
-      "ui_port": 5177,
-      "api": "execution-results-api",
-      "api_port": 8006,
-      "api_module": "execution_results_api",
-      "$note": "Live health monitor calls /api/positions, /api/risk, /api/health from execution-results-api. Manual trade instructions route to execution-service directly (VITE_EXECUTION_API_URL)."
+    "betfair": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "logs-dashboard": {
-      "ui": "logs-dashboard-ui",
-      "ui_port": 5178,
-      "api": "batch-audit-api",
-      "api_port": 8013,
-      "api_module": "batch_audit_api",
-      "$note": "Logs dashboard calls /api/v1/audit/trail and /audit/trail/services from batch-audit-api. Manifest confirms batch-audit-api serves_ui includes logs-dashboard-ui."
+    "pinnacle": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "ml-training": {
-      "ui": "ml-training-ui",
-      "ui_port": 5179,
-      "api": "ml-training-api",
-      "api_port": 8011,
-      "api_module": "ml_training_api"
+    "ibkr": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "streaming_websocket",
+      "data_types": []
     },
-    "trading-analytics": {
-      "ui": "trading-analytics-ui",
-      "ui_port": 5180,
-      "api": "trading-analytics-api",
-      "api_port": 8012,
-      "api_module": "trading_analytics_api"
+    "upbit": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "batch-audit": {
-      "ui": "batch-audit-ui",
-      "ui_port": 5181,
-      "api": "batch-audit-api",
-      "api_port": 8013,
-      "api_module": "batch_audit_api"
+    "defillama": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "client-reporting": {
-      "ui": "client-reporting-ui",
-      "ui_port": 5182,
-      "api": "client-reporting-api",
-      "api_port": 8014,
-      "api_module": "client_reporting_api"
+    "open_meteo": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     },
-    "ml-inference": {
-      "ui": null,
-      "ui_port": null,
-      "api": "ml-inference-api",
-      "api_port": 8015,
-      "api_module": "ml_inference_api"
-    },
-    "market-data": {
-      "ui": null,
-      "ui_port": null,
-      "api": "market-data-api",
-      "api_port": 8016,
-      "api_module": "market_data_api"
-    },
-    "odum-website": {
-      "ui": "odum-research-website",
-      "ui_port": 3000,
-      "api": null,
-      "api_port": null,
-      "api_module": null,
-      "$note": "Self-contained Next.js app with built-in API routes (Firebase Auth + Firestore). No separate API service. Uses port 3000 (Next.js default) instead of 5184 to match Next.js convention."
-    },
-    "user-management": {
-      "ui": "user-management-ui",
-      "ui_port": 5184,
-      "api": null,
-      "api_port": 8017,
-      "api_module": null,
-      "$note": "Admin UI for user lifecycle management (onboard/modify/offboard). OAuth admin auth. Mock mode uses client-side fetch intercepts. Backend API TBD \u2014 currently calls external APIs (GitHub, Slack, MS Graph, GCP) via mock layer."
-    },
-    "unified-trading": {
-      "ui": "unified-trading-system-ui",
-      "ui_port": 5174,
-      "api": "unified-trading-api",
-      "api_port": 8030,
-      "api_module": "unified_trading_api",
-      "$note": "Consolidated API gateway replacing 9 separate domain data APIs. 61 endpoints across 16 domains. WebSocket at /ws. Will eventually replace execution-analytics, trading-analytics, batch-audit, ml-training, ml-inference, client-reporting, market-data, config stacks."
-    },
-    "auth": {
-      "ui": null,
-      "ui_port": null,
-      "api": "auth-api",
-      "api_port": 8200,
-      "api_module": "auth_api",
-      "$note": "Authentication service \u2014 JWT issuance, persona resolution, OAuth token exchange. No dedicated UI; auth flows handled by each UI's login page."
+    "coingecko": {
+      "base_url": null,
+      "ws_url": null,
+      "access_mode": "rest_polling",
+      "data_types": []
     }
   }
+},
+"uac_enums": {
+  "OrderSide": [
+    "buy",
+    "sell"
+  ],
+  "OrderType": [
+    "market",
+    "limit",
+    "stop",
+    "stop_limit",
+    "trailing_stop",
+    "twap",
+    "vwap"
+  ],
+  "OrderStatus": [
+    "pending",
+    "open",
+    "partially_filled",
+    "filled",
+    "cancelled",
+    "rejected",
+    "expired"
+  ],
+  "TimeInForce": [
+    "GTC",
+    "IOC",
+    "FOK",
+    "GTD",
+    "POST_ONLY"
+  ],
+  "ExecutionStatus": [
+    "pending",
+    "submitted",
+    "partial",
+    "completed",
+    "failed",
+    "cancelled",
+    "timeout"
+  ],
+  "OperationType": [
+    "BUY",
+    "SELL",
+    "SWAP",
+    "LEND",
+    "BORROW",
+    "REPAY",
+    "WITHDRAW",
+    "DEPOSIT",
+    "REBALANCE",
+    "ADD_LIQUIDITY",
+    "REMOVE_LIQUIDITY",
+    "COLLECT_FEES"
+  ],
+  "InstrumentType": [
+    "SPOT_PAIR",
+    "PERPETUAL",
+    "PERP",
+    "FUTURE",
+    "OPTION",
+    "LST",
+    "A_TOKEN",
+    "INDEX",
+    "BOND",
+    "EQUITY",
+    "ETF",
+    "COMMODITY",
+    "CURRENCY",
+    "CDS",
+    "SPOT_ASSET",
+    "YIELD_BEARING",
+    "DEBT_TOKEN",
+    "POOL",
+    "LENDING",
+    "STAKING",
+    "PREDICTION_MARKET",
+    "EXCHANGE_ODDS",
+    "FIXED_ODDS",
+    "PROP"
+  ],
+  "InstructionType": [
+    "TRADE",
+    "SWAP",
+    "ZERO_ALPHA",
+    "PREDICTION_BET",
+    "SPORTS_BET",
+    "SPORTS_EXCHANGE_ORDER",
+    "FUTURES_ROLL",
+    "OPTIONS_COMBO",
+    "ADD_LIQUIDITY",
+    "REMOVE_LIQUIDITY",
+    "COLLECT_FEES"
+  ],
+  "MarketState": [
+    "normal",
+    "halted",
+    "auction",
+    "pre_market",
+    "post_market",
+    "closed"
+  ],
+  "Sport": [
+    "FOOTBALL",
+    "BASKETBALL",
+    "BASEBALL",
+    "HOCKEY",
+    "TENNIS",
+    "CRICKET",
+    "RUGBY",
+    "GOLF",
+    "MMA",
+    "BOXING",
+    "MOTORSPORT",
+    "AMERICAN_FOOTBALL",
+    "HANDBALL",
+    "VOLLEYBALL",
+    "TABLE_TENNIS",
+    "DARTS",
+    "SNOOKER",
+    "ESPORTS",
+    "SOCCER"
+  ],
+  "OddsFormat": [
+    "decimal",
+    "american",
+    "fractional"
+  ],
+  "OddsType": [
+    "h2h",
+    "over_under",
+    "asian_handicap",
+    "both_teams_score",
+    "correct_score",
+    "outright",
+    "half_time_result",
+    "first_half_over_under",
+    "corners",
+    "cards",
+    "player_props",
+    "draw_no_bet",
+    "double_chance",
+    "goal_scorer"
+  ],
+  "BetStatus": [
+    "pending",
+    "placed",
+    "partially_matched",
+    "matched",
+    "settled_win",
+    "settled_loss",
+    "settled_void",
+    "cancelled",
+    "rejected"
+  ],
+  "BetSide": [
+    "back",
+    "lay"
+  ],
+  "OptionType": [
+    "call",
+    "put"
+  ],
+  "FeeType": [
+    "maker",
+    "taker",
+    "other"
+  ],
+  "CloudProvider": [
+    "gcp",
+    "aws"
+  ],
+  "ComputeTarget": [
+    "cloud_service",
+    "cloud_job",
+    "vm"
+  ],
+  "ScalingMode": [
+    "always_on",
+    "auto_scale",
+    "scale_to_zero",
+    "manual"
+  ],
+  "VenueCategory": [
+    "exchange",
+    "bookmaker_api",
+    "scraper"
+  ],
+  "AlternativeDataType": [
+    "sentiment",
+    "satellite",
+    "options_flow",
+    "dark_pool",
+    "social_media",
+    "news_flow",
+    "web_traffic",
+    "blockchain_metrics",
+    "insider_transactions"
+  ],
+  "RiskType": [
+    "delta",
+    "vega",
+    "theta",
+    "rho",
+    "funding",
+    "basis",
+    "carry",
+    "fx",
+    "liquidity",
+    "gamma",
+    "volga",
+    "vanna",
+    "slide",
+    "duration",
+    "convexity",
+    "spread",
+    "concentration",
+    "venue_protocol",
+    "correlation",
+    "edge_decay",
+    "market_suspension",
+    "protocol_risk",
+    "impermanent_loss"
+  ],
+  "RiskCategory": [
+    "first_order",
+    "second_order",
+    "structural",
+    "operational",
+    "domain_specific"
+  ],
+  "SignalSource": [
+    "arbitrage",
+    "ml_model"
+  ],
+  "BookmakerCategory": [
+    "exchange",
+    "bookmaker_api",
+    "aggregator",
+    "streaming_api",
+    "scraper"
+  ],
+  "MatchPeriod": [
+    "pre_match",
+    "1H",
+    "HT",
+    "2H",
+    "ET1",
+    "ET2",
+    "PEN",
+    "FT",
+    "abandoned",
+    "postponed"
+  ],
+  "OutcomeType": [
+    "home",
+    "draw",
+    "away",
+    "over",
+    "under",
+    "yes",
+    "no"
+  ],
+  "MarketStatus": [
+    "active",
+    "suspended",
+    "closed",
+    "settled"
+  ],
+  "PredictionMarketCategory": [
+    "politics",
+    "financial",
+    "sports",
+    "crypto",
+    "weather",
+    "entertainment",
+    "other"
+  ]
+},
+"uic_enums": {
+  "AlertType": [
+    "PRE_TRADE_REJECTION",
+    "RISK_WARNING",
+    "RISK_CRITICAL",
+    "EXPOSURE_BREACH",
+    "MARGIN_WARNING",
+    "LIQUIDATION_RISK",
+    "DRAWDOWN_LIMIT",
+    "CONCENTRATION_LIMIT"
+  ],
+  "AssetClass": [
+    "crypto",
+    "equity",
+    "fx",
+    "commodity",
+    "fixed_income"
+  ],
+  "BenchmarkType": [
+    "ORACLE",
+    "TWAP",
+    "ARRIVAL",
+    "VWAP",
+    "CLOSE"
+  ],
+  "BookType": [
+    "L0_TOB",
+    "L1_MBP",
+    "L2_MBP",
+    "AMM",
+    "ALPHA_ZERO"
+  ],
+  "CloudProvider": [
+    "gcp",
+    "aws",
+    "local"
+  ],
+  "ComputeType": [
+    "cloud_run",
+    "vm",
+    "batch",
+    "ec2"
+  ],
+  "CorrelationRegime": [
+    "low",
+    "normal",
+    "high",
+    "crisis"
+  ],
+  "CustomRiskEvaluationMethod": [
+    "rate_sensitivity",
+    "scenario_pnl",
+    "threshold_breach"
+  ],
+  "DataMode": [
+    "mock",
+    "real"
+  ],
+  "DataSourceConstraint": [
+    "DATABENTO_ONLY",
+    "ANY"
+  ],
+  "DataType": [
+    "trades",
+    "book_snapshot_5",
+    "derivative_ticker",
+    "liquidations",
+    "ohlcv_1m",
+    "ohlcv_15m",
+    "ohlcv_24h",
+    "tbbo",
+    "swaps",
+    "rate_indices",
+    "oracle_prices",
+    "options_chain",
+    "futures_chain",
+    "sports_arbitrage",
+    "sports_odds_snapshot",
+    "sports_odds_movement"
+  ],
+  "DeploymentStatus": [
+    "pending",
+    "running",
+    "completed",
+    "failed",
+    "cancelled",
+    "timed_out"
+  ],
+  "DurationBucket": [
+    "overnight",
+    "1w",
+    "1m",
+    "3m",
+    "6m",
+    "1y",
+    "2y+"
+  ],
+  "EmergencyExitType": [
+    "market_close",
+    "atomic_unwind",
+    "deleverage_sequence",
+    "delta_hedge",
+    "stop_new_only",
+    "hedge_cross_venue",
+    "fast_unwind",
+    "slow_unwind",
+    "hybrid_unwind"
+  ],
+  "EnvironmentMode": [
+    "dev",
+    "development",
+    "staging",
+    "prod",
+    "production"
+  ],
+  "ErrorCategory": [
+    "rate_limit",
+    "authentication",
+    "authorization",
+    "not_found",
+    "validation",
+    "validation_error",
+    "timeout",
+    "network",
+    "server_error",
+    "data_quality",
+    "dependency",
+    "unknown",
+    "infrastructure",
+    "application",
+    "data",
+    "execution",
+    "compliance",
+    "configuration"
+  ],
+  "ErrorRecoveryStrategy": [
+    "retry",
+    "retry_with_backoff",
+    "fallback",
+    "fail_fast",
+    "skip",
+    "alert",
+    "dead_letter"
+  ],
+  "ErrorSeverity": [
+    "low",
+    "medium",
+    "high",
+    "critical"
+  ],
+  "EventSeverity": [
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "ERROR",
+    "CRITICAL"
+  ],
+  "ExecutionMode": [
+    "AGGRESSIVE",
+    "PASSIVE",
+    "NEUTRAL",
+    "TWAP",
+    "VWAP"
+  ],
+  "ExecutionOrderType": [
+    "MARKET",
+    "LIMIT",
+    "STOP_LIMIT",
+    "STOP_MARKET",
+    "TWAP",
+    "VWAP"
+  ],
+  "ExecutionPositionSide": [
+    "LONG",
+    "SHORT",
+    "NEUTRAL"
+  ],
+  "ExecutionPositionType": [
+    "SPOT",
+    "SPOT_ASSET",
+    "PERPETUAL",
+    "FUTURE",
+    "A_TOKEN",
+    "DEBT_TOKEN",
+    "LST",
+    "YIELD_BEARING",
+    "LP_POSITION",
+    "POOL"
+  ],
+  "FactorType": [
+    "momentum",
+    "value",
+    "quality",
+    "size",
+    "volatility",
+    "carry",
+    "liquidity",
+    "macro",
+    "crypto_beta",
+    "defi_yield",
+    "sentiment",
+    "technical"
+  ],
+  "FeeType": [
+    "exchange",
+    "prime_broker",
+    "clearing"
+  ],
+  "GasCostAction": [
+    "SWAP",
+    "SUPPLY",
+    "BORROW",
+    "STAKE",
+    "UNSTAKE",
+    "WITHDRAW",
+    "REPAY",
+    "LIQUIDATE"
+  ],
+  "InstructionType": [
+    "TRADE",
+    "SWAP",
+    "ZERO_ALPHA",
+    "OPTIONS_COMBO",
+    "FUTURES_ROLL",
+    "PREDICTION_BET",
+    "SPORTS_BET",
+    "SPORTS_EXCHANGE"
+  ],
+  "InstrumentOverrideAction": [
+    "inject",
+    "expire",
+    "delist"
+  ],
+  "InstrumentStatus": [
+    "active",
+    "halted",
+    "expired",
+    "delisted"
+  ],
+  "InstrumentType": [
+    "spot",
+    "perp",
+    "futures",
+    "option"
+  ],
+  "InternalPubSubTopic": [
+    "fill-events-{venue}",
+    "order-requests",
+    "execution-results",
+    "position-updates",
+    "positions",
+    "risk-alerts",
+    "margin-warnings",
+    "market-ticks",
+    "order-book-updates",
+    "derivative-tickers",
+    "liquidations",
+    "feature-updates",
+    "strategy-signals",
+    "ml-predictions",
+    "service-lifecycle-events",
+    "health-alerts",
+    "circuit-breaker-events",
+    "aggregated-positions",
+    "portfolio-views",
+    "risk-group-updates",
+    "eod-settlement"
+  ],
+  "LegStatus": [
+    "PENDING",
+    "SUBMITTED",
+    "PARTIALLY_FILLED",
+    "FILLED",
+    "CANCELLED",
+    "FAILED"
+  ],
+  "LifecycleEventType": [
+    "STARTED",
+    "VALIDATION_STARTED",
+    "VALIDATION_COMPLETED",
+    "DATA_INGESTION_STARTED",
+    "DATA_INGESTION_COMPLETED",
+    "PROCESSING_STARTED",
+    "PROCESSING_COMPLETED",
+    "STOPPED",
+    "FAILED",
+    "DATA_BROADCAST",
+    "PERSISTENCE_STARTED",
+    "PERSISTENCE_COMPLETED",
+    "AUTH_SUCCESS",
+    "AUTH_FAILURE",
+    "CONFIG_CHANGED",
+    "SECRET_ACCESSED",
+    "DATA_READY",
+    "PREDICTIONS_READY",
+    "STRATEGY_SIGNALS_READY",
+    "QG_PASSED",
+    "QG_FAILED",
+    "DEPLOYMENT_STARTED",
+    "DEPLOYMENT_COMPLETED",
+    "DEPLOYMENT_FAILED",
+    "DEPLOYMENT_ROLLED_BACK",
+    "WORKFLOW_TRIGGERED",
+    "VERSION_BUMPED",
+    "CASCADE_DISPATCHED",
+    "SIT_STARTED",
+    "SIT_PASSED",
+    "SIT_FAILED",
+    "SERVICE_ERROR",
+    "ADAPTER_FETCH_FAILED",
+    "CIRCUIT_OPEN",
+    "CIRCUIT_HALF_OPEN",
+    "CIRCUIT_CLOSED",
+    "DEAD_LETTERED",
+    "AGENT_INVESTIGATION_TRIGGERED",
+    "AGENT_INVESTIGATION_COMPLETED",
+    "AGENT_FIX_APPLIED",
+    "AGENT_FIX_FAILED"
+  ],
+  "LogLevel": [
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "ERROR",
+    "CRITICAL"
+  ],
+  "ManualExecutionMode": [
+    "execute",
+    "record_only"
+  ],
+  "MarginType": [
+    "linear",
+    "inverse",
+    "quanto"
+  ],
+  "MarketCategory": [
+    "CEFI",
+    "TRADFI",
+    "DEFI",
+    "SPORTS",
+    "PREDICTION"
+  ],
+  "MarketState": [
+    "normal",
+    "halted",
+    "auction",
+    "pre_market",
+    "post_market",
+    "closed"
+  ],
+  "MatchingFeeType": [
+    "asymmetric",
+    "symmetric",
+    "pool",
+    "lending",
+    "none"
+  ],
+  "MessagingScope": [
+    "in_process",
+    "same_vm",
+    "cross_vm"
+  ],
+  "MessagingTopic": [
+    "fill-events-{venue}",
+    "order-requests",
+    "execution-results",
+    "position-updates",
+    "positions",
+    "risk-alerts",
+    "margin-warnings",
+    "market-ticks",
+    "order-book-updates",
+    "derivative-tickers",
+    "liquidations",
+    "feature-updates",
+    "strategy-signals",
+    "ml-predictions",
+    "service-lifecycle-events",
+    "health-alerts",
+    "circuit-breaker-events"
+  ],
+  "MockScenario": [
+    "default",
+    "stress",
+    "empty",
+    "normal",
+    "heavy",
+    "light",
+    "big_ranges",
+    "bust",
+    "no_system_overload",
+    "missing_data",
+    "delayed_data",
+    "bad_schema",
+    "error_storm",
+    "flash_crash",
+    "high_latency"
+  ],
+  "ModelType": [
+    "lightgbm",
+    "xgboost",
+    "random_forest",
+    "neural_net",
+    "linear",
+    "ensemble",
+    "catboost",
+    "huber",
+    "poisson_glm",
+    "ridge"
+  ],
+  "MultiLegExecutionMode": [
+    "SEQUENTIAL",
+    "LEADER_FOLLOWER",
+    "PARALLEL"
+  ],
+  "OHLCVSource": [
+    "NATIVE_CANDLE",
+    "COMPUTED_FROM_TICKS"
+  ],
+  "OperationType": [
+    "LEND",
+    "BORROW",
+    "WITHDRAW",
+    "REPAY",
+    "STAKE",
+    "UNSTAKE",
+    "SWAP",
+    "TRADE",
+    "TRANSFER",
+    "FLASH_BORROW",
+    "FLASH_REPAY",
+    "ADD_LIQUIDITY",
+    "REMOVE_LIQUIDITY",
+    "COLLECT_FEES",
+    "BET",
+    "CANCEL_BET",
+    "SPORTS_EXCHANGE",
+    "OPTIONS_COMBO",
+    "FUTURES_ROLL",
+    "PREDICTION_BET",
+    "SPORTS_BET",
+    "SPORTS_EXCHANGE_ORDER"
+  ],
+  "OperationalMode": [
+    "live",
+    "manual",
+    "backtest",
+    "paper"
+  ],
+  "OptionType": [
+    "call",
+    "put"
+  ],
+  "OrderType": [
+    "LIMIT",
+    "IOC",
+    "FOK",
+    "MAX_SLIPPAGE",
+    "MARKET"
+  ],
+  "Permission": [
+    "trade:view",
+    "trade:execute",
+    "trade:cancel",
+    "position:view",
+    "position:close",
+    "market_data:view",
+    "market_data:subscribe",
+    "deploy:view",
+    "deploy:trigger",
+    "deploy:rollback",
+    "config:view",
+    "config:edit",
+    "user:view",
+    "user:manage",
+    "user:role_assign",
+    "audit:view",
+    "audit:export",
+    "risk:view",
+    "risk:override",
+    "system:health_view",
+    "system:admin"
+  ],
+  "PhaseMode": [
+    "phase1",
+    "phase2",
+    "phase3"
+  ],
+  "PositionSide": [
+    "LONG",
+    "SHORT",
+    "FLAT",
+    "NEUTRAL"
+  ],
+  "PredictionMarketUseCase": [
+    "binary_outcome",
+    "multi_outcome",
+    "conditional"
+  ],
+  "ReconciliationAction": [
+    "accept",
+    "reject",
+    "investigate"
+  ],
+  "RegimeState": [
+    "HIGH_VOL_TRENDING",
+    "LOW_VOL_MEAN_REVERTING",
+    "CRISIS",
+    "TRENDING",
+    "MEAN_REVERTING",
+    "VOLATILE",
+    "UNKNOWN"
+  ],
+  "RiskAggregationLevel": [
+    "company",
+    "client",
+    "account",
+    "strategy",
+    "underlying",
+    "instrument"
+  ],
+  "RiskStatus": [
+    "OK",
+    "WARNING",
+    "CRITICAL"
+  ],
+  "RuntimeMode": [
+    "live",
+    "batch"
+  ],
+  "ServiceExecutionStatus": [
+    "PENDING",
+    "VALIDATED",
+    "SUBMITTED",
+    "COMPLETED_SUCCESS",
+    "COMPLETED_FAILED",
+    "COMPLETED_PARTIAL",
+    "REVERTED",
+    "TIMEOUT",
+    "CANCELLED",
+    "REJECTED",
+    "REJECTED_MARKET_HALTED",
+    "REJECTED_AUCTION_ONLY",
+    "REJECTED_CIRCUIT_BREAKER"
+  ],
+  "ServiceMode": [
+    "batch",
+    "live"
+  ],
+  "SettlementType": [
+    "funding_8h",
+    "funding_continuous",
+    "seasonal_weekly",
+    "aave_index",
+    "staking_yield",
+    "lst_yield",
+    "transaction_fee",
+    "gas_rebate",
+    "liquidation",
+    "lp_fee",
+    "flash_loan_fee"
+  ],
+  "StrategyType": [
+    "MOMENTUM",
+    "MEAN_REVERSION",
+    "TREND_FOLLOWING",
+    "BASIS_TRADE",
+    "STAT_ARB",
+    "CROSS_VENUE_ARB",
+    "YIELD_OPTIMIZATION",
+    "DEX_ARB",
+    "FLASH_LOAN_ARB",
+    "LIQUIDITY_PROVISION",
+    "MARKET_MAKING",
+    "SPORTS_VALUE_BET",
+    "SPORTS_ML",
+    "SPORTS_ARB",
+    "SPORTS_HALFTIME_ML",
+    "PREDICTION_ARB"
+  ],
+  "StressScenarioType": [
+    "GFC_2008",
+    "COVID_2020",
+    "CRYPTO_BLACK_THURSDAY_2020"
+  ],
+  "TargetType": [
+    "direction",
+    "return",
+    "volatility",
+    "regime",
+    "spread",
+    "signal",
+    "swing_high",
+    "swing_low",
+    "cross_venue_spread",
+    "clv",
+    "xg",
+    "ht_delta",
+    "clv_meta",
+    "xg_meta"
+  ],
+  "TestingStage": [
+    "MOCK",
+    "HISTORICAL",
+    "LIVE_MOCK",
+    "LIVE_TESTNET",
+    "STAGING",
+    "LIVE_REAL"
+  ],
+  "TestnetMode": [
+    "mainnet",
+    "testnet"
+  ],
+  "Timeframe": [
+    "15s",
+    "30s",
+    "1m",
+    "5m",
+    "15m",
+    "30m",
+    "1h",
+    "4h",
+    "24h",
+    "1d"
+  ],
+  "TrainingPhase": [
+    "feature_selection",
+    "hyperparameter_tuning",
+    "base_results",
+    "meta_learning",
+    "meta_results",
+    "cross_pipeline"
+  ],
+  "TriggerEventType": [
+    "FEATURE_UPDATE",
+    "ODDS_CHANGE",
+    "PRICE_CROSS",
+    "VOLATILITY_REGIME_CHANGE",
+    "RISK_ALERT",
+    "POSITION_UPDATE",
+    "ML_PREDICTION",
+    "MARKET_TICK",
+    "CUSTOM"
+  ],
+  "UrgencyLevel": [
+    "LOW",
+    "MEDIUM",
+    "HIGH",
+    "CRITICAL"
+  ],
+  "UserRole": [
+    "viewer",
+    "operator",
+    "admin",
+    "super_admin"
+  ],
+  "VMEventType": [
+    "VM_PREEMPTED",
+    "VM_DELETED",
+    "VM_QUOTA_EXHAUSTED",
+    "VM_ZONE_UNAVAILABLE",
+    "VM_TIMEOUT",
+    "CONTAINER_OOM",
+    "CLOUD_RUN_REVISION_FAILED",
+    "JOB_RETRY",
+    "JOB_STARTED",
+    "JOB_COMPLETED",
+    "JOB_FAILED",
+    "JOB_CANCELLED",
+    "LIVE_HEALTH_CHECK_PASSED",
+    "LIVE_HEALTH_CHECK_FAILED",
+    "LIVE_ROLLBACK_EXECUTED"
+  ],
+  "VaRMethod": [
+    "historical",
+    "parametric",
+    "monte_carlo",
+    "filtered_historical"
+  ],
+  "VenueCategory": [
+    "cefi",
+    "tradfi",
+    "defi",
+    "onchain_perps"
+  ]
+},
+"config_schemas": {
+  "UnifiedCloudConfig": {
+    "source": "unified-config-interface",
+    "fields": {
+      "service_name": {
+        "type": "<class 'str'>",
+        "default": "'base-service'",
+        "required": false
+      },
+      "project_id": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "environment": {
+        "type": "<class 'str'>",
+        "default": "'development'",
+        "required": false
+      },
+      "tardis_base_url": {
+        "type": "<class 'str'>",
+        "default": "'https://api.tardis.dev/v1'",
+        "required": false
+      },
+      "tardis_datasets_url": {
+        "type": "<class 'str'>",
+        "default": "'https://datasets.tardis.dev/v1'",
+        "required": false
+      },
+      "tardis_timeout": {
+        "type": "<class 'int'>",
+        "default": "30",
+        "required": false
+      },
+      "tardis_max_retries": {
+        "type": "<class 'int'>",
+        "default": "3",
+        "required": false
+      },
+      "databento_timeout": {
+        "type": "<class 'int'>",
+        "default": "60",
+        "required": false
+      },
+      "thegraph_gateway_url": {
+        "type": "<class 'str'>",
+        "default": "'https://gateway.thegraph.com/api'",
+        "required": false
+      },
+      "thegraph_studio_url": {
+        "type": "<class 'str'>",
+        "default": "'https://api.studio.thegraph.com/query'",
+        "required": false
+      },
+      "thegraph_timeout": {
+        "type": "<class 'int'>",
+        "default": "30",
+        "required": false
+      },
+      "alchemy_default_chain": {
+        "type": "<class 'str'>",
+        "default": "'ETHEREUM'",
+        "required": false
+      },
+      "alchemy_timeout": {
+        "type": "<class 'int'>",
+        "default": "30",
+        "required": false
+      },
+      "enable_csv_sampling": {
+        "type": "<class 'bool'>",
+        "default": "False",
+        "required": false
+      },
+      "csv_sample_size": {
+        "type": "<class 'int'>",
+        "default": "20000",
+        "required": false
+      },
+      "csv_sample_dir": {
+        "type": "<class 'str'>",
+        "default": "'data/samples'",
+        "required": false
+      },
+      "cloud_provider": {
+        "type": "<class 'str'>",
+        "default": "'gcp'",
+        "required": false
+      },
+      "cloud_mock_mode": {
+        "type": "<class 'bool'>",
+        "default": "False",
+        "required": false
+      },
+      "fork_mode": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "testnet_mode": {
+        "type": "<class 'bool'>",
+        "default": "False",
+        "required": false
+      },
+      "defi_rpc_url": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "data_mode": {
+        "type": "<class 'str'>",
+        "default": "'real'",
+        "required": false
+      },
+      "runtime_mode": {
+        "type": "<class 'str'>",
+        "default": "'live'",
+        "required": false
+      },
+      "phase_mode": {
+        "type": "<class 'str'>",
+        "default": "'phase3'",
+        "required": false
+      },
+      "testing_stage": {
+        "type": "<class 'str'>",
+        "default": "'MOCK'",
+        "required": false
+      },
+      "enabled_categories": {
+        "type": "list[str]",
+        "default": "['CEFI', 'TRADFI', 'DEFI']",
+        "required": false
+      },
+      "otel_exporter_otlp_endpoint": {
+        "type": "<class 'str'>",
+        "default": "'http://localhost:4317'",
+        "required": false
+      },
+      "disable_auth": {
+        "type": "<class 'bool'>",
+        "default": "False",
+        "required": false
+      },
+      "api_key": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "secrets_cloud_provider": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "storage_cloud_provider": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "gcp_project_id": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "google_application_credentials_path": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "gcs_region": {
+        "type": "<class 'str'>",
+        "default": "'us-central1'",
+        "required": false
+      },
+      "gcs_location": {
+        "type": "<class 'str'>",
+        "default": "'US'",
+        "required": false
+      },
+      "aws_account_id": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "aws_region": {
+        "type": "<class 'str'>",
+        "default": "'us-east-1'",
+        "required": false
+      },
+      "aws_profile": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "instruments_s3_bucket_cefi": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "instruments_s3_bucket_tradfi": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "instruments_s3_bucket_defi": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "market_data_s3_bucket_cefi": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "market_data_s3_bucket_tradfi": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "market_data_s3_bucket_defi": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "features_s3_bucket": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "execution_s3_bucket": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "ml_models_s3_bucket": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "athena_database": {
+        "type": "<class 'str'>",
+        "default": "'default'",
+        "required": false
+      },
+      "athena_workgroup": {
+        "type": "<class 'str'>",
+        "default": "'primary'",
+        "required": false
+      },
+      "athena_output_location": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "gcs_bucket": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "instruments_gcs_bucket": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "instruments_bigquery_dataset": {
+        "type": "<class 'str'>",
+        "default": "'instruments'",
+        "required": false
+      },
+      "market_data_gcs_bucket": {
+        "type": "<class 'str'>",
+        "default": "'market-data-tick'",
+        "required": false
+      },
+      "market_data_bigquery_dataset": {
+        "type": "<class 'str'>",
+        "default": "'market_tick_data'",
+        "required": false
+      },
+      "features_gcs_bucket": {
+        "type": "<class 'str'>",
+        "default": "'features-data'",
+        "required": false
+      },
+      "execution_gcs_bucket": {
+        "type": "<class 'str'>",
+        "default": "''",
+        "required": false
+      },
+      "execution_bigquery_dataset": {
+        "type": "<class 'str'>",
+        "default": "'execution'",
+        "required": false
+      },
+      "market_data_gcs_bucket_test": {
+        "type": "<class 'str'>",
+        "default": "'market-data-tick-test'",
+        "required": false
+      },
+      "bigquery_dataset": {
+        "type": "<class 'str'>",
+        "default": "'market_data'",
+        "required": false
+      },
+      "bigquery_location": {
+        "type": "<class 'str'>",
+        "default": "'US'",
+        "required": false
+      },
+      "tardis_api_key": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "databento_api_key": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "the_graph_api_key": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "alchemy_api_key": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "aavescan_api_key": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "use_secret_manager": {
+        "type": "<class 'bool'>",
+        "default": "True",
+        "required": false
+      },
+      "tardis_secret_name": {
+        "type": "<class 'str'>",
+        "default": "'tardis-api-key'",
+        "required": false
+      },
+      "tardis_full_secret_name": {
+        "type": "<class 'str'>",
+        "default": "'tardis-api-key-full'",
+        "required": false
+      },
+      "databento_secret_name": {
+        "type": "<class 'str'>",
+        "default": "'databento-api-key'",
+        "required": false
+      },
+      "thegraph_secret_name": {
+        "type": "<class 'str'>",
+        "default": "'thegraph-api-key'",
+        "required": false
+      },
+      "alchemy_secret_name": {
+        "type": "<class 'str'>",
+        "default": "'alchemy-api-key'",
+        "required": false
+      },
+      "aavescan_secret_name": {
+        "type": "<class 'str'>",
+        "default": "'aavescan-api-key'",
+        "required": false
+      },
+      "ibkr_gateway_host": {
+        "type": "<class 'str'>",
+        "default": "'127.0.0.1'",
+        "required": false
+      },
+      "ibkr_gateway_port": {
+        "type": "<class 'int'>",
+        "default": "4001",
+        "required": false
+      },
+      "ibkr_client_id_base": {
+        "type": "<class 'int'>",
+        "default": "1",
+        "required": false
+      },
+      "ibkr_credentials_secret_name": {
+        "type": "<class 'str'>",
+        "default": "'ibkr-account-credentials'",
+        "required": false
+      },
+      "service_auth_token": {
+        "type": "str | None",
+        "default": null,
+        "required": false
+      },
+      "log_level": {
+        "type": "<class 'str'>",
+        "default": "'INFO'",
+        "required": false
+      },
+      "enable_debug": {
+        "type": "<class 'bool'>",
+        "default": "False",
+        "required": false
+      },
+      "testing_mode": {
+        "type": "<class 'bool'>",
+        "default": "False",
+        "required": false
+      }
+    }
+  },
+  "validation_constants": {
+    "valid_algorithms": [
+      "TWAP",
+      "VWAP",
+      "ICEBERG",
+      "ADAPTIVE_TWAP",
+      "ALMGREN_CHRISS",
+      "POV_DYNAMIC",
+      "HYBRID_OPTIMAL",
+      "PASSIVE_AGGRESSIVE_HYBRID",
+      "SMART_ORDER_ROUTER",
+      "SOR_TWAP",
+      "SWAP_TWAP",
+      "MAX_SLIPPAGE",
+      "BENCHMARK_FILL"
+    ],
+    "valid_categories": [
+      "cefi",
+      "tradfi",
+      "defi"
+    ],
+    "valid_modes": [
+      "SCE",
+      "HUF"
+    ],
+    "valid_timeframes": [
+      "1M",
+      "5M",
+      "15M",
+      "30M",
+      "1H",
+      "4H",
+      "8H",
+      "24H"
+    ],
+    "valid_book_types": [
+      "L1_MBP",
+      "L2_MBP",
+      "AMM",
+      "LENDING_POOL",
+      "STAKING_POOL"
+    ],
+    "valid_instruction_types": [
+      "TRADE",
+      "SWAP",
+      "LEND",
+      "BORROW",
+      "STAKE",
+      "UNSTAKE",
+      "TRANSFER",
+      "WITHDRAW",
+      "REPAY"
+    ]
+  }
+},
+"operational_modes": {
+  "mode_axes": {
+    "ui_data": {
+      "env_var": "VITE_MOCK_API",
+      "mock_value": "true",
+      "real_value": "false",
+      "controls": "Client-side mock data vs API calls"
+    },
+    "ui_auth": {
+      "env_var": "VITE_SKIP_AUTH",
+      "mock_value": "true",
+      "real_value": "false",
+      "controls": "OAuth login requirement"
+    },
+    "api_data": {
+      "env_var": "CLOUD_MOCK_MODE",
+      "mock_value": "true",
+      "real_value": "false",
+      "controls": "Sample data vs real cloud"
+    },
+    "api_auth": {
+      "env_var": "DISABLE_AUTH",
+      "mock_value": "true",
+      "real_value": "unset",
+      "controls": "Token validation"
+    },
+    "mock_state": {
+      "env_var": "MOCK_STATE_MODE",
+      "mock_value": "interactive",
+      "real_value": "deterministic",
+      "controls": "Stateful vs stateless mock"
+    }
+  },
+  "presets": {
+    "ci": "CI smoke tests, deterministic, no cache persistence",
+    "mock": "Local dev/UAT (default), interactive state, persists to .local-dev-cache/",
+    "api-real": "Test APIs against real cloud data",
+    "real": "Staging-like, needs credentials + OAuth"
+  },
+  "testing_stages": [
+    "MOCK",
+    "HISTORICAL",
+    "LIVE_MOCK",
+    "LIVE_TESTNET",
+    "STAGING",
+    "LIVE_REAL"
+  ],
+  "runtime_modes": [
+    "LIVE",
+    "BATCH"
+  ],
+  "cloud_providers": [
+    "GCP",
+    "AWS",
+    "LOCAL"
+  ]
+},
+"service_port_registry": {
+  "deployment": {
+    "ui": "deployment-ui",
+    "ui_port": 5183,
+    "api": "deployment-api",
+    "api_port": 8004,
+    "api_module": "deployment_api"
+  },
+  "client-reporting": {
+    "ui": "unified-trading-system-ui",
+    "ui_port": 3000,
+    "api": "client-reporting-api",
+    "api_port": 8014,
+    "api_module": "client_reporting_api",
+    "$note": "Standalone client-reporting-ui archived under workspace-root archive/. Client reporting surfaces are integrated into unified-trading-system-ui."
+  },
+  "market-data": {
+    "ui": null,
+    "ui_port": null,
+    "api": "market-data-api",
+    "api_port": 8016,
+    "api_module": "market_data_api"
+  },
+  "user-management": {
+    "api": "auth-api",
+    "api_port": 8200,
+    "api_module": "auth_api",
+    "ui": "unified-trading-system-ui",
+    "ui_port": 3000,
+    "$note": "User lifecycle management merged into auth-api (provisioning routes) and unified-trading-system-ui (admin pages). Standalone user-management-ui archived."
+  },
+  "unified-trading": {
+    "ui": "unified-trading-system-ui",
+    "ui_port": 5174,
+    "api": "unified-trading-api",
+    "api_port": 8030,
+    "api_module": "unified_trading_api",
+    "$note": "Canonical UI + consolidated domain API (three-API model with auth-api and deployment-api). Legacy split UIs, odum-research-website, logs-dashboard-ui, live-health-monitor-ui, batch-audit-api, and related APIs moved to workspace-root archive/."
+  },
+  "auth": {
+    "ui": null,
+    "ui_port": null,
+    "api": "auth-api",
+    "api_port": 8200,
+    "api_module": "auth_api",
+    "$note": "Authentication service \u2014 JWT issuance, persona resolution, OAuth token exchange. No dedicated UI; auth flows handled by each UI's login page."
+  }
+}
 }

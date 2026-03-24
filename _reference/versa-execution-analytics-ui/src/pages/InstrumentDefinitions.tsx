@@ -44,7 +44,7 @@ interface CategoryData {
 }
 
 // Parse instrument_id to extract components
-// Format: VENUE:TYPE:SYMBOL@CHAIN (e.g., UNISWAPV3-ETH:POOL:WETH-USDC:30@ETHEREUM)
+// Format: VENUE:TYPE:SYMBOL@CHAIN (e.g., UNISWAPV3-ETHEREUM:POOL:WETH-USDC:30@ETHEREUM)
 interface InstrumentIdComponents {
   venue: string;
   type: string;
@@ -58,7 +58,7 @@ function parseInstrumentId(id: string): InstrumentIdComponents {
   const parts = mainPart.split(":");
 
   return {
-    venue: parts[0] || "", // UNISWAPV3-ETH
+    venue: parts[0] || "", // UNISWAPV3-ETHEREUM
     type: parts[1] || "", // POOL
     symbol: parts.slice(2).join(":"), // WETH-USDC:30 (keep fee tier if present)
     chain: chain || undefined, // ETHEREUM

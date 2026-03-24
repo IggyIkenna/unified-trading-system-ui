@@ -254,7 +254,7 @@ const clients = [
     strategies: 2,
     aum: 5000000,
     riskProfile: "conservative",
-    venues: ["AAVE_V3_ETH", "UNISWAPV3-ETH"],
+    venues: ["AAVEV3_ETHEREUM", "UNISWAPV3-ETHEREUM"],
   },
 ];
 
@@ -339,17 +339,17 @@ const venues = [
   },
   // DeFi
   {
-    id: "AAVE_V3_ETH",
+    id: "AAVEV3_ETHEREUM",
     name: "Aave V3 (ETH)",
-    type: VENUE_CATEGORIES[VENUE_CATEGORY_MAP["AAVE_V3_ETH"]],
+    type: VENUE_CATEGORIES[VENUE_CATEGORY_MAP["AAVEV3_ETHEREUM"]],
     status: "connected" as const,
     latency: 1.2,
     rateLimit: "30%",
   },
   {
-    id: "UNISWAPV3-ETH",
+    id: "UNISWAPV3-ETHEREUM",
     name: "Uniswap V3",
-    type: VENUE_CATEGORIES[VENUE_CATEGORY_MAP["UNISWAPV3-ETH"]],
+    type: VENUE_CATEGORIES[VENUE_CATEGORY_MAP["UNISWAPV3-ETHEREUM"]],
     status: "connected" as const,
     latency: 2.1,
     rateLimit: "25%",

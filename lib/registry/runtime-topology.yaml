@@ -167,19 +167,18 @@ clusters:
     layer: "L6"
   api_services:
     services:
-      - execution-results-api
       - market-data-api
       - client-reporting-api
       - deployment-api
+      - unified-trading-api
+      - auth-api
     layer: "API"
   website:
-    services:
-      - odum-research-website
+    services: []
     layer: "Web"
     note: >
-      External-facing website. Self-contained Next.js app with built-in API routes (Firebase Auth + Firestore + GCS
-      proxy). No inter-service data flows. Deployment: Cloud Run (live only, not batch). Staging requires internal OAuth
-      gate.
+      odum-research-website archived (2026-03) under workspace-root archive/. Public or research web surfaces are
+      handled outside this runtime topology or via unified-trading-system-ui as applicable.
 
 # ---------------------------------------------------------------------------
 # Complete service data flows (producer → consumer)
@@ -528,9 +527,9 @@ service_flows:
       batch: { transport: gcs }
       live: { transport: pubsub }
 
-  # === Layer 5 → API: Execution → Results API ===
+  # === Layer 5 → API: Execution → consolidated gateway ===
   - producer: execution-service
-    consumer: execution-results-api
+    consumer: unified-trading-api
     data: execution_results
     modes:
       batch: { transport: gcs }
@@ -704,113 +703,87 @@ service_flows:
 
   # === API read edges: pipeline services → API layer ===
   - producer: execution-service
-    consumer: batch-audit-api
+    consumer: unified-trading-api
     data: execution_audit_events
     modes:
       batch: { transport: gcs }
-    note: Audit API reads execution audit trail from GCS/BigQuery for compliance and data-health queries.
-
-  - producer: execution-service
-    consumer: trading-analytics-api
-    data: execution_results
-    modes:
-      batch: { transport: gcs }
-      live: { transport: pubsub }
-    note: Trading analytics API aggregates execution results for slippage, fill quality, and trade analytics.
+    note: >
+      Consolidated gateway reads execution audit trail from GCS/BigQuery. batch-audit-api archived under workspace-root
+      archive/.
 
   - producer: pnl-attribution-service
-    consumer: trading-analytics-api
+    consumer: unified-trading-api
     data: pnl_reports
     modes:
       batch: { transport: gcs }
       live: { transport: pubsub }
-    note: Trading analytics API serves PnL breakdowns alongside execution analytics.
+    note: >
+      PnL breakdowns and analytics are served from unified-trading-api (legacy trading-analytics-api archived under
+      archive/).
 
   - producer: ml-inference-service
-    consumer: ml-inference-api
+    consumer: unified-trading-api
     data: predictions_model_registry
     modes:
       batch: { transport: gcs }
-    note: Inference API fronts the inference service — exposes model registry reads and prediction queries.
+    note: >
+      Model registry and inference reads are exposed via unified-trading-api /ml routes (legacy ml-inference-api
+      archived).
 
   - producer: ml-training-service
-    consumer: ml-training-api
+    consumer: unified-trading-api
     data: training_artifacts_status
     modes:
       batch: { transport: gcs }
-    note: Training API fronts the training service — exposes job status, artifact paths, and training metadata.
+    note: >
+      Training job status and artifact metadata are exposed via unified-trading-api /ml routes (legacy ml-training-api
+      archived).
 
   - producer: instruments-service
-    consumer: config-api
+    consumer: unified-trading-api
     data: instruments_universe
     modes:
       batch: { transport: gcs }
-    note: Config API exposes system configuration including instrument universe; reads GCS-persisted instruments data.
+    note: >
+      Instrument universe and config surfaces are read through unified-trading-api (legacy config-api archived under
+      archive/).
 
 # ---------------------------------------------------------------------------
 # API interaction edges (network boundaries only)
 # ---------------------------------------------------------------------------
 api_interactions:
-  # Trading UIs → execution-results-api (:8002)
-  - caller: trading-analytics-ui
-    callee: execution-results-api
-    protocol: sse
-    endpoint_family: /events/*
-    data_mode: live
-  - caller: strategy-ui
-    callee: execution-results-api
+  # Active surface (2026-03): one primary trading UI + deployment UI; three-API core + domain APIs.
+  # Legacy split UIs and standalone analytics/execution APIs live under workspace-root archive/ only.
+  - caller: unified-trading-system-ui
+    callee: unified-trading-api
     protocol: http
-    endpoint_family: /api/*
+    endpoint_family: "/api/*, /analytics/*, /execution/*, /ml/*, /config/*"
     data_mode: batch+live
-  - caller: execution-analytics-ui
-    callee: execution-results-api
+  - caller: unified-trading-system-ui
+    callee: auth-api
     protocol: http
-    endpoint_family: /api/*
-    data_mode: batch
-  - caller: settlement-ui
-    callee: execution-results-api
-    protocol: http
-    endpoint_family: /api/*
-    data_mode: batch
-
-  # Client UIs → client-reporting-api (:8003)
-  - caller: client-reporting-ui
+    endpoint_family: "/auth/*, /users/*"
+    data_mode: batch+live
+  - caller: unified-trading-system-ui
     callee: client-reporting-api
     protocol: http
     endpoint_family: /api/*
     data_mode: batch
-
-  # Ops UIs → deployment-api (:8001)
+  - caller: unified-trading-system-ui
+    callee: market-data-api
+    protocol: http
+    endpoint_family: /api/*
+    data_mode: batch+live
   - caller: deployment-ui
     callee: deployment-api
     protocol: http
     endpoint_family: /api/*
     data_mode: batch
-  - caller: live-health-monitor-ui
+  - caller: unified-trading-system-ui
     callee: deployment-api
     protocol: sse
     endpoint_family: /events/*
     data_mode: live
-  - caller: batch-audit-ui
-    callee: deployment-api
-    protocol: http
-    endpoint_family: /api/*
-    data_mode: batch
-  - caller: ml-training-ui
-    callee: deployment-api
-    protocol: http
-    endpoint_family: /api/*
-    data_mode: batch
-  - caller: logs-dashboard-ui
-    callee: deployment-api
-    protocol: http
-    endpoint_family: /api/*
-    data_mode: batch
-  - caller: onboarding-ui
-    callee: deployment-api
-    protocol: http
-    endpoint_family: /api/*
-    data_mode: batch
 
 # ---------------------------------------------------------------------------
 # Persistence flows (every service → cloud storage sink: GCS on GCP, S3 on AWS)
@@ -1328,7 +1301,7 @@ kill_switches:
     propagation: PubSub topic kill-switch-commands
     persistence: Secret Manager (few ms latency, survives restarts)
     target_services: [execution-service, strategy-service]
-    ui: live-health-monitor-ui shows status per service
+    ui: unified-trading-system-ui shows status per service (live-health-monitor-ui archived)
   automated_circuit_breaker:
     publisher: alerting-service
     topic: circuit-breaker-commands
@@ -1634,7 +1607,8 @@ health_probes:
     endpoints: ["/health", "/readiness"]
     services:
       [
-        execution-results-api,
+        unified-trading-api,
+        auth-api,
         market-data-api,
         client-reporting-api,
         deployment-api,
@@ -1690,8 +1664,10 @@ deployment_modes:
   auto_scale:
     description: API services that scale based on request load
     services:
-      - execution-results-api
+      - unified-trading-api
+      - auth-api
       - market-data-api
+      - client-reporting-api
       - deployment-api
     note: Scale based on HTTP/SSE connection count. Min instances configurable.
 
@@ -1782,50 +1758,31 @@ deployment_targets:
     scaling: auto_scale_on_connections
     auth: oauth
     services:
-      execution-results-api:
-        port: 8002
-        reason: Scales with HTTP/SSE connection count
+      unified-trading-api:
+        port: 8030
+        reason: Consolidated domain gateway; scales with HTTP/SSE connection count
       market-data-api:
-        port: 8003
-        reason: Scales with HTTP/SSE connection count
+        port: 8016
+        reason: Scales with HTTP/SSE connection count (see ui-api-mapping.json)
       deployment-api:
-        port: 8001
-        reason: Request-driven; SSE for health monitoring stream
+        port: 8004
+        reason: Request-driven; SSE for health monitoring stream (see ui-api-mapping.json)
       client-reporting-api:
-        port: 8005
+        port: 8014
         reason: Batch report generation; target state includes live SSE
-      ml-inference-api:
-        port: 8010
-        reason: REST API for inference requests; scales with request count
-      ml-training-api:
-        port: 8011
-        reason: REST API for training job management; request-driven
-      trading-analytics-api:
-        port: 8012
-        reason: REST/SSE API for analytics queries; scales with query load
-      batch-audit-api:
-        port: 8013
-        reason: REST API for audit queries against BigQuery audit dataset
-
+      auth-api:
+        port: 8200
+        reason: Auth and user lifecycle; request-driven JWT/OAuth endpoints
   cloud_run_service_ui:
     deploy_type: cloud_run_service
     scaling: auto_scale_on_requests
     # note: see comment below
     # All UIs serve React/TypeScript static build from Cloud Run.
     # UI and API are separate Cloud Run Services (separate repos, separate scaling, separate rollouts).
+    # Legacy split UIs (trading-analytics-ui, strategy-ui, logs-dashboard-ui, etc.) live under workspace-root archive/.
     services:
-      - trading-analytics-ui
-      - execution-analytics-ui
-      - ml-training-ui
-      - strategy-ui
       - deployment-ui
-      - live-health-monitor-ui
-      - batch-audit-ui
-      - logs-dashboard-ui
-      - onboarding-ui
-      - client-reporting-ui
-      - settlement-ui
-      - unified-admin-ui
+      - unified-trading-system-ui
 
   # ---------------------------------------------------------------------------
   # Trading agent — LLM-driven strategy commentary and signal generation
@@ -1869,5 +1826,6 @@ protocols:
     # Per-service overrides (Cloud Run for stateless HTTP services):
     deployment-api: cloud_run
     market-data-api: cloud_run
-    execution-results-api: cloud_run
+    unified-trading-api: cloud_run
+    auth-api: cloud_run
     client-reporting-api: cloud_run

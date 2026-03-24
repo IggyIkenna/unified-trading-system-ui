@@ -50,10 +50,10 @@ BASE_PREFIX = "raw_tick_data/by_date"
 
 # Known DeFi venues
 DEFI_VENUES = {
-    "UNISWAPV2-ETH",
-    "UNISWAPV3-ETH",
-    "UNISWAPV4-ETH",
-    "AAVE_V3_ETH",
+    "UNISWAPV2-ETHEREUM",
+    "UNISWAPV3-ETHEREUM",
+    "UNISWAPV4-ETHEREUM",
+    "AAVEV3_ETHEREUM",
     "MORPHO-ETHEREUM",
     "LIDO",
     "ETHERFI",
@@ -100,8 +100,8 @@ def parse_flat_defi_filename(filename: str) -> dict | None:
     Format: VENUE-INST_TYPE-SYMBOL-CHAIN.parquet
 
     Examples:
-    - AAVE_V3_ETH-A_TOKEN-AUSDT-ETHEREUM.parquet
-    - UNISWAPV3-ETH-POOL-WETH-USDC-500-ETHEREUM.parquet
+    - AAVEV3_ETHEREUM-A_TOKEN-AUSDT-ETHEREUM.parquet
+    - UNISWAPV3-ETHEREUM-POOL-WETH-USDC-500-ETHEREUM.parquet
     - LIDO-LST-STETH-ETHEREUM.parquet
     - ETHENA-YIELD_BEARING-SUSDE-ETHEREUM.parquet
 

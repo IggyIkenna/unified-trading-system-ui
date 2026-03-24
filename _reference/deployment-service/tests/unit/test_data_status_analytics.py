@@ -53,11 +53,11 @@ class TestDimensionWeightedCompletion:
     def test_venue_completion_reflects_all_data_types(self, sample_dimension_weighted_data):
         """Test that venue completion accounts for all expected data types.
 
-        Bug: UNISWAPV3-ETH showed 100% because liquidity had 30/30 dates,
+        Bug: UNISWAPV3-ETHEREUM showed 100% because liquidity had 30/30 dates,
         but swaps only had 2/30 dates. The union was 30 dates → 100%.
         Fix: venue completion = (30 + 2) / (30 + 30) = 53.3%
         """
-        venue_data = sample_dimension_weighted_data["venue_with_data_types"]["UNISWAPV3-ETH"]
+        venue_data = sample_dimension_weighted_data["venue_with_data_types"]["UNISWAPV3-ETHEREUM"]
         dt_breakdown = venue_data["data_types"]
         expected_completion = venue_data["expected_weighted_completion"]
 

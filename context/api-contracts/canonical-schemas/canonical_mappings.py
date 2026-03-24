@@ -9,7 +9,9 @@ Scope: Venues in our universe; TradFi via Databento (~506 venues); DeFi = Euler,
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TypedDict
+from typing import Literal, TypedDict
+
+from pydantic import BaseModel
 
 
 class ContractSpec(TypedDict, total=False):
@@ -34,9 +36,7 @@ DATA_SOURCE_TO_VENUES: dict[str, list[str]] = {
         "OKX-SPOT",
         "OKX-FUTURES",
         "OKX-SWAP",
-        "BITFINEX-SPOT",
         "GEMINI-SPOT",
-        "BITSTAMP-SPOT",
         "HUOBI-SPOT",
         "HUOBI-FUTURES",
         "PHEMEX-SPOT",
@@ -67,7 +67,6 @@ DATA_SOURCE_TO_VENUES: dict[str, list[str]] = {
         "COINBASE-SPOT",
         "UPBIT",
         "KUCOIN",
-        "BITFINEX-SPOT",
         "HUOBI-SPOT",
     ],
     "ibkr": [
@@ -91,9 +90,9 @@ DATA_SOURCE_TO_VENUES: dict[str, list[str]] = {
         "MORPHO",
         "EULER",
         "FLUID",
-        "LIDO",
-        "ETHERFI",
-        "ETHENA",
+        "LIDO-ETHEREUM",
+        "ETHERFI-ETHEREUM",
+        "ETHENA-ETHEREUM",
     ],
     "yfinance": ["FX"],
     "barchart": ["VIX"],
@@ -110,9 +109,7 @@ VENUE_TO_DATA_SOURCE: dict[str, str] = {
     "OKX-SPOT": "tardis",
     "OKX-FUTURES": "tardis",
     "OKX-SWAP": "tardis",
-    "BITFINEX-SPOT": "tardis",
     "GEMINI-SPOT": "tardis",
-    "BITSTAMP-SPOT": "tardis",
     "HUOBI-SPOT": "tardis",
     "HUOBI-FUTURES": "tardis",
     "PHEMEX-SPOT": "tardis",
@@ -139,16 +136,95 @@ VENUE_TO_DATA_SOURCE: dict[str, str] = {
     "UNISWAP-V4": "thegraph",
     "AAVE-V3": "thegraph",
     "CURVE": "thegraph",
-    "BALANCER": "thegraph",
+    "BALANCER": "balancer_api_v3",
     "MORPHO": "thegraph",
     "EULER": "thegraph",
     "FLUID": "thegraph",
-    "LIDO": "thegraph",
-    "ETHERFI": "thegraph",
-    "ETHENA": "thegraph",
+    "LIDO-ETHEREUM": "thegraph",
+    "ETHERFI-ETHEREUM": "thegraph",
+    "ETHENA-ETHEREUM": "thegraph",
     "FX": "yfinance",
     "VIX": "barchart",
 }
+
+
+# --- DataSourceRoute: typed 1:N venue→source mapping ---
+
+
+class DataSourceRoute(BaseModel, frozen=True):
+    """One data source route for a venue, with use-case qualifier."""
+
+    provider: str  # tardis, databento, ccxt, yahoo_finance, etc.
+    use_for: Literal["historical", "live", "execution", "all"] = "all"
+
+
+# 1:N mapping — venues that have multiple data sources.
+# Venues not listed here have a single source (use VENUE_TO_DATA_SOURCE).
+VENUE_TO_DATA_SOURCES: dict[str, list[DataSourceRoute]] = {
+    # CeFi: Tardis for historical, CCXT for live/execution
+    "BINANCE-SPOT": [
+        DataSourceRoute(provider="tardis", use_for="historical"),
+        DataSourceRoute(provider="ccxt", use_for="live"),
+        DataSourceRoute(provider="ccxt", use_for="execution"),
+    ],
+    "BINANCE-FUTURES": [
+        DataSourceRoute(provider="tardis", use_for="historical"),
+        DataSourceRoute(provider="ccxt", use_for="live"),
+        DataSourceRoute(provider="ccxt", use_for="execution"),
+    ],
+    "DERIBIT": [
+        DataSourceRoute(provider="tardis", use_for="historical"),
+        DataSourceRoute(provider="ccxt", use_for="live"),
+        DataSourceRoute(provider="ccxt", use_for="execution"),
+    ],
+    "BYBIT": [
+        DataSourceRoute(provider="tardis", use_for="historical"),
+        DataSourceRoute(provider="ccxt", use_for="live"),
+        DataSourceRoute(provider="ccxt", use_for="execution"),
+    ],
+    "OKX": [
+        DataSourceRoute(provider="tardis", use_for="historical"),
+        DataSourceRoute(provider="ccxt", use_for="live"),
+        DataSourceRoute(provider="ccxt", use_for="execution"),
+    ],
+    # CBOE: Databento for some data, Barchart/Yahoo for VIX index
+    "CBOE": [
+        DataSourceRoute(provider="databento", use_for="historical"),
+        DataSourceRoute(provider="barchart", use_for="historical"),
+        DataSourceRoute(provider="yahoo_finance", use_for="live"),
+    ],
+    # TradFi: Databento + IBKR for execution
+    "CME": [
+        DataSourceRoute(provider="databento", use_for="historical"),
+        DataSourceRoute(provider="databento", use_for="live"),
+        DataSourceRoute(provider="ibkr", use_for="execution"),
+    ],
+    "ICE": [
+        DataSourceRoute(provider="databento", use_for="historical"),
+        DataSourceRoute(provider="databento", use_for="live"),
+        DataSourceRoute(provider="ibkr", use_for="execution"),
+    ],
+}
+
+
+def get_data_sources_for_venue(
+    venue: str,
+    use_for: str | None = None,
+) -> list[DataSourceRoute]:
+    """Get data source routes for a venue, optionally filtered by use_for.
+
+    Falls back to VENUE_TO_DATA_SOURCE for venues not in the 1:N mapping.
+    """
+    routes = VENUE_TO_DATA_SOURCES.get(venue.upper())
+    if routes is None:
+        primary = VENUE_TO_DATA_SOURCE.get(venue.upper())
+        if primary is None:
+            return []
+        routes = [DataSourceRoute(provider=primary)]
+    if use_for is not None:
+        return [r for r in routes if r.use_for in (use_for, "all")]
+    return list(routes)
+
 
 # --- DATASET_TO_CANONICAL_VENUE ---
 # Databento dataset_id → canonical venue (TradFi ~506 venues)
@@ -216,41 +292,38 @@ DATASET_TO_CANONICAL_VENUE: dict[str, str] = {
     "deribit": "DERIBIT",
     "upbit": "UPBIT",
     "coinbase": "COINBASE-SPOT",
-    "bitfinex": "BITFINEX-SPOT",
     "gemini": "GEMINI-SPOT",
-    "bitstamp": "BITSTAMP-SPOT",
     "huobi": "HUOBI-SPOT",
     "huobipro": "HUOBI-SPOT",
     "phemex": "PHEMEX-SPOT",
     "hyperliquid": "HYPERLIQUID",
     "aster": "ASTER",
     # Tardis: DeFi (Euler, Fluid, ERC20, BTC only)
-    "euler": "EULER-PLASMA",
-    "fluid": "FLUID-PLASMA",
+    "euler": "EULER-ETHEREUM",
+    "fluid": "FLUID-ETHEREUM",
 }
 
 # --- DEFI_DATASET_TO_CANONICAL_VENUE ---
 # DeFi: dataset/subgraph/chain → canonical venue. Scope: Euler, Fluid, ERC20, BTC only.
 DEFI_DATASET_TO_CANONICAL_VENUE: dict[str, str] = {
-    "uniswap-v2-ethereum": "UNISWAPV2-ETH",
-    "uniswap-v3-ethereum": "UNISWAPV3-ETH",
-    "uniswap-v4-ethereum": "UNISWAPV4-ETH",
-    "uniswap/uniswap-v2": "UNISWAPV2-ETH",
-    "uniswap/uniswap-v3": "UNISWAPV3-ETH",
-    "curve-ethereum": "CURVE-ETH",
-    "curvefi/curve-ethereum": "CURVE-ETH",
+    "uniswap-v2-ethereum": "UNISWAPV2-ETHEREUM",
+    "uniswap-v3-ethereum": "UNISWAPV3-ETHEREUM",
+    "uniswap-v4-ethereum": "UNISWAPV4-ETHEREUM",
+    "uniswap/uniswap-v2": "UNISWAPV2-ETHEREUM",
+    "uniswap/uniswap-v3": "UNISWAPV3-ETHEREUM",
+    "curve-ethereum": "CURVE-ETHEREUM",
+    "curvefi/curve-ethereum": "CURVE-ETHEREUM",
     "aerodrome-base": "AERODROME-BASE",
-    "aave-v3-ethereum": "AAVE_V3_ETH",
-    "aave-v3": "AAVE_V3",
+    "aave-v3-ethereum": "AAVEV3-ETHEREUM",
+    "aave-v3": "AAVEV3-ETHEREUM",
     "morpho-ethereum": "MORPHO-ETHEREUM",
     "morpho-org/morpho-blue": "MORPHO-ETHEREUM",
-    "euler-plasma": "EULER-PLASMA",
-    "fluid-plasma": "FLUID-PLASMA",
-    "aave-plasma": "AAVE-PLASMA",
-    "lido-ethereum": "LIDO",
-    "lido/lido": "LIDO",
-    "etherfi": "ETHERFI",
-    "ethena": "ETHENA",
+    "euler-plasma": "EULER-ETHEREUM",
+    "fluid-plasma": "FLUID-ETHEREUM",
+    "lido-ethereum": "LIDO-ETHEREUM",
+    "lido/lido": "LIDO-ETHEREUM",
+    "etherfi": "ETHERFI-ETHEREUM",
+    "ethena": "ETHENA-ETHEREUM",
 }
 
 
@@ -388,7 +461,6 @@ DATA_SOURCE_TO_SECRET: dict[str, str | None] = {
     "ccxt": None,
     "ibkr": None,
     "glassnode": "GLASSNODE_API_KEY",
-    "arkham": "ARKHAM_API_KEY",
     "defillama": None,
     "betfair": "BETFAIR_API_KEY",
     "coingecko": "COINGECKO_API_KEY",
