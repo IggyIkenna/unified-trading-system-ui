@@ -8,9 +8,7 @@
   "paths": {
     "/health": {
       "get": {
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "summary": "Health",
         "description": "Standard Cloud Run liveness probe.",
         "operationId": "health_health_get",
@@ -32,9 +30,7 @@
     },
     "/readiness": {
       "get": {
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "summary": "Readiness",
         "description": "Standard Cloud Run readiness probe.",
         "operationId": "readiness_readiness_get",
@@ -58,9 +54,7 @@
     },
     "/version": {
       "get": {
-        "tags": [
-          "health"
-        ],
+        "tags": ["health"],
         "summary": "Version",
         "description": "Return service version information.",
         "operationId": "version_version_get",
@@ -84,9 +78,7 @@
     },
     "/market-data/candles": {
       "get": {
-        "tags": [
-          "market-data"
-        ],
+        "tags": ["market-data"],
         "summary": "Get Candles",
         "description": "Get OHLCV candles for an instrument.",
         "operationId": "get_candles_market_data_candles_get",
@@ -176,9 +168,7 @@
     },
     "/market-data/orderbook": {
       "get": {
-        "tags": [
-          "market-data"
-        ],
+        "tags": ["market-data"],
         "summary": "Get Orderbook",
         "description": "Get order book snapshot.",
         "operationId": "get_orderbook_market_data_orderbook_get",
@@ -245,9 +235,7 @@
     },
     "/market-data/trades": {
       "get": {
-        "tags": [
-          "market-data"
-        ],
+        "tags": ["market-data"],
         "summary": "Get Trades",
         "description": "Get recent trades.",
         "operationId": "get_trades_market_data_trades_get",
@@ -327,9 +315,7 @@
     },
     "/market-data/tickers": {
       "get": {
-        "tags": [
-          "market-data"
-        ],
+        "tags": ["market-data"],
         "summary": "Get Tickers",
         "description": "Get all tickers for a venue.",
         "operationId": "get_tickers_market_data_tickers_get",
@@ -377,9 +363,7 @@
     },
     "/execution/orders": {
       "get": {
-        "tags": [
-          "execution"
-        ],
+        "tags": ["execution"],
         "summary": "Get Orders",
         "description": "Get orders, optionally filtered by venue and status.",
         "operationId": "get_orders_execution_orders_get",
@@ -459,9 +443,7 @@
     },
     "/execution/fills": {
       "get": {
-        "tags": [
-          "execution"
-        ],
+        "tags": ["execution"],
         "summary": "Get Fills",
         "description": "Get trade fills.",
         "operationId": "get_fills_execution_fills_get",
@@ -541,9 +523,7 @@
     },
     "/execution/venues": {
       "get": {
-        "tags": [
-          "execution"
-        ],
+        "tags": ["execution"],
         "summary": "Get Venues",
         "description": "Get configured execution venues.",
         "operationId": "get_venues_execution_venues_get",
@@ -570,9 +550,7 @@
     },
     "/execution/algos": {
       "get": {
-        "tags": [
-          "execution"
-        ],
+        "tags": ["execution"],
         "summary": "Get Algos",
         "description": "Get available execution algorithms.",
         "operationId": "get_algos_execution_algos_get",
@@ -599,9 +577,7 @@
     },
     "/execution/backtests": {
       "get": {
-        "tags": [
-          "execution"
-        ],
+        "tags": ["execution"],
         "summary": "Get Backtests",
         "description": "Get backtest runs.",
         "operationId": "get_backtests_execution_backtests_get",
@@ -663,9 +639,7 @@
     },
     "/positions/active": {
       "get": {
-        "tags": [
-          "positions"
-        ],
+        "tags": ["positions"],
         "summary": "Get Active Positions",
         "description": "Get currently active positions.",
         "operationId": "get_active_positions_positions_active_get",
@@ -736,9 +710,7 @@
     },
     "/positions/summary": {
       "get": {
-        "tags": [
-          "positions"
-        ],
+        "tags": ["positions"],
         "summary": "Get Position Summary",
         "description": "Get aggregated position summary across venues.",
         "operationId": "get_position_summary_positions_summary_get",
@@ -765,9 +737,7 @@
     },
     "/positions/balances": {
       "get": {
-        "tags": [
-          "positions"
-        ],
+        "tags": ["positions"],
         "summary": "Get Balances",
         "description": "Get account balances across venues.",
         "operationId": "get_balances_positions_balances_get",
@@ -838,9 +808,7 @@
     },
     "/analytics/pnl": {
       "get": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Get Pnl",
         "description": "Get PnL breakdown.",
         "operationId": "get_pnl_analytics_pnl_get",
@@ -919,9 +887,7 @@
         }
       },
       "post": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Create Pnl Snapshot",
         "description": "Trigger a PnL snapshot calculation.",
         "operationId": "create_pnl_snapshot_analytics_pnl_post",
@@ -948,9 +914,7 @@
     },
     "/analytics/timeseries": {
       "get": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Get Timeseries",
         "description": "Get analytics timeseries data.",
         "operationId": "get_timeseries_analytics_timeseries_get",
@@ -1040,9 +1004,7 @@
         }
       },
       "post": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Create Timeseries Entry",
         "description": "Add a timeseries data point.",
         "operationId": "create_timeseries_entry_analytics_timeseries_post",
@@ -1069,9 +1031,7 @@
     },
     "/analytics/performance": {
       "get": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Get Performance",
         "description": "Get performance metrics.",
         "operationId": "get_performance_analytics_performance_get",
@@ -1118,9 +1078,7 @@
         }
       },
       "post": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Create Performance Snapshot",
         "description": "Trigger a performance snapshot.",
         "operationId": "create_performance_snapshot_analytics_performance_post",
@@ -1147,9 +1105,7 @@
     },
     "/analytics/organizations": {
       "get": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Get Organizations",
         "description": "Get analytics organizations.",
         "operationId": "get_organizations_analytics_organizations_get",
@@ -1176,9 +1132,7 @@
     },
     "/analytics/settlements": {
       "get": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Get Settlements",
         "description": "Get settlement records.",
         "operationId": "get_settlements_analytics_settlements_get",
@@ -1247,9 +1201,7 @@
         }
       },
       "post": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Create Settlement",
         "description": "Create a settlement record.",
         "operationId": "create_settlement_analytics_settlements_post",
@@ -1276,9 +1228,7 @@
     },
     "/analytics/instruments": {
       "get": {
-        "tags": [
-          "analytics"
-        ],
+        "tags": ["analytics"],
         "summary": "Get Instruments",
         "description": "Get analytics instrument list.",
         "operationId": "get_instruments_analytics_instruments_get",
@@ -1326,9 +1276,7 @@
     },
     "/ml/model-families": {
       "get": {
-        "tags": [
-          "ml"
-        ],
+        "tags": ["ml"],
         "summary": "Get Model Families",
         "description": "Get registered model families.",
         "operationId": "get_model_families_ml_model_families_get",
@@ -1355,9 +1303,7 @@
     },
     "/ml/experiments": {
       "get": {
-        "tags": [
-          "ml"
-        ],
+        "tags": ["ml"],
         "summary": "Get Experiments",
         "description": "Get ML experiments.",
         "operationId": "get_experiments_ml_experiments_get",
@@ -1428,9 +1374,7 @@
     },
     "/ml/training-runs": {
       "get": {
-        "tags": [
-          "ml"
-        ],
+        "tags": ["ml"],
         "summary": "Get Training Runs",
         "description": "Get training runs.",
         "operationId": "get_training_runs_ml_training_runs_get",
@@ -1501,9 +1445,7 @@
     },
     "/ml/versions": {
       "get": {
-        "tags": [
-          "ml"
-        ],
+        "tags": ["ml"],
         "summary": "Get Model Versions",
         "description": "Get model versions.",
         "operationId": "get_model_versions_ml_versions_get",
@@ -1551,9 +1493,7 @@
     },
     "/ml/deployments": {
       "get": {
-        "tags": [
-          "ml"
-        ],
+        "tags": ["ml"],
         "summary": "Get Model Deployments",
         "description": "Get active model deployments.",
         "operationId": "get_model_deployments_ml_deployments_get",
@@ -1580,9 +1520,7 @@
     },
     "/ml/features": {
       "get": {
-        "tags": [
-          "ml"
-        ],
+        "tags": ["ml"],
         "summary": "Get Features",
         "description": "Get registered ML features.",
         "operationId": "get_features_ml_features_get",
@@ -1630,9 +1568,7 @@
     },
     "/ml/datasets": {
       "get": {
-        "tags": [
-          "ml"
-        ],
+        "tags": ["ml"],
         "summary": "Get Datasets",
         "description": "Get registered datasets.",
         "operationId": "get_datasets_ml_datasets_get",
@@ -1694,9 +1630,7 @@
     },
     "/reporting/reports": {
       "get": {
-        "tags": [
-          "reporting"
-        ],
+        "tags": ["reporting"],
         "summary": "Get Reports",
         "description": "Get generated reports.",
         "operationId": "get_reports_reporting_reports_get",
@@ -1767,9 +1701,7 @@
     },
     "/reporting/settlements": {
       "get": {
-        "tags": [
-          "reporting"
-        ],
+        "tags": ["reporting"],
         "summary": "Get Settlements",
         "description": "Get settlement reports.",
         "operationId": "get_settlements_reporting_settlements_get",
@@ -1840,9 +1772,7 @@
     },
     "/reporting/reconciliation": {
       "get": {
-        "tags": [
-          "reporting"
-        ],
+        "tags": ["reporting"],
         "summary": "Get Reconciliation",
         "description": "Get reconciliation results.",
         "operationId": "get_reconciliation_reporting_reconciliation_get",
@@ -1913,9 +1843,7 @@
     },
     "/audit/events": {
       "get": {
-        "tags": [
-          "audit"
-        ],
+        "tags": ["audit"],
         "summary": "Get Audit Events",
         "description": "Get audit events.",
         "operationId": "get_audit_events_audit_events_get",
@@ -1986,9 +1914,7 @@
     },
     "/audit/compliance": {
       "get": {
-        "tags": [
-          "audit"
-        ],
+        "tags": ["audit"],
         "summary": "Get Compliance",
         "description": "Get compliance check results.",
         "operationId": "get_compliance_audit_compliance_get",
@@ -2015,9 +1941,7 @@
     },
     "/audit/data-health": {
       "get": {
-        "tags": [
-          "audit"
-        ],
+        "tags": ["audit"],
         "summary": "Get Data Health",
         "description": "Get data health metrics.",
         "operationId": "get_data_health_audit_data_health_get",
@@ -2044,9 +1968,7 @@
     },
     "/audit/logs": {
       "get": {
-        "tags": [
-          "audit"
-        ],
+        "tags": ["audit"],
         "summary": "Get Audit Logs",
         "description": "Get audit logs.",
         "operationId": "get_audit_logs_audit_logs_get",
@@ -2117,9 +2039,7 @@
     },
     "/config/system": {
       "get": {
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "summary": "Get System Config",
         "description": "Get system configuration.",
         "operationId": "get_system_config_config_system_get",
@@ -2144,9 +2064,7 @@
         ]
       },
       "put": {
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "summary": "Update System Config",
         "description": "Update system configuration.",
         "operationId": "update_system_config_config_system_put",
@@ -2173,9 +2091,7 @@
     },
     "/config/venues": {
       "get": {
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "summary": "Get Venue Config",
         "description": "Get venue configuration.",
         "operationId": "get_venue_config_config_venues_get",
@@ -2202,9 +2118,7 @@
     },
     "/config/feature-flags": {
       "get": {
-        "tags": [
-          "config"
-        ],
+        "tags": ["config"],
         "summary": "Get Feature Flags",
         "description": "Get feature flags.",
         "operationId": "get_feature_flags_config_feature_flags_get",
@@ -2231,9 +2145,7 @@
     },
     "/alerts/list": {
       "get": {
-        "tags": [
-          "alerts"
-        ],
+        "tags": ["alerts"],
         "summary": "Get Alerts",
         "description": "Get alerts list.",
         "operationId": "get_alerts_alerts_list_get",
@@ -2313,9 +2225,7 @@
     },
     "/alerts/summary": {
       "get": {
-        "tags": [
-          "alerts"
-        ],
+        "tags": ["alerts"],
         "summary": "Get Alert Summary",
         "description": "Get alert summary counts by severity.",
         "operationId": "get_alert_summary_alerts_summary_get",
@@ -2342,9 +2252,7 @@
     },
     "/alerts/acknowledge": {
       "post": {
-        "tags": [
-          "alerts"
-        ],
+        "tags": ["alerts"],
         "summary": "Acknowledge Alert",
         "description": "Acknowledge an alert.",
         "operationId": "acknowledge_alert_alerts_acknowledge_post",
@@ -2371,9 +2279,7 @@
     },
     "/alerts/resolve": {
       "post": {
-        "tags": [
-          "alerts"
-        ],
+        "tags": ["alerts"],
         "summary": "Resolve Alert",
         "description": "Resolve an alert.",
         "operationId": "resolve_alert_alerts_resolve_post",
@@ -2400,9 +2306,7 @@
     },
     "/risk/limits": {
       "get": {
-        "tags": [
-          "risk"
-        ],
+        "tags": ["risk"],
         "summary": "Get Risk Limits",
         "description": "Get risk limits.",
         "operationId": "get_risk_limits_risk_limits_get",
@@ -2473,9 +2377,7 @@
     },
     "/risk/var": {
       "get": {
-        "tags": [
-          "risk"
-        ],
+        "tags": ["risk"],
         "summary": "Get Var",
         "description": "Get Value-at-Risk calculations.",
         "operationId": "get_var_risk_var_get",
@@ -2534,9 +2436,7 @@
     },
     "/risk/greeks": {
       "get": {
-        "tags": [
-          "risk"
-        ],
+        "tags": ["risk"],
         "summary": "Get Greeks",
         "description": "Get portfolio greeks.",
         "operationId": "get_greeks_risk_greeks_get",
@@ -2607,9 +2507,7 @@
     },
     "/risk/stress": {
       "get": {
-        "tags": [
-          "risk"
-        ],
+        "tags": ["risk"],
         "summary": "Get Stress Tests",
         "description": "Get stress test results.",
         "operationId": "get_stress_tests_risk_stress_get",
@@ -2636,9 +2534,7 @@
     },
     "/instruments/list": {
       "get": {
-        "tags": [
-          "instruments"
-        ],
+        "tags": ["instruments"],
         "summary": "Get Instruments",
         "description": "Get instruments list.",
         "operationId": "get_instruments_instruments_list_get",
@@ -2718,9 +2614,7 @@
     },
     "/instruments/catalogue": {
       "get": {
-        "tags": [
-          "instruments"
-        ],
+        "tags": ["instruments"],
         "summary": "Get Catalogue",
         "description": "Get instrument catalogue with metadata.",
         "operationId": "get_catalogue_instruments_catalogue_get",
@@ -2747,9 +2641,7 @@
     },
     "/instruments/registry": {
       "get": {
-        "tags": [
-          "instruments"
-        ],
+        "tags": ["instruments"],
         "summary": "Get Registry",
         "description": "Get instrument registry \u2014 canonical mapping across venues.",
         "operationId": "get_registry_instruments_registry_get",
@@ -2776,9 +2668,7 @@
     },
     "/documents/upload-url": {
       "get": {
-        "tags": [
-          "documents"
-        ],
+        "tags": ["documents"],
         "summary": "Get Upload Url",
         "description": "Get a signed URL for uploading a document.",
         "operationId": "get_upload_url_documents_upload_url_get",
@@ -2836,9 +2726,7 @@
     },
     "/documents/download-url": {
       "get": {
-        "tags": [
-          "documents"
-        ],
+        "tags": ["documents"],
         "summary": "Get Download Url",
         "description": "Get a signed URL for downloading a document.",
         "operationId": "get_download_url_documents_download_url_get",
@@ -2886,9 +2774,7 @@
     },
     "/documents/list": {
       "get": {
-        "tags": [
-          "documents"
-        ],
+        "tags": ["documents"],
         "summary": "List Documents",
         "description": "List uploaded documents.",
         "operationId": "list_documents_documents_list_get",
@@ -2959,9 +2845,7 @@
     },
     "/documents/{document_id}": {
       "delete": {
-        "tags": [
-          "documents"
-        ],
+        "tags": ["documents"],
         "summary": "Delete Document",
         "description": "Delete a document.",
         "operationId": "delete_document_documents__document_id__delete",
@@ -3009,9 +2893,7 @@
     },
     "/deployment/services": {
       "get": {
-        "tags": [
-          "deployment"
-        ],
+        "tags": ["deployment"],
         "summary": "Get Services",
         "description": "Get registered services and their status.",
         "operationId": "get_services_deployment_services_get",
@@ -3038,9 +2920,7 @@
     },
     "/deployment/deployments": {
       "get": {
-        "tags": [
-          "deployment"
-        ],
+        "tags": ["deployment"],
         "summary": "Get Deployments",
         "description": "Get deployment history.",
         "operationId": "get_deployments_deployment_deployments_get",
@@ -3111,9 +2991,7 @@
     },
     "/deployment/builds": {
       "get": {
-        "tags": [
-          "deployment"
-        ],
+        "tags": ["deployment"],
         "summary": "Get Builds",
         "description": "Get build history.",
         "operationId": "get_builds_deployment_builds_get",
@@ -3184,9 +3062,7 @@
     },
     "/service-status/health": {
       "get": {
-        "tags": [
-          "service-status"
-        ],
+        "tags": ["service-status"],
         "summary": "Get Service Health",
         "description": "Get health status for all services.",
         "operationId": "get_service_health_service_status_health_get",
@@ -3234,9 +3110,7 @@
     },
     "/service-status/feature-freshness": {
       "get": {
-        "tags": [
-          "service-status"
-        ],
+        "tags": ["service-status"],
         "summary": "Get Feature Freshness",
         "description": "Get feature freshness status \u2014 last compute time per feature pipeline.",
         "operationId": "get_feature_freshness_service_status_feature_freshness_get",
@@ -3263,9 +3137,7 @@
     },
     "/service-status/activity": {
       "get": {
-        "tags": [
-          "service-status"
-        ],
+        "tags": ["service-status"],
         "summary": "Get Activity",
         "description": "Get recent system activity feed.",
         "operationId": "get_activity_service_status_activity_get",
@@ -3327,9 +3199,7 @@
     },
     "/users/organizations": {
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "Get Organizations",
         "description": "Get organizations.",
         "operationId": "get_organizations_users_organizations_get",
@@ -3356,9 +3226,7 @@
     },
     "/users/members": {
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "Get Members",
         "description": "Get organization members.",
         "operationId": "get_members_users_members_get",
@@ -3429,9 +3297,7 @@
     },
     "/users/subscriptions": {
       "get": {
-        "tags": [
-          "users"
-        ],
+        "tags": ["users"],
         "summary": "Get Subscriptions",
         "description": "Get subscription plans and status.",
         "operationId": "get_subscriptions_users_subscriptions_get",
@@ -3505,11 +3371,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       }
     },

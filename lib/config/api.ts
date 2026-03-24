@@ -5,10 +5,10 @@
  * Each service prefix matches the openapi.json tag structure.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? ""
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 /** Default timeout for API requests (ms) */
-export const API_TIMEOUT = 30_000
+export const API_TIMEOUT = 30_000;
 
 /** Per-service endpoint prefixes (from openapi.json path prefixes) */
 export const SERVICE_ENDPOINTS = {
@@ -38,6 +38,6 @@ export const SERVICE_ENDPOINTS = {
   config: `${API_BASE}/config-api`,
   audit: `${API_BASE}/batch-audit-api`,
   analytics: `${API_BASE}/trading-analytics-api`,
-} as const
+} as const;
 
-export type ServiceKey = keyof typeof SERVICE_ENDPOINTS
+export type ServiceKey = keyof typeof SERVICE_ENDPOINTS;

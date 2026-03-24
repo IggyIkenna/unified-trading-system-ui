@@ -1,4 +1,4 @@
-import type { AuthPersona } from "@/lib/config/auth"
+import type { AuthPersona } from "@/lib/config/auth";
 
 /**
  * 5 demo personas covering all access tiers.
@@ -71,11 +71,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "CIO",
     role: "client",
     org: { id: "vertex", name: "Vertex Partners" },
-    entitlements: [
-      "data-pro",
-      "execution-full",
-      "strategy-full",
-    ],
+    entitlements: ["data-pro", "execution-full", "strategy-full"],
     description:
       "Premium execution client. Data + strategy + Smart Alpha execution, no ML.",
   },
@@ -90,12 +86,12 @@ export const PERSONAS: readonly AuthPersona[] = [
     description:
       "Investor / board member. Sees investor relations presentations only — board deck, disaster recovery, security posture.",
   },
-] as const
+] as const;
 
 export function getPersonaById(id: string): AuthPersona | undefined {
-  return PERSONAS.find((p) => p.id === id)
+  return PERSONAS.find((p) => p.id === id);
 }
 
 export function getPersonaByEmail(email: string): AuthPersona | undefined {
-  return PERSONAS.find((p) => p.email === email)
+  return PERSONAS.find((p) => p.email === email);
 }

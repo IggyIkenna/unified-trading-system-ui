@@ -47,15 +47,15 @@ The platform must **feel**:
 
 This lifecycle influences every area of the platform:
 
-| Stage | Description | Who Uses It | Services |
-|-------|-------------|-----------|----------|
-| **Design** | Build, configure, define strategies and models | Quants, researchers, internal | Research/Simulation |
-| **Simulate** | Backtest, compare, evaluate candidates | Quants, researchers, internal | Research/Simulation |
-| **Promote** | Select candidates, prepare for deployment review | Strategy team, internal approvers | Research/Simulation → Trading |
-| **Run** | Live operations, active trading, live monitoring | Traders, ops, internal | Trading/Execution |
-| **Monitor** | Oversight, alerts, risk management | Traders, risk team, internal | Trading/Execution, Alerting |
-| **Explain** | Attribution, P&L analysis, signal diagnostics | Quants, PMs, clients (scoped) | Reporting, Analytics |
-| **Reconcile** | Settlement, invoicing, audit, compliance | Finance, compliance, internal | Reporting, Investment Management |
+| Stage         | Description                                      | Who Uses It                       | Services                         |
+| ------------- | ------------------------------------------------ | --------------------------------- | -------------------------------- |
+| **Design**    | Build, configure, define strategies and models   | Quants, researchers, internal     | Research/Simulation              |
+| **Simulate**  | Backtest, compare, evaluate candidates           | Quants, researchers, internal     | Research/Simulation              |
+| **Promote**   | Select candidates, prepare for deployment review | Strategy team, internal approvers | Research/Simulation → Trading    |
+| **Run**       | Live operations, active trading, live monitoring | Traders, ops, internal            | Trading/Execution                |
+| **Monitor**   | Oversight, alerts, risk management               | Traders, risk team, internal      | Trading/Execution, Alerting      |
+| **Explain**   | Attribution, P&L analysis, signal diagnostics    | Quants, PMs, clients (scoped)     | Reporting, Analytics             |
+| **Reconcile** | Settlement, invoicing, audit, compliance         | Finance, compliance, internal     | Reporting, Investment Management |
 
 **In the UI:** Service areas and workflows should use this language. Avoid arbitrary category names that break the mental model.
 
@@ -79,6 +79,7 @@ This lifecycle influences every area of the platform:
 ### Post-Login Experience
 
 The experience must be:
+
 - **Role-aware** — show only relevant features and workflows
 - **Organization-aware** — data scoped to the user's organization
 - **Service-aware** — show available vs locked services clearly
@@ -92,12 +93,14 @@ The experience must be:
 **Access level:** No authentication required
 
 Prospective clients land here to:
+
 - Understand the firm and service offerings
 - Explore available services
 - Understand pricing and capabilities
 - Sign up or request access
 
 **Key pages:**
+
 - Home / landing
 - Service descriptions (data, research, execution, reporting)
 - Pricing / subscription
@@ -110,6 +113,7 @@ Prospective clients land here to:
 **Access level:** Authenticated; scoped to subscribed services and organization data
 
 Logged-in clients see:
+
 - Services their organization has access to
 - Their own organization's data only
 - Role-appropriate (not internal-only) tools
@@ -117,6 +121,7 @@ Logged-in clients see:
 - Scoped versions of research, execution, and reporting tools
 
 **Key properties:**
+
 - Org-level data isolation
 - Least-privilege access to internal tools
 - Premium client versions of shared features
@@ -147,22 +152,24 @@ Every service area follows the SAME funnel. Users arrive from different doors bu
 
 ### The Three Doors
 
-| Door | Who | Entry Point | Journey |
-|------|-----|------------|---------|
-| **Prospect** | Unauthenticated visitor | Landing page → `/services/{domain}` | Sees marketing page → "Subscribe" CTA → Register → Login → Subscription overview → Service detail |
-| **Client** | Authenticated, subscribed | Login → `/service/overview` | Sees subscription overview (entitled vs locked) → Click entitled service → Service detail (org-scoped data) |
-| **Internal** | Authenticated, internal role | Login → `/service/overview` | Sees all services available → Click any service → Service detail (all data, plus admin/ops surfaces) |
+| Door         | Who                          | Entry Point                         | Journey                                                                                                     |
+| ------------ | ---------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Prospect** | Unauthenticated visitor      | Landing page → `/services/{domain}` | Sees marketing page → "Subscribe" CTA → Register → Login → Subscription overview → Service detail           |
+| **Client**   | Authenticated, subscribed    | Login → `/service/overview`         | Sees subscription overview (entitled vs locked) → Click entitled service → Service detail (org-scoped data) |
+| **Internal** | Authenticated, internal role | Login → `/service/overview`         | Sees all services available → Click any service → Service detail (all data, plus admin/ops surfaces)        |
 
 ### The Subscription Overview (Hub)
 
 After authentication, ALL users land on `/service/overview` — the subscription-aware hub.
 
 **What clients see:**
+
 - Services they're subscribed to: full-color cards with quick stats → click for detail
 - Services they're NOT subscribed to: locked cards with "Upgrade" → click shows what they'd get
 - Link to the same detailed page internal users see, but with org-scoped data
 
 **What internal users see:**
+
 - All services available (wildcard entitlements)
 - Per-client view option (select a client org to see what they see)
 - Admin/ops links visible that clients never see
@@ -170,6 +177,7 @@ After authentication, ALL users land on `/service/overview` — the subscription
 ### The Service Detail (Same Page, Different Data)
 
 Every service detail page handles three states:
+
 - **Subscribed:** Full functionality, org-scoped data
 - **Not subscribed:** Locked overlay with "Upgrade" CTA showing what they'd get
 - **Internal:** Full data, no restrictions, plus admin/ops links
@@ -210,6 +218,7 @@ After authentication, users land on a **service-aware cover page** that shows:
 - **Quick entry points** — links to the most relevant workflows for that user's role
 
 Example flows:
+
 - A **client quant** sees: Data (available), Research (available), Execution (locked), Admin (hidden)
 - An **internal trader** sees: All services available with their full, unrestricted versions
 - A **prospective user** sees: Public service descriptions and sign-up call-to-action
@@ -246,24 +255,26 @@ All shells should feel like one system with clear transitions between modes.
 
 ### Client vs Internal
 
-| Feature | Client | Internal |
-|---------|--------|----------|
-| Data subscription management | Org admin only | All internal |
-| Strategy backtesting | Yes (full for subscribed) | Yes (full) |
-| Live trading controls | If entitled | Yes (full) |
-| View other orgs' data | No | Yes (with audit trail) |
-| Admin/onboarding panel | No | Yes (role-dependent) |
-| Deployment/DevOps panel | No | Yes (ops/deployment role only) |
-| Full audit history | No (scoped) | Yes (compliance role) |
+| Feature                      | Client                    | Internal                       |
+| ---------------------------- | ------------------------- | ------------------------------ |
+| Data subscription management | Org admin only            | All internal                   |
+| Strategy backtesting         | Yes (full for subscribed) | Yes (full)                     |
+| Live trading controls        | If entitled               | Yes (full)                     |
+| View other orgs' data        | No                        | Yes (with audit trail)         |
+| Admin/onboarding panel       | No                        | Yes (role-dependent)           |
+| Deployment/DevOps panel      | No                        | Yes (ops/deployment role only) |
+| Full audit history           | No (scoped)               | Yes (compliance role)          |
 
 ### Service Entitlements
 
 Clients are subscribed to specific service packs. Org admins can:
+
 - View current subscriptions
 - Request upgrades
 - Manage user access to entitled services
 
 Internal users can:
+
 - Manage subscriptions for all orgs
 - View cross-org analytics
 - Manage billing and settlement
@@ -275,6 +286,7 @@ Internal users can:
 ### Pattern: Locked Service Visibility
 
 When a client user tries to access a locked service:
+
 1. Show the service card/link in a disabled/grayed state
 2. Explain why it's locked (not subscribed, role not authorized, feature not available)
 3. Provide an "upgrade" or "request access" CTA if applicable
@@ -287,6 +299,7 @@ All data queries must be scoped to `org_id`. Never return cross-org data to clie
 ### Pattern: Role-Aware Depth
 
 The same feature (e.g., execution analytics) exists in both client and internal versions:
+
 - **Client version**: org's data only, limited drill-down, restrictions on exports
 - **Internal version**: cross-org analytics, full drill-down, unrestricted access
 
@@ -295,6 +308,7 @@ The UX should feel like the same tool, not a separate product.
 ### Pattern: Status & Provenance
 
 Every important entity (strategy, order, model, report) should show:
+
 - Who created/modified it (with timestamp)
 - Current status (draft, in-review, live, archived)
 - Permissions/visibility (org-only, internal-only, shared)
@@ -313,6 +327,7 @@ Services are sold as **packages**:
 - **Custom Packs** — bespoke combinations for larger clients
 
 The platform must:
+
 - Enforce these package boundaries
 - Show clear upgrade/downgrade paths
 - Log all access and usage for billing
@@ -368,6 +383,7 @@ This architectural foundation enables the following deepening prompts (in order)
 ### For Implementation Prompts
 
 When you receive a prompt to build a feature or refactor an area:
+
 1. Map it to one of the **three experience modes** (public, client, internal)
 2. Identify which **service area** it belongs to
 3. Check the **role-based access rules** (section 9)

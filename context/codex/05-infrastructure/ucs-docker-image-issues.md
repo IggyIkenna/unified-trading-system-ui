@@ -1,8 +1,8 @@
 # UCS Docker Image: Known Issues & Rollout Tracking
 
-**Owner:** Ikenna  
-**Priority:** P1-high  
-**Status:** Rollout complete (11/11 services); auto-trigger bug open  
+**Owner:** Ikenna
+**Priority:** P1-high
+**Status:** Rollout complete (11/11 services); auto-trigger bug open
 **Last Updated:** 2026-02-12
 
 ---
@@ -11,8 +11,8 @@
 
 ### Issue 1: Cloud Build Not Auto-Triggering on Main Push
 
-**Priority:** P1-high  
-**Status:** Open  
+**Priority:** P1-high
+**Status:** Open
 **Tracking:** `unified-trading-services/.github/ISSUE_BUG_UCS_IMAGE_NOT_AUTO_PUSHING.md`
 
 **Problem:** Cloud Build trigger for `unified-trading-services` is configured correctly but does NOT automatically
@@ -127,7 +127,7 @@ from Artifact Registry.
 
 ## Python Version Alignment
 
-**Current State:** ✅ Python 3.13 everywhere (11/11 services)  
+**Current State:** ✅ Python 3.13 everywhere (11/11 services)
 **Target State:** Python 3.13 everywhere — **achieved**
 
 **Completed:**
@@ -142,7 +142,7 @@ from Artifact Registry.
 
 ## uv Migration
 
-**Status:** ✅ Complete (11/11 services)  
+**Status:** ✅ Complete (11/11 services)
 **Goal:** Replace `pip` with `uv` for 10-100x faster builds — **achieved**
 
 **Migration Pattern:**

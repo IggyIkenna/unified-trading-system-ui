@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { 
-  ArrowLeft, 
-  Activity, 
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  Activity,
   AlertTriangle,
   CheckCircle2,
   XCircle,
@@ -22,14 +22,26 @@ import {
   Filter,
   ChevronRight,
   Target,
-  Layers
-} from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
+  Layers,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -37,7 +49,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   LineChart,
   Line,
@@ -50,16 +62,16 @@ import {
   AreaChart,
   Area,
   ReferenceLine,
-} from "recharts"
+} from "recharts";
 
-import { useMLDeployments, useModelVersions } from "@/hooks/api/use-ml-models"
-import { Skeleton } from "@/components/ui/skeleton"
+import { useMLDeployments, useModelVersions } from "@/hooks/api/use-ml-models";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Live model metrics (simulated real-time data)
 const generateLiveMetrics = () => {
-  const now = new Date()
+  const now = new Date();
   return Array.from({ length: 60 }, (_, i) => {
-    const time = new Date(now.getTime() - (59 - i) * 60000)
+    const time = new Date(now.getTime() - (59 - i) * 60000);
     return {
       time: time.toTimeString().slice(0, 5),
       latency: 25 + Math.random() * 15 + (Math.random() > 0.95 ? 50 : 0),
@@ -68,56 +80,63 @@ const generateLiveMetrics = () => {
       predictionAccuracy: 0.84 + Math.random() * 0.04,
       featureDrift: Math.random() * 0.08,
       gpuUtil: 60 + Math.random() * 20,
-    }
-  })
-}
+    };
+  });
+};
 
 export default function LiveMonitoringPage() {
-  const { data: deploymentsData, isLoading: deploymentsLoading } = useMLDeployments()
-  const { data: versionsData, isLoading: versionsLoading } = useModelVersions()
+  const { data: deploymentsData, isLoading: deploymentsLoading } =
+    useMLDeployments();
+  const { data: versionsData, isLoading: versionsLoading } = useModelVersions();
 
-  const activeModels: Array<any> = ((deploymentsData as any)?.data ?? []).map((d: any) => ({
-    id: d.id ?? "",
-    name: d.name ?? "",
-    version: d.version ?? "",
-    stage: d.stage ?? "CHAMPION",
-    status: d.status ?? "healthy",
-    uptime: d.uptime ?? "99.9%",
-    predictions24h: d.predictions24h ?? 0,
-    avgLatency: d.avgLatency ?? "0ms",
-    errorRate: d.errorRate ?? "0%",
-    accuracy: d.accuracy ?? "0%",
-    drift: d.drift ?? "low",
-    alerts: d.alerts ?? 0,
-  }))
+  const activeModels: Array<any> = ((deploymentsData as any)?.data ?? []).map(
+    (d: any) => ({
+      id: d.id ?? "",
+      name: d.name ?? "",
+      version: d.version ?? "",
+      stage: d.stage ?? "CHAMPION",
+      status: d.status ?? "healthy",
+      uptime: d.uptime ?? "99.9%",
+      predictions24h: d.predictions24h ?? 0,
+      avgLatency: d.avgLatency ?? "0ms",
+      errorRate: d.errorRate ?? "0%",
+      accuracy: d.accuracy ?? "0%",
+      drift: d.drift ?? "low",
+      alerts: d.alerts ?? 0,
+    }),
+  );
 
-  const recentAlerts: Array<any> = ((versionsData as any)?.alerts ?? []).map((a: any, i: number) => ({
-    id: a.id ?? i + 1,
-    model: a.model ?? "",
-    type: a.type ?? "info",
-    severity: a.severity ?? "info",
-    message: a.message ?? "",
-    time: a.time ?? "",
-    acknowledged: a.acknowledged ?? false,
-  }))
+  const recentAlerts: Array<any> = ((versionsData as any)?.alerts ?? []).map(
+    (a: any, i: number) => ({
+      id: a.id ?? i + 1,
+      model: a.model ?? "",
+      type: a.type ?? "info",
+      severity: a.severity ?? "info",
+      message: a.message ?? "",
+      time: a.time ?? "",
+      acknowledged: a.acknowledged ?? false,
+    }),
+  );
 
-  const featureHealth: Array<any> = ((versionsData as any)?.featureHealth ?? []).map((f: any) => ({
+  const featureHealth: Array<any> = (
+    (versionsData as any)?.featureHealth ?? []
+  ).map((f: any) => ({
     feature: f.feature ?? "",
     status: f.status ?? "healthy",
     freshness: f.freshness ?? "0ms",
     drift: f.drift ?? 0,
     coverage: f.coverage ?? 100,
-  }))
-  const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true"
-  const isLoading = deploymentsLoading && versionsLoading
-  const [liveMetrics, setLiveMetrics] = useState(generateLiveMetrics())
-  const [selectedModel, setSelectedModel] = useState("all")
-  const [timeRange, setTimeRange] = useState("1h")
+  }));
+  const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true";
+  const isLoading = deploymentsLoading && versionsLoading;
+  const [liveMetrics, setLiveMetrics] = useState(generateLiveMetrics());
+  const [selectedModel, setSelectedModel] = useState("all");
+  const [timeRange, setTimeRange] = useState("1h");
 
   useEffect(() => {
-    if (isMockMode) return
+    if (isMockMode) return;
     const interval = setInterval(() => {
-      setLiveMetrics(prev => {
+      setLiveMetrics((prev) => {
         const newPoint = {
           time: new Date().toTimeString().slice(0, 5),
           latency: 25 + Math.random() * 15,
@@ -126,24 +145,34 @@ export default function LiveMonitoringPage() {
           predictionAccuracy: 0.84 + Math.random() * 0.04,
           featureDrift: Math.random() * 0.08,
           gpuUtil: 60 + Math.random() * 20,
-        }
-        return [...prev.slice(1), newPoint]
-      })
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [isMockMode])
+        };
+        return [...prev.slice(1), newPoint];
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isMockMode]);
 
-  if (isLoading) return (
-    <div className="space-y-4 p-6">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-64 w-full" />
-    </div>
-  )
+  if (isLoading)
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
 
-  const healthyModels = activeModels.filter(m => m.status === "healthy").length
-  const warningModels = activeModels.filter(m => m.status === "warning").length
-  const totalPredictions = activeModels.reduce((sum, m) => sum + m.predictions24h, 0)
-  const unacknowledgedAlerts = recentAlerts.filter(a => !a.acknowledged).length
+  const healthyModels = activeModels.filter(
+    (m) => m.status === "healthy",
+  ).length;
+  const warningModels = activeModels.filter(
+    (m) => m.status === "warning",
+  ).length;
+  const totalPredictions = activeModels.reduce(
+    (sum, m) => sum + m.predictions24h,
+    0,
+  );
+  const unacknowledgedAlerts = recentAlerts.filter(
+    (a) => !a.acknowledged,
+  ).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -162,7 +191,9 @@ export default function LiveMonitoringPage() {
                   <Activity className="size-5" />
                   Live Model Monitoring
                 </h1>
-                <p className="text-sm text-muted-foreground">Real-time performance, drift detection, and alerts</p>
+                <p className="text-sm text-muted-foreground">
+                  Real-time performance, drift detection, and alerts
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -172,8 +203,10 @@ export default function LiveMonitoringPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Models</SelectItem>
-                  {activeModels.map(m => (
-                    <SelectItem key={m.id} value={m.id}>{m.name} v{m.version}</SelectItem>
+                  {activeModels.map((m) => (
+                    <SelectItem key={m.id} value={m.id}>
+                      {m.name} v{m.version}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -213,8 +246,12 @@ export default function LiveMonitoringPage() {
               <div className="flex items-center gap-3">
                 <CheckCircle2 className="size-8 text-[var(--status-success)]" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Healthy Models</p>
-                  <p className="text-2xl font-bold">{healthyModels}/{activeModels.length}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Healthy Models
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {healthyModels}/{activeModels.length}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -237,8 +274,12 @@ export default function LiveMonitoringPage() {
               <div className="flex items-center gap-3">
                 <Zap className="size-8 text-[#60a5fa]" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Predictions (24h)</p>
-                  <p className="text-2xl font-bold">{(totalPredictions / 1000000).toFixed(1)}M</p>
+                  <p className="text-sm text-muted-foreground">
+                    Predictions (24h)
+                  </p>
+                  <p className="text-2xl font-bold">
+                    {(totalPredictions / 1000000).toFixed(1)}M
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -277,14 +318,19 @@ export default function LiveMonitoringPage() {
                 <div className="flex items-center gap-3">
                   <AlertTriangle className="size-6 text-[var(--status-warning)]" />
                   <div>
-                    <p className="font-semibold">{unacknowledgedAlerts} Active Alert{unacknowledgedAlerts > 1 ? "s" : ""}</p>
+                    <p className="font-semibold">
+                      {unacknowledgedAlerts} Active Alert
+                      {unacknowledgedAlerts > 1 ? "s" : ""}
+                    </p>
                     <p className="text-sm text-muted-foreground">
-                      {recentAlerts.filter(a => !a.acknowledged)[0]?.message}
+                      {recentAlerts.filter((a) => !a.acknowledged)[0]?.message}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm">View All</Button>
+                  <Button variant="outline" size="sm">
+                    View All
+                  </Button>
                   <Button size="sm">Acknowledge</Button>
                 </div>
               </div>
@@ -305,20 +351,28 @@ export default function LiveMonitoringPage() {
               <div className="h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={liveMetrics}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="hsl(var(--border))"
+                    />
                     <XAxis dataKey="time" tick={{ fontSize: 10 }} />
                     <YAxis tick={{ fontSize: 10 }} domain={[0, 100]} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: "hsl(var(--card))", 
-                        border: "1px solid hsl(var(--border))" 
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
                       }}
                     />
-                    <ReferenceLine y={50} stroke="var(--status-warning)" strokeDasharray="5 5" label="SLA" />
-                    <Area 
-                      type="monotone" 
-                      dataKey="latency" 
-                      stroke="#60a5fa" 
+                    <ReferenceLine
+                      y={50}
+                      stroke="var(--status-warning)"
+                      strokeDasharray="5 5"
+                      label="SLA"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="latency"
+                      stroke="#60a5fa"
                       fill="#60a5fa"
                       fillOpacity={0.3}
                     />
@@ -339,31 +393,49 @@ export default function LiveMonitoringPage() {
               <div className="h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={liveMetrics}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="hsl(var(--border))"
+                    />
                     <XAxis dataKey="time" tick={{ fontSize: 10 }} />
-                    <YAxis yAxisId="left" tick={{ fontSize: 10 }} domain={[0, 0.1]} tickFormatter={(v) => `${(v * 100).toFixed(1)}%`} />
-                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} domain={[0, 3000]} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: "hsl(var(--card))", 
-                        border: "1px solid hsl(var(--border))" 
+                    <YAxis
+                      yAxisId="left"
+                      tick={{ fontSize: 10 }}
+                      domain={[0, 0.1]}
+                      tickFormatter={(v) => `${(v * 100).toFixed(1)}%`}
+                    />
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      tick={{ fontSize: 10 }}
+                      domain={[0, 3000]}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
                       }}
                     />
                     <Legend />
-                    <ReferenceLine yAxisId="left" y={0.05} stroke="var(--status-error)" strokeDasharray="5 5" />
-                    <Line 
+                    <ReferenceLine
                       yAxisId="left"
-                      type="monotone" 
-                      dataKey="errorRate" 
-                      stroke="var(--status-error)" 
+                      y={0.05}
+                      stroke="var(--status-error)"
+                      strokeDasharray="5 5"
+                    />
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="errorRate"
+                      stroke="var(--status-error)"
                       dot={false}
                       name="Error Rate"
                     />
-                    <Line 
+                    <Line
                       yAxisId="right"
-                      type="monotone" 
-                      dataKey="throughput" 
-                      stroke="var(--status-success)" 
+                      type="monotone"
+                      dataKey="throughput"
+                      stroke="var(--status-success)"
                       dot={false}
                       name="Throughput (req/s)"
                     />
@@ -378,7 +450,9 @@ export default function LiveMonitoringPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Active Models</CardTitle>
-            <CardDescription>Real-time status of all deployed models</CardDescription>
+            <CardDescription>
+              Real-time status of all deployed models
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -388,7 +462,9 @@ export default function LiveMonitoringPage() {
                   <TableHead>Stage</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Uptime</TableHead>
-                  <TableHead className="text-right">Predictions (24h)</TableHead>
+                  <TableHead className="text-right">
+                    Predictions (24h)
+                  </TableHead>
                   <TableHead className="text-right">Latency</TableHead>
                   <TableHead className="text-right">Error Rate</TableHead>
                   <TableHead className="text-right">Accuracy</TableHead>
@@ -398,16 +474,22 @@ export default function LiveMonitoringPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {activeModels.map(model => (
+                {activeModels.map((model) => (
                   <TableRow key={model.id}>
                     <TableCell>
                       <div>
                         <p className="font-medium">{model.name}</p>
-                        <p className="text-xs text-muted-foreground">v{model.version}</p>
+                        <p className="text-xs text-muted-foreground">
+                          v{model.version}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={model.stage === "CHAMPION" ? "default" : "outline"}>
+                      <Badge
+                        variant={
+                          model.stage === "CHAMPION" ? "default" : "outline"
+                        }
+                      >
                         {model.stage}
                       </Badge>
                     </TableCell>
@@ -421,19 +503,40 @@ export default function LiveMonitoringPage() {
                         <span className="capitalize">{model.status}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right font-mono">{model.uptime}</TableCell>
-                    <TableCell className="text-right font-mono">{model.predictions24h.toLocaleString()}</TableCell>
-                    <TableCell className="text-right font-mono">{model.avgLatency}</TableCell>
-                    <TableCell className="text-right font-mono">{model.errorRate}</TableCell>
-                    <TableCell className="text-right font-mono">{model.accuracy}</TableCell>
+                    <TableCell className="text-right font-mono">
+                      {model.uptime}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {model.predictions24h.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {model.avgLatency}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {model.errorRate}
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {model.accuracy}
+                    </TableCell>
                     <TableCell>
-                      <Badge variant={model.drift === "low" ? "secondary" : "outline"} className={model.drift === "medium" ? "border-[var(--status-warning)] text-[var(--status-warning)]" : ""}>
+                      <Badge
+                        variant={
+                          model.drift === "low" ? "secondary" : "outline"
+                        }
+                        className={
+                          model.drift === "medium"
+                            ? "border-[var(--status-warning)] text-[var(--status-warning)]"
+                            : ""
+                        }
+                      >
                         {model.drift}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       {model.alerts > 0 ? (
-                        <Badge className="bg-[var(--status-warning)] text-black">{model.alerts}</Badge>
+                        <Badge className="bg-[var(--status-warning)] text-black">
+                          {model.alerts}
+                        </Badge>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
@@ -458,7 +561,9 @@ export default function LiveMonitoringPage() {
                 <Database className="size-4" />
                 Feature Health
               </CardTitle>
-              <CardDescription>Real-time feature pipeline status</CardDescription>
+              <CardDescription>
+                Real-time feature pipeline status
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -472,9 +577,11 @@ export default function LiveMonitoringPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {featureHealth.map(f => (
+                  {featureHealth.map((f) => (
                     <TableRow key={f.feature}>
-                      <TableCell className="font-mono text-sm">{f.feature}</TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {f.feature}
+                      </TableCell>
                       <TableCell>
                         {f.status === "healthy" ? (
                           <CheckCircle2 className="size-4 text-[var(--status-success)]" />
@@ -482,13 +589,19 @@ export default function LiveMonitoringPage() {
                           <AlertTriangle className="size-4 text-[var(--status-warning)]" />
                         )}
                       </TableCell>
-                      <TableCell className={`text-right font-mono ${f.freshness > "500ms" ? "text-[var(--status-warning)]" : ""}`}>
+                      <TableCell
+                        className={`text-right font-mono ${f.freshness > "500ms" ? "text-[var(--status-warning)]" : ""}`}
+                      >
                         {f.freshness}
                       </TableCell>
-                      <TableCell className={`text-right font-mono ${f.drift > 0.1 ? "text-[var(--status-warning)]" : ""}`}>
+                      <TableCell
+                        className={`text-right font-mono ${f.drift > 0.1 ? "text-[var(--status-warning)]" : ""}`}
+                      >
                         {f.drift.toFixed(2)}
                       </TableCell>
-                      <TableCell className="text-right font-mono">{f.coverage}%</TableCell>
+                      <TableCell className="text-right font-mono">
+                        {f.coverage}%
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -505,10 +618,17 @@ export default function LiveMonitoringPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {recentAlerts.map(alert => (
-                  <div key={alert.id} className={`flex items-start gap-3 p-3 rounded-lg ${
-                    alert.acknowledged ? "bg-muted/30" : alert.severity === "warning" ? "bg-[var(--status-warning)]/10" : "bg-muted/50"
-                  }`}>
+                {recentAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className={`flex items-start gap-3 p-3 rounded-lg ${
+                      alert.acknowledged
+                        ? "bg-muted/30"
+                        : alert.severity === "warning"
+                          ? "bg-[var(--status-warning)]/10"
+                          : "bg-muted/50"
+                    }`}
+                  >
                     {alert.severity === "warning" ? (
                       <AlertTriangle className="size-4 text-[var(--status-warning)] mt-0.5" />
                     ) : (
@@ -516,10 +636,16 @@ export default function LiveMonitoringPage() {
                     )}
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{alert.model}</span>
-                        <span className="text-xs text-muted-foreground">{alert.time}</span>
+                        <span className="text-sm font-medium">
+                          {alert.model}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {alert.time}
+                        </span>
                       </div>
-                      <p className="text-sm text-muted-foreground">{alert.message}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {alert.message}
+                      </p>
                     </div>
                     {!alert.acknowledged && (
                       <Button variant="ghost" size="sm" className="text-xs">
@@ -534,5 +660,5 @@ export default function LiveMonitoringPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

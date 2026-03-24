@@ -1,53 +1,56 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Sparkles, Lock, ArrowRight, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import Link from "next/link";
+import { Sparkles, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card"
-import { useAuth } from "@/hooks/use-auth"
-import { PERSONAS } from "@/lib/auth/personas"
+} from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
+import { PERSONAS } from "@/lib/auth/personas";
 
 interface RequireAuthProps {
-  children: React.ReactNode
+  children: React.ReactNode;
   /** Optional login route override — defaults to /login */
-  loginHref?: string
+  loginHref?: string;
 }
 
-export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps) {
-  const { user, loading, loginByEmail, switchPersona } = useAuth()
+export function RequireAuth({
+  children,
+  loginHref = "/login",
+}: RequireAuthProps) {
+  const { user, loading, loginByEmail, switchPersona } = useAuth();
 
-  const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
-  const [error, setError] = React.useState("")
-  const [submitting, setSubmitting] = React.useState(false)
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
-    )
+    );
   }
 
-  if (user) return <>{children}</>
+  if (user) return <>{children}</>;
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSubmitting(true)
-    setError("")
-    await new Promise((r) => setTimeout(r, 400))
-    const ok = loginByEmail(email, password)
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    await new Promise((r) => setTimeout(r, 400));
+    const ok = loginByEmail(email, password);
     if (!ok) {
-      setError("Invalid credentials. Try one of the demo accounts below.")
+      setError("Invalid credentials. Try one of the demo accounts below.");
     }
-    setSubmitting(false)
+    setSubmitting(false);
   }
 
   return (
@@ -159,5 +162,5 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
         </div>
       </main>
     </div>
-  )
+  );
 }

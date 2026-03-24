@@ -1,29 +1,29 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface DataFreshnessProps {
-  lastUpdated: Date | null
-  isWebSocket?: boolean
-  isBatch?: boolean
-  asOfDate?: string
+  lastUpdated: Date | null;
+  isWebSocket?: boolean;
+  isBatch?: boolean;
+  asOfDate?: string;
 }
 
 function getSecondsAgo(date: Date): number {
-  return Math.floor((Date.now() - date.getTime()) / 1000)
+  return Math.floor((Date.now() - date.getTime()) / 1000);
 }
 
 function getStalenessColor(seconds: number): string {
-  if (seconds < 5) return 'text-emerald-500'
-  if (seconds <= 30) return 'text-amber-500'
-  return 'text-red-500'
+  if (seconds < 5) return "text-emerald-500";
+  if (seconds <= 30) return "text-amber-500";
+  return "text-red-500";
 }
 
 function getDotColor(seconds: number): string {
-  if (seconds < 5) return 'bg-emerald-500'
-  if (seconds <= 30) return 'bg-amber-500'
-  return 'bg-red-500'
+  if (seconds < 5) return "bg-emerald-500";
+  if (seconds <= 30) return "bg-amber-500";
+  return "bg-red-500";
 }
 
 export function DataFreshness({
@@ -34,27 +34,27 @@ export function DataFreshness({
 }: DataFreshnessProps) {
   const [secondsAgo, setSecondsAgo] = useState<number>(
     lastUpdated ? getSecondsAgo(lastUpdated) : 0,
-  )
+  );
 
   useEffect(() => {
-    if (!lastUpdated || isBatch || isWebSocket) return
+    if (!lastUpdated || isBatch || isWebSocket) return;
 
-    setSecondsAgo(getSecondsAgo(lastUpdated))
+    setSecondsAgo(getSecondsAgo(lastUpdated));
     const interval = setInterval(() => {
-      setSecondsAgo(getSecondsAgo(lastUpdated))
-    }, 1000)
+      setSecondsAgo(getSecondsAgo(lastUpdated));
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [lastUpdated, isBatch, isWebSocket])
+    return () => clearInterval(interval);
+  }, [lastUpdated, isBatch, isWebSocket]);
 
   // Batch mode: show "As of {date}" badge
   if (isBatch) {
     return (
       <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
         <span className="size-2 rounded-full bg-slate-400" />
-        As of {asOfDate ?? 'unknown'}
+        As of {asOfDate ?? "unknown"}
       </span>
-    )
+    );
   }
 
   // WebSocket connected: green dot + "Live" badge
@@ -64,7 +64,7 @@ export function DataFreshness({
         <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
         Live
       </span>
-    )
+    );
   }
 
   // Disconnected: no lastUpdated and not batch
@@ -74,19 +74,19 @@ export function DataFreshness({
         <span className="size-2 rounded-full bg-red-500" />
         Disconnected
       </span>
-    )
+    );
   }
 
   // REST-fetched with staleness coloring
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 text-xs',
+        "inline-flex items-center gap-1.5 text-xs",
         getStalenessColor(secondsAgo),
       )}
     >
-      <span className={cn('size-2 rounded-full', getDotColor(secondsAgo))} />
+      <span className={cn("size-2 rounded-full", getDotColor(secondsAgo))} />
       Updated {secondsAgo}s ago
     </span>
-  )
+  );
 }

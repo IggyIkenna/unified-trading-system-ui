@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useMemo } from "react";
 import {
@@ -171,7 +171,18 @@ function DimensionsPanel({
     }
   };
 
-  const getDimensionBadgeVariant = (type: string): "default" | "secondary" | "destructive" | "outline" | "success" | "error" | "warning" | "running" | "pending" => {
+  const getDimensionBadgeVariant = (
+    type: string,
+  ):
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "outline"
+    | "success"
+    | "error"
+    | "warning"
+    | "running"
+    | "pending" => {
     switch (type) {
       case "fixed":
         return "secondary";

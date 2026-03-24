@@ -1,39 +1,48 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Sparkles, Lock, ArrowLeft, Shield } from "lucide-react"
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles, Lock, ArrowLeft, Shield } from "lucide-react";
 
 export default function InternalLoginPage() {
-  const router = useRouter()
-  const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState("")
+  const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     // Demo: Accept any @odum-research.com email or specific demo accounts
-    await new Promise(resolve => setTimeout(resolve, 800))
-    
-    if (email.endsWith("@odum-research.co.uk") || email === "demo@internal.com") {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    if (
+      email.endsWith("@odum-research.co.uk") ||
+      email === "demo@internal.com"
+    ) {
       // Redirect to internal Unified Trading Platform
-      router.push("/services/platform")
+      router.push("/services/platform");
     } else {
-      setError("Access restricted to internal users only")
+      setError("Access restricted to internal users only");
     }
-    
-    setIsLoading(false)
-  }
+
+    setIsLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -46,7 +55,9 @@ export default function InternalLoginPage() {
             </div>
             <div>
               <span className="text-lg font-semibold">Odum Research</span>
-              <Badge variant="secondary" className="ml-2 text-xs">Internal</Badge>
+              <Badge variant="secondary" className="ml-2 text-xs">
+                Internal
+              </Badge>
             </div>
           </Link>
           <Button variant="ghost" size="sm" asChild>
@@ -67,7 +78,8 @@ export default function InternalLoginPage() {
             </div>
             <CardTitle className="text-2xl">Internal Access</CardTitle>
             <CardDescription>
-              Sign in with your Odum Research credentials to access the Unified Trading Platform
+              Sign in with your Odum Research credentials to access the Unified
+              Trading Platform
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -94,11 +106,13 @@ export default function InternalLoginPage() {
                   required
                 />
               </div>
-              
+
               {error && (
-                <div className="text-sm text-destructive text-center">{error}</div>
+                <div className="text-sm text-destructive text-center">
+                  {error}
+                </div>
               )}
-              
+
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? (
                   <>
@@ -118,18 +132,19 @@ export default function InternalLoginPage() {
               <p className="text-xs text-muted-foreground text-center mb-4">
                 Demo Access
               </p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full"
                 onClick={() => {
-                  setEmail("demo@internal.com")
-                  setPassword("demo")
+                  setEmail("demo@internal.com");
+                  setPassword("demo");
                 }}
               >
                 Use Demo Credentials
               </Button>
               <p className="text-xs text-muted-foreground text-center mt-3">
-                This will grant full access to the Unified Trading Platform with mock data
+                This will grant full access to the Unified Trading Platform with
+                mock data
               </p>
             </div>
           </CardContent>
@@ -140,10 +155,11 @@ export default function InternalLoginPage() {
       <footer className="border-t border-border py-4">
         <div className="container px-4 md:px-6">
           <p className="text-xs text-muted-foreground text-center">
-            Internal systems access only. Unauthorised access is prohibited and may be subject to legal action.
+            Internal systems access only. Unauthorised access is prohibited and
+            may be subject to legal action.
           </p>
         </div>
       </footer>
     </div>
-  )
+  );
 }

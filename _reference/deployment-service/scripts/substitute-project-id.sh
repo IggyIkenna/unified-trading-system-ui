@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # Dynamic Project ID Substitution Script
-# 
+#
 # This script replaces ${PROJECT_ID} placeholders in configuration files
 # with the actual project ID from the unified trading library project_config.
 #
@@ -46,9 +46,9 @@ success() {
 # Get project ID using Python with project_config
 get_project_id() {
     local project_id
-    
+
     log "Resolving project ID using unified_trading_library.project_config..."
-    
+
     # Try to get project ID using the project_config module
     project_id=$(python3 -c "
 import sys
@@ -73,12 +73,12 @@ except Exception as e:
         error "3. Secret Manager is configured with 'gcp-project-id' secret"
         return 1
     }
-    
+
     if [[ -z "$project_id" ]]; then
         error "Project ID resolved to empty string"
         return 1
     fi
-    
+
     echo "$project_id"
 }
 
@@ -86,26 +86,26 @@ except Exception as e:
 substitute_file() {
     local file="$1"
     local project_id="$2"
-    
+
     if [[ ! -f "$file" ]]; then
         warn "File not found: $file"
         return 1
     fi
-    
+
     # Check if file contains the placeholder
     if ! grep -q '\${PROJECT_ID}' "$file"; then
         log "No \${PROJECT_ID} placeholders found in: $file"
         return 0
     fi
-    
+
     log "Substituting \${PROJECT_ID} -> $project_id in: $file"
-    
+
     # Create backup
     cp "$file" "$file.bak"
-    
+
     # Perform substitution using sed with proper escaping
     sed "s/\${PROJECT_ID}/$project_id/g" "$file.bak" > "$file"
-    
+
     success "Updated: $file (backup: $file.bak)"
 }
 
@@ -113,49 +113,49 @@ substitute_file() {
 substitute_directory() {
     local dir="$1"
     local project_id="$2"
-    
+
     if [[ ! -d "$dir" ]]; then
         error "Directory not found: $dir"
         return 1
     fi
-    
+
     log "Processing directory: $dir"
-    
+
     # Find files that likely contain PROJECT_ID placeholders
     local files
     files=$(find "$dir" -type f \( -name "*.tfvars" -o -name "*.tf" -o -name "*.yaml" -o -name "*.yml" -o -name "*.json" -o -name "*.env*" \) 2>/dev/null | head -50)
-    
+
     if [[ -z "$files" ]]; then
         warn "No configuration files found in: $dir"
         return 0
     fi
-    
+
     local count=0
     while IFS= read -r file; do
         if substitute_file "$file" "$project_id"; then
             ((count++))
         fi
     done <<< "$files"
-    
+
     success "Processed $count files in: $dir"
 }
 
 # Main function
 main() {
     local target="${1:-terraform}"
-    
+
     log "=== Dynamic Project ID Substitution ==="
     log "Target: $target"
-    
+
     # Resolve project ID
     local project_id
     project_id=$(get_project_id) || {
         error "Failed to resolve project ID"
         exit 1
     }
-    
+
     success "Resolved project ID: $project_id"
-    
+
     # Determine target path
     local target_path
     if [[ "$target" == /* ]]; then
@@ -165,9 +165,9 @@ main() {
     else
         target_path="$REPO_ROOT/$target"  # Relative to repo root
     fi
-    
+
     log "Target path: $target_path"
-    
+
     # Process target
     if [[ -f "$target_path" ]]; then
         substitute_file "$target_path" "$project_id"
@@ -177,7 +177,7 @@ main() {
         error "Target not found: $target_path"
         exit 1
     fi
-    
+
     success "=== Project ID substitution completed ==="
     log "To restore original files, use: find $target_path -name '*.bak' -exec sh -c 'mv \"\$1\" \"\${1%.bak}\"' _ {} \;"
 }

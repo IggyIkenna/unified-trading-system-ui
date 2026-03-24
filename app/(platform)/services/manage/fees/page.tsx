@@ -1,58 +1,99 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { toast } from "sonner"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import * as React from "react";
+import { toast } from "sonner";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  DollarSign, Pencil, Check, X, Calculator,
-} from "lucide-react"
-import { useOrganizationsList } from "@/hooks/api/use-organizations"
-import { useSubscriptions } from "@/hooks/api/use-organizations"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { DollarSign, Pencil, Check, X, Calculator } from "lucide-react";
+import { useOrganizationsList } from "@/hooks/api/use-organizations";
+import { useSubscriptions } from "@/hooks/api/use-organizations";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
 
 interface FeeRow {
-  orgId: string
-  orgName: string
-  managementFeePct: number
-  performanceFeePct: number
-  dataFeePct: number
-  aumUsd: number
+  orgId: string;
+  orgName: string;
+  managementFeePct: number;
+  performanceFeePct: number;
+  dataFeePct: number;
+  aumUsd: number;
 }
 
 export default function FeeManagementPage() {
-  const { data: orgsData } = useOrganizationsList()
-  const { data: subsData } = useSubscriptions()
-  const orgs = (orgsData as { organizations?: Array<{ id: string; name: string; type: string }> })?.organizations ?? []
+  const { data: orgsData } = useOrganizationsList();
+  const { data: subsData } = useSubscriptions();
+  const orgs =
+    (
+      orgsData as {
+        organizations?: Array<{ id: string; name: string; type: string }>;
+      }
+    )?.organizations ?? [];
   const [subscriptions, setSubscriptions] = React.useState([
-    { orgId: "acme", tier: "execution-full", managementFeePct: 2.0, performanceFeePct: 20, dataFeePct: 0, aumUsd: 25000000, monthlyFee: 25000 },
-    { orgId: "beta", tier: "data-basic", managementFeePct: 0, performanceFeePct: 0, dataFeePct: 0.5, aumUsd: 5000000, monthlyFee: 2500 },
-    { orgId: "vertex", tier: "data-pro", managementFeePct: 0, performanceFeePct: 0, dataFeePct: 1.0, aumUsd: 8000000, monthlyFee: 8000 },
-  ])
-  const updateSubscription = (orgId: string, updates: Record<string, number>) => setSubscriptions((prev) => prev.map((s) => s.orgId === orgId ? { ...s, ...updates } : s))
+    {
+      orgId: "acme",
+      tier: "execution-full",
+      managementFeePct: 2.0,
+      performanceFeePct: 20,
+      dataFeePct: 0,
+      aumUsd: 25000000,
+      monthlyFee: 25000,
+    },
+    {
+      orgId: "beta",
+      tier: "data-basic",
+      managementFeePct: 0,
+      performanceFeePct: 0,
+      dataFeePct: 0.5,
+      aumUsd: 5000000,
+      monthlyFee: 2500,
+    },
+    {
+      orgId: "vertex",
+      tier: "data-pro",
+      managementFeePct: 0,
+      performanceFeePct: 0,
+      dataFeePct: 1.0,
+      aumUsd: 8000000,
+      monthlyFee: 8000,
+    },
+  ]);
+  const updateSubscription = (orgId: string, updates: Record<string, number>) =>
+    setSubscriptions((prev) =>
+      prev.map((s) => (s.orgId === orgId ? { ...s, ...updates } : s)),
+    );
 
-  const [editingOrgId, setEditingOrgId] = React.useState<string | null>(null)
+  const [editingOrgId, setEditingOrgId] = React.useState<string | null>(null);
   const [editValues, setEditValues] = React.useState({
     managementFeePct: 0,
     performanceFeePct: 0,
     dataFeePct: 0,
-  })
+  });
 
   // Fee simulation state
-  const [simAum, setSimAum] = React.useState("10000000")
-  const [simReturn, setSimReturn] = React.useState("15")
-  const [simOrgId, setSimOrgId] = React.useState("")
+  const [simAum, setSimAum] = React.useState("10000000");
+  const [simReturn, setSimReturn] = React.useState("15");
+  const [simOrgId, setSimOrgId] = React.useState("");
 
   const feeRows: FeeRow[] = React.useMemo(() => {
     return orgs
       .filter((o) => o.type === "client")
       .map((o) => {
-        const sub = subscriptions.find((s) => s.orgId === o.id)
+        const sub = subscriptions.find((s) => s.orgId === o.id);
         return {
           orgId: o.id,
           orgName: o.name,
@@ -60,45 +101,45 @@ export default function FeeManagementPage() {
           performanceFeePct: sub?.performanceFeePct ?? 0,
           dataFeePct: sub?.dataFeePct ?? 0,
           aumUsd: sub?.aumUsd ?? 0,
-        }
-      })
-  }, [orgs, subscriptions])
+        };
+      });
+  }, [orgs, subscriptions]);
 
   function startEditing(row: FeeRow) {
-    setEditingOrgId(row.orgId)
+    setEditingOrgId(row.orgId);
     setEditValues({
       managementFeePct: row.managementFeePct,
       performanceFeePct: row.performanceFeePct,
       dataFeePct: row.dataFeePct,
-    })
+    });
   }
 
   function saveEditing() {
-    if (!editingOrgId) return
-    updateSubscription(editingOrgId, editValues)
-    const org = orgs.find((o) => o.id === editingOrgId)
+    if (!editingOrgId) return;
+    updateSubscription(editingOrgId, editValues);
+    const org = orgs.find((o) => o.id === editingOrgId);
     toast.success("Fees updated", {
       description: `${org?.name}: Mgmt ${editValues.managementFeePct}%, Perf ${editValues.performanceFeePct}%, Data ${editValues.dataFeePct}%`,
-    })
-    setEditingOrgId(null)
+    });
+    setEditingOrgId(null);
   }
 
   function cancelEditing() {
-    setEditingOrgId(null)
+    setEditingOrgId(null);
   }
 
   // Fee simulation calculation
   const simResult = React.useMemo(() => {
-    const aum = parseFloat(simAum) || 0
-    const returnPct = parseFloat(simReturn) || 0
-    const row = feeRows.find((r) => r.orgId === simOrgId) ?? feeRows[0]
-    if (!row) return null
+    const aum = parseFloat(simAum) || 0;
+    const returnPct = parseFloat(simReturn) || 0;
+    const row = feeRows.find((r) => r.orgId === simOrgId) ?? feeRows[0];
+    if (!row) return null;
 
-    const mgmtFee = aum * (row.managementFeePct / 100)
-    const profit = aum * (returnPct / 100)
-    const perfFee = Math.max(0, profit) * (row.performanceFeePct / 100)
-    const dataFee = aum * (row.dataFeePct / 100)
-    const totalFee = mgmtFee + perfFee + dataFee
+    const mgmtFee = aum * (row.managementFeePct / 100);
+    const profit = aum * (returnPct / 100);
+    const perfFee = Math.max(0, profit) * (row.performanceFeePct / 100);
+    const dataFee = aum * (row.dataFeePct / 100);
+    const totalFee = mgmtFee + perfFee + dataFee;
 
     return {
       orgName: row.orgName,
@@ -109,18 +150,18 @@ export default function FeeManagementPage() {
       managementFeePct: row.managementFeePct,
       performanceFeePct: row.performanceFeePct,
       dataFeePct: row.dataFeePct,
-    }
-  }, [simAum, simReturn, simOrgId, feeRows])
+    };
+  }, [simAum, simReturn, simOrgId, feeRows]);
 
   // Default sim org
   React.useEffect(() => {
     if (!simOrgId && feeRows.length > 0) {
-      setSimOrgId(feeRows[0].orgId)
+      setSimOrgId(feeRows[0].orgId);
     }
-  }, [feeRows, simOrgId])
+  }, [feeRows, simOrgId]);
 
-  const totalMRR = subscriptions.reduce((sum, s) => sum + s.monthlyFee, 0)
-  const totalAUM = feeRows.reduce((sum, r) => sum + r.aumUsd, 0)
+  const totalMRR = subscriptions.reduce((sum, s) => sum + s.monthlyFee, 0);
+  const totalAUM = feeRows.reduce((sum, r) => sum + r.aumUsd, 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -128,7 +169,9 @@ export default function FeeManagementPage() {
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Fee Management</h1>
+              <h1 className="text-2xl font-bold tracking-tight">
+                Fee Management
+              </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 Manage fee schedules per client and simulate fee projections
               </p>
@@ -151,13 +194,22 @@ export default function FeeManagementPage() {
         <Card>
           <CardHeader className="flex flex-row items-start justify-between">
             <div>
-              <CardTitle className="text-base">Fee Schedule by Client</CardTitle>
+              <CardTitle className="text-base">
+                Fee Schedule by Client
+              </CardTitle>
               <CardDescription>
-                Click Edit to modify fee percentages for each client. Changes take effect immediately.
+                Click Edit to modify fee percentages for each client. Changes
+                take effect immediately.
               </CardDescription>
             </div>
             <ExportDropdown
-              data={feeRows.map(r => ({ client: r.orgName, aum: r.aumUsd, managementFee: r.managementFeePct, performanceFee: r.performanceFeePct, dataFee: r.dataFeePct }))}
+              data={feeRows.map((r) => ({
+                client: r.orgName,
+                aum: r.aumUsd,
+                managementFee: r.managementFeePct,
+                performanceFee: r.performanceFeePct,
+                dataFee: r.dataFeePct,
+              }))}
               columns={[
                 { key: "client", header: "Client" },
                 { key: "aum", header: "AUM ($)", format: "currency" },
@@ -175,23 +227,29 @@ export default function FeeManagementPage() {
                   <TableHead>Client</TableHead>
                   <TableHead className="text-right">AUM</TableHead>
                   <TableHead className="text-right">Management Fee %</TableHead>
-                  <TableHead className="text-right">Performance Fee %</TableHead>
+                  <TableHead className="text-right">
+                    Performance Fee %
+                  </TableHead>
                   <TableHead className="text-right">Data Fee %</TableHead>
-                  <TableHead className="text-right">Est. Annual Revenue</TableHead>
+                  <TableHead className="text-right">
+                    Est. Annual Revenue
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {feeRows.map((row) => {
-                  const isEditing = editingOrgId === row.orgId
+                  const isEditing = editingOrgId === row.orgId;
                   const estRevenue =
                     row.aumUsd * (row.managementFeePct / 100) +
                     row.aumUsd * 0.15 * (row.performanceFeePct / 100) +
-                    row.aumUsd * (row.dataFeePct / 100)
+                    row.aumUsd * (row.dataFeePct / 100);
 
                   return (
                     <TableRow key={row.orgId}>
-                      <TableCell className="font-medium">{row.orgName}</TableCell>
+                      <TableCell className="font-medium">
+                        {row.orgName}
+                      </TableCell>
                       <TableCell className="text-right font-mono">
                         ${(row.aumUsd / 1_000_000).toFixed(1)}M
                       </TableCell>
@@ -204,12 +262,18 @@ export default function FeeManagementPage() {
                             max="10"
                             value={editValues.managementFeePct}
                             onChange={(e) =>
-                              setEditValues((v) => ({ ...v, managementFeePct: parseFloat(e.target.value) || 0 }))
+                              setEditValues((v) => ({
+                                ...v,
+                                managementFeePct:
+                                  parseFloat(e.target.value) || 0,
+                              }))
                             }
                             className="w-20 ml-auto h-7 text-xs text-right"
                           />
                         ) : (
-                          <span className="font-mono">{row.managementFeePct}%</span>
+                          <span className="font-mono">
+                            {row.managementFeePct}%
+                          </span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -221,12 +285,18 @@ export default function FeeManagementPage() {
                             max="50"
                             value={editValues.performanceFeePct}
                             onChange={(e) =>
-                              setEditValues((v) => ({ ...v, performanceFeePct: parseFloat(e.target.value) || 0 }))
+                              setEditValues((v) => ({
+                                ...v,
+                                performanceFeePct:
+                                  parseFloat(e.target.value) || 0,
+                              }))
                             }
                             className="w-20 ml-auto h-7 text-xs text-right"
                           />
                         ) : (
-                          <span className="font-mono">{row.performanceFeePct}%</span>
+                          <span className="font-mono">
+                            {row.performanceFeePct}%
+                          </span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -238,7 +308,10 @@ export default function FeeManagementPage() {
                             max="5"
                             value={editValues.dataFeePct}
                             onChange={(e) =>
-                              setEditValues((v) => ({ ...v, dataFeePct: parseFloat(e.target.value) || 0 }))
+                              setEditValues((v) => ({
+                                ...v,
+                                dataFeePct: parseFloat(e.target.value) || 0,
+                              }))
                             }
                             className="w-20 ml-auto h-7 text-xs text-right"
                           />
@@ -252,10 +325,18 @@ export default function FeeManagementPage() {
                       <TableCell className="text-right">
                         {isEditing ? (
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon-sm" onClick={saveEditing}>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              onClick={saveEditing}
+                            >
                               <Check className="size-4 text-emerald-400" />
                             </Button>
-                            <Button variant="ghost" size="icon-sm" onClick={cancelEditing}>
+                            <Button
+                              variant="ghost"
+                              size="icon-sm"
+                              onClick={cancelEditing}
+                            >
                               <X className="size-4 text-red-400" />
                             </Button>
                           </div>
@@ -272,11 +353,14 @@ export default function FeeManagementPage() {
                         )}
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
                 {feeRows.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell
+                      colSpan={7}
+                      className="text-center py-8 text-muted-foreground"
+                    >
                       No client organizations found.
                     </TableCell>
                   </TableRow>
@@ -367,7 +451,9 @@ export default function FeeManagementPage() {
                     </p>
                   </div>
                   <div className="border-l border-sky-500/20 pl-4">
-                    <p className="text-xs text-muted-foreground">Total Annual Fee</p>
+                    <p className="text-xs text-muted-foreground">
+                      Total Annual Fee
+                    </p>
                     <p className="text-lg font-bold font-mono text-sky-400">
                       ${Math.round(simResult.totalFee).toLocaleString()}
                     </p>
@@ -379,5 +465,5 @@ export default function FeeManagementPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

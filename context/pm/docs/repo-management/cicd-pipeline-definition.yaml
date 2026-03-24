@@ -52,8 +52,7 @@ nodes:
     swimlane: developer
     col: 0
     branch: feat_star
-    tooltip:
-      "Developer writes code and commits using conventional commit syntax: feat:, fix:, chore:, feat!: (breaking)"
+    tooltip: "Developer writes code and commits using conventional commit syntax: feat:, fix:, chore:, feat!: (breaking)"
   - id: pass1_qg
     label: "Pass 1
 
@@ -173,8 +172,7 @@ nodes:
     swimlane: gha_repo
     col: 11.0
     branch: staging
-    tooltip:
-      "GitHub auto-merge fires after both required checks pass: staging-lock-gate (PASS) + staging-version-gate (PASS)."
+    tooltip: "GitHub auto-merge fires after both required checks pass: staging-lock-gate (PASS) + staging-version-gate (PASS)."
   - id: merge_to_main_hotfix
     label: "Merge feat/*
 
@@ -483,8 +481,7 @@ nodes:
     swimlane: cloud_build
     col: 21.8
     branch: main
-    tooltip:
-      AWS CodeBuild runs buildspec.aws.yaml for AWS-hosted services. validate-buildspec.py checks syntax pre-push.
+    tooltip: AWS CodeBuild runs buildspec.aws.yaml for AWS-hosted services. validate-buildspec.py checks syntax pre-push.
   - id: tg_conflict_detected
     label: "⚠️ Conflict
 

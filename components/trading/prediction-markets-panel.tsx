@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   TrendingUp,
   Search,
@@ -27,9 +27,9 @@ import {
   Clock,
   BarChart3,
   ArrowLeft,
-} from "lucide-react"
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger"
-import { useToast } from "@/hooks/use-toast"
+} from "lucide-react";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { useToast } from "@/hooks/use-toast";
 
 // ---------- Types ----------
 
@@ -46,31 +46,31 @@ type MarketCategory =
   | "economy"
   | "weather"
   | "elections"
-  | "esports"
+  | "esports";
 
-type MarketVenue = "polymarket" | "kalshi"
-type MarketType = "binary" | "multi"
-type SortOption = "trending" | "newest" | "highest_volume" | "closing_soon"
+type MarketVenue = "polymarket" | "kalshi";
+type MarketType = "binary" | "multi";
+type SortOption = "trending" | "newest" | "highest_volume" | "closing_soon";
 
 interface MarketOutcome {
-  name: string
-  probability: number
-  yesPrice: number
-  noPrice: number
+  name: string;
+  probability: number;
+  yesPrice: number;
+  noPrice: number;
 }
 
 interface PredictionMarket {
-  id: string
-  question: string
-  category: MarketCategory
-  venue: MarketVenue
-  type: MarketType
-  outcomes: MarketOutcome[]
-  volume: number
-  volumeLabel: string
-  resolutionDate: string | null
-  isLive: boolean
-  isTrending: boolean
+  id: string;
+  question: string;
+  category: MarketCategory;
+  venue: MarketVenue;
+  type: MarketType;
+  outcomes: MarketOutcome[];
+  volume: number;
+  volumeLabel: string;
+  resolutionDate: string | null;
+  isLive: boolean;
+  isTrending: boolean;
 }
 
 // ---------- Constants ----------
@@ -89,14 +89,14 @@ const CATEGORIES: { value: MarketCategory; label: string; icon?: string }[] = [
   { value: "weather", label: "Weather" },
   { value: "elections", label: "Elections" },
   { value: "esports", label: "Esports" },
-]
+];
 
 const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: "trending", label: "Trending" },
   { value: "newest", label: "Newest" },
   { value: "highest_volume", label: "Highest Volume" },
   { value: "closing_soon", label: "Closing Soon" },
-]
+];
 
 // ---------- Mock Data ----------
 
@@ -109,7 +109,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     venue: "polymarket",
     type: "multi",
     outcomes: [
-      { name: "By June 30", probability: 70, yesPrice: 0.70, noPrice: 0.30 },
+      { name: "By June 30", probability: 70, yesPrice: 0.7, noPrice: 0.3 },
       { name: "By May 31", probability: 56, yesPrice: 0.56, noPrice: 0.44 },
     ],
     volume: 35_000_000,
@@ -124,9 +124,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "politics",
     venue: "kalshi",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 24, yesPrice: 0.24, noPrice: 0.76 },
-    ],
+    outcomes: [{ name: "Yes", probability: 24, yesPrice: 0.24, noPrice: 0.76 }],
     volume: 12_500_000,
     volumeLabel: "$12.5M Vol.",
     resolutionDate: "2026-12-31",
@@ -139,9 +137,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "politics",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 40, yesPrice: 0.40, noPrice: 0.60 },
-    ],
+    outcomes: [{ name: "Yes", probability: 40, yesPrice: 0.4, noPrice: 0.6 }],
     volume: 4_200_000,
     volumeLabel: "$4.2M Vol.",
     resolutionDate: "2026-09-30",
@@ -154,9 +150,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "politics",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 11, yesPrice: 0.11, noPrice: 0.89 },
-    ],
+    outcomes: [{ name: "Yes", probability: 11, yesPrice: 0.11, noPrice: 0.89 }],
     volume: 28_000_000,
     volumeLabel: "$28M Vol.",
     resolutionDate: "2026-12-31",
@@ -170,8 +164,18 @@ const MOCK_MARKETS: PredictionMarket[] = [
     venue: "polymarket",
     type: "multi",
     outcomes: [
-      { name: "Freedom Movement (GS)", probability: 99, yesPrice: 0.99, noPrice: 0.01 },
-      { name: "Slovenian Democratic Party (SDS)", probability: 1, yesPrice: 0.01, noPrice: 0.99 },
+      {
+        name: "Freedom Movement (GS)",
+        probability: 99,
+        yesPrice: 0.99,
+        noPrice: 0.01,
+      },
+      {
+        name: "Slovenian Democratic Party (SDS)",
+        probability: 1,
+        yesPrice: 0.01,
+        noPrice: 0.99,
+      },
     ],
     volume: 1_800_000,
     volumeLabel: "$1.8M Vol.",
@@ -186,9 +190,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "crypto",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 72, yesPrice: 0.72, noPrice: 0.28 },
-    ],
+    outcomes: [{ name: "Yes", probability: 72, yesPrice: 0.72, noPrice: 0.28 }],
     volume: 48_000_000,
     volumeLabel: "$48M Vol.",
     resolutionDate: "2026-06-30",
@@ -201,9 +203,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "crypto",
     venue: "kalshi",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 8, yesPrice: 0.08, noPrice: 0.92 },
-    ],
+    outcomes: [{ name: "Yes", probability: 8, yesPrice: 0.08, noPrice: 0.92 }],
     volume: 6_300_000,
     volumeLabel: "$6.3M Vol.",
     resolutionDate: "2027-01-01",
@@ -216,9 +216,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "crypto",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 45, yesPrice: 0.45, noPrice: 0.55 },
-    ],
+    outcomes: [{ name: "Yes", probability: 45, yesPrice: 0.45, noPrice: 0.55 }],
     volume: 22_000_000,
     volumeLabel: "$22M Vol.",
     resolutionDate: "2026-12-31",
@@ -249,7 +247,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     venue: "polymarket",
     type: "multi",
     outcomes: [
-      { name: "Thunder", probability: 90, yesPrice: 0.90, noPrice: 0.10 },
+      { name: "Thunder", probability: 90, yesPrice: 0.9, noPrice: 0.1 },
       { name: "76ers", probability: 11, yesPrice: 0.11, noPrice: 0.89 },
     ],
     volume: 1_500_000,
@@ -264,9 +262,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "sports",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 62, yesPrice: 0.62, noPrice: 0.38 },
-    ],
+    outcomes: [{ name: "Yes", probability: 62, yesPrice: 0.62, noPrice: 0.38 }],
     volume: 15_000_000,
     volumeLabel: "$15M Vol.",
     resolutionDate: "2026-05-25",
@@ -280,9 +276,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "geopolitics",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 28, yesPrice: 0.28, noPrice: 0.72 },
-    ],
+    outcomes: [{ name: "Yes", probability: 28, yesPrice: 0.28, noPrice: 0.72 }],
     volume: 8_700_000,
     volumeLabel: "$8.7M Vol.",
     resolutionDate: "2026-04-30",
@@ -311,9 +305,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "geopolitics",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 39, yesPrice: 0.39, noPrice: 0.61 },
-    ],
+    outcomes: [{ name: "Yes", probability: 39, yesPrice: 0.39, noPrice: 0.61 }],
     volume: 5_400_000,
     volumeLabel: "$5.4M Vol.",
     resolutionDate: "2026-04-30",
@@ -327,9 +319,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "finance",
     venue: "kalshi",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 58, yesPrice: 0.58, noPrice: 0.42 },
-    ],
+    outcomes: [{ name: "Yes", probability: 58, yesPrice: 0.58, noPrice: 0.42 }],
     volume: 31_000_000,
     volumeLabel: "$31M Vol.",
     resolutionDate: "2026-12-31",
@@ -342,9 +332,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "finance",
     venue: "kalshi",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 31, yesPrice: 0.31, noPrice: 0.69 },
-    ],
+    outcomes: [{ name: "Yes", probability: 31, yesPrice: 0.31, noPrice: 0.69 }],
     volume: 18_000_000,
     volumeLabel: "$18M Vol.",
     resolutionDate: "2026-12-31",
@@ -357,9 +345,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "finance",
     venue: "kalshi",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 67, yesPrice: 0.67, noPrice: 0.33 },
-    ],
+    outcomes: [{ name: "Yes", probability: 67, yesPrice: 0.67, noPrice: 0.33 }],
     volume: 25_000_000,
     volumeLabel: "$25M Vol.",
     resolutionDate: "2026-07-01",
@@ -406,9 +392,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "tech",
     venue: "kalshi",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 18, yesPrice: 0.18, noPrice: 0.82 },
-    ],
+    outcomes: [{ name: "Yes", probability: 18, yesPrice: 0.18, noPrice: 0.82 }],
     volume: 3_200_000,
     volumeLabel: "$3.2M Vol.",
     resolutionDate: "2026-12-31",
@@ -421,9 +405,7 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "culture",
     venue: "polymarket",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 41, yesPrice: 0.41, noPrice: 0.59 },
-    ],
+    outcomes: [{ name: "Yes", probability: 41, yesPrice: 0.41, noPrice: 0.59 }],
     volume: 2_800_000,
     volumeLabel: "$2.8M Vol.",
     resolutionDate: "2027-03-01",
@@ -436,39 +418,37 @@ const MOCK_MARKETS: PredictionMarket[] = [
     category: "weather",
     venue: "kalshi",
     type: "binary",
-    outcomes: [
-      { name: "Yes", probability: 23, yesPrice: 0.23, noPrice: 0.77 },
-    ],
+    outcomes: [{ name: "Yes", probability: 23, yesPrice: 0.23, noPrice: 0.77 }],
     volume: 7_800_000,
     volumeLabel: "$7.8M Vol.",
     resolutionDate: "2026-11-30",
     isLive: false,
     isTrending: false,
   },
-]
+];
 
 // ---------- Helper Functions ----------
 
 function formatVolume(vol: number): string {
-  if (vol >= 1_000_000_000) return `$${(vol / 1_000_000_000).toFixed(1)}B`
-  if (vol >= 1_000_000) return `$${(vol / 1_000_000).toFixed(1)}M`
-  if (vol >= 1_000) return `$${(vol / 1_000).toFixed(0)}K`
-  return `$${vol}`
+  if (vol >= 1_000_000_000) return `$${(vol / 1_000_000_000).toFixed(1)}B`;
+  if (vol >= 1_000_000) return `$${(vol / 1_000_000).toFixed(1)}M`;
+  if (vol >= 1_000) return `$${(vol / 1_000).toFixed(0)}K`;
+  return `$${vol}`;
 }
 
 function getPrimaryProbability(market: PredictionMarket): number {
-  if (market.type === "binary") return market.outcomes[0].probability
-  return Math.max(...market.outcomes.map((o) => o.probability))
+  if (market.type === "binary") return market.outcomes[0].probability;
+  return Math.max(...market.outcomes.map((o) => o.probability));
 }
 
 function getVenueBadgeClasses(venue: MarketVenue): string {
   return venue === "polymarket"
     ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-    : "bg-purple-500/20 text-purple-400 border-purple-500/30"
+    : "bg-purple-500/20 text-purple-400 border-purple-500/30";
 }
 
 function getVenueLabel(venue: MarketVenue): string {
-  return venue === "polymarket" ? "Polymarket" : "Kalshi"
+  return venue === "polymarket" ? "Polymarket" : "Kalshi";
 }
 
 // ---------- Sub-components ----------
@@ -477,8 +457,8 @@ function CategoryPills({
   active,
   onSelect,
 }: {
-  active: MarketCategory
-  onSelect: (cat: MarketCategory) => void
+  active: MarketCategory;
+  onSelect: (cat: MarketCategory) => void;
 }) {
   return (
     <ScrollArea className="w-full whitespace-nowrap">
@@ -490,20 +470,18 @@ function CategoryPills({
             size="sm"
             className={cn(
               "text-xs h-8 shrink-0 rounded-full",
-              active === cat.value && "bg-primary text-primary-foreground"
+              active === cat.value && "bg-primary text-primary-foreground",
             )}
             onClick={() => onSelect(cat.value)}
           >
-            {cat.value === "trending" && (
-              <Flame className="size-3 mr-1" />
-            )}
+            {cat.value === "trending" && <Flame className="size-3 mr-1" />}
             {cat.label}
           </Button>
         ))}
       </div>
       <ScrollBar orientation="horizontal" />
     </ScrollArea>
-  )
+  );
 }
 
 function LiveDot() {
@@ -512,7 +490,7 @@ function LiveDot() {
       <span className="absolute inline-flex size-full animate-ping rounded-full bg-red-400 opacity-75" />
       <span className="relative inline-flex size-2 rounded-full bg-red-500" />
     </span>
-  )
+  );
 }
 
 function ProbabilityBadge({ probability }: { probability: number }) {
@@ -521,7 +499,7 @@ function ProbabilityBadge({ probability }: { probability: number }) {
       ? "text-emerald-400"
       : probability >= 40
         ? "text-yellow-400"
-        : "text-red-400"
+        : "text-red-400";
 
   return (
     <div className="flex flex-col items-center gap-0.5">
@@ -532,7 +510,7 @@ function ProbabilityBadge({ probability }: { probability: number }) {
         chance
       </span>
     </div>
-  )
+  );
 }
 
 function YesNoButtons({
@@ -542,11 +520,11 @@ function YesNoButtons({
   onYes,
   onNo,
 }: {
-  yesPrice: number
-  noPrice: number
-  size?: "sm" | "default"
-  onYes?: () => void
-  onNo?: () => void
+  yesPrice: number;
+  noPrice: number;
+  size?: "sm" | "default";
+  onYes?: () => void;
+  onNo?: () => void;
 }) {
   return (
     <div className="flex gap-2">
@@ -555,7 +533,7 @@ function YesNoButtons({
         size={size}
         className={cn(
           "border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300",
-          size === "sm" ? "text-xs h-7 px-2.5" : "text-sm"
+          size === "sm" ? "text-xs h-7 px-2.5" : "text-sm",
         )}
         onClick={onYes}
       >
@@ -566,24 +544,24 @@ function YesNoButtons({
         size={size}
         className={cn(
           "border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300",
-          size === "sm" ? "text-xs h-7 px-2.5" : "text-sm"
+          size === "sm" ? "text-xs h-7 px-2.5" : "text-sm",
         )}
         onClick={onNo}
       >
         No {(noPrice * 100).toFixed(0)}c
       </Button>
     </div>
-  )
+  );
 }
 
 function BinaryMarketCard({
   market,
   onSelect,
 }: {
-  market: PredictionMarket
-  onSelect: (id: string) => void
+  market: PredictionMarket;
+  onSelect: (id: string) => void;
 }) {
-  const outcome = market.outcomes[0]
+  const outcome = market.outcomes[0];
   return (
     <Card
       className="bg-card hover:bg-muted/50 transition-colors cursor-pointer border-border/50"
@@ -594,28 +572,47 @@ function BinaryMarketCard({
           <div className="flex items-center gap-2 flex-wrap">
             <Badge
               variant="outline"
-              className={cn("text-[10px] shrink-0", getVenueBadgeClasses(market.venue))}
+              className={cn(
+                "text-[10px] shrink-0",
+                getVenueBadgeClasses(market.venue),
+              )}
             >
               {getVenueLabel(market.venue)}
             </Badge>
             {market.isLive && (
-              <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-400 flex items-center gap-1">
+              <Badge
+                variant="outline"
+                className="text-[10px] border-red-500/40 text-red-400 flex items-center gap-1"
+              >
                 <LiveDot />
                 LIVE
               </Badge>
             )}
             {market.isTrending && (
-              <Badge variant="outline" className="text-[10px] border-orange-500/40 text-orange-400">
+              <Badge
+                variant="outline"
+                className="text-[10px] border-orange-500/40 text-orange-400"
+              >
                 <TrendingUp className="size-2.5 mr-0.5" />
                 Trending
               </Badge>
             )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <Button variant="ghost" size="icon" className="size-7" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Bookmark className="size-3.5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="size-7" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Share2 className="size-3.5 text-muted-foreground" />
             </Button>
           </div>
@@ -649,15 +646,15 @@ function BinaryMarketCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function MultiOutcomeMarketCard({
   market,
   onSelect,
 }: {
-  market: PredictionMarket
-  onSelect: (id: string) => void
+  market: PredictionMarket;
+  onSelect: (id: string) => void;
 }) {
   return (
     <Card
@@ -669,28 +666,47 @@ function MultiOutcomeMarketCard({
           <div className="flex items-center gap-2 flex-wrap">
             <Badge
               variant="outline"
-              className={cn("text-[10px] shrink-0", getVenueBadgeClasses(market.venue))}
+              className={cn(
+                "text-[10px] shrink-0",
+                getVenueBadgeClasses(market.venue),
+              )}
             >
               {getVenueLabel(market.venue)}
             </Badge>
             {market.isLive && (
-              <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-400 flex items-center gap-1">
+              <Badge
+                variant="outline"
+                className="text-[10px] border-red-500/40 text-red-400 flex items-center gap-1"
+              >
                 <LiveDot />
                 LIVE
               </Badge>
             )}
             {market.isTrending && (
-              <Badge variant="outline" className="text-[10px] border-orange-500/40 text-orange-400">
+              <Badge
+                variant="outline"
+                className="text-[10px] border-orange-500/40 text-orange-400"
+              >
                 <TrendingUp className="size-2.5 mr-0.5" />
                 Trending
               </Badge>
             )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <Button variant="ghost" size="icon" className="size-7" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Bookmark className="size-3.5 text-muted-foreground" />
             </Button>
-            <Button variant="ghost" size="icon" className="size-7" onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Share2 className="size-3.5 text-muted-foreground" />
             </Button>
           </div>
@@ -706,13 +722,13 @@ function MultiOutcomeMarketCard({
               ? "bg-emerald-500/30"
               : outcome.probability >= 40
                 ? "bg-yellow-500/30"
-                : "bg-red-500/30"
+                : "bg-red-500/30";
           const textColor =
             outcome.probability >= 70
               ? "text-emerald-400"
               : outcome.probability >= 40
                 ? "text-yellow-400"
-                : "text-red-400"
+                : "text-red-400";
 
           return (
             <div key={outcome.name} className="relative">
@@ -723,8 +739,12 @@ function MultiOutcomeMarketCard({
               />
               <div className="relative flex items-center justify-between px-3 py-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-medium truncate">{outcome.name}</span>
-                  <span className={cn("text-xs font-bold tabular-nums", textColor)}>
+                  <span className="text-xs font-medium truncate">
+                    {outcome.name}
+                  </span>
+                  <span
+                    className={cn("text-xs font-bold tabular-nums", textColor)}
+                  >
                     {outcome.probability}%
                   </span>
                 </div>
@@ -736,7 +756,7 @@ function MultiOutcomeMarketCard({
                 />
               </div>
             </div>
-          )
+          );
         })}
         <Separator />
         <div className="flex items-center justify-between text-[11px] text-muted-foreground">
@@ -753,26 +773,27 @@ function MultiOutcomeMarketCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function MarketDetailPanel({
   market,
   onClose,
 }: {
-  market: PredictionMarket
-  onClose: () => void
+  market: PredictionMarket;
+  onClose: () => void;
 }) {
-  const { toast } = useToast()
-  const [stakeAmount, setStakeAmount] = React.useState("")
-  const [selectedSide, setSelectedSide] = React.useState<"yes" | "no">("yes")
-  const [selectedOutcomeIdx, setSelectedOutcomeIdx] = React.useState(0)
+  const { toast } = useToast();
+  const [stakeAmount, setStakeAmount] = React.useState("");
+  const [selectedSide, setSelectedSide] = React.useState<"yes" | "no">("yes");
+  const [selectedOutcomeIdx, setSelectedOutcomeIdx] = React.useState(0);
 
-  const selectedOutcome = market.outcomes[selectedOutcomeIdx]
-  const price = selectedSide === "yes" ? selectedOutcome.yesPrice : selectedOutcome.noPrice
-  const stakeNum = parseFloat(stakeAmount) || 0
-  const potentialReturn = stakeNum > 0 ? stakeNum / price : 0
-  const potentialProfit = potentialReturn - stakeNum
+  const selectedOutcome = market.outcomes[selectedOutcomeIdx];
+  const price =
+    selectedSide === "yes" ? selectedOutcome.yesPrice : selectedOutcome.noPrice;
+  const stakeNum = parseFloat(stakeAmount) || 0;
+  const potentialReturn = stakeNum > 0 ? stakeNum / price : 0;
+  const potentialProfit = potentialReturn - stakeNum;
 
   return (
     <Card className="bg-card border-border/50">
@@ -791,12 +812,18 @@ function MarketDetailPanel({
             <div className="flex items-center gap-2 flex-wrap">
               <Badge
                 variant="outline"
-                className={cn("text-[10px]", getVenueBadgeClasses(market.venue))}
+                className={cn(
+                  "text-[10px]",
+                  getVenueBadgeClasses(market.venue),
+                )}
               >
                 {getVenueLabel(market.venue)}
               </Badge>
               {market.isLive && (
-                <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-400 flex items-center gap-1">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] border-red-500/40 text-red-400 flex items-center gap-1"
+                >
                   <LiveDot />
                   LIVE
                 </Badge>
@@ -806,7 +833,12 @@ function MarketDetailPanel({
               {market.question}
             </CardTitle>
           </div>
-          <Button variant="ghost" size="icon" className="size-8 shrink-0" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8 shrink-0"
+            onClick={onClose}
+          >
             <X className="size-4" />
           </Button>
         </div>
@@ -826,7 +858,9 @@ function MarketDetailPanel({
         {/* Outcomes */}
         {market.type === "multi" && (
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">Select outcome</label>
+            <label className="text-xs text-muted-foreground">
+              Select outcome
+            </label>
             <div className="grid gap-1.5">
               {market.outcomes.map((outcome, idx) => (
                 <Button
@@ -837,7 +871,9 @@ function MarketDetailPanel({
                   onClick={() => setSelectedOutcomeIdx(idx)}
                 >
                   <span>{outcome.name}</span>
-                  <span className="font-bold tabular-nums">{outcome.probability}%</span>
+                  <span className="font-bold tabular-nums">
+                    {outcome.probability}%
+                  </span>
                 </Button>
               ))}
             </div>
@@ -849,7 +885,9 @@ function MarketDetailPanel({
           <label className="text-xs text-muted-foreground">Order book</label>
           <div className="grid grid-cols-2 gap-3 rounded-lg border border-border/50 p-3">
             <div className="text-center space-y-1">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">YES shares</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                YES shares
+              </p>
               <p className="text-lg font-bold text-emerald-400 tabular-nums">
                 {(selectedOutcome.yesPrice * 100).toFixed(0)}c
               </p>
@@ -858,7 +896,9 @@ function MarketDetailPanel({
               </p>
             </div>
             <div className="text-center space-y-1">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">NO shares</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                NO shares
+              </p>
               <p className="text-lg font-bold text-red-400 tabular-nums">
                 {(selectedOutcome.noPrice * 100).toFixed(0)}c
               </p>
@@ -882,7 +922,8 @@ function MarketDetailPanel({
               size="sm"
               className={cn(
                 "text-sm",
-                selectedSide === "yes" && "bg-emerald-600 hover:bg-emerald-700 text-white"
+                selectedSide === "yes" &&
+                  "bg-emerald-600 hover:bg-emerald-700 text-white",
               )}
               onClick={() => setSelectedSide("yes")}
             >
@@ -893,7 +934,8 @@ function MarketDetailPanel({
               size="sm"
               className={cn(
                 "text-sm",
-                selectedSide === "no" && "bg-red-600 hover:bg-red-700 text-white"
+                selectedSide === "no" &&
+                  "bg-red-600 hover:bg-red-700 text-white",
               )}
               onClick={() => setSelectedSide("no")}
             >
@@ -903,7 +945,9 @@ function MarketDetailPanel({
 
           {/* Stake input */}
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">Stake amount ($)</label>
+            <label className="text-xs text-muted-foreground">
+              Stake amount ($)
+            </label>
             <Input
               type="number"
               placeholder="0.00"
@@ -931,11 +975,15 @@ function MarketDetailPanel({
             <div className="rounded-lg border border-border/50 bg-muted/30 p-3 space-y-1.5">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Avg price</span>
-                <span className="tabular-nums">{(price * 100).toFixed(1)}c</span>
+                <span className="tabular-nums">
+                  {(price * 100).toFixed(1)}c
+                </span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Shares</span>
-                <span className="tabular-nums">{potentialReturn.toFixed(2)}</span>
+                <span className="tabular-nums">
+                  {potentialReturn.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Potential return</span>
@@ -952,11 +1000,12 @@ function MarketDetailPanel({
               "w-full",
               selectedSide === "yes"
                 ? "bg-emerald-600 hover:bg-emerald-700"
-                : "bg-red-600 hover:bg-red-700"
+                : "bg-red-600 hover:bg-red-700",
             )}
             disabled={stakeNum <= 0}
             onClick={() => {
-              const venueLabel = market.venue === "polymarket" ? "Polymarket" : "Kalshi"
+              const venueLabel =
+                market.venue === "polymarket" ? "Polymarket" : "Kalshi";
               const order = placeMockOrder({
                 client_id: "internal-trader",
                 instrument_id: `${market.venue.toUpperCase()}:${market.id}:${selectedOutcome.name}@${selectedSide.toUpperCase()}`,
@@ -967,12 +1016,16 @@ function MarketDetailPanel({
                 price,
                 asset_class: "Prediction",
                 lane: "predictions",
-              })
-              setStakeAmount("")
-              toast({ title: "Position opened", description: `${selectedSide.toUpperCase()} ${selectedOutcome.name} — $${stakeNum.toFixed(2)} @ ${(price * 100).toFixed(0)}c (${order.id})` })
+              });
+              setStakeAmount("");
+              toast({
+                title: "Position opened",
+                description: `${selectedSide.toUpperCase()} ${selectedOutcome.name} — $${stakeNum.toFixed(2)} @ ${(price * 100).toFixed(0)}c (${order.id})`,
+              });
             }}
           >
-            {selectedSide === "yes" ? "Buy YES" : "Buy NO"} — {selectedOutcome.name}
+            {selectedSide === "yes" ? "Buy YES" : "Buy NO"} —{" "}
+            {selectedOutcome.name}
           </Button>
         </div>
 
@@ -988,7 +1041,12 @@ function MarketDetailPanel({
               Resolves {market.resolutionDate}
             </span>
           )}
-          <Button variant="ghost" size="sm" className="text-[11px] h-6 px-1.5 text-muted-foreground" onClick={() => {}}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-[11px] h-6 px-1.5 text-muted-foreground"
+            onClick={() => {}}
+          >
             <ExternalLink className="size-3 mr-1" />
             View on {getVenueLabel(market.venue)}
           </Button>
@@ -996,9 +1054,11 @@ function MarketDetailPanel({
 
         {/* Related markets */}
         <div className="space-y-2 pt-2">
-          <p className="text-xs text-muted-foreground font-medium">Related markets</p>
+          <p className="text-xs text-muted-foreground font-medium">
+            Related markets
+          </p>
           {MOCK_MARKETS.filter(
-            (m) => m.category === market.category && m.id !== market.id
+            (m) => m.category === market.category && m.id !== market.id,
           )
             .slice(0, 3)
             .map((related) => (
@@ -1018,67 +1078,83 @@ function MarketDetailPanel({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // ---------- Main Component ----------
 
 export function PredictionMarketsPanel() {
-  const [activeCategory, setActiveCategory] = React.useState<MarketCategory>("trending")
-  const [venueFilter, setVenueFilter] = React.useState<"all" | MarketVenue>("all")
-  const [sortBy, setSortBy] = React.useState<SortOption>("trending")
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [selectedMarketId, setSelectedMarketId] = React.useState<string | null>(null)
+  const [activeCategory, setActiveCategory] =
+    React.useState<MarketCategory>("trending");
+  const [venueFilter, setVenueFilter] = React.useState<"all" | MarketVenue>(
+    "all",
+  );
+  const [sortBy, setSortBy] = React.useState<SortOption>("trending");
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [selectedMarketId, setSelectedMarketId] = React.useState<string | null>(
+    null,
+  );
 
   // Filter markets
   const filteredMarkets = React.useMemo(() => {
-    let markets = [...MOCK_MARKETS]
+    let markets = [...MOCK_MARKETS];
 
     // Category filter
     if (activeCategory === "trending") {
-      markets = markets.filter((m) => m.isTrending)
+      markets = markets.filter((m) => m.isTrending);
     } else if (activeCategory === "breaking") {
-      markets = markets.filter((m) => m.isLive || m.isTrending)
+      markets = markets.filter((m) => m.isLive || m.isTrending);
     } else {
-      markets = markets.filter((m) => m.category === activeCategory)
+      markets = markets.filter((m) => m.category === activeCategory);
     }
 
     // Venue filter
     if (venueFilter !== "all") {
-      markets = markets.filter((m) => m.venue === venueFilter)
+      markets = markets.filter((m) => m.venue === venueFilter);
     }
 
     // Search filter
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      markets = markets.filter((m) =>
-        m.question.toLowerCase().includes(query) ||
-        m.outcomes.some((o) => o.name.toLowerCase().includes(query))
-      )
+      const query = searchQuery.toLowerCase();
+      markets = markets.filter(
+        (m) =>
+          m.question.toLowerCase().includes(query) ||
+          m.outcomes.some((o) => o.name.toLowerCase().includes(query)),
+      );
     }
 
     // Sort
     switch (sortBy) {
       case "trending":
-        markets.sort((a, b) => (b.isTrending ? 1 : 0) - (a.isTrending ? 1 : 0) || b.volume - a.volume)
-        break
+        markets.sort(
+          (a, b) =>
+            (b.isTrending ? 1 : 0) - (a.isTrending ? 1 : 0) ||
+            b.volume - a.volume,
+        );
+        break;
       case "newest":
-        markets.sort((a, b) => (b.resolutionDate ?? "").localeCompare(a.resolutionDate ?? ""))
-        break
+        markets.sort((a, b) =>
+          (b.resolutionDate ?? "").localeCompare(a.resolutionDate ?? ""),
+        );
+        break;
       case "highest_volume":
-        markets.sort((a, b) => b.volume - a.volume)
-        break
+        markets.sort((a, b) => b.volume - a.volume);
+        break;
       case "closing_soon":
-        markets.sort((a, b) => (a.resolutionDate ?? "9999").localeCompare(b.resolutionDate ?? "9999"))
-        break
+        markets.sort((a, b) =>
+          (a.resolutionDate ?? "9999").localeCompare(
+            b.resolutionDate ?? "9999",
+          ),
+        );
+        break;
     }
 
-    return markets
-  }, [activeCategory, venueFilter, searchQuery, sortBy])
+    return markets;
+  }, [activeCategory, venueFilter, searchQuery, sortBy]);
 
   const selectedMarket = selectedMarketId
-    ? MOCK_MARKETS.find((m) => m.id === selectedMarketId) ?? null
-    : null
+    ? (MOCK_MARKETS.find((m) => m.id === selectedMarketId) ?? null)
+    : null;
 
   // If a market is selected, show detail view
   if (selectedMarket) {
@@ -1089,7 +1165,7 @@ export function PredictionMarketsPanel() {
           onClose={() => setSelectedMarketId(null)}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -1108,7 +1184,7 @@ export function PredictionMarketsPanel() {
               size="sm"
               className={cn(
                 "text-xs h-8 rounded-none px-3 border-r border-border/50 last:border-r-0",
-                venueFilter === venue && "bg-muted text-foreground"
+                venueFilter === venue && "bg-muted text-foreground",
               )}
               onClick={() => setVenueFilter(venue)}
             >
@@ -1118,7 +1194,10 @@ export function PredictionMarketsPanel() {
         </div>
 
         {/* Sort dropdown */}
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+        <Select
+          value={sortBy}
+          onValueChange={(v) => setSortBy(v as SortOption)}
+        >
           <SelectTrigger className="h-8 w-[160px] text-xs">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
@@ -1156,7 +1235,8 @@ export function PredictionMarketsPanel() {
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          {filteredMarkets.length} market{filteredMarkets.length !== 1 ? "s" : ""}
+          {filteredMarkets.length} market
+          {filteredMarkets.length !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -1186,10 +1266,10 @@ export function PredictionMarketsPanel() {
                 market={market}
                 onSelect={setSelectedMarketId}
               />
-            )
+            ),
           )}
         </div>
       )}
     </div>
-  )
+  );
 }

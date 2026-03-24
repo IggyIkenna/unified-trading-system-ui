@@ -1,32 +1,59 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { useAuth } from "@/hooks/use-auth"
-import { SERVICE_REGISTRY, getVisibleServices } from "@/lib/config/services"
-import type { ServiceDefinition } from "@/lib/config/services"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import Link from "next/link";
+import { useAuth } from "@/hooks/use-auth";
+import { SERVICE_REGISTRY, getVisibleServices } from "@/lib/config/services";
+import type { ServiceDefinition } from "@/lib/config/services";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
-  Database, LineChart, TrendingUp, Wallet, Zap, Shield, Bell,
-  FlaskConical, FileText, Brain, Settings, Activity, Cloud,
-  ClipboardCheck, Users, Lock, ArrowRight, Sparkles,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+  Database,
+  LineChart,
+  TrendingUp,
+  Wallet,
+  Zap,
+  Shield,
+  Bell,
+  FlaskConical,
+  FileText,
+  Brain,
+  Settings,
+  Activity,
+  Cloud,
+  ClipboardCheck,
+  Users,
+  Lock,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  Database, LineChart, TrendingUp, Wallet, Zap, Shield, Bell,
-  FlaskConical, FileText, Brain, Settings, Activity, Cloud,
-  ClipboardCheck, Users,
-}
+  Database,
+  LineChart,
+  TrendingUp,
+  Wallet,
+  Zap,
+  Shield,
+  Bell,
+  FlaskConical,
+  FileText,
+  Brain,
+  Settings,
+  Activity,
+  Cloud,
+  ClipboardCheck,
+  Users,
+};
 
 const CATEGORY_COLORS: Record<string, string> = {
   data: "border-blue-500/30 hover:border-blue-500/60",
@@ -34,7 +61,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   analytics: "border-purple-500/30 hover:border-purple-500/60",
   ml: "border-cyan-500/30 hover:border-cyan-500/60",
   ops: "border-red-500/30 hover:border-red-500/60",
-}
+};
 
 const CATEGORY_LABELS: Record<string, string> = {
   data: "Data",
@@ -42,7 +69,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   analytics: "Research & Analytics",
   ml: "Machine Learning",
   ops: "Operations",
-}
+};
 
 // Mock quick stats per service
 const SERVICE_STATS: Record<string, string> = {
@@ -54,17 +81,17 @@ const SERVICE_STATS: Record<string, string> = {
   manage: "3 client orgs",
   admin: "4 orgs, 12 users",
   devops: "10 services healthy",
-}
+};
 
 interface ServiceCardProps {
-  service: ServiceDefinition
-  state: "available" | "locked"
-  onUpgradeClick: (service: ServiceDefinition) => void
+  service: ServiceDefinition;
+  state: "available" | "locked";
+  onUpgradeClick: (service: ServiceDefinition) => void;
 }
 
 function ServiceCard({ service, state, onUpgradeClick }: ServiceCardProps) {
-  const Icon = ICON_MAP[service.icon] || Database
-  const stat = SERVICE_STATS[service.key]
+  const Icon = ICON_MAP[service.icon] || Database;
+  const stat = SERVICE_STATS[service.key];
 
   if (state === "locked") {
     return (
@@ -72,7 +99,7 @@ function ServiceCard({ service, state, onUpgradeClick }: ServiceCardProps) {
         onClick={() => onUpgradeClick(service)}
         className={cn(
           "relative w-full text-left rounded-xl border border-border/50 bg-card/30 p-5 transition-all hover:bg-card/50",
-          "opacity-60 hover:opacity-80"
+          "opacity-60 hover:opacity-80",
         )}
       >
         <div className="flex items-start justify-between mb-3">
@@ -81,15 +108,22 @@ function ServiceCard({ service, state, onUpgradeClick }: ServiceCardProps) {
           </div>
           <Lock className="size-4 text-muted-foreground" />
         </div>
-        <h3 className="font-semibold text-sm text-muted-foreground">{service.label}</h3>
-        <p className="text-xs text-muted-foreground/60 mt-1 line-clamp-2">{service.description}</p>
+        <h3 className="font-semibold text-sm text-muted-foreground">
+          {service.label}
+        </h3>
+        <p className="text-xs text-muted-foreground/60 mt-1 line-clamp-2">
+          {service.description}
+        </p>
         <div className="mt-3">
-          <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-400">
+          <Badge
+            variant="outline"
+            className="text-[10px] border-amber-500/30 text-amber-400"
+          >
             Upgrade to access
           </Badge>
         </div>
       </button>
-    )
+    );
   }
 
   return (
@@ -97,7 +131,7 @@ function ServiceCard({ service, state, onUpgradeClick }: ServiceCardProps) {
       href={`/services/${service.key}`}
       className={cn(
         "block rounded-xl border bg-card p-5 transition-all hover:bg-accent/50",
-        CATEGORY_COLORS[service.lifecycleStage] ?? ""
+        CATEGORY_COLORS[service.lifecycleStage] ?? "",
       )}
     >
       <div className="flex items-start justify-between mb-3">
@@ -105,18 +139,23 @@ function ServiceCard({ service, state, onUpgradeClick }: ServiceCardProps) {
           <Icon className="size-5 text-primary" />
         </div>
         {service.internalOnly && (
-          <Badge variant="outline" className="text-[10px] border-red-500/30 text-red-400">
+          <Badge
+            variant="outline"
+            className="text-[10px] border-red-500/30 text-red-400"
+          >
             Internal
           </Badge>
         )}
       </div>
       <h3 className="font-semibold text-sm">{service.label}</h3>
-      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
+      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+        {service.description}
+      </p>
       {stat && (
         <div className="mt-3 text-xs font-medium text-primary/80">{stat}</div>
       )}
     </Link>
-  )
+  );
 }
 
 function UpgradeModal({
@@ -124,12 +163,12 @@ function UpgradeModal({
   open,
   onClose,
 }: {
-  service: ServiceDefinition | null
-  open: boolean
-  onClose: () => void
+  service: ServiceDefinition | null;
+  open: boolean;
+  onClose: () => void;
 }) {
-  if (!service) return null
-  const Icon = ICON_MAP[service.icon] || Database
+  if (!service) return null;
+  const Icon = ICON_MAP[service.icon] || Database;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -152,13 +191,16 @@ function UpgradeModal({
             <h4 className="text-sm font-medium">What you get:</h4>
             <ul className="text-xs text-muted-foreground space-y-1">
               <li className="flex items-center gap-2">
-                <Sparkles className="size-3 text-primary" /> Full access to {service.label.toLowerCase()}
+                <Sparkles className="size-3 text-primary" /> Full access to{" "}
+                {service.label.toLowerCase()}
               </li>
               <li className="flex items-center gap-2">
-                <Sparkles className="size-3 text-primary" /> Org-scoped data and analytics
+                <Sparkles className="size-3 text-primary" /> Org-scoped data and
+                analytics
               </li>
               <li className="flex items-center gap-2">
-                <Sparkles className="size-3 text-primary" /> API access for programmatic integration
+                <Sparkles className="size-3 text-primary" /> API access for
+                programmatic integration
               </li>
             </ul>
           </div>
@@ -174,26 +216,29 @@ function UpgradeModal({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
 export function ServiceHub() {
-  const { user, hasEntitlement, isInternal } = useAuth()
-  const [upgradeService, setUpgradeService] = React.useState<ServiceDefinition | null>(null)
+  const { user, hasEntitlement, isInternal } = useAuth();
+  const [upgradeService, setUpgradeService] =
+    React.useState<ServiceDefinition | null>(null);
 
-  if (!user) return null
+  if (!user) return null;
 
-  const visibleServices = getVisibleServices([...user.entitlements], user.role)
+  const visibleServices = getVisibleServices([...user.entitlements], user.role);
   const allServices = SERVICE_REGISTRY.filter((s) => {
-    if (s.internalOnly && !isInternal()) return false
-    return true
-  })
+    if (s.internalOnly && !isInternal()) return false;
+    return true;
+  });
 
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {allServices.map((service) => {
-          const isAvailable = visibleServices.some((v) => v.key === service.key)
+          const isAvailable = visibleServices.some(
+            (v) => v.key === service.key,
+          );
           return (
             <ServiceCard
               key={service.key}
@@ -201,7 +246,7 @@ export function ServiceHub() {
               state={isAvailable ? "available" : "locked"}
               onUpgradeClick={setUpgradeService}
             />
-          )
+          );
         })}
       </div>
 
@@ -211,5 +256,5 @@ export function ServiceHub() {
         onClose={() => setUpgradeService(null)}
       />
     </>
-  )
+  );
 }

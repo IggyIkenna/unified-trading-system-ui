@@ -1,6 +1,6 @@
 /**
  * Custom ESLint rules for trading dashboard
- * 
+ *
  * These rules help catch common issues:
  * - Buttons without handlers
  * - Components that don't respect filters
@@ -28,4 +28,4 @@ module.exports = {
       },
     },
   },
-}
+};

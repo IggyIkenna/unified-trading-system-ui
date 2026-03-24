@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Activity,
   AlertTriangle,
@@ -11,25 +11,25 @@ import {
   Clock,
   RefreshCw,
   Zap,
-} from "lucide-react"
+} from "lucide-react";
 
 // Circuit breaker states
-type CircuitState = "CLOSED" | "DEGRADED" | "OPEN" | "HALF_OPEN"
+type CircuitState = "CLOSED" | "DEGRADED" | "OPEN" | "HALF_OPEN";
 
 interface CircuitBreaker {
-  venue: string
-  venueName: string
-  state: CircuitState
-  errorRate: number
-  errorWindow: number // events in window
-  consecutiveFailures: number
-  lastTrip?: string
-  cooldownRemaining?: number // seconds
-  queueDepth?: { current: number; max: number }
-  throttlePercent?: number
-  nextProbe?: string
-  backoffSeconds?: number
-  baseBackoff?: number
+  venue: string;
+  venueName: string;
+  state: CircuitState;
+  errorRate: number;
+  errorWindow: number; // events in window
+  consecutiveFailures: number;
+  lastTrip?: string;
+  cooldownRemaining?: number; // seconds
+  queueDepth?: { current: number; max: number };
+  throttlePercent?: number;
+  nextProbe?: string;
+  backoffSeconds?: number;
+  baseBackoff?: number;
 }
 
 // Mock circuit breaker data
@@ -128,7 +128,7 @@ const CIRCUIT_BREAKERS: CircuitBreaker[] = [
     consecutiveFailures: 0,
     lastTrip: "12 hours ago",
   },
-]
+];
 
 function getStateConfig(state: CircuitState) {
   switch (state) {
@@ -139,7 +139,7 @@ function getStateConfig(state: CircuitState) {
         borderColor: "border-[var(--status-live)]/30",
         label: "CLOSED",
         icon: CheckCircle2,
-      }
+      };
     case "DEGRADED":
       return {
         color: "var(--status-warning)",
@@ -147,7 +147,7 @@ function getStateConfig(state: CircuitState) {
         borderColor: "border-[var(--status-warning)]/30",
         label: "DEGRADED",
         icon: AlertTriangle,
-      }
+      };
     case "OPEN":
       return {
         color: "var(--status-error)",
@@ -155,7 +155,7 @@ function getStateConfig(state: CircuitState) {
         borderColor: "border-[var(--status-error)]/30",
         label: "OPEN",
         icon: Zap,
-      }
+      };
     case "HALF_OPEN":
       return {
         color: "#3b82f6", // blue
@@ -163,22 +163,22 @@ function getStateConfig(state: CircuitState) {
         borderColor: "border-blue-500/30",
         label: "HALF_OPEN",
         icon: RefreshCw,
-      }
+      };
   }
 }
 
 interface CircuitBreakerGridProps {
-  className?: string
+  className?: string;
 }
 
 export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
-  const [now, setNow] = React.useState(Date.now())
+  const [now, setNow] = React.useState(Date.now());
 
   // Update every second for cooldown timers
   React.useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 1000)
-    return () => clearInterval(interval)
-  }, [])
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Card className={className}>
@@ -187,23 +187,24 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
           <Activity className="size-4" />
           Circuit Breakers
           <Badge variant="secondary" className="ml-auto text-xs">
-            {CIRCUIT_BREAKERS.filter(cb => cb.state === "CLOSED").length}/{CIRCUIT_BREAKERS.length} healthy
+            {CIRCUIT_BREAKERS.filter((cb) => cb.state === "CLOSED").length}/
+            {CIRCUIT_BREAKERS.length} healthy
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {CIRCUIT_BREAKERS.map((cb) => {
-            const config = getStateConfig(cb.state)
-            const Icon = config.icon
-            
+            const config = getStateConfig(cb.state);
+            const Icon = config.icon;
+
             return (
               <div
                 key={cb.venue}
                 className={cn(
                   "p-3 rounded-lg border transition-all",
                   config.bgColor,
-                  config.borderColor
+                  config.borderColor,
                 )}
               >
                 {/* Header */}
@@ -222,15 +223,19 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
                 <div className="space-y-1 text-xs">
                   <div className="flex justify-between text-muted-foreground">
                     <span>Error rate:</span>
-                    <span className={cn(
-                      "font-mono",
-                      cb.errorRate > 10 && "text-[var(--status-error)]",
-                      cb.errorRate > 5 && cb.errorRate <= 10 && "text-[var(--status-warning)]"
-                    )}>
+                    <span
+                      className={cn(
+                        "font-mono",
+                        cb.errorRate > 10 && "text-[var(--status-error)]",
+                        cb.errorRate > 5 &&
+                          cb.errorRate <= 10 &&
+                          "text-[var(--status-warning)]",
+                      )}
+                    >
                       {cb.errorRate}% ({cb.errorWindow}-event window)
                     </span>
                   </div>
-                  
+
                   <div className="flex justify-between text-muted-foreground">
                     <span>Consecutive failures:</span>
                     <span className="font-mono">{cb.consecutiveFailures}</span>
@@ -244,16 +249,24 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
                   )}
 
                   {cb.state === "DEGRADED" && cb.throttlePercent && (
-                    <div className="flex justify-between" style={{ color: config.color }}>
+                    <div
+                      className="flex justify-between"
+                      style={{ color: config.color }}
+                    >
                       <span>Throttle:</span>
-                      <span className="font-mono">{cb.throttlePercent}% of orders pass</span>
+                      <span className="font-mono">
+                        {cb.throttlePercent}% of orders pass
+                      </span>
                     </div>
                   )}
 
                   {cb.state === "OPEN" && (
                     <>
                       {cb.cooldownRemaining && (
-                        <div className="flex justify-between" style={{ color: config.color }}>
+                        <div
+                          className="flex justify-between"
+                          style={{ color: config.color }}
+                        >
                           <span>Cooldown:</span>
                           <span className="font-mono flex items-center gap-1">
                             <Clock className="size-3" />
@@ -264,7 +277,9 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
                       {cb.queueDepth && (
                         <div className="flex justify-between text-muted-foreground">
                           <span>Queue depth:</span>
-                          <span className="font-mono">{cb.queueDepth.current}/{cb.queueDepth.max} orders</span>
+                          <span className="font-mono">
+                            {cb.queueDepth.current}/{cb.queueDepth.max} orders
+                          </span>
                         </div>
                       )}
                       {cb.nextProbe && (
@@ -276,21 +291,29 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
                       {cb.backoffSeconds && cb.baseBackoff && (
                         <div className="flex justify-between text-muted-foreground">
                           <span>Backoff:</span>
-                          <span className="font-mono">{cb.backoffSeconds}s (base {cb.baseBackoff}s x {cb.backoffSeconds / cb.baseBackoff})</span>
+                          <span className="font-mono">
+                            {cb.backoffSeconds}s (base {cb.baseBackoff}s x{" "}
+                            {cb.backoffSeconds / cb.baseBackoff})
+                          </span>
                         </div>
                       )}
                     </>
                   )}
 
                   {cb.state === "HALF_OPEN" && cb.queueDepth && (
-                    <div className="flex justify-between" style={{ color: config.color }}>
+                    <div
+                      className="flex justify-between"
+                      style={{ color: config.color }}
+                    >
                       <span>Probe queue:</span>
-                      <span className="font-mono">{cb.queueDepth.current}/{cb.queueDepth.max}</span>
+                      <span className="font-mono">
+                        {cb.queueDepth.current}/{cb.queueDepth.max}
+                      </span>
                     </div>
                   )}
                 </div>
               </div>
-            )
+            );
           })}
         </div>
 
@@ -315,5 +338,5 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

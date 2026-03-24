@@ -1,13 +1,21 @@
-"use client"
+"use client";
 
-import { ServiceTabs, OBSERVE_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
-import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
-import { EntitlementGate } from "@/components/platform/entitlement-gate"
-import { useAuth } from "@/hooks/use-auth"
+import {
+  ServiceTabs,
+  OBSERVE_TABS,
+  LIVE_ASOF_VISIBLE,
+} from "@/components/shell/service-tabs";
+import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { EntitlementGate } from "@/components/platform/entitlement-gate";
+import { useAuth } from "@/hooks/use-auth";
 
-export default function ObserveServiceLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
+export default function ObserveServiceLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user } = useAuth();
 
   return (
     <>
@@ -20,5 +28,5 @@ export default function ObserveServiceLayout({ children }: { children: React.Rea
         <ErrorBoundary>{children}</ErrorBoundary>
       </EntitlementGate>
     </>
-  )
+  );
 }

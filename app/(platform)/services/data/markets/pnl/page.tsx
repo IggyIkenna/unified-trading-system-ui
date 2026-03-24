@@ -1,19 +1,25 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { use } from "react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { PnLValue } from "@/components/trading/pnl-value"
-import { EntityLink } from "@/components/trading/entity-link"
+import * as React from "react";
+import { use } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { PnLValue } from "@/components/trading/pnl-value";
+import { EntityLink } from "@/components/trading/entity-link";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -21,7 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   ArrowLeft,
   TrendingUp,
@@ -30,66 +36,227 @@ import {
   Download,
   Calendar,
   Filter,
-} from "lucide-react"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { PNL_FACTORS } from "@/lib/reference-data"
+} from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { PNL_FACTORS } from "@/lib/reference-data";
 
 interface FactorBreakdown {
-  strategyId: string
-  strategyName: string
-  pnl: number
-  percentage: number
-  exposure: string
-  trades: number
+  strategyId: string;
+  strategyName: string;
+  pnl: number;
+  percentage: number;
+  exposure: string;
+  trades: number;
 }
 
 // Mock data for factor drill-down by strategy
 const factorBreakdowns: Record<string, FactorBreakdown[]> = {
   funding: [
-    { strategyId: "btc-basis-v3", strategyName: "BTC Basis v3", pnl: 245000, percentage: 59.5, exposure: "$4.2m", trades: 142 },
-    { strategyId: "eth-staked-basis", strategyName: "ETH Staked Basis", pnl: 128000, percentage: 31.1, exposure: "$2.8m", trades: 87 },
-    { strategyId: "aave-lending", strategyName: "AAVE Lending", pnl: 39000, percentage: 9.4, exposure: "$1.1m", trades: 23 },
+    {
+      strategyId: "btc-basis-v3",
+      strategyName: "BTC Basis v3",
+      pnl: 245000,
+      percentage: 59.5,
+      exposure: "$4.2m",
+      trades: 142,
+    },
+    {
+      strategyId: "eth-staked-basis",
+      strategyName: "ETH Staked Basis",
+      pnl: 128000,
+      percentage: 31.1,
+      exposure: "$2.8m",
+      trades: 87,
+    },
+    {
+      strategyId: "aave-lending",
+      strategyName: "AAVE Lending",
+      pnl: 39000,
+      percentage: 9.4,
+      exposure: "$1.1m",
+      trades: 23,
+    },
   ],
   carry: [
-    { strategyId: "eth-staked-basis", strategyName: "ETH Staked Basis", pnl: 198000, percentage: 55.8, exposure: "$2.8m", trades: 87 },
-    { strategyId: "btc-basis-v3", strategyName: "BTC Basis v3", pnl: 112000, percentage: 31.5, exposure: "$4.2m", trades: 142 },
-    { strategyId: "aave-recursive", strategyName: "AAVE Recursive", pnl: 45000, percentage: 12.7, exposure: "$0.9m", trades: 45 },
+    {
+      strategyId: "eth-staked-basis",
+      strategyName: "ETH Staked Basis",
+      pnl: 198000,
+      percentage: 55.8,
+      exposure: "$2.8m",
+      trades: 87,
+    },
+    {
+      strategyId: "btc-basis-v3",
+      strategyName: "BTC Basis v3",
+      pnl: 112000,
+      percentage: 31.5,
+      exposure: "$4.2m",
+      trades: 142,
+    },
+    {
+      strategyId: "aave-recursive",
+      strategyName: "AAVE Recursive",
+      pnl: 45000,
+      percentage: 12.7,
+      exposure: "$0.9m",
+      trades: 45,
+    },
   ],
   basis: [
-    { strategyId: "btc-basis-v3", strategyName: "BTC Basis v3", pnl: 142000, percentage: 75.5, exposure: "$4.2m", trades: 142 },
-    { strategyId: "eth-staked-basis", strategyName: "ETH Staked Basis", pnl: 46000, percentage: 24.5, exposure: "$2.8m", trades: 87 },
+    {
+      strategyId: "btc-basis-v3",
+      strategyName: "BTC Basis v3",
+      pnl: 142000,
+      percentage: 75.5,
+      exposure: "$4.2m",
+      trades: 142,
+    },
+    {
+      strategyId: "eth-staked-basis",
+      strategyName: "ETH Staked Basis",
+      pnl: 46000,
+      percentage: 24.5,
+      exposure: "$2.8m",
+      trades: 87,
+    },
   ],
   delta: [
-    { strategyId: "ml-directional", strategyName: "ML Directional BTC", pnl: -42000, percentage: -68.9, exposure: "$1.2m", trades: 341 },
-    { strategyId: "spy-momentum", strategyName: "SPY Momentum", pnl: 68000, percentage: 111.5, exposure: "$0.8m", trades: 124 },
-    { strategyId: "btc-mm-binance", strategyName: "BTC Market Making", pnl: 35000, percentage: 57.4, exposure: "$1.5m", trades: 892 },
+    {
+      strategyId: "ml-directional",
+      strategyName: "ML Directional BTC",
+      pnl: -42000,
+      percentage: -68.9,
+      exposure: "$1.2m",
+      trades: 341,
+    },
+    {
+      strategyId: "spy-momentum",
+      strategyName: "SPY Momentum",
+      pnl: 68000,
+      percentage: 111.5,
+      exposure: "$0.8m",
+      trades: 124,
+    },
+    {
+      strategyId: "btc-mm-binance",
+      strategyName: "BTC Market Making",
+      pnl: 35000,
+      percentage: 57.4,
+      exposure: "$1.5m",
+      trades: 892,
+    },
   ],
   gamma: [
-    { strategyId: "eth-options-mm", strategyName: "ETH Options MM", pnl: 18000, percentage: 75.0, exposure: "Δ:-0.12", trades: 234 },
-    { strategyId: "btc-basis-v3", strategyName: "BTC Basis v3", pnl: 6000, percentage: 25.0, exposure: "Δ:-0.02", trades: 142 },
+    {
+      strategyId: "eth-options-mm",
+      strategyName: "ETH Options MM",
+      pnl: 18000,
+      percentage: 75.0,
+      exposure: "Δ:-0.12",
+      trades: 234,
+    },
+    {
+      strategyId: "btc-basis-v3",
+      strategyName: "BTC Basis v3",
+      pnl: 6000,
+      percentage: 25.0,
+      exposure: "Δ:-0.02",
+      trades: 142,
+    },
   ],
   vega: [
-    { strategyId: "eth-options-mm", strategyName: "ETH Options MM", pnl: -8000, percentage: 100.0, exposure: "v: 12.4k", trades: 234 },
+    {
+      strategyId: "eth-options-mm",
+      strategyName: "ETH Options MM",
+      pnl: -8000,
+      percentage: 100.0,
+      exposure: "v: 12.4k",
+      trades: 234,
+    },
   ],
   theta: [
-    { strategyId: "eth-options-mm", strategyName: "ETH Options MM", pnl: -12000, percentage: 100.0, exposure: "θ: -1.2k", trades: 234 },
+    {
+      strategyId: "eth-options-mm",
+      strategyName: "ETH Options MM",
+      pnl: -12000,
+      percentage: 100.0,
+      exposure: "θ: -1.2k",
+      trades: 234,
+    },
   ],
   slippage: [
-    { strategyId: "ml-directional", strategyName: "ML Directional BTC", pnl: -28000, percentage: 45.9, exposure: "12 bps", trades: 341 },
-    { strategyId: "btc-mm-binance", strategyName: "BTC Market Making", pnl: -18000, percentage: 29.5, exposure: "4 bps", trades: 892 },
-    { strategyId: "cross-exchange-arb", strategyName: "Cross-Exchange Arb", pnl: -15000, percentage: 24.6, exposure: "8 bps", trades: 567 },
+    {
+      strategyId: "ml-directional",
+      strategyName: "ML Directional BTC",
+      pnl: -28000,
+      percentage: 45.9,
+      exposure: "12 bps",
+      trades: 341,
+    },
+    {
+      strategyId: "btc-mm-binance",
+      strategyName: "BTC Market Making",
+      pnl: -18000,
+      percentage: 29.5,
+      exposure: "4 bps",
+      trades: 892,
+    },
+    {
+      strategyId: "cross-exchange-arb",
+      strategyName: "Cross-Exchange Arb",
+      pnl: -15000,
+      percentage: 24.6,
+      exposure: "8 bps",
+      trades: 567,
+    },
   ],
   fees: [
-    { strategyId: "btc-mm-binance", strategyName: "BTC Market Making", pnl: -22000, percentage: 50.0, exposure: "-", trades: 892 },
-    { strategyId: "ml-directional", strategyName: "ML Directional BTC", pnl: -12000, percentage: 27.3, exposure: "-", trades: 341 },
-    { strategyId: "cross-exchange-arb", strategyName: "Cross-Exchange Arb", pnl: -10000, percentage: 22.7, exposure: "-", trades: 567 },
+    {
+      strategyId: "btc-mm-binance",
+      strategyName: "BTC Market Making",
+      pnl: -22000,
+      percentage: 50.0,
+      exposure: "-",
+      trades: 892,
+    },
+    {
+      strategyId: "ml-directional",
+      strategyName: "ML Directional BTC",
+      pnl: -12000,
+      percentage: 27.3,
+      exposure: "-",
+      trades: 341,
+    },
+    {
+      strategyId: "cross-exchange-arb",
+      strategyName: "Cross-Exchange Arb",
+      pnl: -10000,
+      percentage: 22.7,
+      exposure: "-",
+      trades: 567,
+    },
   ],
   rebates: [
-    { strategyId: "btc-mm-binance", strategyName: "BTC Market Making", pnl: 14000, percentage: 77.8, exposure: "-", trades: 892 },
-    { strategyId: "cross-exchange-arb", strategyName: "Cross-Exchange Arb", pnl: 4000, percentage: 22.2, exposure: "-", trades: 567 },
+    {
+      strategyId: "btc-mm-binance",
+      strategyName: "BTC Market Making",
+      pnl: 14000,
+      percentage: 77.8,
+      exposure: "-",
+      trades: 892,
+    },
+    {
+      strategyId: "cross-exchange-arb",
+      strategyName: "Cross-Exchange Arb",
+      pnl: 4000,
+      percentage: 22.2,
+      exposure: "-",
+      trades: 567,
+    },
   ],
-}
+};
 
 // Factor totals
 const factorTotals: Record<string, number> = {
@@ -103,15 +270,15 @@ const factorTotals: Record<string, number> = {
   slippage: -61000,
   fees: -44000,
   rebates: 18000,
-}
+};
 
 export default function PnLDetailPage() {
-  const [selectedFactor, setSelectedFactor] = React.useState("funding")
-  const [dateRange, setDateRange] = React.useState("today")
+  const [selectedFactor, setSelectedFactor] = React.useState("funding");
+  const [dateRange, setDateRange] = React.useState("today");
 
-  const breakdown = factorBreakdowns[selectedFactor] || []
-  const total = factorTotals[selectedFactor] || 0
-  const factorInfo = PNL_FACTORS.find((f) => f.id === selectedFactor)
+  const breakdown = factorBreakdowns[selectedFactor] || [];
+  const total = factorTotals[selectedFactor] || 0;
+  const factorInfo = PNL_FACTORS.find((f) => f.id === selectedFactor);
 
   return (
     <div className="p-6">
@@ -161,9 +328,9 @@ export default function PnLDetailPage() {
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {PNL_FACTORS.map((factor) => {
-                const total = factorTotals[factor.id] || 0
-                const isPositive = total >= 0
-                const isSelected = selectedFactor === factor.id
+                const total = factorTotals[factor.id] || 0;
+                const isPositive = total >= 0;
+                const isSelected = selectedFactor === factor.id;
 
                 return (
                   <Button
@@ -173,7 +340,8 @@ export default function PnLDetailPage() {
                     onClick={() => setSelectedFactor(factor.id)}
                     className={cn(
                       "gap-2",
-                      isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      isSelected &&
+                        "ring-2 ring-primary ring-offset-2 ring-offset-background",
                     )}
                   >
                     {isPositive ? (
@@ -182,11 +350,19 @@ export default function PnLDetailPage() {
                       <TrendingDown className="size-3.5 text-[var(--pnl-negative)]" />
                     )}
                     {factor.label}
-                    <span className={cn("font-mono text-xs", isPositive ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}>
-                      {isPositive ? "+" : ""}{(total / 1000).toFixed(0)}k
+                    <span
+                      className={cn(
+                        "font-mono text-xs",
+                        isPositive
+                          ? "text-[var(--pnl-positive)]"
+                          : "text-[var(--pnl-negative)]",
+                      )}
+                    >
+                      {isPositive ? "+" : ""}
+                      {(total / 1000).toFixed(0)}k
                     </span>
                   </Button>
-                )
+                );
               })}
             </div>
           </CardContent>
@@ -205,7 +381,9 @@ export default function PnLDetailPage() {
                       {breakdown.length} strategies
                     </Badge>
                   </CardTitle>
-                  <CardDescription>{factorInfo?.description || "P&L attribution by strategy"}</CardDescription>
+                  <CardDescription>
+                    {factorInfo?.description || "P&L attribution by strategy"}
+                  </CardDescription>
                 </div>
                 <PnLValue value={total} size="lg" showSign />
               </div>
@@ -224,7 +402,10 @@ export default function PnLDetailPage() {
                 </TableHeader>
                 <TableBody>
                   {breakdown.map((row) => (
-                    <TableRow key={row.strategyId} className="cursor-pointer hover:bg-muted/30">
+                    <TableRow
+                      key={row.strategyId}
+                      className="cursor-pointer hover:bg-muted/30"
+                    >
                       <TableCell>
                         <EntityLink
                           type="strategy"
@@ -237,8 +418,15 @@ export default function PnLDetailPage() {
                         <PnLValue value={row.pnl} size="sm" showSign />
                       </TableCell>
                       <TableCell className="text-right font-mono text-sm">
-                        <span className={cn(row.percentage >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}>
-                          {row.percentage >= 0 ? "+" : ""}{row.percentage.toFixed(1)}%
+                        <span
+                          className={cn(
+                            row.percentage >= 0
+                              ? "text-[var(--pnl-positive)]"
+                              : "text-[var(--pnl-negative)]",
+                          )}
+                        >
+                          {row.percentage >= 0 ? "+" : ""}
+                          {row.percentage.toFixed(1)}%
                         </span>
                       </TableCell>
                       <TableCell className="text-right font-mono text-sm text-muted-foreground">
@@ -248,7 +436,9 @@ export default function PnLDetailPage() {
                         {row.trades}
                       </TableCell>
                       <TableCell>
-                        <Link href={`/services/trading/strategies/${row.strategyId}`}>
+                        <Link
+                          href={`/services/trading/strategies/${row.strategyId}`}
+                        >
                           <Button variant="ghost" size="sm">
                             <ChevronRight className="size-4" />
                           </Button>
@@ -269,21 +459,31 @@ export default function PnLDetailPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-muted-foreground">Total P&L</span>
+                  <span className="text-sm text-muted-foreground">
+                    Total P&L
+                  </span>
                   <PnLValue value={total} size="md" showSign />
                 </div>
                 <div className="flex items-center justify-between py-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">% of Net P&L</span>
+                  <span className="text-sm text-muted-foreground">
+                    % of Net P&L
+                  </span>
                   <span className="font-mono font-medium">
                     {((total / 933000) * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">Strategies</span>
-                  <span className="font-mono font-medium">{breakdown.length}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Strategies
+                  </span>
+                  <span className="font-mono font-medium">
+                    {breakdown.length}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">Total Trades</span>
+                  <span className="text-sm text-muted-foreground">
+                    Total Trades
+                  </span>
                   <span className="font-mono font-medium">
                     {breakdown.reduce((sum, r) => sum + r.trades, 0)}
                   </span>
@@ -311,8 +511,9 @@ export default function PnLDetailPage() {
                   <div>
                     <p className="text-sm font-medium">Filter Tip</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Use the Context Bar above to filter by client, strategy, or
-                      underlying to see factor attribution for specific segments.
+                      Use the Context Bar above to filter by client, strategy,
+                      or underlying to see factor attribution for specific
+                      segments.
                     </p>
                   </div>
                 </div>
@@ -322,5 +523,5 @@ export default function PnLDetailPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

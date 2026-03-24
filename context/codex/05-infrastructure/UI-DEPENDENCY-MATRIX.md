@@ -1,7 +1,7 @@
 # UI Dependency Matrix
 
-**Last Updated:** 2026-02-28  
-**SSOT for repo registry:** `unified-trading-pm/workspace-manifest.json`  
+**Last Updated:** 2026-02-28
+**SSOT for repo registry:** `unified-trading-pm/workspace-manifest.json`
 **SSOT for API routes:** `deployment-api/api/routes/` (extracted from UTD V3 — see task `deployment-v3-four-way-split`)
 
 ---
@@ -56,10 +56,10 @@ deployment-ui  ── HTTPS POST /cloud-builds/trigger ──►  deployment-api
 ```
 
 **OAuth gate is in:** `deployment-api/api/auth_middleware.py` (via `GoogleOAuthMiddleware` from
-`unified_trading_services`)  
-**Allowed domains config:** `deployment-api/api/settings.py`  
-**Cloud Build trigger route:** `deployment-api/api/routes/cloud_builds.py` — `POST /trigger`  
-**Service restart route:** `deployment-api/api/routes/deployments.py` — `POST /deployments`  
+`unified_trading_services`)
+**Allowed domains config:** `deployment-api/api/settings.py`
+**Cloud Build trigger route:** `deployment-api/api/routes/cloud_builds.py` — `POST /trigger`
+**Service restart route:** `deployment-api/api/routes/deployments.py` — `POST /deployments`
 **Infra health route:** `deployment-api/api/routes/infra.py` — `GET /infra/health` (Layer 2 verification)
 
 Any UI can call the deployment trigger endpoint. The OAuth middleware enforces authentication. This is the ONLY path for

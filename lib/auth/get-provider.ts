@@ -1,8 +1,8 @@
-import type { AuthProvider } from "./types"
-import { DemoAuthProvider } from "./demo-provider"
-import { OAuthProvider } from "./oauth-provider"
+import type { AuthProvider } from "./types";
+import { DemoAuthProvider } from "./demo-provider";
+import { OAuthProvider } from "./oauth-provider";
 
-let _instance: AuthProvider | null = null
+let _instance: AuthProvider | null = null;
 
 /**
  * Return the singleton AuthProvider based on NEXT_PUBLIC_AUTH_PROVIDER.
@@ -17,18 +17,18 @@ let _instance: AuthProvider | null = null
 export function getAuthProvider(): AuthProvider {
   if (typeof window === "undefined") {
     // SSR: no singleton, always fresh (no localStorage)
-    return createProvider()
+    return createProvider();
   }
   if (!_instance) {
-    _instance = createProvider()
+    _instance = createProvider();
   }
-  return _instance
+  return _instance;
 }
 
 function createProvider(): AuthProvider {
-  const mode = process.env.NEXT_PUBLIC_AUTH_PROVIDER ?? "demo"
+  const mode = process.env.NEXT_PUBLIC_AUTH_PROVIDER ?? "demo";
   if (mode === "oauth") {
-    return new OAuthProvider()
+    return new OAuthProvider();
   }
-  return new DemoAuthProvider()
+  return new DemoAuthProvider();
 }

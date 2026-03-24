@@ -1216,11 +1216,9 @@ event_triggers:
     services: [market-tick-data-service]
     trigger: WebSocket message arrival
   time_throttled_short:
-    cadence:
-      "~15s base timer; 1m (every 4), 5m (every 20), 15m (every 60), 1h (every 240), 4h (every 960), 24h (every 5760)"
+    cadence: "~15s base timer; 1m (every 4), 5m (every 20), 15m (every 60), 1h (every 240), 4h (every 960), 24h (every 5760)"
     services: [market-data-processing-service]
-    trigger:
-      timer aggregates buffer; MDPS only starts at even time boundaries since midnight (ensures full candle blocks)
+    trigger: timer aggregates buffer; MDPS only starts at even time boundaries since midnight (ensures full candle blocks)
   event_driven_chain:
     cadence: after MDPS completion
     services: [features-delta-one-service, features-volatility-service]
@@ -1351,8 +1349,19 @@ error_retry_policy:
   ssot: unified-internal-contracts/schemas/errors.py
   summary:
     RATE_LIMIT:
-      { strategy: RETRY_WITH_BACKOFF, max_retries: 5, backoff: "exp 1s-60s + jitter", after_exhaustion: "ALERT + SKIP" }
-    TIMEOUT: { strategy: RETRY, max_retries: 3, backoff: "linear 2s", after_exhaustion: "ALERT + FAIL" }
+      {
+        strategy: RETRY_WITH_BACKOFF,
+        max_retries: 5,
+        backoff: "exp 1s-60s + jitter",
+        after_exhaustion: "ALERT + SKIP",
+      }
+    TIMEOUT:
+      {
+        strategy: RETRY,
+        max_retries: 3,
+        backoff: "linear 2s",
+        after_exhaustion: "ALERT + FAIL",
+      }
     NETWORK:
       {
         strategy: RETRY_WITH_BACKOFF,
@@ -1360,9 +1369,21 @@ error_retry_policy:
         backoff: "exp 1s-120s",
         after_exhaustion: "CIRCUIT_BREAKER + ALERT",
       }
-    SERVER_ERROR: { strategy: RETRY, max_retries: 3, backoff: "linear 5s", after_exhaustion: "ALERT + FAIL" }
-    VALIDATION: { strategy: FAIL_FAST, max_retries: 0, after_exhaustion: "ALERT + LOG" }
-    AUTH_FAILURE: { strategy: FAIL_FAST, max_retries: 0, after_exhaustion: "CIRCUIT_BREAKER + ALERT" }
+    SERVER_ERROR:
+      {
+        strategy: RETRY,
+        max_retries: 3,
+        backoff: "linear 5s",
+        after_exhaustion: "ALERT + FAIL",
+      }
+    VALIDATION:
+      { strategy: FAIL_FAST, max_retries: 0, after_exhaustion: "ALERT + LOG" }
+    AUTH_FAILURE:
+      {
+        strategy: FAIL_FAST,
+        max_retries: 0,
+        after_exhaustion: "CIRCUIT_BREAKER + ALERT",
+      }
 
 # ===========================================================================
 # RECOVERY PATTERNS
@@ -1461,32 +1482,81 @@ recovery_patterns:
 venue_replay_capabilities:
   ssot: unified-api-contracts (per-venue schemas)
   summary:
-    tardis_dev: { lookback: "~7 years", method: "WS-style replay (Tardis Machine)", assets: "crypto 40+ exchanges" }
-    databento: { lookback: "7 years", method: "REST + live-identical replay", assets: "TradFi 60+ venues" }
-    binance_futures: { lookback: "3 months", method: "REST pagination only", replay: false }
+    tardis_dev:
+      {
+        lookback: "~7 years",
+        method: "WS-style replay (Tardis Machine)",
+        assets: "crypto 40+ exchanges",
+      }
+    databento:
+      {
+        lookback: "7 years",
+        method: "REST + live-identical replay",
+        assets: "TradFi 60+ venues",
+      }
+    binance_futures:
+      { lookback: "3 months", method: "REST pagination only", replay: false }
     okx: { lookback: "3 months", method: "REST pagination only", replay: false }
     deribit: { lookback: "shallow public", method: "REST only", replay: false }
-    bybit: { lookback: "2 years (7-day windows)", method: "REST pagination", replay: false }
-    ibkr: { lookback: "6 months tick", method: "TWS API callbacks", replay: false }
-    defi: { lookback: "unlimited", method: "block replay via RPC", replay: true }
+    bybit:
+      {
+        lookback: "2 years (7-day windows)",
+        method: "REST pagination",
+        replay: false,
+      }
+    ibkr:
+      { lookback: "6 months tick", method: "TWS API callbacks", replay: false }
+    defi:
+      { lookback: "unlimited", method: "block replay via RPC", replay: true }
 
 # ===========================================================================
 # INITIAL STATE BOOTSTRAP
 # ===========================================================================
 
 initial_state_bootstrap:
-  instruments-service: { source: "venue REST APIs", method: "full fetch on start" }
-  market-tick-data-service: { source: "venue WebSocket + Tardis", method: "subscribe + backfill gaps" }
-  market-data-processing-service: { source: "GCS + Redis/memcached", method: "load rolling window (~1yr)" }
-  features-services: { source: "GCS historical features", method: "load from GCS, recalculate if stale" }
-  ml-inference-service: { source: "GCS models + PubSub features", method: "load model, subscribe features" }
-  strategy-service: { source: "PBM positions + ML + MDPS", method: "subscribe PBM (initial snapshot), ML, MDPS" }
-  execution-service: { source: "exchange REST + Redis", method: "query exchange open orders, restore Redis" }
+  instruments-service:
+    { source: "venue REST APIs", method: "full fetch on start" }
+  market-tick-data-service:
+    { source: "venue WebSocket + Tardis", method: "subscribe + backfill gaps" }
+  market-data-processing-service:
+    { source: "GCS + Redis/memcached", method: "load rolling window (~1yr)" }
+  features-services:
+    {
+      source: "GCS historical features",
+      method: "load from GCS, recalculate if stale",
+    }
+  ml-inference-service:
+    {
+      source: "GCS models + PubSub features",
+      method: "load model, subscribe features",
+    }
+  strategy-service:
+    {
+      source: "PBM positions + ML + MDPS",
+      method: "subscribe PBM (initial snapshot), ML, MDPS",
+    }
+  execution-service:
+    {
+      source: "exchange REST + Redis",
+      method: "query exchange open orders, restore Redis",
+    }
   position-balance-monitor-service:
-    { source: "exchange REST (positions+balances)", method: "query exchange, publish initial snapshot" }
-  risk-and-exposure-service: { source: "PBM + MDPS PubSub", method: "subscribe to both" }
-  pnl-attribution-service: { source: "GCS historical + live PubSub", method: "load GCS, subscribe exec+risk" }
-  alerting-service: { source: "PubSub replay", method: "Cloud Run auto-restart, PubSub retention" }
+    {
+      source: "exchange REST (positions+balances)",
+      method: "query exchange, publish initial snapshot",
+    }
+  risk-and-exposure-service:
+    { source: "PBM + MDPS PubSub", method: "subscribe to both" }
+  pnl-attribution-service:
+    {
+      source: "GCS historical + live PubSub",
+      method: "load GCS, subscribe exec+risk",
+    }
+  alerting-service:
+    {
+      source: "PubSub replay",
+      method: "Cloud Run auto-restart, PubSub retention",
+    }
 
 # ===========================================================================
 # T+1 RECONCILIATION (two-layer)
@@ -1539,11 +1609,17 @@ mdps_rolling_window:
 
 data_retention_policy:
   tiers:
-    hot: { storage: bigquery_standard, description: "fast queries, recent data" }
+    hot:
+      { storage: bigquery_standard, description: "fast queries, recent data" }
     warm: { storage: gcs_standard, description: "accessible archive" }
-    cold: { storage: gcs_nearline, description: "regulatory archive, infrequent access" }
+    cold:
+      {
+        storage: gcs_nearline,
+        description: "regulatory archive, infrequent access",
+      }
   regulatory_minimum:
-    execution_audit: { cold_years: 7, note: "FCA/MiFID II minimum for transaction records" }
+    execution_audit:
+      { cold_years: 7, note: "FCA/MiFID II minimum for transaction records" }
     strategy_audit: { cold_years: 3, note: "strategy decision audit trail" }
     market_data: { cold_years: 3, note: "market data for best execution proof" }
     default: { hot_days: 90, warm_days: 365, cold_years: 3 }
@@ -1556,7 +1632,13 @@ data_retention_policy:
 health_probes:
   api_services:
     endpoints: ["/health", "/readiness"]
-    services: [execution-results-api, market-data-api, client-reporting-api, deployment-api]
+    services:
+      [
+        execution-results-api,
+        market-data-api,
+        client-reporting-api,
+        deployment-api,
+      ]
     note: Cloud Run auto-restart on health check failure
   vm_services:
     method: deployment-engine-watchdog
@@ -1658,8 +1740,7 @@ deployment_targets:
       risk-and-exposure-service:
         reason: Live PubSub subscriber; computes risk on every position update
       pnl-attribution-service:
-        reason:
-          Continuous subscriber to execution + risk PubSub events; runs P&L attribution on every update (not batch-only)
+        reason: Continuous subscriber to execution + risk PubSub events; runs P&L attribution on every update (not batch-only)
       alerting-service:
         reason: Must be 24/7; auto-restart + PubSub retention for recovery
 

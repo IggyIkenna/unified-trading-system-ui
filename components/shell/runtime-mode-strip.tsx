@@ -1,45 +1,49 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { AlertTriangle } from "lucide-react"
+import * as React from "react";
+import { AlertTriangle } from "lucide-react";
 
-type ApiStatus = "reachable" | "degraded" | "offline"
+type ApiStatus = "reachable" | "degraded" | "offline";
 
 export function RuntimeModeStrip() {
-  const [apiStatus, setApiStatus] = React.useState<ApiStatus>("offline")
-  const [showDebug, setShowDebug] = React.useState(false)
-  const [readinessJson, setReadinessJson] = React.useState<unknown>(null)
+  const [apiStatus, setApiStatus] = React.useState<ApiStatus>("offline");
+  const [showDebug, setShowDebug] = React.useState(false);
+  const [readinessJson, setReadinessJson] = React.useState<unknown>(null);
 
-  const debugRuntime = process.env.NEXT_PUBLIC_DEBUG_RUNTIME === "true"
+  const debugRuntime = process.env.NEXT_PUBLIC_DEBUG_RUNTIME === "true";
 
   React.useEffect(() => {
     const poll = async () => {
       try {
-        const res = await fetch("/api/health", { signal: AbortSignal.timeout(3000) })
-        const data = await res.json()
-        setReadinessJson(data)
+        const res = await fetch("/api/health", {
+          signal: AbortSignal.timeout(3000),
+        });
+        const data = await res.json();
+        setReadinessJson(data);
 
         if (data?.status === "ok" || data?.status === "healthy" || res.ok) {
           if (
             data?.degraded_reasons?.length > 0 ||
-            data?.upstream_checks?.some((c: { status: string }) => c.status !== "ok")
+            data?.upstream_checks?.some(
+              (c: { status: string }) => c.status !== "ok",
+            )
           ) {
-            setApiStatus("degraded")
+            setApiStatus("degraded");
           } else {
-            setApiStatus("reachable")
+            setApiStatus("reachable");
           }
         } else {
-          setApiStatus("degraded")
+          setApiStatus("degraded");
         }
       } catch {
-        setApiStatus("offline")
+        setApiStatus("offline");
       }
-    }
+    };
 
-    poll()
-    const interval = setInterval(poll, 15000)
-    return () => clearInterval(interval)
-  }, [])
+    poll();
+    const interval = setInterval(poll, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -55,7 +59,7 @@ export function RuntimeModeStrip() {
           </span>
           {debugRuntime && (
             <button
-              onClick={() => setShowDebug(o => !o)}
+              onClick={() => setShowDebug((o) => !o)}
               className="text-red-400 hover:text-red-200 underline ml-auto shrink-0"
             >
               debug
@@ -73,5 +77,5 @@ export function RuntimeModeStrip() {
         </div>
       )}
     </>
-  )
+  );
 }

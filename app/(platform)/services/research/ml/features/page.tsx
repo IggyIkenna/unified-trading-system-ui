@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import Link from "next/link"
-import { 
-  ArrowLeft, 
-  Database, 
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  Database,
   GitBranch,
   Clock,
   Search,
@@ -22,16 +22,28 @@ import {
   Eye,
   Code,
   FileText,
-  BarChart3
-} from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { type ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@/components/ui/data-table"
+  BarChart3,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/data-table";
 import {
   LineChart,
   Line,
@@ -42,13 +54,13 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-} from "recharts"
-import { useFeatureProvenance } from "@/hooks/api/use-ml-models"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ApiError } from "@/components/ui/api-error"
-import { EmptyState } from "@/components/ui/empty-state"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
-import type { ExportColumn } from "@/lib/utils/export"
+} from "recharts";
+import { useFeatureProvenance } from "@/hooks/api/use-ml-models";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import type { ExportColumn } from "@/lib/utils/export";
 
 const featureExportColumns: ExportColumn[] = [
   { key: "name", header: "Name" },
@@ -59,7 +71,7 @@ const featureExportColumns: ExportColumn[] = [
   { key: "usedByModels", header: "Used By Models", format: "number" },
   { key: "coverage", header: "Coverage", format: "percent" },
   { key: "nullRate", header: "Null Rate", format: "percent" },
-]
+];
 
 // Default feature catalog
 const DEFAULT_FEATURE_CATALOG = [
@@ -231,46 +243,96 @@ const DEFAULT_FEATURE_CATALOG = [
       coverage: 99.0,
     },
   },
-]
+];
 
 // Feature history and usage matrix are loaded from API inside the component
 
 export default function FeatureProvenancePage() {
-  const { data: featuresData, isLoading, isError, error, refetch } = useFeatureProvenance()
-  const featuresRaw: any[] = (featuresData as any)?.data ?? (featuresData as any)?.features ?? []
-  const featureCatalog = featuresRaw.length > 0 ? featuresRaw : DEFAULT_FEATURE_CATALOG
+  const {
+    data: featuresData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useFeatureProvenance();
+  const featuresRaw: any[] =
+    (featuresData as any)?.data ?? (featuresData as any)?.features ?? [];
+  const featureCatalog =
+    featuresRaw.length > 0 ? featuresRaw : DEFAULT_FEATURE_CATALOG;
 
   // Generate feature history and usage matrix from API or defaults
-  const featureHistory = useMemo(() => (featuresData as any)?.history ?? Array.from({ length: 30 }, (_, i) => ({
-    date: new Date(2026, 2, i + 1).toISOString().split("T")[0],
-    funding_rate_8h: 0.0001 + Math.random() * 0.0003,
-    oi_change_1h: (Math.random() - 0.5) * 0.04,
-    volume_imbalance: (Math.random() - 0.5) * 0.3,
-    basis_spread: 0.06 + Math.random() * 0.04,
-  })), [featuresData])
+  const featureHistory = useMemo(
+    () =>
+      (featuresData as any)?.history ??
+      Array.from({ length: 30 }, (_, i) => ({
+        date: new Date(2026, 2, i + 1).toISOString().split("T")[0],
+        funding_rate_8h: 0.0001 + Math.random() * 0.0003,
+        oi_change_1h: (Math.random() - 0.5) * 0.04,
+        volume_imbalance: (Math.random() - 0.5) * 0.3,
+        basis_spread: 0.06 + Math.random() * 0.04,
+      })),
+    [featuresData],
+  );
 
   const featureUsageMatrix: any[] = (featuresData as any)?.usageMatrix ?? [
-    { model: "Funding Rate Predictor", funding_rate_8h: true, oi_change_1h: true, volume_imbalance: true, basis_spread: true, liquidation_ratio: true, whale_flow: true },
-    { model: "Volatility Forecaster", funding_rate_8h: true, oi_change_1h: true, volume_imbalance: true, basis_spread: false, liquidation_ratio: false, whale_flow: false },
-    { model: "Liquidation Detector", funding_rate_8h: false, oi_change_1h: true, volume_imbalance: true, basis_spread: false, liquidation_ratio: true, whale_flow: true },
-    { model: "Spread Predictor", funding_rate_8h: true, oi_change_1h: false, volume_imbalance: true, basis_spread: true, liquidation_ratio: false, whale_flow: false },
-  ]
+    {
+      model: "Funding Rate Predictor",
+      funding_rate_8h: true,
+      oi_change_1h: true,
+      volume_imbalance: true,
+      basis_spread: true,
+      liquidation_ratio: true,
+      whale_flow: true,
+    },
+    {
+      model: "Volatility Forecaster",
+      funding_rate_8h: true,
+      oi_change_1h: true,
+      volume_imbalance: true,
+      basis_spread: false,
+      liquidation_ratio: false,
+      whale_flow: false,
+    },
+    {
+      model: "Liquidation Detector",
+      funding_rate_8h: false,
+      oi_change_1h: true,
+      volume_imbalance: true,
+      basis_spread: false,
+      liquidation_ratio: true,
+      whale_flow: true,
+    },
+    {
+      model: "Spread Predictor",
+      funding_rate_8h: true,
+      oi_change_1h: false,
+      volume_imbalance: true,
+      basis_spread: true,
+      liquidation_ratio: false,
+      whale_flow: false,
+    },
+  ];
 
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sourceFilter, setSourceFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [selectedFeature, setSelectedFeature] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
 
   const filteredFeatures = featureCatalog.filter((f: any) => {
-    const matchesSearch = f.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          f.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          f.tags.some((t: string) => t.toLowerCase().includes(searchTerm.toLowerCase()))
-    const matchesSource = sourceFilter === "all" || f.source === sourceFilter
-    const matchesStatus = statusFilter === "all" || f.status === statusFilter
-    return matchesSearch && matchesSource && matchesStatus
-  })
+    const matchesSearch =
+      f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      f.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      f.tags.some((t: string) =>
+        t.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    const matchesSource = sourceFilter === "all" || f.source === sourceFilter;
+    const matchesStatus = statusFilter === "all" || f.status === statusFilter;
+    return matchesSearch && matchesSource && matchesStatus;
+  });
 
-  const selectedFeatureData = selectedFeature ? featureCatalog.find((f: any) => f.id === selectedFeature) : null
+  const selectedFeatureData = selectedFeature
+    ? featureCatalog.find((f: any) => f.id === selectedFeature)
+    : null;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const featureCatalogColumns: ColumnDef<any, unknown>[] = useMemo(
@@ -279,13 +341,19 @@ export default function FeatureProvenancePage() {
         accessorKey: "name",
         header: "Feature",
         enableSorting: false,
-        cell: ({ row }: { row: { original: { name: string; id: string } } }) => (
+        cell: ({
+          row,
+        }: {
+          row: { original: { name: string; id: string } };
+        }) => (
           <div
             className="cursor-pointer"
             onClick={() => setSelectedFeature(row.original.id)}
           >
             <p className="font-medium">{row.original.name}</p>
-            <p className="text-xs text-muted-foreground font-mono">{row.original.id}</p>
+            <p className="text-xs text-muted-foreground font-mono">
+              {row.original.id}
+            </p>
           </div>
         ),
       },
@@ -302,7 +370,9 @@ export default function FeatureProvenancePage() {
         header: "Update Freq",
         enableSorting: false,
         cell: ({ row }: { row: { original: { updateFrequency: string } } }) => (
-          <span className="font-mono text-sm">{row.original.updateFrequency}</span>
+          <span className="font-mono text-sm">
+            {row.original.updateFrequency}
+          </span>
         ),
       },
       {
@@ -310,7 +380,9 @@ export default function FeatureProvenancePage() {
         header: "Latency",
         enableSorting: false,
         cell: ({ row }: { row: { original: { latency: string } } }) => (
-          <span className={`font-mono text-sm ${parseInt(row.original.latency) > 500 ? "text-[var(--status-warning)]" : ""}`}>
+          <span
+            className={`font-mono text-sm ${parseInt(row.original.latency) > 500 ? "text-[var(--status-warning)]" : ""}`}
+          >
             {row.original.latency}
           </span>
         ),
@@ -341,7 +413,7 @@ export default function FeatureProvenancePage() {
       },
     ],
     [],
-  )
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const usageMatrixColumns: ColumnDef<any, unknown>[] = useMemo(
@@ -362,35 +434,40 @@ export default function FeatureProvenancePage() {
           row.original[f.id] ? (
             <CheckCircle2 className="size-4 text-[var(--status-success)] mx-auto" />
           ) : (
-            <span className="text-muted-foreground text-center block">&mdash;</span>
+            <span className="text-muted-foreground text-center block">
+              &mdash;
+            </span>
           ),
       })),
     ],
     [featureCatalog],
-  )
+  );
 
-  if (isLoading) return (
-    <div className="space-y-4 p-6">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-64 w-full" />
-    </div>
-  )
+  if (isLoading)
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
 
-  if (isError) return (
-    <div className="p-6">
-      <ApiError error={error} onRetry={() => refetch()} />
-    </div>
-  )
+  if (isError)
+    return (
+      <div className="p-6">
+        <ApiError error={error} onRetry={() => refetch()} />
+      </div>
+    );
 
-  if (featureCatalog.length === 0) return (
-    <div className="p-6">
-      <EmptyState
-        title="No features"
-        description="No features have been registered yet. Register your first feature to start tracking provenance."
-        icon={Database}
-      />
-    </div>
-  )
+  if (featureCatalog.length === 0)
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No features"
+          description="No features have been registered yet. Register your first feature to start tracking provenance."
+          icon={Database}
+        />
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-background">
@@ -409,21 +486,29 @@ export default function FeatureProvenancePage() {
                   <Database className="size-5" />
                   Feature Catalog & Provenance
                 </h1>
-                <p className="text-sm text-muted-foreground">Feature definitions, lineage, and usage tracking</p>
+                <p className="text-sm text-muted-foreground">
+                  Feature definitions, lineage, and usage tracking
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <ExportDropdown
-                data={filteredFeatures.map((f: any) => ({
-                  name: f.name,
-                  source: f.source,
-                  updateFrequency: f.updateFrequency,
-                  latency: f.latency,
-                  status: f.status,
-                  usedByModels: f.usedByModels,
-                  coverage: f.statistics?.coverage != null ? f.statistics.coverage / 100 : null,
-                  nullRate: f.statistics?.nullRate ?? null,
-                } as Record<string, unknown>))}
+                data={filteredFeatures.map(
+                  (f: any) =>
+                    ({
+                      name: f.name,
+                      source: f.source,
+                      updateFrequency: f.updateFrequency,
+                      latency: f.latency,
+                      status: f.status,
+                      usedByModels: f.usedByModels,
+                      coverage:
+                        f.statistics?.coverage != null
+                          ? f.statistics.coverage / 100
+                          : null,
+                      nullRate: f.statistics?.nullRate ?? null,
+                    }) as Record<string, unknown>,
+                )}
                 columns={featureExportColumns}
                 filename="ml-features"
               />
@@ -444,7 +529,9 @@ export default function FeatureProvenancePage() {
               <div className="flex items-center gap-3">
                 <Box className="size-8 text-[#60a5fa]" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Features</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total Features
+                  </p>
                   <p className="text-2xl font-bold">{featureCatalog.length}</p>
                 </div>
               </div>
@@ -457,7 +544,12 @@ export default function FeatureProvenancePage() {
                 <CheckCircle2 className="size-8 text-[var(--status-success)]" />
                 <div>
                   <p className="text-sm text-muted-foreground">Healthy</p>
-                  <p className="text-2xl font-bold">{featureCatalog.filter(f => f.status === "healthy").length}</p>
+                  <p className="text-2xl font-bold">
+                    {
+                      featureCatalog.filter((f) => f.status === "healthy")
+                        .length
+                    }
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -469,7 +561,12 @@ export default function FeatureProvenancePage() {
                 <AlertTriangle className="size-8 text-[var(--status-warning)]" />
                 <div>
                   <p className="text-sm text-muted-foreground">Warnings</p>
-                  <p className="text-2xl font-bold">{featureCatalog.filter(f => f.status === "warning").length}</p>
+                  <p className="text-2xl font-bold">
+                    {
+                      featureCatalog.filter((f) => f.status === "warning")
+                        .length
+                    }
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -481,7 +578,9 @@ export default function FeatureProvenancePage() {
                 <Layers className="size-8 text-[#a78bfa]" />
                 <div>
                   <p className="text-sm text-muted-foreground">Data Sources</p>
-                  <p className="text-2xl font-bold">{new Set(featureCatalog.map(f => f.source)).size}</p>
+                  <p className="text-2xl font-bold">
+                    {new Set(featureCatalog.map((f) => f.source)).size}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -494,8 +593,8 @@ export default function FeatureProvenancePage() {
             <div className="flex items-center gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search features by name, id, or tag..." 
+                <Input
+                  placeholder="Search features by name, id, or tag..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-9"
@@ -508,7 +607,9 @@ export default function FeatureProvenancePage() {
                 <SelectContent>
                   <SelectItem value="all">All Sources</SelectItem>
                   <SelectItem value="features-cefi">CeFi Features</SelectItem>
-                  <SelectItem value="features-onchain">On-Chain Features</SelectItem>
+                  <SelectItem value="features-onchain">
+                    On-Chain Features
+                  </SelectItem>
                   <SelectItem value="features-defi">DeFi Features</SelectItem>
                 </SelectContent>
               </Select>
@@ -533,7 +634,9 @@ export default function FeatureProvenancePage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Feature Catalog</CardTitle>
-                <CardDescription>{filteredFeatures.length} features</CardDescription>
+                <CardDescription>
+                  {filteredFeatures.length} features
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <DataTable
@@ -553,10 +656,14 @@ export default function FeatureProvenancePage() {
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{selectedFeatureData.name}</CardTitle>
+                    <CardTitle className="text-base">
+                      {selectedFeatureData.name}
+                    </CardTitle>
                     <Badge>{selectedFeatureData.version}</Badge>
                   </div>
-                  <CardDescription>{selectedFeatureData.description}</CardDescription>
+                  <CardDescription>
+                    {selectedFeatureData.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Metadata */}
@@ -564,7 +671,9 @@ export default function FeatureProvenancePage() {
                     <h4 className="text-sm font-medium">Metadata</h4>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="text-muted-foreground">Type</div>
-                      <div className="font-mono">{selectedFeatureData.dataType}</div>
+                      <div className="font-mono">
+                        {selectedFeatureData.dataType}
+                      </div>
                       <div className="text-muted-foreground">Owner</div>
                       <div>{selectedFeatureData.owner}</div>
                       <div className="text-muted-foreground">Created</div>
@@ -577,7 +686,13 @@ export default function FeatureProvenancePage() {
                     <h4 className="text-sm font-medium">Tags</h4>
                     <div className="flex flex-wrap gap-1">
                       {selectedFeatureData.tags.map((tag: string) => (
-                        <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          {tag}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -590,24 +705,43 @@ export default function FeatureProvenancePage() {
                     </h4>
                     <div className="p-3 bg-muted/30 rounded-lg space-y-2 text-sm">
                       <div>
-                        <span className="text-muted-foreground">Raw Sources:</span>
+                        <span className="text-muted-foreground">
+                          Raw Sources:
+                        </span>
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {selectedFeatureData.lineage.rawSources.map((src: string) => (
-                            <Badge key={src} variant="outline" className="text-xs font-mono">{src}</Badge>
-                          ))}
+                          {selectedFeatureData.lineage.rawSources.map(
+                            (src: string) => (
+                              <Badge
+                                key={src}
+                                variant="outline"
+                                className="text-xs font-mono"
+                              >
+                                {src}
+                              </Badge>
+                            ),
+                          )}
                         </div>
                       </div>
                       <div>
-                        <span className="text-muted-foreground">Transformations:</span>
+                        <span className="text-muted-foreground">
+                          Transformations:
+                        </span>
                         <div className="flex items-center gap-1 mt-1">
-                          {selectedFeatureData.lineage.transformations.map((t: string, i: number) => (
-                            <span key={t} className="flex items-center">
-                              <Badge variant="secondary" className="text-xs">{t}</Badge>
-                              {i < selectedFeatureData.lineage.transformations.length - 1 && (
-                                <ArrowRight className="size-3 mx-1 text-muted-foreground" />
-                              )}
-                            </span>
-                          ))}
+                          {selectedFeatureData.lineage.transformations.map(
+                            (t: string, i: number) => (
+                              <span key={t} className="flex items-center">
+                                <Badge variant="secondary" className="text-xs">
+                                  {t}
+                                </Badge>
+                                {i <
+                                  selectedFeatureData.lineage.transformations
+                                    .length -
+                                    1 && (
+                                  <ArrowRight className="size-3 mx-1 text-muted-foreground" />
+                                )}
+                              </span>
+                            ),
+                          )}
                         </div>
                       </div>
                     </div>
@@ -621,15 +755,29 @@ export default function FeatureProvenancePage() {
                     </h4>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="text-muted-foreground">Mean</div>
-                      <div className="font-mono">{selectedFeatureData.statistics.mean.toFixed(4)}</div>
+                      <div className="font-mono">
+                        {selectedFeatureData.statistics.mean.toFixed(4)}
+                      </div>
                       <div className="text-muted-foreground">Std Dev</div>
-                      <div className="font-mono">{selectedFeatureData.statistics.std.toFixed(4)}</div>
+                      <div className="font-mono">
+                        {selectedFeatureData.statistics.std.toFixed(4)}
+                      </div>
                       <div className="text-muted-foreground">Min / Max</div>
-                      <div className="font-mono">{selectedFeatureData.statistics.min} / {selectedFeatureData.statistics.max}</div>
+                      <div className="font-mono">
+                        {selectedFeatureData.statistics.min} /{" "}
+                        {selectedFeatureData.statistics.max}
+                      </div>
                       <div className="text-muted-foreground">Null Rate</div>
-                      <div className="font-mono">{(selectedFeatureData.statistics.nullRate * 100).toFixed(2)}%</div>
+                      <div className="font-mono">
+                        {(
+                          selectedFeatureData.statistics.nullRate * 100
+                        ).toFixed(2)}
+                        %
+                      </div>
                       <div className="text-muted-foreground">Coverage</div>
-                      <div className="font-mono">{selectedFeatureData.statistics.coverage}%</div>
+                      <div className="font-mono">
+                        {selectedFeatureData.statistics.coverage}%
+                      </div>
                     </div>
                   </div>
 
@@ -659,7 +807,9 @@ export default function FeatureProvenancePage() {
         {/* Feature-Model Usage Matrix */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Feature-Model Usage Matrix</CardTitle>
+            <CardTitle className="text-base">
+              Feature-Model Usage Matrix
+            </CardTitle>
             <CardDescription>Which models use which features</CardDescription>
           </CardHeader>
           <CardContent>
@@ -674,5 +824,5 @@ export default function FeatureProvenancePage() {
         </Card>
       </main>
     </div>
-  )
+  );
 }

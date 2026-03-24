@@ -1,8 +1,8 @@
 # Sports Data Migration: GCS Bucket Refactoring
 
-**Priority:** P1-high  
-**Owner:** Harsh  
-**Status:** Specification Phase  
+**Priority:** P1-high
+**Owner:** Harsh
+**Status:** Specification Phase
 **Target:** Before sports implementation begins
 
 ---
@@ -12,7 +12,7 @@
 This document defines the migration strategy for refactoring existing sports data in GCS buckets to match the unified
 trading system's structure (hive partitioning, hierarchical clustering, data status tracking).
 
-**Existing Data:** 50GB+ across 6 GCS buckets  
+**Existing Data:** 50GB+ across 6 GCS buckets
 **Target:** Unified structure with `gs://market-data-raw/SPORTS/{venue}/{date}/`
 
 ---
@@ -125,7 +125,7 @@ gs://ml-models/SPORTS/
 
 ### Fixtures & Reference Data
 
-**Shard by:** Day  
+**Shard by:** Day
 **Rationale:** ~100-500 fixtures/day across all leagues, manageable file size
 
 ```
@@ -134,7 +134,7 @@ gs://instruments-data/SPORTS/fixtures/2024-01-01/fixtures.parquet  # ~10-50 MB
 
 ### Odds Data
 
-**Shard by:** Day or Week  
+**Shard by:** Day or Week
 **Rationale:** Depends on tick frequency
 
 | Data Type                  | Shard By | File Size (Approx) | Rationale                     |
@@ -148,7 +148,7 @@ gs://instruments-data/SPORTS/fixtures/2024-01-01/fixtures.parquet  # ~10-50 MB
 
 ### Features
 
-**Shard by:** Day, partitioned by league/season  
+**Shard by:** Day, partitioned by league/season
 **Rationale:** Features computed per fixture, natural hierarchy
 
 ```
@@ -159,7 +159,7 @@ gs://features-sports/t0/ENG-PREMIER_LEAGUE/2024-2025/2024-08-16/team_features.pa
 
 ### Models
 
-**Shard by:** Version (no date sharding)  
+**Shard by:** Version (no date sharding)
 **Rationale:** Models versioned, not date-dependent
 
 ```
@@ -185,7 +185,14 @@ gs://ml-models/SPORTS/match_odds/v1/model.pkl  # ~50-200 MB
     "missing_days": 6,
     "completeness_pct": 99.67
   },
-  "missing_dates": ["2020-03-15", "2020-03-16", "2020-12-25", "2024-06-10", "2024-07-22", "2024-11-30"],
+  "missing_dates": [
+    "2020-03-15",
+    "2020-03-16",
+    "2020-12-25",
+    "2024-06-10",
+    "2024-07-22",
+    "2024-11-30"
+  ],
   "last_updated": "2026-02-12T10:00:00Z",
   "expected_files_per_day": 1,
   "actual_files": {

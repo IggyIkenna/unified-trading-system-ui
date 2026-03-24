@@ -2,10 +2,10 @@
 # This mirrors the exact CI checks for local testing consistency
 #
 # CRITICAL: This must match .github/workflows/quality-gates.yml exactly
-# 
+#
 # Usage:
 #   make ci-local    # Run all CI checks locally (matches GitHub Actions)
-#   make lint        # Run linting only  
+#   make lint        # Run linting only
 #   make test        # Run tests only
 #   make type-check  # Run type checking only
 

@@ -5,7 +5,7 @@
  */
 
 /** User roles in the system */
-export type UserRole = "internal" | "client" | "admin"
+export type UserRole = "internal" | "client" | "admin";
 
 /** Subscription entitlement keys (from SHARDING_DIMENSIONS §Subscription Tiers) */
 export const ENTITLEMENTS = [
@@ -17,30 +17,30 @@ export const ENTITLEMENTS = [
   "strategy-full",
   "reporting",
   "investor-relations",
-] as const
+] as const;
 
-export type Entitlement = (typeof ENTITLEMENTS)[number]
+export type Entitlement = (typeof ENTITLEMENTS)[number];
 
 /** Wildcard entitlement for internal/admin users */
-export const ALL_ENTITLEMENTS = "*" as const
+export const ALL_ENTITLEMENTS = "*" as const;
 
 /** Entitlement or wildcard — used in persona definitions and auth checks */
-export type EntitlementOrWildcard = Entitlement | typeof ALL_ENTITLEMENTS
+export type EntitlementOrWildcard = Entitlement | typeof ALL_ENTITLEMENTS;
 
 export interface Org {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 export interface AuthPersona {
-  id: string
-  email: string
-  password: string
-  displayName: string
-  role: UserRole
-  org: Org
-  entitlements: readonly EntitlementOrWildcard[]
-  description: string
+  id: string;
+  email: string;
+  password: string;
+  displayName: string;
+  role: UserRole;
+  org: Org;
+  entitlements: readonly EntitlementOrWildcard[];
+  description: string;
 }
 
 /** Subscription tier metadata for marketing / pricing pages */
@@ -122,4 +122,4 @@ export const SUBSCRIPTION_TIERS = [
     execution: false,
     analytics: "P&L, settlement, attribution",
   },
-] as const
+] as const;

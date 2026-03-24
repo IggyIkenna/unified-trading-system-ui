@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
@@ -40,7 +40,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogContent,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -62,7 +67,10 @@ import {
   rollbackLiveDeployment,
   getLiveDeploymentHealth,
 } from "@/hooks/deployment/_api-stub";
-import type { DeploymentReport, RerunCommands } from "@/hooks/deployment/_api-stub";
+import type {
+  DeploymentReport,
+  RerunCommands,
+} from "@/hooks/deployment/_api-stub";
 import type { ShardEvent, LiveHealthStatus } from "@/lib/types/deployment";
 import { VM_EVENT_TYPES } from "@/lib/types/deployment";
 
@@ -3061,9 +3069,15 @@ export function DeploymentDetails({
                       {report.infrastructure_issues?.length})
                     </h4>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
-                      {(report.infrastructure_issues ?? [])
-                        .slice(0, 10)
-                        .map((issue: { shard_id?: string; zone?: string; category?: string }, idx: number) => (
+                      {(report.infrastructure_issues ?? []).slice(0, 10).map(
+                        (
+                          issue: {
+                            shard_id?: string;
+                            zone?: string;
+                            category?: string;
+                          },
+                          idx: number,
+                        ) => (
                           <div key={idx} className="text-xs">
                             <span className="text-[var(--color-accent-purple)]">
                               [{issue.shard_id}]
@@ -3076,7 +3090,8 @@ export function DeploymentDetails({
                               {issue.category}
                             </span>
                           </div>
-                        ))}
+                        ),
+                      )}
                     </div>
                   </div>
                 )}
@@ -3252,99 +3267,104 @@ export function DeploymentDetails({
       </CardContent>
 
       {/* Shard Logs Modal */}
-      <Dialog open={!!selectedShardForLogs} onOpenChange={(open) => { if (!open) closeShardLogs(); }}>
+      <Dialog
+        open={!!selectedShardForLogs}
+        onOpenChange={(open) => {
+          if (!open) closeShardLogs();
+        }}
+      >
         <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="font-mono">
-            {selectedShardForLogs?.shard_id} - Logs
-          </DialogTitle>
-        </DialogHeader>
-        <div>
-          {shardLogsLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-[var(--color-accent-cyan)]" />
-              <span className="ml-2 text-sm text-[var(--color-text-muted)]">
-                Loading logs...
-              </span>
-            </div>
-          ) : shardLogs.length === 0 ? (
-            <div className="text-center py-8">
-              <Terminal className="h-8 w-8 mx-auto mb-2 text-[var(--color-text-muted)] opacity-50" />
-              <p className="text-sm text-[var(--color-text-muted)]">
-                {shardLogsMessage || "No logs available for this shard"}
-              </p>
-              {selectedShardForLogs?.status === "pending" && (
-                <p className="text-xs text-[var(--color-text-muted)] mt-1">
-                  Logs will appear once the shard starts running
+          <DialogHeader>
+            <DialogTitle className="font-mono">
+              {selectedShardForLogs?.shard_id} - Logs
+            </DialogTitle>
+          </DialogHeader>
+          <div>
+            {shardLogsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-[var(--color-accent-cyan)]" />
+                <span className="ml-2 text-sm text-[var(--color-text-muted)]">
+                  Loading logs...
+                </span>
+              </div>
+            ) : shardLogs.length === 0 ? (
+              <div className="text-center py-8">
+                <Terminal className="h-8 w-8 mx-auto mb-2 text-[var(--color-text-muted)] opacity-50" />
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  {shardLogsMessage || "No logs available for this shard"}
                 </p>
-              )}
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {shardLogsMessage && (
-                <p className="text-xs text-[var(--color-text-muted)] mb-2">
-                  {shardLogsMessage}
-                </p>
-              )}
-              <div className="bg-[var(--color-bg-tertiary)] rounded-lg p-3 font-mono text-xs overflow-x-auto max-h-96 overflow-y-auto">
-                {shardLogs.map((log, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "py-1 border-b border-[var(--color-border-subtle)] last:border-0",
-                      log.severity === "ERROR" &&
-                        "text-[var(--color-accent-red)]",
-                      log.severity === "WARNING" &&
-                        "text-[var(--color-accent-amber)]",
-                      log.severity === "INFO" &&
-                        "text-[var(--color-text-secondary)]",
-                      log.severity === "DEBUG" &&
-                        "text-[var(--color-text-muted)]",
-                    )}
-                  >
-                    <span className="text-[var(--color-text-muted)] mr-2">
-                      {log.timestamp &&
-                        new Date(log.timestamp).toLocaleTimeString()}
-                    </span>
-                    <span
+                {selectedShardForLogs?.status === "pending" && (
+                  <p className="text-xs text-[var(--color-text-muted)] mt-1">
+                    Logs will appear once the shard starts running
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {shardLogsMessage && (
+                  <p className="text-xs text-[var(--color-text-muted)] mb-2">
+                    {shardLogsMessage}
+                  </p>
+                )}
+                <div className="bg-[var(--color-bg-tertiary)] rounded-lg p-3 font-mono text-xs overflow-x-auto max-h-96 overflow-y-auto">
+                  {shardLogs.map((log, idx) => (
+                    <div
+                      key={idx}
                       className={cn(
-                        "px-1 rounded text-xs mr-2",
+                        "py-1 border-b border-[var(--color-border-subtle)] last:border-0",
                         log.severity === "ERROR" &&
-                          "bg-[var(--color-status-error-bg-tag)]",
+                          "text-[var(--color-accent-red)]",
                         log.severity === "WARNING" &&
-                          "bg-[var(--color-status-warning-bg-tag)]",
+                          "text-[var(--color-accent-amber)]",
                         log.severity === "INFO" &&
-                          "bg-[var(--color-status-success-bg-tag)]",
+                          "text-[var(--color-text-secondary)]",
+                        log.severity === "DEBUG" &&
+                          "text-[var(--color-text-muted)]",
                       )}
                     >
-                      {log.severity}
-                    </span>
-                    <span>{log.message}</span>
-                  </div>
-                ))}
+                      <span className="text-[var(--color-text-muted)] mr-2">
+                        {log.timestamp &&
+                          new Date(log.timestamp).toLocaleTimeString()}
+                      </span>
+                      <span
+                        className={cn(
+                          "px-1 rounded text-xs mr-2",
+                          log.severity === "ERROR" &&
+                            "bg-[var(--color-status-error-bg-tag)]",
+                          log.severity === "WARNING" &&
+                            "bg-[var(--color-status-warning-bg-tag)]",
+                          log.severity === "INFO" &&
+                            "bg-[var(--color-status-success-bg-tag)]",
+                        )}
+                      >
+                        {log.severity}
+                      </span>
+                      <span>{log.message}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Refresh button */}
-          {selectedShardForLogs && (
-            <div className="mt-4 flex justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fetchShardLogs(selectedShardForLogs.shard_id)}
-                disabled={shardLogsLoading}
-              >
-                {shardLogsLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                ) : (
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                )}
-                Refresh
-              </Button>
-            </div>
-          )}
-        </div>
+            {/* Refresh button */}
+            {selectedShardForLogs && (
+              <div className="mt-4 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchShardLogs(selectedShardForLogs.shard_id)}
+                  disabled={shardLogsLoading}
+                >
+                  {shardLogsLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-1" />
+                  )}
+                  Refresh
+                </Button>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </Card>

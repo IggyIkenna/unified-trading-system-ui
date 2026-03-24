@@ -13,11 +13,11 @@
 
 ### Finding Gaps
 
-| By impact | Look at | Examples |
-|-----------|---------|----------|
-| **High (blocker)** | Section 1 | "Dashboard can't show real-time positions" |
-| **Medium (deferred)** | Section 2 | "Risk alerts API supports email, not Slack yet" |
-| **Low (nice-to-have)** | Section 3 | "Position history lacks trade attribution" |
+| By impact              | Look at   | Examples                                        |
+| ---------------------- | --------- | ----------------------------------------------- |
+| **High (blocker)**     | Section 1 | "Dashboard can't show real-time positions"      |
+| **Medium (deferred)**  | Section 2 | "Risk alerts API supports email, not Slack yet" |
+| **Low (nice-to-have)** | Section 3 | "Position history lacks trade attribution"      |
 
 ### Adding a Gap
 
@@ -50,6 +50,7 @@ These gaps prevent major UI features from working. The UI team should **wait** o
 **Blocking:** Risk UI can't show per-venue limits and utilization
 
 **Current API behavior:**
+
 - `GET /api/risk/limits` returns global shard limits only
 - No per-venue breakdown
 - Response:
@@ -62,6 +63,7 @@ These gaps prevent major UI features from working. The UI team should **wait** o
   ```
 
 **What UI needs:**
+
 - Per-venue limits (BINANCE max $2M, KRAKEN max $1.5M, etc.)
 - Per-venue utilization (how close to limit)
 - Response should be:
@@ -94,6 +96,7 @@ These gaps prevent major UI features from working. The UI team should **wait** o
 **Blocking:** Position P&L calculation incomplete in UI
 
 **Current API behavior:**
+
 - `GET /api/positions` returns:
   ```json
   {
@@ -109,6 +112,7 @@ These gaps prevent major UI features from working. The UI team should **wait** o
 - **Missing:** `entry_price`, `cost_basis`, `avg_entry`, `entry_time`
 
 **What UI needs:**
+
 - Entry price to show "bought at $64000, now $65000"
 - Cost basis for tax reporting
 - To calculate true position cost
@@ -131,12 +135,14 @@ These gaps prevent major UI features from working. The UI team should **wait** o
 **Blocking:** Large order histories are slow to load; UI becomes sluggish
 
 **Current API behavior:**
+
 - `GET /api/executions` returns all fills for symbol (no pagination on time)
 - For active traders, this can be 1000s of records per day
 - No date filtering, no limit parameter
 - Response time: 30+ seconds for active traders
 
 **What UI needs:**
+
 - `?start_date=2026-03-01&end_date=2026-03-19` filtering
 - `?limit=100&offset=0` pagination
 - For "show fills in last 7 days" use case
@@ -157,11 +163,13 @@ These gaps prevent major UI features from working. The UI team should **wait** o
 **Blocking:** Can't update individual strategy config fields without redeploying
 
 **Current API behavior:**
+
 - `PUT /api/strategies/{id}/config` requires full config object
 - If you want to change just one risk limit, must provide entire config
 - Fragile — easy to accidentally overwrite other fields
 
 **What UI needs:**
+
 - `PATCH /api/strategies/{id}/config` with partial updates
 - `PATCH /api/strategies/{id}/config/risk` to update just risk section
 - Per-field validation errors, not whole-config rejection
@@ -187,11 +195,13 @@ These gaps don't block core functionality, but they reduce UI quality or require
 **Status:** 🟡 **IN PROGRESS** — alerting-service v0.2.0
 
 **Current behavior:**
+
 - Can create email-only alerts
 - No Slack webhook support yet
 - No PagerDuty integration
 
 **What UI needs:**
+
 - Alert notification channel selector (email, Slack, PagerDuty, SMS)
 - Webhook URL input for Slack
 - Service key input for PagerDuty
@@ -211,10 +221,12 @@ These gaps don't block core functionality, but they reduce UI quality or require
 **Status:** 🟢 **RESOLVED** (v0.1.8) — but only for recent deployments
 
 **What it was:**
+
 - OHLCV candles lacked `tick_count` (number of trades in candle)
 - UI couldn't show trade velocity
 
 **What changed:**
+
 - Market data API now includes `tick_count` in candle response
 - Also added `volume_count` (number of distinct participants)
 
@@ -229,10 +241,12 @@ These gaps don't block core functionality, but they reduce UI quality or require
 **Status:** 🔴 **NOT STARTED**
 
 **Current behavior:**
+
 - Backtest results include daily P&L, Sharpe, drawdown
 - No intra-day P&L progression, no order-by-order breakdown
 
 **What UI needs:**
+
 - Tick-level P&L for smooth profit curve animation
 - Order-level attribution (which order made how much $?)
 - For detailed backtest analysis
@@ -252,10 +266,12 @@ These gaps don't block core functionality, but they reduce UI quality or require
 **Status:** 🟡 **PLANNED** — config-api sprint #2
 
 **Current behavior:**
+
 - Can fetch current config
 - Can't see who changed what and when
 
 **What UI needs:**
+
 - Config change history API: `GET /api/config/{id}/history`
 - Each entry: `{timestamp, user_id, field_name, old_value, new_value}`
 
@@ -278,10 +294,12 @@ These gaps are "nice" improvements but not critical. Build the UI without them; 
 **Status:** 🟢 **PLANNED** — but low priority
 
 **Current behavior:**
+
 - Option positions return quantity and value
 - No delta, gamma, vega, theta
 
 **What UI needs:**
+
 - Greeks for options risk monitoring
 - For options portfolio dashboard
 
@@ -296,10 +314,12 @@ These gaps are "nice" improvements but not critical. Build the UI without them; 
 **Status:** 🟢 **NICE-TO-HAVE** — low priority
 
 **Current behavior:**
+
 - Fills include actual price
 - No "what would VWAP have been" comparison
 
 **What UI needs:**
+
 - Slippage metrics: `slippage_vs_midpoint`, `slippage_vs_vwap`
 
 **Impact:** Execution analytics can't show slippage attribution
@@ -311,10 +331,12 @@ These gaps are "nice" improvements but not critical. Build the UI without them; 
 **Status:** 🔴 **NOT PLANNED**
 
 **Current behavior:**
+
 - Risk API shows current state
 - Can't simulate "if I add 100 BTC, what happens to risk?"
 
 **What UI needs:**
+
 - POST `/api/risk/simulate` with proposed position delta
 - Returns: new risk metrics, breach probability, etc.
 
@@ -331,6 +353,7 @@ These aren't gaps — the APIs work — but there are subtle differences between
 ### Differential 4.1: Order Status Terminology
 
 **API Response:**
+
 ```json
 {
   "order_id": "123",
@@ -341,10 +364,12 @@ These aren't gaps — the APIs work — but there are subtle differences between
 ```
 
 **UI Expectation:**
+
 - "Open" but also partially filled?
 - What should we call this? "Partial Fill"? "Open"?
 
 **Resolution:** API status is venue-native (BINANCE uses "OPEN" even if partial). UI should translate:
+
 - OPEN + filled_qty > 0 → "Partially Filled"
 - OPEN + filled_qty == 0 → "Open"
 - CLOSED + filled_qty == 0 → "Cancelled"
@@ -355,6 +380,7 @@ These aren't gaps — the APIs work — but there are subtle differences between
 ### Differential 4.2: Price Representation (Decimal vs Scientific)
 
 **API Response:**
+
 ```json
 {
   "price": 6.5e-4,
@@ -363,10 +389,12 @@ These aren't gaps — the APIs work — but there are subtle differences between
 ```
 
 **UI Expectation:**
+
 - Users expect "0.00065" not scientific notation
 - Very small prices (altcoins) need careful display
 
 **Resolution:** Format in UI layer:
+
 - If price < 0.0001: show 8 decimal places
 - If price < 1: show 6-8 decimal places
 - If price >= 1: show 2 decimal places
@@ -376,18 +404,21 @@ These aren't gaps — the APIs work — but there are subtle differences between
 ### Differential 4.3: Timestamp Format
 
 **API Response:**
+
 ```json
 {
-  "timestamp": 1711209600000,  // milliseconds
-  "created_at": "2026-03-24T00:00:00Z"  // ISO string
+  "timestamp": 1711209600000, // milliseconds
+  "created_at": "2026-03-24T00:00:00Z" // ISO string
 }
 ```
 
 **UI Expectation:**
+
 - Inconsistency (some ms, some ISO strings)
 - Timezone confusion (UTC vs local)
 
 **Resolution:**
+
 - Standardize: all timestamps as ISO 8601 UTC
 - UI converts to user's local timezone for display
 - Agenda item for API team: standardize on ISO 8601
@@ -397,6 +428,7 @@ These aren't gaps — the APIs work — but there are subtle differences between
 ### Differential 4.4: Aggregation Semantics
 
 **API Response (Market Data):**
+
 ```json
 {
   "symbol": "BTC/USD",
@@ -411,10 +443,12 @@ These aren't gaps — the APIs work — but there are subtle differences between
 ```
 
 **UI Expectation:**
+
 - Which exchange's prices? (Binance only? Binance+Kraken average?)
 - Should multi-venue dashboards show aggregated candles or per-venue?
 
 **Resolution:**
+
 - API should be clear: this is BINANCE 1h candle (tag it)
 - UI aggregates explicitly if needed (don't hide it)
 - Config should control: "aggregation strategy = none | weighted_average | min/max"
@@ -425,52 +459,52 @@ These aren't gaps — the APIs work — but there are subtle differences between
 
 ### Execution Service
 
-| Feature | API Status | UI Status | Gap? |
-|---------|-----------|-----------|------|
-| Place order | ✅ Ready | ✅ Ready | No |
-| Cancel order | ✅ Ready | ✅ Ready | No |
-| View positions | ⚠️ Missing entry_price | 🟡 In progress | **Yes: Gap 1.2** |
-| View executions | ⚠️ No date filtering | 🟡 In progress | **Yes: Gap 1.3** |
-| Set risk limits | ✅ Ready | 📋 Not started | No |
-| Simulated orders | ❌ Not started | 📋 Not started | N/A |
+| Feature          | API Status             | UI Status      | Gap?             |
+| ---------------- | ---------------------- | -------------- | ---------------- |
+| Place order      | ✅ Ready               | ✅ Ready       | No               |
+| Cancel order     | ✅ Ready               | ✅ Ready       | No               |
+| View positions   | ⚠️ Missing entry_price | 🟡 In progress | **Yes: Gap 1.2** |
+| View executions  | ⚠️ No date filtering   | 🟡 In progress | **Yes: Gap 1.3** |
+| Set risk limits  | ✅ Ready               | 📋 Not started | No               |
+| Simulated orders | ❌ Not started         | 📋 Not started | N/A              |
 
 ### Risk Service
 
-| Feature | API Status | UI Status | Gap? |
-|---------|-----------|-----------|------|
-| Get risk limits (global) | ✅ Ready | ✅ Ready | No |
+| Feature                     | API Status     | UI Status      | Gap?             |
+| --------------------------- | -------------- | -------------- | ---------------- |
+| Get risk limits (global)    | ✅ Ready       | ✅ Ready       | No               |
 | Get risk limits (per-venue) | ❌ Not started | 📋 Not started | **Yes: Gap 1.1** |
-| Get current exposure | ✅ Ready | ✅ Ready | No |
-| Alert on breach | ✅ Ready | ⚠️ Email only | **Yes: Gap 2.1** |
-| Scenario analysis | ❌ Not started | 📋 Not started | **Gap 3.3** |
+| Get current exposure        | ✅ Ready       | ✅ Ready       | No               |
+| Alert on breach             | ✅ Ready       | ⚠️ Email only  | **Yes: Gap 2.1** |
+| Scenario analysis           | ❌ Not started | 📋 Not started | **Gap 3.3**      |
 
 ### Strategy Service
 
-| Feature | API Status | UI Status | Gap? |
-|---------|-----------|-----------|------|
-| View strategies | ✅ Ready | ✅ Ready | No |
-| Update config (full) | ✅ Ready | ✅ Ready | No |
-| Update config (partial) | ❌ No PATCH support | 🟡 Workaround | **Yes: Gap 1.4** |
-| Backtest (summary) | ✅ Ready | ✅ Ready | No |
-| Backtest (detailed) | ❌ No tick-level | 📋 Not started | **Gap 2.3** |
+| Feature                 | API Status          | UI Status      | Gap?             |
+| ----------------------- | ------------------- | -------------- | ---------------- |
+| View strategies         | ✅ Ready            | ✅ Ready       | No               |
+| Update config (full)    | ✅ Ready            | ✅ Ready       | No               |
+| Update config (partial) | ❌ No PATCH support | 🟡 Workaround  | **Yes: Gap 1.4** |
+| Backtest (summary)      | ✅ Ready            | ✅ Ready       | No               |
+| Backtest (detailed)     | ❌ No tick-level    | 📋 Not started | **Gap 2.3**      |
 
 ### Market Data Service
 
-| Feature | API Status | UI Status | Gap? |
-|---------|-----------|-----------|------|
-| OHLCV candles | ✅ Ready (w/ tick count) | ✅ Ready | No |
-| Order book snapshot | ✅ Ready | ✅ Ready | No |
-| Trade stream | ✅ WebSocket ready | ✅ Ready | No |
-| Historical data | ✅ Ready | ✅ Ready | No |
+| Feature             | API Status               | UI Status | Gap? |
+| ------------------- | ------------------------ | --------- | ---- |
+| OHLCV candles       | ✅ Ready (w/ tick count) | ✅ Ready  | No   |
+| Order book snapshot | ✅ Ready                 | ✅ Ready  | No   |
+| Trade stream        | ✅ WebSocket ready       | ✅ Ready  | No   |
+| Historical data     | ✅ Ready                 | ✅ Ready  | No   |
 
 ### Alerting Service
 
-| Feature | API Status | UI Status | Gap? |
-|---------|-----------|-----------|------|
-| Create alert (email) | ✅ Ready | ✅ Ready | No |
+| Feature              | API Status     | UI Status      | Gap?        |
+| -------------------- | -------------- | -------------- | ----------- |
+| Create alert (email) | ✅ Ready       | ✅ Ready       | No          |
 | Create alert (Slack) | 🟡 In progress | 📋 Not started | **Gap 2.1** |
-| Alert history | ✅ Ready | ✅ Ready | No |
-| Alert tuning | ✅ Ready | 📋 Not started | No |
+| Alert history        | ✅ Ready       | ✅ Ready       | No          |
+| Alert tuning         | ✅ Ready       | 📋 Not started | No          |
 
 ---
 
@@ -521,17 +555,17 @@ These aren't gaps — the APIs work — but there are subtle differences between
 
 ## Summary Table
 
-| Gap # | Title | Impact | Status | Blocker? |
-|-------|-------|--------|--------|----------|
-| 1.1 | Risk API no per-venue breakdown | Risk UI reduced | 🔴 | **YES** |
-| 1.2 | Positions API missing entry price | P&L incomplete | 🟡 | **YES** |
-| 1.3 | Execution history no date filtering | Slow UI | 🔴 | **YES** |
-| 1.4 | Strategy config no PATCH support | Config UX fragile | 🟡 | **YES** |
-| 2.1 | Alert API no Slack/PagerDuty | Limited notifications | 🟡 | No |
-| 2.2 | Market data missing tick count | ✅ RESOLVED | 🟢 | No |
-| 2.3 | Backtest no tick-level data | Backtest UI basic | 🔴 | No |
-| 2.4 | Config API no audit trail | Audit impossible | 🟡 | No |
-| 3.1 | Positions API no Greeks | Options UI basic | 🟢 | No |
+| Gap # | Title                               | Impact                | Status | Blocker? |
+| ----- | ----------------------------------- | --------------------- | ------ | -------- |
+| 1.1   | Risk API no per-venue breakdown     | Risk UI reduced       | 🔴     | **YES**  |
+| 1.2   | Positions API missing entry price   | P&L incomplete        | 🟡     | **YES**  |
+| 1.3   | Execution history no date filtering | Slow UI               | 🔴     | **YES**  |
+| 1.4   | Strategy config no PATCH support    | Config UX fragile     | 🟡     | **YES**  |
+| 2.1   | Alert API no Slack/PagerDuty        | Limited notifications | 🟡     | No       |
+| 2.2   | Market data missing tick count      | ✅ RESOLVED           | 🟢     | No       |
+| 2.3   | Backtest no tick-level data         | Backtest UI basic     | 🔴     | No       |
+| 2.4   | Config API no audit trail           | Audit impossible      | 🟡     | No       |
+| 3.1   | Positions API no Greeks             | Options UI basic      | 🟢     | No       |
 
 ---
 

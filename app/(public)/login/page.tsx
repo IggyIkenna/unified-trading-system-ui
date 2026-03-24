@@ -1,16 +1,31 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Sparkles, ArrowRight, Mail, Lock, Building2, Shield, Users, Eye } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
-import { PERSONAS } from "@/lib/auth/personas"
+import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sparkles,
+  ArrowRight,
+  Mail,
+  Lock,
+  Building2,
+  Shield,
+  Users,
+  Eye,
+} from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { PERSONAS } from "@/lib/auth/personas";
 
 // Map persona roles to redirect targets and display info
 // ALL personas land on the service hub — the hub shows different services
@@ -21,84 +36,95 @@ const PERSONA_REDIRECTS: Record<string, string> = {
   "client-full": "/dashboard",
   "client-premium": "/dashboard",
   "client-data-only": "/dashboard",
-}
+};
 
 const ROLE_ICONS: Record<string, typeof Shield> = {
   admin: Shield,
   internal: Eye,
   client: Users,
-}
+};
 
 const ROLE_COLORS: Record<string, string> = {
   admin: "text-red-400",
   internal: "text-emerald-400",
   client: "text-blue-400",
-}
+};
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { user, loading, loginByEmail, login } = useAuth()
-  const searchParams = typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search) : null
-  const redirectTo = searchParams?.get("redirect") || null
-  const personaParam = searchParams?.get("persona") || null
+  const router = useRouter();
+  const { user, loading, loginByEmail, login } = useAuth();
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const redirectTo = searchParams?.get("redirect") || null;
+  const personaParam = searchParams?.get("persona") || null;
 
-  const [loginType, setLoginType] = React.useState<"internal" | "external">("external")
-  const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState("")
+  const [loginType, setLoginType] = React.useState<"internal" | "external">(
+    "external",
+  );
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   // Auto-login when ?persona= param is present (from persona switcher)
   React.useEffect(() => {
-    if (!personaParam || loading) return
+    if (!personaParam || loading) return;
     // If already logged in as a different persona, logout first
     if (user && user.id !== personaParam) {
-      localStorage.removeItem("portal_user")
-      localStorage.removeItem("portal_token")
-      localStorage.removeItem("odum_user")
-      window.location.reload()
-      return
+      localStorage.removeItem("portal_user");
+      localStorage.removeItem("portal_token");
+      localStorage.removeItem("odum_user");
+      window.location.reload();
+      return;
     }
     if (!user) {
-      const success = login(personaParam)
+      const success = login(personaParam);
       if (success) {
-        router.replace(redirectTo || PERSONA_REDIRECTS[personaParam] || "/dashboard")
+        router.replace(
+          redirectTo || PERSONA_REDIRECTS[personaParam] || "/dashboard",
+        );
       }
     }
-  }, [personaParam, loading, user, login, router, redirectTo])
+  }, [personaParam, loading, user, login, router, redirectTo]);
 
   React.useEffect(() => {
     if (!loading && user && !personaParam) {
-      router.replace(redirectTo || "/dashboard")
+      router.replace(redirectTo || "/dashboard");
     }
-  }, [loading, user, router, redirectTo, personaParam])
+  }, [loading, user, router, redirectTo, personaParam]);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-    await new Promise((resolve) => setTimeout(resolve, 300))
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const success = loginByEmail(email, password)
+    const success = loginByEmail(email, password);
     if (success) {
       // Find matching persona to get redirect
-      const persona = PERSONAS.find((p) => p.email === email)
-      const target = redirectTo || (persona ? PERSONA_REDIRECTS[persona.id] : "/dashboard") || "/dashboard"
-      router.push(target)
+      const persona = PERSONAS.find((p) => p.email === email);
+      const target =
+        redirectTo ||
+        (persona ? PERSONA_REDIRECTS[persona.id] : "/dashboard") ||
+        "/dashboard";
+      router.push(target);
     } else {
-      setError("Invalid credentials. Try any demo account below with password: demo")
+      setError(
+        "Invalid credentials. Try any demo account below with password: demo",
+      );
     }
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   const handleDemoLogin = (personaId: string) => {
-    const success = login(personaId)
+    const success = login(personaId);
     if (success) {
-      const target = redirectTo || PERSONA_REDIRECTS[personaId] || "/dashboard"
-      router.push(target)
+      const target = redirectTo || PERSONA_REDIRECTS[personaId] || "/dashboard";
+      router.push(target);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -108,7 +134,9 @@ export default function LoginPage() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome back</CardTitle>
-              <CardDescription>Sign in to access your dashboard</CardDescription>
+              <CardDescription>
+                Sign in to access your dashboard
+              </CardDescription>
               {/* Internal / External toggle */}
               <div className="flex items-center justify-center gap-1 mt-4 p-1 rounded-lg bg-muted/50">
                 <button
@@ -120,7 +148,9 @@ export default function LoginPage() {
                   }`}
                 >
                   <div>Internal</div>
-                  <div className="text-[9px] font-normal text-muted-foreground mt-0.5">Odum team · full platform + admin</div>
+                  <div className="text-[9px] font-normal text-muted-foreground mt-0.5">
+                    Odum team · full platform + admin
+                  </div>
                 </button>
                 <button
                   onClick={() => setLoginType("external")}
@@ -131,7 +161,9 @@ export default function LoginPage() {
                   }`}
                 >
                   <div>External Client</div>
-                  <div className="text-[9px] font-normal text-muted-foreground mt-0.5">Subscribed services · your org</div>
+                  <div className="text-[9px] font-normal text-muted-foreground mt-0.5">
+                    Subscribed services · your org
+                  </div>
                 </button>
               </div>
             </CardHeader>
@@ -168,7 +200,9 @@ export default function LoginPage() {
                   </div>
                 </div>
                 {error && (
-                  <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">{error}</p>
+                  <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
+                    {error}
+                  </p>
                 )}
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Signing in..." : "Sign In"}
@@ -179,16 +213,18 @@ export default function LoginPage() {
               {/* Demo Personas */}
               <div className="mt-6 pt-6 border-t border-border">
                 <p className="text-sm text-muted-foreground text-center mb-4">
-                  Or try a demo account <span className="text-xs">(password: demo)</span>
+                  Or try a demo account{" "}
+                  <span className="text-xs">(password: demo)</span>
                 </p>
                 <div className="space-y-2">
                   {PERSONAS.filter((p) =>
                     loginType === "internal"
                       ? p.role === "internal" || p.role === "admin"
-                      : p.role === "client"
+                      : p.role === "client",
                   ).map((persona) => {
-                    const Icon = ROLE_ICONS[persona.role] || Users
-                    const colorClass = ROLE_COLORS[persona.role] || "text-muted-foreground"
+                    const Icon = ROLE_ICONS[persona.role] || Users;
+                    const colorClass =
+                      ROLE_COLORS[persona.role] || "text-muted-foreground";
                     return (
                       <button
                         key={persona.id}
@@ -197,7 +233,9 @@ export default function LoginPage() {
                       >
                         <Icon className={`size-4 ${colorClass}`} />
                         <div className="flex-1">
-                          <div className="text-sm font-medium">{persona.org.name}</div>
+                          <div className="text-sm font-medium">
+                            {persona.org.name}
+                          </div>
                           <div className="text-xs text-muted-foreground">
                             {persona.email} · {persona.displayName}
                           </div>
@@ -205,15 +243,17 @@ export default function LoginPage() {
                         <Badge
                           variant="outline"
                           className={`text-xs ${
-                            persona.role === "admin" ? "border-red-500/30 text-red-400" :
-                            persona.role === "internal" ? "border-emerald-500/30 text-emerald-400" :
-                            "border-blue-500/30 text-blue-400"
+                            persona.role === "admin"
+                              ? "border-red-500/30 text-red-400"
+                              : persona.role === "internal"
+                                ? "border-emerald-500/30 text-emerald-400"
+                                : "border-blue-500/30 text-blue-400"
                           }`}
                         >
                           {persona.role}
                         </Badge>
                       </button>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -222,5 +262,5 @@ export default function LoginPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

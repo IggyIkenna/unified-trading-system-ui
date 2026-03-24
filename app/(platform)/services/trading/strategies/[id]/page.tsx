@@ -1,18 +1,27 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { use } from "react"
-import { StatusBadge } from "@/components/trading/status-badge"
-import { PnLValue } from "@/components/trading/pnl-value"
-import { SparklineCell } from "@/components/trading/kpi-card"
-import { LimitBar } from "@/components/trading/limit-bar"
-import { PnLWaterfall, PnLBarChart } from "@/components/trading/pnl-waterfall"
-import { ExecutionModeToggle, ExecutionModeIndicator } from "@/components/trading/execution-mode-toggle"
-import { useExecutionMode } from "@/lib/execution-mode-context"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import * as React from "react";
+import { use } from "react";
+import { StatusBadge } from "@/components/trading/status-badge";
+import { PnLValue } from "@/components/trading/pnl-value";
+import { SparklineCell } from "@/components/trading/kpi-card";
+import { LimitBar } from "@/components/trading/limit-bar";
+import { PnLWaterfall, PnLBarChart } from "@/components/trading/pnl-waterfall";
+import {
+  ExecutionModeToggle,
+  ExecutionModeIndicator,
+} from "@/components/trading/execution-mode-toggle";
+import { useExecutionMode } from "@/lib/execution-mode-context";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -20,7 +29,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Play,
   Pause,
@@ -40,12 +49,12 @@ import {
   History,
   Rocket,
   Brain,
-} from "lucide-react"
-import { PromoteFlowModal } from "@/components/trading/promote-flow-modal"
-import { StrategyAuditTrail } from "@/components/trading/strategy-audit-trail"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { formatCurrency } from "@/lib/reference-data"
+} from "lucide-react";
+import { PromoteFlowModal } from "@/components/trading/promote-flow-modal";
+import { StrategyAuditTrail } from "@/components/trading/strategy-audit-trail";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/lib/reference-data";
 import {
   STRATEGIES as DEFAULT_STRATEGIES,
   getStrategyById as getDefaultStrategyById,
@@ -53,66 +62,131 @@ import {
   generatePositionsForStrategy,
   type Strategy,
   type PnLBreakdownData,
-} from "@/lib/strategy-registry"
-import { useStrategyPerformance } from "@/hooks/api/use-strategies"
+} from "@/lib/strategy-registry";
+import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 
 // Testing stage colors
 const STAGE_COLORS: Record<string, string> = {
   done: "var(--status-live)",
   pending: "var(--status-warning)",
   blocked: "var(--status-error)",
-}
+};
 
 // Model-Strategy linkage map
-const MODEL_STRATEGY_MAP: Record<string, { modelId: string; modelName: string; version: string }> = {
-  "CEFI_BTC_ML_DIR_HUF_4H": { modelId: "momentum-btc-xgb", modelName: "BTC Momentum XGBoost", version: "v3.2" },
-  "CEFI_ETH_ML_DIR_HUF_4H": { modelId: "momentum-eth-xgb", modelName: "ETH Momentum XGBoost", version: "v2.1" },
-  "DEFI_ETH_ML_DIR_SCE_1H": { modelId: "defi-signal-lstm", modelName: "DeFi Signal LSTM", version: "v1.8" },
-  "SPORTS_FOOTBALL_ML_ARB": { modelId: "sports-edge-gb", modelName: "Sports Edge GradientBoost", version: "v4.0" },
-}
+const MODEL_STRATEGY_MAP: Record<
+  string,
+  { modelId: string; modelName: string; version: string }
+> = {
+  CEFI_BTC_ML_DIR_HUF_4H: {
+    modelId: "momentum-btc-xgb",
+    modelName: "BTC Momentum XGBoost",
+    version: "v3.2",
+  },
+  CEFI_ETH_ML_DIR_HUF_4H: {
+    modelId: "momentum-eth-xgb",
+    modelName: "ETH Momentum XGBoost",
+    version: "v2.1",
+  },
+  DEFI_ETH_ML_DIR_SCE_1H: {
+    modelId: "defi-signal-lstm",
+    modelName: "DeFi Signal LSTM",
+    version: "v1.8",
+  },
+  SPORTS_FOOTBALL_ML_ARB: {
+    modelId: "sports-edge-gb",
+    modelName: "Sports Edge GradientBoost",
+    version: "v4.0",
+  },
+};
 
-export default function StrategyDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const { mode, isLive, isBatch } = useExecutionMode()
-  const { data: perfData, isLoading } = useStrategyPerformance()
-  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.strategies ?? []
-  const STRATEGIES: Strategy[] = perfRaw.length > 0 ? perfRaw as Strategy[] : DEFAULT_STRATEGIES
+export default function StrategyDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  const { mode, isLive, isBatch } = useExecutionMode();
+  const { data: perfData, isLoading } = useStrategyPerformance();
+  const perfRaw: any[] =
+    (perfData as any)?.data ?? (perfData as any)?.strategies ?? [];
+  const STRATEGIES: Strategy[] =
+    perfRaw.length > 0 ? (perfRaw as Strategy[]) : DEFAULT_STRATEGIES;
 
-  const [promoteModalOpen, setPromoteModalOpen] = React.useState(false)
+  const [promoteModalOpen, setPromoteModalOpen] = React.useState(false);
 
   // Prefer registry version (has full fields: pnlAttribution, instruments, etc.)
   // Fall back to API data if not in registry
-  const apiStrategy = perfRaw.find((s: Record<string, unknown>) => s.id === id) as Record<string, unknown> | undefined
-  const registryStrategy = getDefaultStrategyById(id)
+  const apiStrategy = perfRaw.find(
+    (s: Record<string, unknown>) => s.id === id,
+  ) as Record<string, unknown> | undefined;
+  const registryStrategy = getDefaultStrategyById(id);
   // Merge: registry as base, API data for live metrics
   const strategy = registryStrategy
-    ? { ...registryStrategy, ...(apiStrategy ? { pnl: apiStrategy.pnl, nav: apiStrategy.nav, exposure: apiStrategy.exposure, sharpe: apiStrategy.sharpe } : {}) }
-    : (apiStrategy as unknown as Strategy) ?? DEFAULT_STRATEGIES[0]
-  const mlModel = MODEL_STRATEGY_MAP[strategy.strategyIdPattern]
+    ? {
+        ...registryStrategy,
+        ...(apiStrategy
+          ? {
+              pnl: apiStrategy.pnl,
+              nav: apiStrategy.nav,
+              exposure: apiStrategy.exposure,
+              sharpe: apiStrategy.sharpe,
+            }
+          : {}),
+      }
+    : ((apiStrategy as unknown as Strategy) ?? DEFAULT_STRATEGIES[0]);
+  const mlModel = MODEL_STRATEGY_MAP[strategy.strategyIdPattern];
   const pnlBreakdown: PnLBreakdownData = React.useMemo(() => {
     try {
-      return generatePnLBreakdown(strategy)
+      return generatePnLBreakdown(strategy);
     } catch {
-      return { total: strategy.performance?.pnlMTD ?? 0, components: [] } as unknown as PnLBreakdownData
+      return {
+        total: strategy.performance?.pnlMTD ?? 0,
+        components: [],
+      } as unknown as PnLBreakdownData;
     }
-  }, [strategy])
-  const positions = React.useMemo(() => generatePositionsForStrategy(strategy), [strategy])
-  
+  }, [strategy]);
+  const positions = React.useMemo(
+    () => generatePositionsForStrategy(strategy),
+    [strategy],
+  );
+
   // Calculate risk limit utilization from strategy config
   const riskLimits = React.useMemo(() => {
-    const netExposure = strategy.performance.netExposure
-    const maxExposure = parseInt(strategy.configParams.find(c => c.key.includes("capital") || c.key.includes("position"))?.value || "5000000")
-    
+    const netExposure = strategy.performance.netExposure;
+    const maxExposure = parseInt(
+      strategy.configParams.find(
+        (c) => c.key.includes("capital") || c.key.includes("position"),
+      )?.value || "5000000",
+    );
+
     return [
-      { label: "Net Exposure", value: netExposure, limit: maxExposure * 2, unit: "$" },
-      { label: "Position Count", value: strategy.performance.positions, limit: 20, unit: "" },
-      { label: "Max Drawdown", value: strategy.performance.maxDrawdown, limit: parseFloat(strategy.riskProfile.maxDrawdown) || 10, unit: "%" },
-    ]
-  }, [strategy])
+      {
+        label: "Net Exposure",
+        value: netExposure,
+        limit: maxExposure * 2,
+        unit: "$",
+      },
+      {
+        label: "Position Count",
+        value: strategy.performance.positions,
+        limit: 20,
+        unit: "",
+      },
+      {
+        label: "Max Drawdown",
+        value: strategy.performance.maxDrawdown,
+        limit: parseFloat(strategy.riskProfile.maxDrawdown) || 10,
+        unit: "%",
+      },
+    ];
+  }, [strategy]);
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading)
+    return (
+      <div className="p-8 text-center text-muted-foreground">Loading...</div>
+    );
 
-  const arch = strategy.archetype as string
+  const arch = strategy.archetype as string;
 
   return (
     <div className="p-6">
@@ -128,12 +202,17 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               </Badge>
               <ExecutionModeIndicator />
             </div>
-            <p className="text-sm text-muted-foreground max-w-2xl">{strategy.description}</p>
-            
+            <p className="text-sm text-muted-foreground max-w-2xl">
+              {strategy.description}
+            </p>
+
             {/* Instance Identity Panel - Operational metadata per critique 1.1 */}
             <div className="flex items-center gap-2 flex-wrap">
               {/* Strategy ID (structured) */}
-              <Badge variant="outline" className="font-mono text-[10px] bg-muted/30">
+              <Badge
+                variant="outline"
+                className="font-mono text-[10px] bg-muted/30"
+              >
                 {strategy.strategyIdPattern}
               </Badge>
               {/* Config Version */}
@@ -141,11 +220,13 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 v{strategy.version}
               </Badge>
               {/* Runtime Mode */}
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={cn(
                   "text-[10px]",
-                  isLive ? "border-[var(--status-live)] text-[var(--status-live)]" : "border-[var(--surface-markets)] text-[var(--surface-markets)]"
+                  isLive
+                    ? "border-[var(--status-live)] text-[var(--status-live)]"
+                    : "border-[var(--surface-markets)] text-[var(--surface-markets)]",
                 )}
               >
                 {isLive ? "LIVE" : "BATCH"}
@@ -155,34 +236,55 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 {isLive ? "REAL" : "HISTORICAL"}
               </Badge>
               {/* Testing Stage (current) */}
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className={cn(
                   "text-[10px]",
-                  strategy.status === "live" ? "border-[var(--status-live)] text-[var(--status-live)]" : "border-[var(--status-warning)] text-[var(--status-warning)]"
+                  strategy.status === "live"
+                    ? "border-[var(--status-live)] text-[var(--status-live)]"
+                    : "border-[var(--status-warning)] text-[var(--status-warning)]",
                 )}
               >
-                {strategy.status === "live" ? "LIVE_REAL" : strategy.status === "warning" ? "STAGING" : "LIVE_TESTNET"}
+                {strategy.status === "live"
+                  ? "LIVE_REAL"
+                  : strategy.status === "warning"
+                    ? "STAGING"
+                    : "LIVE_TESTNET"}
               </Badge>
               {/* Environment */}
               <Badge variant="secondary" className="text-[10px]">
                 PROD
               </Badge>
             </div>
-            
+
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <span 
+                <span
                   className="size-2 rounded-full"
-                  style={{ backgroundColor: strategy.assetClass === "DeFi" ? "#4ade80" : strategy.assetClass === "CeFi" ? "#60a5fa" : strategy.assetClass === "TradFi" ? "#a78bfa" : strategy.assetClass === "Sports" ? "#f59e0b" : "#ec4899" }}
+                  style={{
+                    backgroundColor:
+                      strategy.assetClass === "DeFi"
+                        ? "#4ade80"
+                        : strategy.assetClass === "CeFi"
+                          ? "#60a5fa"
+                          : strategy.assetClass === "TradFi"
+                            ? "#a78bfa"
+                            : strategy.assetClass === "Sports"
+                              ? "#f59e0b"
+                              : "#ec4899",
+                  }}
                 />
                 {strategy.assetClass}
               </span>
               <span>{strategy.strategyType}</span>
               {/* Execution Mode Tag (SCE/HUF/EVT) */}
               <Badge variant="outline" className="text-[10px] font-mono">
-                {strategy.dataArchitecture.executionMode === "same_candle_exit" ? "SCE" : 
-                 strategy.dataArchitecture.executionMode === "hold_until_flip" ? "HUF" : "EVT"}
+                {strategy.dataArchitecture.executionMode === "same_candle_exit"
+                  ? "SCE"
+                  : strategy.dataArchitecture.executionMode ===
+                      "hold_until_flip"
+                    ? "HUF"
+                    : "EVT"}
               </Badge>
               {strategy.deployedAt && (
                 <span className="flex items-center gap-1">
@@ -208,9 +310,11 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
             <PromoteFlowModal
               strategyId={strategy.id}
               strategyName={strategy.name}
-              currentStage={strategy.status === "live" ? "LIVE_REAL" : "STAGING"}
+              currentStage={
+                strategy.status === "live" ? "LIVE_REAL" : "STAGING"
+              }
               onPromote={async () => {
-                console.log("Promoting strategy:", strategy.id)
+                console.log("Promoting strategy:", strategy.id);
               }}
               trigger={
                 <Button variant="outline" size="sm" className="gap-2">
@@ -239,7 +343,10 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
           <div className="flex items-center gap-2 text-sm text-muted-foreground px-1">
             <Brain className="size-4" />
             <span>ML Model:</span>
-            <Link href={`/quant/models/${mlModel.modelId}`} className="text-[var(--accent-blue)] hover:underline font-medium">
+            <Link
+              href={`/quant/models/${mlModel.modelId}`}
+              className="text-[var(--accent-blue)] hover:underline font-medium"
+            >
               {mlModel.modelName} {mlModel.version} (deployed)
             </Link>
           </div>
@@ -249,7 +356,9 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card className="bg-card/50">
             <CardContent className="p-4">
-              <div className="text-xs text-muted-foreground mb-1">Total P&L</div>
+              <div className="text-xs text-muted-foreground mb-1">
+                Total P&L
+              </div>
               <PnLValue value={strategy.performance.pnlTotal} size="lg" />
             </CardContent>
           </Card>
@@ -262,20 +371,32 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
           <Card className="bg-card/50">
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground mb-1">Sharpe</div>
-              <div className="text-2xl font-semibold font-mono">{strategy.performance.sharpe.toFixed(2)}</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50">
-            <CardContent className="p-4">
-              <div className="text-xs text-muted-foreground mb-1">Return</div>
-              <div className={cn("text-2xl font-semibold font-mono", strategy.performance.returnPct >= 0 ? "pnl-positive" : "pnl-negative")}>
-                {strategy.performance.returnPct >= 0 ? "+" : ""}{strategy.performance.returnPct.toFixed(1)}%
+              <div className="text-2xl font-semibold font-mono">
+                {strategy.performance.sharpe.toFixed(2)}
               </div>
             </CardContent>
           </Card>
           <Card className="bg-card/50">
             <CardContent className="p-4">
-              <div className="text-xs text-muted-foreground mb-1">Max Drawdown</div>
+              <div className="text-xs text-muted-foreground mb-1">Return</div>
+              <div
+                className={cn(
+                  "text-2xl font-semibold font-mono",
+                  strategy.performance.returnPct >= 0
+                    ? "pnl-positive"
+                    : "pnl-negative",
+                )}
+              >
+                {strategy.performance.returnPct >= 0 ? "+" : ""}
+                {strategy.performance.returnPct.toFixed(1)}%
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50">
+            <CardContent className="p-4">
+              <div className="text-xs text-muted-foreground mb-1">
+                Max Drawdown
+              </div>
               <div className="text-2xl font-semibold font-mono text-muted-foreground">
                 {strategy.performance.maxDrawdown.toFixed(1)}%
               </div>
@@ -283,7 +404,9 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
           </Card>
           <Card className="bg-card/50">
             <CardContent className="p-4">
-              <div className="text-xs text-muted-foreground mb-1">Net Exposure</div>
+              <div className="text-xs text-muted-foreground mb-1">
+                Net Exposure
+              </div>
               <div className="text-2xl font-semibold font-mono">
                 ${formatCurrency(strategy.performance.netExposure)}
               </div>
@@ -331,8 +454,12 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-base">P&L Waterfall (MTD)</CardTitle>
-                      <CardDescription>Breakdown by settlement type</CardDescription>
+                      <CardTitle className="text-base">
+                        P&L Waterfall (MTD)
+                      </CardTitle>
+                      <CardDescription>
+                        Breakdown by settlement type
+                      </CardDescription>
                     </div>
                     <Badge variant="outline" className="text-xs">
                       {isLive ? "Live" : "Reconstructed"}
@@ -347,19 +474,30 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               <div className="col-span-4 space-y-4">
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Settlement Types</CardTitle>
+                    <CardTitle className="text-base">
+                      Settlement Types
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {strategy.pnlAttribution.components.map(comp => (
-                      <div key={comp.id} className="flex items-start gap-3 py-2 border-b border-border last:border-0">
-                        <div 
+                    {strategy.pnlAttribution.components.map((comp) => (
+                      <div
+                        key={comp.id}
+                        className="flex items-start gap-3 py-2 border-b border-border last:border-0"
+                      >
+                        <div
                           className="size-3 rounded-full mt-1 shrink-0"
                           style={{ backgroundColor: comp.color }}
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-sm">{comp.label}</div>
-                          <div className="text-xs text-muted-foreground">{comp.settlementType}</div>
-                          <div className="text-xs text-muted-foreground mt-0.5">{comp.description}</div>
+                          <div className="font-medium text-sm">
+                            {comp.label}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {comp.settlementType}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {comp.description}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -387,8 +525,12 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
             <div className="grid grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Instrument Positions</CardTitle>
-                  <CardDescription>Active positions by instrument</CardDescription>
+                  <CardTitle className="text-base">
+                    Instrument Positions
+                  </CardTitle>
+                  <CardDescription>
+                    Active positions by instrument
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -403,12 +545,18 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                     <TableBody>
                       {strategy.instruments.map((inst, idx) => (
                         <TableRow key={idx}>
-                          <TableCell className="font-mono text-xs">{inst.key}</TableCell>
+                          <TableCell className="font-mono text-xs">
+                            {inst.key}
+                          </TableCell>
                           <TableCell>{inst.venue}</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="text-[10px]">{inst.type}</Badge>
+                            <Badge variant="outline" className="text-[10px]">
+                              {inst.type}
+                            </Badge>
                           </TableCell>
-                          <TableCell className="text-muted-foreground text-sm">{inst.role}</TableCell>
+                          <TableCell className="text-muted-foreground text-sm">
+                            {inst.role}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -418,24 +566,40 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Smart Order Routing</CardTitle>
+                  <CardTitle className="text-base">
+                    Smart Order Routing
+                  </CardTitle>
                   <CardDescription>SOR configuration per leg</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {strategy.sorEnabled && strategy.sorConfig ? (
                     <div className="space-y-4">
                       {strategy.sorConfig.legs.map((leg, idx) => (
-                        <div key={idx} className="p-3 rounded-lg border border-border">
+                        <div
+                          key={idx}
+                          className="p-3 rounded-lg border border-border"
+                        >
                           <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-sm">{leg.name}</span>
-                            <Badge variant={leg.sorEnabled ? "default" : "outline"} className="text-[10px]">
+                            <span className="font-medium text-sm">
+                              {leg.name}
+                            </span>
+                            <Badge
+                              variant={leg.sorEnabled ? "default" : "outline"}
+                              className="text-[10px]"
+                            >
                               {leg.sorEnabled ? "SOR ON" : "SOR OFF"}
                             </Badge>
                           </div>
                           {leg.allowedVenues && (
                             <div className="flex items-center gap-1 flex-wrap">
-                              {leg.allowedVenues.map(v => (
-                                <Badge key={v} variant="secondary" className="text-[10px]">{v}</Badge>
+                              {leg.allowedVenues.map((v) => (
+                                <Badge
+                                  key={v}
+                                  variant="secondary"
+                                  className="text-[10px]"
+                                >
+                                  {v}
+                                </Badge>
                               ))}
                             </div>
                           )}
@@ -463,27 +627,51 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-xs text-muted-foreground mb-1">Raw Data Source</div>
-                      <div className="text-sm font-medium">{strategy.dataArchitecture.rawDataSource}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Raw Data Source
+                      </div>
+                      <div className="text-sm font-medium">
+                        {strategy.dataArchitecture.rawDataSource}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground mb-1">Interval</div>
-                      <div className="text-sm font-medium">{strategy.dataArchitecture.interval}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Interval
+                      </div>
+                      <div className="text-sm font-medium">
+                        {strategy.dataArchitecture.interval}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground mb-1">Lowest Granularity</div>
-                      <div className="text-sm font-medium">{strategy.dataArchitecture.lowestGranularity}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Lowest Granularity
+                      </div>
+                      <div className="text-sm font-medium">
+                        {strategy.dataArchitecture.lowestGranularity}
+                      </div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground mb-1">Execution Mode</div>
-                      <Badge variant="outline">{strategy.dataArchitecture.executionMode}</Badge>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Execution Mode
+                      </div>
+                      <Badge variant="outline">
+                        {strategy.dataArchitecture.executionMode}
+                      </Badge>
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-2">Processed Data</div>
+                    <div className="text-xs text-muted-foreground mb-2">
+                      Processed Data
+                    </div>
                     <div className="flex items-center gap-1 flex-wrap">
-                      {strategy.dataArchitecture.processedData.map(d => (
-                        <Badge key={d} variant="secondary" className="text-[10px] font-mono">{d}</Badge>
+                      {strategy.dataArchitecture.processedData.map((d) => (
+                        <Badge
+                          key={d}
+                          variant="secondary"
+                          className="text-[10px] font-mono"
+                        >
+                          {d}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -493,7 +681,9 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">Features Consumed</CardTitle>
-                  <CardDescription>Input features from feature services</CardDescription>
+                  <CardDescription>
+                    Input features from feature services
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -508,12 +698,20 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                     <TableBody>
                       {strategy.featuresConsumed.map((feat, idx) => (
                         <TableRow key={idx}>
-                          <TableCell className="font-mono text-xs">{feat.name}</TableCell>
-                          <TableCell className="text-xs">{feat.source}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-[10px]">{feat.sla}</Badge>
+                          <TableCell className="font-mono text-xs">
+                            {feat.name}
                           </TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{feat.usedFor}</TableCell>
+                          <TableCell className="text-xs">
+                            {feat.source}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-[10px]">
+                              {feat.sla}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">
+                            {feat.usedFor}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -534,52 +732,85 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-3 rounded-lg bg-muted/30">
-                      <div className="text-xs text-muted-foreground mb-1">Target Return</div>
-                      <div className="text-lg font-semibold font-mono">{strategy.riskProfile.targetReturn}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Target Return
+                      </div>
+                      <div className="text-lg font-semibold font-mono">
+                        {strategy.riskProfile.targetReturn}
+                      </div>
                     </div>
                     <div className="p-3 rounded-lg bg-muted/30">
-                      <div className="text-xs text-muted-foreground mb-1">Target Sharpe</div>
-                      <div className="text-lg font-semibold font-mono">{strategy.riskProfile.targetSharpe}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Target Sharpe
+                      </div>
+                      <div className="text-lg font-semibold font-mono">
+                        {strategy.riskProfile.targetSharpe}
+                      </div>
                     </div>
                     <div className="p-3 rounded-lg bg-muted/30">
-                      <div className="text-xs text-muted-foreground mb-1">Max Drawdown</div>
-                      <div className="text-lg font-semibold font-mono">{strategy.riskProfile.maxDrawdown}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Max Drawdown
+                      </div>
+                      <div className="text-lg font-semibold font-mono">
+                        {strategy.riskProfile.maxDrawdown}
+                      </div>
                     </div>
                     <div className="p-3 rounded-lg bg-muted/30">
-                      <div className="text-xs text-muted-foreground mb-1">Max Leverage</div>
-                      <div className="text-lg font-semibold font-mono">{strategy.riskProfile.maxLeverage}</div>
+                      <div className="text-xs text-muted-foreground mb-1">
+                        Max Leverage
+                      </div>
+                      <div className="text-lg font-semibold font-mono">
+                        {strategy.riskProfile.maxLeverage}
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-muted-foreground mb-1">Capital Scalability</div>
-                    <div className="text-sm font-medium">{strategy.riskProfile.capitalScalability}</div>
+                    <div className="text-xs text-muted-foreground mb-1">
+                      Capital Scalability
+                    </div>
+                    <div className="text-sm font-medium">
+                      {strategy.riskProfile.capitalScalability}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Risk Subscriptions</CardTitle>
-                  <CardDescription>Risk types monitored by this strategy</CardDescription>
+                  <CardTitle className="text-base">
+                    Risk Subscriptions
+                  </CardTitle>
+                  <CardDescription>
+                    Risk types monitored by this strategy
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {strategy.riskSubscriptions.map((risk, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                      >
                         <div className="flex items-center gap-2">
                           {risk.subscribed ? (
                             <CheckCircle className="size-4 text-[var(--status-live)]" />
                           ) : (
                             <XCircle className="size-4 text-muted-foreground" />
                           )}
-                          <span className="font-medium text-sm">{risk.riskType}</span>
+                          <span className="font-medium text-sm">
+                            {risk.riskType}
+                          </span>
                         </div>
                         <div className="text-right">
                           {risk.threshold && (
-                            <div className="text-xs text-muted-foreground">{risk.threshold}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {risk.threshold}
+                            </div>
                           )}
                           {risk.action && (
-                            <Badge variant="outline" className="text-[10px]">{risk.action}</Badge>
+                            <Badge variant="outline" className="text-[10px]">
+                              {risk.action}
+                            </Badge>
                           )}
                         </div>
                       </div>
@@ -596,23 +827,37 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between py-2 border-b border-border">
                     <span className="text-sm">Data to Signal</span>
-                    <span className="font-mono text-sm">{strategy.latencyProfile.dataToSignal}</span>
+                    <span className="font-mono text-sm">
+                      {strategy.latencyProfile.dataToSignal}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-border">
                     <span className="text-sm">Signal to Instruction</span>
-                    <span className="font-mono text-sm">{strategy.latencyProfile.signalToInstruction}</span>
+                    <span className="font-mono text-sm">
+                      {strategy.latencyProfile.signalToInstruction}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-border">
                     <span className="text-sm">Instruction to Fill</span>
-                    <span className="font-mono text-sm">{strategy.latencyProfile.instructionToFill}</span>
+                    <span className="font-mono text-sm">
+                      {strategy.latencyProfile.instructionToFill}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between py-2 border-b border-border">
                     <span className="text-sm font-semibold">End-to-End</span>
-                    <span className="font-mono text-sm font-semibold">{strategy.latencyProfile.endToEnd}</span>
+                    <span className="font-mono text-sm font-semibold">
+                      {strategy.latencyProfile.endToEnd}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between py-2">
                     <span className="text-sm">Co-location Needed?</span>
-                    <Badge variant={strategy.latencyProfile.coLocationNeeded ? "destructive" : "secondary"}>
+                    <Badge
+                      variant={
+                        strategy.latencyProfile.coLocationNeeded
+                          ? "destructive"
+                          : "secondary"
+                      }
+                    >
                       {strategy.latencyProfile.coLocationNeeded ? "Yes" : "No"}
                     </Badge>
                   </div>
@@ -622,7 +867,9 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base">Risk Limits</CardTitle>
-                  <CardDescription>Current utilization vs limits</CardDescription>
+                  <CardDescription>
+                    Current utilization vs limits
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {riskLimits.map((limit) => (
@@ -647,8 +894,12 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-base">Strategy Configuration</CardTitle>
-                      <CardDescription>Version {strategy.version}</CardDescription>
+                      <CardTitle className="text-base">
+                        Strategy Configuration
+                      </CardTitle>
+                      <CardDescription>
+                        Version {strategy.version}
+                      </CardDescription>
                     </div>
                     <Link href={`/config/strategies/${id}`}>
                       <Button variant="outline" size="sm" className="gap-2">
@@ -670,9 +921,15 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                     <TableBody>
                       {strategy.configParams.map((param) => (
                         <TableRow key={param.key}>
-                          <TableCell className="font-mono text-xs">{param.key}</TableCell>
-                          <TableCell className="font-mono font-medium">{param.value}</TableCell>
-                          <TableCell className="text-muted-foreground text-xs">{param.description}</TableCell>
+                          <TableCell className="font-mono text-xs">
+                            {param.key}
+                          </TableCell>
+                          <TableCell className="font-mono font-medium">
+                            {param.value}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-xs">
+                            {param.description}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -687,9 +944,17 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {strategy.venues.map((venue) => (
-                    <div key={venue} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                    <div
+                      key={venue}
+                      className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                    >
                       <span className="font-medium">{venue}</span>
-                      <Badge variant="outline" className="text-[var(--status-live)]">Connected</Badge>
+                      <Badge
+                        variant="outline"
+                        className="text-[var(--status-live)]"
+                      >
+                        Connected
+                      </Badge>
                     </div>
                   ))}
                 </CardContent>
@@ -705,20 +970,32 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                     <div className="grid grid-cols-3 gap-4">
                       {strategy.references.implementation && (
                         <div className="p-3 rounded-lg bg-muted/30">
-                          <div className="text-xs text-muted-foreground mb-1">Implementation</div>
-                          <code className="text-xs">{strategy.references.implementation}</code>
+                          <div className="text-xs text-muted-foreground mb-1">
+                            Implementation
+                          </div>
+                          <code className="text-xs">
+                            {strategy.references.implementation}
+                          </code>
                         </div>
                       )}
                       {strategy.references.configSchema && (
                         <div className="p-3 rounded-lg bg-muted/30">
-                          <div className="text-xs text-muted-foreground mb-1">Config Schema</div>
-                          <code className="text-xs">{strategy.references.configSchema}</code>
+                          <div className="text-xs text-muted-foreground mb-1">
+                            Config Schema
+                          </div>
+                          <code className="text-xs">
+                            {strategy.references.configSchema}
+                          </code>
                         </div>
                       )}
                       {strategy.references.executionAdapter && (
                         <div className="p-3 rounded-lg bg-muted/30">
-                          <div className="text-xs text-muted-foreground mb-1">Execution Adapter</div>
-                          <code className="text-xs">{strategy.references.executionAdapter}</code>
+                          <div className="text-xs text-muted-foreground mb-1">
+                            Execution Adapter
+                          </div>
+                          <code className="text-xs">
+                            {strategy.references.executionAdapter}
+                          </code>
                         </div>
                       )}
                     </div>
@@ -732,30 +1009,47 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
           <TabsContent value="testing">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Testing Pipeline Status</CardTitle>
-                <CardDescription>Progress through testing stages</CardDescription>
+                <CardTitle className="text-base">
+                  Testing Pipeline Status
+                </CardTitle>
+                <CardDescription>
+                  Progress through testing stages
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-7 gap-4">
                   {strategy.testingStatus.map((stage, idx) => (
-                    <div 
+                    <div
                       key={stage.stage}
                       className={cn(
                         "p-4 rounded-lg border text-center relative",
-                        stage.status === "done" && "border-[var(--status-live)] bg-[var(--status-live)]/5",
-                        stage.status === "pending" && "border-[var(--status-warning)] bg-[var(--status-warning)]/5",
-                        stage.status === "blocked" && "border-[var(--status-error)] bg-[var(--status-error)]/5"
+                        stage.status === "done" &&
+                          "border-[var(--status-live)] bg-[var(--status-live)]/5",
+                        stage.status === "pending" &&
+                          "border-[var(--status-warning)] bg-[var(--status-warning)]/5",
+                        stage.status === "blocked" &&
+                          "border-[var(--status-error)] bg-[var(--status-error)]/5",
                       )}
                     >
                       <div className="flex items-center justify-center mb-2">
-                        {stage.status === "done" && <CheckCircle className="size-5 text-[var(--status-live)]" />}
-                        {stage.status === "pending" && <Clock className="size-5 text-[var(--status-warning)]" />}
-                        {stage.status === "blocked" && <AlertTriangle className="size-5 text-[var(--status-error)]" />}
+                        {stage.status === "done" && (
+                          <CheckCircle className="size-5 text-[var(--status-live)]" />
+                        )}
+                        {stage.status === "pending" && (
+                          <Clock className="size-5 text-[var(--status-warning)]" />
+                        )}
+                        {stage.status === "blocked" && (
+                          <AlertTriangle className="size-5 text-[var(--status-error)]" />
+                        )}
                       </div>
                       <div className="font-medium text-xs">{stage.stage}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase mt-1">{stage.status}</div>
+                      <div className="text-[10px] text-muted-foreground uppercase mt-1">
+                        {stage.status}
+                      </div>
                       {stage.notes && (
-                        <div className="text-[10px] text-muted-foreground mt-2 line-clamp-2">{stage.notes}</div>
+                        <div className="text-[10px] text-muted-foreground mt-2 line-clamp-2">
+                          {stage.notes}
+                        </div>
                       )}
                       {idx < strategy.testingStatus.length - 1 && (
                         <ChevronRight className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 size-4 text-muted-foreground z-10" />
@@ -777,128 +1071,408 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
-              {arch === "market-making" || arch === "MARKET_MAKING" ? "Market Making Analytics" :
-               strategy.assetClass === "DeFi" ? "DeFi Protocol Analytics" :
-               strategy.assetClass === "Sports" ? "Sports & Betting Analytics" :
-               strategy.assetClass === "Prediction" ? "Prediction Market Analytics" :
-               arch === "basis-trade" || arch === "BASIS_TRADE" ? "Basis/Spread Analytics" :
-               arch === "OPTIONS" || arch === "market-making-options" ? "Derivatives Analytics" :
-               "Strategy Analytics"}
+              {arch === "market-making" || arch === "MARKET_MAKING"
+                ? "Market Making Analytics"
+                : strategy.assetClass === "DeFi"
+                  ? "DeFi Protocol Analytics"
+                  : strategy.assetClass === "Sports"
+                    ? "Sports & Betting Analytics"
+                    : strategy.assetClass === "Prediction"
+                      ? "Prediction Market Analytics"
+                      : arch === "basis-trade" || arch === "BASIS_TRADE"
+                        ? "Basis/Spread Analytics"
+                        : arch === "OPTIONS" || arch === "market-making-options"
+                          ? "Derivatives Analytics"
+                          : "Strategy Analytics"}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
               {/* Common metrics */}
-              <div><span className="text-muted-foreground text-[10px]">Win Rate</span><div className="font-mono font-medium text-lg">62%</div></div>
-              <div><span className="text-muted-foreground text-[10px]">Avg Trade Duration</span><div className="font-mono font-medium text-lg">4.2h</div></div>
+              <div>
+                <span className="text-muted-foreground text-[10px]">
+                  Win Rate
+                </span>
+                <div className="font-mono font-medium text-lg">62%</div>
+              </div>
+              <div>
+                <span className="text-muted-foreground text-[10px]">
+                  Avg Trade Duration
+                </span>
+                <div className="font-mono font-medium text-lg">4.2h</div>
+              </div>
 
               {/* Market Making specific */}
               {(arch === "market-making" || arch === "MARKET_MAKING") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Avg Spread Captured</span><div className="font-mono font-medium text-lg text-emerald-400">2.4 bps</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Inventory Turnover</span><div className="font-mono font-medium text-lg">8.2x/day</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Adverse Selection</span><div className="font-mono font-medium text-lg text-amber-400">12%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Fill Rate</span><div className="font-mono font-medium text-lg">94.2%</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Avg Spread Captured
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      2.4 bps
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Inventory Turnover
+                    </span>
+                    <div className="font-mono font-medium text-lg">
+                      8.2x/day
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Adverse Selection
+                    </span>
+                    <div className="font-mono font-medium text-lg text-amber-400">
+                      12%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Fill Rate
+                    </span>
+                    <div className="font-mono font-medium text-lg">94.2%</div>
+                  </div>
                 </>
               )}
 
               {/* DeFi specific */}
               {strategy.assetClass === "DeFi" && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Health Factor</span><div className="font-mono font-medium text-lg text-emerald-400">1.45</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">APY (Current)</span><div className="font-mono font-medium text-lg">8.2%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Gas Cost (24h)</span><div className="font-mono font-medium text-lg">$142</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Protocol TVL</span><div className="font-mono font-medium text-lg">$12.4B</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Health Factor
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      1.45
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      APY (Current)
+                    </span>
+                    <div className="font-mono font-medium text-lg">8.2%</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Gas Cost (24h)
+                    </span>
+                    <div className="font-mono font-medium text-lg">$142</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Protocol TVL
+                    </span>
+                    <div className="font-mono font-medium text-lg">$12.4B</div>
+                  </div>
                 </>
               )}
 
               {/* Sports specific */}
               {strategy.assetClass === "Sports" && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Edge (Avg)</span><div className="font-mono font-medium text-lg text-emerald-400">3.1%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Markets Scanned</span><div className="font-mono font-medium text-lg">2,400</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Active Bets</span><div className="font-mono font-medium text-lg">18</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Yield</span><div className="font-mono font-medium text-lg">4.8%</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Edge (Avg)
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      3.1%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Markets Scanned
+                    </span>
+                    <div className="font-mono font-medium text-lg">2,400</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Active Bets
+                    </span>
+                    <div className="font-mono font-medium text-lg">18</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Yield
+                    </span>
+                    <div className="font-mono font-medium text-lg">4.8%</div>
+                  </div>
                 </>
               )}
 
               {/* Prediction specific */}
               {strategy.assetClass === "Prediction" && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Markets Active</span><div className="font-mono font-medium text-lg">12</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Avg Mispricing</span><div className="font-mono font-medium text-lg text-emerald-400">2.8%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Resolution Rate</span><div className="font-mono font-medium text-lg">87%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Cross-Platform Arb</span><div className="font-mono font-medium text-lg">$420</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Markets Active
+                    </span>
+                    <div className="font-mono font-medium text-lg">12</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Avg Mispricing
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      2.8%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Resolution Rate
+                    </span>
+                    <div className="font-mono font-medium text-lg">87%</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Cross-Platform Arb
+                    </span>
+                    <div className="font-mono font-medium text-lg">$420</div>
+                  </div>
                 </>
               )}
 
               {/* Basis/Spread specific */}
               {(arch === "basis-trade" || arch === "BASIS_TRADE") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Basis Spread</span><div className="font-mono font-medium text-lg text-emerald-400">+4.2 bps</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Funding Rate</span><div className="font-mono font-medium text-lg">0.012%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Carry P&L (24h)</span><div className="font-mono font-medium text-lg text-emerald-400">$1.2K</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Roll Cost</span><div className="font-mono font-medium text-lg text-rose-400">-$80</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Basis Spread
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      +4.2 bps
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Funding Rate
+                    </span>
+                    <div className="font-mono font-medium text-lg">0.012%</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Carry P&L (24h)
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      $1.2K
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Roll Cost
+                    </span>
+                    <div className="font-mono font-medium text-lg text-rose-400">
+                      -$80
+                    </div>
+                  </div>
                 </>
               )}
 
               {/* Derivatives/Options specific */}
               {(arch === "OPTIONS" || arch === "market-making-options") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Net Delta</span><div className="font-mono font-medium text-lg">+2.4</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Net Gamma</span><div className="font-mono font-medium text-lg">0.15</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Theta Decay (24h)</span><div className="font-mono font-medium text-lg text-rose-400">-$850</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">IV vs RV Spread</span><div className="font-mono font-medium text-lg text-emerald-400">+3.2%</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Net Delta
+                    </span>
+                    <div className="font-mono font-medium text-lg">+2.4</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Net Gamma
+                    </span>
+                    <div className="font-mono font-medium text-lg">0.15</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Theta Decay (24h)
+                    </span>
+                    <div className="font-mono font-medium text-lg text-rose-400">
+                      -$850
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      IV vs RV Spread
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      +3.2%
+                    </div>
+                  </div>
                 </>
               )}
 
               {/* Momentum/Directional/ML */}
-              {(arch === "momentum" || arch === "ml-directional" || arch === "ML_DIRECTIONAL" || arch === "MOMENTUM" || arch === "DIRECTIONAL") && (
+              {(arch === "momentum" ||
+                arch === "ml-directional" ||
+                arch === "ML_DIRECTIONAL" ||
+                arch === "MOMENTUM" ||
+                arch === "DIRECTIONAL") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Signal Strength</span><div className="font-mono font-medium text-lg text-emerald-400">0.72</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Regime</span><div className="font-mono font-medium text-lg">Trending</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Confidence</span><div className="font-mono font-medium text-lg">84%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Signal Lag</span><div className="font-mono font-medium text-lg">2.1s</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Signal Strength
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      0.72
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Regime
+                    </span>
+                    <div className="font-mono font-medium text-lg">
+                      Trending
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Confidence
+                    </span>
+                    <div className="font-mono font-medium text-lg">84%</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Signal Lag
+                    </span>
+                    <div className="font-mono font-medium text-lg">2.1s</div>
+                  </div>
                 </>
               )}
 
               {/* Mean Reversion */}
               {(arch === "mean-reversion" || arch === "MEAN_REVERSION") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Z-Score</span><div className="font-mono font-medium text-lg text-amber-400">1.8σ</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Half-Life</span><div className="font-mono font-medium text-lg">4.2h</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Mean Distance</span><div className="font-mono font-medium text-lg">0.3%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Reversal Rate</span><div className="font-mono font-medium text-lg">71%</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Z-Score
+                    </span>
+                    <div className="font-mono font-medium text-lg text-amber-400">
+                      1.8σ
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Half-Life
+                    </span>
+                    <div className="font-mono font-medium text-lg">4.2h</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Mean Distance
+                    </span>
+                    <div className="font-mono font-medium text-lg">0.3%</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Reversal Rate
+                    </span>
+                    <div className="font-mono font-medium text-lg">71%</div>
+                  </div>
                 </>
               )}
 
               {/* Arbitrage / Statistical Arb */}
-              {(arch === "arbitrage" || arch === "ARBITRAGE" || arch === "statistical-arb" || arch === "STATISTICAL_ARB") && (
+              {(arch === "arbitrage" ||
+                arch === "ARBITRAGE" ||
+                arch === "statistical-arb" ||
+                arch === "STATISTICAL_ARB") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Spread (Current)</span><div className="font-mono font-medium text-lg text-emerald-400">+1.8 bps</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Opportunities/hr</span><div className="font-mono font-medium text-lg">142</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Execution Speed</span><div className="font-mono font-medium text-lg">12ms</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Hit Rate</span><div className="font-mono font-medium text-lg">78%</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Spread (Current)
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      +1.8 bps
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Opportunities/hr
+                    </span>
+                    <div className="font-mono font-medium text-lg">142</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Execution Speed
+                    </span>
+                    <div className="font-mono font-medium text-lg">12ms</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Hit Rate
+                    </span>
+                    <div className="font-mono font-medium text-lg">78%</div>
+                  </div>
                 </>
               )}
 
               {/* Recursive Staked Basis (DeFi subset) */}
-              {(arch === "recursive-staked-basis" || arch === "RECURSIVE_STAKED_BASIS") && (
+              {(arch === "recursive-staked-basis" ||
+                arch === "RECURSIVE_STAKED_BASIS") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Leverage Loop</span><div className="font-mono font-medium text-lg">3.2x</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Net APY</span><div className="font-mono font-medium text-lg text-emerald-400">12.4%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Liquidation Distance</span><div className="font-mono font-medium text-lg">28%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Staking Yield</span><div className="font-mono font-medium text-lg">3.8%</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Leverage Loop
+                    </span>
+                    <div className="font-mono font-medium text-lg">3.2x</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Net APY
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      12.4%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Liquidation Distance
+                    </span>
+                    <div className="font-mono font-medium text-lg">28%</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Staking Yield
+                    </span>
+                    <div className="font-mono font-medium text-lg">3.8%</div>
+                  </div>
                 </>
               )}
 
               {/* AMM LP */}
               {(arch === "amm-lp" || arch === "AMM_LP") && (
                 <>
-                  <div><span className="text-muted-foreground text-[10px]">Fee APR</span><div className="font-mono font-medium text-lg text-emerald-400">18.2%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">IL (Impermanent Loss)</span><div className="font-mono font-medium text-lg text-rose-400">-1.2%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Range Efficiency</span><div className="font-mono font-medium text-lg">82%</div></div>
-                  <div><span className="text-muted-foreground text-[10px]">Pool Share</span><div className="font-mono font-medium text-lg">0.04%</div></div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Fee APR
+                    </span>
+                    <div className="font-mono font-medium text-lg text-emerald-400">
+                      18.2%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      IL (Impermanent Loss)
+                    </span>
+                    <div className="font-mono font-medium text-lg text-rose-400">
+                      -1.2%
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Range Efficiency
+                    </span>
+                    <div className="font-mono font-medium text-lg">82%</div>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground text-[10px]">
+                      Pool Share
+                    </span>
+                    <div className="font-mono font-medium text-lg">0.04%</div>
+                  </div>
                 </>
               )}
             </div>
@@ -906,5 +1480,5 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
         </Card>
       </div>
     </div>
-  )
+  );
 }

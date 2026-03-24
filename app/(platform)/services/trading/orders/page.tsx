@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { DataTable } from "@/components/ui/data-table"
+import * as React from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { DataTable } from "@/components/ui/data-table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Search,
   ArrowUpDown,
@@ -32,64 +32,107 @@ import {
   AlertCircle,
   XCircle,
   Pencil,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
-import type { ExportColumn } from "@/lib/utils/export"
-import { useOrders, useCancelOrder, useAmendOrder } from "@/hooks/api/use-orders"
-import { useGlobalScope } from "@/lib/stores/global-scope-store"
-import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar"
-import Link from "next/link"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import type { ExportColumn } from "@/lib/utils/export";
+import {
+  useOrders,
+  useCancelOrder,
+  useAmendOrder,
+} from "@/hooks/api/use-orders";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import {
+  FilterBar,
+  type FilterDefinition,
+} from "@/components/platform/filter-bar";
+import Link from "next/link";
 
 // Instrument type classification
-type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction"
+type InstrumentType =
+  | "All"
+  | "Spot"
+  | "Perp"
+  | "Futures"
+  | "Options"
+  | "DeFi"
+  | "Prediction";
 
-const INSTRUMENT_TYPES: InstrumentType[] = ["All", "Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"]
+const INSTRUMENT_TYPES: InstrumentType[] = [
+  "All",
+  "Spot",
+  "Perp",
+  "Futures",
+  "Options",
+  "DeFi",
+  "Prediction",
+];
 
-function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> {
-  const upper = instrument.toUpperCase()
-  if (/\d+-[CP]$/.test(upper) || upper.includes("OPTIONS")) return "Options"
-  if (upper.includes("PERPETUAL") || upper.includes("PERP")) return "Perp"
-  if (/^[A-Z]+-\d{1,2}[A-Z]{3}\d{2,4}$/.test(upper)) return "Futures"
-  if (upper.includes("AAVE") || upper.includes("UNISWAP") || upper.includes("LIDO") || upper.includes("WALLET:") || upper.includes("MORPHO")) return "DeFi"
-  if (upper.includes("BETFAIR") || upper.includes("POLYMARKET") || upper.includes("KALSHI") || upper.includes("NBA:") || upper.includes("NFL:") || upper.includes("EPL:") || upper.includes("LALIGA:")) return "Prediction"
-  return "Spot"
+function classifyInstrument(
+  instrument: string,
+): Exclude<InstrumentType, "All"> {
+  const upper = instrument.toUpperCase();
+  if (/\d+-[CP]$/.test(upper) || upper.includes("OPTIONS")) return "Options";
+  if (upper.includes("PERPETUAL") || upper.includes("PERP")) return "Perp";
+  if (/^[A-Z]+-\d{1,2}[A-Z]{3}\d{2,4}$/.test(upper)) return "Futures";
+  if (
+    upper.includes("AAVE") ||
+    upper.includes("UNISWAP") ||
+    upper.includes("LIDO") ||
+    upper.includes("WALLET:") ||
+    upper.includes("MORPHO")
+  )
+    return "DeFi";
+  if (
+    upper.includes("BETFAIR") ||
+    upper.includes("POLYMARKET") ||
+    upper.includes("KALSHI") ||
+    upper.includes("NBA:") ||
+    upper.includes("NFL:") ||
+    upper.includes("EPL:") ||
+    upper.includes("LALIGA:")
+  )
+    return "Prediction";
+  return "Spot";
 }
 
-function getInstrumentRoute(instrument: string, type: Exclude<InstrumentType, "All">): string {
-  const asset = instrument.split("-")[0].split(":")[0].toUpperCase()
+function getInstrumentRoute(
+  instrument: string,
+  type: Exclude<InstrumentType, "All">,
+): string {
+  const asset = instrument.split("-")[0].split(":")[0].toUpperCase();
   switch (type) {
     case "Spot":
     case "Perp":
-      return "/services/trading/terminal"
+      return "/services/trading/terminal";
     case "Options":
-      return `/services/trading/options?tab=chain&asset=${asset}`
+      return `/services/trading/options?tab=chain&asset=${asset}`;
     case "Futures":
-      return `/services/trading/options?tab=futures&asset=${asset}`
+      return `/services/trading/options?tab=futures&asset=${asset}`;
     case "DeFi":
-      return "/services/trading/defi"
+      return "/services/trading/defi";
     case "Prediction":
-      return "/services/trading/sports"
+      return "/services/trading/sports";
   }
 }
 
 // Order shape from the API
 interface OrderRecord {
-  order_id: string
-  instrument: string
-  side: "BUY" | "SELL"
-  type: string
-  price: number
-  mark_price: number
-  quantity: number
-  filled: number
-  status: string
-  venue: string
-  strategy_id: string
-  strategy_name: string
-  edge_bps: number
-  instant_pnl: number
-  created_at: string
+  order_id: string;
+  instrument: string;
+  side: "BUY" | "SELL";
+  type: string;
+  price: number;
+  mark_price: number;
+  quantity: number;
+  filled: number;
+  status: string;
+  venue: string;
+  strategy_id: string;
+  strategy_name: string;
+  edge_bps: number;
+  instant_pnl: number;
+  created_at: string;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -98,19 +141,19 @@ const STATUS_COLORS: Record<string, string> = {
   OPEN: "border-[var(--chart-1)] text-[var(--chart-1)]",
   CANCELLED: "border-muted-foreground text-muted-foreground",
   REJECTED: "border-[var(--status-error)] text-[var(--status-error)]",
-}
+};
 
 function getStatusColor(status: string): string {
-  const upper = status.toUpperCase()
+  const upper = status.toUpperCase();
   for (const [key, val] of Object.entries(STATUS_COLORS)) {
-    if (upper.includes(key)) return val
+    if (upper.includes(key)) return val;
   }
-  return "border-muted-foreground text-muted-foreground"
+  return "border-muted-foreground text-muted-foreground";
 }
 
 function isActionable(status: string): boolean {
-  const s = status.toUpperCase()
-  return s === "OPEN" || s === "PENDING" || s === "PARTIALLY_FILLED"
+  const s = status.toUpperCase();
+  return s === "OPEN" || s === "PENDING" || s === "PARTIALLY_FILLED";
 }
 
 function buildColumns(
@@ -123,7 +166,9 @@ function buildColumns(
       header: "Order ID",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="font-mono text-xs">{row.getValue<string>("order_id")}</span>
+        <span className="font-mono text-xs">
+          {row.getValue<string>("order_id")}
+        </span>
       ),
     },
     {
@@ -131,8 +176,8 @@ function buildColumns(
       header: "Instrument",
       enableSorting: false,
       cell: ({ row }) => {
-        const instrument = row.getValue<string>("instrument")
-        const type = classifyInstrument(instrument)
+        const instrument = row.getValue<string>("instrument");
+        const type = classifyInstrument(instrument);
         return (
           <Link
             href={getInstrumentRoute(instrument, type)}
@@ -140,7 +185,7 @@ function buildColumns(
           >
             {instrument}
           </Link>
-        )
+        );
       },
     },
     {
@@ -148,7 +193,7 @@ function buildColumns(
       header: () => <span className="flex justify-center">Side</span>,
       enableSorting: false,
       cell: ({ row }) => {
-        const side = row.getValue<"BUY" | "SELL">("side")
+        const side = row.getValue<"BUY" | "SELL">("side");
         return (
           <div className="text-center">
             <Badge
@@ -157,7 +202,7 @@ function buildColumns(
                 "font-mono text-xs",
                 side === "BUY"
                   ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
-                  : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]"
+                  : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]",
               )}
             >
               {side === "BUY" ? (
@@ -168,7 +213,7 @@ function buildColumns(
               {side}
             </Badge>
           </div>
-        )
+        );
       },
     },
     {
@@ -176,7 +221,9 @@ function buildColumns(
       header: "Type",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="text-xs uppercase">{row.getValue<string>("type")}</span>
+        <span className="text-xs uppercase">
+          {row.getValue<string>("type")}
+        </span>
       ),
     },
     {
@@ -185,7 +232,11 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-right font-mono">
-          ${row.getValue<number>("price").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          $
+          {row.getValue<number>("price").toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </div>
       ),
     },
@@ -194,12 +245,14 @@ function buildColumns(
       header: () => <span className="flex justify-end">Mark</span>,
       enableSorting: true,
       cell: ({ row }) => {
-        const mark = row.getValue<number>("mark_price")
+        const mark = row.getValue<number>("mark_price");
         return (
           <div className="text-right font-mono text-muted-foreground">
-            {mark ? `$${mark.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "—"}
+            {mark
+              ? `$${mark.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              : "—"}
           </div>
-        )
+        );
       },
     },
     {
@@ -207,12 +260,18 @@ function buildColumns(
       header: () => <span className="flex justify-end">Edge</span>,
       enableSorting: true,
       cell: ({ row }) => {
-        const edge = row.getValue<number>("edge_bps") ?? 0
+        const edge = row.getValue<number>("edge_bps") ?? 0;
         return (
-          <div className={cn("text-right font-mono text-xs", edge >= 0 ? "text-emerald-400" : "text-rose-400")}>
-            {edge >= 0 ? "+" : ""}{edge.toFixed(1)} bps
+          <div
+            className={cn(
+              "text-right font-mono text-xs",
+              edge >= 0 ? "text-emerald-400" : "text-rose-400",
+            )}
+          >
+            {edge >= 0 ? "+" : ""}
+            {edge.toFixed(1)} bps
           </div>
-        )
+        );
       },
     },
     {
@@ -220,13 +279,22 @@ function buildColumns(
       header: () => <span className="flex justify-end">Instant P&L</span>,
       enableSorting: true,
       cell: ({ row }) => {
-        const pnl = row.getValue<number>("instant_pnl") ?? 0
-        const fmt = Math.abs(pnl) >= 1000 ? `$${(pnl / 1000).toFixed(1)}K` : `$${pnl.toFixed(0)}`
+        const pnl = row.getValue<number>("instant_pnl") ?? 0;
+        const fmt =
+          Math.abs(pnl) >= 1000
+            ? `$${(pnl / 1000).toFixed(1)}K`
+            : `$${pnl.toFixed(0)}`;
         return (
-          <div className={cn("text-right font-mono font-medium", pnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
-            {pnl >= 0 ? "+" : ""}{fmt}
+          <div
+            className={cn(
+              "text-right font-mono font-medium",
+              pnl >= 0 ? "text-emerald-400" : "text-rose-400",
+            )}
+          >
+            {pnl >= 0 ? "+" : ""}
+            {fmt}
           </div>
-        )
+        );
       },
     },
     {
@@ -234,7 +302,9 @@ function buildColumns(
       header: "Strategy",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="text-xs text-muted-foreground truncate max-w-24 block">{row.getValue<string>("strategy_name") || "—"}</span>
+        <span className="text-xs text-muted-foreground truncate max-w-24 block">
+          {row.getValue<string>("strategy_name") || "—"}
+        </span>
       ),
     },
     {
@@ -252,15 +322,17 @@ function buildColumns(
       header: () => <span className="flex justify-end">Filled</span>,
       enableSorting: true,
       cell: ({ row }) => {
-        const filled = row.getValue<number>("filled")
-        const quantity = row.original.quantity
-        const fillPct = quantity > 0 ? (filled / quantity) * 100 : 0
+        const filled = row.getValue<number>("filled");
+        const quantity = row.original.quantity;
+        const fillPct = quantity > 0 ? (filled / quantity) * 100 : 0;
         return (
           <div className="flex flex-col items-end">
             <span className="font-mono">{filled.toLocaleString()}</span>
-            <span className="text-[10px] text-muted-foreground">{fillPct.toFixed(0)}%</span>
+            <span className="text-[10px] text-muted-foreground">
+              {fillPct.toFixed(0)}%
+            </span>
           </div>
-        )
+        );
       },
     },
     {
@@ -268,14 +340,17 @@ function buildColumns(
       header: () => <span className="flex justify-center">Status</span>,
       enableSorting: false,
       cell: ({ row }) => {
-        const status = row.getValue<string>("status")
+        const status = row.getValue<string>("status");
         return (
           <div className="text-center">
-            <Badge variant="outline" className={cn("text-xs", getStatusColor(status))}>
+            <Badge
+              variant="outline"
+              className={cn("text-xs", getStatusColor(status))}
+            >
               {status}
             </Badge>
           </div>
-        )
+        );
       },
     },
     {
@@ -301,8 +376,11 @@ function buildColumns(
       header: () => <span className="flex justify-center">Actions</span>,
       enableSorting: false,
       cell: ({ row }) => {
-        const status = row.original.status
-        if (!isActionable(status)) return <div className="text-center text-xs text-muted-foreground">—</div>
+        const status = row.original.status;
+        if (!isActionable(status))
+          return (
+            <div className="text-center text-xs text-muted-foreground">—</div>
+          );
         return (
           <div className="flex items-center justify-center gap-1">
             <Button
@@ -324,175 +402,211 @@ function buildColumns(
               Amend
             </Button>
           </div>
-        )
+        );
       },
     },
-  ]
+  ];
 }
 
 export default function OrdersPage() {
-  const { data: ordersRaw, isLoading, error, refetch } = useOrders()
-  const { scope: globalScope } = useGlobalScope()
-  const cancelOrder = useCancelOrder()
-  const amendOrder = useAmendOrder()
+  const { data: ordersRaw, isLoading, error, refetch } = useOrders();
+  const { scope: globalScope } = useGlobalScope();
+  const cancelOrder = useCancelOrder();
+  const amendOrder = useAmendOrder();
 
-  const [amendTarget, setAmendTarget] = React.useState<OrderRecord | null>(null)
-  const [amendQty, setAmendQty] = React.useState("")
-  const [amendPrice, setAmendPrice] = React.useState("")
+  const [amendTarget, setAmendTarget] = React.useState<OrderRecord | null>(
+    null,
+  );
+  const [amendQty, setAmendQty] = React.useState("");
+  const [amendPrice, setAmendPrice] = React.useState("");
 
-  const handleCancel = React.useCallback((orderId: string) => {
-    cancelOrder.mutate(orderId)
-  }, [cancelOrder])
+  const handleCancel = React.useCallback(
+    (orderId: string) => {
+      cancelOrder.mutate(orderId);
+    },
+    [cancelOrder],
+  );
 
   const handleOpenAmend = React.useCallback((order: OrderRecord) => {
-    setAmendTarget(order)
-    setAmendQty(String(order.quantity))
-    setAmendPrice(String(order.price))
-  }, [])
+    setAmendTarget(order);
+    setAmendQty(String(order.quantity));
+    setAmendPrice(String(order.price));
+  }, []);
 
   const handleSubmitAmend = React.useCallback(() => {
-    if (!amendTarget) return
+    if (!amendTarget) return;
     amendOrder.mutate(
-      { orderId: amendTarget.order_id, quantity: Number(amendQty), price: Number(amendPrice) },
+      {
+        orderId: amendTarget.order_id,
+        quantity: Number(amendQty),
+        price: Number(amendPrice),
+      },
       { onSuccess: () => setAmendTarget(null) },
-    )
-  }, [amendTarget, amendQty, amendPrice, amendOrder])
+    );
+  }, [amendTarget, amendQty, amendPrice, amendOrder]);
 
   const columns = React.useMemo(
     () => buildColumns(handleCancel, handleOpenAmend),
     [handleCancel, handleOpenAmend],
-  )
+  );
 
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [venueFilter, setVenueFilter] = React.useState("all")
-  const [statusFilter, setStatusFilter] = React.useState("all")
-  const [instrumentTypeFilter, setInstrumentTypeFilter] = React.useState<InstrumentType>("All")
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [venueFilter, setVenueFilter] = React.useState("all");
+  const [statusFilter, setStatusFilter] = React.useState("all");
+  const [instrumentTypeFilter, setInstrumentTypeFilter] =
+    React.useState<InstrumentType>("All");
 
   // Coerce API response to typed array
   const orders: OrderRecord[] = React.useMemo(() => {
-    if (!ordersRaw) return []
-    const raw = ordersRaw as Record<string, unknown>
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).orders
-    return Array.isArray(arr) ? (arr as OrderRecord[]) : []
-  }, [ordersRaw])
+    if (!ordersRaw) return [];
+    const raw = ordersRaw as Record<string, unknown>;
+    const arr = Array.isArray(raw)
+      ? raw
+      : (raw as Record<string, unknown>).orders;
+    return Array.isArray(arr) ? (arr as OrderRecord[]) : [];
+  }, [ordersRaw]);
 
   // Apply global scope filter
   const scopedOrders = React.useMemo(() => {
-    if (globalScope.strategyIds.length === 0) return orders
+    if (globalScope.strategyIds.length === 0) return orders;
     // Filter orders by strategy_id if available, otherwise show all
-    return orders.filter(o =>
-      !o.strategy_id || globalScope.strategyIds.includes(o.strategy_id)
-    )
-  }, [orders, globalScope.strategyIds])
+    return orders.filter(
+      (o) => !o.strategy_id || globalScope.strategyIds.includes(o.strategy_id),
+    );
+  }, [orders, globalScope.strategyIds]);
 
   // Filtered orders
   const filteredOrders = React.useMemo(() => {
-    let result = scopedOrders
+    let result = scopedOrders;
 
     if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter(o =>
-        o.order_id.toLowerCase().includes(query) ||
-        o.instrument.toLowerCase().includes(query) ||
-        o.venue.toLowerCase().includes(query)
-      )
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (o) =>
+          o.order_id.toLowerCase().includes(query) ||
+          o.instrument.toLowerCase().includes(query) ||
+          o.venue.toLowerCase().includes(query),
+      );
     }
 
     if (venueFilter !== "all") {
-      result = result.filter(o => o.venue === venueFilter)
+      result = result.filter((o) => o.venue === venueFilter);
     }
 
     if (statusFilter !== "all") {
-      result = result.filter(o => o.status.toUpperCase() === statusFilter)
+      result = result.filter((o) => o.status.toUpperCase() === statusFilter);
     }
 
     if (instrumentTypeFilter !== "All") {
-      result = result.filter(o => classifyInstrument(o.instrument) === instrumentTypeFilter)
+      result = result.filter(
+        (o) => classifyInstrument(o.instrument) === instrumentTypeFilter,
+      );
     }
 
-    return result
-  }, [orders, searchQuery, venueFilter, statusFilter, instrumentTypeFilter])
+    return result;
+  }, [orders, searchQuery, venueFilter, statusFilter, instrumentTypeFilter]);
 
   // Unique values for filters
-  const uniqueVenues = React.useMemo(() =>
-    [...new Set(orders.map(o => o.venue))].sort(),
-    [orders]
-  )
+  const uniqueVenues = React.useMemo(
+    () => [...new Set(orders.map((o) => o.venue))].sort(),
+    [orders],
+  );
 
-  const uniqueStatuses = React.useMemo(() =>
-    [...new Set(orders.map(o => o.status.toUpperCase()))].sort(),
-    [orders]
-  )
+  const uniqueStatuses = React.useMemo(
+    () => [...new Set(orders.map((o) => o.status.toUpperCase()))].sort(),
+    [orders],
+  );
 
   // FilterBar definitions
-  const orderFilterDefs: FilterDefinition[] = React.useMemo(() => [
-    {
-      key: "search",
-      label: "Search",
-      type: "search" as const,
-      placeholder: "Search by order ID, instrument, venue...",
-    },
-    {
-      key: "venue",
-      label: "Venue",
-      type: "select" as const,
-      options: uniqueVenues.map(v => ({ value: v, label: v })),
-    },
-    {
-      key: "status",
-      label: "Status",
-      type: "select" as const,
-      options: uniqueStatuses.map(s => ({ value: s, label: s })),
-    },
-  ], [uniqueVenues, uniqueStatuses])
+  const orderFilterDefs: FilterDefinition[] = React.useMemo(
+    () => [
+      {
+        key: "search",
+        label: "Search",
+        type: "search" as const,
+        placeholder: "Search by order ID, instrument, venue...",
+      },
+      {
+        key: "venue",
+        label: "Venue",
+        type: "select" as const,
+        options: uniqueVenues.map((v) => ({ value: v, label: v })),
+      },
+      {
+        key: "status",
+        label: "Status",
+        type: "select" as const,
+        options: uniqueStatuses.map((s) => ({ value: s, label: s })),
+      },
+    ],
+    [uniqueVenues, uniqueStatuses],
+  );
 
-  const orderFilterValues = React.useMemo(() => ({
-    search: searchQuery || undefined,
-    venue: venueFilter !== "all" ? venueFilter : undefined,
-    status: statusFilter !== "all" ? statusFilter : undefined,
-  }), [searchQuery, venueFilter, statusFilter])
+  const orderFilterValues = React.useMemo(
+    () => ({
+      search: searchQuery || undefined,
+      venue: venueFilter !== "all" ? venueFilter : undefined,
+      status: statusFilter !== "all" ? statusFilter : undefined,
+    }),
+    [searchQuery, venueFilter, statusFilter],
+  );
 
-  const handleFilterChange = React.useCallback((key: string, value: unknown) => {
-    switch (key) {
-      case "search":
-        setSearchQuery((value as string) || "")
-        break
-      case "venue":
-        setVenueFilter((value as string) || "all")
-        break
-      case "status":
-        setStatusFilter((value as string) || "all")
-        break
-    }
-  }, [])
+  const handleFilterChange = React.useCallback(
+    (key: string, value: unknown) => {
+      switch (key) {
+        case "search":
+          setSearchQuery((value as string) || "");
+          break;
+        case "venue":
+          setVenueFilter((value as string) || "all");
+          break;
+        case "status":
+          setStatusFilter((value as string) || "all");
+          break;
+      }
+    },
+    [],
+  );
 
   const handleFilterReset = React.useCallback(() => {
-    setSearchQuery("")
-    setVenueFilter("all")
-    setStatusFilter("all")
-    setInstrumentTypeFilter("All")
-  }, [])
+    setSearchQuery("");
+    setVenueFilter("all");
+    setStatusFilter("all");
+    setInstrumentTypeFilter("All");
+  }, []);
 
   // Summary counts
-  const summary = React.useMemo(() => ({
-    total: filteredOrders.length,
-    open: filteredOrders.filter(o => o.status.toUpperCase().includes("OPEN")).length,
-    filled: filteredOrders.filter(o => o.status.toUpperCase().includes("FILLED")).length,
-    partial: filteredOrders.filter(o => o.status.toUpperCase().includes("PARTIAL")).length,
-  }), [filteredOrders])
+  const summary = React.useMemo(
+    () => ({
+      total: filteredOrders.length,
+      open: filteredOrders.filter((o) =>
+        o.status.toUpperCase().includes("OPEN"),
+      ).length,
+      filled: filteredOrders.filter((o) =>
+        o.status.toUpperCase().includes("FILLED"),
+      ).length,
+      partial: filteredOrders.filter((o) =>
+        o.status.toUpperCase().includes("PARTIAL"),
+      ).length,
+    }),
+    [filteredOrders],
+  );
 
-  const orderExportColumns: ExportColumn[] = React.useMemo(() => [
-    { key: "order_id", header: "Order ID" },
-    { key: "instrument", header: "Instrument" },
-    { key: "side", header: "Side" },
-    { key: "type", header: "Type" },
-    { key: "price", header: "Price", format: "currency" },
-    { key: "quantity", header: "Quantity", format: "number" },
-    { key: "filled", header: "Filled", format: "number" },
-    { key: "status", header: "Status" },
-    { key: "venue", header: "Venue" },
-    { key: "created_at", header: "Created" },
-  ], [])
+  const orderExportColumns: ExportColumn[] = React.useMemo(
+    () => [
+      { key: "order_id", header: "Order ID" },
+      { key: "instrument", header: "Instrument" },
+      { key: "side", header: "Side" },
+      { key: "type", header: "Type" },
+      { key: "price", header: "Price", format: "currency" },
+      { key: "quantity", header: "Quantity", format: "number" },
+      { key: "filled", header: "Filled", format: "number" },
+      { key: "status", header: "Status" },
+      { key: "venue", header: "Venue" },
+      { key: "created_at", header: "Created" },
+    ],
+    [],
+  );
 
   if (isLoading) {
     return (
@@ -500,7 +614,7 @@ export default function OrdersPage() {
         <Loader2 className="size-5 animate-spin" />
         <span>Loading orders...</span>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -513,7 +627,7 @@ export default function OrdersPage() {
           Retry
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -523,10 +637,17 @@ export default function OrdersPage() {
         <div className="flex items-center gap-3">
           <ArrowUpDown className="size-5 text-emerald-400" />
           <h1 className="text-xl font-semibold">Orders</h1>
-          <Badge variant="outline" className="text-xs font-mono">{summary.total} orders</Badge>
+          <Badge variant="outline" className="text-xs font-mono">
+            {summary.total} orders
+          </Badge>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => refetch()}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            onClick={() => refetch()}
+          >
             <RefreshCw className="size-3.5" />
             Refresh
           </Button>
@@ -540,13 +661,22 @@ export default function OrdersPage() {
 
       {/* Summary badges */}
       <div className="flex items-center gap-2 flex-wrap">
-        <Badge variant="outline" className="text-xs border-[var(--chart-1)] text-[var(--chart-1)]">
+        <Badge
+          variant="outline"
+          className="text-xs border-[var(--chart-1)] text-[var(--chart-1)]"
+        >
           {summary.open} Open
         </Badge>
-        <Badge variant="outline" className="text-xs border-[var(--status-warning)] text-[var(--status-warning)]">
+        <Badge
+          variant="outline"
+          className="text-xs border-[var(--status-warning)] text-[var(--status-warning)]"
+        >
           {summary.partial} Partial
         </Badge>
-        <Badge variant="outline" className="text-xs border-[var(--status-live)] text-[var(--status-live)]">
+        <Badge
+          variant="outline"
+          className="text-xs border-[var(--status-live)] text-[var(--status-live)]"
+        >
           {summary.filled} Filled
         </Badge>
       </div>
@@ -583,7 +713,7 @@ export default function OrdersPage() {
             placeholder="Search by order ID, instrument, venue..."
             className="pl-9"
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
@@ -593,8 +723,10 @@ export default function OrdersPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Venues</SelectItem>
-            {uniqueVenues.map(v => (
-              <SelectItem key={v} value={v}>{v}</SelectItem>
+            {uniqueVenues.map((v) => (
+              <SelectItem key={v} value={v}>
+                {v}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -605,8 +737,10 @@ export default function OrdersPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
-            {uniqueStatuses.map(s => (
-              <SelectItem key={s} value={s}>{s}</SelectItem>
+            {uniqueStatuses.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -626,7 +760,12 @@ export default function OrdersPage() {
       </Card>
 
       {/* Amend dialog */}
-      <Dialog open={!!amendTarget} onOpenChange={(open) => { if (!open) setAmendTarget(null) }}>
+      <Dialog
+        open={!!amendTarget}
+        onOpenChange={(open) => {
+          if (!open) setAmendTarget(null);
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Amend Order</DialogTitle>
@@ -636,7 +775,9 @@ export default function OrdersPage() {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="font-mono">{amendTarget.order_id}</span>
                 <span>&middot;</span>
-                <span className="font-medium text-foreground">{amendTarget.instrument}</span>
+                <span className="font-medium text-foreground">
+                  {amendTarget.instrument}
+                </span>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -663,14 +804,18 @@ export default function OrdersPage() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setAmendTarget(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setAmendTarget(null)}>
+              Cancel
+            </Button>
             <Button onClick={handleSubmitAmend} disabled={amendOrder.isPending}>
-              {amendOrder.isPending ? <Loader2 className="size-3.5 mr-1.5 animate-spin" /> : null}
+              {amendOrder.isPending ? (
+                <Loader2 className="size-3.5 mr-1.5 animate-spin" />
+              ) : null}
               Confirm Amend
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </main>
-  )
+  );
 }

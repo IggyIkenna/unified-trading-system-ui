@@ -1,12 +1,12 @@
 // IMPORT THIS — do not create custom loading states
-import * as React from 'react'
+import * as React from "react";
 
-import { cn } from '@/lib/utils'
-import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TableSkeletonProps {
-  rows?: number
-  columns?: number
+  rows?: number;
+  columns?: number;
 }
 
 function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
@@ -14,7 +14,7 @@ function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
     <div data-slot="table-skeleton" className="w-full">
       {/* Header row */}
       <div
-        className={cn('mb-3 grid gap-4')}
+        className={cn("mb-3 grid gap-4")}
         style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
       >
         {Array.from({ length: columns }).map((_, col) => (
@@ -38,7 +38,7 @@ function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
-export { TableSkeleton }
+export { TableSkeleton };

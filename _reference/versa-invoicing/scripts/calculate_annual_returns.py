@@ -16,25 +16,25 @@ def calculate_annual_returns(df, label):
     df['year'] = df['datetime'].dt.year
     df['month'] = df['datetime'].dt.month
     df['year_month'] = df['datetime'].dt.to_period('M')
-    
+
     # Calculate continuous returns (log returns) for each hour
     df['log_return'] = np.log(df['equity'] / df['equity'].shift(1))
-    
+
     # Group by month and sum log returns (continuous compounding within month)
     monthly_returns = df.groupby('year_month').agg({
         'equity': ['first', 'last'],
         'log_return': 'sum'
     }).reset_index()
-    
+
     monthly_returns.columns = ['year_month', 'equity_start', 'equity_end', 'log_return_sum']
-    
+
     # Convert continuous monthly return to simple monthly return
     # Simple return = e^(log_return) - 1
     monthly_returns['monthly_return'] = np.exp(monthly_returns['log_return_sum']) - 1
-    
+
     # Group by year and compound monthly returns simply
     monthly_returns['year'] = monthly_returns['year_month'].dt.year
-    
+
     annual_returns = []
     for year in sorted(monthly_returns['year'].unique()):
         year_data = monthly_returns[monthly_returns['year'] == year]
@@ -45,7 +45,7 @@ def calculate_annual_returns(df, label):
             'annual_return': annual_return * 100,
             'months': len(year_data)
         })
-    
+
     return pd.DataFrame(annual_returns), monthly_returns
 
 # Load data
@@ -84,9 +84,9 @@ print(f'CAGR (geometric mean): {((annual_new["annual_return"]/100 + 1).prod() **
 # Compare
 print('\n\nCOMPARISON:')
 print('-'*80)
-merged = pd.merge(annual_old[['year', 'annual_return']], 
-                  annual_new[['year', 'annual_return']], 
-                  on='year', 
+merged = pd.merge(annual_old[['year', 'annual_return']],
+                  annual_new[['year', 'annual_return']],
+                  on='year',
                   suffixes=('_old', '_new'))
 print(f"{'Year':<8} {'Old (%)':<15} {'New (%)':<15} {'Difference':<15}")
 print('-'*80)
@@ -95,6 +95,3 @@ for _, row in merged.iterrows():
     print(f"{int(row['year']):<8} {row['annual_return_old']:>13.2f}% {row['annual_return_new']:>13.2f}% {diff:>13.2f}%")
 
 print('\n' + '='*80)
-
-
-

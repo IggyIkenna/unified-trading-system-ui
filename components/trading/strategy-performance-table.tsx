@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -9,27 +9,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { EntityLink } from "./entity-link"
-import { StatusDot } from "./status-badge"
-import { PnLValue } from "./pnl-value"
-import { SparklineCell } from "./kpi-card"
+} from "@/components/ui/table";
+import { EntityLink } from "./entity-link";
+import { StatusDot } from "./status-badge";
+import { PnLValue } from "./pnl-value";
+import { SparklineCell } from "./kpi-card";
 
 export interface StrategyPerformance {
-  id: string
-  name: string
-  status: "live" | "paused" | "warning" | "critical"
-  pnl: number
-  sharpe: number
-  maxDrawdown: number
-  sparklineData: number[]
-  assetClass: string
+  id: string;
+  name: string;
+  status: "live" | "paused" | "warning" | "critical";
+  pnl: number;
+  sharpe: number;
+  maxDrawdown: number;
+  sparklineData: number[];
+  assetClass: string;
 }
 
 interface StrategyPerformanceTableProps {
-  strategies: StrategyPerformance[]
-  onRowClick?: (strategyId: string) => void
-  className?: string
+  strategies: StrategyPerformance[];
+  onRowClick?: (strategyId: string) => void;
+  className?: string;
 }
 
 export function StrategyPerformanceTable({
@@ -38,7 +38,12 @@ export function StrategyPerformanceTable({
   className,
 }: StrategyPerformanceTableProps) {
   return (
-    <div className={cn("border border-border rounded-lg overflow-hidden", className)}>
+    <div
+      className={cn(
+        "border border-border rounded-lg overflow-hidden",
+        className,
+      )}
+    >
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -83,7 +88,9 @@ export function StrategyPerformanceTable({
                 {strategy.sharpe?.toFixed(2) ?? "-"}
               </TableCell>
               <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
-                {strategy.maxDrawdown != null ? `${strategy.maxDrawdown.toFixed(1)}%` : "-"}
+                {strategy.maxDrawdown != null
+                  ? `${strategy.maxDrawdown.toFixed(1)}%`
+                  : "-"}
               </TableCell>
               <TableCell className="text-right">
                 <SparklineCell data={strategy.sparklineData ?? []} />
@@ -93,5 +100,5 @@ export function StrategyPerformanceTable({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

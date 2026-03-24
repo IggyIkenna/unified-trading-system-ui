@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import {
   Activity,
   ChevronDown,
@@ -25,37 +25,37 @@ import {
   TrendingDown,
   Target,
   Ban,
-} from "lucide-react"
+} from "lucide-react";
 
-type DecisionType = "ENTRY" | "EXIT" | "HOLD" | "REBALANCE" | "SKIP"
-type SignalSource = "ML_MODEL" | "RULE_ENGINE" | "MANUAL" | "RISK_OVERRIDE"
+type DecisionType = "ENTRY" | "EXIT" | "HOLD" | "REBALANCE" | "SKIP";
+type SignalSource = "ML_MODEL" | "RULE_ENGINE" | "MANUAL" | "RISK_OVERRIDE";
 
 interface StrategyDecision {
-  id: string
-  timestamp: string
-  strategyId: string
-  strategyName: string
-  decisionType: DecisionType
-  signalSource: SignalSource
+  id: string;
+  timestamp: string;
+  strategyId: string;
+  strategyName: string;
+  decisionType: DecisionType;
+  signalSource: SignalSource;
   // Signal details
-  confidence: number
-  modelVersion?: string
-  inputFeatures: { name: string; value: number | string }[]
+  confidence: number;
+  modelVersion?: string;
+  inputFeatures: { name: string; value: number | string }[];
   // Decision outcome
-  instrument?: string
-  side?: "BUY" | "SELL"
-  size?: number
-  entryPrice?: number
+  instrument?: string;
+  side?: "BUY" | "SELL";
+  size?: number;
+  entryPrice?: number;
   // Risk checks
-  riskChecks: { name: string; passed: boolean; details: string }[]
+  riskChecks: { name: string; passed: boolean; details: string }[];
   // Execution
-  executed: boolean
-  executionId?: string
-  executionPrice?: number
-  slippage?: number
+  executed: boolean;
+  executionId?: string;
+  executionPrice?: number;
+  slippage?: number;
   // Override info
-  overrideReason?: string
-  overrideBy?: string
+  overrideReason?: string;
+  overrideBy?: string;
 }
 
 // Mock decision data
@@ -82,8 +82,16 @@ const MOCK_DECISIONS: StrategyDecision[] = [
     riskChecks: [
       { name: "Position Limit", passed: true, details: "Within 80% of max" },
       { name: "Margin Available", passed: true, details: "25% buffer" },
-      { name: "Correlation Check", passed: true, details: "No correlated position" },
-      { name: "Drawdown Limit", passed: true, details: "DD at 2.1% < 5% limit" },
+      {
+        name: "Correlation Check",
+        passed: true,
+        details: "No correlated position",
+      },
+      {
+        name: "Drawdown Limit",
+        passed: true,
+        details: "DD at 2.1% < 5% limit",
+      },
     ],
     executed: true,
     executionId: "exec-24891",
@@ -104,7 +112,11 @@ const MOCK_DECISIONS: StrategyDecision[] = [
       { name: "volume_ratio", value: 0.85 },
     ],
     riskChecks: [
-      { name: "Min Confidence", passed: false, details: "0.45 < 0.65 threshold" },
+      {
+        name: "Min Confidence",
+        passed: false,
+        details: "0.45 < 0.65 threshold",
+      },
     ],
     executed: false,
   },
@@ -125,8 +137,16 @@ const MOCK_DECISIONS: StrategyDecision[] = [
     side: "SELL",
     size: 25,
     riskChecks: [
-      { name: "Delta Limit", passed: false, details: "$125K > $100K soft limit" },
-      { name: "Auto-hedge Enabled", passed: true, details: "Triggered rebalance" },
+      {
+        name: "Delta Limit",
+        passed: false,
+        details: "$125K > $100K soft limit",
+      },
+      {
+        name: "Auto-hedge Enabled",
+        passed: true,
+        details: "Triggered rebalance",
+      },
     ],
     executed: true,
     executionId: "exec-24888",
@@ -174,66 +194,87 @@ const MOCK_DECISIONS: StrategyDecision[] = [
       { name: "borrow_apy", value: "4.2%" },
     ],
     riskChecks: [
-      { name: "Min Health Factor", passed: false, details: "1.38 < 1.5 threshold" },
+      {
+        name: "Min Health Factor",
+        passed: false,
+        details: "1.38 < 1.5 threshold",
+      },
       { name: "Gas Price", passed: true, details: "28 gwei < 50 max" },
     ],
     executed: true,
     executionId: "exec-24880",
     overrideReason: "Health factor drift - rebalance to 1.6",
   },
-]
+];
 
 function getDecisionTypeConfig(type: DecisionType) {
   switch (type) {
     case "ENTRY":
-      return { color: "var(--status-live)", icon: ArrowUpRight, label: "ENTRY" }
+      return {
+        color: "var(--status-live)",
+        icon: ArrowUpRight,
+        label: "ENTRY",
+      };
     case "EXIT":
-      return { color: "var(--pnl-negative)", icon: ArrowDownRight, label: "EXIT" }
+      return {
+        color: "var(--pnl-negative)",
+        icon: ArrowDownRight,
+        label: "EXIT",
+      };
     case "HOLD":
-      return { color: "#6b7280", icon: Shield, label: "HOLD" }
+      return { color: "#6b7280", icon: Shield, label: "HOLD" };
     case "REBALANCE":
-      return { color: "#3b82f6", icon: Activity, label: "REBALANCE" }
+      return { color: "#3b82f6", icon: Activity, label: "REBALANCE" };
     case "SKIP":
-      return { color: "#6b7280", icon: Ban, label: "SKIP" }
+      return { color: "#6b7280", icon: Ban, label: "SKIP" };
   }
 }
 
 function getSignalSourceConfig(source: SignalSource) {
   switch (source) {
     case "ML_MODEL":
-      return { color: "#a855f7", icon: Brain, label: "ML Model" }
+      return { color: "#a855f7", icon: Brain, label: "ML Model" };
     case "RULE_ENGINE":
-      return { color: "#3b82f6", icon: Target, label: "Rule Engine" }
+      return { color: "#3b82f6", icon: Target, label: "Rule Engine" };
     case "MANUAL":
-      return { color: "#6b7280", icon: Activity, label: "Manual" }
+      return { color: "#6b7280", icon: Activity, label: "Manual" };
     case "RISK_OVERRIDE":
-      return { color: "var(--status-warning)", icon: Shield, label: "Risk Override" }
+      return {
+        color: "var(--status-warning)",
+        icon: Shield,
+        label: "Risk Override",
+      };
   }
 }
 
 interface StrategyAuditTrailProps {
-  strategyId?: string
-  className?: string
+  strategyId?: string;
+  className?: string;
 }
 
-export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrailProps) {
-  const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set(["dec-001"]))
+export function StrategyAuditTrail({
+  strategyId,
+  className,
+}: StrategyAuditTrailProps) {
+  const [expandedIds, setExpandedIds] = React.useState<Set<string>>(
+    new Set(["dec-001"]),
+  );
 
   const filteredDecisions = strategyId
     ? MOCK_DECISIONS.filter((d) => d.strategyId === strategyId)
-    : MOCK_DECISIONS
+    : MOCK_DECISIONS;
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
-      const next = new Set(prev)
+      const next = new Set(prev);
       if (next.has(id)) {
-        next.delete(id)
+        next.delete(id);
       } else {
-        next.add(id)
+        next.add(id);
       }
-      return next
-    })
-  }
+      return next;
+    });
+  };
 
   return (
     <Card className={className}>
@@ -250,18 +291,22 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
         <ScrollArea className="h-[500px]">
           <div className="space-y-2">
             {filteredDecisions.map((decision) => {
-              const decisionConfig = getDecisionTypeConfig(decision.decisionType)
-              const sourceConfig = getSignalSourceConfig(decision.signalSource)
-              const DecisionIcon = decisionConfig.icon
-              const SourceIcon = sourceConfig.icon
-              const isExpanded = expandedIds.has(decision.id)
+              const decisionConfig = getDecisionTypeConfig(
+                decision.decisionType,
+              );
+              const sourceConfig = getSignalSourceConfig(decision.signalSource);
+              const DecisionIcon = decisionConfig.icon;
+              const SourceIcon = sourceConfig.icon;
+              const isExpanded = expandedIds.has(decision.id);
 
               return (
                 <Collapsible key={decision.id} open={isExpanded}>
                   <div
                     className={cn(
                       "rounded-lg border transition-all",
-                      isExpanded ? "border-border bg-secondary/20" : "border-border/50"
+                      isExpanded
+                        ? "border-border bg-secondary/20"
+                        : "border-border/50",
                     )}
                   >
                     {/* Summary Row */}
@@ -275,11 +320,11 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                         ) : (
                           <ChevronRight className="size-4 text-muted-foreground" />
                         )}
-                        
+
                         <span className="font-mono text-xs text-muted-foreground w-16">
                           {decision.timestamp}
                         </span>
-                        
+
                         <div
                           className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
                           style={{ color: decisionConfig.color }}
@@ -287,11 +332,11 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                           <DecisionIcon className="size-3" />
                           {decisionConfig.label}
                         </div>
-                        
+
                         <span className="text-sm font-medium truncate max-w-[140px]">
                           {decision.strategyName}
                         </span>
-                        
+
                         <div
                           className="flex items-center gap-1 text-xs"
                           style={{ color: sourceConfig.color }}
@@ -299,18 +344,24 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                           <SourceIcon className="size-3" />
                           {sourceConfig.label}
                         </div>
-                        
+
                         <span className="text-xs text-muted-foreground">
                           conf: {(decision.confidence * 100).toFixed(0)}%
                         </span>
-                        
+
                         {decision.executed ? (
-                          <Badge variant="outline" className="text-[10px] gap-1 text-[var(--status-live)] border-[var(--status-live)]">
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] gap-1 text-[var(--status-live)] border-[var(--status-live)]"
+                          >
                             <Zap className="size-2.5" />
                             Executed
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[10px] text-muted-foreground">
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] text-muted-foreground"
+                          >
                             Not Executed
                           </Badge>
                         )}
@@ -331,7 +382,9 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                                 key={f.name}
                                 className="px-2 py-1 rounded bg-secondary/50 text-xs"
                               >
-                                <span className="text-muted-foreground">{f.name}:</span>{" "}
+                                <span className="text-muted-foreground">
+                                  {f.name}:
+                                </span>{" "}
                                 <span className="font-mono">{f.value}</span>
                               </div>
                             ))}
@@ -346,24 +399,42 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                             </h5>
                             <div className="flex items-center gap-4 text-xs">
                               <span>
-                                <span className="text-muted-foreground">Instrument:</span>{" "}
-                                <span className="font-mono">{decision.instrument}</span>
+                                <span className="text-muted-foreground">
+                                  Instrument:
+                                </span>{" "}
+                                <span className="font-mono">
+                                  {decision.instrument}
+                                </span>
                               </span>
                               {decision.side && (
-                                <span className={decision.side === "BUY" ? "text-[var(--status-live)]" : "text-[var(--pnl-negative)]"}>
+                                <span
+                                  className={
+                                    decision.side === "BUY"
+                                      ? "text-[var(--status-live)]"
+                                      : "text-[var(--pnl-negative)]"
+                                  }
+                                >
                                   {decision.side}
                                 </span>
                               )}
                               {decision.size && (
                                 <span>
-                                  <span className="text-muted-foreground">Size:</span>{" "}
-                                  <span className="font-mono">${decision.size.toLocaleString()}</span>
+                                  <span className="text-muted-foreground">
+                                    Size:
+                                  </span>{" "}
+                                  <span className="font-mono">
+                                    ${decision.size.toLocaleString()}
+                                  </span>
                                 </span>
                               )}
                               {decision.entryPrice && (
                                 <span>
-                                  <span className="text-muted-foreground">Price:</span>{" "}
-                                  <span className="font-mono">{decision.entryPrice}</span>
+                                  <span className="text-muted-foreground">
+                                    Price:
+                                  </span>{" "}
+                                  <span className="font-mono">
+                                    {decision.entryPrice}
+                                  </span>
                                 </span>
                               )}
                             </div>
@@ -383,11 +454,13 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                                   "flex items-center gap-1.5 px-2 py-1 rounded text-xs",
                                   check.passed
                                     ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
-                                    : "bg-[var(--status-error)]/10 text-[var(--status-error)]"
+                                    : "bg-[var(--status-error)]/10 text-[var(--status-error)]",
                                 )}
                               >
                                 {check.passed ? "✓" : "✗"} {check.name}
-                                <span className="text-muted-foreground">({check.details})</span>
+                                <span className="text-muted-foreground">
+                                  ({check.details})
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -401,18 +474,33 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                             </h5>
                             <div className="flex items-center gap-4 text-xs">
                               <span>
-                                <span className="text-muted-foreground">ID:</span>{" "}
-                                <span className="font-mono">{decision.executionId}</span>
+                                <span className="text-muted-foreground">
+                                  ID:
+                                </span>{" "}
+                                <span className="font-mono">
+                                  {decision.executionId}
+                                </span>
                               </span>
                               {decision.executionPrice && (
                                 <span>
-                                  <span className="text-muted-foreground">Fill:</span>{" "}
-                                  <span className="font-mono">{decision.executionPrice}</span>
+                                  <span className="text-muted-foreground">
+                                    Fill:
+                                  </span>{" "}
+                                  <span className="font-mono">
+                                    {decision.executionPrice}
+                                  </span>
                                 </span>
                               )}
                               {decision.slippage !== undefined && (
-                                <span className={decision.slippage <= 0 ? "text-[var(--status-live)]" : "text-[var(--pnl-negative)]"}>
-                                  Slippage: {(decision.slippage * 100).toFixed(3)}%
+                                <span
+                                  className={
+                                    decision.slippage <= 0
+                                      ? "text-[var(--status-live)]"
+                                      : "text-[var(--pnl-negative)]"
+                                  }
+                                >
+                                  Slippage:{" "}
+                                  {(decision.slippage * 100).toFixed(3)}%
                                 </span>
                               )}
                             </div>
@@ -422,10 +510,15 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                         {/* Override Info */}
                         {decision.overrideReason && (
                           <div className="px-2 py-1.5 rounded bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30 text-xs">
-                            <span className="text-[var(--status-warning)] font-medium">Override:</span>{" "}
+                            <span className="text-[var(--status-warning)] font-medium">
+                              Override:
+                            </span>{" "}
                             {decision.overrideReason}
                             {decision.overrideBy && (
-                              <span className="text-muted-foreground"> by {decision.overrideBy}</span>
+                              <span className="text-muted-foreground">
+                                {" "}
+                                by {decision.overrideBy}
+                              </span>
                             )}
                           </div>
                         )}
@@ -433,11 +526,11 @@ export function StrategyAuditTrail({ strategyId, className }: StrategyAuditTrail
                     </CollapsibleContent>
                   </div>
                 </Collapsible>
-              )
+              );
             })}
           </div>
         </ScrollArea>
       </CardContent>
     </Card>
-  )
+  );
 }

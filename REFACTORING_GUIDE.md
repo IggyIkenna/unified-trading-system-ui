@@ -12,16 +12,16 @@
 
 ### What Counts as "Breaking"?
 
-| Change | Example | Ask? |
-|--------|---------|------|
-| Create new page | Add `TradesPage.tsx` | ✅ **YES** |
-| Hide old page | Stop showing `/positions` | ✅ **YES** |
-| Rename route | `/positions` → `/execution/positions` | ✅ **YES** |
-| Move component | `services/data/` → `services/execution/` | ✅ **YES** |
-| Reorganize navigation | Change menu structure | ✅ **YES** |
-| Delete dead code | Remove unused function | ❌ No (if truly unused) |
-| Refactor internals | Change component structure | ❌ No (if route/name same) |
-| Update styling | Change colors, spacing | ❌ No |
+| Change                | Example                                  | Ask?                       |
+| --------------------- | ---------------------------------------- | -------------------------- |
+| Create new page       | Add `TradesPage.tsx`                     | ✅ **YES**                 |
+| Hide old page         | Stop showing `/positions`                | ✅ **YES**                 |
+| Rename route          | `/positions` → `/execution/positions`    | ✅ **YES**                 |
+| Move component        | `services/data/` → `services/execution/` | ✅ **YES**                 |
+| Reorganize navigation | Change menu structure                    | ✅ **YES**                 |
+| Delete dead code      | Remove unused function                   | ❌ No (if truly unused)    |
+| Refactor internals    | Change component structure               | ❌ No (if route/name same) |
+| Update styling        | Change colors, spacing                   | ❌ No                      |
 
 ### How to Ask
 
@@ -59,6 +59,7 @@ Should I proceed?"
 ### Before Refactoring
 
 1. **Read the manifest:**
+
    ```bash
    cat UI_STRUCTURE_MANIFEST.json
    ```
@@ -204,6 +205,7 @@ cat UI_STRUCTURE_MANIFEST.json
 ### 2. Understand the Refactor
 
 Look at the active entry in `refactor_history`:
+
 - **What's being refactored?** (from `id` and `title`)
 - **From what state?** (from `from_state`)
 - **To what state?** (from `to_state`)
@@ -213,11 +215,13 @@ Look at the active entry in `refactor_history`:
 ### 3. Check Current vs Target
 
 Compare:
+
 - **Manifest's `current_structure`** ← what was done last
 - **Manifest's `target_structure`** ← what you're building toward
 - **Actual code** ← what's really there
 
 If they don't match:
+
 ```
 "The manifest says we're at [X], but I see [Y] in the code.
 Last session ended at [date]. Did you make changes?
@@ -227,6 +231,7 @@ Should I continue toward [target]?"
 ### 4. Continue From Where You Left Off
 
 Work toward `target_structure`. The manifest tells you:
+
 - Where you are
 - Where you're going
 - Why you're doing this
@@ -277,6 +282,7 @@ In the refactor_history entry:
 ### When Resuming
 
 Agent reads the notes and knows:
+
 - What's been done
 - What's left
 - Why it paused
@@ -417,11 +423,13 @@ git revert [commit-sha]...
 ## Quick Reference: Refactor Checklist
 
 ### Before Starting
+
 - [ ] Read manifest
 - [ ] Ask user for approval
 - [ ] Get explicit "yes"
 
 ### During Refactor
+
 - [ ] Update manifest `target_structure`
 - [ ] Mark `refactor_in_progress: true`
 - [ ] Document in `refactor_history`
@@ -429,29 +437,34 @@ git revert [commit-sha]...
 - [ ] Commit with refactor ID in message
 
 ### At Session End
+
 - [ ] Update manifest `current_structure` to actual state
 - [ ] Note any blockers or next steps
 - [ ] Commit manifest update
 
 ### When Resuming
+
 - [ ] Read manifest
 - [ ] Verify current vs target
 - [ ] Continue toward target
 - [ ] Update manifest as progress made
 
 ### When Completing
+
 - [ ] Verify all changes done
 - [ ] Mark `refactor_in_progress: false`
 - [ ] Document breaking changes
 - [ ] Commit with completion message
 
 ### If Pausing Mid-Refactor
+
 - [ ] Document pause reason in manifest
 - [ ] Document next steps
 - [ ] Update current_structure to actual state
 - [ ] Commit manifest update
 
 ### If Rolling Back
+
 - [ ] Tell user
 - [ ] Get approval
 - [ ] Revert commits
@@ -488,11 +501,13 @@ Agent: Updates manifest, starts refactoring
     "last_verified": "2026-03-20T17:00:00Z",
     "verified_by": "Agent"
   },
-  "refactor_history": [{
-    "status": "in_progress",
-    "last_activity": "2026-03-20T17:00:00Z",
-    "progress": "50% - Moved files, updating routes next"
-  }]
+  "refactor_history": [
+    {
+      "status": "in_progress",
+      "last_activity": "2026-03-20T17:00:00Z",
+      "progress": "50% - Moved files, updating routes next"
+    }
+  ]
 }
 ```
 
@@ -518,15 +533,19 @@ Agent continues: Updates routes, tests, completes refactor
     "status": "stable",
     "last_verified": "2026-03-20T18:30:00Z"
   },
-  "refactor_history": [{
-    "status": "completed",
-    "completed_date": "2026-03-20T18:30:00Z"
-  }],
-  "breaking_changes_log": [{
-    "old_path": "/positions",
-    "new_path": "/execution/positions",
-    "redirect": true
-  }]
+  "refactor_history": [
+    {
+      "status": "completed",
+      "completed_date": "2026-03-20T18:30:00Z"
+    }
+  ],
+  "breaking_changes_log": [
+    {
+      "old_path": "/positions",
+      "new_path": "/execution/positions",
+      "redirect": true
+    }
+  ]
 }
 ```
 
@@ -551,4 +570,3 @@ Agent continues: Updates routes, tests, completes refactor
 ---
 
 **Remember:** Refactors are structural changes to how users experience the app. Always ask before making them.
-

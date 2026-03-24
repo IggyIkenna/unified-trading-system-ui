@@ -1,44 +1,60 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { toast } from "sonner"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import * as React from "react";
+import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle,
-  DialogDescription, DialogFooter, DialogTrigger,
-} from "@/components/ui/dialog"
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { Users, Plus, Search, Shield, Clock, UserPlus } from "lucide-react";
 import {
-  Users, Plus, Search, Shield, Clock, UserPlus,
-} from "lucide-react"
-import { useOrganizationsList, useOrgMembers } from "@/hooks/api/use-organizations"
+  useOrganizationsList,
+  useOrgMembers,
+} from "@/hooks/api/use-organizations";
 
 interface User {
-  id: string
-  name: string
-  email: string
-  org: string
-  role: string
-  lastLogin: string
-  status: "active" | "suspended"
+  id: string;
+  name: string;
+  email: string;
+  org: string;
+  role: string;
+  lastLogin: string;
+  status: "active" | "suspended";
 }
 
-const ROLES = ["admin", "internal", "client", "viewer"]
+const ROLES = ["admin", "internal", "client", "viewer"];
 
 export default function UsersManagementPage() {
-  const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList()
-  const orgs: Array<{ id: string; name: string }> = (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? []
-  const { data: membersData, isLoading: membersLoading } = useOrgMembers("all")
+  const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList();
+  const orgs: Array<{ id: string; name: string }> =
+    (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? [];
+  const { data: membersData, isLoading: membersLoading } = useOrgMembers("all");
 
   const apiUsers: User[] = ((membersData as any)?.data ?? []).map((m: any) => ({
     id: m.id ?? "",
@@ -48,44 +64,44 @@ export default function UsersManagementPage() {
     role: m.role ?? "viewer",
     lastLogin: m.lastLogin ?? "Never",
     status: (m.status ?? "active") as "active" | "suspended",
-  }))
+  }));
 
-  const [users, setUsers] = React.useState<User[]>([])
+  const [users, setUsers] = React.useState<User[]>([]);
 
   // Sync API data into local state for mutation
   React.useEffect(() => {
-    if (apiUsers.length > 0 && users.length === 0) setUsers(apiUsers)
-  }, [apiUsers.length])
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [orgFilter, setOrgFilter] = React.useState("all")
-  const [inviteOpen, setInviteOpen] = React.useState(false)
-  const [editingRoleId, setEditingRoleId] = React.useState<string | null>(null)
+    if (apiUsers.length > 0 && users.length === 0) setUsers(apiUsers);
+  }, [apiUsers.length]);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [orgFilter, setOrgFilter] = React.useState("all");
+  const [inviteOpen, setInviteOpen] = React.useState(false);
+  const [editingRoleId, setEditingRoleId] = React.useState<string | null>(null);
 
   // Invite form state
-  const [inviteEmail, setInviteEmail] = React.useState("")
-  const [inviteName, setInviteName] = React.useState("")
-  const [inviteOrg, setInviteOrg] = React.useState("")
-  const [inviteRole, setInviteRole] = React.useState("")
+  const [inviteEmail, setInviteEmail] = React.useState("");
+  const [inviteName, setInviteName] = React.useState("");
+  const [inviteOrg, setInviteOrg] = React.useState("");
+  const [inviteRole, setInviteRole] = React.useState("");
 
   const filteredUsers = React.useMemo(() => {
     return users.filter((u) => {
       const matchesSearch =
         !searchQuery ||
         u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchQuery.toLowerCase())
-      const matchesOrg = orgFilter === "all" || u.org === orgFilter
-      return matchesSearch && matchesOrg
-    })
-  }, [users, searchQuery, orgFilter])
+        u.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesOrg = orgFilter === "all" || u.org === orgFilter;
+      return matchesSearch && matchesOrg;
+    });
+  }, [users, searchQuery, orgFilter]);
 
   const uniqueOrgs = React.useMemo(() => {
-    return Array.from(new Set(users.map((u) => u.org)))
-  }, [users])
+    return Array.from(new Set(users.map((u) => u.org)));
+  }, [users]);
 
   function handleInvite() {
     if (!inviteEmail || !inviteOrg || !inviteRole) {
-      toast.error("Please fill all required fields")
-      return
+      toast.error("Please fill all required fields");
+      return;
     }
     const newUser: User = {
       id: `u-${String(Date.now()).slice(-6)}`,
@@ -95,27 +111,27 @@ export default function UsersManagementPage() {
       role: inviteRole,
       lastLogin: "Never",
       status: "active",
-    }
-    setUsers((prev) => [...prev, newUser])
+    };
+    setUsers((prev) => [...prev, newUser]);
     toast.success("User invited", {
       description: `${newUser.email} added to ${newUser.org}`,
-    })
-    setInviteEmail("")
-    setInviteName("")
-    setInviteOrg("")
-    setInviteRole("")
-    setInviteOpen(false)
+    });
+    setInviteEmail("");
+    setInviteName("");
+    setInviteOrg("");
+    setInviteRole("");
+    setInviteOpen(false);
   }
 
   function handleRoleChange(userId: string, newRole: string) {
     setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-    )
-    const user = users.find((u) => u.id === userId)
+      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)),
+    );
+    const user = users.find((u) => u.id === userId);
     toast.success("Role updated", {
       description: `${user?.name} is now ${newRole}`,
-    })
-    setEditingRoleId(null)
+    });
+    setEditingRoleId(null);
   }
 
   function handleStatusToggle(userId: string) {
@@ -123,26 +139,40 @@ export default function UsersManagementPage() {
       prev.map((u) =>
         u.id === userId
           ? { ...u, status: u.status === "active" ? "suspended" : "active" }
-          : u
-      )
-    )
-    const user = users.find((u) => u.id === userId)
-    const newStatus = user?.status === "active" ? "suspended" : "active"
+          : u,
+      ),
+    );
+    const user = users.find((u) => u.id === userId);
+    const newStatus = user?.status === "active" ? "suspended" : "active";
     toast.success("Status updated", {
       description: `${user?.name} is now ${newStatus}`,
-    })
+    });
   }
 
-  if (orgsLoading || membersLoading) return (
-    <main className="flex-1 p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2"><Skeleton className="h-8 w-48" /><Skeleton className="h-4 w-80" /></div>
-        <Skeleton className="h-8 w-24" />
-      </div>
-      <div className="flex gap-3"><Skeleton className="h-10 flex-1" /><Skeleton className="h-10 w-48" /><Skeleton className="h-10 w-32" /></div>
-      <Card><CardContent className="pt-6 space-y-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</CardContent></Card>
-    </main>
-  )
+  if (orgsLoading || membersLoading)
+    return (
+      <main className="flex-1 p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-80" />
+          </div>
+          <Skeleton className="h-8 w-24" />
+        </div>
+        <div className="flex gap-3">
+          <Skeleton className="h-10 flex-1" />
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <Card>
+          <CardContent className="pt-6 space-y-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-12 w-full" />
+            ))}
+          </CardContent>
+        </Card>
+      </main>
+    );
 
   return (
     <div className="min-h-screen bg-background">
@@ -150,14 +180,23 @@ export default function UsersManagementPage() {
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
+              <h1 className="text-2xl font-bold tracking-tight">
+                User Management
+              </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 Manage users, roles, and access across all organizations
               </p>
             </div>
             <div className="flex items-center gap-2">
               <ExportDropdown
-                data={filteredUsers.map(u => ({ name: u.name, email: u.email, org: u.org, role: u.role, lastLogin: u.lastLogin, status: u.status }))}
+                data={filteredUsers.map((u) => ({
+                  name: u.name,
+                  email: u.email,
+                  org: u.org,
+                  role: u.role,
+                  lastLogin: u.lastLogin,
+                  status: u.status,
+                }))}
                 columns={[
                   { key: "name", header: "Name" },
                   { key: "email", header: "Email" },
@@ -196,7 +235,9 @@ export default function UsersManagementPage() {
             <SelectContent>
               <SelectItem value="all">All Organizations</SelectItem>
               {uniqueOrgs.map((org) => (
-                <SelectItem key={org} value={org}>{org}</SelectItem>
+                <SelectItem key={org} value={org}>
+                  {org}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -211,7 +252,8 @@ export default function UsersManagementPage() {
               <DialogHeader>
                 <DialogTitle>Invite User</DialogTitle>
                 <DialogDescription>
-                  Send an invitation to a new user. They will receive access to the selected organization.
+                  Send an invitation to a new user. They will receive access to
+                  the selected organization.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
@@ -244,7 +286,9 @@ export default function UsersManagementPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {orgs.map((o) => (
-                        <SelectItem key={o.id} value={o.name}>{o.name}</SelectItem>
+                        <SelectItem key={o.id} value={o.name}>
+                          {o.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -259,7 +303,9 @@ export default function UsersManagementPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {ROLES.map((r) => (
-                        <SelectItem key={r} value={r} className="capitalize">{r}</SelectItem>
+                        <SelectItem key={r} value={r} className="capitalize">
+                          {r}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -269,9 +315,7 @@ export default function UsersManagementPage() {
                 <Button variant="outline" onClick={() => setInviteOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleInvite}>
-                  Send Invitation
-                </Button>
+                <Button onClick={handleInvite}>Send Invitation</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -296,7 +340,9 @@ export default function UsersManagementPage() {
                 {filteredUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{user.email}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {user.email}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {user.org}
@@ -306,14 +352,20 @@ export default function UsersManagementPage() {
                       {editingRoleId === user.id ? (
                         <Select
                           value={user.role}
-                          onValueChange={(val) => handleRoleChange(user.id, val)}
+                          onValueChange={(val) =>
+                            handleRoleChange(user.id, val)
+                          }
                         >
                           <SelectTrigger className="w-[120px] h-7 text-xs">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             {ROLES.map((r) => (
-                              <SelectItem key={r} value={r} className="capitalize text-xs">
+                              <SelectItem
+                                key={r}
+                                value={r}
+                                className="capitalize text-xs"
+                              >
                                 {r}
                               </SelectItem>
                             ))}
@@ -365,13 +417,21 @@ export default function UsersManagementPage() {
                       <div className="flex flex-col items-center gap-3">
                         <UserPlus className="size-8 text-muted-foreground/50" />
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">No users found</p>
+                          <p className="text-sm font-medium text-muted-foreground">
+                            No users found
+                          </p>
                           <p className="text-xs text-muted-foreground/70 mt-1">
-                            {searchQuery || orgFilter !== "all" ? "Try adjusting your filters" : "Add your first team member to get started"}
+                            {searchQuery || orgFilter !== "all"
+                              ? "Try adjusting your filters"
+                              : "Add your first team member to get started"}
                           </p>
                         </div>
                         {!searchQuery && orgFilter === "all" && (
-                          <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setInviteOpen(true)}
+                          >
                             <Plus className="mr-1 size-3" /> Add User
                           </Button>
                         )}
@@ -385,5 +445,5 @@ export default function UsersManagementPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

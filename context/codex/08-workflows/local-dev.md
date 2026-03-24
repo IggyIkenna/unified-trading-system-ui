@@ -303,17 +303,18 @@ For DeFi protocol testing (Aave, Uniswap, Morpho, etc.), the system supports mai
 
 A pinned fork is available for reproducible tests and historical replay:
 
-| Property       | Value                                |
-| -------------- | ------------------------------------ |
-| Network        | Ethereum Mainnet                     |
-| Block          | 24,681,163                           |
-| Date pinned    | 2026-03-18                           |
-| Chain ID       | 73571 (Tenderly virtual)             |
-| Sync           | Disabled (fully deterministic)       |
-| SM secret      | `tenderly-fork-rpc-url`              |
-| Tenderly slug  | `uts-deterministic-eth-mainnet-blk-24681163` |
+| Property      | Value                                        |
+| ------------- | -------------------------------------------- |
+| Network       | Ethereum Mainnet                             |
+| Block         | 24,681,163                                   |
+| Date pinned   | 2026-03-18                                   |
+| Chain ID      | 73571 (Tenderly virtual)                     |
+| Sync          | Disabled (fully deterministic)               |
+| SM secret     | `tenderly-fork-rpc-url`                      |
+| Tenderly slug | `uts-deterministic-eth-mainnet-blk-24681163` |
 
 Use this fork for:
+
 - Strategy backtests that need real on-chain state (Aave reserve data, Uniswap pool liquidity, token balances)
 - Gas cost estimation (exact `gasUsed` from real EVM execution)
 - Flash loan atomicity testing (reverts behave identically to mainnet)

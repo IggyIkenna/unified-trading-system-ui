@@ -64,8 +64,7 @@ todos:
       alchemy-api-key (Nov 2025), aavescan-api-key (Nov 2025), graph-api-key (Nov 2025). Still missing:
       databento-api-key, envio-api-key, openbb-fmp-api-key, openbb-fred-api-key.
     status: done
-    note:
-      "Verified 2026-03-17. 4 of 7 present. Remaining 3 are non-DeFi (databento=TradFi, openbb=TradFi, envio=indexer)."
+    note: "Verified 2026-03-17. 4 of 7 present. Remaining 3 are non-DeFi (databento=TradFi, openbb=TradFi, envio=indexer)."
 
   - id: secrets-defi-endpoints
     content: >

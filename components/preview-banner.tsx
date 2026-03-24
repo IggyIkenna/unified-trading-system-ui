@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { X } from "lucide-react"
+import * as React from "react";
+import { X } from "lucide-react";
 
 /**
  * Preview banner — shown across the entire site to signal that the platform
@@ -11,18 +11,18 @@ import { X } from "lucide-react"
  * is being built out. The business is 4 years old but this is a new platform.
  */
 
-const DISMISS_KEY = "preview-banner-dismissed"
+const DISMISS_KEY = "preview-banner-dismissed";
 
 export function PreviewBanner() {
-  const [dismissed, setDismissed] = React.useState(false)
+  const [dismissed, setDismissed] = React.useState(false);
 
   React.useEffect(() => {
     if (sessionStorage.getItem(DISMISS_KEY) === "1") {
-      setDismissed(true)
+      setDismissed(true);
     }
-  }, [])
+  }, []);
 
-  if (dismissed) return null
+  if (dismissed) return null;
 
   return (
     <div className="relative bg-amber-500/10 border-b border-amber-500/20 px-4 py-2.5 text-center">
@@ -30,13 +30,13 @@ export function PreviewBanner() {
         <span className="inline-block px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-semibold uppercase tracking-wider mr-2">
           Preview
         </span>
-        Platform rebuild in progress — some sections are incomplete or use sample data.
-        This is not a live product environment.
+        Platform rebuild in progress — some sections are incomplete or use
+        sample data. This is not a live product environment.
       </p>
       <button
         onClick={() => {
-          sessionStorage.setItem(DISMISS_KEY, "1")
-          setDismissed(true)
+          sessionStorage.setItem(DISMISS_KEY, "1");
+          setDismissed(true);
         }}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-300/50 hover:text-amber-300 transition-colors"
         aria-label="Dismiss banner"
@@ -44,5 +44,5 @@ export function PreviewBanner() {
         <X className="size-3.5" />
       </button>
     </div>
-  )
+  );
 }

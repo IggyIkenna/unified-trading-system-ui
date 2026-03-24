@@ -195,7 +195,15 @@ export interface TurboVenueData {
   dates_missing_list?: string[];
   dates_missing_list_tail?: string[];
   dates_missing_truncated?: boolean;
-  data_types?: Record<string, { dates_found?: number; dates_expected?: number; completion_pct?: number; status?: string }>;
+  data_types?: Record<
+    string,
+    {
+      dates_found?: number;
+      dates_expected?: number;
+      completion_pct?: number;
+      status?: string;
+    }
+  >;
 }
 
 export interface TurboCategoryVenueSummary {
@@ -229,7 +237,10 @@ export interface TurboCategoryData {
   venue_weighted?: boolean;
   venue_summary?: TurboCategoryVenueSummary;
   venues?: Record<string, TurboVenueData>;
-  folders?: Record<string, { completion_pct?: number; dates_found?: number; dates_expected?: number }>;
+  folders?: Record<
+    string,
+    { completion_pct?: number; dates_found?: number; dates_expected?: number }
+  >;
   data_types?: string[];
   feature_groups?: string[];
   bulk_service?: boolean;
@@ -440,9 +451,7 @@ export async function discoverConfigs(
   return { total_configs: 0 };
 }
 
-export async function getConfigBuckets(
-  _service: string,
-): Promise<{
+export async function getConfigBuckets(_service: string): Promise<{
   buckets: Array<{ name: string; path: string }>;
   default_bucket?: string;
 }> {
@@ -614,12 +623,23 @@ export async function getServiceDimensions(
   return { service: _service, dimensions: [], cli_args: {} };
 }
 
-export async function getDependencies(_service: string): Promise<DependenciesResponse> {
+export async function getDependencies(
+  _service: string,
+): Promise<DependenciesResponse> {
   // TODO: wire to real API
-  return { service: _service, description: "", upstream: [], downstream_dependents: [], outputs: [], external_dependencies: [] };
+  return {
+    service: _service,
+    description: "",
+    upstream: [],
+    downstream_dependents: [],
+    outputs: [],
+    external_dependencies: [],
+  };
 }
 
-export async function getChecklist(_service: string): Promise<ChecklistResponse> {
+export async function getChecklist(
+  _service: string,
+): Promise<ChecklistResponse> {
   // TODO: wire to real API
   return {
     service: _service,
@@ -688,13 +708,16 @@ export async function getVenuesByCategory(
   return { category: _category, venues: [], data_types: [] };
 }
 
-
-export async function getStartDates(_service: string): Promise<StartDatesResponse> {
+export async function getStartDates(
+  _service: string,
+): Promise<StartDatesResponse> {
   // TODO: wire to real API
   return { service: _service, start_dates: {} };
 }
 
-export async function getServiceStatus(_service: string): Promise<ServiceStatus> {
+export async function getServiceStatus(
+  _service: string,
+): Promise<ServiceStatus> {
   // TODO: wire to real API
   return {
     service: _service,
@@ -765,13 +788,19 @@ export async function getInstrumentAvailability(
 }
 
 // Missing stub — added for build
-export async function getServiceCategories(_service: string): Promise<{ categories: string[] }> {
+export async function getServiceCategories(
+  _service: string,
+): Promise<{ categories: string[] }> {
   // TODO: wire to real API
-  return { categories: ["CEFI", "DEFI", "TRADFI"] }
+  return { categories: ["CEFI", "DEFI", "TRADFI"] };
 }
 
-export async function getVenueFilters(_params: Record<string, string>): Promise<{ folders: string[]; data_types: string[] }> {
+export async function getVenueFilters(
+  _params: Record<string, string>,
+): Promise<{ folders: string[]; data_types: string[] }> {
   // TODO: wire to real API
-  return { folders: ["spot", "perpetuals", "futures"], data_types: ["ohlcv", "trades", "book_snapshot_5"] }
+  return {
+    folders: ["spot", "perpetuals", "futures"],
+    data_types: ["ohlcv", "trades", "book_snapshot_5"],
+  };
 }
-

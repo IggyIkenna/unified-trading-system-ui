@@ -15,7 +15,7 @@ import {
   StrategyArchetype,
   AssetClass,
   TestingStage,
-} from "./strategy-platform-types"
+} from "./strategy-platform-types";
 
 // =============================================================================
 // Strategy Templates
@@ -25,7 +25,8 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-eth-basis",
     name: "ETH Basis Trade",
-    description: "Captures funding rate differential between spot and perpetual futures",
+    description:
+      "Captures funding rate differential between spot and perpetual futures",
     archetype: "BASIS_TRADE",
     assetClasses: ["CeFi", "DeFi"],
     signals: ["funding_rate", "basis_spread", "liquidity_score"],
@@ -40,7 +41,8 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-btc-mm",
     name: "BTC Market Making",
-    description: "Provides liquidity on BTC perpetual markets with inventory management",
+    description:
+      "Provides liquidity on BTC perpetual markets with inventory management",
     archetype: "MARKET_MAKING",
     assetClasses: ["CeFi"],
     signals: ["order_imbalance", "volatility_regime", "spread_pred"],
@@ -55,7 +57,8 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-stat-arb",
     name: "Cross-Exchange Statistical Arb",
-    description: "Exploits mean-reversion in price differentials across exchanges",
+    description:
+      "Exploits mean-reversion in price differentials across exchanges",
     archetype: "STATISTICAL_ARB",
     assetClasses: ["CeFi"],
     signals: ["price_deviation", "cointegration_score", "execution_prob"],
@@ -70,7 +73,8 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-options-mm",
     name: "ETH Options Market Making",
-    description: "Delta-neutral options market making with volatility surface management",
+    description:
+      "Delta-neutral options market making with volatility surface management",
     archetype: "OPTIONS",
     assetClasses: ["CeFi"],
     signals: ["iv_surface", "skew_signal", "vol_regime"],
@@ -127,7 +131,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
     version: "1.5.0",
     linkedModels: ["mdl-odds-fair-value"],
   },
-]
+];
 
 // =============================================================================
 // Strategy Configs (multiple versions per template)
@@ -286,18 +290,32 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
     approvedAt: null,
     approvedBy: null,
   },
-]
+];
 
 // =============================================================================
 // Backtest Runs
 // =============================================================================
 
-function generateMetrics(seed: number, archetype: StrategyArchetype): BacktestMetrics {
-  const r = (base: number, variance: number) => base + (((seed * 9301 + 49297) % 233280) / 233280 - 0.5) * variance
-  
-  const sharpeBase = archetype === "MARKET_MAKING" ? 2.5 : archetype === "BASIS_TRADE" ? 1.8 : 1.2
-  const returnBase = archetype === "MARKET_MAKING" ? 0.35 : archetype === "BASIS_TRADE" ? 0.25 : 0.20
-  
+function generateMetrics(
+  seed: number,
+  archetype: StrategyArchetype,
+): BacktestMetrics {
+  const r = (base: number, variance: number) =>
+    base + (((seed * 9301 + 49297) % 233280) / 233280 - 0.5) * variance;
+
+  const sharpeBase =
+    archetype === "MARKET_MAKING"
+      ? 2.5
+      : archetype === "BASIS_TRADE"
+        ? 1.8
+        : 1.2;
+  const returnBase =
+    archetype === "MARKET_MAKING"
+      ? 0.35
+      : archetype === "BASIS_TRADE"
+        ? 0.25
+        : 0.2;
+
   return {
     totalReturn: r(returnBase, 0.15),
     annualizedReturn: r(returnBase, 0.12),
@@ -322,16 +340,40 @@ function generateMetrics(seed: number, archetype: StrategyArchetype): BacktestMe
     avgLoss: r(0.008, 0.003),
     winLossRatio: r(1.5, 0.4),
     regimeBreakdown: [
-      { regime: "TRENDING", sharpe: r(2.0, 0.5), return: r(0.15, 0.05), drawdown: r(0.03, 0.02), sampleSize: 45 },
-      { regime: "MEAN_REVERTING", sharpe: r(1.8, 0.4), return: r(0.12, 0.04), drawdown: r(0.04, 0.02), sampleSize: 38 },
-      { regime: "VOLATILE", sharpe: r(0.8, 0.6), return: r(0.05, 0.08), drawdown: r(0.08, 0.03), sampleSize: 22 },
-      { regime: "LOW_VOL", sharpe: r(1.5, 0.3), return: r(0.08, 0.03), drawdown: r(0.02, 0.01), sampleSize: 30 },
+      {
+        regime: "TRENDING",
+        sharpe: r(2.0, 0.5),
+        return: r(0.15, 0.05),
+        drawdown: r(0.03, 0.02),
+        sampleSize: 45,
+      },
+      {
+        regime: "MEAN_REVERTING",
+        sharpe: r(1.8, 0.4),
+        return: r(0.12, 0.04),
+        drawdown: r(0.04, 0.02),
+        sampleSize: 38,
+      },
+      {
+        regime: "VOLATILE",
+        sharpe: r(0.8, 0.6),
+        return: r(0.05, 0.08),
+        drawdown: r(0.08, 0.03),
+        sampleSize: 22,
+      },
+      {
+        regime: "LOW_VOL",
+        sharpe: r(1.5, 0.3),
+        return: r(0.08, 0.03),
+        drawdown: r(0.02, 0.01),
+        sampleSize: 30,
+      },
     ],
     grossPnl: r(280000, 80000),
     netPnl: r(250000, 70000),
     tradingCosts: r(18000, 8000),
     fundingCosts: r(12000, 6000),
-  }
+  };
 }
 
 export const BACKTEST_RUNS: BacktestRun[] = [
@@ -494,7 +536,7 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     liveAnalogId: null,
     driftScore: null,
   },
-]
+];
 
 // =============================================================================
 // Strategy Alerts
@@ -537,7 +579,7 @@ export const STRATEGY_ALERTS: StrategyAlert[] = [
     acknowledgedAt: null,
     resolvedAt: null,
   },
-]
+];
 
 // =============================================================================
 // Strategy Candidates
@@ -578,7 +620,7 @@ export const STRATEGY_CANDIDATES: StrategyCandidate[] = [
     metricsSnapshot: generateMetrics(2001, "MARKET_MAKING"),
     promotionPackageId: "pkg-001",
   },
-]
+];
 
 // =============================================================================
 // Filter Options
@@ -592,7 +634,7 @@ export const ARCHETYPE_OPTIONS = [
   { value: "STATISTICAL_ARB", label: "Statistical Arb", count: 2 },
   { value: "BASIS_TRADE", label: "Basis Trade", count: 4 },
   { value: "OPTIONS", label: "Options", count: 1 },
-]
+];
 
 export const ASSET_CLASS_OPTIONS = [
   { value: "CeFi", label: "CeFi", count: 8 },
@@ -600,7 +642,7 @@ export const ASSET_CLASS_OPTIONS = [
   { value: "TradFi", label: "TradFi", count: 2 },
   { value: "Sports", label: "Sports", count: 1 },
   { value: "Prediction", label: "Prediction", count: 1 },
-]
+];
 
 export const VENUE_OPTIONS = [
   { value: "BINANCE", label: "Binance", count: 6 },
@@ -608,11 +650,11 @@ export const VENUE_OPTIONS = [
   { value: "DERIBIT", label: "Deribit", count: 2 },
   { value: "BYBIT", label: "Bybit", count: 2 },
   { value: "HYPERLIQUID", label: "Hyperliquid", count: 1 },
-]
+];
 
 export const TESTING_STAGE_OPTIONS = [
   { value: "HISTORICAL", label: "Historical Backtest", count: 5 },
   { value: "LIVE_MOCK", label: "Validation", count: 2 },
   { value: "LIVE_TESTNET", label: "Paper", count: 1 },
   { value: "STAGING", label: "Shadow", count: 1 },
-]
+];

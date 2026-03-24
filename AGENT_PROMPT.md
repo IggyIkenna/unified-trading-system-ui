@@ -4,18 +4,18 @@ ONE platform. THREE tiers (public/client/internal). SHARDS: CeFi/DeFi/Sports/Tra
 
 ## CURRENT STATE (Post-Phase 2 Cleanup, commit `8e536fc`)
 
-| What | Current State |
-|------|---------------|
-| App structure | **ROUTE GROUPS** — `app/(public)/`, `app/(platform)/`, `app/(ops)/` |
-| Canonical routes | **ALL under `/service/`** — `app/(platform)/service/<domain>/`. Legacy flat routes are redirects in `next.config.mjs` |
-| Mock data | **MSW** — 15 domain handlers in `lib/mocks/handlers/`, persona-scoped fixtures in `lib/mocks/fixtures/` |
-| State management | **Zustand + React Query** — 4 stores in `lib/stores/`, 14 hooks in `hooks/api/` |
-| API layer | **React Query** — hooks in `hooks/api/`, MSW serves data when `NEXT_PUBLIC_MOCK_API=true` |
-| Auth | **5 demo personas** — admin, internal-trader, client-full, client-data-only, client-premium in `lib/mocks/fixtures/personas.ts` |
-| Config | **Centralized** — `lib/config/` (api.ts, branding.ts, auth.ts, services.ts, platform-stats.ts) |
-| Components | **11 domains** — 57 UI primitives, 30 trading, 19 ops/deployment, 10 platform, 6 dashboards, 6 marketing, 5 data, 2 ML, + shell/nav |
-| Navigation | **Lifecycle nav only** — `components/shell/lifecycle-nav.tsx` (no legacy nav models) |
-| Registry data | **Available** — `lib/registry/openapi.json` (298 endpoints), `config-registry.json`, `system-topology.json`, `ui-reference-data.json` |
+| What             | Current State                                                                                                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| App structure    | **ROUTE GROUPS** — `app/(public)/`, `app/(platform)/`, `app/(ops)/`                                                                   |
+| Canonical routes | **ALL under `/service/`** — `app/(platform)/service/<domain>/`. Legacy flat routes are redirects in `next.config.mjs`                 |
+| Mock data        | **MSW** — 15 domain handlers in `lib/mocks/handlers/`, persona-scoped fixtures in `lib/mocks/fixtures/`                               |
+| State management | **Zustand + React Query** — 4 stores in `lib/stores/`, 14 hooks in `hooks/api/`                                                       |
+| API layer        | **React Query** — hooks in `hooks/api/`, MSW serves data when `NEXT_PUBLIC_MOCK_API=true`                                             |
+| Auth             | **5 demo personas** — admin, internal-trader, client-full, client-data-only, client-premium in `lib/mocks/fixtures/personas.ts`       |
+| Config           | **Centralized** — `lib/config/` (api.ts, branding.ts, auth.ts, services.ts, platform-stats.ts)                                        |
+| Components       | **11 domains** — 57 UI primitives, 30 trading, 19 ops/deployment, 10 platform, 6 dashboards, 6 marketing, 5 data, 2 ML, + shell/nav   |
+| Navigation       | **Lifecycle nav only** — `components/shell/lifecycle-nav.tsx` (no legacy nav models)                                                  |
+| Registry data    | **Available** — `lib/registry/openapi.json` (298 endpoints), `config-registry.json`, `system-topology.json`, `ui-reference-data.json` |
 
 ## RULES (violation = wasted work)
 
@@ -31,18 +31,19 @@ ONE platform. THREE tiers (public/client/internal). SHARDS: CeFi/DeFi/Sports/Tra
 
 ## BEFORE CODING — Read These Files (All In-Repo)
 
-| Order | File | What It Tells You |
-|-------|------|-------------------|
-| 1 | `CODEBASE_STRUCTURE.md` | Folder map, state management, tech stack, quick decision guide |
-| 2 | `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | Platform vision, role model, 7-stage lifecycle, service areas |
-| 3 | `context/SHARDING_DIMENSIONS.md` | 3-layer data scoping: infrastructure → client → subscription |
-| 4 | `context/API_FRONTEND_GAPS.md` | What APIs exist (green), need workaround (yellow), or are blocked (red) |
-| 5 | `.cursorrules` | Coding patterns — describes the target state |
-| 6 | `UI_STRUCTURE_MANIFEST.json` | SSOT for codebase metadata: routes, components, personas, mock handlers |
+| Order | File                                    | What It Tells You                                                       |
+| ----- | --------------------------------------- | ----------------------------------------------------------------------- |
+| 1     | `CODEBASE_STRUCTURE.md`                 | Folder map, state management, tech stack, quick decision guide          |
+| 2     | `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | Platform vision, role model, 7-stage lifecycle, service areas           |
+| 3     | `context/SHARDING_DIMENSIONS.md`        | 3-layer data scoping: infrastructure → client → subscription            |
+| 4     | `context/API_FRONTEND_GAPS.md`          | What APIs exist (green), need workaround (yellow), or are blocked (red) |
+| 5     | `.cursorrules`                          | Coding patterns — describes the target state                            |
+| 6     | `UI_STRUCTURE_MANIFEST.json`            | SSOT for codebase metadata: routes, components, personas, mock handlers |
 
 Deep docs for each folder: `docs/STRUCTURE_APP.md`, `docs/STRUCTURE_COMPONENTS.md`, `docs/STRUCTURE_LIB.md`, `docs/STRUCTURE_HOOKS.md`, `docs/STRUCTURE_CONTEXT.md`, `docs/STRUCTURE_REFERENCE.md`.
 
 Also available for reference:
+
 - `lib/registry/openapi.json` — 298 backend API endpoints (source for type generation + mock handlers)
 - `lib/registry/config-registry.json` — service configuration schemas (46 config types)
 - `lib/registry/system-topology.json` — service metadata, health endpoints, dependencies
@@ -115,20 +116,20 @@ hooks/
 
 ```typescript
 // API config — NEVER hardcode endpoints
-import { API_CONFIG } from '@/lib/config/api'
+import { API_CONFIG } from "@/lib/config/api";
 
 // Branding — NEVER hardcode colors/strings
-import { COLORS, COMPANY } from '@/lib/config/branding'
+import { COLORS, COMPANY } from "@/lib/config/branding";
 
 // Auth — ALWAYS scope data through auth store
-const { user } = useAuthStore()
+const { user } = useAuthStore();
 // Internal sees all orgs; client sees their org only
 
 // Shard-aware filtering — ALWAYS: shard -> venue -> instrument
-const { selectedShard, selectedOrg } = useGlobalScopeStore()
+const { selectedShard, selectedOrg } = useGlobalScopeStore();
 
 // Data fetching — ALWAYS React Query + MSW-compatible
-const { data, isLoading } = useInstruments({ shard, venue })
+const { data, isLoading } = useInstruments({ shard, venue });
 
 // Mock handlers — persona-scoped dimensional mocking
 // Same endpoint returns different data per persona
@@ -136,14 +137,14 @@ const { data, isLoading } = useInstruments({ shard, venue })
 
 ## STATE MANAGEMENT
 
-| State type | Tool | Location |
-|---|---|---|
-| Server / async data | React Query | `hooks/api/use-*.ts` |
-| Global filters (org, date, shard) | Zustand | `lib/stores/global-scope-store.ts` |
-| Auth + role | Zustand | `lib/stores/auth-store.ts` |
-| UI preferences (theme, layout) | Zustand | `lib/stores/ui-prefs-store.ts` |
-| Feature filters | Zustand | `lib/stores/filter-store.ts` |
-| Batch vs live mode | React Context | `lib/execution-mode-context.tsx` |
+| State type                        | Tool          | Location                           |
+| --------------------------------- | ------------- | ---------------------------------- |
+| Server / async data               | React Query   | `hooks/api/use-*.ts`               |
+| Global filters (org, date, shard) | Zustand       | `lib/stores/global-scope-store.ts` |
+| Auth + role                       | Zustand       | `lib/stores/auth-store.ts`         |
+| UI preferences (theme, layout)    | Zustand       | `lib/stores/ui-prefs-store.ts`     |
+| Feature filters                   | Zustand       | `lib/stores/filter-store.ts`       |
+| Batch vs live mode                | React Context | `lib/execution-mode-context.tsx`   |
 
 ## QA GATE (Before PR/Deploy)
 

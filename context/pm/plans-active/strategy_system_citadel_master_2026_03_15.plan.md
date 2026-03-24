@@ -382,8 +382,7 @@ todos:
       no signal below threshold, Kelly sizing, config loading).
       Acceptance: QG passes, strategy-manifest.json entries added.
     status: done
-    completion_note:
-      HalftimeMLStrategy enhanced with venue routing, BetSide, validate_config. 24 unit + 7 integration tests.
+    completion_note: HalftimeMLStrategy enhanced with venue routing, BetSide, validate_config. 24 unit + 7 integration tests.
 
   - id: p2d-sports-market-making-vol
     content: |

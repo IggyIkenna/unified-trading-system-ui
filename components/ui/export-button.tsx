@@ -1,23 +1,23 @@
-'use client'
+"use client";
 
-import { Download } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 import {
   type ExportColumn,
   exportTableToCsv,
   exportTableToXlsx,
-} from '@/lib/utils/export'
+} from "@/lib/utils/export";
 
 interface ExportButtonProps {
-  data: readonly object[]
-  columns: ExportColumn[]
-  filename: string
+  data: readonly object[];
+  columns: ExportColumn[];
+  filename: string;
 }
 
 export function ExportButton({ data, columns, filename }: ExportButtonProps) {
@@ -42,5 +42,5 @@ export function ExportButton({ data, columns, filename }: ExportButtonProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

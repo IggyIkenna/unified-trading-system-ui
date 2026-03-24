@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ArrowUpDown,
   CheckCircle2,
@@ -12,10 +12,10 @@ import {
   Rocket,
   Shield,
   X,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -23,15 +23,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -39,13 +39,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
-import { useModelVersions, useModelFamilies, useMLDeployments } from "@/hooks/api/use-ml-models"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ApiError } from "@/components/ui/api-error"
-import { EmptyState } from "@/components/ui/empty-state"
-import type { ModelVersion } from "@/lib/ml-types"
+import {
+  useModelVersions,
+  useModelFamilies,
+  useMLDeployments,
+} from "@/hooks/api/use-ml-models";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { ModelVersion } from "@/lib/ml-types";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -54,160 +58,183 @@ import type { ModelVersion } from "@/lib/ml-types"
 function versionStatusColor(status: ModelVersion["status"]) {
   switch (status) {
     case "live":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
     case "shadow":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
     case "validated":
-      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30";
     case "validating":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     case "registered":
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
     case "deprecated":
-      return "bg-red-500/15 text-red-400 border-red-500/30"
+      return "bg-red-500/15 text-red-400 border-red-500/30";
     case "archived":
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
   }
 }
 
 function fmtPct(v: number) {
-  return `${(v * 100).toFixed(1)}%`
+  return `${(v * 100).toFixed(1)}%`;
 }
 
 function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals)
+  return v.toFixed(decimals);
 }
 
 function fmtLatency(v: number) {
-  return `${v.toFixed(1)}ms`
+  return `${v.toFixed(1)}ms`;
 }
 
-type SortField = "accuracy" | "sharpe" | "maxDrawdown" | "latencyP50"
+type SortField = "accuracy" | "sharpe" | "maxDrawdown" | "latencyP50";
 
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
 export default function RegistryPage() {
-  const { data: versionsData, isLoading: verLoading, isError: verIsError, error: verError, refetch: verRefetch } = useModelVersions()
-  const { data: familiesData, isLoading: famLoading } = useModelFamilies()
-  const { data: deploymentsData, isLoading: depLoading } = useMLDeployments()
+  const {
+    data: versionsData,
+    isLoading: verLoading,
+    isError: verIsError,
+    error: verError,
+    refetch: verRefetch,
+  } = useModelVersions();
+  const { data: familiesData, isLoading: famLoading } = useModelFamilies();
+  const { data: deploymentsData, isLoading: depLoading } = useMLDeployments();
 
-  const MODEL_VERSIONS: ModelVersion[] = (versionsData as any)?.data ?? []
-  const MODEL_FAMILIES: Array<any> = (familiesData as any)?.data ?? []
-  const CHAMPION_CHALLENGER_PAIRS: Array<any> = (deploymentsData as any)?.championChallengerPairs ?? []
+  const MODEL_VERSIONS: ModelVersion[] = (versionsData as any)?.data ?? [];
+  const MODEL_FAMILIES: Array<any> = (familiesData as any)?.data ?? [];
+  const CHAMPION_CHALLENGER_PAIRS: Array<any> =
+    (deploymentsData as any)?.championChallengerPairs ?? [];
 
-  const isLoading = verLoading || famLoading || depLoading
+  const isLoading = verLoading || famLoading || depLoading;
 
-  const [versions, setVersions] = React.useState<ModelVersion[]>([])
+  const [versions, setVersions] = React.useState<ModelVersion[]>([]);
 
   // Sync API data into local state for mutation (deploy actions)
   React.useEffect(() => {
-    if (MODEL_VERSIONS.length > 0) setVersions(MODEL_VERSIONS)
-  }, [MODEL_VERSIONS.length])
-  const [familyFilter, setFamilyFilter] = React.useState("")
-  const [sortField, setSortField] = React.useState<SortField>("sharpe")
-  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
-  const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set())
-  const [deployDialog, setDeployDialog] = React.useState<string | null>(null)
-  const [deployTarget, setDeployTarget] = React.useState<"shadow" | "live">("shadow")
+    if (MODEL_VERSIONS.length > 0) setVersions(MODEL_VERSIONS);
+  }, [MODEL_VERSIONS.length]);
+  const [familyFilter, setFamilyFilter] = React.useState("");
+  const [sortField, setSortField] = React.useState<SortField>("sharpe");
+  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
+  const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set());
+  const [deployDialog, setDeployDialog] = React.useState<string | null>(null);
+  const [deployTarget, setDeployTarget] = React.useState<"shadow" | "live">(
+    "shadow",
+  );
 
   // Filter
   const filtered = versions.filter((v) => {
-    if (familyFilter && v.modelFamilyId !== familyFilter) return false
-    return true
-  })
+    if (familyFilter && v.modelFamilyId !== familyFilter) return false;
+    return true;
+  });
 
   // Sort
   const sorted = [...filtered].sort((a, b) => {
-    const aM = a.metrics
-    const bM = b.metrics
-    let aV: number, bV: number
+    const aM = a.metrics;
+    const bM = b.metrics;
+    let aV: number, bV: number;
     switch (sortField) {
       case "accuracy":
-        aV = aM.accuracy; bV = bM.accuracy; break
+        aV = aM.accuracy;
+        bV = bM.accuracy;
+        break;
       case "sharpe":
-        aV = aM.sharpe; bV = bM.sharpe; break
+        aV = aM.sharpe;
+        bV = bM.sharpe;
+        break;
       case "maxDrawdown":
-        aV = aM.maxDrawdown; bV = bM.maxDrawdown; break
+        aV = aM.maxDrawdown;
+        bV = bM.maxDrawdown;
+        break;
       case "latencyP50":
-        aV = aM.inferenceLatencyP50; bV = bM.inferenceLatencyP50; break
+        aV = aM.inferenceLatencyP50;
+        bV = bM.inferenceLatencyP50;
+        break;
     }
-    return sortDir === "desc" ? bV - aV : aV - bV
-  })
+    return sortDir === "desc" ? bV - aV : aV - bV;
+  });
 
   function handleSort(field: SortField) {
     if (sortField === field) {
-      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"));
     } else {
-      setSortField(field)
-      setSortDir(field === "maxDrawdown" || field === "latencyP50" ? "asc" : "desc")
+      setSortField(field);
+      setSortDir(
+        field === "maxDrawdown" || field === "latencyP50" ? "asc" : "desc",
+      );
     }
   }
 
   function SortIcon({ field }: { field: SortField }) {
-    if (sortField !== field) return <ArrowUpDown className="size-3 opacity-30" />
+    if (sortField !== field)
+      return <ArrowUpDown className="size-3 opacity-30" />;
     return sortDir === "desc" ? (
       <ChevronDown className="size-3" />
     ) : (
       <ChevronUp className="size-3" />
-    )
+    );
   }
 
   function toggleCompare(id: string) {
     setCompareSet((prev) => {
-      const next = new Set(prev)
+      const next = new Set(prev);
       if (next.has(id)) {
-        next.delete(id)
+        next.delete(id);
       } else {
-        next.add(id)
+        next.add(id);
       }
-      return next
-    })
+      return next;
+    });
   }
 
   function handleDeploy() {
-    if (!deployDialog) return
+    if (!deployDialog) return;
     setVersions((prev) =>
       prev.map((v) => {
-        if (v.id !== deployDialog) return v
+        if (v.id !== deployDialog) return v;
         return {
           ...v,
           status: deployTarget as ModelVersion["status"],
           approvedAt: new Date().toISOString(),
           approvedBy: "current_user",
-        }
-      })
-    )
-    setDeployDialog(null)
+        };
+      }),
+    );
+    setDeployDialog(null);
   }
 
-  const compareVersions = versions.filter((v) => compareSet.has(v.id))
+  const compareVersions = versions.filter((v) => compareSet.has(v.id));
 
-  if (isLoading) return (
-    <div className="space-y-4 p-6">
-      <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-64 w-full" />
-    </div>
-  )
+  if (isLoading)
+    return (
+      <div className="space-y-4 p-6">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
 
-  if (verIsError) return (
-    <div className="p-6">
-      <ApiError error={verError} onRetry={() => verRefetch()} />
-    </div>
-  )
+  if (verIsError)
+    return (
+      <div className="p-6">
+        <ApiError error={verError} onRetry={() => verRefetch()} />
+      </div>
+    );
 
-  if (MODEL_VERSIONS.length === 0) return (
-    <div className="p-6">
-      <EmptyState
-        title="No model versions"
-        description="No models have been registered yet. Train and register a model to see it here."
-        icon={Layers}
-      />
-    </div>
-  )
+  if (MODEL_VERSIONS.length === 0)
+    return (
+      <div className="p-6">
+        <EmptyState
+          title="No model versions"
+          description="No models have been registered yet. Train and register a model to see it here."
+          icon={Layers}
+        />
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -215,7 +242,9 @@ export default function RegistryPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Model Registry</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Model Registry
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {versions.length} registered versions &middot;{" "}
               {versions.filter((v) => v.status === "live").length} live
@@ -247,11 +276,15 @@ export default function RegistryPage() {
               Champion vs Challenger
             </h2>
             {CHAMPION_CHALLENGER_PAIRS.map((pair) => {
-              const champion = versions.find((v) => v.id === pair.championId)
-              const challenger = versions.find((v) => v.id === pair.challengerId)
-              const family = MODEL_FAMILIES.find((f) => f.id === pair.modelFamilyId)
+              const champion = versions.find((v) => v.id === pair.championId);
+              const challenger = versions.find(
+                (v) => v.id === pair.challengerId,
+              );
+              const family = MODEL_FAMILIES.find(
+                (f) => f.id === pair.modelFamilyId,
+              );
 
-              if (!champion || !challenger) return null
+              if (!champion || !challenger) return null;
 
               return (
                 <Card key={pair.id} className="border-border/50">
@@ -272,7 +305,8 @@ export default function RegistryPage() {
                           </Badge>
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          Traffic: {pair.trafficSplit.champion}% / {pair.trafficSplit.challenger}%
+                          Traffic: {pair.trafficSplit.champion}% /{" "}
+                          {pair.trafficSplit.challenger}%
                         </span>
                       </div>
 
@@ -284,19 +318,28 @@ export default function RegistryPage() {
                             <span className="font-mono text-sm font-medium">
                               v{champion.version}
                             </span>
-                            <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]">
+                            <Badge
+                              variant="outline"
+                              className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
+                            >
                               champion
                             </Badge>
                           </div>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div>
-                              <span className="text-muted-foreground">Accuracy</span>
+                              <span className="text-muted-foreground">
+                                Accuracy
+                              </span>
                               <p className="font-mono font-medium">
-                                {fmtPct(pair.comparisonMetrics.championAccuracy)}
+                                {fmtPct(
+                                  pair.comparisonMetrics.championAccuracy,
+                                )}
                               </p>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Sharpe</span>
+                              <span className="text-muted-foreground">
+                                Sharpe
+                              </span>
                               <p className="font-mono font-medium">
                                 {fmtNum(pair.comparisonMetrics.championSharpe)}
                               </p>
@@ -311,21 +354,32 @@ export default function RegistryPage() {
                             <span className="font-mono text-sm font-medium">
                               v{challenger.version}
                             </span>
-                            <Badge variant="outline" className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]">
+                            <Badge
+                              variant="outline"
+                              className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
+                            >
                               challenger
                             </Badge>
                           </div>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div>
-                              <span className="text-muted-foreground">Accuracy</span>
+                              <span className="text-muted-foreground">
+                                Accuracy
+                              </span>
                               <p className="font-mono font-medium">
-                                {fmtPct(pair.comparisonMetrics.challengerAccuracy)}
+                                {fmtPct(
+                                  pair.comparisonMetrics.challengerAccuracy,
+                                )}
                               </p>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Sharpe</span>
+                              <span className="text-muted-foreground">
+                                Sharpe
+                              </span>
                               <p className="font-mono font-medium">
-                                {fmtNum(pair.comparisonMetrics.challengerSharpe)}
+                                {fmtNum(
+                                  pair.comparisonMetrics.challengerSharpe,
+                                )}
                               </p>
                             </div>
                           </div>
@@ -334,14 +388,18 @@ export default function RegistryPage() {
 
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>
-                          Significance: {fmtPct(pair.comparisonMetrics.significanceLevel)}
+                          Significance:{" "}
+                          {fmtPct(pair.comparisonMetrics.significanceLevel)}
                         </span>
-                        <span>Started {new Date(pair.startedAt).toLocaleDateString()}</span>
+                        <span>
+                          Started{" "}
+                          {new Date(pair.startedAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         )}
@@ -359,10 +417,18 @@ export default function RegistryPage() {
               <TableHeader>
                 <TableRow className="border-border/50 hover:bg-transparent">
                   <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Version</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Family</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Role</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Version
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Family
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Status
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Role
+                  </TableHead>
                   <TableHead
                     className="text-xs text-muted-foreground cursor-pointer select-none"
                     onClick={() => handleSort("accuracy")}
@@ -395,13 +461,19 @@ export default function RegistryPage() {
                       Latency P50 <SortIcon field="latencyP50" />
                     </span>
                   </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Predictions</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Actions</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Predictions
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sorted.map((ver) => {
-                  const family = MODEL_FAMILIES.find((f) => f.id === ver.modelFamilyId)
+                  const family = MODEL_FAMILIES.find(
+                    (f) => f.id === ver.modelFamilyId,
+                  );
                   return (
                     <TableRow
                       key={ver.id}
@@ -418,31 +490,44 @@ export default function RegistryPage() {
                         </button>
                       </TableCell>
                       <TableCell>
-                        <span className="font-mono font-medium text-sm">v{ver.version}</span>
+                        <span className="font-mono font-medium text-sm">
+                          v{ver.version}
+                        </span>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">
                         {family?.name ?? ver.modelFamilyId}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={versionStatusColor(ver.status)}>
+                        <Badge
+                          variant="outline"
+                          className={versionStatusColor(ver.status)}
+                        >
                           {ver.status}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         {ver.isChampion && (
-                          <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]">
+                          <Badge
+                            variant="outline"
+                            className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
+                          >
                             <Crown className="size-3 mr-0.5" />
                             champion
                           </Badge>
                         )}
                         {ver.isChallenger && (
-                          <Badge variant="outline" className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]">
+                          <Badge
+                            variant="outline"
+                            className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
+                          >
                             <Shield className="size-3 mr-0.5" />
                             challenger
                           </Badge>
                         )}
                         {!ver.isChampion && !ver.isChallenger && (
-                          <span className="text-muted-foreground text-xs">--</span>
+                          <span className="text-muted-foreground text-xs">
+                            --
+                          </span>
                         )}
                       </TableCell>
                       <TableCell className="font-mono text-sm">
@@ -461,17 +546,19 @@ export default function RegistryPage() {
                         {ver.metrics.predictionCount.toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        {ver.status !== "live" && ver.status !== "deprecated" && ver.status !== "archived" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-7 text-xs"
-                            onClick={() => setDeployDialog(ver.id)}
-                          >
-                            <Rocket className="size-3" />
-                            Deploy
-                          </Button>
-                        )}
+                        {ver.status !== "live" &&
+                          ver.status !== "deprecated" &&
+                          ver.status !== "archived" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-xs"
+                              onClick={() => setDeployDialog(ver.id)}
+                            >
+                              <Rocket className="size-3" />
+                              Deploy
+                            </Button>
+                          )}
                         {ver.status === "live" && (
                           <span className="text-xs text-emerald-400 flex items-center gap-1">
                             <CheckCircle2 className="size-3" />
@@ -480,7 +567,7 @@ export default function RegistryPage() {
                         )}
                       </TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>
@@ -496,7 +583,11 @@ export default function RegistryPage() {
                   <GitCompare className="size-4 text-blue-400" />
                   Version Comparison ({compareVersions.length})
                 </CardTitle>
-                <Button variant="ghost" size="sm" onClick={() => setCompareSet(new Set())}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCompareSet(new Set())}
+                >
                   <X className="size-3" />
                   Clear
                 </Button>
@@ -511,7 +602,9 @@ export default function RegistryPage() {
                         Metric
                       </th>
                       {compareVersions.map((ver) => {
-                        const family = MODEL_FAMILIES.find((f) => f.id === ver.modelFamilyId)
+                        const family = MODEL_FAMILIES.find(
+                          (f) => f.id === ver.modelFamilyId,
+                        );
                         return (
                           <th
                             key={ver.id}
@@ -520,39 +613,91 @@ export default function RegistryPage() {
                             <div>
                               <span className="font-mono">v{ver.version}</span>
                               <br />
-                              <span className="text-[10px]">{family?.name}</span>
+                              <span className="text-[10px]">
+                                {family?.name}
+                              </span>
                             </div>
                           </th>
-                        )
+                        );
                       })}
                     </tr>
                   </thead>
                   <tbody>
                     {(
                       [
-                        { key: "accuracy", label: "Accuracy", fmt: fmtPct, lower: false },
-                        { key: "sharpe", label: "Sharpe", fmt: (v: number) => fmtNum(v), lower: false },
-                        { key: "maxDrawdown", label: "Max Drawdown", fmt: fmtPct, lower: true },
-                        { key: "directionalAccuracy", label: "Dir. Accuracy", fmt: fmtPct, lower: false },
-                        { key: "calibration", label: "Calibration", fmt: fmtPct, lower: false },
-                        { key: "inferenceLatencyP50", label: "Latency P50", fmt: fmtLatency, lower: true },
-                        { key: "inferenceLatencyP99", label: "Latency P99", fmt: fmtLatency, lower: true },
-                        { key: "predictionCount", label: "Predictions", fmt: (v: number) => v.toLocaleString(), lower: false },
+                        {
+                          key: "accuracy",
+                          label: "Accuracy",
+                          fmt: fmtPct,
+                          lower: false,
+                        },
+                        {
+                          key: "sharpe",
+                          label: "Sharpe",
+                          fmt: (v: number) => fmtNum(v),
+                          lower: false,
+                        },
+                        {
+                          key: "maxDrawdown",
+                          label: "Max Drawdown",
+                          fmt: fmtPct,
+                          lower: true,
+                        },
+                        {
+                          key: "directionalAccuracy",
+                          label: "Dir. Accuracy",
+                          fmt: fmtPct,
+                          lower: false,
+                        },
+                        {
+                          key: "calibration",
+                          label: "Calibration",
+                          fmt: fmtPct,
+                          lower: false,
+                        },
+                        {
+                          key: "inferenceLatencyP50",
+                          label: "Latency P50",
+                          fmt: fmtLatency,
+                          lower: true,
+                        },
+                        {
+                          key: "inferenceLatencyP99",
+                          label: "Latency P99",
+                          fmt: fmtLatency,
+                          lower: true,
+                        },
+                        {
+                          key: "predictionCount",
+                          label: "Predictions",
+                          fmt: (v: number) => v.toLocaleString(),
+                          lower: false,
+                        },
                       ] as const
                     ).map((metric) => {
                       const values = compareVersions.map(
-                        (v) => v.metrics[metric.key as keyof typeof v.metrics] as number
-                      )
-                      const best = metric.lower ? Math.min(...values) : Math.max(...values)
+                        (v) =>
+                          v.metrics[
+                            metric.key as keyof typeof v.metrics
+                          ] as number,
+                      );
+                      const best = metric.lower
+                        ? Math.min(...values)
+                        : Math.max(...values);
 
                       return (
-                        <tr key={metric.key} className="border-b border-border/30">
+                        <tr
+                          key={metric.key}
+                          className="border-b border-border/30"
+                        >
                           <td className="py-2 pr-4 text-muted-foreground text-xs">
                             {metric.label}
                           </td>
                           {compareVersions.map((ver) => {
-                            const val = ver.metrics[metric.key as keyof typeof ver.metrics] as number
-                            const isBest = val === best
+                            const val = ver.metrics[
+                              metric.key as keyof typeof ver.metrics
+                            ] as number;
+                            const isBest = val === best;
                             return (
                               <td
                                 key={ver.id}
@@ -560,10 +705,10 @@ export default function RegistryPage() {
                               >
                                 {metric.fmt(val)}
                               </td>
-                            )
+                            );
                           })}
                         </tr>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
@@ -576,7 +721,7 @@ export default function RegistryPage() {
         <Dialog
           open={deployDialog !== null}
           onOpenChange={(open) => {
-            if (!open) setDeployDialog(null)
+            if (!open) setDeployDialog(null);
           }}
         >
           <DialogContent className="sm:max-w-md">
@@ -613,8 +758,9 @@ export default function RegistryPage() {
               {deployTarget === "live" && (
                 <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
                   <p className="text-xs text-amber-300">
-                    Deploying to live will replace the current champion model. This action
-                    will immediately route 100% of traffic to this version.
+                    Deploying to live will replace the current champion model.
+                    This action will immediately route 100% of traffic to this
+                    version.
                   </p>
                 </div>
               )}
@@ -639,5 +785,5 @@ export default function RegistryPage() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

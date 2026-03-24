@@ -1,13 +1,16 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { UserPlus, Search } from "lucide-react"
-import { useProvisionedUsers, useAccessRequests } from "@/hooks/api/use-user-management"
-import type { ProvisionedPerson } from "@/lib/types/user-management"
+import * as React from "react";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { UserPlus, Search } from "lucide-react";
+import {
+  useProvisionedUsers,
+  useAccessRequests,
+} from "@/hooks/api/use-user-management";
+import type { ProvisionedPerson } from "@/lib/types/user-management";
 
 const ENTITLEMENT_SHORT: Record<string, string> = {
   "data-basic": "Data",
@@ -16,40 +19,41 @@ const ENTITLEMENT_SHORT: Record<string, string> = {
   "execution-full": "Execution Full",
   "ml-full": "ML",
   "strategy-full": "Strategy",
-  "reporting": "Reports",
-}
+  reporting: "Reports",
+};
 
 export default function AdminUsersPage() {
-  const { data, isLoading } = useProvisionedUsers()
-  const pendingRequests = useAccessRequests("pending")
-  const [search, setSearch] = React.useState("")
+  const { data, isLoading } = useProvisionedUsers();
+  const pendingRequests = useAccessRequests("pending");
+  const [search, setSearch] = React.useState("");
 
   const pendingByEmail = React.useMemo(() => {
-    const map: Record<string, number> = {}
+    const map: Record<string, number> = {};
     for (const req of pendingRequests.data?.requests ?? []) {
-      map[req.requester_email] = (map[req.requester_email] ?? 0) + 1
+      map[req.requester_email] = (map[req.requester_email] ?? 0) + 1;
     }
-    return map
-  }, [pendingRequests.data])
+    return map;
+  }, [pendingRequests.data]);
 
   const users = React.useMemo(() => {
-    const all = data?.users ?? []
-    if (!search) return all
-    const q = search.toLowerCase()
+    const all = data?.users ?? [];
+    if (!search) return all;
+    const q = search.toLowerCase();
     return all.filter(
       (u) =>
         u.name.toLowerCase().includes(q) ||
         u.email.toLowerCase().includes(q) ||
-        u.role.toLowerCase().includes(q)
-    )
-  }, [data, search])
+        u.role.toLowerCase().includes(q),
+    );
+  }, [data, search]);
 
   const internal = users.filter((u) =>
-    ["admin", "collaborator", "operations", "accounting"].includes(u.role)
-  )
+    ["admin", "collaborator", "operations", "accounting"].includes(u.role),
+  );
   const external = users.filter(
-    (u) => !["admin", "collaborator", "operations", "accounting"].includes(u.role)
-  )
+    (u) =>
+      !["admin", "collaborator", "operations", "accounting"].includes(u.role),
+  );
 
   return (
     <div className="px-6 py-6 space-y-6">
@@ -57,7 +61,8 @@ export default function AdminUsersPage() {
         <div>
           <h1 className="text-xl font-semibold">Users</h1>
           <p className="text-sm text-muted-foreground">
-            {data?.total ?? 0} users across {new Set(users.map((u) => u.role)).size} roles
+            {data?.total ?? 0} users across{" "}
+            {new Set(users.map((u) => u.role)).size} roles
           </p>
         </div>
         <Link href="/admin/users/onboard">
@@ -98,7 +103,7 @@ export default function AdminUsersPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function UserSection({
@@ -106,9 +111,9 @@ function UserSection({
   users,
   pendingByEmail,
 }: {
-  title: string
-  users: ProvisionedPerson[]
-  pendingByEmail: Record<string, number>
+  title: string;
+  users: ProvisionedPerson[];
+  pendingByEmail: Record<string, number>;
 }) {
   return (
     <div>
@@ -130,7 +135,7 @@ function UserSection({
           </thead>
           <tbody className="divide-y">
             {users.map((user) => {
-              const pending = pendingByEmail[user.email] ?? 0
+              const pending = pendingByEmail[user.email] ?? 0;
               return (
                 <tr key={user.firebase_uid} className="hover:bg-muted/30">
                   <td className="py-2.5 px-4">
@@ -141,7 +146,9 @@ function UserSection({
                       {user.name}
                     </Link>
                   </td>
-                  <td className="py-2.5 px-4 text-muted-foreground">{user.email}</td>
+                  <td className="py-2.5 px-4 text-muted-foreground">
+                    {user.email}
+                  </td>
                   <td className="py-2.5 px-4">
                     <Badge variant="outline" className="text-xs">
                       {user.role}
@@ -150,7 +157,11 @@ function UserSection({
                   <td className="py-2.5 px-4">
                     <div className="flex gap-1 flex-wrap">
                       {user.product_slugs.map((slug) => (
-                        <Badge key={slug} variant="secondary" className="text-xs">
+                        <Badge
+                          key={slug}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {ENTITLEMENT_SHORT[slug] ?? slug}
                         </Badge>
                       ))}
@@ -160,12 +171,19 @@ function UserSection({
                     </div>
                   </td>
                   <td className="py-2.5 px-4 text-muted-foreground text-xs">
-                    {user.provisioned_at ? new Date(user.provisioned_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                    {user.provisioned_at
+                      ? new Date(user.provisioned_at).toLocaleDateString(
+                          "en-GB",
+                          { day: "numeric", month: "short", year: "numeric" },
+                        )
+                      : "—"}
                   </td>
                   <td className="py-2.5 px-4">
                     <div className="flex items-center gap-1.5">
                       <Badge
-                        variant={user.status === "active" ? "default" : "secondary"}
+                        variant={
+                          user.status === "active" ? "default" : "secondary"
+                        }
                         className="text-xs"
                       >
                         {user.status}
@@ -186,11 +204,11 @@ function UserSection({
                     </Link>
                   </td>
                 </tr>
-              )
+              );
             })}
           </tbody>
         </table>
       </div>
     </div>
-  )
+  );
 }

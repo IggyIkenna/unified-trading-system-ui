@@ -1,62 +1,90 @@
-"use client"
+"use client";
 
-import { ServiceTabs, TRADING_TABS, LIVE_ASOF_VISIBLE } from "@/components/shell/service-tabs"
-import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle"
-import { BatchLiveRail } from "@/components/platform/batch-live-rail"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
-import { EntitlementGate } from "@/components/platform/entitlement-gate"
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { useAuth } from "@/hooks/use-auth"
-import { useGlobalScope } from "@/lib/stores/global-scope-store"
-import { usePositionsSummary } from "@/hooks/api/use-positions"
-import { useAlertsSummary } from "@/hooks/api/use-alerts"
-import { useServiceHealth } from "@/hooks/api/use-service-status"
-import { useOrders } from "@/hooks/api/use-orders"
-import { Activity, AlertTriangle, TrendingUp, Wallet, Server, ArrowUpRight, ArrowDownRight, Lock } from "lucide-react"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
+import {
+  ServiceTabs,
+  TRADING_TABS,
+  LIVE_ASOF_VISIBLE,
+} from "@/components/shell/service-tabs";
+import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
+import { BatchLiveRail } from "@/components/platform/batch-live-rail";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { EntitlementGate } from "@/components/platform/entitlement-gate";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/use-auth";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { usePositionsSummary } from "@/hooks/api/use-positions";
+import { useAlertsSummary } from "@/hooks/api/use-alerts";
+import { useServiceHealth } from "@/hooks/api/use-service-status";
+import { useOrders } from "@/hooks/api/use-orders";
+import {
+  Activity,
+  AlertTriangle,
+  TrendingUp,
+  Wallet,
+  Server,
+  ArrowUpRight,
+  ArrowDownRight,
+  Lock,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 function TradingSidebar() {
-  const { hasEntitlement, isAdmin, isInternal } = useAuth()
+  const { hasEntitlement, isAdmin, isInternal } = useAuth();
   // Only show internal data to internal/admin users
-  const canSeeInternalData = isAdmin() || isInternal() || hasEntitlement("execution-basic")
+  const canSeeInternalData =
+    isAdmin() || isInternal() || hasEntitlement("execution-basic");
 
-  const { data: positionsSummary } = usePositionsSummary()
-  const { data: alertsSummary } = useAlertsSummary()
-  const { data: healthData } = useServiceHealth()
-  const { data: ordersData } = useOrders()
+  const { data: positionsSummary } = usePositionsSummary();
+  const { data: alertsSummary } = useAlertsSummary();
+  const { data: healthData } = useServiceHealth();
+  const { data: ordersData } = useOrders();
 
   if (!canSeeInternalData) {
     return (
       <div className="h-full p-3 flex items-center justify-center">
         <div className="text-center space-y-2">
           <Lock className="size-5 text-muted-foreground mx-auto" />
-          <p className="text-xs text-muted-foreground">Upgrade to view trading data</p>
+          <p className="text-xs text-muted-foreground">
+            Upgrade to view trading data
+          </p>
         </div>
       </div>
-    )
+    );
   }
-  const ps = positionsSummary as Record<string, unknown> | undefined
-  const als = alertsSummary as Record<string, unknown> | undefined
-  const health = healthData as Record<string, unknown> | undefined
-  const ordersRaw = ordersData as unknown
-  const orders = Array.isArray(ordersRaw) ? ordersRaw : ((ordersRaw as Record<string, unknown>)?.orders ?? []) as Array<Record<string, unknown>>
+  const ps = positionsSummary as Record<string, unknown> | undefined;
+  const als = alertsSummary as Record<string, unknown> | undefined;
+  const health = healthData as Record<string, unknown> | undefined;
+  const ordersRaw = ordersData as unknown;
+  const orders = Array.isArray(ordersRaw)
+    ? ordersRaw
+    : (((ordersRaw as Record<string, unknown>)?.orders ?? []) as Array<
+        Record<string, unknown>
+      >);
 
   const fmt = (v: unknown) => {
-    const n = Number(v) || 0
-    if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(1)}M`
-    if (Math.abs(n) >= 1e3) return `$${(n / 1e3).toFixed(0)}K`
-    return `$${n.toFixed(0)}`
-  }
+    const n = Number(v) || 0;
+    if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
+    if (Math.abs(n) >= 1e3) return `$${(n / 1e3).toFixed(0)}K`;
+    return `$${n.toFixed(0)}`;
+  };
 
-  const services = (health?.services ?? []) as Array<Record<string, unknown>>
-  const healthyCount = services.filter(s => s.status === "live" || s.status === "healthy").length
+  const services = (health?.services ?? []) as Array<Record<string, unknown>>;
+  const healthyCount = services.filter(
+    (s) => s.status === "live" || s.status === "healthy",
+  ).length;
 
   return (
     <div className="h-full space-y-3 p-3 overflow-y-auto">
-      <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Quick View</div>
+      <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+        Quick View
+      </div>
 
       {/* Positions */}
       <Link href="/services/trading/positions">
@@ -68,21 +96,38 @@ function TradingSidebar() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
                 <div className="text-muted-foreground text-[10px]">Open</div>
-                <div className="font-mono font-medium">{Number(ps?.totalPositions) || 0}</div>
+                <div className="font-mono font-medium">
+                  {Number(ps?.totalPositions) || 0}
+                </div>
               </div>
               <div>
-                <div className="text-muted-foreground text-[10px]">Exposure</div>
-                <div className="font-mono font-medium">{fmt(ps?.totalExposure)}</div>
+                <div className="text-muted-foreground text-[10px]">
+                  Exposure
+                </div>
+                <div className="font-mono font-medium">
+                  {fmt(ps?.totalExposure)}
+                </div>
               </div>
               <div>
-                <div className="text-muted-foreground text-[10px]">Unrealised P&L</div>
-                <div className={cn("font-mono font-medium", Number(ps?.totalUnrealizedPnl) >= 0 ? "text-emerald-400" : "text-rose-400")}>
+                <div className="text-muted-foreground text-[10px]">
+                  Unrealised P&L
+                </div>
+                <div
+                  className={cn(
+                    "font-mono font-medium",
+                    Number(ps?.totalUnrealizedPnl) >= 0
+                      ? "text-emerald-400"
+                      : "text-rose-400",
+                  )}
+                >
                   {fmt(ps?.totalUnrealizedPnl)}
                 </div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Margin</div>
-                <div className="font-mono font-medium">{fmt(ps?.totalMargin)}</div>
+                <div className="font-mono font-medium">
+                  {fmt(ps?.totalMargin)}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -98,24 +143,34 @@ function TradingSidebar() {
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <div className="text-muted-foreground text-[10px]">Critical</div>
-                <div className="font-mono font-medium text-rose-400">{Number(als?.critical) || 0}</div>
+                <div className="text-muted-foreground text-[10px]">
+                  Critical
+                </div>
+                <div className="font-mono font-medium text-rose-400">
+                  {Number(als?.critical) || 0}
+                </div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Warning</div>
-                <div className="font-mono font-medium text-amber-400">{Number(als?.warning) || 0}</div>
+                <div className="font-mono font-medium text-amber-400">
+                  {Number(als?.warning) || 0}
+                </div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Total</div>
-                <div className="font-mono font-medium">{Number(als?.total) || 0}</div>
+                <div className="font-mono font-medium">
+                  {Number(als?.total) || 0}
+                </div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Unacked</div>
-                <div className="font-mono font-medium">{Number(als?.unacknowledged) || 0}</div>
+                <div className="font-mono font-medium">
+                  {Number(als?.unacknowledged) || 0}
+                </div>
               </div>
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
       </Link>
 
       {/* Recent Fills */}
@@ -126,23 +181,39 @@ function TradingSidebar() {
               <TrendingUp className="size-3" /> Recent Fills
             </div>
             <div className="space-y-1">
-              {(orders as Array<Record<string, unknown>>).slice(0, 3).map((o, i) => (
-                <div key={String(o.order_id ?? i)} className="flex items-center justify-between text-[10px]">
-                  <div className="flex items-center gap-1">
-                    {String(o.side) === "BUY" ? (
-                      <ArrowUpRight className="size-2.5 text-emerald-400" />
-                    ) : (
-                      <ArrowDownRight className="size-2.5 text-rose-400" />
-                    )}
-                    <span className="font-mono">{String(o.instrument ?? "")}</span>
+              {(orders as Array<Record<string, unknown>>)
+                .slice(0, 3)
+                .map((o, i) => (
+                  <div
+                    key={String(o.order_id ?? i)}
+                    className="flex items-center justify-between text-[10px]"
+                  >
+                    <div className="flex items-center gap-1">
+                      {String(o.side) === "BUY" ? (
+                        <ArrowUpRight className="size-2.5 text-emerald-400" />
+                      ) : (
+                        <ArrowDownRight className="size-2.5 text-rose-400" />
+                      )}
+                      <span className="font-mono">
+                        {String(o.instrument ?? "")}
+                      </span>
+                    </div>
+                    <span
+                      className={cn(
+                        "font-mono",
+                        String(o.status) === "FILLED"
+                          ? "text-emerald-400"
+                          : "text-amber-400",
+                      )}
+                    >
+                      {String(o.status ?? "")}
+                    </span>
                   </div>
-                  <span className={cn("font-mono", String(o.status) === "FILLED" ? "text-emerald-400" : "text-amber-400")}>
-                    {String(o.status ?? "")}
-                  </span>
-                </div>
-              ))}
+                ))}
               {orders.length === 0 && (
-                <div className="text-[10px] text-muted-foreground text-center py-2">No recent fills</div>
+                <div className="text-[10px] text-muted-foreground text-center py-2">
+                  No recent fills
+                </div>
               )}
             </div>
           </CardContent>
@@ -158,12 +229,16 @@ function TradingSidebar() {
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <div className="text-muted-foreground text-[10px]">Services</div>
+                <div className="text-muted-foreground text-[10px]">
+                  Services
+                </div>
                 <div className="font-mono font-medium">{services.length}</div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Healthy</div>
-                <div className="font-mono font-medium text-emerald-400">{healthyCount}/{services.length}</div>
+                <div className="font-mono font-medium text-emerald-400">
+                  {healthyCount}/{services.length}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -178,19 +253,27 @@ function TradingSidebar() {
               <Wallet className="size-3" /> Accounts
             </div>
             <div className="text-xs">
-              <div className="text-muted-foreground text-[10px]">Total Balance</div>
-              <div className="font-mono font-medium">{fmt(ps?.totalExposure ? Number(ps.totalExposure) * 1.8 : 0)}</div>
+              <div className="text-muted-foreground text-[10px]">
+                Total Balance
+              </div>
+              <div className="font-mono font-medium">
+                {fmt(ps?.totalExposure ? Number(ps.totalExposure) * 1.8 : 0)}
+              </div>
             </div>
           </CardContent>
         </Card>
       </Link>
     </div>
-  )
+  );
 }
 
-export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
-  const { scope, setMode } = useGlobalScope()
+export default function TradingServiceLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user } = useAuth();
+  const { scope, setMode } = useGlobalScope();
 
   return (
     <>
@@ -213,7 +296,10 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
       >
         <ResizablePanel defaultSize={82} minSize={60}>
           <div className="h-full overflow-auto min-w-[800px]">
-            <EntitlementGate entitlement="execution-basic" serviceName="Trading">
+            <EntitlementGate
+              entitlement="execution-basic"
+              serviceName="Trading"
+            >
               <ErrorBoundary>{children}</ErrorBoundary>
             </EntitlementGate>
           </div>
@@ -224,5 +310,5 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
         </ResizablePanel>
       </ResizablePanelGroup>
     </>
-  )
+  );
 }

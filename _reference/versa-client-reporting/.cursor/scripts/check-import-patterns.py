@@ -48,8 +48,8 @@ FROM_IMPORT_PATTERN = re.compile(
 
 class ImportViolation:
     """Represents an import pattern violation."""
-    
-    def __init__(self, file_path: str, line_no: int, original: str, 
+
+    def __init__(self, file_path: str, line_no: int, original: str,
                  package: str, module_path: str, imports: str):
         self.file_path = file_path
         self.line_no = line_no
@@ -57,13 +57,13 @@ class ImportViolation:
         self.package = package
         self.module_path = module_path
         self.imports = imports
-        
+
     def get_fixed_import(self) -> str:
         """Generate the corrected import statement."""
         # Extract indentation from original
         indent = re.match(r'^(\s*)', self.original).group(1)
         return f"{indent}from {self.package} import {self.imports}"
-    
+
     def __str__(self) -> str:
         return (f"{self.file_path}:{self.line_no}: "
                 f"Deep import from {self.package}.{self.module_path}")
@@ -71,27 +71,27 @@ class ImportViolation:
 
 class ImportChecker:
     """Checks and fixes import patterns in Python files."""
-    
+
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
         self.violations: List[ImportViolation] = []
         self.files_checked = 0
         self.files_with_violations = set()
-        
+
     def check_file(self, file_path: Path) -> List[ImportViolation]:
         """Check a single file for import violations."""
         violations = []
-        
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-                
+
             for line_no, line in enumerate(lines, 1):
                 match = DEEP_IMPORT_PATTERN.match(line.strip())
                 if match:
                     package = match.group(1)
                     module_path = match.group(2)
-                    
+
                     # Extract what's being imported
                     import_match = FROM_IMPORT_PATTERN.match(line)
                     if import_match:
@@ -101,70 +101,70 @@ class ImportChecker:
                             package, module_path, imports
                         )
                         violations.append(violation)
-                        
+
         except Exception as e:
             if self.verbose:
                 print(f"Error checking {file_path}: {e}")
-                
+
         return violations
-    
+
     def check_directory(self, directory: Path) -> None:
         """Recursively check all Python files in a directory."""
         for file_path in directory.rglob('*.py'):
             # Skip certain directories
-            if any(part in file_path.parts for part in 
+            if any(part in file_path.parts for part in
                    ['.venv', 'venv', '__pycache__', '.git', 'node_modules']):
                 continue
-                
+
             self.files_checked += 1
             file_violations = self.check_file(file_path)
-            
+
             if file_violations:
                 self.violations.extend(file_violations)
                 self.files_with_violations.add(str(file_path))
-                
+
     def fix_file(self, file_path: str, violations: List[ImportViolation]) -> bool:
         """Fix violations in a file."""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
-                
+
             # Sort violations by line number in reverse to avoid offset issues
             sorted_violations = sorted(violations, key=lambda v: v.line_no, reverse=True)
-            
+
             for violation in sorted_violations:
                 # Replace the line with fixed import
                 lines[violation.line_no - 1] = violation.get_fixed_import() + '\n'
-                
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.writelines(lines)
-                
+
             return True
-            
+
         except Exception as e:
             print(f"Error fixing {file_path}: {e}")
             return False
-            
+
     def fix_violations(self) -> int:
         """Fix all found violations."""
         if not self.violations:
             return 0
-            
+
         # Group violations by file
         violations_by_file = {}
         for violation in self.violations:
             if violation.file_path not in violations_by_file:
                 violations_by_file[violation.file_path] = []
             violations_by_file[violation.file_path].append(violation)
-            
+
         fixed_count = 0
         for file_path, file_violations in violations_by_file.items():
             if self.fix_file(file_path, file_violations):
                 fixed_count += len(file_violations)
                 print(f"Fixed {len(file_violations)} violations in {file_path}")
-                
+
         return fixed_count
-        
+
     def print_summary(self) -> None:
         """Print summary of findings."""
         print("\n" + "=" * 60)
@@ -173,7 +173,7 @@ class ImportChecker:
         print(f"Files checked: {self.files_checked}")
         print(f"Files with violations: {len(self.files_with_violations)}")
         print(f"Total violations: {len(self.violations)}")
-        
+
         if self.violations:
             print("\nViolations by package:")
             package_counts = {}
@@ -181,15 +181,15 @@ class ImportChecker:
                 package_counts[v.package] = package_counts.get(v.package, 0) + 1
             for package, count in sorted(package_counts.items()):
                 print(f"  {package}: {count}")
-                
+
     def print_violations(self) -> None:
         """Print detailed violation information."""
         if not self.violations:
             return
-            
+
         print("\nDetailed Violations:")
         print("-" * 60)
-        
+
         for violation in self.violations:
             print(f"\n{violation}")
             print(f"  Original: {violation.original}")
@@ -217,11 +217,11 @@ def main():
         '--quiet', action='store_true',
         help='Only show errors'
     )
-    
+
     args = parser.parse_args()
-    
+
     checker = ImportChecker(verbose=args.verbose)
-    
+
     # Check all specified paths
     for path in args.paths:
         path_obj = Path(path).resolve()
@@ -236,7 +236,7 @@ def main():
             checker.check_directory(path_obj)
         else:
             print(f"Warning: {path} is not a valid file or directory")
-            
+
     # Handle output based on mode
     if args.fix:
         if checker.violations:
@@ -250,10 +250,10 @@ def main():
     else:
         if args.verbose:
             checker.print_violations()
-            
+
         if not args.quiet:
             checker.print_summary()
-            
+
         if checker.violations:
             print("\n❌ Import pattern violations detected!")
             print("To fix automatically, run: python check-import-patterns.py --fix")

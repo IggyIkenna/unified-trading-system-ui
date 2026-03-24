@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import * as React from "react";
+import { useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Separator } from "@/components/ui/separator"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   TrendingUp,
   TrendingDown,
@@ -24,45 +24,58 @@ import {
   AlertTriangle,
   ShieldCheck,
   ShieldX,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
-import { usePlaceOrder, usePreTradeCheck } from "@/hooks/api/use-orders"
-import { useOrganizationsList } from "@/hooks/api/use-organizations"
-import { useAuth } from "@/hooks/use-auth"
-import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry"
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { usePlaceOrder, usePreTradeCheck } from "@/hooks/api/use-orders";
+import { useOrganizationsList } from "@/hooks/api/use-organizations";
+import { useAuth } from "@/hooks/use-auth";
+import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-type ExecutionMode = "execute" | "record_only"
-type CategoryTab = "cefi_spot" | "cefi_derivatives" | "defi" | "tradfi" | "sports" | "prediction"
-type AlgoType = "MARKET" | "TWAP" | "VWAP" | "ICEBERG" | "SOR" | "BEST_PRICE" | "BENCHMARK_FILL"
-type OrderState = "idle" | "preview" | "submitting" | "success" | "error"
+type ExecutionMode = "execute" | "record_only";
+type CategoryTab =
+  | "cefi_spot"
+  | "cefi_derivatives"
+  | "defi"
+  | "tradfi"
+  | "sports"
+  | "prediction";
+type AlgoType =
+  | "MARKET"
+  | "TWAP"
+  | "VWAP"
+  | "ICEBERG"
+  | "SOR"
+  | "BEST_PRICE"
+  | "BENCHMARK_FILL";
+type OrderState = "idle" | "preview" | "submitting" | "success" | "error";
 
 interface ComplianceCheckResult {
-  name: string
-  passed: boolean
-  limit_value: number | string
-  current_value: number | string
-  proposed_value: number | string
+  name: string;
+  passed: boolean;
+  limit_value: number | string;
+  current_value: number | string;
+  proposed_value: number | string;
 }
 
 interface PreTradeCheckResponse {
-  passed: boolean
-  checks: ComplianceCheckResult[]
+  passed: boolean;
+  checks: ComplianceCheckResult[];
 }
 
 interface PrefillData {
-  org_id?: string
-  client_id?: string
-  strategy_id?: string
-  execution_mode?: ExecutionMode
-  category?: CategoryTab
-  venue?: string
-  instrument?: string
-  side?: "buy" | "sell"
-  quantity?: string
-  price?: string
-  algo?: AlgoType
+  org_id?: string;
+  client_id?: string;
+  strategy_id?: string;
+  execution_mode?: ExecutionMode;
+  category?: CategoryTab;
+  venue?: string;
+  instrument?: string;
+  side?: "buy" | "sell";
+  quantity?: string;
+  price?: string;
+  algo?: AlgoType;
 }
 
 // ── Venue lists per category ─────────────────────────────────────────────────
@@ -74,7 +87,7 @@ const VENUES_BY_CATEGORY: Record<CategoryTab, string[]> = {
   tradfi: ["NYSE", "NASDAQ", "LSE", "CME", "ICE", "Eurex"],
   sports: ["Betfair", "Smarkets", "Pinnacle"],
   prediction: ["Polymarket", "Kalshi"],
-}
+};
 
 const CATEGORY_LABELS: Record<CategoryTab, string> = {
   cefi_spot: "CeFi Spot",
@@ -83,125 +96,138 @@ const CATEGORY_LABELS: Record<CategoryTab, string> = {
   tradfi: "TradFi",
   sports: "Sports",
   prediction: "Prediction",
-}
+};
 
 const ALGO_OPTIONS: AlgoType[] = [
-  "MARKET", "TWAP", "VWAP", "ICEBERG", "SOR", "BEST_PRICE", "BENCHMARK_FILL",
-]
+  "MARKET",
+  "TWAP",
+  "VWAP",
+  "ICEBERG",
+  "SOR",
+  "BEST_PRICE",
+  "BENCHMARK_FILL",
+];
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BookTradePage() {
-  const { user, hasEntitlement } = useAuth()
-  const canExecute = hasEntitlement("execution-full" as never) || hasEntitlement("can-trade" as never) || user?.role === "admin"
-  const searchParams = useSearchParams()
-  const placeOrder = usePlaceOrder()
-  const preTradeCheck = usePreTradeCheck()
-  const { data: organizations } = useOrganizationsList()
+  const { user, hasEntitlement } = useAuth();
+  const canExecute =
+    hasEntitlement("execution-full" as never) ||
+    hasEntitlement("can-trade" as never) ||
+    user?.role === "admin";
+  const searchParams = useSearchParams();
+  const placeOrder = usePlaceOrder();
+  const preTradeCheck = usePreTradeCheck();
+  const { data: organizations } = useOrganizationsList();
 
   // ── Hierarchy state ──────────────────────────────────────────────────────
-  const [orgId, setOrgId] = React.useState("")
-  const [clientId, setClientId] = React.useState("")
-  const [strategyId, setStrategyId] = React.useState("manual")
+  const [orgId, setOrgId] = React.useState("");
+  const [clientId, setClientId] = React.useState("");
+  const [strategyId, setStrategyId] = React.useState("manual");
 
   // ── Mode & category ─────────────────────────────────────────────────────
-  const [executionMode, setExecutionMode] = React.useState<ExecutionMode>("execute")
-  const [category, setCategory] = React.useState<CategoryTab>("cefi_spot")
+  const [executionMode, setExecutionMode] =
+    React.useState<ExecutionMode>("execute");
+  const [category, setCategory] = React.useState<CategoryTab>("cefi_spot");
 
   // ── Core fields ──────────────────────────────────────────────────────────
-  const [venue, setVenue] = React.useState("")
-  const [instrument, setInstrument] = React.useState("")
-  const [side, setSide] = React.useState<"buy" | "sell">("buy")
-  const [quantity, setQuantity] = React.useState("")
-  const [price, setPrice] = React.useState("")
+  const [venue, setVenue] = React.useState("");
+  const [instrument, setInstrument] = React.useState("");
+  const [side, setSide] = React.useState<"buy" | "sell">("buy");
+  const [quantity, setQuantity] = React.useState("");
+  const [price, setPrice] = React.useState("");
 
   // ── EXECUTE mode fields ──────────────────────────────────────────────────
-  const [algo, setAlgo] = React.useState<AlgoType>("MARKET")
-  const [algoParamDuration, setAlgoParamDuration] = React.useState("")
-  const [algoParamSlices, setAlgoParamSlices] = React.useState("")
-  const [algoParamDisplayQty, setAlgoParamDisplayQty] = React.useState("")
-  const [algoParamBenchmark, setAlgoParamBenchmark] = React.useState("")
+  const [algo, setAlgo] = React.useState<AlgoType>("MARKET");
+  const [algoParamDuration, setAlgoParamDuration] = React.useState("");
+  const [algoParamSlices, setAlgoParamSlices] = React.useState("");
+  const [algoParamDisplayQty, setAlgoParamDisplayQty] = React.useState("");
+  const [algoParamBenchmark, setAlgoParamBenchmark] = React.useState("");
 
   // ── RECORD_ONLY mode fields ──────────────────────────────────────────────
-  const [counterparty, setCounterparty] = React.useState("")
-  const [sourceReference, setSourceReference] = React.useState("")
-  const [fee, setFee] = React.useState("")
+  const [counterparty, setCounterparty] = React.useState("");
+  const [sourceReference, setSourceReference] = React.useState("");
+  const [fee, setFee] = React.useState("");
 
   // ── Order state ──────────────────────────────────────────────────────────
-  const [orderState, setOrderState] = React.useState<OrderState>("idle")
-  const [errorMessage, setErrorMessage] = React.useState("")
-  const [complianceResult, setComplianceResult] = React.useState<PreTradeCheckResponse | null>(null)
-  const [complianceUnavailable, setComplianceUnavailable] = React.useState(false)
-  const [complianceLoading, setComplianceLoading] = React.useState(false)
+  const [orderState, setOrderState] = React.useState<OrderState>("idle");
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [complianceResult, setComplianceResult] =
+    React.useState<PreTradeCheckResponse | null>(null);
+  const [complianceUnavailable, setComplianceUnavailable] =
+    React.useState(false);
+  const [complianceLoading, setComplianceLoading] = React.useState(false);
 
   // ── URL prefill ──────────────────────────────────────────────────────────
   React.useEffect(() => {
-    const prefillRaw = searchParams.get("prefill")
-    if (!prefillRaw) return
+    const prefillRaw = searchParams.get("prefill");
+    if (!prefillRaw) return;
     try {
-      const data = JSON.parse(prefillRaw) as PrefillData
-      if (data.org_id) setOrgId(data.org_id)
-      if (data.client_id) setClientId(data.client_id)
-      if (data.strategy_id) setStrategyId(data.strategy_id)
-      if (data.execution_mode) setExecutionMode(data.execution_mode)
-      if (data.category) setCategory(data.category)
-      if (data.venue) setVenue(data.venue)
-      if (data.instrument) setInstrument(data.instrument)
-      if (data.side) setSide(data.side)
-      if (data.quantity) setQuantity(data.quantity)
-      if (data.price) setPrice(data.price)
-      if (data.algo) setAlgo(data.algo)
+      const data = JSON.parse(prefillRaw) as PrefillData;
+      if (data.org_id) setOrgId(data.org_id);
+      if (data.client_id) setClientId(data.client_id);
+      if (data.strategy_id) setStrategyId(data.strategy_id);
+      if (data.execution_mode) setExecutionMode(data.execution_mode);
+      if (data.category) setCategory(data.category);
+      if (data.venue) setVenue(data.venue);
+      if (data.instrument) setInstrument(data.instrument);
+      if (data.side) setSide(data.side);
+      if (data.quantity) setQuantity(data.quantity);
+      if (data.price) setPrice(data.price);
+      if (data.algo) setAlgo(data.algo);
     } catch {
       // Invalid prefill JSON — silently ignore
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   // Reset venue when category changes
   React.useEffect(() => {
-    setVenue("")
-  }, [category])
+    setVenue("");
+  }, [category]);
 
   // ── Derived ──────────────────────────────────────────────────────────────
-  const qty = parseFloat(quantity) || 0
-  const priceNum = parseFloat(price) || 0
-  const total = priceNum * qty
-  const canPreview = qty > 0 && priceNum > 0 && instrument.length > 0 && venue.length > 0
+  const qty = parseFloat(quantity) || 0;
+  const priceNum = parseFloat(price) || 0;
+  const total = priceNum * qty;
+  const canPreview =
+    qty > 0 && priceNum > 0 && instrument.length > 0 && venue.length > 0;
 
   // ── Handlers ─────────────────────────────────────────────────────────────
   const handlePreview = async () => {
-    if (!canPreview) return
-    setOrderState("preview")
-    setComplianceResult(null)
-    setComplianceUnavailable(false)
+    if (!canPreview) return;
+    setOrderState("preview");
+    setComplianceResult(null);
+    setComplianceUnavailable(false);
 
     if (executionMode === "execute") {
-      setComplianceLoading(true)
+      setComplianceLoading(true);
       try {
-        const result = await preTradeCheck.mutateAsync({
+        const result = (await preTradeCheck.mutateAsync({
           instrument,
           side,
           quantity: qty,
           price: priceNum,
           strategy_id: strategyId === "manual" ? undefined : strategyId,
-        }) as PreTradeCheckResponse
-        setComplianceResult(result)
+        })) as PreTradeCheckResponse;
+        setComplianceResult(result);
       } catch {
-        setComplianceUnavailable(true)
+        setComplianceUnavailable(true);
       } finally {
-        setComplianceLoading(false)
+        setComplianceLoading(false);
       }
     }
-  }
+  };
 
   const compliancePassed =
     executionMode === "record_only" ||
     complianceUnavailable ||
-    (complianceResult?.passed ?? false)
-  const failedCheck = complianceResult?.checks.find((c) => !c.passed)
+    (complianceResult?.passed ?? false);
+  const failedCheck = complianceResult?.checks.find((c) => !c.passed);
 
   const handleSubmit = async () => {
-    setOrderState("submitting")
-    setErrorMessage("")
+    setOrderState("submitting");
+    setErrorMessage("");
     try {
       await placeOrder.mutateAsync({
         instrument,
@@ -214,42 +240,50 @@ export default function BookTradePage() {
         client_id: clientId || orgId || user?.org?.id,
         reason: undefined,
         execution_mode: executionMode,
-        counterparty: executionMode === "record_only" ? counterparty || undefined : undefined,
-        source_reference: executionMode === "record_only" ? sourceReference || undefined : undefined,
+        counterparty:
+          executionMode === "record_only"
+            ? counterparty || undefined
+            : undefined,
+        source_reference:
+          executionMode === "record_only"
+            ? sourceReference || undefined
+            : undefined,
         category: CATEGORY_LABELS[category],
         portfolio_id: orgId || undefined,
-      })
-      setOrderState("success")
+      });
+      setOrderState("success");
       setTimeout(() => {
-        resetForm()
-      }, 2000)
+        resetForm();
+      }, 2000);
     } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : "Order failed")
-      setOrderState("error")
+      setErrorMessage(err instanceof Error ? err.message : "Order failed");
+      setOrderState("error");
     }
-  }
+  };
 
   const resetForm = () => {
-    setInstrument("")
-    setQuantity("")
-    setPrice("")
-    setFee("")
-    setCounterparty("")
-    setSourceReference("")
-    setAlgoParamDuration("")
-    setAlgoParamSlices("")
-    setAlgoParamDisplayQty("")
-    setAlgoParamBenchmark("")
-    setOrderState("idle")
-    setErrorMessage("")
-    setComplianceResult(null)
-    setComplianceUnavailable(false)
-    setComplianceLoading(false)
-  }
+    setInstrument("");
+    setQuantity("");
+    setPrice("");
+    setFee("");
+    setCounterparty("");
+    setSourceReference("");
+    setAlgoParamDuration("");
+    setAlgoParamSlices("");
+    setAlgoParamDisplayQty("");
+    setAlgoParamBenchmark("");
+    setOrderState("idle");
+    setErrorMessage("");
+    setComplianceResult(null);
+    setComplianceUnavailable(false);
+    setComplianceLoading(false);
+  };
 
   // ── Render ─────────────────────────────────────────────────────────────
 
-  const orgList = Array.isArray(organizations) ? organizations as Array<{ id: string; name: string }> : []
+  const orgList = Array.isArray(organizations)
+    ? (organizations as Array<{ id: string; name: string }>)
+    : [];
 
   return (
     <div className="flex flex-col h-full">
@@ -258,17 +292,29 @@ export default function BookTradePage() {
         <div className="flex items-center gap-4 flex-wrap">
           {/* Organization */}
           <div className="flex items-center gap-2">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">Org</label>
-            <Select value={orgId} onValueChange={(v) => { setOrgId(v); setClientId("") }}>
+            <label className="text-xs text-muted-foreground whitespace-nowrap">
+              Org
+            </label>
+            <Select
+              value={orgId}
+              onValueChange={(v) => {
+                setOrgId(v);
+                setClientId("");
+              }}
+            >
               <SelectTrigger className="w-[180px] h-8 text-xs">
                 <SelectValue placeholder="Select org" />
               </SelectTrigger>
               <SelectContent>
                 {orgList.map((org) => (
-                  <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>
+                  <SelectItem key={org.id} value={org.id}>
+                    {org.name}
+                  </SelectItem>
                 ))}
                 {orgList.length === 0 && (
-                  <SelectItem value="default" disabled>No organizations</SelectItem>
+                  <SelectItem value="default" disabled>
+                    No organizations
+                  </SelectItem>
                 )}
               </SelectContent>
             </Select>
@@ -276,7 +322,9 @@ export default function BookTradePage() {
 
           {/* Client */}
           <div className="flex items-center gap-2">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">Client</label>
+            <label className="text-xs text-muted-foreground whitespace-nowrap">
+              Client
+            </label>
             <Input
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
@@ -287,18 +335,24 @@ export default function BookTradePage() {
 
           {/* Strategy */}
           <div className="flex items-center gap-2">
-            <label className="text-xs text-muted-foreground whitespace-nowrap">Strategy</label>
+            <label className="text-xs text-muted-foreground whitespace-nowrap">
+              Strategy
+            </label>
             <Select value={strategyId} onValueChange={setStrategyId}>
               <SelectTrigger className="w-[180px] h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
                 <SelectItem value="manual">Manual (unlinked)</SelectItem>
-                {REGISTRY_STRATEGIES.filter(s => s.status === "live" || s.status === "paper").map(s => (
+                {REGISTRY_STRATEGIES.filter(
+                  (s) => s.status === "live" || s.status === "paper",
+                ).map((s) => (
                   <SelectItem key={s.id} value={s.id}>
                     <div className="flex items-center gap-2">
                       <span>{s.name}</span>
-                      <span className="text-[10px] text-muted-foreground">{s.assetClass}</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {s.assetClass}
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
@@ -324,15 +378,24 @@ export default function BookTradePage() {
             onValueChange={(v) => setExecutionMode(v as ExecutionMode)}
           >
             <TabsList className="w-full">
-              <TabsTrigger value="execute" className="flex-1">Execute</TabsTrigger>
-              <TabsTrigger value="record_only" className="flex-1">Record Only</TabsTrigger>
+              <TabsTrigger value="execute" className="flex-1">
+                Execute
+              </TabsTrigger>
+              <TabsTrigger value="record_only" className="flex-1">
+                Record Only
+              </TabsTrigger>
             </TabsList>
           </Tabs>
 
           {/* ── Category Tabs ──────────────────────────────────────────── */}
-          <Tabs value={category} onValueChange={(v) => setCategory(v as CategoryTab)}>
+          <Tabs
+            value={category}
+            onValueChange={(v) => setCategory(v as CategoryTab)}
+          >
             <TabsList className="w-full flex-wrap h-auto gap-0.5">
-              {(Object.entries(CATEGORY_LABELS) as Array<[CategoryTab, string]>).map(([key, label]) => (
+              {(
+                Object.entries(CATEGORY_LABELS) as Array<[CategoryTab, string]>
+              ).map(([key, label]) => (
                 <TabsTrigger key={key} value={key} className="flex-1 text-xs">
                   {label}
                 </TabsTrigger>
@@ -355,7 +418,9 @@ export default function BookTradePage() {
                   </SelectTrigger>
                   <SelectContent>
                     {VENUES_BY_CATEGORY[category].map((v) => (
-                      <SelectItem key={v} value={v}>{v}</SelectItem>
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -363,11 +428,19 @@ export default function BookTradePage() {
 
               {/* Instrument */}
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground">Instrument</label>
+                <label className="text-xs text-muted-foreground">
+                  Instrument
+                </label>
                 <Input
                   value={instrument}
                   onChange={(e) => setInstrument(e.target.value)}
-                  placeholder={category === "cefi_spot" ? "BTC/USDT" : category === "tradfi" ? "AAPL" : "ETH/USDC"}
+                  placeholder={
+                    category === "cefi_spot"
+                      ? "BTC/USDT"
+                      : category === "tradfi"
+                        ? "AAPL"
+                        : "ETH/USDC"
+                  }
                   className="font-mono"
                 />
               </div>
@@ -379,7 +452,10 @@ export default function BookTradePage() {
                   <Button
                     type="button"
                     variant={side === "buy" ? "default" : "outline"}
-                    className={cn("w-full", side === "buy" && "bg-emerald-600 hover:bg-emerald-700")}
+                    className={cn(
+                      "w-full",
+                      side === "buy" && "bg-emerald-600 hover:bg-emerald-700",
+                    )}
                     onClick={() => setSide("buy")}
                   >
                     <TrendingUp className="size-4 mr-2" />
@@ -388,7 +464,10 @@ export default function BookTradePage() {
                   <Button
                     type="button"
                     variant={side === "sell" ? "default" : "outline"}
-                    className={cn("w-full", side === "sell" && "bg-rose-600 hover:bg-rose-700")}
+                    className={cn(
+                      "w-full",
+                      side === "sell" && "bg-rose-600 hover:bg-rose-700",
+                    )}
                     onClick={() => setSide("sell")}
                   >
                     <TrendingDown className="size-4 mr-2" />
@@ -399,7 +478,9 @@ export default function BookTradePage() {
 
               {/* Quantity */}
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground">Quantity</label>
+                <label className="text-xs text-muted-foreground">
+                  Quantity
+                </label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -431,14 +512,21 @@ export default function BookTradePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Algorithm</label>
-                  <Select value={algo} onValueChange={(v) => setAlgo(v as AlgoType)}>
+                  <label className="text-xs text-muted-foreground">
+                    Algorithm
+                  </label>
+                  <Select
+                    value={algo}
+                    onValueChange={(v) => setAlgo(v as AlgoType)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {ALGO_OPTIONS.map((a) => (
-                        <SelectItem key={a} value={a}>{a}</SelectItem>
+                        <SelectItem key={a} value={a}>
+                          {a}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -448,7 +536,9 @@ export default function BookTradePage() {
                 {(algo === "TWAP" || algo === "VWAP") && (
                   <>
                     <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">Duration (seconds)</label>
+                      <label className="text-xs text-muted-foreground">
+                        Duration (seconds)
+                      </label>
                       <Input
                         type="number"
                         placeholder="3600"
@@ -458,7 +548,9 @@ export default function BookTradePage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs text-muted-foreground">Slices</label>
+                      <label className="text-xs text-muted-foreground">
+                        Slices
+                      </label>
                       <Input
                         type="number"
                         placeholder="10"
@@ -472,7 +564,9 @@ export default function BookTradePage() {
 
                 {algo === "ICEBERG" && (
                   <div className="space-y-1.5">
-                    <label className="text-xs text-muted-foreground">Display Quantity</label>
+                    <label className="text-xs text-muted-foreground">
+                      Display Quantity
+                    </label>
                     <Input
                       type="number"
                       placeholder="0.00"
@@ -485,8 +579,13 @@ export default function BookTradePage() {
 
                 {algo === "BENCHMARK_FILL" && (
                   <div className="space-y-1.5">
-                    <label className="text-xs text-muted-foreground">Benchmark</label>
-                    <Select value={algoParamBenchmark} onValueChange={setAlgoParamBenchmark}>
+                    <label className="text-xs text-muted-foreground">
+                      Benchmark
+                    </label>
+                    <Select
+                      value={algoParamBenchmark}
+                      onValueChange={setAlgoParamBenchmark}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select benchmark" />
                       </SelectTrigger>
@@ -511,7 +610,9 @@ export default function BookTradePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Counterparty</label>
+                  <label className="text-xs text-muted-foreground">
+                    Counterparty
+                  </label>
                   <Input
                     value={counterparty}
                     onChange={(e) => setCounterparty(e.target.value)}
@@ -519,7 +620,9 @@ export default function BookTradePage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Source Reference</label>
+                  <label className="text-xs text-muted-foreground">
+                    Source Reference
+                  </label>
                   <Input
                     value={sourceReference}
                     onChange={(e) => setSourceReference(e.target.value)}
@@ -556,7 +659,12 @@ export default function BookTradePage() {
                 <span className="text-muted-foreground">Category</span>
                 <span>{CATEGORY_LABELS[category]}</span>
                 <span className="text-muted-foreground">Side</span>
-                <span className={cn("font-medium", side === "buy" ? "text-emerald-500" : "text-rose-500")}>
+                <span
+                  className={cn(
+                    "font-medium",
+                    side === "buy" ? "text-emerald-500" : "text-rose-500",
+                  )}
+                >
                   {side.toUpperCase()}
                 </span>
                 <span className="text-muted-foreground">Instrument</span>
@@ -565,13 +673,17 @@ export default function BookTradePage() {
                 <span>{venue}</span>
                 <span className="text-muted-foreground">Price</span>
                 <span className="font-mono">
-                  {priceNum.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {priceNum.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                  })}
                 </span>
                 <span className="text-muted-foreground">Quantity</span>
                 <span className="font-mono">{qty}</span>
                 <span className="text-muted-foreground">Total</span>
                 <span className="font-mono font-medium">
-                  {total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                  {total.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                  })}
                 </span>
                 {executionMode === "execute" && (
                   <>
@@ -623,22 +735,35 @@ export default function BookTradePage() {
           {orderState === "preview" && executionMode === "execute" && (
             <div className="p-4 rounded-lg border space-y-3">
               <p className="text-xs font-medium flex items-center gap-1.5">
-                {complianceLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
-                {!complianceLoading && complianceResult?.passed && <ShieldCheck className="size-3.5 text-emerald-500" />}
-                {!complianceLoading && complianceResult && !complianceResult.passed && <ShieldX className="size-3.5 text-rose-500" />}
-                {!complianceLoading && complianceUnavailable && <AlertTriangle className="size-3.5 text-amber-500" />}
+                {complianceLoading && (
+                  <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+                )}
+                {!complianceLoading && complianceResult?.passed && (
+                  <ShieldCheck className="size-3.5 text-emerald-500" />
+                )}
+                {!complianceLoading &&
+                  complianceResult &&
+                  !complianceResult.passed && (
+                    <ShieldX className="size-3.5 text-rose-500" />
+                  )}
+                {!complianceLoading && complianceUnavailable && (
+                  <AlertTriangle className="size-3.5 text-amber-500" />
+                )}
                 Pre-Trade Compliance
               </p>
 
               {complianceLoading && (
-                <p className="text-xs text-muted-foreground">Running compliance checks...</p>
+                <p className="text-xs text-muted-foreground">
+                  Running compliance checks...
+                </p>
               )}
 
               {complianceUnavailable && (
                 <div className="flex items-center gap-2 p-2 rounded bg-amber-500/10 border border-amber-500/30">
                   <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
                   <span className="text-xs text-amber-600 dark:text-amber-400">
-                    Compliance check unavailable — submission permitted with caution
+                    Compliance check unavailable — submission permitted with
+                    caution
                   </span>
                 </div>
               )}
@@ -647,25 +772,38 @@ export default function BookTradePage() {
                 <>
                   <div className="space-y-1.5">
                     {complianceResult.checks.map((check) => (
-                      <div key={check.name} className="flex items-center justify-between text-xs">
+                      <div
+                        key={check.name}
+                        className="flex items-center justify-between text-xs"
+                      >
                         <div className="flex items-center gap-1.5">
                           <Badge
                             variant={check.passed ? "outline" : "destructive"}
                             className={cn(
                               "text-[10px] px-1.5 py-0",
-                              check.passed && "border-emerald-500/50 text-emerald-600 dark:text-emerald-400"
+                              check.passed &&
+                                "border-emerald-500/50 text-emerald-600 dark:text-emerald-400",
                             )}
                           >
                             {check.passed ? "PASS" : "FAIL"}
                           </Badge>
-                          <span className="text-muted-foreground">{check.name}</span>
+                          <span className="text-muted-foreground">
+                            {check.name}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2 font-mono text-[10px]">
-                          <span className="text-muted-foreground" title="Limit">{check.limit_value}</span>
+                          <span className="text-muted-foreground" title="Limit">
+                            {check.limit_value}
+                          </span>
                           <span className="text-muted-foreground">/</span>
                           <span title="Current">{check.current_value}</span>
                           <span className="text-muted-foreground">-&gt;</span>
-                          <span className={cn(!check.passed && "text-rose-500 font-medium")} title="Proposed">
+                          <span
+                            className={cn(
+                              !check.passed && "text-rose-500 font-medium",
+                            )}
+                            title="Proposed"
+                          >
                             {check.proposed_value}
                           </span>
                         </div>
@@ -678,7 +816,7 @@ export default function BookTradePage() {
                       "flex items-center gap-2 p-2 rounded text-xs",
                       complianceResult.passed
                         ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
-                        : "bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400"
+                        : "bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400",
                     )}
                   >
                     {complianceResult.passed ? (
@@ -689,7 +827,8 @@ export default function BookTradePage() {
                     ) : (
                       <>
                         <ShieldX className="size-3.5 shrink-0" />
-                        Order rejected — {failedCheck?.name ?? "compliance check"} violated
+                        Order rejected —{" "}
+                        {failedCheck?.name ?? "compliance check"} violated
                       </>
                     )}
                   </div>
@@ -703,7 +842,9 @@ export default function BookTradePage() {
             <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
               <CheckCircle2 className="size-4 text-emerald-500" />
               <span className="text-sm text-emerald-500">
-                {executionMode === "execute" ? "Order submitted successfully" : "Trade recorded successfully"}
+                {executionMode === "execute"
+                  ? "Order submitted successfully"
+                  : "Trade recorded successfully"}
               </span>
             </div>
           )}
@@ -728,23 +869,35 @@ export default function BookTradePage() {
               <Button
                 className="flex-1"
                 onClick={handlePreview}
-                disabled={!canPreview || (!canExecute && executionMode === "execute")}
+                disabled={
+                  !canPreview || (!canExecute && executionMode === "execute")
+                }
               >
                 Preview Order
               </Button>
             )}
             {orderState === "preview" && (
               <>
-                <Button variant="outline" className="flex-1" onClick={() => setOrderState("idle")}>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setOrderState("idle")}
+                >
                   Edit
                 </Button>
                 <Button
                   className={cn(
                     "flex-1",
-                    side === "buy" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"
+                    side === "buy"
+                      ? "bg-emerald-600 hover:bg-emerald-700"
+                      : "bg-rose-600 hover:bg-rose-700",
                   )}
                   onClick={handleSubmit}
-                  disabled={complianceLoading || (!compliancePassed && !complianceLoading) || (!canExecute && executionMode === "execute")}
+                  disabled={
+                    complianceLoading ||
+                    (!compliancePassed && !complianceLoading) ||
+                    (!canExecute && executionMode === "execute")
+                  }
                 >
                   {complianceLoading ? (
                     <>
@@ -766,7 +919,11 @@ export default function BookTradePage() {
               </Button>
             )}
             {orderState === "error" && (
-              <Button variant="outline" className="flex-1" onClick={() => setOrderState("preview")}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setOrderState("preview")}
+              >
                 Retry
               </Button>
             )}
@@ -775,12 +932,16 @@ export default function BookTradePage() {
           {/* ── User Badge ─────────────────────────────────────────────── */}
           {user && (
             <div className="flex items-center gap-2 pt-2 text-xs text-muted-foreground">
-              <Badge variant="outline" className="text-[10px]">{user.org?.id ?? "unknown org"}</Badge>
-              <span>Submitted by {user.displayName ?? user.email ?? "unknown"}</span>
+              <Badge variant="outline" className="text-[10px]">
+                {user.org?.id ?? "unknown org"}
+              </Badge>
+              <span>
+                Submitted by {user.displayName ?? user.email ?? "unknown"}
+              </span>
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }

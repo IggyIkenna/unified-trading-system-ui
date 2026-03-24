@@ -9,33 +9,33 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-          
+          node-version: "20"
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Run linting
         run: pnpm lint
-        
+
       - name: Run type check
         run: pnpm tsc --noEmit
-        
+
       - name: Run unit tests
         run: pnpm test:ci
-        
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
@@ -45,33 +45,33 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-          
+          node-version: "20"
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
-        
+
       - name: Build application
         run: pnpm build
-        
+
       - name: Run E2E tests
         run: pnpm test:e2e
-        
+
       - name: Upload E2E artifacts
         uses: actions/upload-artifact@v4
         if: failure()

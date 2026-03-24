@@ -97,7 +97,11 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     id: "pull-cache"
     entrypoint: "bash"
-    args: ["-c", "docker pull asia-northeast1-docker.pkg.dev/$PROJECT_ID/<repo>/<service>:latest || true"]
+    args:
+      [
+        "-c",
+        "docker pull asia-northeast1-docker.pkg.dev/$PROJECT_ID/<repo>/<service>:latest || true",
+      ]
 
   # Build with cache-from
   - name: "gcr.io/cloud-builders/docker"

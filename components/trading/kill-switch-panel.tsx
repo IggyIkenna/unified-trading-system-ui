@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -11,19 +11,19 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import {
   AlertOctagon,
   Shield,
@@ -40,7 +40,7 @@ import {
   TrendingDown,
   Ban,
   Activity,
-} from "lucide-react"
+} from "lucide-react";
 
 // Exit playbook types
 const EXIT_PLAYBOOKS = [
@@ -86,13 +86,17 @@ const EXIT_PLAYBOOKS = [
     icon: Zap,
     severity: "high",
   },
-] as const
+] as const;
 
 // Mock active kill switches
 const ACTIVE_KILL_SWITCHES = [
   {
     id: "ks-001",
-    scope: { entity: "client", entityId: "apex-capital", entityName: "Apex Capital" },
+    scope: {
+      entity: "client",
+      entityId: "apex-capital",
+      entityName: "Apex Capital",
+    },
     strategy: "all",
     venue: "all",
     instrument: "all",
@@ -104,11 +108,14 @@ const ACTIVE_KILL_SWITCHES = [
     affectedPositions: 8,
     affectedExposure: 2450000,
   },
-]
+];
 
 // Mock data for dropdowns
 const MOCK_ENTITIES = {
-  firms: [{ id: "odum", name: "Odum Research" }, { id: "alpha", name: "Alpha Capital" }],
+  firms: [
+    { id: "odum", name: "Odum Research" },
+    { id: "alpha", name: "Alpha Capital" },
+  ],
   clients: [
     { id: "apex-capital", name: "Apex Capital" },
     { id: "meridian", name: "Meridian Fund" },
@@ -131,50 +138,55 @@ const MOCK_ENTITIES = {
     { id: "eth-usdt", name: "ETH/USDT" },
     { id: "eth-perp", name: "ETH-PERP" },
   ],
-}
+};
 
 interface KillSwitchPanelProps {
-  className?: string
+  className?: string;
 }
 
 export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
-  const [open, setOpen] = React.useState(false)
-  const [entityLevel, setEntityLevel] = React.useState<"firm" | "client">("firm")
-  const [entityId, setEntityId] = React.useState<string>("all")
-  const [strategyId, setStrategyId] = React.useState<string>("all")
-  const [venueId, setVenueId] = React.useState<string>("all")
-  const [instrumentId, setInstrumentId] = React.useState<string>("all")
-  const [playbook, setPlaybook] = React.useState<string>("STOP_NEW_ONLY")
-  const [autoResumeMinutes, setAutoResumeMinutes] = React.useState(30)
-  const [autoResumeEnabled, setAutoResumeEnabled] = React.useState(true)
-  const [rationale, setRationale] = React.useState("")
-  const [isArming, setIsArming] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
+  const [entityLevel, setEntityLevel] = React.useState<"firm" | "client">(
+    "firm",
+  );
+  const [entityId, setEntityId] = React.useState<string>("all");
+  const [strategyId, setStrategyId] = React.useState<string>("all");
+  const [venueId, setVenueId] = React.useState<string>("all");
+  const [instrumentId, setInstrumentId] = React.useState<string>("all");
+  const [playbook, setPlaybook] = React.useState<string>("STOP_NEW_ONLY");
+  const [autoResumeMinutes, setAutoResumeMinutes] = React.useState(30);
+  const [autoResumeEnabled, setAutoResumeEnabled] = React.useState(true);
+  const [rationale, setRationale] = React.useState("");
+  const [isArming, setIsArming] = React.useState(false);
 
   const formatCurrency = (v: number) => {
-    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(1)}M`
-    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}K`
-    return `$${v.toFixed(0)}`
-  }
+    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
+    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}K`;
+    return `$${v.toFixed(0)}`;
+  };
 
-  const selectedPlaybook = EXIT_PLAYBOOKS.find(p => p.id === playbook)
+  const selectedPlaybook = EXIT_PLAYBOOKS.find((p) => p.id === playbook);
 
   // Calculate impact preview (mock)
-  const impactPreview = React.useMemo(() => ({
-    affectedPositions: entityId === "all" ? 24 : 12,
-    estimatedImpact: entityId === "all" ? 120000 : 45000,
-    impactBps: entityId === "all" ? 42 : 23,
-    affectedClients: entityId === "all" ? 5 : 3,
-    clientNames: ["Apex Capital", "Meridian Fund", "QuantEdge HK"],
-  }), [entityId])
+  const impactPreview = React.useMemo(
+    () => ({
+      affectedPositions: entityId === "all" ? 24 : 12,
+      estimatedImpact: entityId === "all" ? 120000 : 45000,
+      impactBps: entityId === "all" ? 42 : 23,
+      affectedClients: entityId === "all" ? 5 : 3,
+      clientNames: ["Apex Capital", "Meridian Fund", "QuantEdge HK"],
+    }),
+    [entityId],
+  );
 
   const handleArm = async () => {
-    if (!rationale.trim()) return
-    setIsArming(true)
+    if (!rationale.trim()) return;
+    setIsArming(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setIsArming(false)
-    setOpen(false)
-  }
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setIsArming(false);
+    setOpen(false);
+  };
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -190,11 +202,18 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
           <CardContent className="space-y-3">
             {ACTIVE_KILL_SWITCHES.map((ks) => {
               const minutesRemaining = ks.autoResumeEnabled
-                ? Math.max(0, ks.autoResumeMinutes - Math.floor((Date.now() - ks.armedAt.getTime()) / 60000))
-                : null
-              
+                ? Math.max(
+                    0,
+                    ks.autoResumeMinutes -
+                      Math.floor((Date.now() - ks.armedAt.getTime()) / 60000),
+                  )
+                : null;
+
               return (
-                <div key={ks.id} className="p-3 bg-background rounded-lg border border-border space-y-2">
+                <div
+                  key={ks.id}
+                  className="p-3 bg-background rounded-lg border border-border space-y-2"
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant="destructive" className="text-xs">
@@ -216,7 +235,11 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                   <div className="grid grid-cols-3 gap-2 text-xs">
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Clock className="size-3" />
-                      Armed {Math.floor((Date.now() - ks.armedAt.getTime()) / 60000)} min ago
+                      Armed{" "}
+                      {Math.floor(
+                        (Date.now() - ks.armedAt.getTime()) / 60000,
+                      )}{" "}
+                      min ago
                     </div>
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Users className="size-3" />
@@ -230,7 +253,7 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                     )}
                   </div>
                 </div>
-              )
+              );
             })}
           </CardContent>
         </Card>
@@ -261,8 +284,13 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
               <h4 className="text-sm font-medium">Scope Selector</h4>
               <div className="grid grid-cols-4 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Entity Level</label>
-                  <Select value={entityLevel} onValueChange={(v: "firm" | "client") => setEntityLevel(v)}>
+                  <label className="text-xs text-muted-foreground">
+                    Entity Level
+                  </label>
+                  <Select
+                    value={entityLevel}
+                    onValueChange={(v: "firm" | "client") => setEntityLevel(v)}
+                  >
                     <SelectTrigger className="h-8">
                       <SelectValue />
                     </SelectTrigger>
@@ -282,22 +310,31 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
-                      {(entityLevel === "firm" ? MOCK_ENTITIES.firms : MOCK_ENTITIES.clients).map(e => (
-                        <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>
+                      {(entityLevel === "firm"
+                        ? MOCK_ENTITIES.firms
+                        : MOCK_ENTITIES.clients
+                      ).map((e) => (
+                        <SelectItem key={e.id} value={e.id}>
+                          {e.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-muted-foreground">Strategy</label>
+                  <label className="text-xs text-muted-foreground">
+                    Strategy
+                  </label>
                   <Select value={strategyId} onValueChange={setStrategyId}>
                     <SelectTrigger className="h-8">
                       <SelectValue placeholder="All" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
-                      {MOCK_ENTITIES.strategies.map(s => (
-                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                      {MOCK_ENTITIES.strategies.map((s) => (
+                        <SelectItem key={s.id} value={s.id}>
+                          {s.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -310,8 +347,10 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All</SelectItem>
-                      {MOCK_ENTITIES.venues.map(v => (
-                        <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                      {MOCK_ENTITIES.venues.map((v) => (
+                        <SelectItem key={v.id} value={v.id}>
+                          {v.name}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -324,7 +363,7 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
               <h4 className="text-sm font-medium">Exit Playbook</h4>
               <div className="grid grid-cols-2 gap-2">
                 {EXIT_PLAYBOOKS.map((pb) => {
-                  const Icon = pb.icon
+                  const Icon = pb.icon;
                   return (
                     <button
                       key={pb.id}
@@ -335,24 +374,30 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                           ? pb.severity === "critical"
                             ? "border-[var(--status-error)] bg-[var(--status-error)]/5 ring-2 ring-[var(--status-error)]/20"
                             : pb.severity === "high"
-                            ? "border-[var(--status-warning)] bg-[var(--status-warning)]/5 ring-2 ring-[var(--status-warning)]/20"
-                            : "border-primary bg-primary/5 ring-2 ring-primary/20"
-                          : "border-border hover:border-border/80"
+                              ? "border-[var(--status-warning)] bg-[var(--status-warning)]/5 ring-2 ring-[var(--status-warning)]/20"
+                              : "border-primary bg-primary/5 ring-2 ring-primary/20"
+                          : "border-border hover:border-border/80",
                       )}
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <Icon className={cn(
-                          "size-4",
-                          pb.severity === "critical" && "text-[var(--status-error)]",
-                          pb.severity === "high" && "text-[var(--status-warning)]",
-                          pb.severity === "medium" && "text-blue-500",
-                          pb.severity === "low" && "text-muted-foreground"
-                        )} />
+                        <Icon
+                          className={cn(
+                            "size-4",
+                            pb.severity === "critical" &&
+                              "text-[var(--status-error)]",
+                            pb.severity === "high" &&
+                              "text-[var(--status-warning)]",
+                            pb.severity === "medium" && "text-blue-500",
+                            pb.severity === "low" && "text-muted-foreground",
+                          )}
+                        />
                         <span className="font-medium text-sm">{pb.name}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground">{pb.description}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {pb.description}
+                      </p>
                     </button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -366,16 +411,22 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                     checked={autoResumeEnabled}
                     onCheckedChange={setAutoResumeEnabled}
                   />
-                  <span className="text-xs text-muted-foreground">Enable auto-resume</span>
+                  <span className="text-xs text-muted-foreground">
+                    Enable auto-resume
+                  </span>
                 </div>
               </div>
               {autoResumeEnabled && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Auto-resume after:</span>
+                  <span className="text-sm text-muted-foreground">
+                    Auto-resume after:
+                  </span>
                   <Input
                     type="number"
                     value={autoResumeMinutes}
-                    onChange={(e) => setAutoResumeMinutes(parseInt(e.target.value) || 30)}
+                    onChange={(e) =>
+                      setAutoResumeMinutes(parseInt(e.target.value) || 30)
+                    }
                     className="w-20 h-8"
                     min={5}
                     max={1440}
@@ -390,18 +441,29 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
               <h4 className="text-sm font-medium">Impact Preview</h4>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Affected positions:</span>
-                  <span className="ml-2 font-mono font-medium">{impactPreview.affectedPositions}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Est. market impact:</span>
-                  <span className="ml-2 font-mono font-medium text-[var(--status-warning)]">
-                    ~{formatCurrency(impactPreview.estimatedImpact)} ({impactPreview.impactBps} bps)
+                  <span className="text-muted-foreground">
+                    Affected positions:
+                  </span>
+                  <span className="ml-2 font-mono font-medium">
+                    {impactPreview.affectedPositions}
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Affected clients:</span>
-                  <span className="ml-2 font-mono font-medium">{impactPreview.affectedClients}</span>
+                  <span className="text-muted-foreground">
+                    Est. market impact:
+                  </span>
+                  <span className="ml-2 font-mono font-medium text-[var(--status-warning)]">
+                    ~{formatCurrency(impactPreview.estimatedImpact)} (
+                    {impactPreview.impactBps} bps)
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">
+                    Affected clients:
+                  </span>
+                  <span className="ml-2 font-mono font-medium">
+                    {impactPreview.affectedClients}
+                  </span>
                 </div>
               </div>
               <div className="text-xs text-muted-foreground">
@@ -411,7 +473,9 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
 
             {/* Rationale */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Rationale (required)</label>
+              <label className="text-sm font-medium">
+                Rationale (required)
+              </label>
               <Textarea
                 value={rationale}
                 onChange={(e) => setRationale(e.target.value)}
@@ -436,5 +500,5 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

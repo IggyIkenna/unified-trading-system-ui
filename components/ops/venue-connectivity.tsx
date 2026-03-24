@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import {
   Activity,
   Wifi,
@@ -15,25 +15,25 @@ import {
   Zap,
   Database,
   Radio,
-} from "lucide-react"
+} from "lucide-react";
 
-type ConnectionType = "websocket" | "rest" | "batch" | "graphql" | "rpc"
-type CircuitState = "CLOSED" | "DEGRADED" | "OPEN"
-type VenueCategory = "CeFi" | "TradFi" | "DeFi" | "Sports"
+type ConnectionType = "websocket" | "rest" | "batch" | "graphql" | "rpc";
+type CircuitState = "CLOSED" | "DEGRADED" | "OPEN";
+type VenueCategory = "CeFi" | "TradFi" | "DeFi" | "Sports";
 
 interface VenueConnection {
-  id: string
-  name: string
-  category: VenueCategory
-  connectionType: ConnectionType
-  status: "connected" | "disconnected" | "degraded"
-  latency: { p50: number; p99: number }
-  rateLimitUsed: number // percentage
-  circuitState: CircuitState
-  lastMessage: string
+  id: string;
+  name: string;
+  category: VenueCategory;
+  connectionType: ConnectionType;
+  status: "connected" | "disconnected" | "degraded";
+  latency: { p50: number; p99: number };
+  rateLimitUsed: number; // percentage
+  circuitState: CircuitState;
+  lastMessage: string;
   // DeFi-specific
-  blockHeight?: number
-  gasPrice?: number
+  blockHeight?: number;
+  gasPrice?: number;
 }
 
 // Mock venue connection data
@@ -213,36 +213,36 @@ const VENUE_CONNECTIONS: VenueConnection[] = [
     circuitState: "CLOSED",
     lastMessage: "5.2s ago",
   },
-]
+];
 
 function getConnectionTypeConfig(type: ConnectionType) {
   switch (type) {
     case "websocket":
-      return { color: "var(--status-live)", label: "WebSocket", icon: Radio }
+      return { color: "var(--status-live)", label: "WebSocket", icon: Radio };
     case "rest":
-      return { color: "#3b82f6", label: "REST polling", icon: Activity }
+      return { color: "#3b82f6", label: "REST polling", icon: Activity };
     case "batch":
-      return { color: "#6b7280", label: "Batch file", icon: Database }
+      return { color: "#6b7280", label: "Batch file", icon: Database };
     case "graphql":
-      return { color: "#a855f7", label: "GraphQL", icon: Zap }
+      return { color: "#a855f7", label: "GraphQL", icon: Zap };
     case "rpc":
-      return { color: "#f59e0b", label: "RPC", icon: Zap }
+      return { color: "#f59e0b", label: "RPC", icon: Zap };
   }
 }
 
 function getCircuitStateColor(state: CircuitState) {
   switch (state) {
     case "CLOSED":
-      return "var(--status-live)"
+      return "var(--status-live)";
     case "DEGRADED":
-      return "var(--status-warning)"
+      return "var(--status-warning)";
     case "OPEN":
-      return "var(--status-error)"
+      return "var(--status-error)";
   }
 }
 
 interface VenueConnectivityProps {
-  className?: string
+  className?: string;
 }
 
 export function VenueConnectivity({ className }: VenueConnectivityProps) {
@@ -253,14 +253,16 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
       TradFi: [],
       DeFi: [],
       Sports: [],
-    }
+    };
     VENUE_CONNECTIONS.forEach((v) => {
-      groups[v.category].push(v)
-    })
-    return groups
-  }, [])
+      groups[v.category].push(v);
+    });
+    return groups;
+  }, []);
 
-  const healthyCount = VENUE_CONNECTIONS.filter(v => v.status === "connected" && v.circuitState === "CLOSED").length
+  const healthyCount = VENUE_CONNECTIONS.filter(
+    (v) => v.status === "connected" && v.circuitState === "CLOSED",
+  ).length;
 
   return (
     <Card className={className}>
@@ -274,16 +276,24 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {(Object.entries(groupedVenues) as [VenueCategory, VenueConnection[]][]).map(([category, venues]) => (
+        {(
+          Object.entries(groupedVenues) as [VenueCategory, VenueConnection[]][]
+        ).map(([category, venues]) => (
           <div key={category}>
-            <h4 className="text-sm font-medium text-muted-foreground mb-2">{category}</h4>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">
+              {category}
+            </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {venues.map((venue) => {
-                const connConfig = getConnectionTypeConfig(venue.connectionType)
-                const ConnIcon = connConfig.icon
-                const circuitColor = getCircuitStateColor(venue.circuitState)
-                const isHealthy = venue.status === "connected" && venue.circuitState === "CLOSED"
-                
+                const connConfig = getConnectionTypeConfig(
+                  venue.connectionType,
+                );
+                const ConnIcon = connConfig.icon;
+                const circuitColor = getCircuitStateColor(venue.circuitState);
+                const isHealthy =
+                  venue.status === "connected" &&
+                  venue.circuitState === "CLOSED";
+
                 return (
                   <div
                     key={venue.id}
@@ -292,8 +302,8 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
                       isHealthy
                         ? "border-border bg-background"
                         : venue.status === "degraded"
-                        ? "border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5"
-                        : "border-[var(--status-error)]/30 bg-[var(--status-error)]/5"
+                          ? "border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5"
+                          : "border-[var(--status-error)]/30 bg-[var(--status-error)]/5",
                     )}
                   >
                     {/* Header */}
@@ -312,8 +322,14 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
 
                     {/* Connection Type */}
                     <div className="flex items-center gap-1.5 mb-2">
-                      <ConnIcon className="size-3" style={{ color: connConfig.color }} />
-                      <span className="text-xs" style={{ color: connConfig.color }}>
+                      <ConnIcon
+                        className="size-3"
+                        style={{ color: connConfig.color }}
+                      />
+                      <span
+                        className="text-xs"
+                        style={{ color: connConfig.color }}
+                      >
                         {connConfig.label}
                       </span>
                     </div>
@@ -328,27 +344,37 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
                           </span>
                         </div>
                       )}
-                      
+
                       {venue.rateLimitUsed > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Rate limit:</span>
-                          <span className={cn(
-                            "font-mono",
-                            venue.rateLimitUsed > 80 && "text-[var(--status-error)]",
-                            venue.rateLimitUsed > 60 && venue.rateLimitUsed <= 80 && "text-[var(--status-warning)]"
-                          )}>
+                          <span className="text-muted-foreground">
+                            Rate limit:
+                          </span>
+                          <span
+                            className={cn(
+                              "font-mono",
+                              venue.rateLimitUsed > 80 &&
+                                "text-[var(--status-error)]",
+                              venue.rateLimitUsed > 60 &&
+                                venue.rateLimitUsed <= 80 &&
+                                "text-[var(--status-warning)]",
+                            )}
+                          >
                             {venue.rateLimitUsed}% used
                           </span>
                         </div>
                       )}
-                      
+
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Circuit:</span>
-                        <span className="font-mono" style={{ color: circuitColor }}>
+                        <span
+                          className="font-mono"
+                          style={{ color: circuitColor }}
+                        >
                           {venue.circuitState}
                         </span>
                       </div>
-                      
+
                       <div className="flex justify-between text-muted-foreground">
                         <span>Last msg:</span>
                         <span>{venue.lastMessage}</span>
@@ -358,18 +384,22 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
                       {venue.blockHeight && (
                         <div className="flex justify-between text-muted-foreground pt-1 border-t border-border/50 mt-1">
                           <span>Block:</span>
-                          <span className="font-mono">{venue.blockHeight.toLocaleString()}</span>
+                          <span className="font-mono">
+                            {venue.blockHeight.toLocaleString()}
+                          </span>
                         </div>
                       )}
                       {venue.gasPrice && (
                         <div className="flex justify-between text-muted-foreground">
                           <span>Gas:</span>
-                          <span className="font-mono">{venue.gasPrice} gwei</span>
+                          <span className="font-mono">
+                            {venue.gasPrice} gwei
+                          </span>
                         </div>
                       )}
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           </div>
@@ -396,5 +426,5 @@ export function VenueConnectivity({ className }: VenueConnectivityProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

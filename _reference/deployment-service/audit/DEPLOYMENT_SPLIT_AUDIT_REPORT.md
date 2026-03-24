@@ -1,7 +1,7 @@
 # Deployment Split Audit Report
 
-**Date:** 2026-03-04  
-**Archive:** /tmp/unified-trading-deployment-v3-archive (v3 clone for comparison)  
+**Date:** 2026-03-04
+**Archive:** /tmp/unified-trading-deployment-v3-archive (v3 clone for comparison)
 **Split repos:** deployment-service, deployment-api, deployment-ui, system-integration-tests
 
 ---

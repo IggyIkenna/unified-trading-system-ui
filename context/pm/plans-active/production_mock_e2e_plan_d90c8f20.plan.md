@@ -18,38 +18,32 @@ repo_gates:
     code: C1
     deployment: none
     business: none
-    readiness_note:
-      "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
+    readiness_note: "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
   - repo: unified-cloud-interface
     code: C2
     deployment: none
     business: none
-    readiness_note:
-      "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
+    readiness_note: "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
   - repo: unified-market-interface
     code: C2
     deployment: none
     business: none
-    readiness_note:
-      "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
+    readiness_note: "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
   - repo: unified-defi-execution-interface
     code: C2
     deployment: none
     business: none
-    readiness_note:
-      "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
+    readiness_note: "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
   - repo: system-integration-tests
     code: C2
     deployment: none
     business: none
-    readiness_note:
-      "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
+    readiness_note: "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
   - repo: unified-trading-pm
     code: C2
     deployment: none
     business: none
-    readiness_note:
-      "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
+    readiness_note: "DR N/A: local developer tooling — no cloud deployment required. BR N/A: internal tooling, no commercial KPI."
 
 depends_on: []
 

@@ -8,6 +8,7 @@ Deep documentation for each folder lives in `docs/STRUCTURE_*.md`.
 ## What This Repo Is
 
 A Next.js 15 App Router TypeScript application. Institutional trading platform UI serving three audiences:
+
 - **Public** — marketing, service discovery, demo
 - **Client / org user** — authenticated, sees only their org's entitlements
 - **Internal user** — full operator surface (quant, trader, risk, devops, compliance, admin)
@@ -42,41 +43,42 @@ eslint-rules/      Custom ESLint rules (2 rules: button handler, filter prop)
 
 ## Quick Decision Guide for Agents
 
-| Task | Where to go |
-|---|---|
-| Add a new platform page | `app/(platform)/services/<domain>/` — **only canonical location** |
-| Add a new redirect for renamed URL | `next.config.mjs` → `redirects()` array |
-| Add a reusable component | `components/<domain>/` — pick the closest domain |
-| Add a base UI primitive | `components/ui/` — shadcn/ui pattern |
-| Add a data-fetching hook | `hooks/api/use-<domain>.ts` |
-| Add a Zustand store | `lib/stores/` |
-| Add domain types | `lib/<domain>-types.ts` (convention) or `lib/types/` |
-| Add MSW mock handler | `lib/mocks/handlers/<domain>.ts` + register in `lib/mocks/handlers/index.ts` |
-| Add app config or branding | `lib/config/` |
-| Understand API shape / schema | `context/api-contracts/` |
-| Understand what's not yet built | `context/API_FRONTEND_GAPS.md` |
-| Understand backend data flow | `context/pm/data-flow-manifest.json` |
-| Understand service config fields | `context/api-contracts/openapi/config-registry.json` |
-| Understand backend Python patterns | `_reference/deployment-api/` — reference only |
+| Task                               | Where to go                                                                  |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| Add a new platform page            | `app/(platform)/services/<domain>/` — **only canonical location**            |
+| Add a new redirect for renamed URL | `next.config.mjs` → `redirects()` array                                      |
+| Add a reusable component           | `components/<domain>/` — pick the closest domain                             |
+| Add a base UI primitive            | `components/ui/` — shadcn/ui pattern                                         |
+| Add a data-fetching hook           | `hooks/api/use-<domain>.ts`                                                  |
+| Add a Zustand store                | `lib/stores/`                                                                |
+| Add domain types                   | `lib/<domain>-types.ts` (convention) or `lib/types/`                         |
+| Add MSW mock handler               | `lib/mocks/handlers/<domain>.ts` + register in `lib/mocks/handlers/index.ts` |
+| Add app config or branding         | `lib/config/`                                                                |
+| Understand API shape / schema      | `context/api-contracts/`                                                     |
+| Understand what's not yet built    | `context/API_FRONTEND_GAPS.md`                                               |
+| Understand backend data flow       | `context/pm/data-flow-manifest.json`                                         |
+| Understand service config fields   | `context/api-contracts/openapi/config-registry.json`                         |
+| Understand backend Python patterns | `_reference/deployment-api/` — reference only                                |
 
 ---
 
 ## State Management Contract
 
-| State type | Tool | Location |
-|---|---|---|
-| Server / async data | React Query | `hooks/api/use-*.ts` |
-| Global filters (org, date, shard) | Zustand | `lib/stores/global-scope-store.ts` |
-| Auth + role | Zustand | `lib/stores/auth-store.ts` |
-| UI preferences (theme, layout) | Zustand | `lib/stores/ui-prefs-store.ts` |
-| Feature filters | Zustand | `lib/stores/filter-store.ts` |
-| Batch vs live mode | React Context | `lib/execution-mode-context.tsx` |
+| State type                        | Tool          | Location                           |
+| --------------------------------- | ------------- | ---------------------------------- |
+| Server / async data               | React Query   | `hooks/api/use-*.ts`               |
+| Global filters (org, date, shard) | Zustand       | `lib/stores/global-scope-store.ts` |
+| Auth + role                       | Zustand       | `lib/stores/auth-store.ts`         |
+| UI preferences (theme, layout)    | Zustand       | `lib/stores/ui-prefs-store.ts`     |
+| Feature filters                   | Zustand       | `lib/stores/filter-store.ts`       |
+| Batch vs live mode                | React Context | `lib/execution-mode-context.tsx`   |
 
 ---
 
 ## Deleted Components (do not recreate)
 
 The following were deleted in commit `8e536fc` — they had zero consumers after nav consolidation:
+
 - `components/trading/global-nav-bar.tsx` — replaced by `shell/lifecycle-nav.tsx`
 - `components/trading/app-shell.tsx` — GlobalNavBar wrapper, no longer needed
 - `components/trading/lifecycle-rail.tsx` — merged into `shell/lifecycle-nav.tsx`
@@ -98,11 +100,11 @@ The following were deleted in commit `8e536fc` — they had zero consumers after
 
 ## Deep Documentation
 
-| File | Covers |
-|---|---|
-| [docs/STRUCTURE_APP.md](docs/STRUCTURE_APP.md) | Route groups, page inventory, dynamic routes, layout hierarchy |
-| [docs/STRUCTURE_COMPONENTS.md](docs/STRUCTURE_COMPONENTS.md) | All 11 component domains, key files, naming rules |
-| [docs/STRUCTURE_LIB.md](docs/STRUCTURE_LIB.md) | lib/ layout — types, stores, mocks, config, utilities |
-| [docs/STRUCTURE_HOOKS.md](docs/STRUCTURE_HOOKS.md) | hooks/api/ and hooks/deployment/ — conventions and patterns |
-| [docs/STRUCTURE_CONTEXT.md](docs/STRUCTURE_CONTEXT.md) | context/ folder — how to use backend reference material |
-| [docs/STRUCTURE_REFERENCE.md](docs/STRUCTURE_REFERENCE.md) | _reference/ Python services — what they contain and when to read them |
+| File                                                         | Covers                                                                 |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| [docs/STRUCTURE_APP.md](docs/STRUCTURE_APP.md)               | Route groups, page inventory, dynamic routes, layout hierarchy         |
+| [docs/STRUCTURE_COMPONENTS.md](docs/STRUCTURE_COMPONENTS.md) | All 11 component domains, key files, naming rules                      |
+| [docs/STRUCTURE_LIB.md](docs/STRUCTURE_LIB.md)               | lib/ layout — types, stores, mocks, config, utilities                  |
+| [docs/STRUCTURE_HOOKS.md](docs/STRUCTURE_HOOKS.md)           | hooks/api/ and hooks/deployment/ — conventions and patterns            |
+| [docs/STRUCTURE_CONTEXT.md](docs/STRUCTURE_CONTEXT.md)       | context/ folder — how to use backend reference material                |
+| [docs/STRUCTURE_REFERENCE.md](docs/STRUCTURE_REFERENCE.md)   | \_reference/ Python services — what they contain and when to read them |

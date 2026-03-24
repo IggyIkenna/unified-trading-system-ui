@@ -1,5 +1,5 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 /**
  * Global scope store — shared data-scoping state lifted out of per-page ContextBar.
@@ -9,27 +9,27 @@ import { persist } from "zustand/middleware"
  */
 
 export interface GlobalScopeState {
-  organizationIds: string[]
-  clientIds: string[]
-  strategyIds: string[]
-  underlyingIds: string[]
-  mode: "live" | "batch"
-  asOfDatetime?: string
+  organizationIds: string[];
+  clientIds: string[];
+  strategyIds: string[];
+  underlyingIds: string[];
+  mode: "live" | "batch";
+  asOfDatetime?: string;
 }
 
 interface GlobalScopeActions {
-  scope: GlobalScopeState
-  setOrganizationIds: (ids: string[]) => void
-  setClientIds: (ids: string[]) => void
-  setStrategyIds: (ids: string[]) => void
-  setUnderlyingIds: (ids: string[]) => void
-  setMode: (mode: "live" | "batch") => void
-  setAsOfDatetime: (dt: string | undefined) => void
-  clearAll: () => void
-  reset: () => void
+  scope: GlobalScopeState;
+  setOrganizationIds: (ids: string[]) => void;
+  setClientIds: (ids: string[]) => void;
+  setStrategyIds: (ids: string[]) => void;
+  setUnderlyingIds: (ids: string[]) => void;
+  setMode: (mode: "live" | "batch") => void;
+  setAsOfDatetime: (dt: string | undefined) => void;
+  clearAll: () => void;
+  reset: () => void;
 }
 
-const STORAGE_KEY = "unified-global-scope"
+const STORAGE_KEY = "unified-global-scope";
 
 const INITIAL_SCOPE: GlobalScopeState = {
   organizationIds: [],
@@ -38,33 +38,43 @@ const INITIAL_SCOPE: GlobalScopeState = {
   underlyingIds: [],
   mode: "live",
   asOfDatetime: undefined,
-}
+};
 
 export const useGlobalScope = create<GlobalScopeActions>()(
   persist(
     (set) => ({
       scope: { ...INITIAL_SCOPE },
-      setOrganizationIds: (ids) => set((s) => ({ scope: { ...s.scope, organizationIds: ids } })),
-      setClientIds: (ids) => set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
-      setStrategyIds: (ids) => set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
-      setUnderlyingIds: (ids) => set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
-      setMode: (mode) => set((s) => ({
-        scope: {
-          ...s.scope,
-          mode,
-          asOfDatetime: mode === "live" ? undefined : s.scope.asOfDatetime ?? new Date().toISOString().slice(0, 16),
-        },
-      })),
-      setAsOfDatetime: (dt) => set((s) => ({ scope: { ...s.scope, asOfDatetime: dt } })),
+      setOrganizationIds: (ids) =>
+        set((s) => ({ scope: { ...s.scope, organizationIds: ids } })),
+      setClientIds: (ids) =>
+        set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
+      setStrategyIds: (ids) =>
+        set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
+      setUnderlyingIds: (ids) =>
+        set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
+      setMode: (mode) =>
+        set((s) => ({
+          scope: {
+            ...s.scope,
+            mode,
+            asOfDatetime:
+              mode === "live"
+                ? undefined
+                : (s.scope.asOfDatetime ??
+                  new Date().toISOString().slice(0, 16)),
+          },
+        })),
+      setAsOfDatetime: (dt) =>
+        set((s) => ({ scope: { ...s.scope, asOfDatetime: dt } })),
       clearAll: () => {
-        localStorage.removeItem(STORAGE_KEY)
-        set({ scope: { ...INITIAL_SCOPE } })
+        localStorage.removeItem(STORAGE_KEY);
+        set({ scope: { ...INITIAL_SCOPE } });
       },
       reset: () => {
-        localStorage.removeItem(STORAGE_KEY)
-        set({ scope: { ...INITIAL_SCOPE } })
+        localStorage.removeItem(STORAGE_KEY);
+        set({ scope: { ...INITIAL_SCOPE } });
       },
     }),
     { name: STORAGE_KEY },
   ),
-)
+);

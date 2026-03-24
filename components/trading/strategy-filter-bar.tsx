@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,17 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuCheckboxItem,
-} from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { Filter, X, ChevronDown } from "lucide-react"
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { Filter, X, ChevronDown } from "lucide-react";
 
 // Asset class domains - where the strategy operates
-export type AssetClass =
-  | "DeFi"
-  | "CeFi"
-  | "TradFi"
-  | "Sports"
-  | "Prediction"
+export type AssetClass = "DeFi" | "CeFi" | "TradFi" | "Sports" | "Prediction";
 
 // Strategy type domains - what the strategy does
 export type StrategyType =
@@ -34,15 +29,19 @@ export type StrategyType =
   | "Mean Reversion"
   | "ML Directional"
   | "Options"
-  | "LP Provision"
+  | "LP Provision";
 
-export const ASSET_CLASSES: { value: AssetClass; label: string; color: string }[] = [
+export const ASSET_CLASSES: {
+  value: AssetClass;
+  label: string;
+  color: string;
+}[] = [
   { value: "DeFi", label: "DeFi", color: "#4ade80" },
   { value: "CeFi", label: "CeFi", color: "#60a5fa" },
   { value: "TradFi", label: "TradFi", color: "#a78bfa" },
   { value: "Sports", label: "Sports", color: "#fbbf24" },
   { value: "Prediction", label: "Prediction", color: "#f472b6" },
-]
+];
 
 export const STRATEGY_TYPES: { value: StrategyType; label: string }[] = [
   { value: "Market Making", label: "Market Making" },
@@ -55,14 +54,14 @@ export const STRATEGY_TYPES: { value: StrategyType; label: string }[] = [
   { value: "ML Directional", label: "ML Directional" },
   { value: "Options", label: "Options" },
   { value: "LP Provision", label: "LP Provision" },
-]
+];
 
 interface StrategyFilterBarProps {
-  selectedAssetClasses: AssetClass[]
-  selectedStrategyTypes: StrategyType[]
-  onAssetClassChange: (assetClasses: AssetClass[]) => void
-  onStrategyTypeChange: (strategyTypes: StrategyType[]) => void
-  className?: string
+  selectedAssetClasses: AssetClass[];
+  selectedStrategyTypes: StrategyType[];
+  onAssetClassChange: (assetClasses: AssetClass[]) => void;
+  onStrategyTypeChange: (strategyTypes: StrategyType[]) => void;
+  className?: string;
 }
 
 export function StrategyFilterBar({
@@ -72,28 +71,33 @@ export function StrategyFilterBar({
   onStrategyTypeChange,
   className,
 }: StrategyFilterBarProps) {
-  const hasFilters = selectedAssetClasses.length > 0 || selectedStrategyTypes.length > 0
+  const hasFilters =
+    selectedAssetClasses.length > 0 || selectedStrategyTypes.length > 0;
 
   const toggleAssetClass = (assetClass: AssetClass) => {
     if (selectedAssetClasses.includes(assetClass)) {
-      onAssetClassChange(selectedAssetClasses.filter((ac) => ac !== assetClass))
+      onAssetClassChange(
+        selectedAssetClasses.filter((ac) => ac !== assetClass),
+      );
     } else {
-      onAssetClassChange([...selectedAssetClasses, assetClass])
+      onAssetClassChange([...selectedAssetClasses, assetClass]);
     }
-  }
+  };
 
   const toggleStrategyType = (strategyType: StrategyType) => {
     if (selectedStrategyTypes.includes(strategyType)) {
-      onStrategyTypeChange(selectedStrategyTypes.filter((st) => st !== strategyType))
+      onStrategyTypeChange(
+        selectedStrategyTypes.filter((st) => st !== strategyType),
+      );
     } else {
-      onStrategyTypeChange([...selectedStrategyTypes, strategyType])
+      onStrategyTypeChange([...selectedStrategyTypes, strategyType]);
     }
-  }
+  };
 
   const clearAll = () => {
-    onAssetClassChange([])
-    onStrategyTypeChange([])
-  }
+    onAssetClassChange([]);
+    onStrategyTypeChange([]);
+  };
 
   return (
     <div className={cn("flex items-center gap-2 flex-wrap", className)}>
@@ -107,7 +111,7 @@ export function StrategyFilterBar({
             size="sm"
             className={cn(
               "h-7 gap-1.5 text-xs",
-              selectedAssetClasses.length > 0 && "border-primary"
+              selectedAssetClasses.length > 0 && "border-primary",
             )}
           >
             Asset Class
@@ -150,7 +154,7 @@ export function StrategyFilterBar({
             size="sm"
             className={cn(
               "h-7 gap-1.5 text-xs",
-              selectedStrategyTypes.length > 0 && "border-primary"
+              selectedStrategyTypes.length > 0 && "border-primary",
             )}
           >
             Strategy Type
@@ -181,7 +185,7 @@ export function StrategyFilterBar({
 
       {/* Active Filter Badges */}
       {selectedAssetClasses.map((ac) => {
-        const config = ASSET_CLASSES.find((a) => a.value === ac)
+        const config = ASSET_CLASSES.find((a) => a.value === ac);
         return (
           <Badge
             key={ac}
@@ -201,7 +205,7 @@ export function StrategyFilterBar({
               <X className="size-3" />
             </button>
           </Badge>
-        )
+        );
       })}
 
       {selectedStrategyTypes.map((st) => (
@@ -232,5 +236,5 @@ export function StrategyFilterBar({
         </Button>
       )}
     </div>
-  )
+  );
 }

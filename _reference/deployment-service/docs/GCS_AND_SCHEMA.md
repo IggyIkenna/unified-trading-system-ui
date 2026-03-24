@@ -2,7 +2,7 @@
 
 GCS path format, key=value partitions, and per-service schema changes.
 
-**Last consolidated:** 2026-02-09  
+**Last consolidated:** 2026-02-09
 **Status:** ✅ All production services use `key=value` format
 
 ---

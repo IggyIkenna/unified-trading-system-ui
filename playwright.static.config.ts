@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from "@playwright/test";
 
 /**
  * Playwright config for static smoke tests (Tier 0).
@@ -10,12 +10,12 @@ import { defineConfig, devices } from '@playwright/test'
  * Route-registry-only (no dev server): PLAYWRIGHT_SKIP_GLOBAL_SETUP=1 npx playwright test e2e/tier0-app-route-coverage.spec.ts --config playwright.static.config.ts
  */
 export default defineConfig({
-  globalSetup: './e2e/warmup.setup.ts',
-  testDir: './e2e',
+  globalSetup: "./e2e/warmup.setup.ts",
+  testDir: "./e2e",
   testMatch: [
-    'static-smoke.spec.ts',
-    'tier0-app-route-coverage.spec.ts',
-    'tier0-behavior-audit.spec.ts',
+    "static-smoke.spec.ts",
+    "tier0-app-route-coverage.spec.ts",
+    "tier0-behavior-audit.spec.ts",
   ],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -23,19 +23,19 @@ export default defineConfig({
   workers: 3,
   timeout: 30000,
   reporter: [
-    ['list'],
-    ['json', { outputFile: 'test-results/static-smoke-results.json' }],
+    ["list"],
+    ["json", { outputFile: "test-results/static-smoke-results.json" }],
   ],
   use: {
-    baseURL: 'http://localhost:3100',
-    trace: 'off',
-    screenshot: 'only-on-failure',
+    baseURL: "http://localhost:3100",
+    trace: "off",
+    screenshot: "only-on-failure",
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
   // No webServer — expects tier 0 already running
-})
+});

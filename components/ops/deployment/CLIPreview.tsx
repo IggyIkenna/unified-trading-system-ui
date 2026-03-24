@@ -1,10 +1,13 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { Copy, Check, Terminal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import type { DeploymentRequest, ServiceDimensionsResponse } from "@/lib/types/deployment";
+import type {
+  DeploymentRequest,
+  ServiceDimensionsResponse,
+} from "@/lib/types/deployment";
 
 interface CLIPreviewProps {
   serviceName: string;

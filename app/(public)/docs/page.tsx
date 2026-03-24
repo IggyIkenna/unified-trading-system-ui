@@ -1,12 +1,18 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
+import * as React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import {
   Database,
   LineChart,
@@ -20,7 +26,7 @@ import {
   Copy,
   Check,
   ExternalLink,
-} from "lucide-react"
+} from "lucide-react";
 
 // API Endpoints organized by service
 const apiEndpoints = {
@@ -113,7 +119,8 @@ const apiEndpoints = {
   execution: {
     name: "Execution API",
     baseUrl: "https://api.odum.io/v1/execution",
-    description: "Institutional execution algorithms for optimal trade execution",
+    description:
+      "Institutional execution algorithms for optimal trade execution",
     endpoints: [
       {
         method: "POST",
@@ -153,7 +160,7 @@ const apiEndpoints = {
       },
     ],
   },
-}
+};
 
 // Documentation sections
 const docSections = [
@@ -178,7 +185,7 @@ The Odum Research API provides institutional-grade access to trading infrastruct
 - DeFi (AMM pools, Lending protocols)
 - Sports (Pre-match odds, In-play)
 - Prediction Markets (Political, Economic events)
-    `
+    `,
   },
   {
     id: "authentication",
@@ -212,7 +219,7 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \\
 | Starter | 60 | 2 |
 | Professional | 600 | 10 |
 | Enterprise | 6000 | 100 |
-    `
+    `,
   },
   {
     id: "quickstart",
@@ -260,9 +267,9 @@ print(f"Sharpe: {results.sharpe}")
 - Explore the [Data API](#data) for market data access
 - Learn about [Backtesting](#backtesting) for strategy simulation
 - Set up [Execution](#execution) for live trading
-    `
+    `,
   },
-]
+];
 
 const codeExamples = {
   python: `import requests
@@ -343,223 +350,275 @@ curl -X POST "https://api.odum.io/v1/execution/orders" \\
       "participation_rate": 0.1
     }
   }'`,
-}
+};
 
 // Simple markdown-to-JSX renderer
 function DocContent({ content }: { content: string }) {
-  const lines = content.trim().split('\n')
-  const elements: React.ReactNode[] = []
-  let inCodeBlock = false
-  let codeLines: string[] = []
-  let codeLanguage = ''
-  let inTable = false
-  let tableRows: string[][] = []
-  let listItems: string[] = []
+  const lines = content.trim().split("\n");
+  const elements: React.ReactNode[] = [];
+  let inCodeBlock = false;
+  let codeLines: string[] = [];
+  let codeLanguage = "";
+  let inTable = false;
+  let tableRows: string[][] = [];
+  let listItems: string[] = [];
 
   const processInlineMarkdown = (text: string): React.ReactNode => {
     // Process bold, code, and links
-    const parts: React.ReactNode[] = []
-    let remaining = text
-    let keyIdx = 0
+    const parts: React.ReactNode[] = [];
+    let remaining = text;
+    let keyIdx = 0;
 
     while (remaining.length > 0) {
       // Check for inline code
-      const codeMatch = remaining.match(/^`([^`]+)`/)
+      const codeMatch = remaining.match(/^`([^`]+)`/);
       if (codeMatch) {
-        parts.push(<code key={keyIdx++} className="bg-muted px-1.5 py-0.5 rounded text-sm">{codeMatch[1]}</code>)
-        remaining = remaining.slice(codeMatch[0].length)
-        continue
+        parts.push(
+          <code
+            key={keyIdx++}
+            className="bg-muted px-1.5 py-0.5 rounded text-sm"
+          >
+            {codeMatch[1]}
+          </code>,
+        );
+        remaining = remaining.slice(codeMatch[0].length);
+        continue;
       }
 
       // Check for bold
-      const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/)
+      const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
       if (boldMatch) {
-        parts.push(<strong key={keyIdx++} className="text-foreground">{boldMatch[1]}</strong>)
-        remaining = remaining.slice(boldMatch[0].length)
-        continue
+        parts.push(
+          <strong key={keyIdx++} className="text-foreground">
+            {boldMatch[1]}
+          </strong>,
+        );
+        remaining = remaining.slice(boldMatch[0].length);
+        continue;
       }
 
       // Check for links
-      const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/)
+      const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
       if (linkMatch) {
-        parts.push(<a key={keyIdx++} href={linkMatch[2]} className="text-primary hover:underline">{linkMatch[1]}</a>)
-        remaining = remaining.slice(linkMatch[0].length)
-        continue
+        parts.push(
+          <a
+            key={keyIdx++}
+            href={linkMatch[2]}
+            className="text-primary hover:underline"
+          >
+            {linkMatch[1]}
+          </a>,
+        );
+        remaining = remaining.slice(linkMatch[0].length);
+        continue;
       }
 
       // Regular text - find next special character
-      const nextSpecial = remaining.search(/[`*\[]/)
+      const nextSpecial = remaining.search(/[`*\[]/);
       if (nextSpecial === -1) {
-        parts.push(remaining)
-        break
+        parts.push(remaining);
+        break;
       } else if (nextSpecial === 0) {
-        parts.push(remaining[0])
-        remaining = remaining.slice(1)
+        parts.push(remaining[0]);
+        remaining = remaining.slice(1);
       } else {
-        parts.push(remaining.slice(0, nextSpecial))
-        remaining = remaining.slice(nextSpecial)
+        parts.push(remaining.slice(0, nextSpecial));
+        remaining = remaining.slice(nextSpecial);
       }
     }
 
-    return parts.length === 1 ? parts[0] : parts
-  }
+    return parts.length === 1 ? parts[0] : parts;
+  };
 
   const flushList = () => {
     if (listItems.length > 0) {
       elements.push(
         <ul key={elements.length} className="list-disc pl-6 mb-4 space-y-1">
           {listItems.map((item, i) => (
-            <li key={i} className="text-muted-foreground">{processInlineMarkdown(item)}</li>
+            <li key={i} className="text-muted-foreground">
+              {processInlineMarkdown(item)}
+            </li>
           ))}
-        </ul>
-      )
-      listItems = []
+        </ul>,
+      );
+      listItems = [];
     }
-  }
+  };
 
   const flushTable = () => {
     if (tableRows.length > 0) {
-      const [header, ...body] = tableRows
+      const [header, ...body] = tableRows;
       elements.push(
         <div key={elements.length} className="mb-4 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b">
                 {header.map((cell, i) => (
-                  <th key={i} className="text-left p-2 font-semibold">{cell}</th>
+                  <th key={i} className="text-left p-2 font-semibold">
+                    {cell}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {body.filter(row => !row.every(c => c.match(/^-+$/))).map((row, i) => (
-                <tr key={i} className="border-b">
-                  {row.map((cell, j) => (
-                    <td key={j} className="p-2 text-muted-foreground">{cell}</td>
-                  ))}
-                </tr>
-              ))}
+              {body
+                .filter((row) => !row.every((c) => c.match(/^-+$/)))
+                .map((row, i) => (
+                  <tr key={i} className="border-b">
+                    {row.map((cell, j) => (
+                      <td key={j} className="p-2 text-muted-foreground">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
             </tbody>
           </table>
-        </div>
-      )
-      tableRows = []
-      inTable = false
+        </div>,
+      );
+      tableRows = [];
+      inTable = false;
     }
-  }
+  };
 
   for (const line of lines) {
     // Code block handling
-    if (line.trim().startsWith('```')) {
+    if (line.trim().startsWith("```")) {
       if (inCodeBlock) {
         // End code block
         elements.push(
-          <pre key={elements.length} className="bg-muted p-4 rounded-lg overflow-x-auto mb-4">
-            <code className="text-sm font-mono">{codeLines.join('\n')}</code>
-          </pre>
-        )
-        codeLines = []
-        inCodeBlock = false
+          <pre
+            key={elements.length}
+            className="bg-muted p-4 rounded-lg overflow-x-auto mb-4"
+          >
+            <code className="text-sm font-mono">{codeLines.join("\n")}</code>
+          </pre>,
+        );
+        codeLines = [];
+        inCodeBlock = false;
       } else {
         // Start code block
-        flushList()
-        flushTable()
-        codeLanguage = line.trim().slice(3)
-        inCodeBlock = true
+        flushList();
+        flushTable();
+        codeLanguage = line.trim().slice(3);
+        inCodeBlock = true;
       }
-      continue
+      continue;
     }
 
     if (inCodeBlock) {
-      codeLines.push(line)
-      continue
+      codeLines.push(line);
+      continue;
     }
 
-    const trimmed = line.trim()
+    const trimmed = line.trim();
 
     // Empty line
     if (!trimmed) {
-      flushList()
-      flushTable()
-      continue
+      flushList();
+      flushTable();
+      continue;
     }
 
     // Table row
-    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
-      flushList()
-      inTable = true
-      const cells = trimmed.slice(1, -1).split('|').map(c => c.trim())
-      tableRows.push(cells)
-      continue
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      flushList();
+      inTable = true;
+      const cells = trimmed
+        .slice(1, -1)
+        .split("|")
+        .map((c) => c.trim());
+      tableRows.push(cells);
+      continue;
     } else if (inTable) {
-      flushTable()
+      flushTable();
     }
 
     // Headings
-    if (trimmed.startsWith('## ')) {
-      flushList()
-      elements.push(<h2 key={elements.length} className="text-2xl font-bold mb-4 mt-6">{trimmed.slice(3)}</h2>)
-      continue
+    if (trimmed.startsWith("## ")) {
+      flushList();
+      elements.push(
+        <h2 key={elements.length} className="text-2xl font-bold mb-4 mt-6">
+          {trimmed.slice(3)}
+        </h2>,
+      );
+      continue;
     }
-    if (trimmed.startsWith('### ')) {
-      flushList()
-      elements.push(<h3 key={elements.length} className="text-lg font-semibold mb-3 mt-4">{trimmed.slice(4)}</h3>)
-      continue
+    if (trimmed.startsWith("### ")) {
+      flushList();
+      elements.push(
+        <h3 key={elements.length} className="text-lg font-semibold mb-3 mt-4">
+          {trimmed.slice(4)}
+        </h3>,
+      );
+      continue;
     }
 
     // List item
-    if (trimmed.startsWith('- ')) {
-      listItems.push(trimmed.slice(2))
-      continue
+    if (trimmed.startsWith("- ")) {
+      listItems.push(trimmed.slice(2));
+      continue;
     }
 
     // Numbered list
     if (/^\d+\.\s/.test(trimmed)) {
-      listItems.push(trimmed.replace(/^\d+\.\s/, ''))
-      continue
+      listItems.push(trimmed.replace(/^\d+\.\s/, ""));
+      continue;
     }
 
     // Regular paragraph
-    flushList()
-    elements.push(<p key={elements.length} className="text-muted-foreground mb-4">{processInlineMarkdown(trimmed)}</p>)
+    flushList();
+    elements.push(
+      <p key={elements.length} className="text-muted-foreground mb-4">
+        {processInlineMarkdown(trimmed)}
+      </p>,
+    );
   }
 
   // Flush remaining
-  flushList()
-  flushTable()
+  flushList();
+  flushTable();
 
-  return <div className="max-w-none">{elements}</div>
+  return <div className="max-w-none">{elements}</div>;
 }
 
 export default function DocsPage() {
-  const [activeSection, setActiveSection] = React.useState("introduction")
-  const [activeTab, setActiveTab] = React.useState("data")
-  const [codeTab, setCodeTab] = React.useState("python")
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [copiedEndpoint, setCopiedEndpoint] = React.useState<string | null>(null)
+  const [activeSection, setActiveSection] = React.useState("introduction");
+  const [activeTab, setActiveTab] = React.useState("data");
+  const [codeTab, setCodeTab] = React.useState("python");
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [copiedEndpoint, setCopiedEndpoint] = React.useState<string | null>(
+    null,
+  );
 
   // Check if viewing a guide section or API reference
-  const isGuideSection = docSections.some(s => s.id === activeSection)
+  const isGuideSection = docSections.some((s) => s.id === activeSection);
 
   const copyToClipboard = (text: string, id: string) => {
-    navigator.clipboard.writeText(text)
-    setCopiedEndpoint(id)
-    setTimeout(() => setCopiedEndpoint(null), 2000)
-  }
+    navigator.clipboard.writeText(text);
+    setCopiedEndpoint(id);
+    setTimeout(() => setCopiedEndpoint(null), 2000);
+  };
 
   const getMethodColor = (method: string) => {
     switch (method) {
-      case "GET": return "bg-emerald-500/10 text-emerald-500"
-      case "POST": return "bg-sky-500/10 text-sky-500"
-      case "PATCH": return "bg-amber-500/10 text-amber-500"
-      case "DELETE": return "bg-rose-500/10 text-rose-500"
-      case "WS": return "bg-violet-500/10 text-violet-500"
-      default: return "bg-muted text-muted-foreground"
+      case "GET":
+        return "bg-emerald-500/10 text-emerald-500";
+      case "POST":
+        return "bg-sky-500/10 text-sky-500";
+      case "PATCH":
+        return "bg-amber-500/10 text-amber-500";
+      case "DELETE":
+        return "bg-rose-500/10 text-rose-500";
+      case "WS":
+        return "bg-violet-500/10 text-violet-500";
+      default:
+        return "bg-muted text-muted-foreground";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
-
       <div className="container px-4 py-8 md:px-6">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
@@ -567,8 +626,8 @@ export default function DocsPage() {
             <div className="sticky top-24">
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Search docs..." 
+                <Input
+                  placeholder="Search docs..."
                   className="pl-9"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -579,43 +638,51 @@ export default function DocsPage() {
                   Getting Started
                 </div>
                 {docSections.map((section) => {
-                  const Icon = section.icon
+                  const Icon = section.icon;
                   return (
                     <button
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
                       className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${
-                        activeSection === section.id ? "bg-muted font-medium" : "hover:bg-muted"
+                        activeSection === section.id
+                          ? "bg-muted font-medium"
+                          : "hover:bg-muted"
                       }`}
                     >
                       <Icon className="size-4" />
                       {section.title}
                     </button>
-                  )
+                  );
                 })}
-                
+
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 mt-6">
                   API Reference
                 </div>
                 {Object.entries(apiEndpoints).map(([key, api]) => {
-                  const Icon = api.name.includes("Data") ? Database : 
-                              api.name.includes("Backtest") ? LineChart : 
-                              api.name.includes("Execution") ? Zap : FileJson
+                  const Icon = api.name.includes("Data")
+                    ? Database
+                    : api.name.includes("Backtest")
+                      ? LineChart
+                      : api.name.includes("Execution")
+                        ? Zap
+                        : FileJson;
                   return (
                     <button
                       key={key}
                       onClick={() => {
-                        setActiveSection(key)
-                        setActiveTab(key)
+                        setActiveSection(key);
+                        setActiveTab(key);
                       }}
                       className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md w-full text-left ${
-                        activeSection === key ? "bg-muted font-medium" : "hover:bg-muted"
+                        activeSection === key
+                          ? "bg-muted font-medium"
+                          : "hover:bg-muted"
                       }`}
                     >
                       <Icon className="size-4" />
                       {api.name}
                     </button>
-                  )
+                  );
                 })}
               </nav>
             </div>
@@ -625,7 +692,10 @@ export default function DocsPage() {
           <main className="flex-1 min-w-0">
             {/* Guide Sections */}
             {docSections.map((section) => (
-              <div key={section.id} className={activeSection === section.id ? "block" : "hidden"}>
+              <div
+                key={section.id}
+                className={activeSection === section.id ? "block" : "hidden"}
+              >
                 <DocContent content={section.content} />
               </div>
             ))}
@@ -634,7 +704,8 @@ export default function DocsPage() {
             <div className={!isGuideSection ? "block mb-8" : "hidden"}>
               <h1 className="text-3xl font-bold mb-2">API Reference</h1>
               <p className="text-muted-foreground">
-                Complete reference for the Odum Research API. All endpoints require authentication via API key.
+                Complete reference for the Odum Research API. All endpoints
+                require authentication via API key.
               </p>
             </div>
 
@@ -678,7 +749,10 @@ export default function DocsPage() {
 
             {/* API Endpoints */}
             {Object.entries(apiEndpoints).map(([key, api]) => (
-              <div key={key} className={activeSection === key ? "block" : "hidden"}>
+              <div
+                key={key}
+                className={activeSection === key ? "block" : "hidden"}
+              >
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold">{api.name}</h2>
                   <p className="text-muted-foreground">{api.description}</p>
@@ -694,15 +768,24 @@ export default function DocsPage() {
                     <Card key={idx}>
                       <CardHeader className="pb-2">
                         <div className="flex items-center gap-3">
-                          <Badge className={`${getMethodColor(endpoint.method)} font-mono text-xs`}>
+                          <Badge
+                            className={`${getMethodColor(endpoint.method)} font-mono text-xs`}
+                          >
                             {endpoint.method}
                           </Badge>
-                          <code className="text-sm font-mono">{endpoint.path}</code>
+                          <code className="text-sm font-mono">
+                            {endpoint.path}
+                          </code>
                           <Button
                             variant="ghost"
                             size="sm"
                             className="ml-auto h-7"
-                            onClick={() => copyToClipboard(`${api.baseUrl}${endpoint.path}`, `${key}-${idx}`)}
+                            onClick={() =>
+                              copyToClipboard(
+                                `${api.baseUrl}${endpoint.path}`,
+                                `${key}-${idx}`,
+                              )
+                            }
                           >
                             {copiedEndpoint === `${key}-${idx}` ? (
                               <Check className="size-3" />
@@ -713,12 +796,20 @@ export default function DocsPage() {
                         </div>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-muted-foreground mb-3">{endpoint.description}</p>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          {endpoint.description}
+                        </p>
                         {endpoint.params.length > 0 && (
                           <div className="flex flex-wrap gap-2">
-                            <span className="text-xs text-muted-foreground">Parameters:</span>
+                            <span className="text-xs text-muted-foreground">
+                              Parameters:
+                            </span>
                             {endpoint.params.map((param) => (
-                              <Badge key={param} variant="secondary" className="text-xs font-mono">
+                              <Badge
+                                key={param}
+                                variant="secondary"
+                                className="text-xs font-mono"
+                              >
                                 {param}
                               </Badge>
                             ))}
@@ -735,7 +826,9 @@ export default function DocsPage() {
             <Card className={!isGuideSection ? "mt-8" : "hidden"}>
               <CardHeader>
                 <CardTitle className="text-lg">OpenAPI Specification</CardTitle>
-                <CardDescription>Download the full API spec for code generation</CardDescription>
+                <CardDescription>
+                  Download the full API spec for code generation
+                </CardDescription>
               </CardHeader>
               <CardContent className="flex gap-4">
                 <Button variant="outline" asChild>
@@ -751,7 +844,10 @@ export default function DocsPage() {
                   </a>
                 </Button>
                 <Button variant="ghost" asChild>
-                  <Link href="https://github.com/odum-research/api-clients" target="_blank">
+                  <Link
+                    href="https://github.com/odum-research/api-clients"
+                    target="_blank"
+                  >
                     <ExternalLink className="mr-2 size-4" />
                     SDK Libraries
                   </Link>
@@ -762,5 +858,5 @@ export default function DocsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

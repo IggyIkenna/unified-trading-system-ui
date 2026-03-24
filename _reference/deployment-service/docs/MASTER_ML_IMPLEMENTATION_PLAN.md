@@ -87,7 +87,7 @@ If you have old data with `day-2023-01-01/` format:
 
 ## 2. Service Status Summary
 
-**Audit Date:** February 9, 2026  
+**Audit Date:** February 9, 2026
 **Result:** ✅ All services production-ready with `key=value` format
 
 ### 2.1 instruments-service ✅

@@ -6,11 +6,11 @@ Next.js 15 App Router. Three route groups. **Critical architectural change from 
 
 ## Route Group Overview
 
-| Group | URL prefix | Audience | Auth required |
-|---|---|---|---|
-| `(public)/` | `/`, `/login`, `/services/*`, etc. | Unauthenticated visitors | No |
-| `(platform)/` | `/dashboard`, `/services/*`, `/strategies/*`, etc. | Authenticated org users + internal | Yes |
-| `(ops)/` | `/admin`, `/devops`, `/compliance`, etc. | Internal operators only | Yes + role gate |
+| Group         | URL prefix                                         | Audience                           | Auth required   |
+| ------------- | -------------------------------------------------- | ---------------------------------- | --------------- |
+| `(public)/`   | `/`, `/login`, `/services/*`, etc.                 | Unauthenticated visitors           | No              |
+| `(platform)/` | `/dashboard`, `/services/*`, `/strategies/*`, etc. | Authenticated org users + internal | Yes             |
+| `(ops)/`      | `/admin`, `/devops`, `/compliance`, etc.           | Internal operators only            | Yes + role gate |
 
 ---
 
@@ -188,46 +188,46 @@ Internal-only. Hidden from client personas.
 
 All old flat and parallel routes now permanently redirect to `/services/*`. Agents must NOT create new pages at these old paths — they will be overwritten by redirects.
 
-| Old URL | → Canonical URL |
-|---|---|
-| `/overview` | `/services/overview` |
-| `/data` | `/services/data/overview` |
-| `/trading` | `/services/trading/overview` |
-| `/trading/positions` | `/services/trading/positions` |
-| `/trading/risk` | `/services/trading/risk` |
-| `/trading/alerts` | `/services/trading/alerts` |
-| `/trading/markets` | `/services/data/markets` |
-| `/trading/markets/:path*` | `/services/data/markets/:path*` |
-| `/research` | `/services/research/overview` |
-| `/research/strategy/:path*` | `/services/research/strategy/:path*` |
-| `/research/ml/:path*` | `/services/research/ml/:path*` |
-| `/research/execution/:path*` | `/services/research/execution/:path*` |
-| `/ml` | `/services/research/ml` |
-| `/ml/:path*` | `/services/research/ml/:path*` |
-| `/positions` | `/services/trading/positions` |
-| `/risk` | `/services/trading/risk` |
-| `/alerts` | `/services/trading/alerts` |
-| `/strategy-platform` | `/services/research/strategy/backtests` |
-| `/strategy-platform/:path*` | `/services/research/strategy/:path*` |
-| `/execution` | `/services/execution/overview` |
-| `/execution/:path*` | `/services/execution/:path*` |
-| `/reports` | `/services/reports/overview` |
-| `/reports/:path*` | `/services/reports/:path*` |
-| `/markets` | `/services/data/markets` |
-| `/markets/pnl` | `/services/data/markets/pnl` |
-| `/executive` | `/services/reports/executive` |
-| `/quant` | `/services/research/quant` |
+| Old URL                      | → Canonical URL                         |
+| ---------------------------- | --------------------------------------- |
+| `/overview`                  | `/services/overview`                    |
+| `/data`                      | `/services/data/overview`               |
+| `/trading`                   | `/services/trading/overview`            |
+| `/trading/positions`         | `/services/trading/positions`           |
+| `/trading/risk`              | `/services/trading/risk`                |
+| `/trading/alerts`            | `/services/trading/alerts`              |
+| `/trading/markets`           | `/services/data/markets`                |
+| `/trading/markets/:path*`    | `/services/data/markets/:path*`         |
+| `/research`                  | `/services/research/overview`           |
+| `/research/strategy/:path*`  | `/services/research/strategy/:path*`    |
+| `/research/ml/:path*`        | `/services/research/ml/:path*`          |
+| `/research/execution/:path*` | `/services/research/execution/:path*`   |
+| `/ml`                        | `/services/research/ml`                 |
+| `/ml/:path*`                 | `/services/research/ml/:path*`          |
+| `/positions`                 | `/services/trading/positions`           |
+| `/risk`                      | `/services/trading/risk`                |
+| `/alerts`                    | `/services/trading/alerts`              |
+| `/strategy-platform`         | `/services/research/strategy/backtests` |
+| `/strategy-platform/:path*`  | `/services/research/strategy/:path*`    |
+| `/execution`                 | `/services/execution/overview`          |
+| `/execution/:path*`          | `/services/execution/:path*`            |
+| `/reports`                   | `/services/reports/overview`            |
+| `/reports/:path*`            | `/services/reports/:path*`              |
+| `/markets`                   | `/services/data/markets`                |
+| `/markets/pnl`               | `/services/data/markets/pnl`            |
+| `/executive`                 | `/services/reports/executive`           |
+| `/quant`                     | `/services/research/quant`              |
 
 ---
 
 ## Dynamic Routes
 
-| Pattern | Example URL | Purpose |
-|---|---|---|
-| `service/[key]/page.tsx` | `/services/execution-service` | Service detail by registry key |
-| `service/research/ml/experiments/[id]/page.tsx` | `/services/research/ml/experiments/exp-42` | ML experiment detail |
-| `strategies/[id]/page.tsx` | `/strategies/strat-001` | Strategy detail |
-| `client-portal/[org]/page.tsx` | `/client-portal/odum` | Org-scoped portal |
+| Pattern                                         | Example URL                                | Purpose                        |
+| ----------------------------------------------- | ------------------------------------------ | ------------------------------ |
+| `service/[key]/page.tsx`                        | `/services/execution-service`              | Service detail by registry key |
+| `service/research/ml/experiments/[id]/page.tsx` | `/services/research/ml/experiments/exp-42` | ML experiment detail           |
+| `strategies/[id]/page.tsx`                      | `/strategies/strat-001`                    | Strategy detail                |
+| `client-portal/[org]/page.tsx`                  | `/client-portal/odum`                      | Org-scoped portal              |
 
 ---
 

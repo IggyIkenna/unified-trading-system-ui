@@ -12,8 +12,7 @@ todos:
       counts, CSV export"
     status: pending
   - id: filter-bar-cascading
-    content:
-      Build FilterBar with URL state, cascading counts, multi-select, search-within-dropdown, dimension pin toggle
+    content: Build FilterBar with URL state, cascading counts, multi-select, search-within-dropdown, dimension pin toggle
     status: pending
   - id: global-nav-three-entry
     content:
@@ -27,8 +26,7 @@ todos:
     content: "Build Command Center landing: KPI grid + strategy sparkline table + alert feed + health bar"
     status: pending
   - id: strategy-grid-wire-apis
-    content:
-      Wire DimensionalGrid in strategy-ui to existing unwired aggregate/heatmap/distribution/best-configs API endpoints
+    content: Wire DimensionalGrid in strategy-ui to existing unwired aggregate/heatmap/distribution/best-configs API endpoints
     status: pending
   - id: ml-config-grid
     content: Build ML Training config grid with hyperparameter dimensions (instrument, timeframe, learning_rate, phase)

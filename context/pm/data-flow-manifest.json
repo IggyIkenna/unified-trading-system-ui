@@ -37,7 +37,11 @@
       "service": "execution-service",
       "data_source": "pubsub",
       "api": "execution-results-api",
-      "ui": ["execution-analytics-ui", "trading-analytics-ui", "live-health-monitor-ui"]
+      "ui": [
+        "execution-analytics-ui",
+        "trading-analytics-ui",
+        "live-health-monitor-ui"
+      ]
     },
     {
       "id": "market-data",

@@ -12,19 +12,19 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "@unified-trading/ui-kit/globals.css": path.resolve(
         __dirname,
-        "packages/ui-kit/src/globals.css"
+        "packages/ui-kit/src/globals.css",
       ),
       "@unified-trading/ui-kit": path.resolve(
         __dirname,
-        "packages/ui-kit/src/index.ts"
+        "packages/ui-kit/src/index.ts",
       ),
       "@unified-trading/ui-auth": path.resolve(
         __dirname,
-        "packages/ui-auth/src/index.ts"
+        "packages/ui-auth/src/index.ts",
       ),
       "@unified-admin/core": path.resolve(
         __dirname,
-        "packages/admin-core/src/index.ts"
+        "packages/admin-core/src/index.ts",
       ),
     },
   },

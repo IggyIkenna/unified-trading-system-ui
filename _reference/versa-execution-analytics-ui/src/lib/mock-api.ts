@@ -181,12 +181,7 @@ const MOCK_RESULTS_LIST = [
 const MOCK_FILTERS = {
   categories: ["crypto", "equities", "defi"],
   assets: ["BTC", "ETH", "UNI", "AAPL", "SOL", "AAVE"],
-  strategies: [
-    "StatArb",
-    "MeanReversion",
-    "TrendFollowing",
-    "MarketMaking",
-  ],
+  strategies: ["StatArb", "MeanReversion", "TrendFollowing", "MarketMaking"],
   algorithms: ["TWAP", "VWAP", "ADAPTIVE_TWAP", "BENCHMARK_FILL"],
   timeframes: ["1h", "4h", "8h"],
   instruction_types: ["TRADE", "LEND"],
@@ -198,10 +193,13 @@ const MOCK_FILTERS = {
 // ---------------------------------------------------------------------------
 
 function makeMockExecutionAlpha(runId: string) {
-  const base = 43000 + MOCK_RESULTS_LIST.findIndex((r) => r.run_id === runId) * 500;
+  const base =
+    43000 + MOCK_RESULTS_LIST.findIndex((r) => r.run_id === runId) * 500;
   const entryFills = Array.from({ length: 12 }, (_, i) => ({
     order_id: `ord-${runId}-e${i + 1}`,
-    timestamp: new Date(Date.UTC(2024, 0, 2, 9, 30) + i * 3600000).toISOString(),
+    timestamp: new Date(
+      Date.UTC(2024, 0, 2, 9, 30) + i * 3600000,
+    ).toISOString(),
     fill_price: base + Math.sin(i / 3) * 200 + (i % 2 === 0 ? -30 : 20),
     benchmark_price: base + Math.sin(i / 3) * 200,
     slippage_bps: (i % 2 === 0 ? -3.1 : 8.4) + i * 0.7,
@@ -215,7 +213,9 @@ function makeMockExecutionAlpha(runId: string) {
 
   const exitFills = Array.from({ length: 10 }, (_, i) => ({
     order_id: `ord-${runId}-x${i + 1}`,
-    timestamp: new Date(Date.UTC(2024, 0, 2, 11, 0) + i * 3600000).toISOString(),
+    timestamp: new Date(
+      Date.UTC(2024, 0, 2, 11, 0) + i * 3600000,
+    ).toISOString(),
     fill_price: base + 150 + Math.sin(i / 3) * 180 + (i % 2 === 0 ? 25 : -15),
     benchmark_price: base + 150 + Math.sin(i / 3) * 180,
     slippage_bps: (i % 2 === 0 ? 5.2 : -2.8) + i * 0.5,
@@ -231,7 +231,9 @@ function makeMockExecutionAlpha(runId: string) {
   const equityCurve = Array.from({ length: 50 }, (_, i) => {
     const cumAlphaUsd = 200 * i + Math.sin(i / 5) * 800;
     return {
-      timestamp: new Date(Date.UTC(2024, 0, 2, 9, 30) + i * 1800000).toISOString(),
+      timestamp: new Date(
+        Date.UTC(2024, 0, 2, 9, 30) + i * 1800000,
+      ).toISOString(),
       cumulative_alpha_usd: cumAlphaUsd,
       cumulative_alpha_bps: cumAlphaUsd / 100,
       cumulative_notional_usd: 10000 + i * 3000,
@@ -252,7 +254,9 @@ function makeMockExecutionAlpha(runId: string) {
       num_exits: exitFills.length,
       tp_hits: exitFills.filter((f) => f.exit_type === "TP").length,
       sl_hits: exitFills.filter((f) => f.exit_type === "SL").length,
-      candle_close_exits: exitFills.filter((f) => f.exit_type === "CANDLE_CLOSE").length,
+      candle_close_exits: exitFills.filter(
+        (f) => f.exit_type === "CANDLE_CLOSE",
+      ).length,
       // For the Analysis page shape (different field names)
       vw_gross_entry_alpha_bps: 8.2,
       vw_gross_exit_alpha_bps: 4.2,
@@ -279,7 +283,7 @@ function makeMockResultDetails(runId: string) {
     id: `order-${runId}-${j + 1}`,
     timestamp: new Date(Date.UTC(2024, 0, 2) + j * 3600000).toISOString(),
     side: j % 3 === 0 ? "SELL" : "BUY",
-    price: basePrice + (Math.sin(j) * 500),
+    price: basePrice + Math.sin(j) * 500,
     amount: 0.1 + (j % 5) * 0.12,
     status: (["FILLED", "FILLED", "FILLED", "REJECTED"] as const)[j % 4],
     exec_algorithm: (["TWAP", "VWAP", "ADAPTIVE_TWAP"] as const)[j % 3],
@@ -297,7 +301,8 @@ function makeMockResultDetails(runId: string) {
 
   const equity_curve = Array.from({ length: 90 }, (_, k) => ({
     timestamp: new Date(Date.UTC(2024, 0, 1) + k * 86400000).toISOString(),
-    portfolio_value: 100000 * (1 + (idx + 1) * 0.0015 * k + 0.01 * Math.sin(k / 5)),
+    portfolio_value:
+      100000 * (1 + (idx + 1) * 0.0015 * k + 0.01 * Math.sin(k / 5)),
     cash: 50000 + k * 200,
     positions_value: 50000 * (1 + (idx + 1) * 0.002 * k),
   }));
@@ -389,7 +394,9 @@ const MOCK_BACKTEST_RESULTS = [
     startDate: "2024-01-01",
     endDate: "2024-03-31",
     equity: Array.from({ length: 60 }, (_, i) => ({
-      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000).toISOString().slice(0, 10),
+      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000)
+        .toISOString()
+        .slice(0, 10),
       value: 1000000 + i * 3100 + (i % 7) * 1200,
     })),
     venues: [
@@ -398,7 +405,9 @@ const MOCK_BACKTEST_RESULTS = [
       { venue: "Bybit", trades: 2082, pnl: 43000 },
     ],
     dailyPnl: Array.from({ length: 60 }, (_, i) => ({
-      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000).toISOString().slice(0, 10),
+      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000)
+        .toISOString()
+        .slice(0, 10),
       pnl: (i % 3 === 0 ? -15000 : 22000) + i * 400,
       cumPnl: i * 3100 + (i % 5) * 2000,
     })),
@@ -416,7 +425,9 @@ const MOCK_BACKTEST_RESULTS = [
     startDate: "2024-01-01",
     endDate: "2024-03-31",
     equity: Array.from({ length: 60 }, (_, i) => ({
-      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000).toISOString().slice(0, 10),
+      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000)
+        .toISOString()
+        .slice(0, 10),
       value: 800000 + i * 1900 + (i % 9) * 800,
     })),
     venues: [
@@ -424,7 +435,9 @@ const MOCK_BACKTEST_RESULTS = [
       { venue: "Kraken", trades: 132, pnl: 42000 },
     ],
     dailyPnl: Array.from({ length: 60 }, (_, i) => ({
-      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000).toISOString().slice(0, 10),
+      date: new Date(Date.UTC(2024, 0, 1) + i * 86400000)
+        .toISOString()
+        .slice(0, 10),
       pnl: (i % 4 === 0 ? -8000 : 14000) + i * 250,
       cumPnl: i * 1900 + (i % 6) * 1000,
     })),
@@ -501,7 +514,10 @@ const MOCK_CONFIG_CONTENT = {
     related_balance: ["BINANCE:SPOT:USDT", "COINBASE:SPOT:USD"],
   },
   execution: {
-    entry: { algorithm: "TWAP", params: { horizon_seconds: 600, urgency: 0.4 } },
+    entry: {
+      algorithm: "TWAP",
+      params: { horizon_seconds: 600, urgency: 0.4 },
+    },
     exit: { algorithm: "TWAP", params: { horizon_seconds: 300, urgency: 0.6 } },
   },
   venue: "BINANCE",
@@ -689,10 +705,7 @@ function generateTicks(basePrice = 43000) {
       timestamp: ts,
       timestamp_formatted: new Date(ts).toLocaleTimeString(),
       price:
-        basePrice +
-        Math.sin(i / 20) * 200 +
-        (i % 2 === 0 ? -25 : 25) +
-        i * 0.5,
+        basePrice + Math.sin(i / 20) * 200 + (i % 2 === 0 ? -25 : 25) + i * 0.5,
       size: 0.01 + (i % 10) * 0.2,
       side: i % 2 === 0 ? "buy" : "sell",
     };
@@ -853,7 +866,12 @@ const MOCK_DATA_STATUS = {
                   algo_name: "TWAP",
                   result_strategy_id: "statarb_v2",
                   has_results: true,
-                  result_dates: ["2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05"],
+                  result_dates: [
+                    "2024-01-02",
+                    "2024-01-03",
+                    "2024-01-04",
+                    "2024-01-05",
+                  ],
                   dates_found_count: 4,
                   completion_pct: 100.0,
                 },
@@ -937,18 +955,66 @@ const MOCK_DATA_STATUS = {
     },
   ],
   breakdown_by_mode: {
-    day: { total: 8, with_results: 7, missing_count: 1, completion_pct: 87.5, missing_samples: [] },
-    night: { total: 4, with_results: 2, missing_count: 2, completion_pct: 50.0, missing_samples: ["trend_night_adaptive.json:2024-01-02"] },
+    day: {
+      total: 8,
+      with_results: 7,
+      missing_count: 1,
+      completion_pct: 87.5,
+      missing_samples: [],
+    },
+    night: {
+      total: 4,
+      with_results: 2,
+      missing_count: 2,
+      completion_pct: 50.0,
+      missing_samples: ["trend_night_adaptive.json:2024-01-02"],
+    },
   },
   breakdown_by_timeframe: {
-    "1h": { total: 4, with_results: 4, missing_count: 0, completion_pct: 100.0, missing_samples: [] },
-    "4h": { total: 4, with_results: 3, missing_count: 1, completion_pct: 75.0, missing_samples: [] },
-    "8h": { total: 4, with_results: 2, missing_count: 2, completion_pct: 50.0, missing_samples: [] },
+    "1h": {
+      total: 4,
+      with_results: 4,
+      missing_count: 0,
+      completion_pct: 100.0,
+      missing_samples: [],
+    },
+    "4h": {
+      total: 4,
+      with_results: 3,
+      missing_count: 1,
+      completion_pct: 75.0,
+      missing_samples: [],
+    },
+    "8h": {
+      total: 4,
+      with_results: 2,
+      missing_count: 2,
+      completion_pct: 50.0,
+      missing_samples: [],
+    },
   },
   breakdown_by_algo: {
-    TWAP: { total: 4, with_results: 4, missing_count: 0, completion_pct: 100.0, missing_samples: [] },
-    VWAP: { total: 4, with_results: 3, missing_count: 1, completion_pct: 75.0, missing_samples: [] },
-    ADAPTIVE_TWAP: { total: 4, with_results: 2, missing_count: 2, completion_pct: 50.0, missing_samples: [] },
+    TWAP: {
+      total: 4,
+      with_results: 4,
+      missing_count: 0,
+      completion_pct: 100.0,
+      missing_samples: [],
+    },
+    VWAP: {
+      total: 4,
+      with_results: 3,
+      missing_count: 1,
+      completion_pct: 75.0,
+      missing_samples: [],
+    },
+    ADAPTIVE_TWAP: {
+      total: 4,
+      with_results: 2,
+      missing_count: 2,
+      completion_pct: 50.0,
+      missing_samples: [],
+    },
   },
   date_filter: { start: "2024-01-01", end: "2024-03-31" },
 };
@@ -968,7 +1034,8 @@ const MOCK_MISSING_SHARDS = {
       algo: "VWAP",
     },
     {
-      config_gcs: "gs://execution-store-prod/configs/v2/trend_night_adaptive.json",
+      config_gcs:
+        "gs://execution-store-prod/configs/v2/trend_night_adaptive.json",
       date: "2024-01-01",
       strategy: "TrendFollowing",
       mode: "night",
@@ -976,7 +1043,8 @@ const MOCK_MISSING_SHARDS = {
       algo: "ADAPTIVE_TWAP",
     },
     {
-      config_gcs: "gs://execution-store-prod/configs/v2/trend_night_adaptive.json",
+      config_gcs:
+        "gs://execution-store-prod/configs/v2/trend_night_adaptive.json",
       date: "2024-01-02",
       strategy: "TrendFollowing",
       mode: "night",
@@ -1012,7 +1080,11 @@ const MOCK_MISSING_SHARDS = {
 function handleCoreRoutes(path: string): Response | null {
   // Health
   if (path.endsWith("/health"))
-    return jsonResponse({ status: "healthy", mock: true, version: "1.0.0-mock" });
+    return jsonResponse({
+      status: "healthy",
+      mock: true,
+      version: "1.0.0-mock",
+    });
 
   // Recon
   if (path.includes("/recon/breaks"))
@@ -1030,28 +1102,59 @@ function handleCoreRoutes(path: string): Response | null {
 
   // Config sources
   if (path.includes("/config/sources"))
-    return jsonResponse({ sources: ["gs://execution-store-prod/configs/v2/", "gs://execution-store-staging/configs/v2/"] });
+    return jsonResponse({
+      sources: [
+        "gs://execution-store-prod/configs/v2/",
+        "gs://execution-store-staging/configs/v2/",
+      ],
+    });
 
   // CPU cores
   if (path.includes("/config/system/cores"))
-    return jsonResponse({ cores: 8, recommended_workers: 6, max_safe_workers: 12 });
+    return jsonResponse({
+      cores: 8,
+      recommended_workers: 6,
+      max_safe_workers: 12,
+    });
 
   // Buckets
   if (path.includes("/results/buckets"))
-    return jsonResponse({ buckets: MOCK_BUCKETS, project_id: "unified-trading-prod" });
+    return jsonResponse({
+      buckets: MOCK_BUCKETS,
+      project_id: "unified-trading-prod",
+    });
 
   // Prefixes
   if (path.includes("/results/prefixes"))
-    return jsonResponse({ prefixes: MOCK_PREFIXES, bucket: "execution-store-prod" });
+    return jsonResponse({
+      prefixes: MOCK_PREFIXES,
+      bucket: "execution-store-prod",
+    });
 
   // Files
   if (path.includes("/results/files"))
     return jsonResponse({
       files: [
-        { name: "run-001/execution_alpha.json", size: 48200, updated: "2024-03-31T18:00:00Z" },
-        { name: "run-002/execution_alpha.json", size: 32100, updated: "2024-03-31T18:00:00Z" },
-        { name: "run-003/execution_alpha.json", size: 21400, updated: "2024-03-31T18:00:00Z" },
-        { name: "run-004/execution_alpha.json", size: 68900, updated: "2024-03-31T18:00:00Z" },
+        {
+          name: "run-001/execution_alpha.json",
+          size: 48200,
+          updated: "2024-03-31T18:00:00Z",
+        },
+        {
+          name: "run-002/execution_alpha.json",
+          size: 32100,
+          updated: "2024-03-31T18:00:00Z",
+        },
+        {
+          name: "run-003/execution_alpha.json",
+          size: 21400,
+          updated: "2024-03-31T18:00:00Z",
+        },
+        {
+          name: "run-004/execution_alpha.json",
+          size: 68900,
+          updated: "2024-03-31T18:00:00Z",
+        },
       ],
     });
 
@@ -1116,8 +1219,7 @@ function handleDeploymentRoutes(path: string): Response | null {
     });
 
   // Single deployment by ID
-  if (path.match(/\/deployments\//))
-    return jsonResponse(MOCK_DEPLOYMENT);
+  if (path.match(/\/deployments\//)) return jsonResponse(MOCK_DEPLOYMENT);
 
   // Services list
   if (path.includes("/services") && !path.includes("/service-status"))
@@ -1128,8 +1230,7 @@ function handleDeploymentRoutes(path: string): Response | null {
     });
 
   // Service status — data-status
-  if (path.includes("/data-status"))
-    return jsonResponse(MOCK_DATA_STATUS);
+  if (path.includes("/data-status")) return jsonResponse(MOCK_DATA_STATUS);
 
   // Service status — missing-shards
   if (path.includes("/missing-shards"))
@@ -1165,8 +1266,14 @@ function handleDeploymentRoutes(path: string): Response | null {
     return jsonResponse({
       default_bucket: "gs://execution-store-prod/configs/v2/",
       buckets: [
-        { name: "execution-store-prod", path: "gs://execution-store-prod/configs/v2/" },
-        { name: "execution-store-staging", path: "gs://execution-store-staging/configs/v2/" },
+        {
+          name: "execution-store-prod",
+          path: "gs://execution-store-prod/configs/v2/",
+        },
+        {
+          name: "execution-store-staging",
+          path: "gs://execution-store-staging/configs/v2/",
+        },
       ],
     });
 
@@ -1192,7 +1299,10 @@ function handleDataAssetRoutes(path: string): Response | null {
       instruments: [
         { instrumentId: "BINANCE:SPOT:BTC-USDT", instrumentType: "SPOT" },
         { instrumentId: "BINANCE:SPOT:ETH-USDT", instrumentType: "SPOT" },
-        { instrumentId: "BINANCE:PERPETUAL:BTC-USDT-PERP", instrumentType: "PERPETUAL" },
+        {
+          instrumentId: "BINANCE:PERPETUAL:BTC-USDT-PERP",
+          instrumentType: "PERPETUAL",
+        },
         { instrumentId: "COINBASE:SPOT:BTC-USD", instrumentType: "SPOT" },
         { instrumentId: "KRAKEN:SPOT:ETH-USD", instrumentType: "SPOT" },
       ],
@@ -1232,7 +1342,12 @@ function handleDataRoutes(path: string): Response | null {
 
   // Result details by ID (e.g. /results/run-001)
   const resultDetailMatch = path.match(/\/results\/([^/?]+)$/);
-  if (resultDetailMatch && !path.includes("/results/buckets") && !path.includes("/results/prefixes") && !path.includes("/results/files")) {
+  if (
+    resultDetailMatch &&
+    !path.includes("/results/buckets") &&
+    !path.includes("/results/prefixes") &&
+    !path.includes("/results/files")
+  ) {
     const runId = resultDetailMatch[1];
     return jsonResponse(makeMockResultDetails(runId));
   }
@@ -1276,7 +1391,11 @@ function handleDataRoutes(path: string): Response | null {
   // Backtest run / cancel
   if (path.includes("/backtest/run") || path.includes("/backtest/cancel")) {
     const jobId = `mock-job-${Date.now()}`;
-    return jsonResponse({ job_id: jobId, status: "queued", message: "Backtest queued" });
+    return jsonResponse({
+      job_id: jobId,
+      status: "queued",
+      message: "Backtest queued",
+    });
   }
 
   return null;

@@ -1,11 +1,11 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen } from "@testing-library/react";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 describe("Select", () => {
   it("renders trigger with placeholder", () => {
@@ -18,10 +18,10 @@ describe("Select", () => {
           <SelectItem value="a">Option A</SelectItem>
           <SelectItem value="b">Option B</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    expect(screen.getByText("Pick one")).toBeInTheDocument()
-  })
+      </Select>,
+    );
+    expect(screen.getByText("Pick one")).toBeInTheDocument();
+  });
 
   it("renders trigger with data-slot attribute", () => {
     render(
@@ -32,11 +32,11 @@ describe("Select", () => {
         <SelectContent>
           <SelectItem value="x">X</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    const trigger = screen.getByTestId("trigger")
-    expect(trigger).toHaveAttribute("data-slot", "select-trigger")
-  })
+      </Select>,
+    );
+    const trigger = screen.getByTestId("trigger");
+    expect(trigger).toHaveAttribute("data-slot", "select-trigger");
+  });
 
   it("renders trigger as a combobox role", () => {
     render(
@@ -47,10 +47,10 @@ describe("Select", () => {
         <SelectContent>
           <SelectItem value="alpha">Alpha</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    expect(screen.getByRole("combobox")).toBeInTheDocument()
-  })
+      </Select>,
+    );
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
 
   it("renders with small size trigger", () => {
     render(
@@ -61,11 +61,11 @@ describe("Select", () => {
         <SelectContent>
           <SelectItem value="a">A</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    const trigger = screen.getByTestId("sm-trigger")
-    expect(trigger).toHaveAttribute("data-size", "sm")
-  })
+      </Select>,
+    );
+    const trigger = screen.getByTestId("sm-trigger");
+    expect(trigger).toHaveAttribute("data-size", "sm");
+  });
 
   it("renders with a controlled value", () => {
     render(
@@ -77,10 +77,10 @@ describe("Select", () => {
           <SelectItem value="alpha">Alpha</SelectItem>
           <SelectItem value="beta">Beta</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    expect(screen.getByText("Beta")).toBeInTheDocument()
-  })
+      </Select>,
+    );
+    expect(screen.getByText("Beta")).toBeInTheDocument();
+  });
 
   it("applies custom className to trigger", () => {
     render(
@@ -91,10 +91,10 @@ describe("Select", () => {
         <SelectContent>
           <SelectItem value="a">A</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    expect(screen.getByTestId("ct").className).toContain("custom-trigger")
-  })
+      </Select>,
+    );
+    expect(screen.getByTestId("ct").className).toContain("custom-trigger");
+  });
 
   it("trigger has aria-expanded attribute", () => {
     render(
@@ -105,11 +105,11 @@ describe("Select", () => {
         <SelectContent>
           <SelectItem value="alpha">Alpha</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    const combobox = screen.getByRole("combobox")
-    expect(combobox).toHaveAttribute("aria-expanded", "false")
-  })
+      </Select>,
+    );
+    const combobox = screen.getByRole("combobox");
+    expect(combobox).toHaveAttribute("aria-expanded", "false");
+  });
 
   it("renders disabled trigger", () => {
     render(
@@ -120,9 +120,9 @@ describe("Select", () => {
         <SelectContent>
           <SelectItem value="a">A</SelectItem>
         </SelectContent>
-      </Select>
-    )
-    const combobox = screen.getByRole("combobox")
-    expect(combobox).toBeDisabled()
-  })
-})
+      </Select>,
+    );
+    const combobox = screen.getByRole("combobox");
+    expect(combobox).toBeDisabled();
+  });
+});

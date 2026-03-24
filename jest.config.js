@@ -1,8 +1,8 @@
-const nextJest = require("next/jest")
+const nextJest = require("next/jest");
 
 const createJestConfig = nextJest({
   dir: "./",
-})
+});
 
 const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
@@ -20,9 +20,7 @@ const customJestConfig = {
   forceExit: true,
   // Cap worker memory to prevent OOM in CI
   workerIdleMemoryLimit: "512MB",
-  testMatch: [
-    "<rootDir>/__tests__/**/*.test.{ts,tsx}",
-  ],
+  testMatch: ["<rootDir>/__tests__/**/*.test.{ts,tsx}"],
   collectCoverageFrom: [
     "components/ui/**/*.{ts,tsx}",
     "lib/config/**/*.{ts,tsx}",
@@ -41,6 +39,6 @@ const customJestConfig = {
       statements: 80,
     },
   },
-}
+};
 
-module.exports = createJestConfig(customJestConfig)
+module.exports = createJestConfig(customJestConfig);

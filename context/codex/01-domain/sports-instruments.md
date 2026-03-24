@@ -1,7 +1,7 @@
 # Sports Instruments: Format, Matching, Normalization
 
-**Asset Class:** SPORTS (FOOTBALL)  
-**Purpose:** Define canonical instrument format for sports betting  
+**Asset Class:** SPORTS (FOOTBALL)
+**Purpose:** Define canonical instrument format for sports betting
 **Reference:** [sportsbetting-services/docs/INSTRUMENT_KEY.md](../../sports-betting-services/docs/INSTRUMENT_KEY.md)
 
 ---

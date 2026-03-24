@@ -2,10 +2,10 @@
 # This mirrors the exact CI checks for local testing consistency
 #
 # CRITICAL: This must match .github/workflows/quality-gates.yml exactly
-# 
+#
 # Usage:
 #   make ci-local    # Run all CI checks locally (matches GitHub Actions)
-#   make lint        # Run ESLint only  
+#   make lint        # Run ESLint only
 #   make test        # Run tests only
 #   make type-check  # Run TypeScript check only
 #   make build       # Build application
@@ -53,7 +53,7 @@ type-check:
 	@echo "Running TypeScript type check..."
 	npx tsc --noEmit
 
-# ESLint (matches CI exactly)  
+# ESLint (matches CI exactly)
 lint:
 	@echo "Running ESLint..."
 	npx eslint . --max-warnings 0

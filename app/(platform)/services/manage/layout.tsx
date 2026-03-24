@@ -1,12 +1,16 @@
-"use client"
+"use client";
 
-import { ServiceTabs, MANAGE_TABS } from "@/components/shell/service-tabs"
-import { ErrorBoundary } from "@/components/ui/error-boundary"
-import { EntitlementGate } from "@/components/platform/entitlement-gate"
-import { useAuth } from "@/hooks/use-auth"
+import { ServiceTabs, MANAGE_TABS } from "@/components/shell/service-tabs";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { EntitlementGate } from "@/components/platform/entitlement-gate";
+import { useAuth } from "@/hooks/use-auth";
 
-export default function ManageLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
+export default function ManageLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user } = useAuth();
 
   return (
     <>
@@ -15,5 +19,5 @@ export default function ManageLayout({ children }: { children: React.ReactNode }
         <ErrorBoundary>{children}</ErrorBoundary>
       </EntitlementGate>
     </>
-  )
+  );
 }

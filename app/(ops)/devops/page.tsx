@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * /devops — Deployment control center.
@@ -11,14 +11,19 @@
  * Readiness: ReadinessTab + EpicReadinessView
  */
 
-import dynamic from "next/dynamic"
-import { DevOpsDashboard } from "@/components/dashboards/devops-dashboard"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
+import dynamic from "next/dynamic";
+import { DevOpsDashboard } from "@/components/dashboards/devops-dashboard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Cloud, Database, Rocket, Activity, CheckCircle2, History,
-} from "lucide-react"
+  Cloud,
+  Database,
+  Rocket,
+  Activity,
+  CheckCircle2,
+  History,
+} from "lucide-react";
 
 function TabSkeleton() {
   return (
@@ -28,29 +33,44 @@ function TabSkeleton() {
       <Skeleton className="h-8 w-full" />
       <Skeleton className="h-8 w-full" />
     </div>
-  )
+  );
 }
 
 const DeploymentHistory = dynamic(
-  () => import("@/components/ops/deployment/DeploymentHistory").then(m => m.DeploymentHistory),
-  { ssr: false, loading: () => <TabSkeleton /> }
-)
+  () =>
+    import("@/components/ops/deployment/DeploymentHistory").then(
+      (m) => m.DeploymentHistory,
+    ),
+  { ssr: false, loading: () => <TabSkeleton /> },
+);
 const DataStatusTab = dynamic(
-  () => import("@/components/ops/deployment/DataStatusTab").then(m => m.DataStatusTab),
-  { ssr: false, loading: () => <TabSkeleton /> }
-)
+  () =>
+    import("@/components/ops/deployment/DataStatusTab").then(
+      (m) => m.DataStatusTab,
+    ),
+  { ssr: false, loading: () => <TabSkeleton /> },
+);
 const CloudBuildsTab = dynamic(
-  () => import("@/components/ops/deployment/CloudBuildsTab").then(m => m.CloudBuildsTab),
-  { ssr: false, loading: () => <TabSkeleton /> }
-)
+  () =>
+    import("@/components/ops/deployment/CloudBuildsTab").then(
+      (m) => m.CloudBuildsTab,
+    ),
+  { ssr: false, loading: () => <TabSkeleton /> },
+);
 const ServicesOverviewTab = dynamic(
-  () => import("@/components/ops/deployment/ServicesOverviewTab").then(m => m.ServicesOverviewTab),
-  { ssr: false, loading: () => <TabSkeleton /> }
-)
+  () =>
+    import("@/components/ops/deployment/ServicesOverviewTab").then(
+      (m) => m.ServicesOverviewTab,
+    ),
+  { ssr: false, loading: () => <TabSkeleton /> },
+);
 const ReadinessTab = dynamic(
-  () => import("@/components/ops/deployment/ReadinessTab").then(m => m.ReadinessTab),
-  { ssr: false, loading: () => <TabSkeleton /> }
-)
+  () =>
+    import("@/components/ops/deployment/ReadinessTab").then(
+      (m) => m.ReadinessTab,
+    ),
+  { ssr: false, loading: () => <TabSkeleton /> },
+);
 
 export default function DevOpsPage() {
   return (
@@ -60,7 +80,8 @@ export default function DevOpsPage() {
           <div>
             <h1 className="text-2xl font-bold">Deployment Control Center</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Service deployments, data pipelines, cloud builds, and infrastructure readiness.
+              Service deployments, data pipelines, cloud builds, and
+              infrastructure readiness.
             </p>
           </div>
           <Badge variant="outline" className="text-xs">
@@ -122,5 +143,5 @@ export default function DevOpsPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

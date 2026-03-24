@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { ContextBar } from "@/components/platform/context-bar"
-import { BatchLiveRail } from "@/components/platform/batch-live-rail"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ContextBar } from "@/components/platform/context-bar";
+import { BatchLiveRail } from "@/components/platform/batch-live-rail";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   GitCompare,
   Plus,
@@ -25,25 +25,32 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShoppingBasket,
-} from "lucide-react"
-import { useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ApiError } from "@/components/ui/api-error"
-import { EmptyState } from "@/components/ui/empty-state"
-import { cn } from "@/lib/utils"
-import type { BacktestRun, StrategyConfig } from "@/lib/strategy-platform-types"
+} from "lucide-react";
+import {
+  useStrategyBacktests,
+  useStrategyTemplates,
+} from "@/hooks/api/use-strategies";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
+import { EmptyState } from "@/components/ui/empty-state";
+import { cn } from "@/lib/utils";
+import type {
+  BacktestRun,
+  StrategyConfig,
+} from "@/lib/strategy-platform-types";
 
 // Get backtest metrics for a config
 function getConfigMetrics(configId: string, backtestRuns: BacktestRun[]) {
   const runs = backtestRuns.filter(
-    (r: BacktestRun) => r.configId === configId && r.status === "completed" && r.metrics
-  )
-  if (runs.length === 0) return null
-  
+    (r: BacktestRun) =>
+      r.configId === configId && r.status === "completed" && r.metrics,
+  );
+  if (runs.length === 0) return null;
+
   // Average metrics across all completed runs
   const metrics = runs.reduce(
     (acc, r) => {
-      if (!r.metrics) return acc
+      if (!r.metrics) return acc;
       return {
         sharpe: acc.sharpe + r.metrics.sharpe,
         return: acc.return + r.metrics.totalReturn,
@@ -55,7 +62,7 @@ function getConfigMetrics(configId: string, backtestRuns: BacktestRun[]) {
         slippage: acc.slippage + r.metrics.avgSlippage,
         profitFactor: acc.profitFactor + r.metrics.profitFactor,
         alpha: acc.alpha + r.metrics.alpha,
-      }
+      };
     },
     {
       sharpe: 0,
@@ -68,10 +75,10 @@ function getConfigMetrics(configId: string, backtestRuns: BacktestRun[]) {
       slippage: 0,
       profitFactor: 0,
       alpha: 0,
-    }
-  )
+    },
+  );
 
-  const count = runs.length
+  const count = runs.length;
   return {
     sharpe: metrics.sharpe / count,
     return: metrics.return / count,
@@ -84,7 +91,7 @@ function getConfigMetrics(configId: string, backtestRuns: BacktestRun[]) {
     profitFactor: metrics.profitFactor / count,
     alpha: metrics.alpha / count,
     runCount: count,
-  }
+  };
 }
 
 // Compare value with delta indicator
@@ -95,22 +102,22 @@ function CompareValue({
   higherIsBetter = true,
   isBase = false,
 }: {
-  value: number
-  baseValue?: number
-  format?: "number" | "percent" | "bps"
-  higherIsBetter?: boolean
-  isBase?: boolean
+  value: number;
+  baseValue?: number;
+  format?: "number" | "percent" | "bps";
+  higherIsBetter?: boolean;
+  isBase?: boolean;
 }) {
-  let displayValue: string
+  let displayValue: string;
   switch (format) {
     case "percent":
-      displayValue = `${(value * 100).toFixed(1)}%`
-      break
+      displayValue = `${(value * 100).toFixed(1)}%`;
+      break;
     case "bps":
-      displayValue = `${(value * 10000).toFixed(1)} bps`
-      break
+      displayValue = `${(value * 10000).toFixed(1)} bps`;
+      break;
     default:
-      displayValue = value.toFixed(2)
+      displayValue = value.toFixed(2);
   }
 
   if (isBase || baseValue === undefined) {
@@ -125,13 +132,13 @@ function CompareValue({
           </Badge>
         )}
       </div>
-    )
+    );
   }
 
-  const diff = value - baseValue
-  const pctDiff = baseValue !== 0 ? (diff / Math.abs(baseValue)) * 100 : 0
-  const isPositive = higherIsBetter ? diff > 0 : diff < 0
-  const isNeutral = Math.abs(pctDiff) < 1
+  const diff = value - baseValue;
+  const pctDiff = baseValue !== 0 ? (diff / Math.abs(baseValue)) * 100 : 0;
+  const isPositive = higherIsBetter ? diff > 0 : diff < 0;
+  const isNeutral = Math.abs(pctDiff) < 1;
 
   return (
     <div className="text-right">
@@ -150,8 +157,8 @@ function CompareValue({
             isNeutral
               ? "text-muted-foreground"
               : isPositive
-              ? "text-[var(--status-live)]"
-              : "text-[var(--status-critical)]"
+                ? "text-[var(--status-live)]"
+                : "text-[var(--status-critical)]",
           )}
         >
           {pctDiff >= 0 ? "+" : ""}
@@ -159,7 +166,7 @@ function CompareValue({
         </span>
       </div>
     </div>
-  )
+  );
 }
 
 // Parameter diff row
@@ -168,18 +175,18 @@ function ParamDiffRow({
   values,
   baseIndex,
 }: {
-  param: string
-  values: (string | number | boolean)[]
-  baseIndex: number
+  param: string;
+  values: (string | number | boolean)[];
+  baseIndex: number;
 }) {
-  const baseVal = values[baseIndex]
-  const allSame = values.every((v) => v === baseVal)
+  const baseVal = values[baseIndex];
+  const allSame = values.every((v) => v === baseVal);
 
   return (
     <div
       className={cn(
         "grid gap-4 py-2 border-b border-border/50 text-xs",
-        !allSame && "bg-[var(--surface-strategy)]/5"
+        !allSame && "bg-[var(--surface-strategy)]/5",
       )}
       style={{ gridTemplateColumns: `180px repeat(${values.length}, 1fr)` }}
     >
@@ -192,7 +199,7 @@ function ParamDiffRow({
           className={cn(
             "text-right font-mono",
             i === baseIndex && "font-bold",
-            !allSame && val !== baseVal && "text-[var(--surface-strategy)]"
+            !allSame && val !== baseVal && "text-[var(--surface-strategy)]",
           )}
         >
           {typeof val === "boolean" ? (val ? "true" : "false") : String(val)}
@@ -204,7 +211,7 @@ function ParamDiffRow({
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 // Config selector card
@@ -216,15 +223,17 @@ function ConfigSelector({
   strategyConfigs,
   backtestRuns,
 }: {
-  configId: string | null
-  onSelect: (id: string) => void
-  onRemove?: () => void
-  isBase?: boolean
-  strategyConfigs: StrategyConfig[]
-  backtestRuns: BacktestRun[]
+  configId: string | null;
+  onSelect: (id: string) => void;
+  onRemove?: () => void;
+  isBase?: boolean;
+  strategyConfigs: StrategyConfig[];
+  backtestRuns: BacktestRun[];
 }) {
-  const config = configId ? strategyConfigs.find((c) => c.id === configId) : null
-  const metrics = configId ? getConfigMetrics(configId, backtestRuns) : null
+  const config = configId
+    ? strategyConfigs.find((c) => c.id === configId)
+    : null;
+  const metrics = configId ? getConfigMetrics(configId, backtestRuns) : null;
 
   if (!config) {
     return (
@@ -249,7 +258,7 @@ function ConfigSelector({
           </Select>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -291,14 +300,18 @@ function ConfigSelector({
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
               <div className="text-muted-foreground">Sharpe</div>
-              <div className="font-mono font-bold text-lg">{metrics.sharpe.toFixed(2)}</div>
+              <div className="font-mono font-bold text-lg">
+                {metrics.sharpe.toFixed(2)}
+              </div>
             </div>
             <div>
               <div className="text-muted-foreground">Return</div>
               <div
                 className={cn(
                   "font-mono font-bold text-lg",
-                  metrics.return >= 0 ? "text-[var(--status-live)]" : "text-[var(--status-critical)]"
+                  metrics.return >= 0
+                    ? "text-[var(--status-live)]"
+                    : "text-[var(--status-critical)]",
                 )}
               >
                 {(metrics.return * 100).toFixed(1)}%
@@ -306,7 +319,9 @@ function ConfigSelector({
             </div>
             <div>
               <div className="text-muted-foreground">Max DD</div>
-              <div className="font-mono">{(metrics.maxDrawdown * 100).toFixed(1)}%</div>
+              <div className="font-mono">
+                {(metrics.maxDrawdown * 100).toFixed(1)}%
+              </div>
             </div>
             <div>
               <div className="text-muted-foreground">Runs</div>
@@ -318,66 +333,73 @@ function ConfigSelector({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export default function StrategyComparePage() {
-  const { data: backtestsData, isLoading: backtestsLoading, isError: backtestsIsError, error: backtestsError, refetch: backtestsRefetch } = useStrategyBacktests()
-  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates()
+  const {
+    data: backtestsData,
+    isLoading: backtestsLoading,
+    isError: backtestsIsError,
+    error: backtestsError,
+    refetch: backtestsRefetch,
+  } = useStrategyBacktests();
+  const { data: templatesData, isLoading: templatesLoading } =
+    useStrategyTemplates();
 
-  const BACKTEST_RUNS: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
-  const STRATEGY_CONFIGS: StrategyConfig[] = (templatesData as any)?.data ?? (templatesData as any)?.configs ?? []
+  const BACKTEST_RUNS: BacktestRun[] =
+    (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
+  const STRATEGY_CONFIGS: StrategyConfig[] =
+    (templatesData as any)?.data ?? (templatesData as any)?.configs ?? [];
 
-  const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH")
-  const [selectedConfigs, setSelectedConfigs] = React.useState<(string | null)[]>([
-    null,
-    null,
-    null,
-  ])
-  const [baseIndex, setBaseIndex] = React.useState(0)
+  const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH");
+  const [selectedConfigs, setSelectedConfigs] = React.useState<
+    (string | null)[]
+  >([null, null, null]);
+  const [baseIndex, setBaseIndex] = React.useState(0);
 
   const addSlot = () => {
     if (selectedConfigs.length < 5) {
-      setSelectedConfigs([...selectedConfigs, null])
+      setSelectedConfigs([...selectedConfigs, null]);
     }
-  }
+  };
 
   const removeSlot = (index: number) => {
     if (selectedConfigs.length > 2) {
-      const newConfigs = selectedConfigs.filter((_, i) => i !== index)
-      setSelectedConfigs(newConfigs)
+      const newConfigs = selectedConfigs.filter((_, i) => i !== index);
+      setSelectedConfigs(newConfigs);
       if (baseIndex >= newConfigs.length) {
-        setBaseIndex(0)
+        setBaseIndex(0);
       } else if (baseIndex > index) {
-        setBaseIndex(baseIndex - 1)
+        setBaseIndex(baseIndex - 1);
       }
     }
-  }
+  };
 
   const setConfig = (index: number, configId: string) => {
-    const newConfigs = [...selectedConfigs]
-    newConfigs[index] = configId
-    setSelectedConfigs(newConfigs)
-  }
+    const newConfigs = [...selectedConfigs];
+    newConfigs[index] = configId;
+    setSelectedConfigs(newConfigs);
+  };
 
-  const isLoading = backtestsLoading || templatesLoading
+  const isLoading = backtestsLoading || templatesLoading;
 
   // Get configs and metrics
   const configs = selectedConfigs.map((id) =>
-    id ? STRATEGY_CONFIGS.find((c) => c.id === id) : null
-  )
+    id ? STRATEGY_CONFIGS.find((c) => c.id === id) : null,
+  );
   const metricsData = selectedConfigs.map((id) =>
-    id ? getConfigMetrics(id, BACKTEST_RUNS) : null
-  )
-  const baseMetrics = metricsData[baseIndex]
+    id ? getConfigMetrics(id, BACKTEST_RUNS) : null,
+  );
+  const baseMetrics = metricsData[baseIndex];
 
   // Get all parameter keys
-  const allParams = new Set<string>()
+  const allParams = new Set<string>();
   configs.forEach((cfg) => {
     if (cfg?.parameters) {
-      Object.keys(cfg.parameters).forEach((k) => allParams.add(k))
+      Object.keys(cfg.parameters).forEach((k) => allParams.add(k));
     }
-  })
+  });
 
   if (isLoading) {
     return (
@@ -385,7 +407,7 @@ export default function StrategyComparePage() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
-    )
+    );
   }
 
   if (backtestsIsError) {
@@ -393,7 +415,7 @@ export default function StrategyComparePage() {
       <div className="p-6">
         <ApiError error={backtestsError} onRetry={() => backtestsRefetch()} />
       </div>
-    )
+    );
   }
 
   if (BACKTEST_RUNS.length === 0) {
@@ -405,7 +427,7 @@ export default function StrategyComparePage() {
           icon={GitCompare}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -415,7 +437,12 @@ export default function StrategyComparePage() {
         platform="strategy"
         scope={{ fund: "ODUM", client: "Internal" }}
         context={context}
-        badges={[{ label: "Comparing", value: String(selectedConfigs.filter(Boolean).length) }]}
+        badges={[
+          {
+            label: "Comparing",
+            value: String(selectedConfigs.filter(Boolean).length),
+          },
+        ]}
       />
 
       {/* Batch/Live Rail */}
@@ -447,7 +474,9 @@ export default function StrategyComparePage() {
                 <ConfigSelector
                   configId={configId}
                   onSelect={(id) => setConfig(i, id)}
-                  onRemove={selectedConfigs.length > 2 ? () => removeSlot(i) : undefined}
+                  onRemove={
+                    selectedConfigs.length > 2 ? () => removeSlot(i) : undefined
+                  }
                   isBase={baseIndex === i}
                   strategyConfigs={STRATEGY_CONFIGS}
                   backtestRuns={BACKTEST_RUNS}
@@ -478,7 +507,9 @@ export default function StrategyComparePage() {
                 }}
               >
                 {/* Header */}
-                <div className="font-medium text-xs text-muted-foreground">Metric</div>
+                <div className="font-medium text-xs text-muted-foreground">
+                  Metric
+                </div>
                 {configs.map((cfg, i) => (
                   <div key={i} className="text-right text-xs font-medium">
                     {cfg?.name || "—"}
@@ -486,7 +517,9 @@ export default function StrategyComparePage() {
                 ))}
 
                 {/* Sharpe */}
-                <div className="text-xs text-muted-foreground border-t pt-3">Sharpe</div>
+                <div className="text-xs text-muted-foreground border-t pt-3">
+                  Sharpe
+                </div>
                 {metricsData.map((m, i) => (
                   <div key={i} className="border-t pt-3">
                     {m ? (
@@ -519,7 +552,9 @@ export default function StrategyComparePage() {
                 ))}
 
                 {/* Max Drawdown */}
-                <div className="text-xs text-muted-foreground">Max Drawdown</div>
+                <div className="text-xs text-muted-foreground">
+                  Max Drawdown
+                </div>
                 {metricsData.map((m, i) => (
                   <div key={i}>
                     {m ? (
@@ -587,7 +622,9 @@ export default function StrategyComparePage() {
                 ))}
 
                 {/* Slippage */}
-                <div className="text-xs text-muted-foreground">Avg Slippage</div>
+                <div className="text-xs text-muted-foreground">
+                  Avg Slippage
+                </div>
                 {metricsData.map((m, i) => (
                   <div key={i}>
                     {m ? (
@@ -634,7 +671,9 @@ export default function StrategyComparePage() {
                   <ParamDiffRow
                     key={param}
                     param={param}
-                    values={configs.map((cfg) => cfg?.parameters?.[param] ?? "—")}
+                    values={configs.map(
+                      (cfg) => cfg?.parameters?.[param] ?? "—",
+                    )}
                     baseIndex={baseIndex}
                   />
                 ))}
@@ -647,7 +686,8 @@ export default function StrategyComparePage() {
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Select configs to add to your candidate basket for promotion review.
+                  Select configs to add to your candidate basket for promotion
+                  review.
                 </p>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="gap-2">
@@ -666,5 +706,5 @@ export default function StrategyComparePage() {
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </div>
-  )
+  );
 }

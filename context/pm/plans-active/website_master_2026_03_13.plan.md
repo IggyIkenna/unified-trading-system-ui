@@ -18,8 +18,7 @@ repo_gates:
     code: C3
     deployment: D3
     business: B4
-    readiness_note:
-      "Integrated into workspace. QG green, 72% coverage, 101 tests. Awaiting DNS migration for production deploy."
+    readiness_note: "Integrated into workspace. QG green, 72% coverage, 101 tests. Awaiting DNS migration for production deploy."
 
 depends_on:
   - presentations_2026_03_13

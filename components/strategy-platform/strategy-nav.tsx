@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import {
   LayoutDashboard,
   FlaskConical,
@@ -14,7 +14,7 @@ import {
   ShoppingBasket,
   Send,
   ChevronRight,
-} from "lucide-react"
+} from "lucide-react";
 
 const NAV_ITEMS = [
   {
@@ -61,16 +61,16 @@ const NAV_ITEMS = [
     icon: Send,
     description: "Promotion packages",
   },
-]
+];
 
 export function StrategyPlatformNav({ className }: { className?: string }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <nav
       className={cn(
         "flex items-center gap-1 px-4 py-2 border-b bg-card/50 overflow-x-auto",
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-1 mr-4">
@@ -84,8 +84,8 @@ export function StrategyPlatformNav({ className }: { className?: string }) {
       <div className="h-4 w-px bg-border mr-2" />
 
       {NAV_ITEMS.map((item) => {
-        const isActive = pathname === item.href
-        const Icon = item.icon
+        const isActive = pathname === item.href;
+        const Icon = item.icon;
 
         return (
           <Link
@@ -95,7 +95,7 @@ export function StrategyPlatformNav({ className }: { className?: string }) {
               "flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors",
               isActive
                 ? "bg-[var(--surface-strategy)]/10 text-[var(--surface-strategy)] font-medium"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
             )}
           >
             <Icon className="size-4" />
@@ -105,15 +105,15 @@ export function StrategyPlatformNav({ className }: { className?: string }) {
                 variant="secondary"
                 className={cn(
                   "h-5 min-w-[20px] px-1.5 text-[10px]",
-                  isActive && "bg-[var(--surface-strategy)]/20"
+                  isActive && "bg-[var(--surface-strategy)]/20",
                 )}
               >
                 {item.badge}
               </Badge>
             )}
           </Link>
-        )
+        );
       })}
     </nav>
-  )
+  );
 }

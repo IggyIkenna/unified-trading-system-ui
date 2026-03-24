@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 describe("Tabs", () => {
   it("renders tabs with triggers and content", () => {
@@ -12,12 +12,12 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="tab1">Content 1</TabsContent>
         <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>
-    )
-    expect(screen.getByText("Tab 1")).toBeInTheDocument()
-    expect(screen.getByText("Tab 2")).toBeInTheDocument()
-    expect(screen.getByText("Content 1")).toBeInTheDocument()
-  })
+      </Tabs>,
+    );
+    expect(screen.getByText("Tab 1")).toBeInTheDocument();
+    expect(screen.getByText("Tab 2")).toBeInTheDocument();
+    expect(screen.getByText("Content 1")).toBeInTheDocument();
+  });
 
   it("has correct data-slot attributes", () => {
     render(
@@ -28,25 +28,25 @@ describe("Tabs", () => {
         <TabsContent value="a" data-testid="tabs-content">
           Content A
         </TabsContent>
-      </Tabs>
-    )
+      </Tabs>,
+    );
     expect(screen.getByTestId("tabs-root")).toHaveAttribute(
       "data-slot",
-      "tabs"
-    )
+      "tabs",
+    );
     expect(screen.getByTestId("tabs-list")).toHaveAttribute(
       "data-slot",
-      "tabs-list"
-    )
-    expect(screen.getByText("A")).toHaveAttribute("data-slot", "tabs-trigger")
+      "tabs-list",
+    );
+    expect(screen.getByText("A")).toHaveAttribute("data-slot", "tabs-trigger");
     expect(screen.getByTestId("tabs-content")).toHaveAttribute(
       "data-slot",
-      "tabs-content"
-    )
-  })
+      "tabs-content",
+    );
+  });
 
   it("switches content when clicking a different tab", async () => {
-    const user = userEvent.setup()
+    const user = userEvent.setup();
     render(
       <Tabs defaultValue="first">
         <TabsList>
@@ -55,15 +55,15 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="first">First content</TabsContent>
         <TabsContent value="second">Second content</TabsContent>
-      </Tabs>
-    )
+      </Tabs>,
+    );
     // Initially first tab is shown
-    expect(screen.getByText("First content")).toBeVisible()
+    expect(screen.getByText("First content")).toBeVisible();
 
     // Click second tab
-    await user.click(screen.getByText("Second"))
-    expect(screen.getByText("Second content")).toBeVisible()
-  })
+    await user.click(screen.getByText("Second"));
+    expect(screen.getByText("Second content")).toBeVisible();
+  });
 
   it("marks active tab trigger with active state", () => {
     render(
@@ -74,14 +74,14 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="active-tab">Active content</TabsContent>
         <TabsContent value="inactive-tab">Inactive content</TabsContent>
-      </Tabs>
-    )
-    const activeTrigger = screen.getByText("Active")
-    expect(activeTrigger).toHaveAttribute("data-state", "active")
+      </Tabs>,
+    );
+    const activeTrigger = screen.getByText("Active");
+    expect(activeTrigger).toHaveAttribute("data-state", "active");
 
-    const inactiveTrigger = screen.getByText("Inactive")
-    expect(inactiveTrigger).toHaveAttribute("data-state", "inactive")
-  })
+    const inactiveTrigger = screen.getByText("Inactive");
+    expect(inactiveTrigger).toHaveAttribute("data-state", "inactive");
+  });
 
   it("applies custom className to Tabs", () => {
     render(
@@ -90,14 +90,14 @@ describe("Tabs", () => {
           <TabsTrigger value="x">X</TabsTrigger>
         </TabsList>
         <TabsContent value="x">X content</TabsContent>
-      </Tabs>
-    )
-    expect(screen.getByTestId("root").className).toContain("custom-tabs")
-  })
+      </Tabs>,
+    );
+    expect(screen.getByTestId("root").className).toContain("custom-tabs");
+  });
 
   it("fires onValueChange callback", async () => {
-    const onValueChange = jest.fn()
-    const user = userEvent.setup()
+    const onValueChange = jest.fn();
+    const user = userEvent.setup();
     render(
       <Tabs defaultValue="a" onValueChange={onValueChange}>
         <TabsList>
@@ -106,9 +106,9 @@ describe("Tabs", () => {
         </TabsList>
         <TabsContent value="a">A content</TabsContent>
         <TabsContent value="b">B content</TabsContent>
-      </Tabs>
-    )
-    await user.click(screen.getByText("B"))
-    expect(onValueChange).toHaveBeenCalledWith("b")
-  })
-})
+      </Tabs>,
+    );
+    await user.click(screen.getByText("B"));
+    expect(onValueChange).toHaveBeenCalledWith("b");
+  });
+});

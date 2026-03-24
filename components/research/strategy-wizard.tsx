@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Check, ChevronRight, Loader2, Upload } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { Check, ChevronRight, Loader2, Upload } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,52 +11,55 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
-import { useStrategyTemplates, useCreateBacktest } from "@/hooks/api/use-strategies"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Separator } from "@/components/ui/separator";
+import {
+  useStrategyTemplates,
+  useCreateBacktest,
+} from "@/hooks/api/use-strategies";
 import {
   STRATEGY_ARCHETYPES,
   ASSET_CLASSES,
   type StrategyArchetype,
   type AssetClass,
   type StrategyTemplate,
-} from "@/lib/strategy-platform-types"
+} from "@/lib/strategy-platform-types";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 interface StrategyWizardProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 interface WizardFormState {
   // Step 1: Basic Config
-  name: string
-  description: string
-  assetClass: AssetClass | ""
+  name: string;
+  description: string;
+  assetClass: AssetClass | "";
   // Step 2: Strategy Selection
-  templateId: string
+  templateId: string;
   // Step 3: Parameters
-  instrument: string
-  venue: string
-  dateStart: string
-  dateEnd: string
-  entryThreshold: string
-  exitThreshold: string
-  maxLeverage: string
-  initialCapital: string
+  instrument: string;
+  venue: string;
+  dateStart: string;
+  dateEnd: string;
+  entryThreshold: string;
+  exitThreshold: string;
+  maxLeverage: string;
+  initialCapital: string;
   // Step 4 is review only
 }
 
@@ -73,14 +76,18 @@ const INITIAL_FORM: WizardFormState = {
   exitThreshold: "0.02",
   maxLeverage: "3.0",
   initialCapital: "100000",
-}
+};
 
 const STEPS = [
   { id: "basic", title: "Basic Config", description: "Name and asset class" },
-  { id: "strategy", title: "Strategy Selection", description: "Choose archetype" },
+  {
+    id: "strategy",
+    title: "Strategy Selection",
+    description: "Choose archetype",
+  },
   { id: "parameters", title: "Parameters", description: "Trading parameters" },
   { id: "review", title: "Review", description: "Confirm and submit" },
-] as const
+] as const;
 
 // ---------------------------------------------------------------------------
 // Step Indicator
@@ -90,14 +97,14 @@ function StepIndicator({
   steps,
   currentStep,
 }: {
-  steps: typeof STEPS
-  currentStep: number
+  steps: typeof STEPS;
+  currentStep: number;
 }) {
   return (
     <div className="flex items-center justify-center gap-0 py-4">
       {steps.map((step, index) => {
-        const isCompleted = index < currentStep
-        const isCurrent = index === currentStep
+        const isCompleted = index < currentStep;
+        const isCurrent = index === currentStep;
         return (
           <React.Fragment key={step.id}>
             <div className="flex flex-col items-center gap-1.5">
@@ -133,10 +140,10 @@ function StepIndicator({
               />
             )}
           </React.Fragment>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -147,8 +154,8 @@ function BasicConfigStep({
   form,
   onChange,
 }: {
-  form: WizardFormState
-  onChange: (updates: Partial<WizardFormState>) => void
+  form: WizardFormState;
+  onChange: (updates: Partial<WizardFormState>) => void;
 }) {
   return (
     <div className="space-y-4">
@@ -181,7 +188,14 @@ function BasicConfigStep({
         </Label>
         <Select
           value={form.assetClass}
-          onValueChange={(v) => onChange({ assetClass: v as AssetClass, templateId: "", instrument: "", venue: "" })}
+          onValueChange={(v) =>
+            onChange({
+              assetClass: v as AssetClass,
+              templateId: "",
+              instrument: "",
+              venue: "",
+            })
+          }
         >
           <SelectTrigger id="wizard-asset-class" className="w-full">
             <SelectValue placeholder="Select asset class..." />
@@ -196,7 +210,7 @@ function BasicConfigStep({
         </Select>
       </div>
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -209,28 +223,28 @@ function StrategySelectionStep({
   templates,
   isLoading,
 }: {
-  form: WizardFormState
-  onChange: (updates: Partial<WizardFormState>) => void
-  templates: StrategyTemplate[]
-  isLoading: boolean
+  form: WizardFormState;
+  onChange: (updates: Partial<WizardFormState>) => void;
+  templates: StrategyTemplate[];
+  isLoading: boolean;
 }) {
   // Filter templates by selected asset class if set
   const filtered = form.assetClass
     ? templates.filter((t) =>
         t.assetClasses.some((ac) => ac === form.assetClass),
       )
-    : templates
+    : templates;
 
   // Group by archetype for display
   const byArchetype = React.useMemo(() => {
-    const map = new Map<StrategyArchetype, StrategyTemplate[]>()
+    const map = new Map<StrategyArchetype, StrategyTemplate[]>();
     for (const tpl of filtered) {
-      const existing = map.get(tpl.archetype) ?? []
-      existing.push(tpl)
-      map.set(tpl.archetype, existing)
+      const existing = map.get(tpl.archetype) ?? [];
+      existing.push(tpl);
+      map.set(tpl.archetype, existing);
     }
-    return map
-  }, [filtered])
+    return map;
+  }, [filtered]);
 
   if (isLoading) {
     return (
@@ -238,7 +252,7 @@ function StrategySelectionStep({
         <Loader2 className="mr-2 size-4 animate-spin" />
         Loading strategy templates...
       </div>
-    )
+    );
   }
 
   if (filtered.length === 0) {
@@ -247,7 +261,7 @@ function StrategySelectionStep({
         No strategy templates found
         {form.assetClass ? ` for ${form.assetClass.replace(/_/g, " ")}` : ""}.
       </div>
-    )
+    );
   }
 
   return (
@@ -259,7 +273,7 @@ function StrategySelectionStep({
           </p>
           <div className="space-y-2">
             {tpls.map((tpl) => {
-              const isSelected = form.templateId === tpl.id
+              const isSelected = form.templateId === tpl.id;
               return (
                 <button
                   key={tpl.id}
@@ -295,7 +309,11 @@ function StrategySelectionStep({
                       {tpl.archetype.replace(/_/g, " ")}
                     </Badge>
                     {tpl.venues.slice(0, 2).map((v) => (
-                      <Badge key={v} variant="secondary" className="text-[10px]">
+                      <Badge
+                        key={v}
+                        variant="secondary"
+                        className="text-[10px]"
+                      >
                         {v}
                       </Badge>
                     ))}
@@ -306,13 +324,13 @@ function StrategySelectionStep({
                     )}
                   </div>
                 </button>
-              )
+              );
             })}
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -324,9 +342,9 @@ function ParametersStep({
   onChange,
   selectedTemplate,
 }: {
-  form: WizardFormState
-  onChange: (updates: Partial<WizardFormState>) => void
-  selectedTemplate: StrategyTemplate | undefined
+  form: WizardFormState;
+  onChange: (updates: Partial<WizardFormState>) => void;
+  selectedTemplate: StrategyTemplate | undefined;
 }) {
   return (
     <div className="space-y-4">
@@ -450,39 +468,42 @@ function ParametersStep({
           Upload Parameters (CSV)
         </Label>
         <p className="text-[10px] text-muted-foreground">
-          Upload a CSV file with columns: parameter_name, value. Overrides manual fields above.
+          Upload a CSV file with columns: parameter_name, value. Overrides
+          manual fields above.
         </p>
         <Input
           type="file"
           accept=".csv"
           onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (!file) return
-            const reader = new FileReader()
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
             reader.onload = (evt) => {
-              const text = evt.target?.result
-              if (typeof text !== "string") return
-              const lines = text.trim().split("\n").slice(1)
-              const updates: Partial<WizardFormState> = {}
+              const text = evt.target?.result;
+              if (typeof text !== "string") return;
+              const lines = text.trim().split("\n").slice(1);
+              const updates: Partial<WizardFormState> = {};
               for (const line of lines) {
-                const [key, val] = line.split(",").map((s) => s.trim().replace(/^"|"$/g, ""))
-                if (!key || !val) continue
-                if (key === "entry_threshold") updates.entryThreshold = val
-                if (key === "exit_threshold") updates.exitThreshold = val
-                if (key === "max_leverage") updates.maxLeverage = val
-                if (key === "initial_capital") updates.initialCapital = val
-                if (key === "date_start") updates.dateStart = val
-                if (key === "date_end") updates.dateEnd = val
+                const [key, val] = line
+                  .split(",")
+                  .map((s) => s.trim().replace(/^"|"$/g, ""));
+                if (!key || !val) continue;
+                if (key === "entry_threshold") updates.entryThreshold = val;
+                if (key === "exit_threshold") updates.exitThreshold = val;
+                if (key === "max_leverage") updates.maxLeverage = val;
+                if (key === "initial_capital") updates.initialCapital = val;
+                if (key === "date_start") updates.dateStart = val;
+                if (key === "date_end") updates.dateEnd = val;
               }
-              onChange(updates)
-            }
-            reader.readAsText(file)
+              onChange(updates);
+            };
+            reader.readAsText(file);
           }}
           className="cursor-pointer"
         />
       </div>
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -493,29 +514,50 @@ function ReviewStep({
   form,
   selectedTemplate,
 }: {
-  form: WizardFormState
-  selectedTemplate: StrategyTemplate | undefined
+  form: WizardFormState;
+  selectedTemplate: StrategyTemplate | undefined;
 }) {
   const duration = React.useMemo(() => {
-    if (!form.dateStart || !form.dateEnd) return 0
-    const start = new Date(form.dateStart + "T00:00:00")
-    const end = new Date(form.dateEnd + "T00:00:00")
-    return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
-  }, [form.dateStart, form.dateEnd])
+    if (!form.dateStart || !form.dateEnd) return 0;
+    const start = new Date(form.dateStart + "T00:00:00");
+    const end = new Date(form.dateEnd + "T00:00:00");
+    return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+  }, [form.dateStart, form.dateEnd]);
 
   const rows: { label: string; value: string }[] = [
     { label: "Strategy Name", value: form.name },
     { label: "Description", value: form.description || "--" },
-    { label: "Asset Class", value: form.assetClass ? form.assetClass.replace(/_/g, " ") : "--" },
+    {
+      label: "Asset Class",
+      value: form.assetClass ? form.assetClass.replace(/_/g, " ") : "--",
+    },
     { label: "Template", value: selectedTemplate?.name ?? form.templateId },
-    { label: "Archetype", value: selectedTemplate?.archetype.replace(/_/g, " ") ?? "--" },
-    { label: "Instrument", value: form.instrument || selectedTemplate?.instruments[0] || "--" },
-    { label: "Venue", value: form.venue || selectedTemplate?.venues[0] || "--" },
-    { label: "Date Window", value: `${form.dateStart}  ->  ${form.dateEnd}  (${duration} days)` },
-    { label: "Initial Capital", value: `$${Number(form.initialCapital).toLocaleString()}` },
-    { label: "Entry / Exit", value: `${form.entryThreshold} / ${form.exitThreshold}` },
+    {
+      label: "Archetype",
+      value: selectedTemplate?.archetype.replace(/_/g, " ") ?? "--",
+    },
+    {
+      label: "Instrument",
+      value: form.instrument || selectedTemplate?.instruments[0] || "--",
+    },
+    {
+      label: "Venue",
+      value: form.venue || selectedTemplate?.venues[0] || "--",
+    },
+    {
+      label: "Date Window",
+      value: `${form.dateStart}  ->  ${form.dateEnd}  (${duration} days)`,
+    },
+    {
+      label: "Initial Capital",
+      value: `$${Number(form.initialCapital).toLocaleString()}`,
+    },
+    {
+      label: "Entry / Exit",
+      value: `${form.entryThreshold} / ${form.exitThreshold}`,
+    },
     { label: "Max Leverage", value: `${form.maxLeverage}x` },
-  ]
+  ];
 
   return (
     <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
@@ -529,7 +571,7 @@ function ReviewStep({
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -537,32 +579,33 @@ function ReviewStep({
 // ---------------------------------------------------------------------------
 
 export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
-  const [currentStep, setCurrentStep] = React.useState(0)
-  const [form, setForm] = React.useState<WizardFormState>(INITIAL_FORM)
-  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [currentStep, setCurrentStep] = React.useState(0);
+  const [form, setForm] = React.useState<WizardFormState>(INITIAL_FORM);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates()
-  const createBacktest = useCreateBacktest()
+  const { data: templatesData, isLoading: templatesLoading } =
+    useStrategyTemplates();
+  const createBacktest = useCreateBacktest();
 
   const templates: StrategyTemplate[] = React.useMemo(() => {
-    const raw = templatesData as Record<string, unknown> | undefined
-    return (raw?.data ?? raw?.templates ?? []) as StrategyTemplate[]
-  }, [templatesData])
+    const raw = templatesData as Record<string, unknown> | undefined;
+    return (raw?.data ?? raw?.templates ?? []) as StrategyTemplate[];
+  }, [templatesData]);
 
-  const selectedTemplate = templates.find((t) => t.id === form.templateId)
+  const selectedTemplate = templates.find((t) => t.id === form.templateId);
 
   // Reset when dialog closes
   React.useEffect(() => {
     if (!open) {
-      setCurrentStep(0)
-      setForm(INITIAL_FORM)
-      setIsSubmitting(false)
+      setCurrentStep(0);
+      setForm(INITIAL_FORM);
+      setIsSubmitting(false);
     }
-  }, [open])
+  }, [open]);
 
   const updateForm = React.useCallback((updates: Partial<WizardFormState>) => {
-    setForm((prev) => ({ ...prev, ...updates }))
-  }, [])
+    setForm((prev) => ({ ...prev, ...updates }));
+  }, []);
 
   // ---------------------------------------------------------------------------
   // Validation per step
@@ -571,40 +614,41 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
   function canProceed(): boolean {
     switch (currentStep) {
       case 0:
-        return form.name.trim().length > 0 && form.assetClass !== ""
+        return form.name.trim().length > 0 && form.assetClass !== "";
       case 1:
-        return form.templateId !== ""
+        return form.templateId !== "";
       case 2: {
-        const capital = Number(form.initialCapital)
-        if (isNaN(capital) || capital < 1000 || capital > 10_000_000) return false
-        if (!form.dateStart || !form.dateEnd) return false
-        const start = new Date(form.dateStart + "T00:00:00")
-        const end = new Date(form.dateEnd + "T00:00:00")
-        const days = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-        return days >= 7
+        const capital = Number(form.initialCapital);
+        if (isNaN(capital) || capital < 1000 || capital > 10_000_000)
+          return false;
+        if (!form.dateStart || !form.dateEnd) return false;
+        const start = new Date(form.dateStart + "T00:00:00");
+        const end = new Date(form.dateEnd + "T00:00:00");
+        const days = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+        return days >= 7;
       }
       case 3:
-        return true
+        return true;
       default:
-        return false
+        return false;
     }
   }
 
   function handleNext() {
     if (currentStep < STEPS.length - 1) {
-      setCurrentStep((s) => s + 1)
+      setCurrentStep((s) => s + 1);
     }
   }
 
   function handleBack() {
     if (currentStep > 0) {
-      setCurrentStep((s) => s - 1)
+      setCurrentStep((s) => s - 1);
     }
   }
 
   async function handleSubmit() {
-    if (!selectedTemplate) return
-    setIsSubmitting(true)
+    if (!selectedTemplate) return;
+    setIsSubmitting(true);
     try {
       createBacktest.mutate({
         name: form.name,
@@ -619,10 +663,10 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
         entryThreshold: parseFloat(form.entryThreshold),
         exitThreshold: parseFloat(form.exitThreshold),
         maxLeverage: parseFloat(form.maxLeverage),
-      })
-      onOpenChange(false)
+      });
+      onOpenChange(false);
     } catch {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -689,5 +733,5 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

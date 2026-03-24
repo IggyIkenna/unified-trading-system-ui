@@ -10,7 +10,7 @@ export const COMPANY = {
   legalName: "Odum Research Ltd",
   tagline: "Institutional-Grade Trading Infrastructure",
   domain: "odumresearch.com",
-} as const
+} as const;
 
 export const BRAND_COLORS = {
   /** Primary accent — used for CTAs, active states */
@@ -27,12 +27,12 @@ export const BRAND_COLORS = {
   destructive: "hsl(0, 84%, 60%)",
   /** Warning */
   warning: "hsl(38, 92%, 50%)",
-} as const
+} as const;
 
 export const FONTS = {
   sans: "var(--font-ibm-plex-sans)",
   mono: "var(--font-jetbrains-mono)",
-} as const
+} as const;
 
 /** 3 USPs for marketing pages */
 export const USP = [
@@ -51,4 +51,4 @@ export const USP = [
     description:
       "Run backtests and live strategies on the same engine. Compare backtest vs live P&L side-by-side.",
   },
-] as const
+] as const;

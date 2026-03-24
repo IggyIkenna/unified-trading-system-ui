@@ -290,9 +290,9 @@ Appears in:
 
 ### Benefits:
 
-✅ **No manual dual-tagging** - GitHub workflows handle it automatically  
-✅ **Single source issue** - Close once, disappears from all projects  
-✅ **Filter flexibility** - Service projects can show "All work", "CODs only", "Waves only"  
+✅ **No manual dual-tagging** - GitHub workflows handle it automatically
+✅ **Single source issue** - Close once, disappears from all projects
+✅ **Filter flexibility** - Service projects can show "All work", "CODs only", "Waves only"
 ✅ **Correct cross-cutting concerns** - Tracked centrally AND per-service
 
 ### Create Service Projects:
@@ -334,8 +334,8 @@ python3 scripts/utilities/create-all-service-projects.py --service execution-ser
 
 ---
 
-**Last Updated:** 2026-02-13  
-**Status:** Current state of unified trading system workflow  
+**Last Updated:** 2026-02-13
+**Status:** Current state of unified trading system workflow
 **Next:** See
 [phase_0_cod_service_specs_f0a0afbd.plan.md](../../.cursor/plans/phase_0_cod_service_specs_f0a0afbd.plan.md) for initial
 build plan

@@ -328,6 +328,7 @@ Services in live mode (`SERVICE_MODE=live`) buffer data in-memory and flush to G
 4. At end-of-day, a compaction job composes window files into the daily `by_date/` partition via GCS object compose
 
 **Why micro-batch, not per-event:**
+
 - GCS charges per write operation ($0.005 per 1,000 ops)
 - Tiny objects (<1 KB) waste storage overhead and slow list operations
 - 1-minute windows at 100 instruments = 144,000 files/day — manageable

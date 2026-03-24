@@ -1,106 +1,110 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useAuth } from "@/hooks/use-auth"
-import { apiFetch } from "@/lib/api/fetch"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { apiFetch } from "@/lib/api/fetch";
 
 export function useOrders() {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ["orders", user?.id],
     queryFn: () => apiFetch("/api/execution/orders", token),
     enabled: !!user,
-  })
+  });
 }
 
 export function useAlgos() {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ["algos", user?.id],
     queryFn: () => apiFetch("/api/execution/algos", token),
     enabled: !!user,
-  })
+  });
 }
 
 export function useVenues() {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ["execution-venues", user?.id],
     queryFn: () => apiFetch("/api/execution/venues", token),
     enabled: !!user,
-  })
+  });
 }
 
 export function useExecutionBacktests() {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ["execution-backtests", user?.id],
     queryFn: () => apiFetch("/api/execution/backtests", token),
     enabled: !!user,
-  })
+  });
 }
 
 export function useExecutionMetrics() {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ["execution-metrics", user?.id],
     queryFn: () => apiFetch("/api/execution/metrics", token),
     enabled: !!user,
-  })
+  });
 }
 
 export function useExecutionCandidates() {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ["execution-candidates", user?.id],
     queryFn: () => apiFetch("/api/execution/candidates", token),
     enabled: !!user,
-  })
+  });
 }
 
 export function useExecutionHandoff(algoId?: string) {
-  const { user, token } = useAuth()
+  const { user, token } = useAuth();
 
   return useQuery({
     queryKey: ["execution-handoff", algoId, user?.id],
-    queryFn: () => apiFetch(`/api/execution/handoff${algoId ? `?algoId=${algoId}` : ""}`, token),
+    queryFn: () =>
+      apiFetch(
+        `/api/execution/handoff${algoId ? `?algoId=${algoId}` : ""}`,
+        token,
+      ),
     enabled: !!user,
-  })
+  });
 }
 
 export interface PlaceOrderParams {
-  instrument: string
-  side: "buy" | "sell"
-  order_type: "limit" | "market"
-  quantity: number
-  price?: number
-  venue?: string
-  strategy_id?: string
-  client_id?: string
-  reason?: string
-  execution_mode?: "execute" | "record_only"
-  counterparty?: string
-  source_reference?: string
-  category?: string
-  portfolio_id?: string
-  algo?: string
-  algo_params?: Record<string, number>
+  instrument: string;
+  side: "buy" | "sell";
+  order_type: "limit" | "market";
+  quantity: number;
+  price?: number;
+  venue?: string;
+  strategy_id?: string;
+  client_id?: string;
+  reason?: string;
+  execution_mode?: "execute" | "record_only";
+  counterparty?: string;
+  source_reference?: string;
+  category?: string;
+  portfolio_id?: string;
+  algo?: string;
+  algo_params?: Record<string, number>;
 }
 
 export interface PreTradeCheckParams {
-  instrument: string
-  side: string
-  quantity: number
-  price?: number
-  strategy_id?: string
+  instrument: string;
+  side: string;
+  quantity: number;
+  price?: number;
+  strategy_id?: string;
 }
 
 export function usePreTradeCheck() {
-  const { token } = useAuth()
+  const { token } = useAuth();
   return useMutation({
     mutationFn: (params: PreTradeCheckParams) =>
       apiFetch("/api/compliance/pre-trade-check", token, {
@@ -108,12 +112,12 @@ export function usePreTradeCheck() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(params),
       }),
-  })
+  });
 }
 
 export function usePlaceOrder() {
-  const { token } = useAuth()
-  const queryClient = useQueryClient()
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (params: PlaceOrderParams) =>
@@ -123,15 +127,15 @@ export function usePlaceOrder() {
         body: JSON.stringify(params),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] })
-      queryClient.invalidateQueries({ queryKey: ["positions"] })
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
     },
-  })
+  });
 }
 
 export function useCancelOrder() {
-  const { token } = useAuth()
-  const queryClient = useQueryClient()
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (orderId: string) =>
@@ -139,24 +143,31 @@ export function useCancelOrder() {
         method: "PUT",
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] })
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-  })
+  });
 }
 
 export function useAmendOrder() {
-  const { token } = useAuth()
-  const queryClient = useQueryClient()
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (params: { orderId: string; quantity?: number; price?: number }) =>
+    mutationFn: (params: {
+      orderId: string;
+      quantity?: number;
+      price?: number;
+    }) =>
       apiFetch(`/api/execution/orders/${params.orderId}/amend`, token, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quantity: params.quantity, price: params.price }),
+        body: JSON.stringify({
+          quantity: params.quantity,
+          price: params.price,
+        }),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["orders"] })
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-  })
+  });
 }

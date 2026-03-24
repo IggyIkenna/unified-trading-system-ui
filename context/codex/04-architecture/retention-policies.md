@@ -42,7 +42,11 @@ For GCP-hosted environments, retention is enforced via GCS bucket lifecycle rule
         "action": { "type": "Delete" },
         "condition": {
           "age": 365,
-          "matchesPrefix": ["alerting/history/", "market-data/raw/", "positions/snapshots/"]
+          "matchesPrefix": [
+            "alerting/history/",
+            "market-data/raw/",
+            "positions/snapshots/"
+          ]
         }
       }
     ]
@@ -71,7 +75,11 @@ For AWS-hosted environments, equivalent S3 lifecycle rules apply:
       "ID": "compliance-1y",
       "Filter": {
         "Or": {
-          "Prefix": ["alerting/history/", "market-data/raw/", "positions/snapshots/"]
+          "Prefix": [
+            "alerting/history/",
+            "market-data/raw/",
+            "positions/snapshots/"
+          ]
         }
       },
       "Status": "Enabled",

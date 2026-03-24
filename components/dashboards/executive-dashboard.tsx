@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   TrendingUp,
   TrendingDown,
@@ -37,8 +37,8 @@ import {
   MessageSquare,
   Sparkles,
   Send,
-} from "lucide-react"
-import { Input } from "@/components/ui/input"
+} from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   AreaChart,
   Area,
@@ -53,7 +53,7 @@ import {
   BarChart,
   Bar,
   Legend,
-} from "recharts"
+} from "recharts";
 
 // Mock data for executive dashboard
 const navHistory = [
@@ -63,16 +63,61 @@ const navHistory = [
   { date: "Apr", nav: 22.9, benchmark: 22.2 },
   { date: "May", nav: 23.8, benchmark: 22.5 },
   { date: "Jun", nav: 24.5, benchmark: 22.8 },
-]
+];
 
 // Available strategies with their performance data
 const availableStrategies = [
-  { id: "arbitrage", name: "Crypto Arbitrage", aum: 4.2, pnl: 312, pnlPct: 7.4, sharpe: 2.8, allocation: 35, color: "#4ade80" },
-  { id: "market-making", name: "DeFi Market Making", aum: 3.1, pnl: 198, pnlPct: 6.4, sharpe: 2.2, allocation: 25, color: "#60a5fa" },
-  { id: "directional", name: "Momentum Long/Short", aum: 2.5, pnl: 145, pnlPct: 5.8, sharpe: 1.9, allocation: 20, color: "#f472b6" },
-  { id: "yield", name: "DeFi Yield", aum: 1.9, pnl: 87, pnlPct: 4.6, sharpe: 3.1, allocation: 15, color: "#fbbf24" },
-  { id: "sports", name: "Sports Arbitrage", aum: 0.6, pnl: 42, pnlPct: 7.0, sharpe: 2.4, allocation: 5, color: "#94a3b8" },
-]
+  {
+    id: "arbitrage",
+    name: "Crypto Arbitrage",
+    aum: 4.2,
+    pnl: 312,
+    pnlPct: 7.4,
+    sharpe: 2.8,
+    allocation: 35,
+    color: "#4ade80",
+  },
+  {
+    id: "market-making",
+    name: "DeFi Market Making",
+    aum: 3.1,
+    pnl: 198,
+    pnlPct: 6.4,
+    sharpe: 2.2,
+    allocation: 25,
+    color: "#60a5fa",
+  },
+  {
+    id: "directional",
+    name: "Momentum Long/Short",
+    aum: 2.5,
+    pnl: 145,
+    pnlPct: 5.8,
+    sharpe: 1.9,
+    allocation: 20,
+    color: "#f472b6",
+  },
+  {
+    id: "yield",
+    name: "DeFi Yield",
+    aum: 1.9,
+    pnl: 87,
+    pnlPct: 4.6,
+    sharpe: 3.1,
+    allocation: 15,
+    color: "#fbbf24",
+  },
+  {
+    id: "sports",
+    name: "Sports Arbitrage",
+    aum: 0.6,
+    pnl: 42,
+    pnlPct: 7.0,
+    sharpe: 2.4,
+    allocation: 5,
+    color: "#94a3b8",
+  },
+];
 
 const monthlyPnL = [
   { month: "Jan", pnl: 420, target: 400 },
@@ -81,24 +126,31 @@ const monthlyPnL = [
   { month: "Apr", pnl: 290, target: 400 },
   { month: "May", pnl: 480, target: 400 },
   { month: "Jun", pnl: 620, target: 400 },
-]
+];
 
 const clientSummary = [
   { name: "Odum Capital", aum: 12.5, pnl: 842, pnlPct: 6.7, status: "active" },
   { name: "Meridian Fund", aum: 8.2, pnl: 512, pnlPct: 6.2, status: "active" },
   { name: "Apex Partners", aum: 5.1, pnl: 198, pnlPct: 3.9, status: "active" },
-  { name: "Nova Ventures", aum: 3.8, pnl: -42, pnlPct: -1.1, status: "warning" },
-]
+  {
+    name: "Nova Ventures",
+    aum: 3.8,
+    pnl: -42,
+    pnlPct: -1.1,
+    status: "warning",
+  },
+];
 
 // Demo NL query response data
 const nlDemoQuestions = [
   "What was the Sharpe of my DeFi basis strategy in Q4 excluding periods when funding rate was below 3%?",
   "Show me the top 3 performing strategies by risk-adjusted return since inception",
   "What is the current drawdown vs max drawdown for each strategy?",
-]
+];
 
 const nlDemoResponse = {
-  question: "What was the Sharpe of my DeFi basis strategy in Q4 excluding periods when funding rate was below 3%?",
+  question:
+    "What was the Sharpe of my DeFi basis strategy in Q4 excluding periods when funding rate was below 3%?",
   answer: `**Analysis: DeFi Basis Strategy Q4 Performance (Funding Rate > 3%)**
 
 The DeFi Basis strategy achieved a **Sharpe ratio of 2.84** during Q4 2025 when filtering for periods where the funding rate exceeded 3%.
@@ -120,67 +172,79 @@ This confirms that the strategy performs significantly better in high-funding-ra
     { month: "Nov", sharpe: 3.1, funding: 5.1 },
     { month: "Dec", sharpe: 2.8, funding: 3.8 },
   ],
-}
+};
 
 interface ExecutiveDashboardProps {
-  className?: string
+  className?: string;
 }
 
 export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
-  const [reportPeriod, setReportPeriod] = React.useState("ytd")
+  const [reportPeriod, setReportPeriod] = React.useState("ytd");
   const [selectedStrategies, setSelectedStrategies] = React.useState<string[]>(
-    availableStrategies.map(s => s.id) // All selected by default
-  )
-  
+    availableStrategies.map((s) => s.id), // All selected by default
+  );
+
   // Natural language query state
-  const [nlQuery, setNlQuery] = React.useState(nlDemoQuestions[0])
-  const [nlResponse, setNlResponse] = React.useState<typeof nlDemoResponse | null>(null)
-  const [nlLoading, setNlLoading] = React.useState(false)
+  const [nlQuery, setNlQuery] = React.useState(nlDemoQuestions[0]);
+  const [nlResponse, setNlResponse] = React.useState<
+    typeof nlDemoResponse | null
+  >(null);
+  const [nlLoading, setNlLoading] = React.useState(false);
 
   const handleNlQuery = async () => {
-    setNlLoading(true)
+    setNlLoading(true);
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    setNlResponse(nlDemoResponse)
-    setNlLoading(false)
-  }
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setNlResponse(nlDemoResponse);
+    setNlLoading(false);
+  };
 
   // Auto-trigger demo on mount
   React.useEffect(() => {
     const timer = setTimeout(() => {
-      handleNlQuery()
-    }, 800)
-    return () => clearTimeout(timer)
-  }, [])
+      handleNlQuery();
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Compute aggregated metrics based on selected strategies
   const selectedStrategyData = React.useMemo(() => {
-    const selected = availableStrategies.filter(s => selectedStrategies.includes(s.id))
-    const totalAum = selected.reduce((sum, s) => sum + s.aum, 0)
-    const totalPnl = selected.reduce((sum, s) => sum + s.pnl, 0)
-    const weightedSharpe = selected.length > 0 
-      ? selected.reduce((sum, s) => sum + s.sharpe * s.aum, 0) / totalAum 
-      : 0
-    const pnlPct = totalAum > 0 ? (totalPnl / (totalAum * 10)) * 100 : 0 // Simplified calculation
-    
+    const selected = availableStrategies.filter((s) =>
+      selectedStrategies.includes(s.id),
+    );
+    const totalAum = selected.reduce((sum, s) => sum + s.aum, 0);
+    const totalPnl = selected.reduce((sum, s) => sum + s.pnl, 0);
+    const weightedSharpe =
+      selected.length > 0
+        ? selected.reduce((sum, s) => sum + s.sharpe * s.aum, 0) / totalAum
+        : 0;
+    const pnlPct = totalAum > 0 ? (totalPnl / (totalAum * 10)) * 100 : 0; // Simplified calculation
+
     // Recalculate allocation percentages for selected strategies
-    const totalAllocation = selected.reduce((sum, s) => sum + s.allocation, 0)
-    const strategyAllocation = selected.map(s => ({
+    const totalAllocation = selected.reduce((sum, s) => sum + s.allocation, 0);
+    const strategyAllocation = selected.map((s) => ({
       name: s.name,
       value: Math.round((s.allocation / totalAllocation) * 100),
       color: s.color,
-    }))
+    }));
 
-    return { totalAum, totalPnl, weightedSharpe, pnlPct, strategyAllocation, count: selected.length }
-  }, [selectedStrategies])
+    return {
+      totalAum,
+      totalPnl,
+      weightedSharpe,
+      pnlPct,
+      strategyAllocation,
+      count: selected.length,
+    };
+  }, [selectedStrategies]);
 
   const toggleStrategy = (strategyId: string) => {
-    setSelectedStrategies(prev => 
+    setSelectedStrategies((prev) =>
       prev.includes(strategyId)
-        ? prev.filter(id => id !== strategyId)
-        : [...prev, strategyId]
-    )
-  }
+        ? prev.filter((id) => id !== strategyId)
+        : [...prev, strategyId],
+    );
+  };
 
   return (
     <div className={className}>
@@ -205,14 +269,14 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
               <SelectItem value="inception">Since Inception</SelectItem>
             </SelectContent>
           </Select>
-          
+
           {/* Strategy Multi-Select */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="w-48 justify-between">
                 <span className="truncate">
-                  {selectedStrategies.length === availableStrategies.length 
-                    ? "All Strategies" 
+                  {selectedStrategies.length === availableStrategies.length
+                    ? "All Strategies"
                     : `${selectedStrategies.length} Strategies`}
                 </span>
                 <Badge variant="secondary" className="ml-2">
@@ -230,8 +294,8 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                   onCheckedChange={() => toggleStrategy(strategy.id)}
                 >
                   <div className="flex items-center gap-2">
-                    <div 
-                      className="size-2 rounded-full" 
+                    <div
+                      className="size-2 rounded-full"
                       style={{ backgroundColor: strategy.color }}
                     />
                     {strategy.name}
@@ -240,12 +304,14 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
               ))}
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
-                checked={selectedStrategies.length === availableStrategies.length}
+                checked={
+                  selectedStrategies.length === availableStrategies.length
+                }
                 onCheckedChange={(checked) => {
                   if (checked) {
-                    setSelectedStrategies(availableStrategies.map(s => s.id))
+                    setSelectedStrategies(availableStrategies.map((s) => s.id));
                   } else {
-                    setSelectedStrategies([])
+                    setSelectedStrategies([]);
                   }
                 }}
               >
@@ -269,8 +335,12 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
               <Sparkles className="size-4 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-sm font-medium">Ask Your Portfolio</CardTitle>
-              <p className="text-xs text-muted-foreground">Natural language queries across all your data</p>
+              <CardTitle className="text-sm font-medium">
+                Ask Your Portfolio
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Natural language queries across all your data
+              </p>
             </div>
           </div>
         </CardHeader>
@@ -303,10 +373,13 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
             {nlDemoQuestions.map((q, i) => (
               <button
                 key={i}
-                onClick={() => { setNlQuery(q); setNlResponse(null) }}
+                onClick={() => {
+                  setNlQuery(q);
+                  setNlResponse(null);
+                }}
                 className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                  nlQuery === q 
-                    ? "border-primary bg-primary/10 text-primary" 
+                  nlQuery === q
+                    ? "border-primary bg-primary/10 text-primary"
                     : "border-border hover:border-primary/50 text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -326,33 +399,82 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                   <div className="prose prose-sm prose-invert max-w-none">
                     {nlResponse.answer.split("\n").map((line, i) => {
                       if (line.startsWith("**") && line.endsWith("**")) {
-                        return <h4 key={i} className="text-sm font-semibold text-foreground mt-3 mb-1">{line.replace(/\*\*/g, "")}</h4>
+                        return (
+                          <h4
+                            key={i}
+                            className="text-sm font-semibold text-foreground mt-3 mb-1"
+                          >
+                            {line.replace(/\*\*/g, "")}
+                          </h4>
+                        );
                       }
                       if (line.startsWith("- ")) {
-                        return <p key={i} className="text-sm text-muted-foreground ml-4">{line}</p>
+                        return (
+                          <p
+                            key={i}
+                            className="text-sm text-muted-foreground ml-4"
+                          >
+                            {line}
+                          </p>
+                        );
                       }
                       if (line.includes("**")) {
-                        const parts = line.split(/\*\*/)
+                        const parts = line.split(/\*\*/);
                         return (
                           <p key={i} className="text-sm text-muted-foreground">
-                            {parts.map((part, j) => j % 2 === 1 ? <strong key={j} className="text-primary font-semibold">{part}</strong> : part)}
+                            {parts.map((part, j) =>
+                              j % 2 === 1 ? (
+                                <strong
+                                  key={j}
+                                  className="text-primary font-semibold"
+                                >
+                                  {part}
+                                </strong>
+                              ) : (
+                                part
+                              ),
+                            )}
                           </p>
-                        )
+                        );
                       }
-                      return line.trim() ? <p key={i} className="text-sm text-muted-foreground">{line}</p> : null
+                      return line.trim() ? (
+                        <p key={i} className="text-sm text-muted-foreground">
+                          {line}
+                        </p>
+                      ) : null;
                     })}
                   </div>
-                  
+
                   {/* Chart */}
                   <div className="mt-4 p-3 rounded-lg border border-border bg-muted/30">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Q4 Monthly Sharpe vs Funding Rate</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
+                      Q4 Monthly Sharpe vs Funding Rate
+                    </p>
                     <div className="h-[120px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={nlResponse.chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                          <XAxis dataKey="month" tick={{ fontSize: 10 }} stroke="var(--muted-foreground)" />
-                          <YAxis yAxisId="left" tick={{ fontSize: 10 }} stroke="var(--muted-foreground)" domain={[0, 4]} />
-                          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10 }} stroke="var(--muted-foreground)" domain={[0, 6]} />
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="var(--border)"
+                          />
+                          <XAxis
+                            dataKey="month"
+                            tick={{ fontSize: 10 }}
+                            stroke="var(--muted-foreground)"
+                          />
+                          <YAxis
+                            yAxisId="left"
+                            tick={{ fontSize: 10 }}
+                            stroke="var(--muted-foreground)"
+                            domain={[0, 4]}
+                          />
+                          <YAxis
+                            yAxisId="right"
+                            orientation="right"
+                            tick={{ fontSize: 10 }}
+                            stroke="var(--muted-foreground)"
+                            domain={[0, 6]}
+                          />
                           <Tooltip
                             contentStyle={{
                               backgroundColor: "var(--popover)",
@@ -361,8 +483,21 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                               fontSize: "12px",
                             }}
                           />
-                          <Bar yAxisId="left" dataKey="sharpe" name="Sharpe Ratio" fill="var(--surface-trading)" radius={[4, 4, 0, 0]} />
-                          <Bar yAxisId="right" dataKey="funding" name="Funding Rate %" fill="var(--surface-strategy)" radius={[4, 4, 0, 0]} fillOpacity={0.5} />
+                          <Bar
+                            yAxisId="left"
+                            dataKey="sharpe"
+                            name="Sharpe Ratio"
+                            fill="var(--surface-trading)"
+                            radius={[4, 4, 0, 0]}
+                          />
+                          <Bar
+                            yAxisId="right"
+                            dataKey="funding"
+                            name="Funding Rate %"
+                            fill="var(--surface-strategy)"
+                            radius={[4, 4, 0, 0]}
+                            fillOpacity={0.5}
+                          />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -383,10 +518,13 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   Total AUM
                 </p>
-                <p className="text-2xl font-semibold mt-1">${selectedStrategyData.totalAum.toFixed(1)}M</p>
+                <p className="text-2xl font-semibold mt-1">
+                  ${selectedStrategyData.totalAum.toFixed(1)}M
+                </p>
                 <div className="flex items-center gap-1 mt-1">
                   <span className="text-xs text-muted-foreground">
-                    {selectedStrategyData.count} of {availableStrategies.length} strategies
+                    {selectedStrategyData.count} of {availableStrategies.length}{" "}
+                    strategies
                   </span>
                 </div>
               </div>
@@ -404,8 +542,11 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   YTD P&L
                 </p>
-                <p className={`text-2xl font-semibold mt-1 ${selectedStrategyData.totalPnl >= 0 ? 'text-[var(--pnl-positive)]' : 'text-[var(--pnl-negative)]'}`}>
-                  {selectedStrategyData.totalPnl >= 0 ? '+' : ''}${Math.abs(selectedStrategyData.totalPnl)}K
+                <p
+                  className={`text-2xl font-semibold mt-1 ${selectedStrategyData.totalPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+                >
+                  {selectedStrategyData.totalPnl >= 0 ? "+" : ""}$
+                  {Math.abs(selectedStrategyData.totalPnl)}K
                 </p>
                 <div className="flex items-center gap-1 mt-1">
                   {selectedStrategyData.totalPnl >= 0 ? (
@@ -413,7 +554,9 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                   ) : (
                     <ArrowDownRight className="size-3 text-[var(--pnl-negative)]" />
                   )}
-                  <span className={`text-xs ${selectedStrategyData.totalPnl >= 0 ? 'text-[var(--pnl-positive)]' : 'text-[var(--pnl-negative)]'}`}>
+                  <span
+                    className={`text-xs ${selectedStrategyData.totalPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+                  >
                     {selectedStrategyData.pnlPct.toFixed(1)}%
                   </span>
                   <span className="text-xs text-muted-foreground">return</span>
@@ -433,9 +576,13 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   Active Strategies
                 </p>
-                <p className="text-2xl font-semibold mt-1">{selectedStrategyData.count}</p>
+                <p className="text-2xl font-semibold mt-1">
+                  {selectedStrategyData.count}
+                </p>
                 <div className="flex items-center gap-1 mt-1">
-                  <span className="text-xs text-muted-foreground">selected for analysis</span>
+                  <span className="text-xs text-muted-foreground">
+                    selected for analysis
+                  </span>
                 </div>
               </div>
               <div className="size-10 rounded-lg bg-[var(--surface-strategy)]/10 flex items-center justify-center">
@@ -452,9 +599,13 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
                   Avg Sharpe Ratio
                 </p>
-                <p className="text-2xl font-semibold mt-1">{selectedStrategyData.weightedSharpe.toFixed(2)}</p>
+                <p className="text-2xl font-semibold mt-1">
+                  {selectedStrategyData.weightedSharpe.toFixed(2)}
+                </p>
                 <div className="flex items-center gap-1 mt-1">
-                  <span className="text-xs text-muted-foreground">AUM-weighted</span>
+                  <span className="text-xs text-muted-foreground">
+                    AUM-weighted
+                  </span>
                 </div>
               </div>
               <div className="size-10 rounded-lg bg-[var(--surface-markets)]/10 flex items-center justify-center">
@@ -478,15 +629,28 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
             {/* NAV Chart */}
             <Card className="col-span-2">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">NAV Performance vs Benchmark</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  NAV Performance vs Benchmark
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[280px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={navHistory}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
-                      <YAxis tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" domain={[20, 26]} />
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="var(--border)"
+                      />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fontSize: 11 }}
+                        stroke="var(--muted-foreground)"
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11 }}
+                        stroke="var(--muted-foreground)"
+                        domain={[20, 26]}
+                      />
                       <Tooltip
                         contentStyle={{
                           backgroundColor: "var(--popover)",
@@ -520,7 +684,9 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
             {/* Strategy Allocation Pie */}
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Strategy Allocation</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Strategy Allocation
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[200px]">
@@ -536,9 +702,11 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                           paddingAngle={2}
                           dataKey="value"
                         >
-                          {selectedStrategyData.strategyAllocation.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
+                          {selectedStrategyData.strategyAllocation.map(
+                            (entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ),
+                          )}
                         </Pie>
                         <Tooltip
                           contentStyle={{
@@ -557,12 +725,17 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {selectedStrategyData.strategyAllocation.map((s) => (
-                    <div key={s.name} className="flex items-center gap-2 text-xs">
+                    <div
+                      key={s.name}
+                      className="flex items-center gap-2 text-xs"
+                    >
                       <div
                         className="size-2 rounded-full"
                         style={{ backgroundColor: s.color }}
                       />
-                      <span className="text-muted-foreground truncate">{s.name}</span>
+                      <span className="text-muted-foreground truncate">
+                        {s.name}
+                      </span>
                       <span className="ml-auto font-medium">{s.value}%</span>
                     </div>
                   ))}
@@ -574,15 +747,27 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
           {/* Monthly P&L */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Monthly P&L vs Target</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Monthly P&L vs Target
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[200px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlyPnL}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                    <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
-                    <YAxis tick={{ fontSize: 11 }} stroke="var(--muted-foreground)" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--border)"
+                    />
+                    <XAxis
+                      dataKey="month"
+                      tick={{ fontSize: 11 }}
+                      stroke="var(--muted-foreground)"
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11 }}
+                      stroke="var(--muted-foreground)"
+                    />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "var(--popover)",
@@ -592,8 +777,19 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                       formatter={(value: number) => [`$${value}K`, ""]}
                     />
                     <Legend />
-                    <Bar dataKey="pnl" name="P&L ($K)" fill="var(--surface-trading)" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="target" name="Target" fill="var(--muted-foreground)" radius={[4, 4, 0, 0]} fillOpacity={0.3} />
+                    <Bar
+                      dataKey="pnl"
+                      name="P&L ($K)"
+                      fill="var(--surface-trading)"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="target"
+                      name="Target"
+                      fill="var(--muted-foreground)"
+                      radius={[4, 4, 0, 0]}
+                      fillOpacity={0.3}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -604,7 +800,9 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
         <TabsContent value="clients" className="space-y-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Client Performance Summary</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Client Performance Summary
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -635,11 +833,14 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                         {client.pnl >= 0 ? "+" : ""}${Math.abs(client.pnl)}K
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {client.pnlPct >= 0 ? "+" : ""}{client.pnlPct}% YTD
+                        {client.pnlPct >= 0 ? "+" : ""}
+                        {client.pnlPct}% YTD
                       </p>
                     </div>
                     <Badge
-                      variant={client.status === "active" ? "default" : "secondary"}
+                      variant={
+                        client.status === "active" ? "default" : "secondary"
+                      }
                       className={
                         client.status === "active"
                           ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
@@ -673,7 +874,9 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium">Recent Documents</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Recent Documents
+                </CardTitle>
                 <Button variant="outline" size="sm">
                   <FileText className="size-4 mr-2" />
                   New Document
@@ -683,10 +886,26 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
             <CardContent>
               <div className="space-y-2">
                 {[
-                  { name: "Q2 2024 Investor Letter", date: "Jun 30, 2024", type: "PDF" },
-                  { name: "Monthly Performance Report - June", date: "Jul 5, 2024", type: "PDF" },
-                  { name: "Risk Committee Presentation", date: "Jun 15, 2024", type: "PPTX" },
-                  { name: "Strategy Allocation Memo", date: "Jun 1, 2024", type: "PDF" },
+                  {
+                    name: "Q2 2024 Investor Letter",
+                    date: "Jun 30, 2024",
+                    type: "PDF",
+                  },
+                  {
+                    name: "Monthly Performance Report - June",
+                    date: "Jul 5, 2024",
+                    type: "PDF",
+                  },
+                  {
+                    name: "Risk Committee Presentation",
+                    date: "Jun 15, 2024",
+                    type: "PPTX",
+                  },
+                  {
+                    name: "Strategy Allocation Memo",
+                    date: "Jun 1, 2024",
+                    type: "PDF",
+                  },
                 ].map((doc, i) => (
                   <div
                     key={i}
@@ -696,7 +915,9 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
                       <FileText className="size-5 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-medium">{doc.name}</p>
-                        <p className="text-xs text-muted-foreground">{doc.date}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {doc.date}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -713,5 +934,5 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

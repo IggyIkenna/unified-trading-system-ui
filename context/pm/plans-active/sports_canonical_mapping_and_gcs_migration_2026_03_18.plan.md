@@ -225,22 +225,23 @@ name normalisation, OddsAPI team names) is scattered across:
 - `/tmp/footballbets/` — original source (EPL + Bundesliga only, 2 leagues)
 
 None of it is in UAC where external-data normalization schemas belong. This means:
+
 1. `features-sports-service` and all future sports consumers must re-implement or go without
 2. The instruments-service leaks a service-internal dependency on raw mapping tables
 3. No SSOT for "what is the canonical name for X entity from source Y"
 
 ## Canonical ID Table (definitive reference)
 
-| Entity | Canonical ID format | Example | Source |
-|--------|--------------------|---------| -------|
-| League | `{COUNTRY_CODE}_{LEAGUE_ABBR}` | `EPL`, `BUN`, `ENG_CHAMPIONSHIP` | instruments-service/sports/league_data_prediction.py |
-| Team | SCREAMING_SNAKE_CASE | `MAN_CITY`, `TOTTENHAM`, `DORTMUND` | /tmp/footballbets/utils/mapping.py |
-| Fixture | `{api_football_fixture_id}` (int as str) | `"1034567"` | API Football |
-| Player | `{LASTNAME}_{INITIAL}` or `{LASTNAME}_{FIRSTNAME}` | `PICKFORD_J`, `FERNANDES_BRUNO` | player_name.py normalization |
-| Stadium | SCREAMING_SNAKE_CASE | `ANFIELD`, `ALLIANZ_ARENA` | stadium_mappings.py |
-| Referee | `{LASTNAME}_{INITIAL}` | `ATKINSON_M` | Same pattern as player |
-| Season | `{YYYY}/{YY}` | `2024/25` | String convention |
-| Instrument | `{fixture_id}::{market_type}::{outcome}::{bookmaker_key}` | `"1034567::h2h::home::betfair_ex_uk"` | UAC CanonicalOdds |
+| Entity     | Canonical ID format                                       | Example                               | Source                                               |
+| ---------- | --------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------- |
+| League     | `{COUNTRY_CODE}_{LEAGUE_ABBR}`                            | `EPL`, `BUN`, `ENG_CHAMPIONSHIP`      | instruments-service/sports/league_data_prediction.py |
+| Team       | SCREAMING_SNAKE_CASE                                      | `MAN_CITY`, `TOTTENHAM`, `DORTMUND`   | /tmp/footballbets/utils/mapping.py                   |
+| Fixture    | `{api_football_fixture_id}` (int as str)                  | `"1034567"`                           | API Football                                         |
+| Player     | `{LASTNAME}_{INITIAL}` or `{LASTNAME}_{FIRSTNAME}`        | `PICKFORD_J`, `FERNANDES_BRUNO`       | player_name.py normalization                         |
+| Stadium    | SCREAMING_SNAKE_CASE                                      | `ANFIELD`, `ALLIANZ_ARENA`            | stadium_mappings.py                                  |
+| Referee    | `{LASTNAME}_{INITIAL}`                                    | `ATKINSON_M`                          | Same pattern as player                               |
+| Season     | `{YYYY}/{YY}`                                             | `2024/25`                             | String convention                                    |
+| Instrument | `{fixture_id}::{market_type}::{outcome}::{bookmaker_key}` | `"1034567::h2h::home::betfair_ex_uk"` | UAC CanonicalOdds                                    |
 
 ## Architecture Decision
 
@@ -267,38 +268,38 @@ instruments-service/sports/
 
 ### Symbols being MOVED from instruments-service to UAC
 
-| Symbol | From | To |
-|--------|------|----|
-| `LeagueDefinition` | instruments_service.sports.league_definition | unified_api_contracts.sports |
-| `LeagueClassificationType` | instruments_service.sports.league_classification | unified_api_contracts.sports |
-| `LeagueClassification` | instruments_service.sports.league_classification | unified_api_contracts.sports |
-| `LEAGUE_REGISTRY` | instruments_service.sports.league_lookup | unified_api_contracts.sports |
-| `get_league()` | instruments_service.sports.league_lookup | unified_api_contracts.sports |
-| `get_league_by_api_football_id()` | instruments_service.sports.league_lookup | unified_api_contracts.sports |
-| `get_prediction_leagues()` | instruments_service.sports.league_lookup | unified_api_contracts.sports |
-| `get_leagues_by_classification()` | instruments_service.sports.league_lookup | unified_api_contracts.sports |
-| `get_leagues_by_country()` | instruments_service.sports.league_lookup | unified_api_contracts.sports |
-| `EPL_TEAM_MAPPINGS` | instruments_service.sports.team_mapping_data | unified_api_contracts.external.api_football |
-| `BUNDESLIGA_TEAM_MAPPINGS` | instruments_service.sports.team_mapping_data | unified_api_contracts.external.api_football |
-| `API_FOOTBALL_TO_CANONICAL` | (new) | unified_api_contracts.external.api_football |
-| `BETFAIR_TO_CANONICAL` | (new) | unified_api_contracts.external.api_football |
-| `API_FOOTBALL_TO_CANONICAL_STADIUMS` | (new) | unified_api_contracts.external.api_football |
-| `CANONICAL_TO_ODDS_API_EPL/BL` | (new) | unified_api_contracts.external.odds_api |
-| `CANONICAL_TO_UNDERSTAT_EPL/BL` | (new) | unified_api_contracts.external.odds_api |
+| Symbol                               | From                                             | To                                          |
+| ------------------------------------ | ------------------------------------------------ | ------------------------------------------- |
+| `LeagueDefinition`                   | instruments_service.sports.league_definition     | unified_api_contracts.sports                |
+| `LeagueClassificationType`           | instruments_service.sports.league_classification | unified_api_contracts.sports                |
+| `LeagueClassification`               | instruments_service.sports.league_classification | unified_api_contracts.sports                |
+| `LEAGUE_REGISTRY`                    | instruments_service.sports.league_lookup         | unified_api_contracts.sports                |
+| `get_league()`                       | instruments_service.sports.league_lookup         | unified_api_contracts.sports                |
+| `get_league_by_api_football_id()`    | instruments_service.sports.league_lookup         | unified_api_contracts.sports                |
+| `get_prediction_leagues()`           | instruments_service.sports.league_lookup         | unified_api_contracts.sports                |
+| `get_leagues_by_classification()`    | instruments_service.sports.league_lookup         | unified_api_contracts.sports                |
+| `get_leagues_by_country()`           | instruments_service.sports.league_lookup         | unified_api_contracts.sports                |
+| `EPL_TEAM_MAPPINGS`                  | instruments_service.sports.team_mapping_data     | unified_api_contracts.external.api_football |
+| `BUNDESLIGA_TEAM_MAPPINGS`           | instruments_service.sports.team_mapping_data     | unified_api_contracts.external.api_football |
+| `API_FOOTBALL_TO_CANONICAL`          | (new)                                            | unified_api_contracts.external.api_football |
+| `BETFAIR_TO_CANONICAL`               | (new)                                            | unified_api_contracts.external.api_football |
+| `API_FOOTBALL_TO_CANONICAL_STADIUMS` | (new)                                            | unified_api_contracts.external.api_football |
+| `CANONICAL_TO_ODDS_API_EPL/BL`       | (new)                                            | unified_api_contracts.external.odds_api     |
+| `CANONICAL_TO_UNDERSTAT_EPL/BL`      | (new)                                            | unified_api_contracts.external.odds_api     |
 
 ### Files that import from instruments_service.sports (pre-audit)
 
-| File | Symbols used | Action |
-|------|-------------|--------|
-| instruments_service/sports/__init__.py | all | Re-export from UAC |
-| instruments_service/sports/league_registry.py | LeagueClassification, league_lookup | Re-export from UAC |
-| instruments_service/sports/fixture_parser.py | LeagueDefinition | Update import |
-| instruments_service/sports/team_aliases.py | EPL_TEAM_MAPPINGS, BUND_TEAM_MAPPINGS | Update import |
-| instruments_service/sports/team_normalizer.py | team_aliases | Stays local (logic) |
-| instruments_service/engine/.../sports_orchestration.py | league_registry, team_aliases | Update import |
-| instruments_service/app/core/selective_validation.py | league_classification | Update import |
-| deployment-service/scripts/sports/league_config.py | LEAGUE_CLASSIFICATION | Update import |
-| tests (8 files) | various | Update imports |
+| File                                                   | Symbols used                          | Action              |
+| ------------------------------------------------------ | ------------------------------------- | ------------------- |
+| instruments_service/sports/**init**.py                 | all                                   | Re-export from UAC  |
+| instruments_service/sports/league_registry.py          | LeagueClassification, league_lookup   | Re-export from UAC  |
+| instruments_service/sports/fixture_parser.py           | LeagueDefinition                      | Update import       |
+| instruments_service/sports/team_aliases.py             | EPL_TEAM_MAPPINGS, BUND_TEAM_MAPPINGS | Update import       |
+| instruments_service/sports/team_normalizer.py          | team_aliases                          | Stays local (logic) |
+| instruments_service/engine/.../sports_orchestration.py | league_registry, team_aliases         | Update import       |
+| instruments_service/app/core/selective_validation.py   | league_classification                 | Update import       |
+| deployment-service/scripts/sports/league_config.py     | LEAGUE_CLASSIFICATION                 | Update import       |
+| tests (8 files)                                        | various                               | Update imports      |
 
 ## Dependency DAG
 
@@ -329,19 +330,23 @@ Phase 4 ─────────────────── p4: Full QG sw
 ## Success Criteria
 
 ### Phase 1
+
 - C4: `cd unified-api-contracts && bash scripts/quality-gates.sh` → green
 - All 6 new modules pass basedpyright strict mode
 - LEAGUE_REGISTRY has ≥28 Prediction leagues matching league_classification_config.py
 
 ### Phase 2
+
 - C4: `cd instruments-service && bash scripts/quality-gates.sh` → green
 - 0 references to `instruments_service.sports.league_data_*` or `team_mapping_data*` remain
 - All 9 test files updated and passing
 
 ### Phase 3
+
 - USRI exports ≥10 new symbols via `from unified_api_contracts.sports import`
 - GCS migration script either runs successfully or documents empty-bucket state
 
 ### Phase 4
+
 - All 3 repos pass quality gates simultaneously
 - B1: Canonical ID table in plan is accurate and serves as reference for all future development

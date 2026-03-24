@@ -1,6 +1,7 @@
 # QA Gates — Pre-Deploy Verification
 
 **Problem:** Code looks fine during hot-reload dev, but fails at deploy time due to:
+
 - Broken imports/links not caught locally
 - Hot reload masking actual compilation errors
 - Dependency mismatches (`node_modules` stale)
@@ -51,6 +52,7 @@ pnpm build
 ```
 
 **Why:** Development build is different from production. This catches:
+
 - Tree-shaking errors
 - Dead code elimination issues
 - Minification breakage
@@ -110,18 +112,22 @@ pnpm lint && pnpm tsc --noEmit && pnpm build && pnpm test
 ## Common Failures & Fixes
 
 ### ❌ "Cannot find module X"
+
 **Cause:** Import path broken, or dependency missing from package.json
 **Fix:** Check spelling, verify dep is installed, check barrel exports
 
 ### ❌ "Type 'X' is not assignable to type 'Y'"
+
 **Cause:** TypeScript narrowing or prop type mismatch
 **Fix:** Fix the type error (don't `// @ts-ignore`)
 
 ### ❌ Build succeeds, but tests fail
+
 **Cause:** Mock setup or test isolation issue
 **Fix:** Run single failing test, check mock scope (should be in `lib/mocks/`)
 
 ### ❌ "Configuration not found"
+
 **Cause:** Config import path broken (e.g., moved config file)
 **Fix:** Re-verify `lib/config/` has the file you're importing
 
@@ -130,6 +136,7 @@ pnpm lint && pnpm tsc --noEmit && pnpm build && pnpm test
 ## Why This Matters
 
 Hot reload in development ≠ actual build. You might see:
+
 - ✅ Page renders in browser
 - ❌ But TypeScript compilation fails
 - ❌ But imports are broken
@@ -151,6 +158,7 @@ Running QA gates before PR catches ALL of these. Saves 30 min of CI debugging.
 5. ✅ **THEN** create PR
 
 **If QA gates fail:**
+
 - Do NOT push to PR
 - Fix the issue locally
 - Re-run gates

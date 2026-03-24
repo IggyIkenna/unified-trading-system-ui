@@ -1,7 +1,7 @@
 # BigQuery Integration Guide
 
-**Purpose:** Complete guide to BigQuery external tables for ML features and market data  
-**Status:** Production Ready - External tables can be created after data generation  
+**Purpose:** Complete guide to BigQuery external tables for ML features and market data
+**Status:** Production Ready - External tables can be created after data generation
 **Last Updated:** February 9, 2026
 
 ---

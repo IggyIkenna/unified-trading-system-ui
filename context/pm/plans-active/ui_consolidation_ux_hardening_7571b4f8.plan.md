@@ -30,8 +30,7 @@ todos:
     content: Replace plain-text entity names with EntityLink in all table views
     status: pending
   - id: phase-2-merge-exec-into-strategy
-    content:
-      Move execution-analytics-ui pages into strategy-ui under strategy-scoped routes with strategy/execution tab split
+    content: Move execution-analytics-ui pages into strategy-ui under strategy-scoped routes with strategy/execution tab split
     status: pending
   - id: phase-3-command-center
     content: Build fund dashboard, dimensional PnL drill-down, absorb health/alerts into trading-analytics-ui
@@ -230,8 +229,16 @@ New file: `src/lib/surface-registry.ts`
 
 ```typescript
 export const SURFACES = {
-  commandCenter: { name: "Trading Analytics", port: 5180, repo: "trading-analytics-ui" },
-  strategyAnalytics: { name: "Strategy & Analytics", port: 5175, repo: "strategy-ui" },
+  commandCenter: {
+    name: "Trading Analytics",
+    port: 5180,
+    repo: "trading-analytics-ui",
+  },
+  strategyAnalytics: {
+    name: "Strategy & Analytics",
+    port: 5175,
+    repo: "strategy-ui",
+  },
   operations: { name: "Operations", port: 5183, repo: "deployment-ui" },
   onboarding: { name: "Onboarding", port: 5173, repo: "onboarding-ui" },
   settlement: { name: "Settlement", port: 5176, repo: "settlement-ui" },
@@ -240,9 +247,14 @@ export const SURFACES = {
 
 export type SurfaceKey = keyof typeof SURFACES;
 
-export function buildCrossLink(surface: SurfaceKey, path: string, params?: Record<string, string>): string {
+export function buildCrossLink(
+  surface: SurfaceKey,
+  path: string,
+  params?: Record<string, string>,
+): string {
   const s = SURFACES[surface];
-  const base = import.meta.env.VITE_SURFACE_BASE_URL ?? `http://localhost:${s.port}`;
+  const base =
+    import.meta.env.VITE_SURFACE_BASE_URL ?? `http://localhost:${s.port}`;
   const url = new URL(path, base);
   if (params) {
     for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);

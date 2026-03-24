@@ -31,11 +31,13 @@ Configuration includes:
 **Location:** `lib/registry/config-registry.json` (copied from unified-api-contracts/openapi/)
 
 **What it contains:**
+
 - Every Pydantic config class from every service
 - All fields, types, defaults
 - Grouped by repo
 
 **Example:**
+
 ```json
 {
   "deployment-api": [
@@ -60,6 +62,7 @@ Configuration includes:
 ```
 
 **How to use:**
+
 1. Find the service you're building UI for (e.g., `ExecutionService`)
 2. Look up the corresponding config class (`ExecutionServicesConfig`)
 3. See all configurable fields, their types, defaults
@@ -71,14 +74,15 @@ Configuration includes:
 
 In each service repo, look for:
 
-| File Pattern | What It Contains |
-|--------------|------------------|
-| `<service>/config.py` | Main configuration class |
-| `<service>/service_config.py` | Alternative location |
-| `<service>/engine/core/config_loader.py` | Strategy/ML internal config |
-| `<service>/domain_configs.py` | Client/org/venue domain configs |
+| File Pattern                             | What It Contains                |
+| ---------------------------------------- | ------------------------------- |
+| `<service>/config.py`                    | Main configuration class        |
+| `<service>/service_config.py`            | Alternative location            |
+| `<service>/engine/core/config_loader.py` | Strategy/ML internal config     |
+| `<service>/domain_configs.py`            | Client/org/venue domain configs |
 
 **Example:** To find execution service config:
+
 ```bash
 cd unified-trading-system-repos/execution-service
 find . -name "*config*" -type f | head -20
@@ -109,6 +113,7 @@ context/codex/
 **Main config class:** `ExecutionServicesConfig`
 
 **Key sections:**
+
 - Order routing rules (per-venue execution preferences)
 - Risk management overrides
 - Position limits (by venue, by symbol)
@@ -117,6 +122,7 @@ context/codex/
 - Post-trade optimization
 
 **UI relevance:**
+
 - Configuration panels for traders setting execution preferences
 - Risk limit controls
 - Slippage budgets per strategy
@@ -126,6 +132,7 @@ context/codex/
 **Main config class:** `StrategyConfig` + sub-configs
 
 **Key sections:**
+
 - `MLSignalConfig` — model selection, feature weights, signal thresholds
 - `RiskConfig` — max drawdown, volatility targets, correlation limits
 - `RebalancingConfig` — frequency, execution windows, tolerance bands
@@ -134,6 +141,7 @@ context/codex/
 - `PositionConfig` — position limits, concentration rules
 
 **UI relevance:**
+
 - Strategy parameter tuning UI
 - Signal configuration panels
 - Risk scenario definition
@@ -144,12 +152,14 @@ context/codex/
 **Main config class:** `AlertingSystemConfig`
 
 **Key sections:**
+
 - Alert rules (thresholds, conditions)
 - Delivery channels (Slack, email, PagerDuty)
 - Rate limiting and deduplication
 - Event filtering and routing
 
 **UI relevance:**
+
 - Alert rule builder
 - Notification preferences
 - Alert history and drill-down
@@ -159,6 +169,7 @@ context/codex/
 **Main config class:** `MarketDataApiConfig` + `DataSourceConfig`
 
 **Key sections:**
+
 - Data source URLs (Tardis, Databento, The Graph, Alchemy)
 - Rate limits per source
 - Caching and persistence rules
@@ -166,6 +177,7 @@ context/codex/
 - Subscription tiers
 
 **UI relevance:**
+
 - Data catalogue UI
 - Subscription management
 - Source selection and pricing
@@ -187,6 +199,7 @@ class ExecutionServiceConfig:
 ```
 
 **In UI:**
+
 - If `enable_smart_order_routing=false`, hide SOR controls
 - If `enable_post_trade_optimization=true`, show PTO panel
 - If `enable_dark_pool_routing=true`, add dark pool venue option
@@ -203,6 +216,7 @@ class RiskConfig:
 ```
 
 **In UI:**
+
 - Slider max = config value
 - Input validation uses config limits
 - Show user: "Max allowed: {config_value}"
@@ -219,6 +233,7 @@ class SmartOrderRoutingConfig:
 ```
 
 **In UI:**
+
 - Dropdown default = config value
 - Timeout input default = config value
 - Pre-populate with config defaults, allow override
@@ -247,6 +262,7 @@ class ExecutionServiceConfig:
 ```
 
 **In UI:**
+
 - Show deprecation warning if old field is used
 - Encourage migration to new field
 - Eventually hide deprecated fields
@@ -258,6 +274,7 @@ class ExecutionServiceConfig:
 ### API Services (stateless)
 
 **Configs are mostly read-only:**
+
 - Data source URLs
 - API keys / authentication
 - Rate limits
@@ -268,6 +285,7 @@ class ExecutionServiceConfig:
 ### Core Services (stateful)
 
 **Configs are dynamic and tradeable:**
+
 - Risk limits (changeable per day/session)
 - Position limits (real-time adjustable)
 - Execution preferences (per strategy)
@@ -278,6 +296,7 @@ class ExecutionServiceConfig:
 ### Feature Services
 
 **Configs are feature-level:**
+
 - Which features are enabled
 - Feature parameters (thresholds, windows, etc.)
 - Feature-specific limits
@@ -302,6 +321,7 @@ Use this for **UI validation:**
 ```
 
 **In UI:**
+
 ```typescript
 // Input component constraint
 <input type="number" min="0" max="100" step="0.1" />
@@ -323,6 +343,7 @@ class ExecutionServiceConfig:
 ```
 
 **In UI:**
+
 - When displaying risk limits, ask: "Which shard?" (CEFI, DeFi, Sports)
 - Show shard-specific limits, not global
 - See **SHARDING_DIMENSIONS.md** for sharding taxonomy
@@ -332,6 +353,7 @@ class ExecutionServiceConfig:
 ## 9. Known Configuration Gaps
 
 See **API_FRONTEND_GAPS.md** for a running list of:
+
 - Config fields that exist in backend but UI doesn't expose
 - UI features that lack backend configuration support
 - Configuration the UI needs but backend doesn't provide
@@ -346,6 +368,7 @@ See **API_FRONTEND_GAPS.md** for a running list of:
 **Script:** `unified-trading-pm/scripts/openapi/generate_config_registry.py` (in the multi-repo workspace, not this repo)
 
 **What it does:**
+
 1. Scans all service repos in the workspace
 2. Imports each service's config class
 3. Extracts Pydantic field metadata
@@ -353,12 +376,14 @@ See **API_FRONTEND_GAPS.md** for a running list of:
 5. Outputs JSON
 
 **How to regenerate:**
+
 ```bash
 cd unified-trading-pm
 python scripts/openapi/generate_config_registry.py --output-dir ../unified-api-contracts/openapi/
 ```
 
 **When to regenerate:**
+
 - When adding new config fields to any service
 - When a service publishes a new version
 - When modifying config class structure

@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import React, { ReactElement } from "react"
-import { render, RenderOptions, screen, within } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
+import React, { ReactElement } from "react";
+import { render, RenderOptions, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 // =============================================================================
 // TEST UTILITIES - Common patterns for testing trading dashboard components
@@ -10,11 +10,11 @@ import userEvent from "@testing-library/user-event"
 
 // Mock trading context for testing
 export interface MockTradingContext {
-  mode: "live" | "batch"
-  organizationIds: string[]
-  clientIds: string[]
-  strategyIds: string[]
-  asOfDatetime?: string
+  mode: "live" | "batch";
+  organizationIds: string[];
+  clientIds: string[];
+  strategyIds: string[];
+  asOfDatetime?: string;
 }
 
 export const defaultMockContext: MockTradingContext = {
@@ -22,25 +22,27 @@ export const defaultMockContext: MockTradingContext = {
   organizationIds: [],
   clientIds: [],
   strategyIds: [],
-}
+};
 
 // Create a wrapper with all providers needed for testing
 interface TestWrapperProps {
-  children: React.ReactNode
-  initialContext?: Partial<MockTradingContext>
+  children: React.ReactNode;
+  initialContext?: Partial<MockTradingContext>;
 }
 
 export function TestWrapper({ children, initialContext }: TestWrapperProps) {
-  return <>{children}</>
+  return <>{children}</>;
 }
 
 // Custom render function that includes providers
 export function renderWithProviders(
   ui: ReactElement,
-  options?: Omit<RenderOptions, "wrapper"> & { initialContext?: Partial<MockTradingContext> }
+  options?: Omit<RenderOptions, "wrapper"> & {
+    initialContext?: Partial<MockTradingContext>;
+  },
 ) {
-  const { initialContext, ...renderOptions } = options || {}
-  
+  const { initialContext, ...renderOptions } = options || {};
+
   return {
     user: userEvent.setup(),
     ...render(ui, {
@@ -49,7 +51,7 @@ export function renderWithProviders(
       ),
       ...renderOptions,
     }),
-  }
+  };
 }
 
 // =============================================================================
@@ -62,98 +64,117 @@ export function renderWithProviders(
  */
 export function auditInteractiveElements(container: HTMLElement) {
   const results: {
-    buttons: { element: HTMLElement; hasHandler: boolean; text: string; disabled: boolean }[]
-    links: { element: HTMLElement; hasHref: boolean; text: string }[]
-    inputs: { element: HTMLElement; hasHandler: boolean; name: string; type: string }[]
-    selects: { element: HTMLElement; hasHandler: boolean; name: string }[]
+    buttons: {
+      element: HTMLElement;
+      hasHandler: boolean;
+      text: string;
+      disabled: boolean;
+    }[];
+    links: { element: HTMLElement; hasHref: boolean; text: string }[];
+    inputs: {
+      element: HTMLElement;
+      hasHandler: boolean;
+      name: string;
+      type: string;
+    }[];
+    selects: { element: HTMLElement; hasHandler: boolean; name: string }[];
   } = {
     buttons: [],
     links: [],
     inputs: [],
     selects: [],
-  }
+  };
 
   // Audit buttons
-  const buttons = container.querySelectorAll("button, [role='button']")
+  const buttons = container.querySelectorAll("button, [role='button']");
   buttons.forEach((btn) => {
-    const element = btn as HTMLElement
-    const hasOnClick = element.onclick !== null || element.hasAttribute("onClick")
-    const hasHandler = hasOnClick || element.closest("form") !== null
+    const element = btn as HTMLElement;
+    const hasOnClick =
+      element.onclick !== null || element.hasAttribute("onClick");
+    const hasHandler = hasOnClick || element.closest("form") !== null;
     results.buttons.push({
       element,
       hasHandler,
       text: element.textContent?.trim().slice(0, 50) || "[no text]",
       disabled: element.hasAttribute("disabled"),
-    })
-  })
+    });
+  });
 
   // Audit links
-  const links = container.querySelectorAll("a")
+  const links = container.querySelectorAll("a");
   links.forEach((link) => {
-    const element = link as HTMLAnchorElement
+    const element = link as HTMLAnchorElement;
     results.links.push({
       element,
       hasHref: !!element.href && element.href !== "#",
       text: element.textContent?.trim().slice(0, 50) || "[no text]",
-    })
-  })
+    });
+  });
 
   // Audit inputs
-  const inputs = container.querySelectorAll("input, textarea")
+  const inputs = container.querySelectorAll("input, textarea");
   inputs.forEach((input) => {
-    const element = input as HTMLInputElement
-    const hasHandler = element.onchange !== null || element.oninput !== null
+    const element = input as HTMLInputElement;
+    const hasHandler = element.onchange !== null || element.oninput !== null;
     results.inputs.push({
       element,
       hasHandler,
       name: element.name || element.id || "[unnamed]",
       type: element.type || "text",
-    })
-  })
+    });
+  });
 
   // Audit selects
-  const selects = container.querySelectorAll("select, [role='combobox'], [role='listbox']")
+  const selects = container.querySelectorAll(
+    "select, [role='combobox'], [role='listbox']",
+  );
   selects.forEach((select) => {
-    const element = select as HTMLElement
-    const hasHandler = element.onchange !== null
+    const element = select as HTMLElement;
+    const hasHandler = element.onchange !== null;
     results.selects.push({
       element,
       hasHandler,
       name: element.getAttribute("name") || element.id || "[unnamed]",
-    })
-  })
+    });
+  });
 
-  return results
+  return results;
 }
 
 /**
  * Generates a report of all interactive elements and their handler status
  */
-export function generateInteractiveElementsReport(container: HTMLElement): string {
-  const audit = auditInteractiveElements(container)
-  const lines: string[] = ["Interactive Elements Audit Report", "=".repeat(50)]
+export function generateInteractiveElementsReport(
+  container: HTMLElement,
+): string {
+  const audit = auditInteractiveElements(container);
+  const lines: string[] = ["Interactive Elements Audit Report", "=".repeat(50)];
 
   // Buttons
-  lines.push(`\nButtons (${audit.buttons.length}):`)
+  lines.push(`\nButtons (${audit.buttons.length}):`);
   audit.buttons.forEach((btn, i) => {
-    const status = btn.disabled ? "DISABLED" : btn.hasHandler ? "OK" : "NO HANDLER"
-    lines.push(`  ${i + 1}. [${status}] "${btn.text}"`)
-  })
+    const status = btn.disabled
+      ? "DISABLED"
+      : btn.hasHandler
+        ? "OK"
+        : "NO HANDLER";
+    lines.push(`  ${i + 1}. [${status}] "${btn.text}"`);
+  });
 
   // Links
-  lines.push(`\nLinks (${audit.links.length}):`)
+  lines.push(`\nLinks (${audit.links.length}):`);
   audit.links.forEach((link, i) => {
-    const status = link.hasHref ? "OK" : "NO HREF"
-    lines.push(`  ${i + 1}. [${status}] "${link.text}"`)
-  })
+    const status = link.hasHref ? "OK" : "NO HREF";
+    lines.push(`  ${i + 1}. [${status}] "${link.text}"`);
+  });
 
   // Inputs
-  lines.push(`\nInputs (${audit.inputs.length}):`)
+  lines.push(`\nInputs (${audit.inputs.length}):`);
   audit.inputs.forEach((input, i) => {
-    lines.push(`  ${i + 1}. [${input.type}] "${input.name}"`)
-  })
+    lines.push(`  ${i + 1}. [${input.type}] "${input.name}"`);
+  });
 
-  return lines.join("\n")
+  return lines.join("\n");
 }
 
 // =============================================================================
@@ -167,31 +188,35 @@ export async function testFilterPropagation(
   container: HTMLElement,
   filterSelector: string,
   expectedDataAttribute: string,
-  expectedValue: string
+  expectedValue: string,
 ) {
-  const filterElement = container.querySelector(filterSelector)
+  const filterElement = container.querySelector(filterSelector);
   if (!filterElement) {
-    throw new Error(`Filter element not found: ${filterSelector}`)
+    throw new Error(`Filter element not found: ${filterSelector}`);
   }
 
   // Click the filter
-  await userEvent.click(filterElement as HTMLElement)
+  await userEvent.click(filterElement as HTMLElement);
 
   // Check if data propagated
-  const elementsWithData = container.querySelectorAll(`[${expectedDataAttribute}="${expectedValue}"]`)
-  return elementsWithData.length > 0
+  const elementsWithData = container.querySelectorAll(
+    `[${expectedDataAttribute}="${expectedValue}"]`,
+  );
+  return elementsWithData.length > 0;
 }
 
 // =============================================================================
 // MOCK DATA GENERATORS
 // =============================================================================
 
-export function createMockStrategy(overrides: Partial<{
-  id: string
-  name: string
-  clientId: string
-  status: string
-}> = {}) {
+export function createMockStrategy(
+  overrides: Partial<{
+    id: string;
+    name: string;
+    clientId: string;
+    status: string;
+  }> = {},
+) {
   return {
     id: overrides.id || `strategy-${Math.random().toString(36).slice(2)}`,
     name: overrides.name || "Test Strategy",
@@ -201,20 +226,22 @@ export function createMockStrategy(overrides: Partial<{
     assetClass: "DeFi",
     executionMode: "SCE",
     ...overrides,
-  }
+  };
 }
 
-export function createMockClient(overrides: Partial<{
-  id: string
-  name: string
-  organizationId: string
-}> = {}) {
+export function createMockClient(
+  overrides: Partial<{
+    id: string;
+    name: string;
+    organizationId: string;
+  }> = {},
+) {
   return {
     id: overrides.id || `client-${Math.random().toString(36).slice(2)}`,
     name: overrides.name || "Test Client",
     organizationId: overrides.organizationId || "test-org",
     ...overrides,
-  }
+  };
 }
 
 // =============================================================================
@@ -225,12 +252,16 @@ export function createMockClient(overrides: Partial<{
  * Asserts that all buttons in a container have click handlers or are properly disabled
  */
 export function assertAllButtonsHaveHandlers(container: HTMLElement) {
-  const audit = auditInteractiveElements(container)
-  const brokenButtons = audit.buttons.filter((btn) => !btn.hasHandler && !btn.disabled)
-  
+  const audit = auditInteractiveElements(container);
+  const brokenButtons = audit.buttons.filter(
+    (btn) => !btn.hasHandler && !btn.disabled,
+  );
+
   if (brokenButtons.length > 0) {
-    const details = brokenButtons.map((btn) => `"${btn.text}"`).join(", ")
-    throw new Error(`Found ${brokenButtons.length} buttons without handlers: ${details}`)
+    const details = brokenButtons.map((btn) => `"${btn.text}"`).join(", ");
+    throw new Error(
+      `Found ${brokenButtons.length} buttons without handlers: ${details}`,
+    );
   }
 }
 
@@ -240,13 +271,15 @@ export function assertAllButtonsHaveHandlers(container: HTMLElement) {
 export function assertFilterAffectsData(
   beforeCount: number,
   afterCount: number,
-  filterDescription: string
+  filterDescription: string,
 ) {
   if (beforeCount === afterCount) {
-    throw new Error(`Filter "${filterDescription}" did not affect displayed data (still ${beforeCount} items)`)
+    throw new Error(
+      `Filter "${filterDescription}" did not affect displayed data (still ${beforeCount} items)`,
+    );
   }
 }
 
 // Re-export everything from testing-library
-export * from "@testing-library/react"
-export { userEvent }
+export * from "@testing-library/react";
+export { userEvent };

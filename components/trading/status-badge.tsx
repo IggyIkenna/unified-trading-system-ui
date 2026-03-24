@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 // StatusBadge v3.0 - fully hardened with safe fallbacks
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 type StatusType =
   | "live"
@@ -18,13 +18,13 @@ type StatusType =
   | "staging"
   | "development"
   | "blocked"
-  | "in_progress"
+  | "in_progress";
 
 interface StatusBadgeProps {
-  status?: StatusType | string | null | undefined
-  label?: string
-  showDot?: boolean
-  className?: string
+  status?: StatusType | string | null | undefined;
+  label?: string;
+  showDot?: boolean;
+  className?: string;
 }
 
 const DEFAULT_CONFIG = {
@@ -32,9 +32,12 @@ const DEFAULT_CONFIG = {
   color: "var(--muted-foreground)",
   bgColor: "rgba(161, 161, 170, 0.1)",
   dotColor: "var(--muted-foreground)",
-}
+};
 
-const statusConfig: Record<string, { label: string; color: string; bgColor: string; dotColor: string }> = {
+const statusConfig: Record<
+  string,
+  { label: string; color: string; bgColor: string; dotColor: string }
+> = {
   live: {
     label: "Live",
     color: "var(--status-live)",
@@ -108,7 +111,7 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
     bgColor: "rgba(251, 191, 36, 0.1)",
     dotColor: "var(--status-warning)",
   },
-}
+};
 
 export function StatusBadge({
   status,
@@ -117,7 +120,9 @@ export function StatusBadge({
   className,
 }: StatusBadgeProps) {
   // SAFE: Always returns a valid config object, never undefined
-  const config = (status && typeof status === "string" && statusConfig[status]) || DEFAULT_CONFIG
+  const config =
+    (status && typeof status === "string" && statusConfig[status]) ||
+    DEFAULT_CONFIG;
 
   return (
     <Badge
@@ -136,18 +141,20 @@ export function StatusBadge({
       )}
       {label || config.label}
     </Badge>
-  )
+  );
 }
 
 export function StatusDot({
   status,
   className,
 }: {
-  status?: StatusType | string | null | undefined
-  className?: string
+  status?: StatusType | string | null | undefined;
+  className?: string;
 }) {
   // SAFE: Always returns a valid config object, never undefined
-  const config = (status && typeof status === "string" && statusConfig[status]) || DEFAULT_CONFIG
+  const config =
+    (status && typeof status === "string" && statusConfig[status]) ||
+    DEFAULT_CONFIG;
 
   return (
     <span
@@ -155,5 +162,5 @@ export function StatusDot({
       style={{ backgroundColor: config.dotColor }}
       title={config.label}
     />
-  )
+  );
 }

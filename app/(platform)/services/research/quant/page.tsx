@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { QuantDashboard } from "@/components/dashboards/quant-dashboard"
+import { QuantDashboard } from "@/components/dashboards/quant-dashboard";
 
 export default function QuantPage() {
-  return <QuantDashboard currentPage="dashboard" />
+  return <QuantDashboard currentPage="dashboard" />;
 }

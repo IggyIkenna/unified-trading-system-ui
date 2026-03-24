@@ -3,42 +3,57 @@
  * Used by mock-handler.ts when NEXT_PUBLIC_MOCK_API=true.
  */
 
-const STORAGE_KEY = "mock-onboarding-state"
+const STORAGE_KEY = "mock-onboarding-state";
 
 export interface OnboardingApplication {
-  id: string
-  applicant_user_id: string
-  applicant_name: string
-  applicant_email: string
-  org_name: string
-  desired_product_slugs: string[]
-  subscription_tier: string
-  engagement_type: "ar" | "advisor" | null
-  regulated_activities: string[]
-  fund_structure_requested: "crypto_spot" | "derivatives_tradfi" | "both" | null
-  pod_registration_status: "not_required" | "pending" | "submitted" | "registered" | null
-  status: "draft" | "submitted" | "in_review" | "approved" | "rejected"
-  submitted_at: string | null
-  reviewer_id: string | null
-  review_note: string
-  correlation_id: string
-  created_at: string
-  updated_at: string
+  id: string;
+  applicant_user_id: string;
+  applicant_name: string;
+  applicant_email: string;
+  org_name: string;
+  desired_product_slugs: string[];
+  subscription_tier: string;
+  engagement_type: "ar" | "advisor" | null;
+  regulated_activities: string[];
+  fund_structure_requested:
+    | "crypto_spot"
+    | "derivatives_tradfi"
+    | "both"
+    | null;
+  pod_registration_status:
+    | "not_required"
+    | "pending"
+    | "submitted"
+    | "registered"
+    | null;
+  status: "draft" | "submitted" | "in_review" | "approved" | "rejected";
+  submitted_at: string | null;
+  reviewer_id: string | null;
+  review_note: string;
+  correlation_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DocumentArtifact {
-  id: string
-  application_id: string
-  doc_type: "proof_of_address" | "identity" | "source_of_funds" | "wealth_declaration" | "management_agreement" | "other"
-  file_name: string
-  uploaded_at: string
-  review_status: "pending" | "accepted" | "rejected"
-  review_note: string
+  id: string;
+  application_id: string;
+  doc_type:
+    | "proof_of_address"
+    | "identity"
+    | "source_of_funds"
+    | "wealth_declaration"
+    | "management_agreement"
+    | "other";
+  file_name: string;
+  uploaded_at: string;
+  review_status: "pending" | "accepted" | "rejected";
+  review_note: string;
 }
 
 interface OnboardingState {
-  applications: OnboardingApplication[]
-  documents: DocumentArtifact[]
+  applications: OnboardingApplication[];
+  documents: DocumentArtifact[];
 }
 
 function defaultState(): OnboardingState {
@@ -50,7 +65,13 @@ function defaultState(): OnboardingState {
         applicant_name: "New Fund Manager",
         applicant_email: "fm@gammainvestments.com",
         org_name: "Gamma Investments",
-        desired_product_slugs: ["ar", "dealing_principal", "managing", "compliance", "reporting"],
+        desired_product_slugs: [
+          "ar",
+          "dealing_principal",
+          "managing",
+          "compliance",
+          "reporting",
+        ],
         subscription_tier: "standard",
         engagement_type: "ar",
         regulated_activities: ["dealing_principal", "managing"],
@@ -70,7 +91,12 @@ function defaultState(): OnboardingState {
         applicant_name: "DeFi Desk Lead",
         applicant_email: "lead@deltaprotocol.io",
         org_name: "Delta Protocol",
-        desired_product_slugs: ["advisor", "dealing_principal", "arranging", "aml"],
+        desired_product_slugs: [
+          "advisor",
+          "dealing_principal",
+          "arranging",
+          "aml",
+        ],
         subscription_tier: "standard",
         engagement_type: "advisor",
         regulated_activities: ["dealing_principal", "arranging"],
@@ -132,63 +158,75 @@ function defaultState(): OnboardingState {
         review_note: "",
       },
     ],
-  }
+  };
 }
 
 function loadState(): OnboardingState {
-  if (typeof window === "undefined") return defaultState()
+  if (typeof window === "undefined") return defaultState();
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return JSON.parse(raw) as OnboardingState
-  } catch { /* ignore */ }
-  return defaultState()
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as OnboardingState;
+  } catch {
+    /* ignore */
+  }
+  return defaultState();
 }
 
 function saveState(state: OnboardingState): void {
-  if (typeof window === "undefined") return
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-let _state: OnboardingState | null = null
+let _state: OnboardingState | null = null;
 
 export function getOnboardingState(): OnboardingState {
-  if (!_state) _state = loadState()
-  return _state
+  if (!_state) _state = loadState();
+  return _state;
 }
 
 function persist(): void {
-  if (_state) saveState(_state)
+  if (_state) saveState(_state);
 }
 
 export function addApplication(app: OnboardingApplication): void {
-  getOnboardingState().applications.push(app)
-  persist()
+  getOnboardingState().applications.push(app);
+  persist();
 }
 
-export function updateApplication(id: string, updates: Partial<OnboardingApplication>): OnboardingApplication | null {
-  const state = getOnboardingState()
-  const idx = state.applications.findIndex(a => a.id === id)
-  if (idx === -1) return null
-  state.applications[idx] = { ...state.applications[idx], ...updates, updated_at: new Date().toISOString() }
-  persist()
-  return state.applications[idx]
+export function updateApplication(
+  id: string,
+  updates: Partial<OnboardingApplication>,
+): OnboardingApplication | null {
+  const state = getOnboardingState();
+  const idx = state.applications.findIndex((a) => a.id === id);
+  if (idx === -1) return null;
+  state.applications[idx] = {
+    ...state.applications[idx],
+    ...updates,
+    updated_at: new Date().toISOString(),
+  };
+  persist();
+  return state.applications[idx];
 }
 
 export function addDocument(doc: DocumentArtifact): void {
-  getOnboardingState().documents.push(doc)
-  persist()
+  getOnboardingState().documents.push(doc);
+  persist();
 }
 
-export function updateDocument(id: string, updates: Partial<DocumentArtifact>): DocumentArtifact | null {
-  const state = getOnboardingState()
-  const idx = state.documents.findIndex(d => d.id === id)
-  if (idx === -1) return null
-  state.documents[idx] = { ...state.documents[idx], ...updates }
-  persist()
-  return state.documents[idx]
+export function updateDocument(
+  id: string,
+  updates: Partial<DocumentArtifact>,
+): DocumentArtifact | null {
+  const state = getOnboardingState();
+  const idx = state.documents.findIndex((d) => d.id === id);
+  if (idx === -1) return null;
+  state.documents[idx] = { ...state.documents[idx], ...updates };
+  persist();
+  return state.documents[idx];
 }
 
 export function resetOnboardingState(): void {
-  _state = defaultState()
-  persist()
+  _state = defaultState();
+  persist();
 }

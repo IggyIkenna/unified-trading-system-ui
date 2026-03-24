@@ -1,20 +1,23 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { EntityLink } from "@/components/trading/entity-link"
-import { PnLValue, PnLChange } from "@/components/trading/pnl-value"
-import { useContextState, type ContextState } from "@/components/trading/context-bar"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { EntityLink } from "@/components/trading/entity-link";
+import { PnLValue, PnLChange } from "@/components/trading/pnl-value";
+import {
+  useContextState,
+  type ContextState,
+} from "@/components/trading/context-bar";
 import {
   CLIENTS,
   ORGANIZATIONS,
   STRATEGIES,
   getFilteredStrategies,
   type FilterContext,
-} from "@/lib/trading-data"
+} from "@/lib/trading-data";
 import {
   FileText,
   Download,
@@ -33,8 +36,8 @@ import {
   Vault,
   AlertCircle,
   Loader2,
-} from "lucide-react"
-import { Progress } from "@/components/ui/progress"
+} from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -42,107 +45,168 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { useReports, useSettlements } from "@/hooks/api/use-reports"
-import { Skeleton } from "@/components/ui/skeleton"
-import { GenerateReportModal } from "@/components/reports/generate-report-modal"
-import { ScheduleReportModal } from "@/components/reports/schedule-report-modal"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
-import { ApiError } from "@/components/ui/api-error"
-import { Printer, CalendarClock } from "lucide-react"
+} from "@/components/ui/table";
+import { useReports, useSettlements } from "@/hooks/api/use-reports";
+import { Skeleton } from "@/components/ui/skeleton";
+import { GenerateReportModal } from "@/components/reports/generate-report-modal";
+import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ApiError } from "@/components/ui/api-error";
+import { Printer, CalendarClock } from "lucide-react";
 
-type TransferStatus = "confirming" | "settled" | "confirmed" | "pending" | "failed";
+type TransferStatus =
+  | "confirming"
+  | "settled"
+  | "confirmed"
+  | "pending"
+  | "failed";
 
 export default function ReportsPage() {
-  const { data: reportsApiData, isLoading: reportsLoading, isError: reportsIsError, error: reportsErr, refetch: refetchReports } = useReports()
-  const { data: settlementsApiData, isLoading: settlementsLoading, isError: settlementsIsError, refetch: refetchSettlements } = useSettlements()
+  const {
+    data: reportsApiData,
+    isLoading: reportsLoading,
+    isError: reportsIsError,
+    error: reportsErr,
+    refetch: refetchReports,
+  } = useReports();
+  const {
+    data: settlementsApiData,
+    isLoading: settlementsLoading,
+    isError: settlementsIsError,
+    refetch: refetchSettlements,
+  } = useSettlements();
 
-  const allReports: Array<any> = (reportsApiData as any)?.data ?? []
-  const allSettlements: Array<any> = (settlementsApiData as any)?.settlements ?? (settlementsApiData as any)?.data ?? []
-  const allPortfolioSummary: Array<any> = (reportsApiData as any)?.portfolioSummary ?? []
-  const allInvoices: Array<any> = (reportsApiData as any)?.invoices ?? []
-  const accountBalances: Array<any> = (settlementsApiData as any)?.accountBalances ?? []
-  const recentTransfers: Array<{ time: string; from: string; to: string; amount: string; status: TransferStatus; confirmations?: string; txHash?: string }> = (settlementsApiData as any)?.recentTransfers ?? []
+  const allReports: Array<any> = (reportsApiData as any)?.data ?? [];
+  const allSettlements: Array<any> =
+    (settlementsApiData as any)?.settlements ??
+    (settlementsApiData as any)?.data ??
+    [];
+  const allPortfolioSummary: Array<any> =
+    (reportsApiData as any)?.portfolioSummary ?? [];
+  const allInvoices: Array<any> = (reportsApiData as any)?.invoices ?? [];
+  const accountBalances: Array<any> =
+    (settlementsApiData as any)?.accountBalances ?? [];
+  const recentTransfers: Array<{
+    time: string;
+    from: string;
+    to: string;
+    amount: string;
+    status: TransferStatus;
+    confirmations?: string;
+    txHash?: string;
+  }> = (settlementsApiData as any)?.recentTransfers ?? [];
 
-  const isApiLoading = reportsLoading || settlementsLoading
-  const { context, setContext } = useContextState()
-  
+  const isApiLoading = reportsLoading || settlementsLoading;
+  const { context, setContext } = useContextState();
+
   // Build filter context
-  const filterContext: FilterContext = React.useMemo(() => ({
-    organizationIds: context.organizationIds,
-    clientIds: context.clientIds,
-    strategyIds: context.strategyIds,
-    mode: context.mode,
-    date: new Date().toISOString().split("T")[0],
-  }), [context])
-  
+  const filterContext: FilterContext = React.useMemo(
+    () => ({
+      organizationIds: context.organizationIds,
+      clientIds: context.clientIds,
+      strategyIds: context.strategyIds,
+      mode: context.mode,
+      date: new Date().toISOString().split("T")[0],
+    }),
+    [context],
+  );
+
   // Get client IDs that match the current filter
   const relevantClientIds = React.useMemo(() => {
     // If specific clients selected, use those
-    if (context.clientIds.length > 0) return context.clientIds
-    
+    if (context.clientIds.length > 0) return context.clientIds;
+
     // If orgs selected, get all clients in those orgs
     if (context.organizationIds.length > 0) {
-      return CLIENTS
-        .filter(c => context.organizationIds.includes(c.orgId))
-        .map(c => c.id)
+      return CLIENTS.filter((c) =>
+        context.organizationIds.includes(c.orgId),
+      ).map((c) => c.id);
     }
-    
+
     // No filter = all clients
-    return []
-  }, [context.organizationIds, context.clientIds])
-  
+    return [];
+  }, [context.organizationIds, context.clientIds]);
+
   // Filter data based on context
   const reports = React.useMemo(() => {
-    if (relevantClientIds.length === 0) return allReports
-    return allReports.filter(r => relevantClientIds.includes(r.clientId))
-  }, [relevantClientIds])
-  
+    if (relevantClientIds.length === 0) return allReports;
+    return allReports.filter((r) => relevantClientIds.includes(r.clientId));
+  }, [relevantClientIds]);
+
   const settlements = React.useMemo(() => {
-    if (relevantClientIds.length === 0) return allSettlements
-    return allSettlements.filter(s => relevantClientIds.includes(s.clientId))
-  }, [relevantClientIds])
-  
+    if (relevantClientIds.length === 0) return allSettlements;
+    return allSettlements.filter((s) => relevantClientIds.includes(s.clientId));
+  }, [relevantClientIds]);
+
   const portfolioSummary = React.useMemo(() => {
-    if (relevantClientIds.length === 0) return allPortfolioSummary
-    return allPortfolioSummary.filter(p => relevantClientIds.includes(p.clientId))
-  }, [relevantClientIds])
-  
+    if (relevantClientIds.length === 0) return allPortfolioSummary;
+    return allPortfolioSummary.filter((p) =>
+      relevantClientIds.includes(p.clientId),
+    );
+  }, [relevantClientIds]);
+
   const invoices = React.useMemo(() => {
-    if (relevantClientIds.length === 0) return allInvoices
-    return allInvoices.filter(i => relevantClientIds.includes(i.clientId))
-  }, [relevantClientIds])
-  
+    if (relevantClientIds.length === 0) return allInvoices;
+    return allInvoices.filter((i) => relevantClientIds.includes(i.clientId));
+  }, [relevantClientIds]);
+
   // Calculate totals from filtered data
-  const totalAum = portfolioSummary.reduce((sum, p) => sum + p.aum, 0)
-  const avgMtdReturn = portfolioSummary.length > 0 
-    ? portfolioSummary.reduce((sum, p) => sum + p.mtdReturn, 0) / portfolioSummary.length 
-    : 0
-  const pendingSettlement = settlements.filter(s => s.status !== "settled").reduce((sum, s) => sum + s.amount, 0)
-  const reportsThisMonth = reports.length
+  const totalAum = portfolioSummary.reduce((sum, p) => sum + p.aum, 0);
+  const avgMtdReturn =
+    portfolioSummary.length > 0
+      ? portfolioSummary.reduce((sum, p) => sum + p.mtdReturn, 0) /
+        portfolioSummary.length
+      : 0;
+  const pendingSettlement = settlements
+    .filter((s) => s.status !== "settled")
+    .reduce((sum, s) => sum + s.amount, 0);
+  const reportsThisMonth = reports.length;
 
-  const [generateOpen, setGenerateOpen] = React.useState(false)
-  const [scheduleOpen, setScheduleOpen] = React.useState(false)
+  const [generateOpen, setGenerateOpen] = React.useState(false);
+  const [scheduleOpen, setScheduleOpen] = React.useState(false);
 
-  if (reportsIsError || settlementsIsError) return (
-    <div className="p-6 max-w-[1600px] mx-auto">
-      <ApiError
-        error={reportsErr instanceof Error ? reportsErr : new Error("Failed to load reports data")}
-        onRetry={() => { refetchReports(); refetchSettlements() }}
-      />
-    </div>
-  )
-
-  if (isApiLoading) return (
-    <div className="p-6 max-w-[1600px] mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2"><Skeleton className="h-8 w-64" /><Skeleton className="h-4 w-96" /></div>
-        <div className="flex gap-3"><Skeleton className="h-9 w-32" /><Skeleton className="h-9 w-40" /></div>
+  if (reportsIsError || settlementsIsError)
+    return (
+      <div className="p-6 max-w-[1600px] mx-auto">
+        <ApiError
+          error={
+            reportsErr instanceof Error
+              ? reportsErr
+              : new Error("Failed to load reports data")
+          }
+          onRetry={() => {
+            refetchReports();
+            refetchSettlements();
+          }}
+        />
       </div>
-      <div className="grid grid-cols-4 gap-4">{Array.from({ length: 4 }).map((_, i) => <Card key={i}><CardContent className="pt-4"><Skeleton className="h-16" /></CardContent></Card>)}</div>
-      <Skeleton className="h-[400px]" />
-    </div>
-  )
+    );
+
+  if (isApiLoading)
+    return (
+      <div className="p-6 max-w-[1600px] mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-96" />
+          </div>
+          <div className="flex gap-3">
+            <Skeleton className="h-9 w-32" />
+            <Skeleton className="h-9 w-40" />
+          </div>
+        </div>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i}>
+              <CardContent className="pt-4">
+                <Skeleton className="h-16" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Skeleton className="h-[400px]" />
+      </div>
+    );
 
   return (
     <div className="p-6">
@@ -160,12 +224,17 @@ export default function ReportsPage() {
               <Calendar className="size-4" />
               March 2026
             </Button>
-            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => window.print()}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 no-print"
+              onClick={() => window.print()}
+            >
               <Printer className="size-4" />
               Print
             </Button>
             <ExportDropdown
-              data={reports.map(r => ({ ...r }))}
+              data={reports.map((r) => ({ ...r }))}
               columns={[
                 { key: "id", header: "ID" },
                 { key: "name", header: "Report" },
@@ -175,11 +244,20 @@ export default function ReportsPage() {
               ]}
               filename="reports-pnl"
             />
-            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => setScheduleOpen(true)}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 no-print"
+              onClick={() => setScheduleOpen(true)}
+            >
               <CalendarClock className="size-4" />
               Schedule
             </Button>
-            <Button size="sm" className="gap-2" onClick={() => setGenerateOpen(true)}>
+            <Button
+              size="sm"
+              className="gap-2"
+              onClick={() => setGenerateOpen(true)}
+            >
               <FileText className="size-4" />
               Generate Report
             </Button>
@@ -192,10 +270,15 @@ export default function ReportsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--pnl-positive)]/10">
-                  <DollarSign className="size-5" style={{ color: "var(--pnl-positive)" }} />
+                  <DollarSign
+                    className="size-5"
+                    style={{ color: "var(--pnl-positive)" }}
+                  />
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold">${(totalAum / 1000000).toFixed(1)}m</p>
+                  <p className="text-2xl font-semibold">
+                    ${(totalAum / 1000000).toFixed(1)}m
+                  </p>
                   <p className="text-xs text-muted-foreground">Total AUM</p>
                 </div>
               </div>
@@ -208,10 +291,15 @@ export default function ReportsPage() {
                   <TrendingUp className="size-5 text-primary" />
                 </div>
                 <div>
-                  <p className={`text-2xl font-semibold ${avgMtdReturn >= 0 ? "pnl-positive" : "pnl-negative"}`}>
-                    {avgMtdReturn >= 0 ? "+" : ""}{avgMtdReturn.toFixed(1)}%
+                  <p
+                    className={`text-2xl font-semibold ${avgMtdReturn >= 0 ? "pnl-positive" : "pnl-negative"}`}
+                  >
+                    {avgMtdReturn >= 0 ? "+" : ""}
+                    {avgMtdReturn.toFixed(1)}%
                   </p>
-                  <p className="text-xs text-muted-foreground">Avg MTD Return</p>
+                  <p className="text-xs text-muted-foreground">
+                    Avg MTD Return
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -220,11 +308,18 @@ export default function ReportsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                  <Receipt className="size-5" style={{ color: "var(--status-warning)" }} />
+                  <Receipt
+                    className="size-5"
+                    style={{ color: "var(--status-warning)" }}
+                  />
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold">${(pendingSettlement / 1000).toFixed(1)}k</p>
-                  <p className="text-xs text-muted-foreground">Pending Settlement</p>
+                  <p className="text-2xl font-semibold">
+                    ${(pendingSettlement / 1000).toFixed(1)}k
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Pending Settlement
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -233,11 +328,16 @@ export default function ReportsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--surface-reports)]/10">
-                  <FileText className="size-5" style={{ color: "var(--surface-reports)" }} />
+                  <FileText
+                    className="size-5"
+                    style={{ color: "var(--surface-reports)" }}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">{reportsThisMonth}</p>
-                  <p className="text-xs text-muted-foreground">Reports This Month</p>
+                  <p className="text-xs text-muted-foreground">
+                    Reports This Month
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -273,7 +373,9 @@ export default function ReportsPage() {
           <TabsContent value="portfolio" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Client Portfolio Summary</CardTitle>
+                <CardTitle className="text-lg">
+                  Client Portfolio Summary
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -308,8 +410,12 @@ export default function ReportsPage() {
                           <PnLChange value={client.ytdReturn} size="sm" />
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-muted-foreground">Sharpe</p>
-                          <p className="font-mono font-semibold">{client.sharpe}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Sharpe
+                          </p>
+                          <p className="font-mono font-semibold">
+                            {client.sharpe}
+                          </p>
                         </div>
                         <Button variant="ghost" size="sm">
                           <ArrowRight className="size-4" />
@@ -346,8 +452,8 @@ export default function ReportsPage() {
                           report.status === "ready"
                             ? "bg-[var(--status-live)]/10"
                             : report.status === "sent"
-                            ? "bg-primary/10"
-                            : "bg-muted"
+                              ? "bg-primary/10"
+                              : "bg-muted"
                         }`}
                       >
                         <FileText
@@ -357,15 +463,16 @@ export default function ReportsPage() {
                               report.status === "ready"
                                 ? "var(--status-live)"
                                 : report.status === "sent"
-                                ? "var(--primary)"
-                                : "var(--muted-foreground)",
+                                  ? "var(--primary)"
+                                  : "var(--muted-foreground)",
                           }}
                         />
                       </div>
                       <div>
                         <p className="font-medium">{report.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {report.client} &bull; {report.date} &bull; {report.format}
+                          {report.client} &bull; {report.date} &bull;{" "}
+                          {report.format}
                         </p>
                       </div>
                     </div>
@@ -380,8 +487,8 @@ export default function ReportsPage() {
                           report.status === "ready"
                             ? "default"
                             : report.status === "sent"
-                            ? "secondary"
-                            : "outline"
+                              ? "secondary"
+                              : "outline"
                         }
                         className={
                           report.status === "ready"
@@ -441,7 +548,8 @@ export default function ReportsPage() {
                           className="font-medium"
                         />
                         <p className="text-xs text-muted-foreground">
-                          {settlement.type.replace("_", " ")} &bull; Due: {settlement.dueDate}
+                          {settlement.type.replace("_", " ")} &bull; Due:{" "}
+                          {settlement.dueDate}
                         </p>
                       </div>
                     </div>
@@ -452,15 +560,15 @@ export default function ReportsPage() {
                           settlement.status === "settled"
                             ? "default"
                             : settlement.status === "confirmed"
-                            ? "secondary"
-                            : "outline"
+                              ? "secondary"
+                              : "outline"
                         }
                         className={
                           settlement.status === "settled"
                             ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
                             : settlement.status === "confirmed"
-                            ? "bg-[var(--status-warning)]/10 text-[var(--status-warning)]"
-                            : ""
+                              ? "bg-[var(--status-warning)]/10 text-[var(--status-warning)]"
+                              : ""
                         }
                       >
                         {settlement.status}
@@ -513,7 +621,9 @@ export default function ReportsPage() {
                         ${invoice.amount.toLocaleString()}
                       </span>
                       <Badge
-                        variant={invoice.status === "paid" ? "default" : "secondary"}
+                        variant={
+                          invoice.status === "paid" ? "default" : "secondary"
+                        }
                         className={
                           invoice.status === "paid"
                             ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
@@ -531,16 +641,26 @@ export default function ReportsPage() {
               </CardContent>
             </Card>
           </TabsContent>
-          
+
           {/* Treasury Tab */}
           <TabsContent value="treasury" className="space-y-6">
             {/* Capital Allocation */}
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Capital Allocation by Venue</CardTitle>
+                  <CardTitle className="text-lg">
+                    Capital Allocation by Venue
+                  </CardTitle>
                   <div className="text-sm text-muted-foreground">
-                    Total: <span className="font-semibold text-foreground">${(accountBalances.reduce((s, b) => s + b.total, 0) / 1000000).toFixed(2)}M</span>
+                    Total:{" "}
+                    <span className="font-semibold text-foreground">
+                      $
+                      {(
+                        accountBalances.reduce((s, b) => s + b.total, 0) /
+                        1000000
+                      ).toFixed(2)}
+                      M
+                    </span>
                   </div>
                 </div>
               </CardHeader>
@@ -557,10 +677,13 @@ export default function ReportsPage() {
                   </TableHeader>
                   <TableBody>
                     {accountBalances.map((bal) => {
-                      const utilization = bal.total > 0 ? (bal.locked / bal.total) * 100 : 0
+                      const utilization =
+                        bal.total > 0 ? (bal.locked / bal.total) * 100 : 0;
                       return (
                         <TableRow key={bal.venue}>
-                          <TableCell className="font-medium">{bal.venue}</TableCell>
+                          <TableCell className="font-medium">
+                            {bal.venue}
+                          </TableCell>
                           <TableCell className="text-right font-mono text-[var(--pnl-positive)]">
                             ${(bal.free / 1000).toFixed(0)}k
                           </TableCell>
@@ -572,18 +695,23 @@ export default function ReportsPage() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <Progress value={utilization} className="h-2 flex-1" />
-                              <span className="text-xs text-muted-foreground w-10">{utilization.toFixed(0)}%</span>
+                              <Progress
+                                value={utilization}
+                                className="h-2 flex-1"
+                              />
+                              <span className="text-xs text-muted-foreground w-10">
+                                {utilization.toFixed(0)}%
+                              </span>
                             </div>
                           </TableCell>
                         </TableRow>
-                      )
+                      );
                     })}
                   </TableBody>
                 </Table>
               </CardContent>
             </Card>
-            
+
             {/* Recent Transfers */}
             <Card>
               <CardHeader>
@@ -613,36 +741,47 @@ export default function ReportsPage() {
                       )}
                       <div>
                         <p className="font-medium">
-                          {transfer.from} <ArrowRight className="size-3 inline mx-1" /> {transfer.to}
+                          {transfer.from}{" "}
+                          <ArrowRight className="size-3 inline mx-1" />{" "}
+                          {transfer.to}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {transfer.time}
-                          {transfer.txHash && <span className="ml-2 font-mono">{transfer.txHash}</span>}
+                          {transfer.txHash && (
+                            <span className="ml-2 font-mono">
+                              {transfer.txHash}
+                            </span>
+                          )}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-mono font-medium">{transfer.amount}</span>
+                      <span className="font-mono font-medium">
+                        {transfer.amount}
+                      </span>
                       <Badge
                         variant={
-                          transfer.status === "settled" || transfer.status === "confirmed"
+                          transfer.status === "settled" ||
+                          transfer.status === "confirmed"
                             ? "default"
                             : transfer.status === "confirming"
-                            ? "secondary"
-                            : transfer.status === "failed"
-                            ? "destructive"
-                            : "outline"
+                              ? "secondary"
+                              : transfer.status === "failed"
+                                ? "destructive"
+                                : "outline"
                         }
                         className={
-                          transfer.status === "settled" || transfer.status === "confirmed"
+                          transfer.status === "settled" ||
+                          transfer.status === "confirmed"
                             ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
                             : transfer.status === "confirming"
-                            ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
-                            : ""
+                              ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
+                              : ""
                         }
                       >
                         {transfer.status}
-                        {transfer.confirmations && ` (${transfer.confirmations})`}
+                        {transfer.confirmations &&
+                          ` (${transfer.confirmations})`}
                       </Badge>
                     </div>
                   </div>
@@ -658,10 +797,7 @@ export default function ReportsPage() {
         onOpenChange={setGenerateOpen}
         defaultType="pnl-attribution"
       />
-      <ScheduleReportModal
-        open={scheduleOpen}
-        onOpenChange={setScheduleOpen}
-      />
+      <ScheduleReportModal open={scheduleOpen} onOpenChange={setScheduleOpen} />
     </div>
-  )
+  );
 }

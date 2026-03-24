@@ -8,10 +8,7 @@
   "paths": {
     "/deployment-api/api/services": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "List Services",
         "description": "List all available services with their sharding configurations.\n\nReturns:\n    List of services with their descriptions and dimensions.",
         "operationId": "list_services_api_services_get",
@@ -34,10 +31,7 @@
     },
     "/deployment-api/api/services/{service_name}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Get Service Config",
         "description": "Get detailed configuration for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Full sharding configuration for the service.",
         "operationId": "get_service_config_api_services__service_name__get",
@@ -81,10 +75,7 @@
     },
     "/deployment-api/api/services/{service_name}/dimensions": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Get Service Dimensions",
         "description": "Get dimension values for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Dimension definitions with their possible values.",
         "operationId": "get_service_dimensions_api_services__service_name__dimensions_get",
@@ -128,10 +119,7 @@
     },
     "/deployment-api/api/services/{service_name}/discover-configs": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Discover Configs",
         "description": "Discover config files from a cloud storage path.\n\nThis endpoint lists all .json config files in a cloud storage directory\nand returns the count for shard estimation.\n\nArgs:\n    service_name: Name of the service (for validation)\n    cloud_path: Cloud storage path (gs://... or s3://...)\n\nReturns:\n    List of discovered config file paths and count.",
         "operationId": "discover_configs_api_services__service_name__discover_configs_get",
@@ -184,10 +172,7 @@
     },
     "/deployment-api/api/services/{service_name}/list-directories": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "List Directories",
         "description": "List subdirectories in a cloud storage path.\n\nThis enables hierarchical browsing of GCS directories for config selection.\n\nArgs:\n    service_name: Name of the service (for context)\n    cloud_path: Cloud storage path (gs://bucket/prefix/)\n\nReturns:\n    List of immediate subdirectory names.",
         "operationId": "list_directories_api_services__service_name__list_directories_get",
@@ -240,10 +225,7 @@
     },
     "/deployment-api/api/services/{service_name}/config-buckets": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Get Config Buckets",
         "description": "Get the default config bucket(s) for a service.\n\nReturns the GCS bucket path where configs are typically stored.",
         "operationId": "get_config_buckets_api_services__service_name__config_buckets_get",
@@ -287,10 +269,7 @@
     },
     "/deployment-api/api/deployments": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "List Deployments",
         "description": "List deployments with optional filtering and pagination.",
         "operationId": "list_deployments_api_deployments_get",
@@ -390,10 +369,7 @@
         }
       },
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Create Deployment",
         "description": "Create a new deployment.",
         "operationId": "create_deployment_api_deployments_post",
@@ -438,10 +414,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Status",
         "description": "Get detailed status for a specific deployment.",
         "operationId": "get_deployment_status_api_deployments__deployment_id__get",
@@ -499,10 +472,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Update Deployment",
         "description": "Update deployment properties.",
         "operationId": "update_deployment_api_deployments__deployment_id__patch",
@@ -560,10 +530,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Delete Deployment",
         "description": "Delete a deployment and its resources.",
         "operationId": "delete_deployment_api_deployments__deployment_id__delete",
@@ -613,10 +580,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/verify": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Verify Deployment Completion",
         "description": "Verify deployment completion and data integrity.",
         "operationId": "verify_deployment_completion_api_deployments__deployment_id__verify_get",
@@ -676,10 +640,7 @@
     },
     "/deployment-api/api/deployments/quota-info": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Quota Info",
         "description": "Get quota requirements and recommendations for a deployment.",
         "operationId": "quota_info_api_deployments_quota_info_post",
@@ -726,10 +687,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/cancel": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Cancel Deployment",
         "description": "Cancel a running deployment.",
         "operationId": "cancel_deployment_api_deployments__deployment_id__cancel_post",
@@ -779,10 +737,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/resume": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Resume Deployment",
         "description": "Resume a cancelled or failed deployment.",
         "operationId": "resume_deployment_api_deployments__deployment_id__resume_post",
@@ -832,10 +787,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/retry-failed": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Retry Failed Shards",
         "description": "Retry failed shards in a deployment.",
         "operationId": "retry_failed_shards_api_deployments__deployment_id__retry_failed_post",
@@ -895,10 +847,7 @@
     },
     "/deployment-api/api/deployments/bulk-delete": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Bulk Delete Deployments",
         "description": "Delete multiple deployments.",
         "operationId": "bulk_delete_deployments_api_deployments_bulk_delete_post",
@@ -945,10 +894,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/refresh": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Refresh Deployment Status",
         "description": "Refresh deployment status from cloud provider.",
         "operationId": "refresh_deployment_status_api_deployments__deployment_id__refresh_post",
@@ -996,10 +942,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/logs": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Logs",
         "description": "Get deployment logs with filtering options.",
         "operationId": "get_deployment_logs_api_deployments__deployment_id__logs_get",
@@ -1103,10 +1046,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/report": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Report",
         "description": "Get a detailed deployment report with analysis and recommendations.",
         "operationId": "get_deployment_report_api_deployments__deployment_id__report_get",
@@ -1154,10 +1094,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/events": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Events",
         "description": "Return the full shard event stream for a deployment.\n\nEvents are written by deployment-service backends to GCS as JSONL and aggregated\nhere. Each event captures a lifecycle step (JOB_STARTED, VM_PREEMPTED, etc.)\nwith timestamp, message, and optional metadata.",
         "operationId": "get_deployment_events_api_deployments__deployment_id__events_get",
@@ -1223,10 +1160,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/vm-events": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Vm Events",
         "description": "Return VM-level infrastructure events for a deployment.\n\nFilters the full event stream to VM_PREEMPTED, VM_DELETED, VM_QUOTA_EXHAUSTED,\nVM_ZONE_UNAVAILABLE, VM_TIMEOUT, CONTAINER_OOM, CLOUD_RUN_REVISION_FAILED.\nUsed by the History tab to surface infrastructure failure badges on shard rows.",
         "operationId": "get_deployment_vm_events_api_deployments__deployment_id__vm_events_get",
@@ -1274,10 +1208,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/rollback": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Rollback Live Deployment",
         "description": "Roll back a live Cloud Run Service deployment to the previous revision.\n\nOnly valid for deployments with deploy_mode=\"live\". Calls the deployment-service\nLiveDeployer to revert traffic to the specified (or previous) Cloud Run revision.",
         "operationId": "rollback_live_deployment_api_deployments__deployment_id__rollback_post",
@@ -1335,10 +1266,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/live-health": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Live Deployment Health",
         "description": "Return the current health check status of a live Cloud Run Service.\n\nPolls the service /health endpoint and returns a structured response.\nUsed by DeploymentDetails to show a live health badge for live-mode deployments.",
         "operationId": "get_live_deployment_health_api_deployments__deployment_id__live_health_get",
@@ -1408,10 +1336,7 @@
     },
     "/deployment-api/api/config/region": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Region Config",
         "description": "Return the configured GCS region for UI validation.\n\nUsed by DeployForm and DataStatusTab to warn when user selects a different region\n(cross-region egress costs).",
         "operationId": "get_region_config_api_config_region_get",
@@ -1434,10 +1359,7 @@
     },
     "/deployment-api/api/config/validate-region": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Validate Region",
         "description": "Validate requested deployment region against GCS region.\n\nReturns cross_region flag and warning message when deploying to a different\nregion than GCS (incurs egress costs).",
         "operationId": "validate_region_api_config_validate_region_get",
@@ -1483,10 +1405,7 @@
     },
     "/deployment-api/api/config/venues": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Venues",
         "description": "Get all venues organized by category.\n\nReturns:\n    Venues grouped by category (CEFI, TRADFI, DEFI) with their data types.",
         "operationId": "get_venues_api_config_venues_get",
@@ -1509,10 +1428,7 @@
     },
     "/deployment-api/api/config/venues/{category}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Venues By Category",
         "description": "Get venues for a specific category.\n\nArgs:\n    category: Category name (CEFI, TRADFI, DEFI)\n\nReturns:\n    List of venues and their data types for the category.",
         "operationId": "get_venues_by_category_api_config_venues__category__get",
@@ -1556,10 +1472,7 @@
     },
     "/deployment-api/api/config/expected-start-dates": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Expected Start Dates",
         "description": "Get expected data start dates for all services.\n\nReturns:\n    Start dates by service, category, and venue.",
         "operationId": "get_expected_start_dates_api_config_expected_start_dates_get",
@@ -1582,10 +1495,7 @@
     },
     "/deployment-api/api/config/expected-start-dates/{service_name}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Service Start Dates",
         "description": "Get expected start dates for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Start dates by category and venue for the service.",
         "operationId": "get_service_start_dates_api_config_expected_start_dates__service_name__get",
@@ -1629,10 +1539,7 @@
     },
     "/deployment-api/api/config/dependencies": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Dependencies",
         "description": "Get service dependency graph.\n\nReturns:\n    Full dependencies configuration including execution order.",
         "operationId": "get_dependencies_api_config_dependencies_get",
@@ -1655,10 +1562,7 @@
     },
     "/deployment-api/api/config/dependencies/{service_name}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Service Dependencies",
         "description": "Get dependencies for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Upstream dependencies, downstream dependents, and full DAG context.",
         "operationId": "get_service_dependencies_api_config_dependencies__service_name__get",
@@ -1702,10 +1606,7 @@
     },
     "/deployment-api/api/checklists/{service_name}/checklist": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Checklists"
-        ],
+        "tags": ["deployment-api", "Checklists"],
         "summary": "Get Service Checklist",
         "description": "Get production readiness checklist for a service.\n\nReads from unified-trading-codex/10-audit/repos/{service}.yaml (v3.0 schema).",
         "operationId": "get_service_checklist_api_checklists__service_name__checklist_get",
@@ -1753,10 +1654,7 @@
     },
     "/deployment-api/api/checklists/{service_name}/checklist/validate": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Checklists"
-        ],
+        "tags": ["deployment-api", "Checklists"],
         "summary": "Validate Service Checklist",
         "description": "Validate service readiness for deployment.\n\nReturns blocking items and overall readiness. Ready = no blocking items\nAND readiness >= 95% (threshold allows in-progress non-critical items).",
         "operationId": "validate_service_checklist_api_checklists__service_name__checklist_validate_get",
@@ -1804,10 +1702,7 @@
     },
     "/deployment-api/api/checklists": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Checklists"
-        ],
+        "tags": ["deployment-api", "Checklists"],
         "summary": "List Checklists",
         "description": "List all available service checklists with summary status.\n\nReads exclusively from codex v3.0 SSOT (unified-trading-codex/10-audit/repos/).",
         "operationId": "list_checklists_api_checklists_get",
@@ -1834,10 +1729,7 @@
     },
     "/deployment-api/api/epics": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Epics"
-        ],
+        "tags": ["deployment-api", "Epics"],
         "summary": "List Epics",
         "description": "List all epics with summary readiness percentages.\n\nReturns compact summaries: epic_id, display_name, mvp_priority,\nepic_pct, total_required, completed, epic_complete, blocking_count.\n\nReads from:\n  - codex_dir (10-audit/repos/) for per-repo data\n  - epics_dir (11-project-management/epics/) for epic definitions",
         "operationId": "list_epics_api_epics_get",
@@ -1867,10 +1759,7 @@
     },
     "/deployment-api/api/epics/{epic_id}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Epics"
-        ],
+        "tags": ["deployment-api", "Epics"],
         "summary": "Get Epic Detail",
         "description": "Get detailed epic status: per-repo CR/BR stages, branch status,\ndata availability, feature groups, ML models, and blocking reasons.",
         "operationId": "get_epic_detail_api_epics__epic_id__get",
@@ -1918,10 +1807,7 @@
     },
     "/deployment-api/api/data-status": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Data Status",
         "description": "Get data completion status for a service across a date range.\n\nReturns completion percentages broken down by category and venue,\nwith optional list of missing dates.",
         "operationId": "get_data_status_api_data_status_get",
@@ -2115,10 +2001,7 @@
     },
     "/deployment-api/api/data-status/missing-shards": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Calculate Missing Shards",
         "description": "Calculate missing shards for a service over a date range.",
         "operationId": "calculate_missing_shards_api_data_status_missing_shards_post",
@@ -2240,10 +2123,7 @@
     },
     "/deployment-api/api/data-status/last-updated": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Last Updated",
         "description": "Get last updated information for a service.",
         "operationId": "get_last_updated_api_data_status_last_updated_get",
@@ -2310,10 +2190,7 @@
     },
     "/deployment-api/api/data-status/turbo": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Data Status Turbo",
         "description": "Get data status with turbo mode caching (5-minute cache TTL).",
         "operationId": "get_data_status_turbo_api_data_status_turbo_get",
@@ -2471,10 +2348,7 @@
     },
     "/deployment-api/api/data-status/turbo/stats": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Turbo Cache Stats",
         "description": "Get turbo mode cache statistics.",
         "operationId": "get_turbo_cache_stats_api_data_status_turbo_stats_get",
@@ -2497,10 +2371,7 @@
     },
     "/deployment-api/api/data-status/turbo/clear": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Clear Turbo Cache",
         "description": "Clear the turbo mode cache.",
         "operationId": "clear_turbo_cache_api_data_status_turbo_clear_post",
@@ -2523,10 +2394,7 @@
     },
     "/deployment-api/api/data-status/venue-filters": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Venue Filters",
         "description": "Get available venue filters for a service.",
         "operationId": "get_venue_filters_api_data_status_venue_filters_get",
@@ -2572,10 +2440,7 @@
     },
     "/deployment-api/api/data-status/list-files": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "List Files In Path",
         "description": "List files in a specific GCS bucket path.",
         "operationId": "list_files_in_path_api_data_status_list_files_get",
@@ -2657,10 +2522,7 @@
     },
     "/deployment-api/api/data-status/instruments": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Instruments List",
         "description": "Get list of instruments for a category.",
         "operationId": "get_instruments_list_api_data_status_instruments_get",
@@ -2754,10 +2616,7 @@
     },
     "/deployment-api/api/data-status/instrument-availability": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Instrument Availability",
         "description": "Check instrument availability over a date range.",
         "operationId": "get_instrument_availability_api_data_status_instrument_availability_get",
@@ -2901,10 +2760,7 @@
     },
     "/deployment-api/api/data-status/analyze": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Analyze Data Patterns",
         "description": "Analyze data patterns and trends for a service.",
         "operationId": "analyze_data_patterns_api_data_status_analyze_post",
@@ -2993,10 +2849,7 @@
     },
     "/deployment-api/api/data-status/multi-service": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Multi Service Status",
         "description": "Get aggregated data status across multiple services.",
         "operationId": "get_multi_service_status_api_data_status_multi_service_post",
@@ -3088,10 +2941,7 @@
     },
     "/deployment-api/api/service-status/{service}/status": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Get Service Status",
         "description": "Get comprehensive status for a service.\n\nReturns temporal audit trail with timestamps for:\n- Last data update (GCS)\n- Last deployment (state files)\n- Last build (Cloud Build API)\n- Last code push (GitHub API)\n\nPlus anomaly detection.",
         "operationId": "get_service_status_api_service_status__service__status_get",
@@ -3135,10 +2985,7 @@
     },
     "/deployment-api/api/service-status/overview": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Get Services Overview",
         "description": "Get FAST status overview for all services.\n\nReturns a lightweight summary - skips slow GitHub/Build lookups.\nFor full details, query individual service status.",
         "operationId": "get_services_overview_api_service_status_overview_get",
@@ -3161,10 +3008,7 @@
     },
     "/deployment-api/api/service-status/execution-service/data-status": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Get Execution Service Data Status Endpoint",
         "description": "Get execution-service data status by checking configs vs results.",
         "operationId": "get_execution_service_data_status_endpoint_api_service_status_execution_service_data_status_get",
@@ -3240,10 +3084,7 @@
     },
     "/deployment-api/api/service-status/execution-service/missing-shards": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Calculate Execution Missing Shards Endpoint",
         "description": "Calculate missing config x date shards for execution-service.",
         "operationId": "calculate_execution_missing_shards_endpoint_api_service_status_execution_service_missing_shards_post",
@@ -3369,10 +3210,7 @@
     },
     "/deployment-api/api/capabilities": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Capabilities"
-        ],
+        "tags": ["deployment-api", "Capabilities"],
         "summary": "Get Capabilities",
         "description": "Get API capabilities for UI display.\n\nIncludes GCS Fuse status: whether the API is using FUSE mounts for GCS\nreads (faster) or falling back to GCS API.",
         "operationId": "get_capabilities_api_capabilities_get",
@@ -3395,10 +3233,7 @@
     },
     "/deployment-api/api/capabilities/service-categories/{service}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Capabilities"
-        ],
+        "tags": ["deployment-api", "Capabilities"],
         "summary": "Get Service Categories",
         "description": "Get supported categories for a service from its sharding config.\n\nReturns the categories that can be used for deployment and data status checks.\nThis allows the UI to hide irrelevant category filters (e.g., hide CEFI/DEFI\nwhen viewing corporate-actions which is TRADFI-only).\n\nArgs:\n    service: Service name (e.g., \"instruments-service\", \"corporate-actions\")\n\nReturns:\n    {\"service\": str, \"categories\": List[str]}\n\nExamples:\n    - instruments-service: [\"CEFI\", \"DEFI\", \"TRADFI\"]\n    - corporate-actions: [\"TRADFI\"]\n    - features-calendar-service: []  # No category dimension",
         "operationId": "get_service_categories_api_capabilities_service_categories__service__get",
@@ -3446,10 +3281,7 @@
     },
     "/deployment-api/api/cloud-builds/triggers": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "List Triggers",
         "description": "List all Cloud Build triggers with their current status.\n\nReturns a list of triggers with last build info.\nResults are cached for 5 minutes (TTL_BUILD_INFO) to avoid slow Cloud Build API calls.\nUse force_refresh=true to bypass cache.",
         "operationId": "list_triggers_api_cloud_builds_triggers_get",
@@ -3498,10 +3330,7 @@
     },
     "/deployment-api/api/cloud-builds/trigger": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Trigger Build",
         "description": "Manually trigger a Cloud Build for a service.\n\nThis runs the build trigger as if code was pushed to the specified branch.\n\nRequires: roles/cloudbuild.builds.editor on the service account.",
         "operationId": "trigger_build_api_cloud_builds_trigger_post",
@@ -3546,10 +3375,7 @@
     },
     "/deployment-api/api/cloud-builds/history/{service}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Get Build History",
         "description": "Get build history for a specific service.\n\nReturns the most recent builds for the service's trigger.",
         "operationId": "get_build_history_api_cloud_builds_history__service__get",
@@ -3605,10 +3431,7 @@
     },
     "/deployment-api/api/cloud-builds/library-status/{library}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Get Library Status",
         "description": "Get detailed status for a library/SDK (like unified-trading-library).\n\nReturns:\n- Package version from pyproject.toml\n- Latest commit info from GitHub\n- Recent build status from Cloud Build\n- Which services depend on this library",
         "operationId": "get_library_status_api_cloud_builds_library_status__library__get",
@@ -3654,10 +3477,7 @@
     },
     "/deployment-api/api/cloud-builds/dependency-check": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Check Dependencies",
         "description": "Check if any libraries have failing quality gates that could affect services.\n\nThis is useful for catching version mismatches before they cause runtime errors.",
         "operationId": "check_dependencies_api_cloud_builds_dependency_check_get",
@@ -3682,10 +3502,7 @@
     },
     "/deployment-api/api/builds/{service}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Builds"
-        ],
+        "tags": ["deployment-api", "Builds"],
         "summary": "List Builds",
         "description": "List available builds for a service from Artifact Registry.\n\nReturns builds sorted by version descending. In mock mode (CLOUD_MOCK_MODE=true or\nCLOUD_PROVIDER=local), falls back to deployed_versions from the PM manifest.\n\nBuild display format: \"{version} @ {branch}\" \u2014 human-readable and idempotent\n(same version + branch = same artifact, enforced by immutable AR tags).",
         "operationId": "list_builds_api_builds__service__get",
@@ -3709,11 +3526,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "enum": [
-                "dev",
-                "staging",
-                "prod"
-              ],
+              "enum": ["dev", "staging", "prod"],
               "type": "string",
               "description": "Target environment: dev, staging, or prod",
               "title": "Env"
@@ -3751,10 +3564,7 @@
     },
     "/deployment-api/api/deployments/{service}/deploy": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Builds"
-        ],
+        "tags": ["deployment-api", "Builds"],
         "summary": "Deploy Build",
         "description": "Deploy a specific build tag to any environment.\n\nNo version gate \u2014 deployment is always a manual decision. Pre-1.0.0 builds\nare explicitly allowed for development and testing.\n\nThis triggers a Cloud Run revision update with the specified image tag.\nIn mock mode, returns a dry-run response without calling Cloud Run.",
         "operationId": "deploy_build_api_deployments__service__deploy_post",
@@ -3812,10 +3622,7 @@
     },
     "/deployment-api/api/config-store/{domain}": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Write Domain Config",
         "description": "Write a new version of the domain config.\n\nValidates the content against the domain schema, writes a versioned YAML\nblob to cloud storage, updates the active pointer, and publishes a\nconfig-domain-{domain} event to notify all subscribing services.",
         "operationId": "write_domain_config_api_config_store__domain__post",
@@ -3871,10 +3678,7 @@
         }
       },
       "get": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Read Domain Config",
         "description": "Read the active domain config from the config store.",
         "operationId": "read_domain_config_api_config_store__domain__get",
@@ -3922,10 +3726,7 @@
     },
     "/deployment-api/api/config-store/{domain}/versions": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "List Domain Config Versions",
         "description": "List config versions for the domain (newest first, up to 50).",
         "operationId": "list_domain_config_versions_api_config_store__domain__versions_get",
@@ -3977,10 +3778,7 @@
     },
     "/deployment-api/api/config-store/{domain}/versions/{ts1}/diff/{ts2}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Diff Domain Config Versions",
         "description": "Return a unified diff between two config versions.",
         "operationId": "diff_domain_config_versions_api_config_store__domain__versions__ts1__diff__ts2__get",
@@ -4050,10 +3848,7 @@
     },
     "/deployment-api/api/config-store/{domain}/rollback/{timestamp}": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Rollback Domain Config",
         "description": "Roll back domain config to a specific version by re-saving it as the new active.",
         "operationId": "rollback_domain_config_api_config_store__domain__rollback__timestamp__post",
@@ -4112,10 +3907,7 @@
     },
     "/deployment-api/api/commentary/pipeline-uat": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Commentary"
-        ],
+        "tags": ["deployment-api", "Commentary"],
         "summary": "Pipeline Uat Commentary",
         "description": "Trigger pipeline UAT LLM commentary for a completed batch run.\n\nReturns 202 Accepted immediately. Commentary is generated asynchronously\nand written to GCS at:\n  gs://deployment-store-{project}/pipeline-uat/day={date}/run={run_id}.json\n\nArgs:\n    request: PipelineUATRequest with job_name, run_id, gcs_manifest_path.\n    background_tasks: FastAPI BackgroundTasks for async execution.\n\nReturns:\n    Accepted response with run_id and status.",
         "operationId": "pipeline_uat_commentary_api_commentary_pipeline_uat_post",
@@ -4162,10 +3954,7 @@
     },
     "/deployment-api/sports/venues": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "List Sports Venues",
         "description": "List all configured sports venues with their status.",
         "operationId": "list_sports_venues_sports_venues_get",
@@ -4222,10 +4011,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/credentials": {
       "put": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Update Venue Credentials",
         "description": "Update venue credential reference in Secret Manager.",
         "operationId": "update_venue_credentials_sports_venues__venue_key__credentials_put",
@@ -4285,10 +4071,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/health": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Check Venue Health",
         "description": "Health check for venue connectivity (login URL reachable, API responding).",
         "operationId": "check_venue_health_sports_venues__venue_key__health_get",
@@ -4336,10 +4119,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/enable": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Enable Venue",
         "description": "Enable a sports venue for betting.",
         "operationId": "enable_venue_sports_venues__venue_key__enable_post",
@@ -4389,10 +4169,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/disable": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Disable Venue",
         "description": "Disable a sports venue for betting.",
         "operationId": "disable_venue_sports_venues__venue_key__disable_post",
@@ -4442,10 +4219,7 @@
     },
     "/deployment-api/api/user-management/users": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "List Users",
         "description": "List all registered users.\n\nRequires USER_VIEW permission (ADMIN or SUPER_ADMIN).",
         "operationId": "list_users_api_user_management_users_get",
@@ -4470,10 +4244,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Create User",
         "description": "Create a new user.\n\nRequires USER_MANAGE permission (ADMIN or SUPER_ADMIN).",
         "operationId": "create_user_api_user_management_users_post",
@@ -4520,10 +4291,7 @@
     },
     "/deployment-api/api/user-management/users/{user_id}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Get User",
         "description": "Get a single user by ID.\n\nRequires USER_VIEW permission.",
         "operationId": "get_user_api_user_management_users__user_id__get",
@@ -4569,10 +4337,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Update User",
         "description": "Update an existing user.\n\nRequires USER_MANAGE permission (ADMIN or SUPER_ADMIN).",
         "operationId": "update_user_api_user_management_users__user_id__patch",
@@ -4628,10 +4393,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Delete User",
         "description": "Deactivate a user (soft delete).\n\nRequires USER_MANAGE permission (ADMIN or SUPER_ADMIN).",
         "operationId": "delete_user_api_user_management_users__user_id__delete",
@@ -4679,10 +4441,7 @@
     },
     "/deployment-api/api/user-management/users/{user_id}/role": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Assign Role",
         "description": "Assign a role to a user.\n\nRequires USER_ROLE_ASSIGN permission (ADMIN or SUPER_ADMIN).",
         "operationId": "assign_role_api_user_management_users__user_id__role_post",
@@ -4740,10 +4499,7 @@
     },
     "/deployment-api/api/user-management/roles": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "List Roles",
         "description": "List all available roles with their permissions.\n\nOpen to any authenticated user (for UI dropdowns).",
         "operationId": "list_roles_api_user_management_roles_get",
@@ -4770,10 +4526,7 @@
     },
     "/deployment-api/api/user-management/permissions": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "List Permissions",
         "description": "List all available permissions.\n\nOpen to any authenticated user (for reference).",
         "operationId": "list_permissions_api_user_management_permissions_get",
@@ -4813,9 +4566,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/health": {
@@ -4837,9 +4588,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/health": {
@@ -4861,9 +4610,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/version": {
@@ -4887,9 +4634,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/readiness": {
@@ -4913,9 +4658,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/readiness": {
@@ -4939,9 +4682,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/workers": {
@@ -4963,9 +4704,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/cache/clear": {
@@ -4983,9 +4722,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/{full_path}": {
@@ -5024,9 +4761,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/infra/health": {
@@ -5048,17 +4783,12 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/events": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "events"
-        ],
+        "tags": ["deployment-api", "events"],
         "summary": "Relay Ui Event",
         "operationId": "relay_ui_event_events_post",
         "requestBody": {
@@ -5090,10 +4820,7 @@
     },
     "/config-api/health": {
       "get": {
-        "tags": [
-          "config-api",
-          "health"
-        ],
+        "tags": ["config-api", "health"],
         "summary": "Health",
         "operationId": "health_health_get",
         "responses": {
@@ -5110,10 +4837,7 @@
     },
     "/config-api/readiness": {
       "get": {
-        "tags": [
-          "config-api",
-          "health"
-        ],
+        "tags": ["config-api", "health"],
         "summary": "Readiness",
         "operationId": "readiness_readiness_get",
         "responses": {
@@ -5130,10 +4854,7 @@
     },
     "/config-api/config": {
       "get": {
-        "tags": [
-          "config-api",
-          "Configuration"
-        ],
+        "tags": ["config-api", "Configuration"],
         "summary": "Get Config",
         "description": "Return current configuration.\n\nIn mock mode, returns the latest config entry from MockStateStore (cfg-system).",
         "operationId": "get_config_config_get",
@@ -5182,10 +4903,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "config-api",
-          "Configuration"
-        ],
+        "tags": ["config-api", "Configuration"],
         "summary": "Update Config",
         "description": "Update full configuration and publish CONFIG_CHANGED event.\n\nIn mock mode, updates the cfg-system entry in MockStateStore.",
         "operationId": "update_config_config_post",
@@ -5234,10 +4952,7 @@
     },
     "/config-api/config/entries": {
       "get": {
-        "tags": [
-          "config-api",
-          "Configuration"
-        ],
+        "tags": ["config-api", "Configuration"],
         "summary": "List Config Entries",
         "description": "List all config entries (system, execution, risk, etc.).\n\nReturns seed + mutations in mock mode, GCS entries in real mode.",
         "operationId": "list_config_entries_config_entries_get",
@@ -5267,10 +4982,7 @@
     },
     "/config-api/config/{key}": {
       "put": {
-        "tags": [
-          "config-api",
-          "Configuration"
-        ],
+        "tags": ["config-api", "Configuration"],
         "summary": "Update Config Key",
         "description": "Update a single configuration key and publish CONFIG_CHANGED event.\n\nIn mock mode, merges the key into the cfg-system config in MockStateStore.",
         "operationId": "update_config_key_config__key__put",
@@ -5330,10 +5042,7 @@
     },
     "/config-api/venues": {
       "get": {
-        "tags": [
-          "config-api",
-          "Venues"
-        ],
+        "tags": ["config-api", "Venues"],
         "summary": "List Venues",
         "description": "Return all supported venues with their categories.",
         "operationId": "list_venues_venues_get",
@@ -5368,10 +5077,7 @@
     },
     "/config-api/venues/configs": {
       "get": {
-        "tags": [
-          "config-api",
-          "Venues"
-        ],
+        "tags": ["config-api", "Venues"],
         "summary": "List Venue Configs",
         "description": "List saved venue configurations.\n\nReturns seed + mutations from MockStateStore in mock mode.\nReal mode reads from GCS config store.",
         "operationId": "list_venue_configs_venues_configs_get",
@@ -5447,10 +5153,7 @@
         }
       },
       "post": {
-        "tags": [
-          "config-api",
-          "Venues"
-        ],
+        "tags": ["config-api", "Venues"],
         "summary": "Create Venue Config",
         "description": "Save a new venue configuration. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_venue_config_venues_configs_post",
@@ -5499,10 +5202,7 @@
     },
     "/config-api/venues/configs/{config_id}": {
       "get": {
-        "tags": [
-          "config-api",
-          "Venues"
-        ],
+        "tags": ["config-api", "Venues"],
         "summary": "Get Venue Config",
         "description": "Get a single venue configuration by ID.",
         "operationId": "get_venue_config_venues_configs__config_id__get",
@@ -5548,10 +5248,7 @@
         }
       },
       "put": {
-        "tags": [
-          "config-api",
-          "Venues"
-        ],
+        "tags": ["config-api", "Venues"],
         "summary": "Update Venue Config",
         "description": "Update a venue configuration. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "update_venue_config_venues_configs__config_id__put",
@@ -5609,10 +5306,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "config-api",
-          "Venues"
-        ],
+        "tags": ["config-api", "Venues"],
         "summary": "Delete Venue Config",
         "description": "Delete a venue configuration. Marks as deleted in mock state.",
         "operationId": "delete_venue_config_venues_configs__config_id__delete",
@@ -5662,10 +5356,7 @@
     },
     "/execution-results-api/api/v1/results/buckets": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Results"
-        ],
+        "tags": ["execution-results-api", "Results"],
         "summary": "List Buckets",
         "description": "List available GCS buckets for a project.\n\nFilters to execution-store buckets by default. Pass empty string for all buckets.",
         "operationId": "list_buckets_api_v1_results_buckets_get",
@@ -5732,10 +5423,7 @@
     },
     "/execution-results-api/api/v1/results/prefixes": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Results"
-        ],
+        "tags": ["execution-results-api", "Results"],
         "summary": "List Prefixes",
         "description": "List prefixes (folders) within a GCS bucket.\n\nReturns folder-like prefixes for navigation.",
         "operationId": "list_prefixes_api_v1_results_prefixes_get",
@@ -5807,10 +5495,7 @@
     },
     "/execution-results-api/api/v1/results": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Results"
-        ],
+        "tags": ["execution-results-api", "Results"],
         "summary": "List Results",
         "description": "List backtest results from GCS or local directory.\n\nFor GCS: provide bucket and optional prefix\nFor local: provide directory path",
         "operationId": "list_results_api_v1_results_get",
@@ -5825,10 +5510,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "enum": [
-                "gcs",
-                "local"
-              ],
+              "enum": ["gcs", "local"],
               "type": "string",
               "description": "Data source",
               "default": "gcs",
@@ -5925,10 +5607,7 @@
     },
     "/execution-results-api/api/v1/results/files": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Results"
-        ],
+        "tags": ["execution-results-api", "Results"],
         "summary": "List Files",
         "description": "List files (not folders) within a GCS bucket prefix.\n\nReturns actual file paths for config selection.",
         "operationId": "list_files_api_v1_results_files_get",
@@ -6000,10 +5679,7 @@
     },
     "/execution-results-api/api/v1/results/local-default-directory": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Results"
-        ],
+        "tags": ["execution-results-api", "Results"],
         "summary": "Get Local Default Directory",
         "description": "Get suggested local directory for loading results in UI.",
         "operationId": "get_local_default_directory_api_v1_results_local_default_directory_get",
@@ -6028,10 +5704,7 @@
     },
     "/execution-results-api/api/v1/results/execution_alpha": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Results"
-        ],
+        "tags": ["execution-results-api", "Results"],
         "summary": "Get Execution Alpha",
         "description": "Get execution alpha data for a specific backtest run.\n\nReturns entry/exit fills with slippage, equity curve, and summary metrics.",
         "operationId": "get_execution_alpha_api_v1_results_execution_alpha_get",
@@ -6057,10 +5730,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "enum": [
-                "gcs",
-                "local"
-              ],
+              "enum": ["gcs", "local"],
               "type": "string",
               "description": "Data source",
               "default": "gcs",
@@ -6111,10 +5781,7 @@
     },
     "/execution-results-api/api/v1/results/{result_id}": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Results"
-        ],
+        "tags": ["execution-results-api", "Results"],
         "summary": "Get Result Details",
         "description": "Get full details for a specific result.\n\nIncludes orders, fills, equity curve, timeline, and execution alpha.",
         "operationId": "get_result_details_api_v1_results__result_id__get",
@@ -6138,10 +5805,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "enum": [
-                "gcs",
-                "local"
-              ],
+              "enum": ["gcs", "local"],
               "type": "string",
               "default": "gcs",
               "title": "Source"
@@ -6222,10 +5886,7 @@
     },
     "/execution-results-api/api/v1/analysis/performance": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Analysis"
-        ],
+        "tags": ["execution-results-api", "Analysis"],
         "summary": "Get Performance",
         "description": "Get overall performance metrics. Returns mock data when CLOUD_MOCK_MODE=true.",
         "operationId": "get_performance_api_v1_analysis_performance_get",
@@ -6252,10 +5913,7 @@
     },
     "/execution-results-api/api/v1/analysis/aggregate": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Analysis"
-        ],
+        "tags": ["execution-results-api", "Analysis"],
         "summary": "Aggregate Results",
         "description": "Aggregate results by a dimension.\n\nGroups results by algorithm, strategy, timeframe, etc. and\ncalculates summary statistics for each group.",
         "operationId": "aggregate_results_api_v1_analysis_aggregate_post",
@@ -6300,10 +5958,7 @@
     },
     "/execution-results-api/api/v1/analysis/distribution": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Analysis"
-        ],
+        "tags": ["execution-results-api", "Analysis"],
         "summary": "Get Distribution",
         "description": "Get distribution of a metric.\n\nReturns histogram bins and statistics (mean, median, std, etc.)",
         "operationId": "get_distribution_api_v1_analysis_distribution_post",
@@ -6348,10 +6003,7 @@
     },
     "/execution-results-api/api/v1/analysis/timeseries": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Analysis"
-        ],
+        "tags": ["execution-results-api", "Analysis"],
         "summary": "Get Timeseries",
         "description": "Get time series of a metric.\n\nReturns cumulative values over time, optionally grouped by date or hour.",
         "operationId": "get_timeseries_api_v1_analysis_timeseries_post",
@@ -6396,10 +6048,7 @@
     },
     "/execution-results-api/api/v1/analysis/heatmap": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Analysis"
-        ],
+        "tags": ["execution-results-api", "Analysis"],
         "summary": "Get Heatmap",
         "description": "Get heatmap data for two dimensions.\n\nReturns a matrix of values for visualization as a heatmap.",
         "operationId": "get_heatmap_api_v1_analysis_heatmap_post",
@@ -6444,10 +6093,7 @@
     },
     "/execution-results-api/api/v1/analysis/best-configs": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Analysis"
-        ],
+        "tags": ["execution-results-api", "Analysis"],
         "summary": "Get Best Configs",
         "description": "Get best performing configs.\n\nRanks configs by the specified metric and returns top N.",
         "operationId": "get_best_configs_api_v1_analysis_best_configs_get",
@@ -6473,12 +6119,7 @@
             "in": "query",
             "required": false,
             "schema": {
-              "enum": [
-                "net_alpha_bps",
-                "sharpe_ratio",
-                "win_rate",
-                "pnl"
-              ],
+              "enum": ["net_alpha_bps", "sharpe_ratio", "win_rate", "pnl"],
               "type": "string",
               "description": "Sort metric",
               "default": "net_alpha_bps",
@@ -6527,10 +6168,7 @@
     },
     "/execution-results-api/api/v1/backtest/results": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "List Backtest Results",
         "description": "List completed backtest results. Returns mock data when CLOUD_MOCK_MODE=true.",
         "operationId": "list_backtest_results_api_v1_backtest_results_get",
@@ -6553,10 +6191,7 @@
     },
     "/execution-results-api/api/v1/backtest/run": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "Run Backtest",
         "description": "Run a single backtest.\n\nAccepts a GCS config path and execution parameters.\nReturns a job ID for tracking progress.\n\nExample:\n    POST /api/v1/backtest/run\n    {\n        \"config_gcs_path\": \"gs://execution-store-.../configs/V1/.../BENCHMARK_V1.json\",  # noqa: gs-uri\n        \"start_date\": \"2023-05-23\",\n        \"end_date\": \"2023-05-24\",\n        \"fast_mode\": true\n    }",
         "operationId": "run_backtest_api_v1_backtest_run_post",
@@ -6601,10 +6236,7 @@
     },
     "/execution-results-api/api/v1/backtest/batch": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "Run Batch Backtest",
         "description": "Run batch backtests.\n\nAccepts up to 10 GCS config paths and runs them in parallel.\nReturns a batch ID and individual job IDs.",
         "operationId": "run_batch_backtest_api_v1_backtest_batch_post",
@@ -6649,10 +6281,7 @@
     },
     "/execution-results-api/api/v1/backtest/run-local": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "Run Local Backtest",
         "description": "Run a single backtest with local config JSON.\n\nAccepts config content directly (not from GCS).\nUseful for running backtests with uploaded/modified configs.\n\nExample:\n    POST /api/v1/backtest/run-local\n    {\n        \"config_json\": {\"config_id\": \"...\", \"strategy_id\": \"...\", ...},\n        \"start_date\": \"2023-05-23\",\n        \"end_date\": \"2023-05-24\"\n    }",
         "operationId": "run_local_backtest_api_v1_backtest_run_local_post",
@@ -6697,10 +6326,7 @@
     },
     "/execution-results-api/api/v1/backtest/batch-local": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "Run Batch Local Backtest",
         "description": "Run batch backtests with local config JSONs.\n\nAccepts up to 10 config JSONs and runs them in parallel.\nReturns a batch ID and individual job IDs.",
         "operationId": "run_batch_local_backtest_api_v1_backtest_batch_local_post",
@@ -6745,10 +6371,7 @@
     },
     "/execution-results-api/api/v1/backtest/run-exact-cli": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "Run Exact Cli Backtest",
         "description": "Run backtest with exact CLI command (for testing/comparison).\n\nThis endpoint runs the exact same CLI command as would be executed manually,\nincluding the --upload-gcs flag, to ensure 100% identical execution for log comparison.\n\nExample:\n    POST /api/v1/backtest/run-exact-cli\n    {\n        \"config_gcs_path\": \"gs://execution-store-.../configs/V2/.../config.json\",  # noqa: gs-uri\n        \"start_date\": \"2023-05-23T00:00:00Z\",\n        \"end_date\": \"2023-05-23T00:05:00Z\",\n        \"upload_gcs\": true\n    }",
         "operationId": "run_exact_cli_backtest_api_v1_backtest_run_exact_cli_post",
@@ -6793,10 +6416,7 @@
     },
     "/execution-results-api/api/v1/backtest/status/{job_id}": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "Get Job Status",
         "description": "Get status of a backtest job.\n\nReturns current status, progress percentage, logs, and result path when complete.\n\nArgs:\n    job_id: Job ID to get status for\n    full_logs: If True, return all logs instead of just the last 20 lines (default: False)",
         "operationId": "get_job_status_api_v1_backtest_status__job_id__get",
@@ -6852,10 +6472,7 @@
     },
     "/execution-results-api/api/v1/backtest/mass-deploy": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Backtest"
-        ],
+        "tags": ["execution-results-api", "Backtest"],
         "summary": "Mass Deploy",
         "description": "Trigger mass deployment via unified-trading-deployment-v2.\n\nThis endpoint calls the UTD-v2 CLI to deploy backtests across Cloud Run Jobs.\nUses sharding for parallel execution across many machines.\n\nExample:\n    POST /api/v1/backtest/mass-deploy\n    {\n        \"config_folders\": [\"configs/V1/CEFI_BTC_momentum-macd/SCE/5M/\"],\n        \"start_date\": \"2023-05-23\",\n        \"end_date\": \"2023-05-25\",\n        \"force\": false\n    }",
         "operationId": "mass_deploy_api_v1_backtest_mass_deploy_post",
@@ -6900,10 +6517,7 @@
     },
     "/execution-results-api/api/v1/validate/config": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Validation"
-        ],
+        "tags": ["execution-results-api", "Validation"],
         "summary": "Validate Config",
         "description": "Validate a backtest config.\n\nChecks:\n- Valid strategy_id format\n- Valid config_id format\n- Execution section uses new format\n- Algorithm horizon <= strategy timeframe",
         "operationId": "validate_config_api_v1_validate_config_post",
@@ -6948,10 +6562,7 @@
     },
     "/execution-results-api/api/v1/validate/dependencies": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Validation"
-        ],
+        "tags": ["execution-results-api", "Validation"],
         "summary": "Check Dependencies",
         "description": "Check upstream dependencies for a config.\n\nVerifies:\n- Strategy instructions exist for strategy_id/date\n- Market tick data exists for instruments\n- Instrument definitions exist for venues",
         "operationId": "check_dependencies_api_v1_validate_dependencies_post",
@@ -6996,10 +6607,7 @@
     },
     "/execution-results-api/api/v1/config/algorithms": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "Get Algorithms",
         "description": "Get available algorithms and their parameter grids.\n\nNOTE(extraction): Requires execution_services.config.grid_generator.",
         "operationId": "get_algorithms_api_v1_config_algorithms_get",
@@ -7024,10 +6632,7 @@
     },
     "/execution-results-api/api/v1/config/strategies": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "Get Strategies",
         "description": "Get available strategy variants for config generation.\n\nNOTE(extraction): Requires execution_services.config.grid_generator.",
         "operationId": "get_strategies_api_v1_config_strategies_get",
@@ -7084,10 +6689,7 @@
     },
     "/execution-results-api/api/v1/config/generate": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "Generate Configs",
         "description": "Generate configs for a single strategy.\n\nNOTE(extraction): Requires execution_services.config.grid_generator.",
         "operationId": "generate_configs_api_v1_config_generate_post",
@@ -7132,10 +6734,7 @@
     },
     "/execution-results-api/api/v1/config/generate-all": {
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "Generate All Configs",
         "description": "Generate all configs for all strategies.\n\nNOTE(extraction): Requires execution_services.config.grid_generator.",
         "operationId": "generate_all_configs_api_v1_config_generate_all_post",
@@ -7180,10 +6779,7 @@
     },
     "/execution-results-api/api/v1/config/system/cores": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "Get System Cores",
         "description": "Get number of CPU cores available on the system.",
         "operationId": "get_system_cores_api_v1_config_system_cores_get",
@@ -7206,10 +6802,7 @@
     },
     "/execution-results-api/api/v1/config/users": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "List User Configs",
         "description": "List all user-specific config directories.\n\nNOTE(extraction): Config directory paths are relative to this service, not execution-service.",
         "operationId": "list_user_configs_api_v1_config_users_get",
@@ -7234,10 +6827,7 @@
     },
     "/execution-results-api/api/v1/config/sources": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "Get Config Sources",
         "description": "Get all available config sources (V1, V2, and user directories).",
         "operationId": "get_config_sources_api_v1_config_sources_get",
@@ -7262,10 +6852,7 @@
     },
     "/execution-results-api/api/v1/config/users/{username}/configs": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Config Generation"
-        ],
+        "tags": ["execution-results-api", "Config Generation"],
         "summary": "Get User Config List",
         "description": "List all configs for a specific user.",
         "operationId": "get_user_config_list_api_v1_config_users__username__configs_get",
@@ -7309,10 +6896,7 @@
     },
     "/execution-results-api/api/v1/data/strategies": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "List Strategies",
         "description": "List all available strategies with their dates.\n\nReturns strategies from the strategy-store bucket with their available instruction dates.",
         "operationId": "list_strategies_api_v1_data_strategies_get",
@@ -7359,10 +6943,7 @@
         }
       },
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "Create Strategy",
         "description": "Create a new strategy. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_strategy_api_v1_data_strategies_post",
@@ -7411,10 +6992,7 @@
     },
     "/execution-results-api/api/v1/data/instructions": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "Get Instructions",
         "description": "Get instructions for a strategy on a specific date.\n\nReturns instruction records with timestamp, signal, and metadata.",
         "operationId": "get_instructions_api_v1_data_instructions_get",
@@ -7469,10 +7047,7 @@
         }
       },
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "Create Instruction",
         "description": "Create a new instruction. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_instruction_api_v1_data_instructions_post",
@@ -7521,10 +7096,7 @@
     },
     "/execution-results-api/api/v1/data/configs": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "List Configs",
         "description": "List all available configs in the execution bucket.\n\nReturns configs from V1/ and V2/ folders. V2 is recommended (comprehensive multi-instruction support).\nUse the version parameter to filter by specific version.",
         "operationId": "list_configs_api_v1_data_configs_get",
@@ -7584,10 +7156,7 @@
     },
     "/execution-results-api/api/v1/data/configs/content": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "Get Config Content",
         "description": "Get content of a specific config file.\n\nReturns the config JSON and any validation errors.",
         "operationId": "get_config_content_api_v1_data_configs_content_get",
@@ -7633,10 +7202,7 @@
     },
     "/execution-results-api/api/v1/data/configs/validate": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "Validate Config",
         "description": "Validate a specific config against the schema.\n\nReturns validation status and any errors.",
         "operationId": "validate_config_api_v1_data_configs_validate_get",
@@ -7682,10 +7248,7 @@
     },
     "/execution-results-api/api/v1/data/instruments": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "List Instrument Categories",
         "description": "List available instrument definition categories and dates.\n\nReturns categories (cefi, tradfi, defi) with their available dates.",
         "operationId": "list_instrument_categories_api_v1_data_instruments_get",
@@ -7708,10 +7271,7 @@
     },
     "/execution-results-api/api/v1/data/instruments/data": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "Get Instrument Definitions",
         "description": "Get instrument definitions for a category and date.\n\nReturns instrument records with ID, venue, and metadata.",
         "operationId": "get_instrument_definitions_api_v1_data_instruments_data_get",
@@ -7768,10 +7328,7 @@
     },
     "/execution-results-api/api/v1/data/tick-data": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "List Tick Data Categories",
         "description": "List available market tick data categories, instrument types, and dates.\n\nReturns categories with their available instrument types and dates.",
         "operationId": "list_tick_data_categories_api_v1_data_tick_data_get",
@@ -7794,10 +7351,7 @@
     },
     "/execution-results-api/api/v1/data/tick-data/instruments": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "List Tick Data Instruments",
         "description": "List available instruments for tick data.\n\nReturns instrument IDs available for the given category, type, and date.",
         "operationId": "list_tick_data_instruments_api_v1_data_tick_data_instruments_get",
@@ -7865,10 +7419,7 @@
     },
     "/execution-results-api/api/v1/data/tick-data/ticks": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Data Browsing"
-        ],
+        "tags": ["execution-results-api", "Data Browsing"],
         "summary": "Get Tick Data",
         "description": "Get tick data for an instrument.\n\nSupports downsampling via sample_rate parameter for faster loading.\nHigher sample_rate values mean less data but faster response.",
         "operationId": "get_tick_data_api_v1_data_tick_data_ticks_get",
@@ -7964,10 +7515,7 @@
     },
     "/execution-results-api/api/v1/fills": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Fills"
-        ],
+        "tags": ["execution-results-api", "Fills"],
         "summary": "List Fills",
         "operationId": "list_fills_api_v1_fills_get",
         "security": [
@@ -8064,10 +7612,7 @@
         }
       },
       "post": {
-        "tags": [
-          "execution-results-api",
-          "Fills"
-        ],
+        "tags": ["execution-results-api", "Fills"],
         "summary": "Record Fill",
         "operationId": "record_fill_api_v1_fills_post",
         "security": [
@@ -8111,10 +7656,7 @@
     },
     "/execution-results-api/api/v1/fills/stream": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Fills"
-        ],
+        "tags": ["execution-results-api", "Fills"],
         "summary": "Stream Fills",
         "operationId": "stream_fills_api_v1_fills_stream_get",
         "security": [
@@ -8164,10 +7706,7 @@
     },
     "/execution-results-api/api/v1/stream/fills": {
       "get": {
-        "tags": [
-          "execution-results-api",
-          "Streaming"
-        ],
+        "tags": ["execution-results-api", "Streaming"],
         "summary": "Stream Fills",
         "description": "Stream fill events via Server-Sent Events.",
         "operationId": "stream_fills_api_v1_stream_fills_get",
@@ -8207,9 +7746,7 @@
             }
           }
         },
-        "tags": [
-          "execution-results-api"
-        ]
+        "tags": ["execution-results-api"]
       }
     },
     "/execution-results-api/api/v1/health": {
@@ -8231,9 +7768,7 @@
             }
           }
         },
-        "tags": [
-          "execution-results-api"
-        ]
+        "tags": ["execution-results-api"]
       }
     },
     "/execution-results-api/readiness": {
@@ -8257,9 +7792,7 @@
             }
           }
         },
-        "tags": [
-          "execution-results-api"
-        ]
+        "tags": ["execution-results-api"]
       }
     },
     "/execution-results-api/api/v1/readiness": {
@@ -8283,9 +7816,7 @@
             }
           }
         },
-        "tags": [
-          "execution-results-api"
-        ]
+        "tags": ["execution-results-api"]
       }
     },
     "/execution-results-api/api/v1": {
@@ -8307,17 +7838,12 @@
             }
           }
         },
-        "tags": [
-          "execution-results-api"
-        ]
+        "tags": ["execution-results-api"]
       }
     },
     "/trading-analytics-api/events": {
       "post": {
-        "tags": [
-          "trading-analytics-api",
-          "events"
-        ],
+        "tags": ["trading-analytics-api", "events"],
         "summary": "Relay Ui Event",
         "operationId": "relay_ui_event_events_post",
         "requestBody": {
@@ -8349,10 +7875,7 @@
     },
     "/trading-analytics-api/health": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "health"
-        ],
+        "tags": ["trading-analytics-api", "health"],
         "summary": "Health",
         "operationId": "health_health_get",
         "responses": {
@@ -8369,10 +7892,7 @@
     },
     "/trading-analytics-api/readiness": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "health"
-        ],
+        "tags": ["trading-analytics-api", "health"],
         "summary": "Readiness",
         "operationId": "readiness_readiness_get",
         "responses": {
@@ -8389,10 +7909,7 @@
     },
     "/trading-analytics-api/analytics/trades": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "analytics"
-        ],
+        "tags": ["trading-analytics-api", "analytics"],
         "summary": "Get Trades",
         "description": "Execution fills from GCS EXECUTION_GCS_BUCKET/{category}/. GCS_READER stub.",
         "operationId": "get_trades_analytics_trades_get",
@@ -8466,10 +7983,7 @@
         }
       },
       "post": {
-        "tags": [
-          "trading-analytics-api",
-          "analytics"
-        ],
+        "tags": ["trading-analytics-api", "analytics"],
         "summary": "Create Trade",
         "description": "Record a new trade. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_trade_analytics_trades_post",
@@ -8518,10 +8032,7 @@
     },
     "/trading-analytics-api/analytics/slippage": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "analytics"
-        ],
+        "tags": ["trading-analytics-api", "analytics"],
         "summary": "Get Slippage",
         "description": "Slippage analysis computed from fills. GCS_READER stub.",
         "operationId": "get_slippage_analytics_slippage_get",
@@ -8592,10 +8103,7 @@
     },
     "/trading-analytics-api/analytics/strategy/{strategy_id}/performance": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "analytics"
-        ],
+        "tags": ["trading-analytics-api", "analytics"],
         "summary": "Get Strategy Performance",
         "description": "Signal quality from strategy signals GCS. GCS_READER stub.",
         "operationId": "get_strategy_performance_analytics_strategy__strategy_id__performance_get",
@@ -8643,10 +8151,7 @@
     },
     "/trading-analytics-api/analytics/predictions/quality": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "analytics"
-        ],
+        "tags": ["trading-analytics-api", "analytics"],
         "summary": "Get Prediction Quality",
         "description": "Prediction accuracy vs outcomes from BQ ml_predictions. BQ_READER stub.",
         "operationId": "get_prediction_quality_analytics_predictions_quality_get",
@@ -8673,10 +8178,7 @@
     },
     "/trading-analytics-api/analytics/risk": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "analytics"
-        ],
+        "tags": ["trading-analytics-api", "analytics"],
         "summary": "Get Risk",
         "description": "Risk snapshots from risk/{client_id}/{date}/ GCS. GCS_READER stub.",
         "operationId": "get_risk_analytics_risk_get",
@@ -8740,10 +8242,7 @@
     },
     "/trading-analytics-api/instruments": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "instruments"
-        ],
+        "tags": ["trading-analytics-api", "instruments"],
         "summary": "List Instruments",
         "description": "Instruments list from instruments GCS. GCS_READER stub.",
         "operationId": "list_instruments_instruments_get",
@@ -8803,10 +8302,7 @@
     },
     "/trading-analytics-api/instruments/corporate-actions": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "instruments"
-        ],
+        "tags": ["trading-analytics-api", "instruments"],
         "summary": "Get Corporate Actions",
         "description": "Dividends, splits, earnings from instruments corporate_actions GCS. GCS_READER stub.",
         "operationId": "get_corporate_actions_instruments_corporate_actions_get",
@@ -8882,10 +8378,7 @@
     },
     "/trading-analytics-api/market-data/candles": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "market-data"
-        ],
+        "tags": ["trading-analytics-api", "market-data"],
         "summary": "Get Candles",
         "description": "HTTP_PROXY to market-data-api for real processed candles.",
         "operationId": "get_candles_market_data_candles_get",
@@ -8959,10 +8452,7 @@
     },
     "/trading-analytics-api/stream/signals": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "streaming"
-        ],
+        "tags": ["trading-analytics-api", "streaming"],
         "summary": "Stream Signals",
         "description": "SSE: live strategy-sports-signals PubSub subscription.",
         "operationId": "stream_signals_stream_signals_get",
@@ -8985,10 +8475,7 @@
     },
     "/trading-analytics-api/stream/predictions": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "streaming"
-        ],
+        "tags": ["trading-analytics-api", "streaming"],
         "summary": "Stream Predictions",
         "description": "SSE: live cascade_predictions PubSub subscription.",
         "operationId": "stream_predictions_stream_predictions_get",
@@ -9011,10 +8498,7 @@
     },
     "/trading-analytics-api/recon/runs": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "recon"
-        ],
+        "tags": ["trading-analytics-api", "recon"],
         "summary": "List Recon Runs",
         "description": "List T+1 reconciliation runs ordered by date descending.\n\nData source: GCS {RECON_GCS_BUCKET}/recon/index.json.",
         "operationId": "list_recon_runs_recon_runs_get",
@@ -9086,10 +8570,7 @@
     },
     "/trading-analytics-api/recon/runs/{date}": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "recon"
-        ],
+        "tags": ["trading-analytics-api", "recon"],
         "summary": "Get Recon Run",
         "description": "Get full reconciliation run detail for a specific date.\n\nData source: GCS {RECON_GCS_BUCKET}/recon/summary_{date}.json.\n\nArgs:\n    date: YYYY-MM-DD",
         "operationId": "get_recon_run_recon_runs__date__get",
@@ -9137,10 +8618,7 @@
     },
     "/trading-analytics-api/recon/runs/{date}/stages/{stage}": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "recon"
-        ],
+        "tags": ["trading-analytics-api", "recon"],
         "summary": "Get Recon Stage",
         "description": "Get detailed report for a single reconciliation stage.\n\nData source: GCS {RECON_GCS_BUCKET}/recon/{stage}_recon_report_{date}.json.\n\nArgs:\n    date: YYYY-MM-DD\n    stage: ml_recon | strategy_recon | execution_recon | fee_recon\n        | funding_recon | agent_analysis",
         "operationId": "get_recon_stage_recon_runs__date__stages__stage__get",
@@ -9197,10 +8675,7 @@
     },
     "/trading-analytics-api/recon/deviations": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "recon"
-        ],
+        "tags": ["trading-analytics-api", "recon"],
         "summary": "List Deviations",
         "description": "List all deviations across runs, filterable by date/stage/metric.\n\nData source: scans GCS {RECON_GCS_BUCKET}/recon/ summary files.",
         "operationId": "list_deviations_recon_deviations_get",
@@ -9308,10 +8783,7 @@
     },
     "/trading-analytics-api/recon/runs/{date}/agent-report": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "recon"
-        ],
+        "tags": ["trading-analytics-api", "recon"],
         "summary": "Get Agent Report",
         "description": "Get the agent analysis markdown report for a specific date.\n\nData source: GCS {RECON_GCS_BUCKET}/recon/agent_report_{date}.md.\n\nArgs:\n    date: YYYY-MM-DD",
         "operationId": "get_agent_report_recon_runs__date__agent_report_get",
@@ -9359,10 +8831,7 @@
     },
     "/trading-analytics-api/prime-brokers": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "prime-brokers"
-        ],
+        "tags": ["trading-analytics-api", "prime-brokers"],
         "summary": "List Prime Brokers",
         "description": "List all active prime brokers.",
         "operationId": "list_prime_brokers_prime_brokers_get",
@@ -9390,10 +8859,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "trading-analytics-api",
-          "prime-brokers"
-        ],
+        "tags": ["trading-analytics-api", "prime-brokers"],
         "summary": "Create Prime Broker",
         "description": "Create a new prime broker entity (no fees yet).",
         "operationId": "create_prime_broker_prime_brokers_post",
@@ -9440,10 +8906,7 @@
     },
     "/trading-analytics-api/prime-brokers/{pb_id}/fees": {
       "put": {
-        "tags": [
-          "trading-analytics-api",
-          "prime-brokers"
-        ],
+        "tags": ["trading-analytics-api", "prime-brokers"],
         "summary": "Update Pb Fees",
         "description": "Replace the default fee schedule for a prime broker.",
         "operationId": "update_pb_fees_prime_brokers__pb_id__fees_put",
@@ -9505,10 +8968,7 @@
     },
     "/trading-analytics-api/clients/{client_id}/fee-schedule": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "client-fees"
-        ],
+        "tags": ["trading-analytics-api", "client-fees"],
         "summary": "Get Effective Fee Schedule",
         "description": "Return the effective fee schedule for a client (PB defaults + overrides).",
         "operationId": "get_effective_fee_schedule_clients__client_id__fee_schedule_get",
@@ -9564,10 +9024,7 @@
         }
       },
       "put": {
-        "tags": [
-          "trading-analytics-api",
-          "client-fees"
-        ],
+        "tags": ["trading-analytics-api", "client-fees"],
         "summary": "Upsert Client Fee Overrides",
         "description": "Set the prime broker link and fee overrides for a client.",
         "operationId": "upsert_client_fee_overrides_clients__client_id__fee_schedule_put",
@@ -9625,10 +9082,7 @@
     },
     "/trading-analytics-api/settlements/submit": {
       "post": {
-        "tags": [
-          "trading-analytics-api",
-          "settlements"
-        ],
+        "tags": ["trading-analytics-api", "settlements"],
         "summary": "Submit Settlement",
         "description": "Submit a new expected settlement for later confirmation.",
         "operationId": "submit_settlement_settlements_submit_post",
@@ -9675,10 +9129,7 @@
     },
     "/trading-analytics-api/settlements/pending": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "settlements"
-        ],
+        "tags": ["trading-analytics-api", "settlements"],
         "summary": "List Pending Settlements",
         "description": "List all pending (unconfirmed) settlements.",
         "operationId": "list_pending_settlements_settlements_pending_get",
@@ -9708,10 +9159,7 @@
     },
     "/trading-analytics-api/settlements/{settlement_id}/confirm": {
       "post": {
-        "tags": [
-          "trading-analytics-api",
-          "settlements"
-        ],
+        "tags": ["trading-analytics-api", "settlements"],
         "summary": "Confirm Settlement",
         "description": "Confirm actual amount received for a pending settlement.",
         "operationId": "confirm_settlement_settlements__settlement_id__confirm_post",
@@ -9769,10 +9217,7 @@
     },
     "/trading-analytics-api/settlements/residuals": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "settlements"
-        ],
+        "tags": ["trading-analytics-api", "settlements"],
         "summary": "Get Residuals",
         "description": "Return explained vs unexplained P&L residual breakdown for confirmed settlements.",
         "operationId": "get_residuals_settlements_residuals_get",
@@ -9861,10 +9306,7 @@
     },
     "/trading-analytics-api/settlement/positions": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "settlement"
-        ],
+        "tags": ["trading-analytics-api", "settlement"],
         "summary": "List Settlement Positions",
         "description": "List settlement positions from storage.\n\nData source: GCS {TRADING_ANALYTICS_GCS_BUCKET}/settlement/positions.json.",
         "operationId": "list_settlement_positions_settlement_positions_get",
@@ -9958,10 +9400,7 @@
         }
       },
       "post": {
-        "tags": [
-          "trading-analytics-api",
-          "settlement"
-        ],
+        "tags": ["trading-analytics-api", "settlement"],
         "summary": "Create Settlement Position",
         "description": "Create a settlement position. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_settlement_position_settlement_positions_post",
@@ -10010,10 +9449,7 @@
     },
     "/trading-analytics-api/settlement/positions/{position_id}": {
       "put": {
-        "tags": [
-          "trading-analytics-api",
-          "settlement"
-        ],
+        "tags": ["trading-analytics-api", "settlement"],
         "summary": "Update Settlement Position",
         "description": "Update a settlement position. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "update_settlement_position_settlement_positions__position_id__put",
@@ -10073,10 +9509,7 @@
     },
     "/trading-analytics-api/settlement/invoices": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "settlement"
-        ],
+        "tags": ["trading-analytics-api", "settlement"],
         "summary": "List Settlement Invoices",
         "description": "List settlement invoices from storage.\n\nData source: GCS {TRADING_ANALYTICS_GCS_BUCKET}/settlement/invoices.json.",
         "operationId": "list_settlement_invoices_settlement_invoices_get",
@@ -10152,10 +9585,7 @@
         }
       },
       "post": {
-        "tags": [
-          "trading-analytics-api",
-          "settlement"
-        ],
+        "tags": ["trading-analytics-api", "settlement"],
         "summary": "Create Settlement Invoice",
         "description": "Create a settlement invoice. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_settlement_invoice_settlement_invoices_post",
@@ -10204,10 +9634,7 @@
     },
     "/trading-analytics-api/settlement/invoices/{invoice_id}": {
       "put": {
-        "tags": [
-          "trading-analytics-api",
-          "settlement"
-        ],
+        "tags": ["trading-analytics-api", "settlement"],
         "summary": "Update Settlement Invoice",
         "description": "Update a settlement invoice. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "update_settlement_invoice_settlement_invoices__invoice_id__put",
@@ -10267,10 +9694,7 @@
     },
     "/trading-analytics-api/settlement/reports": {
       "get": {
-        "tags": [
-          "trading-analytics-api",
-          "settlement"
-        ],
+        "tags": ["trading-analytics-api", "settlement"],
         "summary": "List Settlement Reports",
         "description": "List settlement reports from storage.\n\nData source: GCS {TRADING_ANALYTICS_GCS_BUCKET}/settlement/reports.json.",
         "operationId": "list_settlement_reports_settlement_reports_get",
@@ -10348,10 +9772,7 @@
     },
     "/batch-audit-api/events": {
       "post": {
-        "tags": [
-          "batch-audit-api",
-          "events"
-        ],
+        "tags": ["batch-audit-api", "events"],
         "summary": "Relay Ui Event",
         "operationId": "relay_ui_event_events_post",
         "requestBody": {
@@ -10383,10 +9804,7 @@
     },
     "/batch-audit-api/health": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "health"
-        ],
+        "tags": ["batch-audit-api", "health"],
         "summary": "Health",
         "operationId": "health_health_get",
         "responses": {
@@ -10403,10 +9821,7 @@
     },
     "/batch-audit-api/readiness": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "health"
-        ],
+        "tags": ["batch-audit-api", "health"],
         "summary": "Readiness",
         "operationId": "readiness_readiness_get",
         "responses": {
@@ -10423,10 +9838,7 @@
     },
     "/batch-audit-api/audit/trail": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "List Audit Events",
         "description": "System-wide event audit trail.\n\nReads GCS/S3 JSONL files via UCI get_storage_client().\nPath pattern: events/{service_name}/{YYYY-MM-DD}/events.jsonl\nAlso queries alerting/history/date={YYYY-MM-DD}/ for alert history.",
         "operationId": "list_audit_events_audit_trail_get",
@@ -10592,10 +10004,7 @@
         }
       },
       "post": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "Create Audit Event",
         "description": "Record a new audit event. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_audit_event_audit_trail_post",
@@ -10659,10 +10068,7 @@
     },
     "/batch-audit-api/audit/trail/services": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "List Audited Services",
         "description": "List all services with archived events.\n\nScans the events/ prefix in the events bucket for unique service names.",
         "operationId": "list_audited_services_audit_trail_services_get",
@@ -10691,10 +10097,7 @@
     },
     "/batch-audit-api/audit/trail/summary": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "Get Audit Summary",
         "description": "Summary of events per service for a given date.\n\nCounts events by service and event type from the GCS event archive.",
         "operationId": "get_audit_summary_audit_trail_summary_get",
@@ -10762,10 +10165,7 @@
     },
     "/batch-audit-api/audit/data-health": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "Get Data Health",
         "description": "Data completeness check: scan expected GCS paths across all services.\n\nReturns per-service presence grid (present/missing/stale).\nData source: GCS path existence checks across all service buckets. GCS_READER stub.",
         "operationId": "get_data_health_audit_data_health_get",
@@ -10822,10 +10222,7 @@
     },
     "/batch-audit-api/audit/data-health/retention": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "Get Retention Health",
         "description": "Data retention health: check if old data is being deleted per retention policy.\n\nData source: GCS bucket metadata + retention policy check. GCS_READER stub.",
         "operationId": "get_retention_health_audit_data_health_retention_get",
@@ -10855,10 +10252,7 @@
     },
     "/batch-audit-api/audit/data-health/services/{service_name}": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "Get Service Data Health",
         "description": "Per-service data health: expected vs actual GCS paths.\n\nData source: service GCS bucket path scan. GCS_READER stub.",
         "operationId": "get_service_data_health_audit_data_health_services__service_name__get",
@@ -10924,10 +10318,7 @@
     },
     "/batch-audit-api/audit/compliance": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "Get Compliance Summary",
         "description": "Compliance summary: orphan events, TTS-tagged records, error counts.\n\nData source: UEI event archive + TTS compliance index. GCS_READER stub.",
         "operationId": "get_compliance_summary_audit_compliance_get",
@@ -10984,10 +10375,7 @@
     },
     "/batch-audit-api/audit/compliance/orphans": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "List Orphan Events",
         "description": "Orphan events: events without a matching correlation chain.\n\nData source: UEI orphan detection scan. GCS_READER stub.",
         "operationId": "list_orphan_events_audit_compliance_orphans_get",
@@ -11071,10 +10459,7 @@
     },
     "/batch-audit-api/audit/compliance/tts": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "List Tts Records",
         "description": "TTS (Time-To-Serve) compliance records: events tagged for compliance review.\n\nData source: compliance GCS index. GCS_READER stub.",
         "operationId": "list_tts_records_audit_compliance_tts_get",
@@ -11158,10 +10543,7 @@
     },
     "/batch-audit-api/audit/compliance/errors": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "audit"
-        ],
+        "tags": ["batch-audit-api", "audit"],
         "summary": "List Error Events",
         "description": "Error events: FAILED/ERROR lifecycle events across all services.\n\nData source: UEI event archive error index. GCS_READER stub.",
         "operationId": "list_error_events_audit_compliance_errors_get",
@@ -11245,10 +10627,7 @@
     },
     "/batch-audit-api/batch/jobs": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "batch"
-        ],
+        "tags": ["batch-audit-api", "batch"],
         "summary": "List Batch Jobs",
         "description": "Batch job run history across all T+1 batch services.\n\nData source: deployment-api Cloud Run Job execution history. API_READER stub.",
         "operationId": "list_batch_jobs_batch_jobs_get",
@@ -11356,10 +10735,7 @@
     },
     "/batch-audit-api/batch/jobs/{job_id}": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "batch"
-        ],
+        "tags": ["batch-audit-api", "batch"],
         "summary": "Get Batch Job",
         "description": "Get detail for a specific batch job run.\n\nData source: deployment-api Cloud Run Job execution log. API_READER stub.",
         "operationId": "get_batch_job_batch_jobs__job_id__get",
@@ -11407,10 +10783,7 @@
     },
     "/batch-audit-api/batch/jobs/services/{service_name}/history": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "batch"
-        ],
+        "tags": ["batch-audit-api", "batch"],
         "summary": "Get Service Job History",
         "description": "Job run history for a specific service.\n\nData source: deployment-api filtered by service. API_READER stub.",
         "operationId": "get_service_job_history_batch_jobs_services__service_name__history_get",
@@ -11473,10 +10846,7 @@
     },
     "/batch-audit-api/api/v1/logs": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "logs"
-        ],
+        "tags": ["batch-audit-api", "logs"],
         "summary": "Query Logs",
         "description": "Query events filtered by log level, service, time range, and text search.\n\nReads JSONL event files from cloud storage and applies filters.\nLevel is validated against the canonical LogLevel enum from UAC.",
         "operationId": "query_logs_api_v1_logs_get",
@@ -11635,10 +11005,7 @@
         }
       },
       "post": {
-        "tags": [
-          "batch-audit-api",
-          "logs"
-        ],
+        "tags": ["batch-audit-api", "logs"],
         "summary": "Create Log Entry",
         "description": "Record a new log entry. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_log_entry_api_v1_logs_post",
@@ -11702,10 +11069,7 @@
     },
     "/batch-audit-api/api/v1/services": {
       "get": {
-        "tags": [
-          "batch-audit-api",
-          "logs"
-        ],
+        "tags": ["batch-audit-api", "logs"],
         "summary": "List Services",
         "description": "List all services that have emitted events.\n\nScans the events/ prefix in the events bucket for unique service name prefixes.",
         "operationId": "list_services_api_v1_services_get",
@@ -11750,9 +11114,7 @@
             }
           }
         },
-        "tags": [
-          "client-reporting-api"
-        ]
+        "tags": ["client-reporting-api"]
       }
     },
     "/client-reporting-api/readiness": {
@@ -11776,17 +11138,12 @@
             }
           }
         },
-        "tags": [
-          "client-reporting-api"
-        ]
+        "tags": ["client-reporting-api"]
       }
     },
     "/client-reporting-api/api/v1/stream/reports": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "Streaming"
-        ],
+        "tags": ["client-reporting-api", "Streaming"],
         "summary": "Stream Reports",
         "description": "Stream client report events via Server-Sent Events.\n\nClients receive a heartbeat every 30 seconds when no events are pending.",
         "operationId": "stream_reports_api_v1_stream_reports_get",
@@ -11804,10 +11161,7 @@
     },
     "/client-reporting-api/api/reports": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "reports"
-        ],
+        "tags": ["client-reporting-api", "reports"],
         "summary": "List Reports",
         "description": "List available reports.\n\nIn mock mode returns seed + mutated reports (performance, risk, compliance types).\nIn live mode reads from GCS report metadata.",
         "operationId": "list_reports_api_reports_get",
@@ -11837,10 +11191,7 @@
     },
     "/client-reporting-api/api/reports/generate": {
       "post": {
-        "tags": [
-          "client-reporting-api",
-          "reports"
-        ],
+        "tags": ["client-reporting-api", "reports"],
         "summary": "Generate Report",
         "description": "Generate a PnL attribution report for a client/period.\n\nReads Parquet files from GCS at pnl/{period_month}/{client_id}/ and\nreturns a structured report payload.",
         "operationId": "generate_report_api_reports_generate_post",
@@ -11887,10 +11238,7 @@
     },
     "/client-reporting-api/pnl": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "pnl"
-        ],
+        "tags": ["client-reporting-api", "pnl"],
         "summary": "Get Pnl",
         "description": "Return PnL attribution data for a client/period from GCS.",
         "operationId": "get_pnl_pnl_get",
@@ -11951,10 +11299,7 @@
     },
     "/client-reporting-api/performance": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "pnl"
-        ],
+        "tags": ["client-reporting-api", "pnl"],
         "summary": "Get Performance",
         "description": "Return portfolio performance metrics (returns, sharpe, drawdown).\n\nIn mock mode returns realistic sample performance data.\nIn live mode computes from GCS PnL data.",
         "operationId": "get_performance_performance_get",
@@ -12015,10 +11360,7 @@
     },
     "/client-reporting-api/alerts": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "alerts"
-        ],
+        "tags": ["client-reporting-api", "alerts"],
         "summary": "Proxy Alerts",
         "description": "Proxy alerts from alerting-service.",
         "operationId": "proxy_alerts_alerts_get",
@@ -12048,10 +11390,7 @@
     },
     "/client-reporting-api/sports/pnl": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Pnl",
         "description": "Sports P&L breakdown by venue, strategy, and period.",
         "operationId": "get_sports_pnl_sports_pnl_get",
@@ -12112,10 +11451,7 @@
     },
     "/client-reporting-api/sports/clv": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Clv",
         "description": "CLV (Closing Line Value) analysis \u2014 edge per venue/strategy.",
         "operationId": "get_sports_clv_sports_clv_get",
@@ -12176,10 +11512,7 @@
     },
     "/client-reporting-api/sports/venue-performance": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Venue Performance",
         "description": "Per-venue performance metrics (ROI, volume, limiting status).",
         "operationId": "get_venue_performance_sports_venue_performance_get",
@@ -12229,10 +11562,7 @@
     },
     "/client-reporting-api/sports/positions": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Positions",
         "description": "Open sports positions \u2014 pending bets, exposure.",
         "operationId": "get_sports_positions_sports_positions_get",
@@ -12282,10 +11612,7 @@
     },
     "/client-reporting-api/sports/risk": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Risk",
         "description": "Current sports risk exposure \u2014 liability, correlation, limits.",
         "operationId": "get_sports_risk_sports_risk_get",
@@ -12348,9 +11675,7 @@
             }
           }
         },
-        "tags": [
-          "client-reporting-api"
-        ]
+        "tags": ["client-reporting-api"]
       }
     },
     "/ml-inference-api/health": {
@@ -12372,9 +11697,7 @@
             }
           }
         },
-        "tags": [
-          "ml-inference-api"
-        ]
+        "tags": ["ml-inference-api"]
       }
     },
     "/ml-inference-api/readiness": {
@@ -12398,9 +11721,7 @@
             }
           }
         },
-        "tags": [
-          "ml-inference-api"
-        ]
+        "tags": ["ml-inference-api"]
       }
     },
     "/ml-inference-api/metrics": {
@@ -12418,9 +11739,7 @@
             }
           }
         },
-        "tags": [
-          "ml-inference-api"
-        ]
+        "tags": ["ml-inference-api"]
       }
     },
     "/ml-inference-api/data-contract": {
@@ -12444,17 +11763,12 @@
             }
           }
         },
-        "tags": [
-          "ml-inference-api"
-        ]
+        "tags": ["ml-inference-api"]
       }
     },
     "/ml-inference-api/models": {
       "get": {
-        "tags": [
-          "ml-inference-api",
-          "models"
-        ],
+        "tags": ["ml-inference-api", "models"],
         "summary": "List Models",
         "description": "List available models from GCS model registry (ml-models-store bucket).\n\nReads model metadata from GCS path:\n    model_registry/metadata/{model_id}/metadata.json\n\nReturns mock data when CLOUD_MOCK_MODE=true.\nReturns an empty list when GCS is unavailable (local/dev mode).",
         "operationId": "list_models_models_get",
@@ -12483,10 +11797,7 @@
     },
     "/ml-inference-api/models/{model_id}": {
       "get": {
-        "tags": [
-          "ml-inference-api",
-          "models"
-        ],
+        "tags": ["ml-inference-api", "models"],
         "summary": "Get Model",
         "description": "Get metadata for a specific model by model_id.\n\nReads from GCS path:\n    model_registry/metadata/{model_id}/metadata.json",
         "operationId": "get_model_models__model_id__get",
@@ -12532,10 +11843,7 @@
     },
     "/ml-inference-api/models/deploy": {
       "post": {
-        "tags": [
-          "ml-inference-api",
-          "models"
-        ],
+        "tags": ["ml-inference-api", "models"],
         "summary": "Deploy Model",
         "description": "Publish a deploy command to the PubSub ml-deploy topic.\n\nThe ml-inference-service consumes this topic and loads the model\ninto its in-memory model cache.\n\nReturns a job_id that can be polled for completion status.",
         "operationId": "deploy_model_models_deploy_post",
@@ -12584,10 +11892,7 @@
     },
     "/ml-inference-api/models/{model_id}/undeploy": {
       "post": {
-        "tags": [
-          "ml-inference-api",
-          "models"
-        ],
+        "tags": ["ml-inference-api", "models"],
         "summary": "Undeploy Model",
         "description": "Publish an undeploy command to the PubSub ml-deploy topic.\n\nThe ml-inference-service evicts the model from its in-memory cache.",
         "operationId": "undeploy_model_models__model_id__undeploy_post",
@@ -12637,10 +11942,7 @@
     },
     "/ml-inference-api/predictions/recent": {
       "get": {
-        "tags": [
-          "ml-inference-api",
-          "predictions"
-        ],
+        "tags": ["ml-inference-api", "predictions"],
         "summary": "Recent Predictions",
         "description": "Return recent prediction records from BigQuery.\n\nReads from:\n    {predictions_analytics_dataset}.{predictions_bq_table}\n\nResults are ordered by prediction_timestamp DESC.\nReturns mock data when CLOUD_MOCK_MODE=true.\nReturns an empty list when BigQuery is unavailable (local/dev mode).",
         "operationId": "recent_predictions_predictions_recent_get",
@@ -12707,10 +12009,7 @@
     },
     "/ml-inference-api/predictions": {
       "post": {
-        "tags": [
-          "ml-inference-api",
-          "predictions"
-        ],
+        "tags": ["ml-inference-api", "predictions"],
         "summary": "Create Prediction",
         "description": "Record a new prediction. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_prediction_predictions_post",
@@ -12777,10 +12076,7 @@
     },
     "/ml-training-api/events": {
       "post": {
-        "tags": [
-          "ml-training-api",
-          "events"
-        ],
+        "tags": ["ml-training-api", "events"],
         "summary": "Relay Ui Event",
         "operationId": "relay_ui_event_events_post",
         "requestBody": {
@@ -12829,9 +12125,7 @@
             }
           }
         },
-        "tags": [
-          "ml-training-api"
-        ]
+        "tags": ["ml-training-api"]
       }
     },
     "/ml-training-api/readiness": {
@@ -12855,17 +12149,12 @@
             }
           }
         },
-        "tags": [
-          "ml-training-api"
-        ]
+        "tags": ["ml-training-api"]
       }
     },
     "/ml-training-api/features": {
       "get": {
-        "tags": [
-          "ml-training-api",
-          "features"
-        ],
+        "tags": ["ml-training-api", "features"],
         "summary": "List Features",
         "description": "List available features from the features GCS bucket.\n\nShows which features are ready per date/timeframe \u2014 used as a Phase 1\nprerequisite check before triggering feature selection.\n\nGCS path pattern: features/{service}/{date}/*.parquet\nPhase 1 output:   feature_selection/{instrument}/{timeframe}/selected_features.json\n\nReturns mock data when CLOUD_MOCK_MODE=true.\nReturns one entry per (service, date, timeframe) combination found in GCS.\nStub: always returns [] until GCS reader is wired.",
         "operationId": "list_features_features_get",
@@ -12936,10 +12225,7 @@
     },
     "/ml-training-api/experiments": {
       "get": {
-        "tags": [
-          "ml-training-api",
-          "experiments"
-        ],
+        "tags": ["ml-training-api", "experiments"],
         "summary": "List Experiments",
         "description": "List all training experiments.\n\nSources:\n- BQ ``ml_training`` dataset \u2014 run metadata and phase status\n- GCS ``model_registry/metadata/`` \u2014 Phase 3 registry entries\n\nReturns mock data when CLOUD_MOCK_MODE=true.\nStub: always returns [] until BQ reader is wired.",
         "operationId": "list_experiments_experiments_get",
@@ -13014,10 +12300,7 @@
         }
       },
       "post": {
-        "tags": [
-          "ml-training-api",
-          "experiments"
-        ],
+        "tags": ["ml-training-api", "experiments"],
         "summary": "Create Experiment",
         "description": "Create a new experiment. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_experiment_experiments_post",
@@ -13062,10 +12345,7 @@
     },
     "/ml-training-api/experiments/{run_id}": {
       "get": {
-        "tags": [
-          "ml-training-api",
-          "experiments"
-        ],
+        "tags": ["ml-training-api", "experiments"],
         "summary": "Get Experiment",
         "description": "Get experiment detail including all 3 pipeline phases.\n\nPhase 1 GCS: feature_selection/{instrument}/{timeframe}/selected_features.json\nPhase 2 GCS: hyperparam_tuning/{model_id}/training-period-{YYYY-MM}/best_params.json\nPhase 3 GCS: models/{model_id}/model.joblib + model_registry/metadata/\n\nReturns mock data when CLOUD_MOCK_MODE=true.\nStub: returns empty phases list until GCS/BQ readers are wired.",
         "operationId": "get_experiment_experiments__run_id__get",
@@ -13113,10 +12393,7 @@
     },
     "/ml-training-api/experiments/{run_id}/phase/{phase_num}": {
       "get": {
-        "tags": [
-          "ml-training-api",
-          "experiments"
-        ],
+        "tags": ["ml-training-api", "experiments"],
         "summary": "Get Experiment Phase",
         "description": "Get phase-specific detail for an experiment.\n\nPhase 1 \u2014 Feature Selection:\n    GCS: feature_selection/{instrument}/{timeframe}/selected_features.json\nPhase 2 \u2014 Hyperparameter Tuning:\n    GCS: hyperparam_tuning/{model_id}/training-period-{YYYY-MM}/best_params.json\nPhase 3 \u2014 Final Model Training:\n    GCS: models/{model_id}/model.joblib\n    BQ:  ml_training dataset (metrics + run metadata)\n\nStub: returns phase envelope until GCS/BQ readers are wired.",
         "operationId": "get_experiment_phase_experiments__run_id__phase__phase_num__get",
@@ -13177,10 +12454,7 @@
     },
     "/ml-training-api/models": {
       "get": {
-        "tags": [
-          "ml-training-api",
-          "models"
-        ],
+        "tags": ["ml-training-api", "models"],
         "summary": "List Trained Models",
         "description": "List trained model registry entries from GCS model_registry/metadata/.\n\nReturns mock data when CLOUD_MOCK_MODE=true.\nStub: always returns [] until GCS reader is wired.",
         "operationId": "list_trained_models_models_get",
@@ -13249,10 +12523,7 @@
         }
       },
       "post": {
-        "tags": [
-          "ml-training-api",
-          "models"
-        ],
+        "tags": ["ml-training-api", "models"],
         "summary": "Create Trained Model",
         "description": "Register a new trained model. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_trained_model_models_post",
@@ -13328,9 +12599,7 @@
             }
           }
         },
-        "tags": [
-          "ml-training-api"
-        ]
+        "tags": ["ml-training-api"]
       }
     },
     "/ml-training-api/data-contract": {
@@ -13354,9 +12623,7 @@
             }
           }
         },
-        "tags": [
-          "ml-training-api"
-        ]
+        "tags": ["ml-training-api"]
       }
     },
     "/market-data-api/health": {
@@ -13378,9 +12645,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/readiness": {
@@ -13404,9 +12669,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/orderbook/{symbol}/snapshot": {
@@ -13453,9 +12716,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/candles": {
@@ -13566,9 +12827,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/venues": {
@@ -13600,9 +12859,7 @@
             "APIKeyHeader": []
           }
         ],
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/venues/{venue}/validate": {
@@ -13659,9 +12916,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/stream/orderbook": {
@@ -13714,9 +12969,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/data-contract": {
@@ -13740,9 +12993,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/metrics": {
@@ -13760,9 +13011,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/alerting-service/health": {
@@ -13783,9 +13032,7 @@
             }
           }
         },
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/readiness": {
@@ -13803,17 +13050,12 @@
             }
           }
         },
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/system-status": {
       "get": {
-        "tags": [
-          "alerting-service",
-          "system-status"
-        ],
+        "tags": ["alerting-service", "system-status"],
         "summary": "System Status",
         "description": "Return aggregated health for all services (30s TTL cache).",
         "operationId": "system_status_system_status_get",
@@ -13852,9 +13094,7 @@
             "APIKeyHeader": []
           }
         ],
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/rules/recent": {
@@ -13878,9 +13118,7 @@
             "APIKeyHeader": []
           }
         ],
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       },
       "post": {
         "summary": "Create Alert",
@@ -13927,17 +13165,12 @@
             "APIKeyHeader": []
           }
         ],
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/alerts/delivery-status/{alert_id}": {
       "get": {
-        "tags": [
-          "alerting-service",
-          "delivery"
-        ],
+        "tags": ["alerting-service", "delivery"],
         "summary": "Get Delivery Status",
         "description": "Return delivery records for a given alert_id.\n\nScans GCS history partitions (last 7 days) for matching records.\n\nReturns:\n    JSON object with ``alert_id`` and a list of ``records``.",
         "operationId": "get_delivery_status_alerts_delivery_status__alert_id__get",
@@ -13985,10 +13218,7 @@
     },
     "/alerting-service/alerts/delivery-status": {
       "post": {
-        "tags": [
-          "alerting-service",
-          "delivery"
-        ],
+        "tags": ["alerting-service", "delivery"],
         "summary": "Create Delivery Record",
         "description": "Record a new delivery record. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_delivery_record_alerts_delivery_status_post",
@@ -14037,10 +13267,7 @@
     },
     "/execution-service/manual/instruction": {
       "post": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Submit Manual Instruction",
         "description": "Submit manual instruction from operator UI.\n\nValidates request, logs event, routes to orchestrator (same path as automated strategies).\n\nArgs:\n    request: Manual instruction request\n    http_request: FastAPI request object\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException: If validation fails or execution errors",
         "operationId": "submit_manual_instruction_manual_instruction_post",
@@ -14080,10 +13307,7 @@
     },
     "/execution-service/manual/cancel": {
       "post": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Cancel Manual Instruction",
         "description": "Cancel manual instruction.\n\nArgs:\n    request: Cancel instruction request\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException: If orchestrator not initialized",
         "operationId": "cancel_manual_instruction_manual_cancel_post",
@@ -14127,10 +13351,7 @@
     },
     "/execution-service/manual/amend": {
       "post": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Amend Manual Instruction",
         "description": "Amend manual instruction.\n\nArgs:\n    request: Amend instruction request\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException: If orchestrator not initialized",
         "operationId": "amend_manual_instruction_manual_amend_post",
@@ -14174,10 +13395,7 @@
     },
     "/execution-service/manual/instructions/{instruction_id}": {
       "get": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Get Instruction Status",
         "description": "Get status of manual instruction.\n\nArgs:\n    instruction_id: Instruction ID\n\nReturns:\n    Instruction status and fills",
         "operationId": "get_instruction_status_manual_instructions__instruction_id__get",
@@ -14269,9 +13487,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/kill-switch/deactivate": {
@@ -14309,9 +13525,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/kill-switch/status": {
@@ -14328,9 +13542,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/health": {
@@ -14361,9 +13573,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/ready": {
@@ -14381,9 +13591,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/readiness": {
@@ -14401,9 +13609,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/drain": {
@@ -14458,9 +13664,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/resume": {
@@ -14515,9 +13719,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/drain/status": {
@@ -14551,9 +13753,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/positions/snapshot": {
@@ -14575,9 +13775,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/risk-and-exposure-service/": {
@@ -14601,9 +13799,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/health": {
@@ -14634,9 +13830,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/readiness": {
@@ -14660,9 +13854,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/pre-trade-check": {
@@ -14713,9 +13905,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/exposure/summary": {
@@ -14758,9 +13948,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/exposure/by-venue": {
@@ -14803,9 +13991,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/exposure/by-instrument": {
@@ -14848,9 +14034,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/risk-limits/{client_id}": {
@@ -14891,9 +14075,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/risk-limits": {
@@ -14948,9 +14130,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       },
       "get": {
         "summary": "List Risk Limits Clients",
@@ -14975,9 +14155,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/risk/var": {
@@ -15079,17 +14257,12 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/position-balance-monitor-service/stream/positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Streaming"
-        ],
+        "tags": ["position-balance-monitor-service", "Streaming"],
         "summary": "Stream Positions",
         "description": "Stream position updates via Server-Sent Events.",
         "operationId": "stream_positions_stream_positions_get",
@@ -15107,10 +14280,7 @@
     },
     "/position-balance-monitor-service/aggregated-positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "List Aggregated Positions",
         "description": "Return all AggregatedPosition objects from the aggregator.\n\nSupports filtering by asset_class, venue, instrument_type with pagination.",
         "operationId": "list_aggregated_positions_aggregated_positions_get",
@@ -15227,10 +14397,7 @@
     },
     "/position-balance-monitor-service/aggregated-positions/{instrument_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Aggregated Position",
         "description": "Return AggregatedPosition for a single instrument.",
         "operationId": "get_aggregated_position_aggregated_positions__instrument_id__get",
@@ -15271,10 +14438,7 @@
     },
     "/position-balance-monitor-service/portfolio-view/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Portfolio View",
         "description": "Build and return PortfolioView for a client.\n\nCurrently returns positions with empty balances/greeks/risk-groups.\nFull enrichment requires integration with balance and greeks aggregators.",
         "operationId": "get_portfolio_view_portfolio_view__client_id__get",
@@ -15315,10 +14479,7 @@
     },
     "/position-balance-monitor-service/sports-arb-positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "List Sports Arb Positions",
         "description": "Return all SportsArbPosition from SportsArbEngine.\n\nDetects cross-venue arbitrage opportunities using configured commission rates.\nReturns empty list if SportsArbEngine is not initialized.",
         "operationId": "list_sports_arb_positions_sports_arb_positions_get",
@@ -15342,10 +14503,7 @@
     },
     "/position-balance-monitor-service/defi-health/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Defi Health",
         "description": "Return DeFiAggregatedHealth for a client.\n\nRequires DeFiHealthAggregator to be wired with lending positions.",
         "operationId": "get_defi_health_defi_health__client_id__get",
@@ -15386,10 +14544,7 @@
     },
     "/position-balance-monitor-service/defi-lp/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Defi Lp",
         "description": "Return DeFiLPAggregatedMetrics for a client.\n\nRequires DeFiLPAggregator to be wired with LP positions from DeFi adapters.",
         "operationId": "get_defi_lp_defi_lp__client_id__get",
@@ -15430,10 +14585,7 @@
     },
     "/position-balance-monitor-service/defi-staking/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Defi Staking",
         "description": "Return DeFiStakingAggregatedMetrics for a client.\n\nRequires DeFiStakingAggregator to be wired with staking positions from DeFi adapters.",
         "operationId": "get_defi_staking_defi_staking__client_id__get",
@@ -15474,10 +14626,7 @@
     },
     "/position-balance-monitor-service/risk-groups/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Risk Groups",
         "description": "Return RiskGroupSummary list for a client.\n\nGroups positions by underlying and computes diversified exposure.\nRequires PortfolioGreeksSnapshot for full greeks breakdown; returns\nposition-only risk groups when greeks are unavailable.",
         "operationId": "get_risk_groups_risk_groups__client_id__get",
@@ -15522,10 +14671,7 @@
     },
     "/position-balance-monitor-service/stream/aggregated-positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Stream Aggregated Positions",
         "description": "Stream aggregated position updates via Server-Sent Events.",
         "operationId": "stream_aggregated_positions_stream_aggregated_positions_get",
@@ -15558,9 +14704,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/": {
@@ -15584,9 +14728,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/readiness": {
@@ -15604,9 +14746,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/health": {
@@ -15624,9 +14764,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/positions": {
@@ -15719,9 +14857,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/positions/{client_id}/{strategy_id}/{venue}/{instrument}": {
@@ -15796,9 +14932,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/reconciliation/status": {
@@ -15837,9 +14971,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/reconciliation/trigger": {
@@ -15880,9 +15012,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/deployment-service/api/v1/shards/calculate": {
@@ -15924,9 +15054,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments": {
@@ -15968,9 +15096,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/data-status": {
@@ -16100,9 +15226,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/vm-jobs/cancel": {
@@ -16144,9 +15268,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/vm-jobs/status-batch": {
@@ -16188,9 +15310,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/cloud-run/status-batch": {
@@ -16232,9 +15352,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/quota/acquire": {
@@ -16276,9 +15394,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/quota/release": {
@@ -16311,9 +15427,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/events": {
@@ -16372,9 +15486,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/vm-events": {
@@ -16417,9 +15529,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/rollback": {
@@ -16472,9 +15582,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/live-health": {
@@ -16535,17 +15643,12 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/market-tick-data-service/health": {
       "get": {
-        "tags": [
-          "market-tick-data-service",
-          "health"
-        ],
+        "tags": ["market-tick-data-service", "health"],
         "summary": "Health",
         "operationId": "health_health_get",
         "responses": {
@@ -16562,10 +15665,7 @@
     },
     "/market-tick-data-service/readiness": {
       "get": {
-        "tags": [
-          "market-tick-data-service",
-          "health"
-        ],
+        "tags": ["market-tick-data-service", "health"],
         "summary": "Readiness",
         "operationId": "readiness_readiness_get",
         "responses": {
@@ -16582,10 +15682,7 @@
     },
     "/pnl-attribution-service/health": {
       "get": {
-        "tags": [
-          "pnl-attribution-service",
-          "health"
-        ],
+        "tags": ["pnl-attribution-service", "health"],
         "summary": "Health",
         "operationId": "health_health_get",
         "responses": {
@@ -16602,10 +15699,7 @@
     },
     "/pnl-attribution-service/readiness": {
       "get": {
-        "tags": [
-          "pnl-attribution-service",
-          "health"
-        ],
+        "tags": ["pnl-attribution-service", "health"],
         "summary": "Readiness",
         "operationId": "readiness_readiness_get",
         "responses": {
@@ -16631,9 +15725,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "role"
-        ],
+        "required": ["role"],
         "title": "AssignRoleRequest",
         "description": "Request body for assigning a role to a user."
       },
@@ -16666,13 +15758,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "tag",
-          "display",
-          "version",
-          "branch",
-          "is_v1"
-        ],
+        "required": ["tag", "display", "version", "branch", "is_v1"],
         "title": "BuildEntry",
         "description": "A single available build in Artifact Registry."
       },
@@ -16699,12 +15785,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "trigger_name",
-          "builds",
-          "total"
-        ],
+        "required": ["service", "trigger_name", "builds", "total"],
         "title": "BuildHistoryResponseDict",
         "description": "Response from get_build_history endpoint."
       },
@@ -16811,9 +15892,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "deployment_ids"
-        ],
+        "required": ["deployment_ids"],
         "title": "BulkDeleteRequest",
         "description": "Request to delete multiple deployments."
       },
@@ -16840,12 +15919,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "timestamp_a",
-          "timestamp_b",
-          "diff"
-        ],
+        "required": ["domain", "timestamp_a", "timestamp_b", "diff"],
         "title": "ConfigDiffResponse",
         "description": "Response for config diff operation."
       },
@@ -16873,11 +15947,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "content",
-          "active_path"
-        ],
+        "required": ["domain", "content", "active_path"],
         "title": "ConfigReadResponse",
         "description": "Response for reading active config."
       },
@@ -16900,11 +15970,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "path",
-          "timestamp",
-          "schema_version"
-        ],
+        "required": ["path", "timestamp", "schema_version"],
         "title": "ConfigVersionEntry",
         "description": "Single entry from the config version history."
       },
@@ -16928,12 +15994,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "path",
-          "timestamp",
-          "message"
-        ],
+        "required": ["domain", "path", "timestamp", "message"],
         "title": "ConfigVersionResponse",
         "description": "Response for write/rollback operations."
       },
@@ -16959,9 +16020,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "content"
-        ],
+        "required": ["content"],
         "title": "ConfigWriteRequest",
         "description": "Request body for writing a new domain config version."
       },
@@ -16987,10 +16046,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "display_name"
-        ],
+        "required": ["email", "display_name"],
         "title": "CreateUserRequest",
         "description": "Request body for creating a new user."
       },
@@ -17020,12 +16076,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "has_issues",
-          "issue_count",
-          "issues",
-          "libraries"
-        ],
+        "required": ["has_issues", "issue_count", "issues", "libraries"],
         "title": "DependencyCheckResponseDict",
         "description": "Response from check_dependencies endpoint."
       },
@@ -17094,12 +16145,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "deployment_id",
-          "status",
-          "total_shards",
-          "cli_command"
-        ],
+        "required": ["deployment_id", "status", "total_shards", "cli_command"],
         "title": "DeploymentResult",
         "description": "Result of creating a deployment."
       },
@@ -17139,9 +16185,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "event_name"
-        ],
+        "required": ["event_name"],
         "title": "EventRelayPayload"
       },
       "HTTPValidationError": {
@@ -17254,11 +16298,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "job_name",
-          "run_id",
-          "gcs_manifest_path"
-        ],
+        "required": ["job_name", "run_id", "gcs_manifest_path"],
         "title": "PipelineUATRequest",
         "description": "Request body for the pipeline UAT endpoint."
       },
@@ -17336,10 +16376,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "region"
-        ],
+        "required": ["service", "region"],
         "title": "RollbackRequest",
         "description": "Request body for a live deployment rollback."
       },
@@ -17358,9 +16395,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service"
-        ],
+        "required": ["service"],
         "title": "TriggerBuildRequest",
         "description": "Request to trigger a Cloud Build."
       },
@@ -17406,12 +16441,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "success",
-          "message",
-          "service",
-          "branch"
-        ],
+        "required": ["success", "message", "service", "branch"],
         "title": "TriggerBuildResponse",
         "description": "Response from triggering a Cloud Build."
       },
@@ -17475,9 +16505,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "trigger_id"
-        ],
+        "required": ["trigger_id"],
         "title": "TriggerDict",
         "description": "Cloud Build trigger information."
       },
@@ -17504,12 +16532,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "triggers",
-          "total",
-          "project",
-          "region"
-        ],
+        "required": ["triggers", "total", "project", "region"],
         "title": "TriggersResponseDict",
         "description": "Response from list_triggers endpoint."
       },
@@ -17616,11 +16639,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       },
       "VenueCredentialUpdate": {
@@ -17653,9 +16672,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "secret_manager_path"
-        ],
+        "required": ["secret_manager_path"],
         "title": "VenueCredentialUpdate"
       },
       "VenueHealthResponse": {
@@ -17703,10 +16720,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "venue_key",
-          "reachable"
-        ],
+        "required": ["venue_key", "reachable"],
         "title": "VenueHealthResponse"
       },
       "deployment_api__routes__builds__DeployRequest": {
@@ -17718,20 +16732,13 @@
           },
           "environment": {
             "type": "string",
-            "enum": [
-              "dev",
-              "staging",
-              "prod"
-            ],
+            "enum": ["dev", "staging", "prod"],
             "title": "Environment",
             "description": "Target environment: dev, staging, or prod"
           }
         },
         "type": "object",
-        "required": [
-          "image_tag",
-          "environment"
-        ],
+        "required": ["image_tag", "environment"],
         "title": "DeployRequest",
         "description": "Request body for deploying a specific build tag to an environment."
       },
@@ -17989,9 +16996,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service"
-        ],
+        "required": ["service"],
         "title": "DeployRequest",
         "description": "Request body for creating a deployment."
       },
@@ -18030,9 +17035,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "title": "ConfigKeyUpdateRequest",
         "description": "Request body for single key update."
       },
@@ -18074,9 +17077,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config"
-        ],
+        "required": ["config"],
         "title": "ConfigUpdateRequest",
         "description": "Request body for full config update."
       },
@@ -18103,10 +17104,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "result_ids",
-          "group_by"
-        ],
+        "required": ["result_ids", "group_by"],
         "title": "AggregateRequest",
         "description": "Request for aggregation analysis."
       },
@@ -18124,10 +17122,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "groups",
-          "summary"
-        ],
+        "required": ["groups", "summary"],
         "title": "AggregateResponse",
         "description": "Response for aggregation analysis."
       },
@@ -18202,12 +17197,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "instruction_types",
-          "parameters",
-          "description"
-        ],
+        "required": ["name", "instruction_types", "parameters", "description"],
         "title": "AlgorithmInfo",
         "description": "Information about an algorithm."
       },
@@ -18222,9 +17212,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "algorithms"
-        ],
+        "required": ["algorithms"],
         "title": "AlgorithmsResponse",
         "description": "Response with available algorithms."
       },
@@ -18236,12 +17224,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "queued",
-              "running",
-              "completed",
-              "failed"
-            ],
+            "enum": ["queued", "running", "completed", "failed"],
             "title": "Status",
             "default": "queued"
           },
@@ -18258,9 +17241,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "job_id"
-        ],
+        "required": ["job_id"],
         "title": "BacktestJobResponse",
         "description": "Response for backtest job creation."
       },
@@ -18306,11 +17287,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config_gcs_path",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["config_gcs_path", "start_date", "end_date"],
         "title": "BacktestRequest",
         "description": "Request to run a single backtest."
       },
@@ -18340,11 +17317,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config_gcs_paths",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["config_gcs_paths", "start_date", "end_date"],
         "title": "BatchBacktestRequest",
         "description": "Request to run batch backtests."
       },
@@ -18363,10 +17336,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "batch_id",
-          "jobs"
-        ],
+        "required": ["batch_id", "jobs"],
         "title": "BatchJobResponse",
         "description": "Response for batch backtest job creation."
       },
@@ -18397,11 +17367,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config_jsons",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["config_jsons", "start_date", "end_date"],
         "title": "BatchLocalBacktestRequest",
         "description": "Request to run batch backtests with local config JSONs."
       },
@@ -18416,9 +17382,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "configs"
-        ],
+        "required": ["configs"],
         "title": "BestConfigsResponse",
         "description": "Response for best configs ranking."
       },
@@ -18440,9 +17404,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "BucketInfo",
         "description": "GCS bucket information."
       },
@@ -18461,10 +17423,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "buckets",
-          "project_id"
-        ],
+        "required": ["buckets", "project_id"],
         "title": "BucketsResponse",
         "description": "Response for bucket listing."
       },
@@ -18500,13 +17459,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "type",
-          "path",
-          "gcs_path",
-          "config_count"
-        ],
+        "required": ["name", "type", "path", "gcs_path", "config_count"],
         "title": "ConfigSourceEntry",
         "description": "Typed dict for a config source entry."
       },
@@ -18521,9 +17474,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "sources"
-        ],
+        "required": ["sources"],
         "title": "ConfigSourcesResponse",
         "description": "Response with available config sources (global + users)."
       },
@@ -18536,9 +17487,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config"
-        ],
+        "required": ["config"],
         "title": "ConfigValidationRequest",
         "description": "Request to validate a config."
       },
@@ -18558,9 +17507,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "valid"
-        ],
+        "required": ["valid"],
         "title": "ConfigValidationResponse",
         "description": "Response for config validation."
       },
@@ -18593,13 +17540,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "service",
-          "available",
-          "message",
-          "checked_path"
-        ],
+        "required": ["name", "service", "available", "message", "checked_path"],
         "title": "DependencyCheck",
         "description": "Single dependency check result."
       },
@@ -18616,10 +17557,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config",
-          "date"
-        ],
+        "required": ["config", "date"],
         "title": "DependencyCheckRequest",
         "description": "Request to check dependencies."
       },
@@ -18642,11 +17580,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "all_available",
-          "required_available",
-          "checks"
-        ],
+        "required": ["all_available", "required_available", "checks"],
         "title": "DependencyCheckResponse",
         "description": "Response for dependency check."
       },
@@ -18661,12 +17595,7 @@
           },
           "metric": {
             "type": "string",
-            "enum": [
-              "net_alpha_bps",
-              "gross_alpha_bps",
-              "pnl",
-              "sharpe_ratio"
-            ],
+            "enum": ["net_alpha_bps", "gross_alpha_bps", "pnl", "sharpe_ratio"],
             "title": "Metric",
             "default": "net_alpha_bps"
           },
@@ -18679,9 +17608,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "result_ids"
-        ],
+        "required": ["result_ids"],
         "title": "DistributionRequest",
         "description": "Request for distribution analysis."
       },
@@ -18699,10 +17626,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "histogram",
-          "stats"
-        ],
+        "required": ["histogram", "stats"],
         "title": "DistributionResponse",
         "description": "Response for distribution analysis."
       },
@@ -18750,13 +17674,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "mean",
-          "median",
-          "std",
-          "min",
-          "max"
-        ],
+        "required": ["mean", "median", "std", "min", "max"],
         "title": "DistributionStats",
         "description": "Distribution statistics."
       },
@@ -18785,10 +17703,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "timestamp",
-          "portfolio_value"
-        ],
+        "required": ["timestamp", "portfolio_value"],
         "title": "EquityPoint",
         "description": "Equity curve data point."
       },
@@ -18814,11 +17729,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "category",
-          "message",
-          "details"
-        ],
+        "required": ["category", "message", "details"],
         "title": "ErrorInfo",
         "description": "Structured error information."
       },
@@ -18853,11 +17764,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config_gcs_path",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["config_gcs_path", "start_date", "end_date"],
         "title": "ExactCliBacktestRequest",
         "description": "Request to run backtest with exact CLI command (for testing/comparison)."
       },
@@ -18884,9 +17791,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "summary"
-        ],
+        "required": ["summary"],
         "title": "ExecutionAlpha",
         "description": "Full execution alpha details."
       },
@@ -18959,11 +17864,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "files",
-          "bucket",
-          "prefix"
-        ],
+        "required": ["files", "bucket", "prefix"],
         "title": "FilesResponse",
         "description": "Response for file listing within a GCS bucket prefix."
       },
@@ -19004,13 +17905,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "order_id",
-          "timestamp",
-          "side",
-          "price",
-          "quantity"
-        ],
+        "required": ["order_id", "timestamp", "side", "price", "quantity"],
         "title": "Fill",
         "description": "Fill record."
       },
@@ -19212,10 +18107,7 @@
             "type": "array",
             "title": "Modes",
             "description": "Execution modes",
-            "default": [
-              "SCE",
-              "HUF"
-            ]
+            "default": ["SCE", "HUF"]
           },
           "timeframes": {
             "items": {
@@ -19224,10 +18116,7 @@
             "type": "array",
             "title": "Timeframes",
             "description": "Timeframes",
-            "default": [
-              "5M",
-              "15M"
-            ]
+            "default": ["5M", "15M"]
           },
           "upload_gcs": {
             "type": "boolean",
@@ -19325,10 +18214,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
+        "required": ["success", "message"],
         "title": "GenerateAllResponse",
         "description": "Response from generate-all."
       },
@@ -19349,13 +18235,7 @@
           },
           "instruction_type": {
             "type": "string",
-            "enum": [
-              "TRADE",
-              "SWAP",
-              "LEND",
-              "BORROW",
-              "STAKE"
-            ],
+            "enum": ["TRADE", "SWAP", "LEND", "BORROW", "STAKE"],
             "title": "Instruction Type",
             "description": "Instruction type",
             "default": "TRADE"
@@ -19429,9 +18309,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "strategy_id"
-        ],
+        "required": ["strategy_id"],
         "title": "GenerateConfigRequest",
         "description": "Request to generate configs for a single strategy."
       },
@@ -19478,10 +18356,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "success",
-          "message"
-        ],
+        "required": ["success", "message"],
         "title": "GenerateConfigResponse",
         "description": "Response from config generation."
       },
@@ -19496,39 +18371,25 @@
           },
           "row_dimension": {
             "type": "string",
-            "enum": [
-              "algorithm",
-              "strategy"
-            ],
+            "enum": ["algorithm", "strategy"],
             "title": "Row Dimension",
             "default": "algorithm"
           },
           "col_dimension": {
             "type": "string",
-            "enum": [
-              "timeframe",
-              "asset",
-              "mode",
-              "category"
-            ],
+            "enum": ["timeframe", "asset", "mode", "category"],
             "title": "Col Dimension",
             "default": "timeframe"
           },
           "metric": {
             "type": "string",
-            "enum": [
-              "net_alpha_bps",
-              "gross_alpha_bps",
-              "pnl"
-            ],
+            "enum": ["net_alpha_bps", "gross_alpha_bps", "pnl"],
             "title": "Metric",
             "default": "net_alpha_bps"
           }
         },
         "type": "object",
-        "required": [
-          "result_ids"
-        ],
+        "required": ["result_ids"],
         "title": "HeatmapRequest",
         "description": "Request for heatmap analysis."
       },
@@ -19560,11 +18421,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "rows",
-          "cols",
-          "values"
-        ],
+        "required": ["rows", "cols", "values"],
         "title": "HeatmapResponse",
         "description": "Response for heatmap analysis."
       },
@@ -19584,11 +18441,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "bin_start",
-          "bin_end",
-          "count"
-        ],
+        "required": ["bin_start", "bin_end", "count"],
         "title": "HistogramBin",
         "description": "Histogram bin."
       },
@@ -19608,11 +18461,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "job_id",
-          "config_id",
-          "config_path"
-        ],
+        "required": ["job_id", "config_id", "config_path"],
         "title": "JobInfo",
         "description": "Job info for batch."
       },
@@ -19624,12 +18473,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "queued",
-              "running",
-              "completed",
-              "failed"
-            ],
+            "enum": ["queued", "running", "completed", "failed"],
             "title": "Status"
           },
           "progress": {
@@ -19717,10 +18561,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "job_id",
-          "status"
-        ],
+        "required": ["job_id", "status"],
         "title": "JobStatusResponse",
         "description": "Response for job status query."
       },
@@ -19746,11 +18587,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config_json",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["config_json", "start_date", "end_date"],
         "title": "LocalBacktestRequest",
         "description": "Request to run a single backtest with local config JSON."
       },
@@ -19770,11 +18607,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "directory",
-          "reason",
-          "exists"
-        ],
+        "required": ["directory", "reason", "exists"],
         "title": "LocalDefaultDirectoryResponse",
         "description": "Response for local default directory suggestion."
       },
@@ -19812,11 +18645,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "config_folders",
-          "start_date",
-          "end_date"
-        ],
+        "required": ["config_folders", "start_date", "end_date"],
         "title": "MassDeployRequest",
         "description": "Request to trigger mass deployment via unified-trading-deployment-v2."
       },
@@ -19858,11 +18687,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "deployment_id",
-          "status",
-          "message"
-        ],
+        "required": ["deployment_id", "status", "message"],
         "title": "MassDeployResponse",
         "description": "Response from mass deployment."
       },
@@ -19918,14 +18743,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "timestamp",
-          "side",
-          "price",
-          "amount",
-          "status"
-        ],
+        "required": ["id", "timestamp", "side", "price", "amount", "status"],
         "title": "Order",
         "description": "Order record."
       },
@@ -20000,10 +18818,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "prefix",
-          "name"
-        ],
+        "required": ["prefix", "name"],
         "title": "PrefixInfo",
         "description": "GCS prefix (folder) information."
       },
@@ -20026,11 +18841,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "prefixes",
-          "bucket",
-          "parent_prefix"
-        ],
+        "required": ["prefixes", "bucket", "parent_prefix"],
         "title": "PrefixesResponse",
         "description": "Response for prefix listing."
       },
@@ -20214,9 +19025,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "summary"
-        ],
+        "required": ["summary"],
         "title": "ResultDetails",
         "description": "Full result details for deep dive."
       },
@@ -20339,11 +19148,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "result_id",
-          "config_id",
-          "strategy_id"
-        ],
+        "required": ["result_id", "config_id", "strategy_id"],
         "title": "ResultSummary",
         "description": "Summary of a backtest result."
       },
@@ -20365,11 +19170,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "results",
-          "total",
-          "filters"
-        ],
+        "required": ["results", "total", "filters"],
         "title": "ResultsResponse",
         "description": "Response for results list."
       },
@@ -20389,10 +19190,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "strategies",
-          "total"
-        ],
+        "required": ["strategies", "total"],
         "title": "StrategiesResponse",
         "description": "Response with available strategies."
       },
@@ -20408,10 +19206,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "timestamp",
-          "value"
-        ],
+        "required": ["timestamp", "value"],
         "title": "TimeSeriesPoint",
         "description": "Time series data point."
       },
@@ -20426,10 +19221,7 @@
           },
           "metric": {
             "type": "string",
-            "enum": [
-              "cumulative_alpha_usd",
-              "pnl"
-            ],
+            "enum": ["cumulative_alpha_usd", "pnl"],
             "title": "Metric",
             "default": "cumulative_alpha_usd"
           },
@@ -20437,10 +19229,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": [
-                  "date",
-                  "hour"
-                ]
+                "enum": ["date", "hour"]
               },
               {
                 "type": "null"
@@ -20451,9 +19240,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "result_ids"
-        ],
+        "required": ["result_ids"],
         "title": "TimeSeriesRequest",
         "description": "Request for time series analysis."
       },
@@ -20468,9 +19255,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "series"
-        ],
+        "required": ["series"],
         "title": "TimeSeriesResponse",
         "description": "Response for time series analysis."
       },
@@ -20489,11 +19274,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ts",
-          "event",
-          "data"
-        ],
+        "required": ["ts", "event", "data"],
         "title": "TimelineEvent",
         "description": "Timeline event."
       },
@@ -20594,10 +19375,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "users",
-          "user_configs"
-        ],
+        "required": ["users", "user_configs"],
         "title": "UserConfigsResponse",
         "description": "Response with user config directories."
       },
@@ -20617,9 +19395,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pb_id"
-        ],
+        "required": ["pb_id"],
         "title": "ClientPBLinkIn"
       },
       "ConfirmSettlementIn": {
@@ -20630,9 +19406,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "actual_amount"
-        ],
+        "required": ["actual_amount"],
         "title": "ConfirmSettlementIn"
       },
       "FeeEntryIn": {
@@ -20673,10 +19447,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "maker_fee_bps",
-          "taker_fee_bps"
-        ],
+        "required": ["maker_fee_bps", "taker_fee_bps"],
         "title": "FeeEntryIn"
       },
       "FeeOverrideIn": {
@@ -20725,12 +19496,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "fee_type",
-          "venue",
-          "maker_fee_bps",
-          "taker_fee_bps"
-        ],
+        "required": ["fee_type", "venue", "maker_fee_bps", "taker_fee_bps"],
         "title": "FeeOverrideIn"
       },
       "PrimeBrokerCreate": {
@@ -20745,10 +19511,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "pb_id",
-          "display_name"
-        ],
+        "required": ["pb_id", "display_name"],
         "title": "PrimeBrokerCreate"
       },
       "SubmitSettlementIn": {
@@ -20796,11 +19559,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "strategy_id",
-          "settlement_type",
-          "expected_amount"
-        ],
+        "required": ["strategy_id", "settlement_type", "expected_amount"],
         "title": "SubmitSettlementIn"
       },
       "GenerateReportRequest": {
@@ -20815,10 +19574,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id",
-          "period_month"
-        ],
+        "required": ["client_id", "period_month"],
         "title": "GenerateReportRequest"
       },
       "DeployRequest": {
@@ -20829,9 +19585,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "model_id"
-        ],
+        "required": ["model_id"],
         "title": "DeployRequest",
         "description": "Request body for deploying a model (API layer DTO)."
       },
@@ -20859,13 +19613,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "model_id",
-          "name",
-          "version",
-          "status",
-          "bucket"
-        ],
+        "required": ["model_id", "name", "version", "status", "bucket"],
         "title": "ModelMetadata",
         "description": "Metadata for a deployed ML model (API layer DTO)."
       },
@@ -20884,10 +19632,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "run_id",
-          "phases"
-        ],
+        "required": ["run_id", "phases"],
         "title": "ExperimentDetail",
         "description": "Detail view of a training experiment including all phases."
       },
@@ -20903,10 +19648,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "run_id",
-          "phase"
-        ],
+        "required": ["run_id", "phase"],
         "title": "ExperimentPhaseEnvelope",
         "description": "Envelope returned for a single phase query."
       },
@@ -20967,12 +19709,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "phase",
-          "status",
-          "gcs_path",
-          "metrics"
-        ],
+        "required": ["phase", "status", "gcs_path", "metrics"],
         "title": "PhaseDetail",
         "description": "Detail for a single pipeline phase within an experiment."
       },
@@ -21021,11 +19758,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "instruction_id",
-          "new_quantity",
-          "reason"
-        ],
+        "required": ["instruction_id", "new_quantity", "reason"],
         "title": "AmendInstructionRequest",
         "description": "Request schema for amending manual instruction."
       },
@@ -21044,10 +19777,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "instruction_id",
-          "reason"
-        ],
+        "required": ["instruction_id", "reason"],
         "title": "CancelInstructionRequest",
         "description": "Request schema for cancelling manual instruction."
       },
@@ -21150,13 +19880,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id",
-          "venue",
-          "instrument_id",
-          "side",
-          "quantity"
-        ],
+        "required": ["client_id", "venue", "instrument_id", "side", "quantity"],
         "title": "ManualInstructionRequest",
         "description": "Request schema for manual instruction entry.",
         "example": {
@@ -21219,11 +19943,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "instruction_id",
-          "status",
-          "message"
-        ],
+        "required": ["instruction_id", "status", "message"],
         "title": "ManualInstructionResponse",
         "description": "Response schema for manual instruction submission.",
         "example": {
@@ -21343,9 +20063,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "AlertContextData"
       },
       "AlertMessage": {
@@ -21468,12 +20186,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "passed",
-          "limit_type",
-          "current_value",
-          "limit_value"
-        ],
+        "required": ["passed", "limit_type", "current_value", "limit_value"],
         "title": "LimitCheckResult",
         "description": "Result of a single limit check."
       },
@@ -21704,11 +20417,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "approved",
-          "client_id",
-          "instrument"
-        ],
+        "required": ["approved", "client_id", "instrument"],
         "title": "PreTradeCheckResponse"
       },
       "RiskLimits-Input": {
@@ -21889,9 +20598,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "RiskLimits",
         "description": "Risk limits configuration for a client."
       },
@@ -21982,9 +20689,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "RiskLimits",
         "description": "Risk limits configuration for a client."
       },
@@ -22036,12 +20741,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "var",
-          "cvar",
-          "confidence",
-          "horizon_days"
-        ],
+        "required": ["var", "cvar", "confidence", "horizon_days"],
         "title": "VaRResponse",
         "description": "Response body for GET /risk/var."
       },
@@ -22289,12 +20989,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "currency",
-          "free",
-          "locked",
-          "total"
-        ],
+        "required": ["currency", "free", "locked", "total"],
         "title": "CanonicalBalance",
         "description": "Normalised balance for a single currency."
       },
@@ -22376,9 +21071,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "DeFiAggregatedHealth",
         "description": "Combined DeFi lending health factor across protocols and chains."
       },
@@ -22429,9 +21122,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "DeFiLPAggregatedMetrics",
         "description": "Combined DeFi LP metrics across Uniswap/Curve/Balancer."
       },
@@ -22482,9 +21173,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "DeFiStakingAggregatedMetrics",
         "description": "Combined DeFi staking metrics across Lido/EtherFi/etc."
       },
@@ -22524,10 +21213,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "protocol",
-          "chain"
-        ],
+        "required": ["protocol", "chain"],
         "title": "LPProtocolBreakdown",
         "description": "Per-protocol DeFi LP metrics."
       },
@@ -22830,11 +21516,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id",
-          "snapshot_id",
-          "timestamp"
-        ],
+        "required": ["client_id", "snapshot_id", "timestamp"],
         "title": "PortfolioView",
         "description": "Full portfolio snapshot across all venues, asset classes, and risk groups."
       },
@@ -22974,10 +21656,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "protocol",
-          "chain"
-        ],
+        "required": ["protocol", "chain"],
         "title": "ProtocolHealthBreakdown",
         "description": "Per-protocol DeFi lending health metrics."
       },
@@ -23053,11 +21732,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "risk_group_id",
-          "underlying",
-          "asset_class"
-        ],
+        "required": ["risk_group_id", "underlying", "asset_class"],
         "title": "RiskGroupSummary",
         "description": "Risk group aggregation for positions sharing the same underlying."
       },
@@ -23097,12 +21772,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "venue",
-          "side",
-          "stake",
-          "odds"
-        ],
+        "required": ["venue", "side", "stake", "odds"],
         "title": "SportsArbLeg",
         "description": "Single leg of a sports arbitrage position."
       },
@@ -23171,11 +21841,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "fixture_id",
-          "market_type",
-          "selection"
-        ],
+        "required": ["fixture_id", "market_type", "selection"],
         "title": "SportsArbPosition",
         "description": "Cross-venue sports arbitrage position for a single selection.\n\nTracks back on venue A + lay on venue B for the same fixture/selection,\ncalculating guaranteed P&L after commission netting.\nLimited to 2-outcome back/lay markets; multi-outcome arb is future scope."
       },
@@ -23222,10 +21888,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "protocol",
-          "chain"
-        ],
+        "required": ["protocol", "chain"],
         "title": "StakingProtocolBreakdown",
         "description": "Per-protocol DeFi staking metrics."
       },
@@ -23312,9 +21975,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "underlying"
-        ],
+        "required": ["underlying"],
         "title": "UnderlyingGreeksBreakdown",
         "description": "Per-underlying Greeks aggregation \u2014 same underlying nets at correlation=1."
       },
@@ -23538,10 +22199,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "config_dir"
-        ],
+        "required": ["service", "config_dir"],
         "title": "CalculateShardsRequest"
       },
       "CancelVMJobsRequest": {
@@ -23752,10 +22410,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "quota_shape",
-          "batch_size"
-        ],
+        "required": ["quota_shape", "batch_size"],
         "title": "QuotaAcquireRequest"
       },
       "QuotaReleaseRequest": {
@@ -23771,10 +22426,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "quota_shape",
-          "batch_size"
-        ],
+        "required": ["quota_shape", "batch_size"],
         "title": "QuotaReleaseRequest"
       },
       "deployment_service__RollbackRequest": {
@@ -23800,10 +22452,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "region"
-        ],
+        "required": ["service", "region"],
         "title": "RollbackRequest"
       },
       "VMStatusBatchRequest": {
@@ -23825,11 +22474,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "project_id",
-          "zone",
-          "vm_names"
-        ],
+        "required": ["project_id", "zone", "vm_names"],
         "title": "VMStatusBatchRequest"
       }
     }

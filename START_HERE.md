@@ -32,6 +32,7 @@ This document tells you exactly what to read and in what order before you start 
 Read: **[ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md)**
 
 Learn:
+
 - What the platform is (unified institutional system, not just a website)
 - The three experience modes (public, client, internal)
 - The six service areas (data, research, execution, reporting, admin, deployment)
@@ -45,12 +46,14 @@ Learn:
 Read: **[CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md)**
 
 Learn:
+
 - Next.js 15 App Router with three route groups `(public)`, `(platform)`, `(ops)`
 - The canonical content tree lives at `app/(platform)/services/`
 - Where to add new pages, components, hooks, types, mock handlers
 - State management: Zustand (global) + React Query (server data)
 
 Then read the deep docs for your area:
+
 - **[docs/STRUCTURE_APP.md](./docs/STRUCTURE_APP.md)** — Full route inventory, redirect map
 - **[docs/STRUCTURE_COMPONENTS.md](./docs/STRUCTURE_COMPONENTS.md)** — All 11 component domains
 - **[docs/STRUCTURE_LIB.md](./docs/STRUCTURE_LIB.md)** — Types, stores, mocks, config
@@ -64,6 +67,7 @@ Then read the deep docs for your area:
 Read: **[context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md)**
 
 Learn:
+
 - Five primary shards (CEFI, DeFi, Sports, TradFi, OnChain)
 - How data is partitioned (shard → venue → instrument → org)
 - Why sharding matters (failure isolation, per-shard config, data scoping)
@@ -88,6 +92,7 @@ Scan: **[context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md)**
 Skim: **[.cursorrules](./.cursorrules)**
 
 Key rules:
+
 - All new platform pages go under `app/(platform)/services/<domain>/`
 - Never create pages at old flat paths (`/trading/`, `/execution/`, etc.) — they are redirects
 - Components in `components/<domain>/` — kebab-case filenames
@@ -135,21 +140,21 @@ Key rules:
 
 ## Key File Locations
 
-| What you need           | Where to find it |
-|---|---|
-| Codebase overview       | [CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md) |
+| What you need           | Where to find it                                                                 |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| Codebase overview       | [CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md)                                 |
 | Platform vision         | [ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md) |
-| Route inventory         | [ROUTES.md](./ROUTES.md) or [docs/STRUCTURE_APP.md](./docs/STRUCTURE_APP.md) |
-| Component inventory     | [docs/STRUCTURE_COMPONENTS.md](./docs/STRUCTURE_COMPONENTS.md) |
-| Lib layer               | [docs/STRUCTURE_LIB.md](./docs/STRUCTURE_LIB.md) |
-| API hooks               | [docs/STRUCTURE_HOOKS.md](./docs/STRUCTURE_HOOKS.md) |
-| Sharding model          | [context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md) |
-| API readiness           | [context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md) |
-| Coding rules (full)     | [.cursorrules](./.cursorrules) |
-| Config schema reference | `context/api-contracts/openapi/config-registry.json` |
-| API specs               | `context/api-contracts/openapi/*.yaml` |
-| Data schemas            | `context/api-contracts/canonical-schemas/` |
-| Service types           | `context/internal-contracts/schemas/` |
+| Route inventory         | [ROUTES.md](./ROUTES.md) or [docs/STRUCTURE_APP.md](./docs/STRUCTURE_APP.md)     |
+| Component inventory     | [docs/STRUCTURE_COMPONENTS.md](./docs/STRUCTURE_COMPONENTS.md)                   |
+| Lib layer               | [docs/STRUCTURE_LIB.md](./docs/STRUCTURE_LIB.md)                                 |
+| API hooks               | [docs/STRUCTURE_HOOKS.md](./docs/STRUCTURE_HOOKS.md)                             |
+| Sharding model          | [context/SHARDING_DIMENSIONS.md](./context/SHARDING_DIMENSIONS.md)               |
+| API readiness           | [context/API_FRONTEND_GAPS.md](./context/API_FRONTEND_GAPS.md)                   |
+| Coding rules (full)     | [.cursorrules](./.cursorrules)                                                   |
+| Config schema reference | `context/api-contracts/openapi/config-registry.json`                             |
+| API specs               | `context/api-contracts/openapi/*.yaml`                                           |
+| Data schemas            | `context/api-contracts/canonical-schemas/`                                       |
+| Service types           | `context/internal-contracts/schemas/`                                            |
 
 ---
 

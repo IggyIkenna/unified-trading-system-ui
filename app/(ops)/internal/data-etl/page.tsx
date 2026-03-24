@@ -1,45 +1,70 @@
-"use client"
+"use client";
 
 // /internal/data-etl — Internal ETL Pipeline Management Dashboard
 // Full visibility into all data pipelines, venues, instruments, and data gaps
 // Sharded by: Asset Class → Venue → Folder → Data Type → Date
 // This is the internal operations view for the data engineering team
 
-import * as React from "react"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Progress } from "@/components/ui/progress"
+import * as React from "react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
-  Database, ArrowLeft, Activity, AlertTriangle, CheckCircle2,
-  XCircle, Clock, RefreshCw, Search, Filter, ChevronRight,
-  Layers, Zap, Server, HardDrive, TrendingUp, BarChart3,
-  Calendar, FileWarning, Play, Pause, Settings, Bell,
-} from "lucide-react"
+  Database,
+  ArrowLeft,
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  RefreshCw,
+  Search,
+  Filter,
+  ChevronRight,
+  Layers,
+  Zap,
+  Server,
+  HardDrive,
+  TrendingUp,
+  BarChart3,
+  Calendar,
+  FileWarning,
+  Play,
+  Pause,
+  Settings,
+  Bell,
+} from "lucide-react";
 import {
   MOCK_ETL_PIPELINES,
   MOCK_VENUE_COVERAGE,
   MOCK_DATA_GAPS,
   ETL_SUMMARY,
-} from "@/lib/data-service-mock-data"
+} from "@/lib/data-service-mock-data";
 import {
   DATA_CATEGORY_LABELS,
   VENUES_BY_CATEGORY,
   type DataCategory,
   type ETLStatus,
   type ETLStage,
-} from "@/lib/data-service-types"
+} from "@/lib/data-service-types";
 
 const ETL_STAGE_LABELS: Record<ETLStage, string> = {
   ingest: "Ingest",
@@ -49,15 +74,26 @@ const ETL_STAGE_LABELS: Record<ETLStage, string> = {
   store_gcp: "Store (GCP)",
   store_aws: "Store (AWS)",
   index: "Index",
-}
+};
 
-const STATUS_CONFIG: Record<ETLStatus, { color: string; bg: string; icon: React.ElementType }> = {
-  healthy: { color: "text-emerald-400", bg: "bg-emerald-500/10", icon: CheckCircle2 },
-  degraded: { color: "text-amber-400", bg: "bg-amber-500/10", icon: AlertTriangle },
+const STATUS_CONFIG: Record<
+  ETLStatus,
+  { color: string; bg: string; icon: React.ElementType }
+> = {
+  healthy: {
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    icon: CheckCircle2,
+  },
+  degraded: {
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    icon: AlertTriangle,
+  },
   failed: { color: "text-red-400", bg: "bg-red-500/10", icon: XCircle },
   pending: { color: "text-blue-400", bg: "bg-blue-500/10", icon: Clock },
   disabled: { color: "text-muted-foreground", bg: "bg-muted", icon: Pause },
-}
+};
 
 const CATEGORY_COLORS: Record<DataCategory, string> = {
   cefi: "text-sky-400 border-sky-500/30 bg-sky-500/10",
@@ -66,25 +102,38 @@ const CATEGORY_COLORS: Record<DataCategory, string> = {
   onchain_perps: "text-amber-400 border-amber-500/30 bg-amber-500/10",
   prediction_market: "text-rose-400 border-rose-500/30 bg-rose-500/10",
   sports: "text-orange-400 border-orange-500/30 bg-orange-500/10",
-}
+};
 
 export default function DataETLDashboard() {
-  const [selectedCategory, setSelectedCategory] = React.useState<DataCategory | "all">("all")
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [showOnlyIssues, setShowOnlyIssues] = React.useState(false)
+  const [selectedCategory, setSelectedCategory] = React.useState<
+    DataCategory | "all"
+  >("all");
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [showOnlyIssues, setShowOnlyIssues] = React.useState(false);
 
-  const filteredPipelines = MOCK_ETL_PIPELINES.filter(p => {
-    if (selectedCategory !== "all" && p.config.category !== selectedCategory) return false
-    if (showOnlyIssues && p.overallStatus === "healthy") return false
-    if (searchQuery && !p.config.venue.toLowerCase().includes(searchQuery.toLowerCase())) return false
-    return true
-  })
+  const filteredPipelines = MOCK_ETL_PIPELINES.filter((p) => {
+    if (selectedCategory !== "all" && p.config.category !== selectedCategory)
+      return false;
+    if (showOnlyIssues && p.overallStatus === "healthy") return false;
+    if (
+      searchQuery &&
+      !p.config.venue.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+      return false;
+    return true;
+  });
 
-  const filteredVenues = MOCK_VENUE_COVERAGE.filter(v => {
-    if (selectedCategory !== "all" && v.category !== selectedCategory) return false
-    if (searchQuery && !v.venue.toLowerCase().includes(searchQuery.toLowerCase()) && !v.label.toLowerCase().includes(searchQuery.toLowerCase())) return false
-    return true
-  })
+  const filteredVenues = MOCK_VENUE_COVERAGE.filter((v) => {
+    if (selectedCategory !== "all" && v.category !== selectedCategory)
+      return false;
+    if (
+      searchQuery &&
+      !v.venue.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      !v.label.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+      return false;
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,12 +142,16 @@ export default function DataETLDashboard() {
         <div className="container flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild>
-              <Link href="/internal"><ArrowLeft className="size-4" /></Link>
+              <Link href="/internal">
+                <ArrowLeft className="size-4" />
+              </Link>
             </Button>
             <div className="flex items-center gap-2">
               <Database className="size-5 text-sky-400" />
               <span className="font-semibold">Data ETL Management</span>
-              <Badge variant="outline" className="text-xs">Internal</Badge>
+              <Badge variant="outline" className="text-xs">
+                Internal
+              </Badge>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -188,15 +241,24 @@ export default function DataETLDashboard() {
               className="pl-9"
             />
           </div>
-          <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as DataCategory | "all")}>
+          <Select
+            value={selectedCategory}
+            onValueChange={(v) =>
+              setSelectedCategory(v as DataCategory | "all")
+            }
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {(Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).filter(c => c !== "prediction_market").map(cat => (
-                <SelectItem key={cat} value={cat}>{DATA_CATEGORY_LABELS[cat]}</SelectItem>
-              ))}
+              {(Object.keys(DATA_CATEGORY_LABELS) as DataCategory[])
+                .filter((c) => c !== "prediction_market")
+                .map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {DATA_CATEGORY_LABELS[cat]}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
           <Button
@@ -232,7 +294,7 @@ export default function DataETLDashboard() {
 
           {/* ─── Pipelines Tab ──────────────────────────────────────────────── */}
           <TabsContent value="pipelines" className="space-y-4">
-            {filteredPipelines.map(pipeline => (
+            {filteredPipelines.map((pipeline) => (
               <PipelineCard key={pipeline.config.id} pipeline={pipeline} />
             ))}
             {filteredPipelines.length === 0 && (
@@ -245,7 +307,7 @@ export default function DataETLDashboard() {
           {/* ─── Venues Tab ─────────────────────────────────────────────────── */}
           <TabsContent value="venues" className="space-y-4">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredVenues.map(venue => (
+              {filteredVenues.map((venue) => (
                 <VenueCard key={venue.venue} venue={venue} />
               ))}
             </div>
@@ -271,39 +333,64 @@ export default function DataETLDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {MOCK_DATA_GAPS.map(gap => (
+                  {MOCK_DATA_GAPS.map((gap) => (
                     <tr key={gap.id} className="border-b last:border-0">
                       <td className="p-3">
                         <div className="font-medium">{gap.dataType}</div>
-                        <div className="text-xs text-muted-foreground">{gap.instrument || "All instruments"}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {gap.instrument || "All instruments"}
+                        </div>
                       </td>
                       <td className="p-3">
-                        <Badge variant="outline" className={CATEGORY_COLORS[gap.category]}>
+                        <Badge
+                          variant="outline"
+                          className={CATEGORY_COLORS[gap.category]}
+                        >
                           {DATA_CATEGORY_LABELS[gap.category]}
                         </Badge>
-                        <span className="ml-2 text-muted-foreground">{gap.venue} / {gap.folder}</span>
+                        <span className="ml-2 text-muted-foreground">
+                          {gap.venue} / {gap.folder}
+                        </span>
                       </td>
                       <td className="p-3 font-mono text-xs">
-                        {gap.gapStart === gap.gapEnd ? gap.gapStart : `${gap.gapStart} → ${gap.gapEnd}`}
-                        <div className="text-muted-foreground">{gap.daysAffected} day(s)</div>
+                        {gap.gapStart === gap.gapEnd
+                          ? gap.gapStart
+                          : `${gap.gapStart} → ${gap.gapEnd}`}
+                        <div className="text-muted-foreground">
+                          {gap.daysAffected} day(s)
+                        </div>
                       </td>
                       <td className="p-3">
-                        <Badge variant="outline" className={cn(
-                          gap.severity === "critical" && "border-red-500/30 text-red-400",
-                          gap.severity === "high" && "border-orange-500/30 text-orange-400",
-                          gap.severity === "medium" && "border-amber-500/30 text-amber-400",
-                          gap.severity === "low" && "border-muted-foreground/30 text-muted-foreground"
-                        )}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            gap.severity === "critical" &&
+                              "border-red-500/30 text-red-400",
+                            gap.severity === "high" &&
+                              "border-orange-500/30 text-orange-400",
+                            gap.severity === "medium" &&
+                              "border-amber-500/30 text-amber-400",
+                            gap.severity === "low" &&
+                              "border-muted-foreground/30 text-muted-foreground",
+                          )}
+                        >
                           {gap.severity}
                         </Badge>
                       </td>
                       <td className="p-3">
-                        <Badge variant="outline" className={cn(
-                          gap.status === "open" && "border-red-500/30 text-red-400",
-                          gap.status === "backfilling" && "border-blue-500/30 text-blue-400",
-                          gap.status === "resolved" && "border-emerald-500/30 text-emerald-400",
-                          gap.status === "wont_fix" && "border-muted-foreground/30 text-muted-foreground"
-                        )}>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            gap.status === "open" &&
+                              "border-red-500/30 text-red-400",
+                            gap.status === "backfilling" &&
+                              "border-blue-500/30 text-blue-400",
+                            gap.status === "resolved" &&
+                              "border-emerald-500/30 text-emerald-400",
+                            gap.status === "wont_fix" &&
+                              "border-muted-foreground/30 text-muted-foreground",
+                          )}
+                        >
                           {gap.status}
                         </Badge>
                       </td>
@@ -330,12 +417,15 @@ export default function DataETLDashboard() {
 
           {/* ─── Instruments Tab ────────────────────────────────────────────── */}
           <TabsContent value="instruments">
-            <InstrumentBrowser selectedCategory={selectedCategory} searchQuery={searchQuery} />
+            <InstrumentBrowser
+              selectedCategory={selectedCategory}
+              searchQuery={searchQuery}
+            />
           </TabsContent>
         </Tabs>
       </div>
     </div>
-  )
+  );
 }
 
 // ─── Components ───────────────────────────────────────────────────────────────
@@ -348,66 +438,100 @@ function SummaryCard({
   color,
   alert,
 }: {
-  label: string
-  value: string | number
-  subValue?: string
-  icon: React.ElementType
-  color: string
-  alert?: boolean
+  label: string;
+  value: string | number;
+  subValue?: string;
+  icon: React.ElementType;
+  color: string;
+  alert?: boolean;
 }) {
   return (
     <Card className={cn(alert && "border-amber-500/30")}>
       <CardContent className="p-3">
         <div className="flex items-center justify-between">
           <Icon className={cn("size-4", color)} />
-          {alert && <span className="size-2 rounded-full bg-amber-500 animate-pulse" />}
+          {alert && (
+            <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+          )}
         </div>
         <div className="mt-2">
           <div className="text-xl font-bold font-mono">{value}</div>
-          <div className="text-xs text-muted-foreground">{subValue || label}</div>
+          <div className="text-xs text-muted-foreground">
+            {subValue || label}
+          </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-function PipelineCard({ pipeline }: { pipeline: typeof MOCK_ETL_PIPELINES[0] }) {
-  const { config, stages, overallStatus, dataLagMinutes, alerts } = pipeline
-  const StatusIcon = STATUS_CONFIG[overallStatus].icon
+function PipelineCard({
+  pipeline,
+}: {
+  pipeline: (typeof MOCK_ETL_PIPELINES)[0];
+}) {
+  const { config, stages, overallStatus, dataLagMinutes, alerts } = pipeline;
+  const StatusIcon = STATUS_CONFIG[overallStatus].icon;
 
   return (
-    <Card className={cn(
-      overallStatus === "degraded" && "border-amber-500/30",
-      overallStatus === "failed" && "border-red-500/30"
-    )}>
+    <Card
+      className={cn(
+        overallStatus === "degraded" && "border-amber-500/30",
+        overallStatus === "failed" && "border-red-500/30",
+      )}
+    >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={cn("p-2 rounded-lg", STATUS_CONFIG[overallStatus].bg)}>
-              <StatusIcon className={cn("size-4", STATUS_CONFIG[overallStatus].color)} />
+            <div
+              className={cn("p-2 rounded-lg", STATUS_CONFIG[overallStatus].bg)}
+            >
+              <StatusIcon
+                className={cn("size-4", STATUS_CONFIG[overallStatus].color)}
+              />
             </div>
             <div>
               <CardTitle className="text-base flex items-center gap-2">
                 {config.venue}
-                <Badge variant="outline" className={CATEGORY_COLORS[config.category]}>
+                <Badge
+                  variant="outline"
+                  className={CATEGORY_COLORS[config.category]}
+                >
                   {DATA_CATEGORY_LABELS[config.category]}
                 </Badge>
-                <Badge variant="secondary" className="text-[10px]">{config.folder}</Badge>
+                <Badge variant="secondary" className="text-[10px]">
+                  {config.folder}
+                </Badge>
               </CardTitle>
               <CardDescription className="text-xs">
                 {config.dataTypes.join(", ")} · {config.schedule}
                 {config.priority === "critical" && (
-                  <Badge variant="destructive" className="ml-2 text-[9px]">Critical</Badge>
+                  <Badge variant="destructive" className="ml-2 text-[9px]">
+                    Critical
+                  </Badge>
                 )}
               </CardDescription>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="text-right">
-              <div className={cn("text-sm font-mono", dataLagMinutes > 10 ? "text-amber-400" : "text-muted-foreground")}>
-                {dataLagMinutes < 60 ? `${dataLagMinutes}m` : `${Math.floor(dataLagMinutes / 60)}h ${dataLagMinutes % 60}m`} lag
+              <div
+                className={cn(
+                  "text-sm font-mono",
+                  dataLagMinutes > 10
+                    ? "text-amber-400"
+                    : "text-muted-foreground",
+                )}
+              >
+                {dataLagMinutes < 60
+                  ? `${dataLagMinutes}m`
+                  : `${Math.floor(dataLagMinutes / 60)}h ${dataLagMinutes % 60}m`}{" "}
+                lag
               </div>
-              <div className="text-xs text-muted-foreground">Last sync: {new Date(pipeline.lastFullSync).toLocaleTimeString()}</div>
+              <div className="text-xs text-muted-foreground">
+                Last sync:{" "}
+                {new Date(pipeline.lastFullSync).toLocaleTimeString()}
+              </div>
             </div>
             <Button variant="ghost" size="icon">
               <RefreshCw className="size-4" />
@@ -430,44 +554,50 @@ function PipelineCard({ pipeline }: { pipeline: typeof MOCK_ETL_PIPELINES[0] }) 
                   stage.status === "degraded" && "bg-amber-500",
                   stage.status === "failed" && "bg-red-500",
                   stage.status === "pending" && "bg-blue-500 animate-pulse",
-                  stage.status === "disabled" && "bg-muted"
+                  stage.status === "disabled" && "bg-muted",
                 )}
                 title={`${ETL_STAGE_LABELS[stage.stage]}: ${stage.status}`}
               />
-              {i < stages.length - 1 && <ChevronRight className="size-3 text-muted-foreground shrink-0" />}
+              {i < stages.length - 1 && (
+                <ChevronRight className="size-3 text-muted-foreground shrink-0" />
+              )}
             </React.Fragment>
           ))}
         </div>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex gap-4">
-            {stages.slice(0, 4).map(stage => (
+            {stages.slice(0, 4).map((stage) => (
               <span key={stage.stage} className="flex items-center gap-1">
-                <span className={cn(
-                  "size-1.5 rounded-full",
-                  stage.status === "healthy" && "bg-emerald-500",
-                  stage.status === "degraded" && "bg-amber-500",
-                  stage.status === "failed" && "bg-red-500"
-                )} />
+                <span
+                  className={cn(
+                    "size-1.5 rounded-full",
+                    stage.status === "healthy" && "bg-emerald-500",
+                    stage.status === "degraded" && "bg-amber-500",
+                    stage.status === "failed" && "bg-red-500",
+                  )}
+                />
                 {ETL_STAGE_LABELS[stage.stage]}
               </span>
             ))}
           </div>
           <div>
-            {stages[0].recordsProcessed?.toLocaleString()} records · {stages[0].latencyMs}ms
+            {stages[0].recordsProcessed?.toLocaleString()} records ·{" "}
+            {stages[0].latencyMs}ms
           </div>
         </div>
 
         {/* Alerts */}
         {alerts.length > 0 && (
           <div className="mt-3 space-y-2">
-            {alerts.map(alert => (
+            {alerts.map((alert) => (
               <div
                 key={alert.id}
                 className={cn(
                   "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
                   alert.severity === "critical" && "bg-red-500/10 text-red-400",
-                  alert.severity === "warning" && "bg-amber-500/10 text-amber-400",
-                  alert.severity === "info" && "bg-blue-500/10 text-blue-400"
+                  alert.severity === "warning" &&
+                    "bg-amber-500/10 text-amber-400",
+                  alert.severity === "info" && "bg-blue-500/10 text-blue-400",
                 )}
               >
                 <AlertTriangle className="size-4 shrink-0" />
@@ -481,22 +611,26 @@ function PipelineCard({ pipeline }: { pipeline: typeof MOCK_ETL_PIPELINES[0] }) 
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
-function VenueCard({ venue }: { venue: typeof MOCK_VENUE_COVERAGE[0] }) {
-  const StatusIcon = STATUS_CONFIG[venue.healthStatus].icon
+function VenueCard({ venue }: { venue: (typeof MOCK_VENUE_COVERAGE)[0] }) {
+  const StatusIcon = STATUS_CONFIG[venue.healthStatus].icon;
 
   return (
-    <Card className={cn(
-      venue.healthStatus === "degraded" && "border-amber-500/30",
-      venue.healthStatus === "failed" && "border-red-500/30"
-    )}>
+    <Card
+      className={cn(
+        venue.healthStatus === "degraded" && "border-amber-500/30",
+        venue.healthStatus === "failed" && "border-red-500/30",
+      )}
+    >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
             {venue.label}
-            <StatusIcon className={cn("size-4", STATUS_CONFIG[venue.healthStatus].color)} />
+            <StatusIcon
+              className={cn("size-4", STATUS_CONFIG[venue.healthStatus].color)}
+            />
           </CardTitle>
           <Badge variant="outline" className={CATEGORY_COLORS[venue.category]}>
             {DATA_CATEGORY_LABELS[venue.category]}
@@ -510,11 +644,15 @@ function VenueCard({ venue }: { venue: typeof MOCK_VENUE_COVERAGE[0] }) {
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
             <div className="text-muted-foreground text-xs">Instruments</div>
-            <div className="font-mono font-medium">{venue.instrumentCount.toLocaleString()}</div>
+            <div className="font-mono font-medium">
+              {venue.instrumentCount.toLocaleString()}
+            </div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">Daily Volume</div>
-            <div className="font-mono font-medium">{(venue.dailyVolume / 1000000).toFixed(1)}M</div>
+            <div className="font-mono font-medium">
+              {(venue.dailyVolume / 1000000).toFixed(1)}M
+            </div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">Oldest Data</div>
@@ -531,19 +669,28 @@ function VenueCard({ venue }: { venue: typeof MOCK_VENUE_COVERAGE[0] }) {
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-function InstrumentBrowser({ selectedCategory, searchQuery }: { selectedCategory: DataCategory | "all"; searchQuery: string }) {
-  const [expandedVenue, setExpandedVenue] = React.useState<string | null>(null)
+function InstrumentBrowser({
+  selectedCategory,
+  searchQuery,
+}: {
+  selectedCategory: DataCategory | "all";
+  searchQuery: string;
+}) {
+  const [expandedVenue, setExpandedVenue] = React.useState<string | null>(null);
 
-  const categories = selectedCategory === "all"
-    ? (Object.keys(VENUES_BY_CATEGORY) as DataCategory[]).filter(c => c !== "prediction_market")
-    : [selectedCategory]
+  const categories =
+    selectedCategory === "all"
+      ? (Object.keys(VENUES_BY_CATEGORY) as DataCategory[]).filter(
+          (c) => c !== "prediction_market",
+        )
+      : [selectedCategory];
 
   return (
     <div className="space-y-4">
-      {categories.map(cat => (
+      {categories.map((cat) => (
         <Card key={cat}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -558,37 +705,50 @@ function InstrumentBrowser({ selectedCategory, searchQuery }: { selectedCategory
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
               {VENUES_BY_CATEGORY[cat]
-                .filter(v => !searchQuery || v.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map(venue => {
-                  const coverage = MOCK_VENUE_COVERAGE.find(vc => vc.venue === venue)
+                .filter(
+                  (v) =>
+                    !searchQuery ||
+                    v.toLowerCase().includes(searchQuery.toLowerCase()),
+                )
+                .map((venue) => {
+                  const coverage = MOCK_VENUE_COVERAGE.find(
+                    (vc) => vc.venue === venue,
+                  );
                   return (
                     <button
                       key={venue}
-                      onClick={() => setExpandedVenue(expandedVenue === venue ? null : venue)}
+                      onClick={() =>
+                        setExpandedVenue(expandedVenue === venue ? null : venue)
+                      }
                       className={cn(
                         "flex items-center justify-between rounded-md border p-3 text-left text-sm transition-colors hover:bg-accent",
-                        expandedVenue === venue && "bg-accent border-primary"
+                        expandedVenue === venue && "bg-accent border-primary",
                       )}
                     >
                       <div>
-                        <div className="font-medium capitalize">{venue.replace(/_/g, " ")}</div>
+                        <div className="font-medium capitalize">
+                          {venue.replace(/_/g, " ")}
+                        </div>
                         {coverage && (
                           <div className="text-xs text-muted-foreground">
-                            {coverage.instrumentCount.toLocaleString()} instruments · Since {coverage.oldestData}
+                            {coverage.instrumentCount.toLocaleString()}{" "}
+                            instruments · Since {coverage.oldestData}
                           </div>
                         )}
                       </div>
-                      <ChevronRight className={cn(
-                        "size-4 text-muted-foreground transition-transform",
-                        expandedVenue === venue && "rotate-90"
-                      )} />
+                      <ChevronRight
+                        className={cn(
+                          "size-4 text-muted-foreground transition-transform",
+                          expandedVenue === venue && "rotate-90",
+                        )}
+                      />
                     </button>
-                  )
+                  );
                 })}
             </div>
           </CardContent>
         </Card>
       ))}
     </div>
-  )
+  );
 }

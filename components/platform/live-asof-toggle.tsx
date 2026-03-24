@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * LiveAsOfToggle — compact Live/As-Of mode switch for Row 2 (service tabs).
@@ -6,20 +6,22 @@
  * Reads/writes from the global scope store.
  */
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Radio, Calendar, AlertTriangle } from "lucide-react"
-import { useGlobalScope } from "@/lib/stores/global-scope-store"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Radio, Calendar, AlertTriangle } from "lucide-react";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 
 export function LiveAsOfToggle({ className }: { className?: string }) {
-  const { scope, setMode, setAsOfDatetime } = useGlobalScope()
+  const { scope, setMode, setAsOfDatetime } = useGlobalScope();
 
-  const selectedDateTime = scope.asOfDatetime ? new Date(scope.asOfDatetime) : new Date()
-  const now = new Date()
-  const yesterday8am = new Date(now)
-  yesterday8am.setDate(yesterday8am.getDate() - 1)
-  yesterday8am.setHours(8, 0, 0, 0)
-  const showWarning = scope.mode === "batch" && selectedDateTime > yesterday8am
+  const selectedDateTime = scope.asOfDatetime
+    ? new Date(scope.asOfDatetime)
+    : new Date();
+  const now = new Date();
+  const yesterday8am = new Date(now);
+  yesterday8am.setDate(yesterday8am.getDate() - 1);
+  yesterday8am.setHours(8, 0, 0, 0);
+  const showWarning = scope.mode === "batch" && selectedDateTime > yesterday8am;
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
@@ -30,7 +32,7 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
             "flex items-center gap-1.5 px-2 py-1 text-xs transition-colors",
             scope.mode === "live"
               ? "bg-emerald-500/10 text-emerald-400 font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary",
           )}
         >
           <Radio className="size-3" />
@@ -43,7 +45,7 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
             "flex items-center gap-1.5 px-2 py-1 text-xs transition-colors",
             scope.mode === "batch"
               ? "bg-sky-500/10 text-sky-400 font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary",
           )}
         >
           <Calendar className="size-3" />
@@ -53,14 +55,23 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
 
       {scope.mode === "batch" && (
         <>
-          <div className={cn(
-            "hidden sm:flex items-center gap-1.5 px-2 py-1 border rounded-md",
-            showWarning ? "border-amber-500 bg-amber-500/5" : "border-border"
-          )}>
-            <Calendar className={cn("size-3", showWarning ? "text-amber-500" : "text-muted-foreground")} />
+          <div
+            className={cn(
+              "hidden sm:flex items-center gap-1.5 px-2 py-1 border rounded-md",
+              showWarning ? "border-amber-500 bg-amber-500/5" : "border-border",
+            )}
+          >
+            <Calendar
+              className={cn(
+                "size-3",
+                showWarning ? "text-amber-500" : "text-muted-foreground",
+              )}
+            />
             <input
               type="datetime-local"
-              value={scope.asOfDatetime || new Date().toISOString().slice(0, 16)}
+              value={
+                scope.asOfDatetime || new Date().toISOString().slice(0, 16)
+              }
               onChange={(e) => setAsOfDatetime(e.target.value)}
               className="bg-transparent text-xs border-none focus:outline-none w-36"
             />
@@ -82,10 +93,10 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
               <button
                 key={label}
                 onClick={() => {
-                  const dt = new Date()
-                  dt.setDate(dt.getDate() + offset)
-                  dt.setHours(23, 59, 0, 0)
-                  setAsOfDatetime(dt.toISOString().slice(0, 16))
+                  const dt = new Date();
+                  dt.setDate(dt.getDate() + offset);
+                  dt.setHours(23, 59, 0, 0);
+                  setAsOfDatetime(dt.toISOString().slice(0, 16));
                 }}
                 className="px-1.5 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:bg-secondary rounded"
               >
@@ -96,5 +107,5 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
         </>
       )}
     </div>
-  )
+  );
 }

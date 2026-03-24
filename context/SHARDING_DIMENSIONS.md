@@ -37,11 +37,11 @@ Services shard differently depending on their domain. Below is the canonical tru
 
 #### Data Pipeline Services
 
-| Service | Batch Dimensions | Live Dimensions |
-|---------|------------------|-----------------|
-| **instruments-service** | `[category, venue, date]` | `[venue]` |
-| **market-tick-data-service** | `[category, venue, instrument_type, data_type, date]` | `[venue, instrument_type, data_type]` |
-| **market-data-processing-service** | `[category, venue, instrument_type, date, timeframe]` | `[venue, instrument_type]` |
+| Service                            | Batch Dimensions                                      | Live Dimensions                       |
+| ---------------------------------- | ----------------------------------------------------- | ------------------------------------- |
+| **instruments-service**            | `[category, venue, date]`                             | `[venue]`                             |
+| **market-tick-data-service**       | `[category, venue, instrument_type, data_type, date]` | `[venue, instrument_type, data_type]` |
+| **market-data-processing-service** | `[category, venue, instrument_type, date, timeframe]` | `[venue, instrument_type]`            |
 
 Instrument types: `spot, perpetual, future, option, odds`
 Data types: `trades, book_snapshot_5, derivative_ticker, liquidations, incremental_book_l2, opra_options, cme_options, odds_tick, book_update`
@@ -49,15 +49,15 @@ Timeframes: `15s, 1min, 5min, 15min, 1h, 4h, 1d`
 
 #### Feature Services
 
-| Service | Batch Dimensions | Live Dimensions |
-|---------|------------------|-----------------|
-| **features-delta-one-service** | `[category, venue, feature_category, date]` | `[venue, feature_category]` |
-| **features-volatility-service** | `[category, venue, feature_category, date]` | `[venue, feature_category]` |
-| **features-calendar-service** | `[category, date]` | N/A (batch only) |
-| **features-onchain-service** | `[protocol, chain, date]` | N/A (batch only) |
-| **features-cross-instrument-service** | `[category, feature_category, date]` | `[feature_category]` |
-| **features-multi-timeframe-service** | `[category, feature_category, date]` | `[feature_category]` |
-| **features-sports-service** | `[league, feature_group, date]` | `[league]` |
+| Service                               | Batch Dimensions                            | Live Dimensions             |
+| ------------------------------------- | ------------------------------------------- | --------------------------- |
+| **features-delta-one-service**        | `[category, venue, feature_category, date]` | `[venue, feature_category]` |
+| **features-volatility-service**       | `[category, venue, feature_category, date]` | `[venue, feature_category]` |
+| **features-calendar-service**         | `[category, date]`                          | N/A (batch only)            |
+| **features-onchain-service**          | `[protocol, chain, date]`                   | N/A (batch only)            |
+| **features-cross-instrument-service** | `[category, feature_category, date]`        | `[feature_category]`        |
+| **features-multi-timeframe-service**  | `[category, feature_category, date]`        | `[feature_category]`        |
+| **features-sports-service**           | `[league, feature_group, date]`             | `[league]`                  |
 
 **Sports shards by league, NOT category:** EPL, LA_LIGA, BUNDESLIGA, SERIE_A, LIGUE_1, CHAMPIONSHIP, EREDIVISIE, PRIMEIRA_LIGA
 
@@ -67,26 +67,27 @@ On-chain protocols: `aave_v3, uniswap_v3, curve, morpho, euler, fluid` across ch
 
 #### ML Services
 
-| Service | Batch Dimensions | Live Dimensions |
-|---------|------------------|-----------------|
-| **ml-training-service** | `[model, instrument, timeframe, target_type, config]` | N/A (batch only, ~quarterly) |
-| **ml-inference-service** | `[model, venue, instrument, date]` | `[model, venue, instrument]` |
+| Service                  | Batch Dimensions                                      | Live Dimensions              |
+| ------------------------ | ----------------------------------------------------- | ---------------------------- |
+| **ml-training-service**  | `[model, instrument, timeframe, target_type, config]` | N/A (batch only, ~quarterly) |
+| **ml-inference-service** | `[model, venue, instrument, date]`                    | `[model, venue, instrument]` |
 
 Models: `lstm, xgboost, lightgbm, ensemble`
 Target types: `return, volatility, direction, regime`
 
 #### Trading Services (Client-Sharded — see Layer 2)
 
-| Service | Batch Dimensions | Live Dimensions |
-|---------|------------------|-----------------|
-| **strategy-service** | `[strategy_id, client, date]` | `[strategy_id, client]` |
-| **execution-service** | `[client, subaccount, date]` | `[client, subaccount]` |
-| **position-balance-monitor-service** | `[client, venue, date]` | `[client, venue]` |
-| **risk-and-exposure-service** | `[client, date]` | `[client]` |
-| **pnl-attribution-service** | `[client, date]` | `[client]` |
-| **alerting-service** | N/A | singleton |
+| Service                              | Batch Dimensions              | Live Dimensions         |
+| ------------------------------------ | ----------------------------- | ----------------------- |
+| **strategy-service**                 | `[strategy_id, client, date]` | `[strategy_id, client]` |
+| **execution-service**                | `[client, subaccount, date]`  | `[client, subaccount]`  |
+| **position-balance-monitor-service** | `[client, venue, date]`       | `[client, venue]`       |
+| **risk-and-exposure-service**        | `[client, date]`              | `[client]`              |
+| **pnl-attribution-service**          | `[client, date]`              | `[client]`              |
+| **alerting-service**                 | N/A                           | singleton               |
 
 **Key notes:**
+
 - **strategy-service is NOT sharded by venue** — a strategy may span venues (arb, spread)
 - **execution-service uses subaccount** — finer than client-level isolation
 - **position-balance-monitor raw granularity:** `[client, subaccount, venue, instrument]`
@@ -95,18 +96,19 @@ Target types: `return, volatility, direction, regime`
 
 ### Dimension Types (deployment-service)
 
-| Type | Description | Example |
-|------|-------------|---------|
-| **fixed** | Static list of values | `category_values: [cefi, defi, tradfi]` |
-| **hierarchical** | Depends on parent dimension | venue depends on category |
-| **date_range** | Date-based with granularity (daily/weekly/monthly/none) | `[..., date]` |
-| **cloud_dynamic / gcs_dynamic** | Discovered from GCS bucket paths at runtime | Dynamic instrument lists |
+| Type                            | Description                                             | Example                                 |
+| ------------------------------- | ------------------------------------------------------- | --------------------------------------- |
+| **fixed**                       | Static list of values                                   | `category_values: [cefi, defi, tradfi]` |
+| **hierarchical**                | Depends on parent dimension                             | venue depends on category               |
+| **date_range**                  | Date-based with granularity (daily/weekly/monthly/none) | `[..., date]`                           |
+| **cloud_dynamic / gcs_dynamic** | Discovered from GCS bucket paths at runtime             | Dynamic instrument lists                |
 
 ---
 
 ## Layer 2: Client Sharding (How Org/Client Data is Isolated)
 
 Client is a **real sharding dimension** on trading services. Each client has their own:
+
 - Strategies (deployed per-client with separate configs)
 - Execution (separate subaccounts, separate order flows)
 - Positions (isolated position state per client per venue)
@@ -114,6 +116,7 @@ Client is a **real sharding dimension** on trading services. Each client has the
 - P&L (separate attribution, separate reporting)
 
 **In the UI:**
+
 - Internal users see ALL clients via org/client selector at top
 - Client users see ONLY their client (selector is read-only or hidden)
 - The pages are the same — the API scopes the data by the `client` dimension
@@ -122,6 +125,7 @@ Client is a **real sharding dimension** on trading services. Each client has the
 **Client values in the system today:** `internal`, `external` (will expand as more orgs onboard)
 
 **What already exists per-client:**
+
 - Strategy configs deployed per-client (strategy-service)
 - Execution per-client with subaccount (execution-service)
 - Positions per-client per-venue (position-balance-monitor-service)
@@ -137,20 +141,20 @@ infrastructure sharding and client isolation.
 
 ### Scoping Rules by Data Type
 
-| Data Type | Infrastructure Shard | Client Isolation | Subscription Scoping | Notes |
-|-----------|---------------------|------------------|---------------------|-------|
-| **Market data** (OHLCV, books, ticks) | category→venue→instrument | **None** — shared infrastructure | **None** — everyone accesses same data | Data exists; clients use it within the platform. No duplication. |
-| **Instrument registry** | category→venue | **None** — shared | **Subscription-filtered** | Same registry, filtered view. Basic tier = 180 instruments. Pro = 2400. |
-| **Download/data status** | category→venue | **None** — shared | **Subscription-scoped** | Progress bars for entitled instruments. Same UI as internal data status page. |
-| **Features** (delta-one, vol, etc.) | category→venue→feature_category | **None** — shared computation | **Subscription-filtered** | Full feature subscription = see all. Basic = subset. Same feature pipeline. |
-| **ML models** | model→instrument→timeframe | **None** — shared models | **Subscription-filtered** | Full ML sub = all models/features/targets. Basic = restricted set. |
-| **Strategies** | strategy_id→client | **Client-isolated** | **Client-scoped** | Each org has their own strategies. Internal sees all. |
-| **Execution/Orders** | client→subaccount | **Client-isolated** | **Client-scoped** | Each org's order flow. Internal sees all via client selector. |
-| **Positions** | client→venue→instrument | **Client-isolated** | **Client-scoped** | Each org's positions. Internal sees all. |
-| **Risk/Exposure** | client | **Client-isolated** | **Client-scoped** | Each org's risk limits and exposure. |
-| **P&L/Attribution** | client→strategy→date | **Client-isolated** | **Client-scoped** | Each org's P&L. Key USP: backtest↔live diff visible here. |
-| **Reports/Settlement** | client→date | **Client-isolated** | **Client-scoped** | Each org's reports. |
-| **Data export** | category→venue | N/A | **Premium add-on** | Optional: export to client's GCP/AWS or download. Not default. |
+| Data Type                             | Infrastructure Shard            | Client Isolation                 | Subscription Scoping                   | Notes                                                                         |
+| ------------------------------------- | ------------------------------- | -------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------- |
+| **Market data** (OHLCV, books, ticks) | category→venue→instrument       | **None** — shared infrastructure | **None** — everyone accesses same data | Data exists; clients use it within the platform. No duplication.              |
+| **Instrument registry**               | category→venue                  | **None** — shared                | **Subscription-filtered**              | Same registry, filtered view. Basic tier = 180 instruments. Pro = 2400.       |
+| **Download/data status**              | category→venue                  | **None** — shared                | **Subscription-scoped**                | Progress bars for entitled instruments. Same UI as internal data status page. |
+| **Features** (delta-one, vol, etc.)   | category→venue→feature_category | **None** — shared computation    | **Subscription-filtered**              | Full feature subscription = see all. Basic = subset. Same feature pipeline.   |
+| **ML models**                         | model→instrument→timeframe      | **None** — shared models         | **Subscription-filtered**              | Full ML sub = all models/features/targets. Basic = restricted set.            |
+| **Strategies**                        | strategy_id→client              | **Client-isolated**              | **Client-scoped**                      | Each org has their own strategies. Internal sees all.                         |
+| **Execution/Orders**                  | client→subaccount               | **Client-isolated**              | **Client-scoped**                      | Each org's order flow. Internal sees all via client selector.                 |
+| **Positions**                         | client→venue→instrument         | **Client-isolated**              | **Client-scoped**                      | Each org's positions. Internal sees all.                                      |
+| **Risk/Exposure**                     | client                          | **Client-isolated**              | **Client-scoped**                      | Each org's risk limits and exposure.                                          |
+| **P&L/Attribution**                   | client→strategy→date            | **Client-isolated**              | **Client-scoped**                      | Each org's P&L. Key USP: backtest↔live diff visible here.                    |
+| **Reports/Settlement**                | client→date                     | **Client-isolated**              | **Client-scoped**                      | Each org's reports.                                                           |
+| **Data export**                       | category→venue                  | N/A                              | **Premium add-on**                     | Optional: export to client's GCP/AWS or download. Not default.                |
 
 ### Key Principle: Shared Data, Not Duplicated
 
@@ -160,21 +164,22 @@ there's no extra cost. Data export (to their own GCP/AWS bucket or file download
 
 ### Subscription Tiers (Mock Demo)
 
-| Tier | Data | Features | ML | Strategy | Execution | Analytics |
-|------|------|----------|----|----------|-----------|-----------|
-| **data-basic** | 180 instruments, CEFI only | — | — | — | — | — |
-| **data-pro** | 2400 instruments, all categories | All features | — | — | — | — |
-| **execution-basic** | Via data tier | Via data tier | — | — | Basic algos (TWAP, VWAP) | — |
-| **execution-full** | Via data tier | Via data tier | — | — | All algos + SOR + dark pool | TCA, fill analysis |
-| **ml-full** | Via data tier | All features | All models, targets, training | — | — | Model performance |
-| **strategy-full** | Via data tier | All features | All models | Full strategy suite | Full execution | Backtest↔live diff |
-| **reporting** | — | — | — | — | — | P&L, settlement, attribution |
+| Tier                | Data                             | Features      | ML                            | Strategy            | Execution                   | Analytics                    |
+| ------------------- | -------------------------------- | ------------- | ----------------------------- | ------------------- | --------------------------- | ---------------------------- |
+| **data-basic**      | 180 instruments, CEFI only       | —             | —                             | —                   | —                           | —                            |
+| **data-pro**        | 2400 instruments, all categories | All features  | —                             | —                   | —                           | —                            |
+| **execution-basic** | Via data tier                    | Via data tier | —                             | —                   | Basic algos (TWAP, VWAP)    | —                            |
+| **execution-full**  | Via data tier                    | Via data tier | —                             | —                   | All algos + SOR + dark pool | TCA, fill analysis           |
+| **ml-full**         | Via data tier                    | All features  | All models, targets, training | —                   | —                           | Model performance            |
+| **strategy-full**   | Via data tier                    | All features  | All models                    | Full strategy suite | Full execution              | Backtest↔live diff          |
+| **reporting**       | —                                | —             | —                             | —                   | —                           | P&L, settlement, attribution |
 
 Internal users: `entitlements: ["*"]` — see everything.
 
 ### Data Export (Premium Add-On)
 
 Clients who need data outside the platform can:
+
 1. **Export to their cloud** (GCP bucket or AWS S3) — aligned with our cloud infrastructure
 2. **Download** (CSV/Parquet) — for offline analysis
 
@@ -191,8 +196,8 @@ export pricing" with options for GCP and AWS.
 ```typescript
 // Always include shard dimensions
 const { data } = useInstrumentRegistry({
-  category: shard,      // CEFI, DEFI, TRADFI, SPORTS
-  venue: selectedVenue,  // BINANCE, UNISWAP, etc.
+  category: shard, // CEFI, DEFI, TRADFI, SPORTS
+  venue: selectedVenue, // BINANCE, UNISWAP, etc.
 });
 
 // Client-scoped calls include org_id (from auth)
@@ -214,12 +219,12 @@ const { data } = usePositions({
 
 ### Venue Hierarchy by Category
 
-| Category | Venues |
-|----------|--------|
-| **CEFI** | BINANCE, KRAKEN, COINBASE, BYBIT, DERIBIT, CME, OTC |
-| **DEFI** | UNISWAP, AAVE, HYPERLIQUID, DYDX, CURVE, MORPHO, EULER, FLUID |
-| **SPORTS** | FANDUEL, DRAFTKINGS, POLYMARKET, BETFAIR, PINNACLE, ODDS_API |
-| **TRADFI** | NYSE, LSE, EUREX, LIFFE |
+| Category   | Venues                                                        |
+| ---------- | ------------------------------------------------------------- |
+| **CEFI**   | BINANCE, KRAKEN, COINBASE, BYBIT, DERIBIT, CME, OTC           |
+| **DEFI**   | UNISWAP, AAVE, HYPERLIQUID, DYDX, CURVE, MORPHO, EULER, FLUID |
+| **SPORTS** | FANDUEL, DRAFTKINGS, POLYMARKET, BETFAIR, PINNACLE, ODDS_API  |
+| **TRADFI** | NYSE, LSE, EUREX, LIFFE                                       |
 
 ### Sports: League-Based Sharding
 
@@ -237,6 +242,7 @@ Sports features are sharded by **league**, not by category. The UI should use le
 ---
 
 **References (all paths relative to this repo root):**
+
 - Infrastructure sharding: `lib/registry/sharding_config.yaml`
 - Market categories: `context/internal-contracts/schemas/market_category.py`
 - Runtime topology: `lib/registry/runtime-topology.yaml`

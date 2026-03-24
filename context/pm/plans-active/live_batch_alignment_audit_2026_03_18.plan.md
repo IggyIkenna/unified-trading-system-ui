@@ -241,8 +241,7 @@ todos:
       Pre-audit: grep "topology_reader" across all repos for import manifest.
       Tests: move tests from UCI to UTL; ensure topology resolution still works.
     status: done
-    note:
-      "Completed 2026-03-18. Moved to UTL topology/ module, 20 tests, deployment-service import updated. Clean break."
+    note: "Completed 2026-03-18. Moved to UTL topology/ module, 20 tests, deployment-service import updated. Clean break."
 
   # --- 0E: Sharding SSOT Docs + Symlink ---
 

@@ -1,16 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {
-  Filter,
-  FlaskConical,
-  GitCompare,
-  Search,
-  X,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import * as React from "react";
+import { Filter, FlaskConical, GitCompare, Search, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -18,26 +12,37 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { type ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@/components/ui/data-table"
+} from "@/components/ui/select";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/data-table";
 
-import { useExperiments, useModelFamilies, useFeatureProvenance, useDatasets, useCreateTrainingJob } from "@/hooks/api/use-ml-models"
-import type { Experiment, ModelFamily, FeatureSetVersion, DatasetSnapshot } from "@/lib/ml-types"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ApiError } from "@/components/ui/api-error"
-import { EmptyState } from "@/components/ui/empty-state"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
-import type { ExportColumn } from "@/lib/utils/export"
+import {
+  useExperiments,
+  useModelFamilies,
+  useFeatureProvenance,
+  useDatasets,
+  useCreateTrainingJob,
+} from "@/hooks/api/use-ml-models";
+import type {
+  Experiment,
+  ModelFamily,
+  FeatureSetVersion,
+  DatasetSnapshot,
+} from "@/lib/ml-types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import type { ExportColumn } from "@/lib/utils/export";
 
 // ---------------------------------------------------------------------------
 // Export columns
@@ -54,7 +59,7 @@ const experimentExportColumns: ExportColumn[] = [
   { key: "directionalAccuracy", header: "Dir. Accuracy", format: "percent" },
   { key: "createdBy", header: "Created By" },
   { key: "createdAt", header: "Created At" },
-]
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -63,28 +68,28 @@ const experimentExportColumns: ExportColumn[] = [
 function statusColor(status: string) {
   switch (status) {
     case "running":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
     case "completed":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
     case "failed":
-      return "bg-red-500/15 text-red-400 border-red-500/30"
+      return "bg-red-500/15 text-red-400 border-red-500/30";
     case "queued":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     case "cancelled":
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
     case "draft":
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
   }
 }
 
 function fmtPct(v: number) {
-  return `${(v * 100).toFixed(1)}%`
+  return `${(v * 100).toFixed(1)}%`;
 }
 
 function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals)
+  return v.toFixed(decimals);
 }
 
 // ---------------------------------------------------------------------------
@@ -92,31 +97,31 @@ function fmtNum(v: number, decimals = 2) {
 // ---------------------------------------------------------------------------
 
 interface FilterState {
-  familyId: string
-  status: string
-  search: string
+  familyId: string;
+  status: string;
+  search: string;
 }
 
 const EMPTY_FILTERS: FilterState = {
   familyId: "",
   status: "",
   search: "",
-}
+};
 
 // ---------------------------------------------------------------------------
 // New Experiment Form
 // ---------------------------------------------------------------------------
 
 interface ExperimentFormState {
-  familyId: string
-  name: string
-  description: string
-  featureSetId: string
-  datasetId: string
-  epochs: string
-  batchSize: string
-  learningRate: string
-  optimizer: string
+  familyId: string;
+  name: string;
+  description: string;
+  featureSetId: string;
+  datasetId: string;
+  epochs: string;
+  batchSize: string;
+  learningRate: string;
+  optimizer: string;
 }
 
 const INITIAL_FORM: ExperimentFormState = {
@@ -129,51 +134,68 @@ const INITIAL_FORM: ExperimentFormState = {
   batchSize: "256",
   learningRate: "0.001",
   optimizer: "AdamW",
-}
+};
 
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
 export default function ExperimentsPage() {
-  const { data: experimentsData, isLoading: experimentsLoading, isError: experimentsIsError, error: experimentsError, refetch: experimentsRefetch } = useExperiments()
-  const { data: familiesData, isLoading: familiesLoading } = useModelFamilies()
-  const { data: featuresData, isLoading: featuresLoading } = useFeatureProvenance()
-  const { data: datasetsData, isLoading: datasetsLoading } = useDatasets()
-  const createJob = useCreateTrainingJob()
+  const {
+    data: experimentsData,
+    isLoading: experimentsLoading,
+    isError: experimentsIsError,
+    error: experimentsError,
+    refetch: experimentsRefetch,
+  } = useExperiments();
+  const { data: familiesData, isLoading: familiesLoading } = useModelFamilies();
+  const { data: featuresData, isLoading: featuresLoading } =
+    useFeatureProvenance();
+  const { data: datasetsData, isLoading: datasetsLoading } = useDatasets();
+  const createJob = useCreateTrainingJob();
 
-  const experiments: Experiment[] = (experimentsData as any)?.data ?? (experimentsData as any)?.experiments ?? []
-  const modelFamilies: ModelFamily[] = (familiesData as any)?.data ?? (familiesData as any)?.families ?? []
-  const featureSetVersions: FeatureSetVersion[] = (featuresData as any)?.data ?? (featuresData as any)?.features ?? []
-  const datasetSnapshots: DatasetSnapshot[] = (datasetsData as any)?.data ?? (datasetsData as any)?.datasets ?? []
+  const experiments: Experiment[] =
+    (experimentsData as any)?.data ??
+    (experimentsData as any)?.experiments ??
+    [];
+  const modelFamilies: ModelFamily[] =
+    (familiesData as any)?.data ?? (familiesData as any)?.families ?? [];
+  const featureSetVersions: FeatureSetVersion[] =
+    (featuresData as any)?.data ?? (featuresData as any)?.features ?? [];
+  const datasetSnapshots: DatasetSnapshot[] =
+    (datasetsData as any)?.data ?? (datasetsData as any)?.datasets ?? [];
 
-  const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS)
-  const [dialogOpen, setDialogOpen] = React.useState(false)
-  const [form, setForm] = React.useState<ExperimentFormState>(INITIAL_FORM)
-  const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set())
+  const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [form, setForm] = React.useState<ExperimentFormState>(INITIAL_FORM);
+  const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set());
 
   // Filter
   const filtered = experiments.filter((exp) => {
-    if (filters.familyId && exp.modelFamilyId !== filters.familyId) return false
-    if (filters.status && exp.status !== filters.status) return false
+    if (filters.familyId && exp.modelFamilyId !== filters.familyId)
+      return false;
+    if (filters.status && exp.status !== filters.status) return false;
     if (filters.search) {
-      const q = filters.search.toLowerCase()
-      if (!exp.name.toLowerCase().includes(q) && !exp.description.toLowerCase().includes(q))
-        return false
+      const q = filters.search.toLowerCase();
+      if (
+        !exp.name.toLowerCase().includes(q) &&
+        !exp.description.toLowerCase().includes(q)
+      )
+        return false;
     }
-    return true
-  })
+    return true;
+  });
 
   function toggleCompare(id: string) {
     setCompareSet((prev) => {
-      const next = new Set(prev)
+      const next = new Set(prev);
       if (next.has(id)) {
-        next.delete(id)
+        next.delete(id);
       } else {
-        next.add(id)
+        next.add(id);
       }
-      return next
-    })
+      return next;
+    });
   }
 
   const experimentColumns: ColumnDef<Experiment, unknown>[] = React.useMemo(
@@ -187,7 +209,9 @@ export default function ExperimentsPage() {
             onClick={() => toggleCompare(row.original.id)}
             className="p-0.5 rounded hover:bg-muted"
             title={
-              compareSet.has(row.original.id) ? "Remove from comparison" : "Add to comparison"
+              compareSet.has(row.original.id)
+                ? "Remove from comparison"
+                : "Add to comparison"
             }
           >
             <GitCompare
@@ -203,7 +227,9 @@ export default function ExperimentsPage() {
         cell: ({ row }) => (
           <div>
             <p className="font-medium text-sm">{row.original.name}</p>
-            <p className="text-[10px] text-muted-foreground font-mono">{row.original.id}</p>
+            <p className="text-[10px] text-muted-foreground font-mono">
+              {row.original.id}
+            </p>
           </div>
         ),
       },
@@ -212,12 +238,14 @@ export default function ExperimentsPage() {
         header: "Family",
         enableSorting: false,
         cell: ({ row }) => {
-          const family = modelFamilies.find((f) => f.id === row.original.modelFamilyId)
+          const family = modelFamilies.find(
+            (f) => f.id === row.original.modelFamilyId,
+          );
           return (
             <span className="text-muted-foreground text-xs">
               {family?.name ?? row.original.modelFamilyId}
             </span>
-          )
+          );
         },
       },
       {
@@ -226,11 +254,16 @@ export default function ExperimentsPage() {
         enableSorting: false,
         cell: ({ row }) => (
           <div className="flex items-center gap-1.5">
-            <Badge variant="outline" className={statusColor(row.original.status)}>
+            <Badge
+              variant="outline"
+              className={statusColor(row.original.status)}
+            >
               {row.original.status}
             </Badge>
             {row.original.status === "running" && (
-              <span className="text-xs text-muted-foreground">{row.original.progress}%</span>
+              <span className="text-xs text-muted-foreground">
+                {row.original.progress}%
+              </span>
             )}
           </div>
         ),
@@ -241,7 +274,9 @@ export default function ExperimentsPage() {
         accessorFn: (row) => row.metrics?.accuracy ?? -Infinity,
         cell: ({ row }) => (
           <span className="font-mono text-sm">
-            {row.original.metrics ? fmtPct(row.original.metrics.accuracy) : "--"}
+            {row.original.metrics
+              ? fmtPct(row.original.metrics.accuracy)
+              : "--"}
           </span>
         ),
       },
@@ -271,7 +306,9 @@ export default function ExperimentsPage() {
         accessorFn: (row) => row.metrics?.maxDrawdown ?? Infinity,
         cell: ({ row }) => (
           <span className="font-mono text-sm text-red-400">
-            {row.original.metrics ? fmtPct(row.original.metrics.maxDrawdown) : "--"}
+            {row.original.metrics
+              ? fmtPct(row.original.metrics.maxDrawdown)
+              : "--"}
           </span>
         ),
       },
@@ -281,7 +318,9 @@ export default function ExperimentsPage() {
         accessorFn: (row) => row.metrics?.directionalAccuracy ?? -Infinity,
         cell: ({ row }) => (
           <span className="font-mono text-sm">
-            {row.original.metrics ? fmtPct(row.original.metrics.directionalAccuracy) : "--"}
+            {row.original.metrics
+              ? fmtPct(row.original.metrics.directionalAccuracy)
+              : "--"}
           </span>
         ),
       },
@@ -290,16 +329,18 @@ export default function ExperimentsPage() {
         header: "Created By",
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="text-muted-foreground text-xs">{row.original.createdBy}</span>
+          <span className="text-muted-foreground text-xs">
+            {row.original.createdBy}
+          </span>
         ),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [compareSet, modelFamilies],
-  )
+  );
 
   function handleSubmitExperiment() {
-    if (!form.familyId || !form.name) return
+    if (!form.familyId || !form.name) return;
 
     createJob.mutate({
       name: form.name,
@@ -323,14 +364,17 @@ export default function ExperimentsPage() {
         gpuType: "A100",
         numGpus: 4,
       },
-    })
-    setForm(INITIAL_FORM)
-    setDialogOpen(false)
+    });
+    setForm(INITIAL_FORM);
+    setDialogOpen(false);
   }
 
-  const isLoading = experimentsLoading || familiesLoading || featuresLoading || datasetsLoading
-  const activeFilterCount = Object.values(filters).filter(Boolean).length
-  const compareExps = experiments.filter((e) => compareSet.has(e.id) && e.metrics)
+  const isLoading =
+    experimentsLoading || familiesLoading || featuresLoading || datasetsLoading;
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const compareExps = experiments.filter(
+    (e) => compareSet.has(e.id) && e.metrics,
+  );
 
   if (isLoading) {
     return (
@@ -338,15 +382,18 @@ export default function ExperimentsPage() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
-    )
+    );
   }
 
   if (experimentsIsError) {
     return (
       <div className="p-6">
-        <ApiError error={experimentsError} onRetry={() => experimentsRefetch()} />
+        <ApiError
+          error={experimentsError}
+          onRetry={() => experimentsRefetch()}
+        />
       </div>
-    )
+    );
   }
 
   if (experiments.length === 0) {
@@ -355,11 +402,14 @@ export default function ExperimentsPage() {
         <EmptyState
           title="No experiments"
           description="Start your first ML experiment to begin tracking model performance."
-          action={{ label: "New Experiment", onClick: () => setDialogOpen(true) }}
+          action={{
+            label: "New Experiment",
+            onClick: () => setDialogOpen(true),
+          }}
           icon={FlaskConical}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -368,7 +418,9 @@ export default function ExperimentsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Experiment Tracking</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Experiment Tracking
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
               {filtered.length} experiments &middot;{" "}
               {experiments.filter((e) => e.status === "running").length} running
@@ -377,7 +429,9 @@ export default function ExperimentsPage() {
           <div className="flex items-center gap-2">
             <ExportDropdown
               data={filtered.map((exp) => {
-                const family = modelFamilies.find((f) => f.id === exp.modelFamilyId)
+                const family = modelFamilies.find(
+                  (f) => f.id === exp.modelFamilyId,
+                );
                 return {
                   name: exp.name,
                   modelFamily: family?.name ?? exp.modelFamilyId,
@@ -389,7 +443,7 @@ export default function ExperimentsPage() {
                   directionalAccuracy: exp.metrics?.directionalAccuracy ?? null,
                   createdBy: exp.createdBy,
                   createdAt: exp.createdAt,
-                } as Record<string, unknown>
+                } as Record<string, unknown>;
               })}
               columns={experimentExportColumns}
               filename="ml-experiments"
@@ -409,7 +463,10 @@ export default function ExperimentsPage() {
                 <Filter className="size-3.5" />
                 Filters
                 {activeFilterCount > 0 && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] px-1.5 py-0"
+                  >
                     {activeFilterCount}
                   </Badge>
                 )}
@@ -417,7 +474,12 @@ export default function ExperimentsPage() {
 
               <Select
                 value={filters.familyId}
-                onValueChange={(v) => setFilters((f) => ({ ...f, familyId: v === "__all__" ? "" : v }))}
+                onValueChange={(v) =>
+                  setFilters((f) => ({
+                    ...f,
+                    familyId: v === "__all__" ? "" : v,
+                  }))
+                }
               >
                 <SelectTrigger size="sm" className="w-48">
                   <SelectValue placeholder="Model Family" />
@@ -434,7 +496,12 @@ export default function ExperimentsPage() {
 
               <Select
                 value={filters.status}
-                onValueChange={(v) => setFilters((f) => ({ ...f, status: v === "__all__" ? "" : v }))}
+                onValueChange={(v) =>
+                  setFilters((f) => ({
+                    ...f,
+                    status: v === "__all__" ? "" : v,
+                  }))
+                }
               >
                 <SelectTrigger size="sm" className="w-36">
                   <SelectValue placeholder="Status" />
@@ -453,13 +520,19 @@ export default function ExperimentsPage() {
                 <Input
                   placeholder="Search experiments..."
                   value={filters.search}
-                  onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((f) => ({ ...f, search: e.target.value }))
+                  }
                   className="pl-8 h-8 text-sm"
                 />
               </div>
 
               {activeFilterCount > 0 && (
-                <Button variant="ghost" size="sm" onClick={() => setFilters(EMPTY_FILTERS)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFilters(EMPTY_FILTERS)}
+                >
                   <X className="size-3" />
                   Clear
                 </Button>
@@ -517,7 +590,9 @@ export default function ExperimentsPage() {
                           key={exp.id}
                           className="text-right py-2 px-3 text-xs text-muted-foreground font-medium min-w-[120px]"
                         >
-                          {exp.name.length > 25 ? `${exp.name.slice(0, 25)}...` : exp.name}
+                          {exp.name.length > 25
+                            ? `${exp.name.slice(0, 25)}...`
+                            : exp.name}
                         </th>
                       ))}
                     </tr>
@@ -526,32 +601,64 @@ export default function ExperimentsPage() {
                     {(
                       [
                         { key: "accuracy", label: "Accuracy", fmt: fmtPct },
-                        { key: "sharpe", label: "Sharpe", fmt: (v: number) => fmtNum(v) },
-                        { key: "loss", label: "Loss", fmt: (v: number) => fmtNum(v, 3) },
-                        { key: "directionalAccuracy", label: "Dir. Accuracy", fmt: fmtPct },
-                        { key: "maxDrawdown", label: "Max Drawdown", fmt: fmtPct },
-                        { key: "calibration", label: "Calibration", fmt: fmtPct },
+                        {
+                          key: "sharpe",
+                          label: "Sharpe",
+                          fmt: (v: number) => fmtNum(v),
+                        },
+                        {
+                          key: "loss",
+                          label: "Loss",
+                          fmt: (v: number) => fmtNum(v, 3),
+                        },
+                        {
+                          key: "directionalAccuracy",
+                          label: "Dir. Accuracy",
+                          fmt: fmtPct,
+                        },
+                        {
+                          key: "maxDrawdown",
+                          label: "Max Drawdown",
+                          fmt: fmtPct,
+                        },
+                        {
+                          key: "calibration",
+                          label: "Calibration",
+                          fmt: fmtPct,
+                        },
                         { key: "precision", label: "Precision", fmt: fmtPct },
                         { key: "recall", label: "Recall", fmt: fmtPct },
-                        { key: "stabilityScore", label: "Stability", fmt: fmtPct },
+                        {
+                          key: "stabilityScore",
+                          label: "Stability",
+                          fmt: fmtPct,
+                        },
                       ] as const
                     ).map((metric) => {
                       const values = compareExps.map(
-                        (e) => e.metrics![metric.key as keyof typeof e.metrics] as number
-                      )
+                        (e) =>
+                          e.metrics![
+                            metric.key as keyof typeof e.metrics
+                          ] as number,
+                      );
                       const best =
                         metric.key === "loss" || metric.key === "maxDrawdown"
                           ? Math.min(...values)
-                          : Math.max(...values)
+                          : Math.max(...values);
 
                       return (
-                        <tr key={metric.key} className="border-b border-border/30">
+                        <tr
+                          key={metric.key}
+                          className="border-b border-border/30"
+                        >
                           <td className="py-2 pr-4 text-muted-foreground text-xs">
                             {metric.label}
                           </td>
                           {compareExps.map((exp) => {
-                            const val = exp.metrics![metric.key as keyof typeof exp.metrics] as number
-                            const isBest = val === best
+                            const val = exp.metrics![
+                              metric.key as keyof typeof exp.metrics
+                            ] as number;
+                            const isBest = val === best;
                             return (
                               <td
                                 key={exp.id}
@@ -559,10 +666,10 @@ export default function ExperimentsPage() {
                               >
                                 {metric.fmt(val)}
                               </td>
-                            )
+                            );
                           })}
                         </tr>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
@@ -615,7 +722,9 @@ export default function ExperimentsPage() {
                 <Input
                   placeholder="e.g., ETH Vol - Larger Context Window"
                   value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, name: e.target.value }))
+                  }
                 />
               </div>
 
@@ -624,7 +733,9 @@ export default function ExperimentsPage() {
                 <Input
                   placeholder="Brief description of hypothesis..."
                   value={form.description}
-                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, description: e.target.value }))
+                  }
                 />
               </div>
 
@@ -633,7 +744,9 @@ export default function ExperimentsPage() {
                   <Label>Feature Set</Label>
                   <Select
                     value={form.featureSetId}
-                    onValueChange={(v) => setForm((f) => ({ ...f, featureSetId: v }))}
+                    onValueChange={(v) =>
+                      setForm((f) => ({ ...f, featureSetId: v }))
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select..." />
@@ -651,7 +764,9 @@ export default function ExperimentsPage() {
                   <Label>Dataset</Label>
                   <Select
                     value={form.datasetId}
-                    onValueChange={(v) => setForm((f) => ({ ...f, datasetId: v }))}
+                    onValueChange={(v) =>
+                      setForm((f) => ({ ...f, datasetId: v }))
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select..." />
@@ -677,7 +792,9 @@ export default function ExperimentsPage() {
                     <Input
                       type="number"
                       value={form.epochs}
-                      onChange={(e) => setForm((f) => ({ ...f, epochs: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, epochs: e.target.value }))
+                      }
                     />
                   </div>
                   <div className="space-y-1">
@@ -685,7 +802,9 @@ export default function ExperimentsPage() {
                     <Input
                       type="number"
                       value={form.batchSize}
-                      onChange={(e) => setForm((f) => ({ ...f, batchSize: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, batchSize: e.target.value }))
+                      }
                     />
                   </div>
                   <div className="space-y-1">
@@ -694,14 +813,18 @@ export default function ExperimentsPage() {
                       type="number"
                       step="0.0001"
                       value={form.learningRate}
-                      onChange={(e) => setForm((f) => ({ ...f, learningRate: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, learningRate: e.target.value }))
+                      }
                     />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs">Optimizer</Label>
                     <Select
                       value={form.optimizer}
-                      onValueChange={(v) => setForm((f) => ({ ...f, optimizer: v }))}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, optimizer: v }))
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue />
@@ -732,5 +855,5 @@ export default function ExperimentsPage() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

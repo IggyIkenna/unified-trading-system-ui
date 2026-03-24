@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 // =============================================================================
 // TRADING DATA SYSTEM - Granular data at strategy/client/org level
@@ -19,29 +19,34 @@ import {
   type StrategyExecutionMode,
   type StrategyStatus,
   type StrategyArchetype,
-} from "./taxonomy"
+} from "./taxonomy";
 
 // Import canonical strategy registry as the single source of truth
 import {
   STRATEGIES as REGISTRY_STRATEGIES,
   type Strategy as RegistryStrategy,
-} from "./strategy-registry"
+} from "./strategy-registry";
 
 // Re-export taxonomy types for convenience
-export type { AssetClass, StrategyExecutionMode, StrategyStatus, StrategyArchetype }
+export type {
+  AssetClass,
+  StrategyExecutionMode,
+  StrategyStatus,
+  StrategyArchetype,
+};
 
 // Seeded random for deterministic data
 function seededRandom(seed: string): () => number {
-  let h = 0
+  let h = 0;
   for (let i = 0; i < seed.length; i++) {
-    h = Math.imul(31, h) + seed.charCodeAt(i) | 0
+    h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0;
   }
   return () => {
-    h = Math.imul(h ^ h >>> 17, 0xed5ad4bb)
-    h = Math.imul(h ^ h >>> 11, 0xac4c1b51)
-    h = Math.imul(h ^ h >>> 15, 0x31848bab)
-    return (h >>> 0) / 4294967296
-  }
+    h = Math.imul(h ^ (h >>> 17), 0xed5ad4bb);
+    h = Math.imul(h ^ (h >>> 11), 0xac4c1b51);
+    h = Math.imul(h ^ (h >>> 15), 0x31848bab);
+    return (h >>> 0) / 4294967296;
+  };
 }
 
 // =============================================================================
@@ -49,34 +54,34 @@ function seededRandom(seed: string): () => number {
 // =============================================================================
 
 export interface TradingOrganization {
-  id: string
-  name: string
-  type: "internal" | "external"
+  id: string;
+  name: string;
+  type: "internal" | "external";
 }
 
 export interface TradingClient {
-  id: string
-  name: string
-  orgId: string
-  status: "active" | "onboarding" | "inactive"
-  capitalAllocation: number // USD
+  id: string;
+  name: string;
+  orgId: string;
+  status: "active" | "onboarding" | "inactive";
+  capitalAllocation: number; // USD
 }
 
 export interface TradingStrategy {
-  id: string
-  name: string
-  clientId: string
-  archetype: StrategyArchetype | string // Using taxonomy type with fallback
-  assetClass: AssetClass // Using taxonomy type
-  executionMode: StrategyExecutionMode // Using taxonomy type
-  status: StrategyStatus // Using taxonomy type
-  configVersion: string
-  underlyings: string[]
-  venues: string[]
+  id: string;
+  name: string;
+  clientId: string;
+  archetype: StrategyArchetype | string; // Using taxonomy type with fallback
+  assetClass: AssetClass; // Using taxonomy type
+  executionMode: StrategyExecutionMode; // Using taxonomy type
+  status: StrategyStatus; // Using taxonomy type
+  configVersion: string;
+  underlyings: string[];
+  venues: string[];
   // Base metrics for data generation
-  baseCapital: number
-  expectedSharpe: number
-  expectedVolatility: number
+  baseCapital: number;
+  expectedSharpe: number;
+  expectedVolatility: number;
 }
 
 // =============================================================================
@@ -84,56 +89,212 @@ export interface TradingStrategy {
 // =============================================================================
 
 export interface TradingAccount {
-  id: string
-  name: string
-  organizationId: string
-  clientId: string
-  venue: string
-  venueAccountId: string // External venue account identifier
-  marginType: "cross" | "isolated" | "portfolio" | "spot" // Margin mode
-  status: "active" | "suspended" | "pending"
-  balanceUSD: number
-  marginUsed: number
-  marginAvailable: number
+  id: string;
+  name: string;
+  organizationId: string;
+  clientId: string;
+  venue: string;
+  venueAccountId: string; // External venue account identifier
+  marginType: "cross" | "isolated" | "portfolio" | "spot"; // Margin mode
+  status: "active" | "suspended" | "pending";
+  balanceUSD: number;
+  marginUsed: number;
+  marginAvailable: number;
 }
 
 export const ACCOUNTS: TradingAccount[] = [
   // Binance accounts - Odum
-  { id: "acc-binance-odum-1", name: "Binance Main", organizationId: "odum", clientId: "delta-one", venue: "Binance", venueAccountId: "BN-ODUM-001", marginType: "cross", status: "active", balanceUSD: 2500000, marginUsed: 850000, marginAvailable: 1650000 },
-  { id: "acc-binance-odum-2", name: "Binance Isolated", organizationId: "odum", clientId: "delta-one", venue: "Binance", venueAccountId: "BN-ODUM-002", marginType: "isolated", status: "active", balanceUSD: 500000, marginUsed: 120000, marginAvailable: 380000 },
-  { id: "acc-binance-qf-1", name: "Binance QF", organizationId: "odum", clientId: "quant-fund", venue: "Binance", venueAccountId: "BN-QF-001", marginType: "cross", status: "active", balanceUSD: 1800000, marginUsed: 600000, marginAvailable: 1200000 },
-  
+  {
+    id: "acc-binance-odum-1",
+    name: "Binance Main",
+    organizationId: "odum",
+    clientId: "delta-one",
+    venue: "Binance",
+    venueAccountId: "BN-ODUM-001",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 2500000,
+    marginUsed: 850000,
+    marginAvailable: 1650000,
+  },
+  {
+    id: "acc-binance-odum-2",
+    name: "Binance Isolated",
+    organizationId: "odum",
+    clientId: "delta-one",
+    venue: "Binance",
+    venueAccountId: "BN-ODUM-002",
+    marginType: "isolated",
+    status: "active",
+    balanceUSD: 500000,
+    marginUsed: 120000,
+    marginAvailable: 380000,
+  },
+  {
+    id: "acc-binance-qf-1",
+    name: "Binance QF",
+    organizationId: "odum",
+    clientId: "quant-fund",
+    venue: "Binance",
+    venueAccountId: "BN-QF-001",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 1800000,
+    marginUsed: 600000,
+    marginAvailable: 1200000,
+  },
+
   // Hyperliquid accounts
-  { id: "acc-hl-odum-1", name: "Hyperliquid Main", organizationId: "odum", clientId: "delta-one", venue: "Hyperliquid", venueAccountId: "HL-ODUM-MAIN", marginType: "cross", status: "active", balanceUSD: 1200000, marginUsed: 400000, marginAvailable: 800000 },
-  { id: "acc-hl-qf-1", name: "Hyperliquid QF", organizationId: "odum", clientId: "quant-fund", venue: "Hyperliquid", venueAccountId: "HL-QF-001", marginType: "cross", status: "active", balanceUSD: 900000, marginUsed: 300000, marginAvailable: 600000 },
-  
+  {
+    id: "acc-hl-odum-1",
+    name: "Hyperliquid Main",
+    organizationId: "odum",
+    clientId: "delta-one",
+    venue: "Hyperliquid",
+    venueAccountId: "HL-ODUM-MAIN",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 1200000,
+    marginUsed: 400000,
+    marginAvailable: 800000,
+  },
+  {
+    id: "acc-hl-qf-1",
+    name: "Hyperliquid QF",
+    organizationId: "odum",
+    clientId: "quant-fund",
+    venue: "Hyperliquid",
+    venueAccountId: "HL-QF-001",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 900000,
+    marginUsed: 300000,
+    marginAvailable: 600000,
+  },
+
   // Deribit accounts
-  { id: "acc-deribit-odum-1", name: "Deribit Options", organizationId: "odum", clientId: "delta-one", venue: "Deribit", venueAccountId: "DB-ODUM-OPT", marginType: "portfolio", status: "active", balanceUSD: 800000, marginUsed: 350000, marginAvailable: 450000 },
-  { id: "acc-deribit-qf-1", name: "Deribit QF", organizationId: "odum", clientId: "quant-fund", venue: "Deribit", venueAccountId: "DB-QF-001", marginType: "portfolio", status: "active", balanceUSD: 600000, marginUsed: 200000, marginAvailable: 400000 },
-  
+  {
+    id: "acc-deribit-odum-1",
+    name: "Deribit Options",
+    organizationId: "odum",
+    clientId: "delta-one",
+    venue: "Deribit",
+    venueAccountId: "DB-ODUM-OPT",
+    marginType: "portfolio",
+    status: "active",
+    balanceUSD: 800000,
+    marginUsed: 350000,
+    marginAvailable: 450000,
+  },
+  {
+    id: "acc-deribit-qf-1",
+    name: "Deribit QF",
+    organizationId: "odum",
+    clientId: "quant-fund",
+    venue: "Deribit",
+    venueAccountId: "DB-QF-001",
+    marginType: "portfolio",
+    status: "active",
+    balanceUSD: 600000,
+    marginUsed: 200000,
+    marginAvailable: 400000,
+  },
+
   // OKX accounts
-  { id: "acc-okx-odum-1", name: "OKX Main", organizationId: "odum", clientId: "delta-one", venue: "OKX", venueAccountId: "OKX-ODUM-001", marginType: "cross", status: "active", balanceUSD: 1500000, marginUsed: 500000, marginAvailable: 1000000 },
-  
+  {
+    id: "acc-okx-odum-1",
+    name: "OKX Main",
+    organizationId: "odum",
+    clientId: "delta-one",
+    venue: "OKX",
+    venueAccountId: "OKX-ODUM-001",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 1500000,
+    marginUsed: 500000,
+    marginAvailable: 1000000,
+  },
+
   // Bybit accounts
-  { id: "acc-bybit-odum-1", name: "Bybit Main", organizationId: "odum", clientId: "delta-one", venue: "Bybit", venueAccountId: "BB-ODUM-001", marginType: "isolated", status: "active", balanceUSD: 750000, marginUsed: 250000, marginAvailable: 500000 },
-  
+  {
+    id: "acc-bybit-odum-1",
+    name: "Bybit Main",
+    organizationId: "odum",
+    clientId: "delta-one",
+    venue: "Bybit",
+    venueAccountId: "BB-ODUM-001",
+    marginType: "isolated",
+    status: "active",
+    balanceUSD: 750000,
+    marginUsed: 250000,
+    marginAvailable: 500000,
+  },
+
   // DeFi accounts (wallet-based) - no margin concept
-  { id: "acc-uniswap-odum-1", name: "Uniswap Wallet", organizationId: "odum", clientId: "defi-desk", venue: "Uniswap V3", venueAccountId: "0x742d...3a2f", marginType: "spot", status: "active", balanceUSD: 450000, marginUsed: 0, marginAvailable: 450000 },
-  { id: "acc-aave-odum-1", name: "Aave Position", organizationId: "odum", clientId: "defi-desk", venue: "Aave V3", venueAccountId: "0x742d...3a2f", marginType: "cross", status: "active", balanceUSD: 320000, marginUsed: 180000, marginAvailable: 140000 },
-  
+  {
+    id: "acc-uniswap-odum-1",
+    name: "Uniswap Wallet",
+    organizationId: "odum",
+    clientId: "defi-desk",
+    venue: "Uniswap V3",
+    venueAccountId: "0x742d...3a2f",
+    marginType: "spot",
+    status: "active",
+    balanceUSD: 450000,
+    marginUsed: 0,
+    marginAvailable: 450000,
+  },
+  {
+    id: "acc-aave-odum-1",
+    name: "Aave Position",
+    organizationId: "odum",
+    clientId: "defi-desk",
+    venue: "Aave V3",
+    venueAccountId: "0x742d...3a2f",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 320000,
+    marginUsed: 180000,
+    marginAvailable: 140000,
+  },
+
   // External client accounts
-  { id: "acc-binance-ext-1", name: "Binance AlphaT", organizationId: "alpha-capital", clientId: "alpha-main", venue: "Binance", venueAccountId: "BN-ALPHAT-001", marginType: "cross", status: "active", balanceUSD: 3500000, marginUsed: 1200000, marginAvailable: 2300000 },
-  { id: "acc-hl-ext-1", name: "HL AlphaT", organizationId: "alpha-capital", clientId: "alpha-main", venue: "Hyperliquid", venueAccountId: "HL-ALPHAT-001", marginType: "cross", status: "active", balanceUSD: 2100000, marginUsed: 700000, marginAvailable: 1400000 },
-]
+  {
+    id: "acc-binance-ext-1",
+    name: "Binance AlphaT",
+    organizationId: "alpha-capital",
+    clientId: "alpha-main",
+    venue: "Binance",
+    venueAccountId: "BN-ALPHAT-001",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 3500000,
+    marginUsed: 1200000,
+    marginAvailable: 2300000,
+  },
+  {
+    id: "acc-hl-ext-1",
+    name: "HL AlphaT",
+    organizationId: "alpha-capital",
+    clientId: "alpha-main",
+    venue: "Hyperliquid",
+    venueAccountId: "HL-ALPHAT-001",
+    marginType: "cross",
+    status: "active",
+    balanceUSD: 2100000,
+    marginUsed: 700000,
+    marginAvailable: 1400000,
+  },
+];
 
 // Get accounts for a specific client
 export function getAccountsForClient(clientId: string): TradingAccount[] {
-  return ACCOUNTS.filter(a => a.clientId === clientId)
+  return ACCOUNTS.filter((a) => a.clientId === clientId);
 }
 
 // Get accounts for a specific venue
 export function getAccountsForVenue(venue: string): TradingAccount[] {
-  return ACCOUNTS.filter(a => a.venue === venue)
+  return ACCOUNTS.filter((a) => a.venue === venue);
 }
 
 // The actual hierarchy
@@ -141,128 +302,177 @@ export const ORGANIZATIONS: TradingOrganization[] = [
   { id: "odum", name: "Odum Research", type: "internal" },
   { id: "alpha-capital", name: "Alpha Capital", type: "external" },
   { id: "vertex-partners", name: "Vertex Partners", type: "external" },
-]
+];
 
 export const CLIENTS: TradingClient[] = [
-  { id: "delta-one", name: "Delta One Desk", orgId: "odum", status: "active", capitalAllocation: 5000000 },
-  { id: "quant-fund", name: "Quant Fund", orgId: "odum", status: "active", capitalAllocation: 8000000 },
-  { id: "sports-desk", name: "Sports Desk", orgId: "odum", status: "active", capitalAllocation: 2000000 },
-  { id: "defi-desk", name: "DeFi Desk", orgId: "odum", status: "active", capitalAllocation: 3000000 },
-  { id: "alpha-main", name: "Main Fund", orgId: "alpha-capital", status: "active", capitalAllocation: 10000000 },
-  { id: "alpha-crypto", name: "Crypto Desk", orgId: "alpha-capital", status: "onboarding", capitalAllocation: 5000000 },
-  { id: "vertex-core", name: "Core Strategy", orgId: "vertex-partners", status: "active", capitalAllocation: 15000000 },
-]
+  {
+    id: "delta-one",
+    name: "Delta One Desk",
+    orgId: "odum",
+    status: "active",
+    capitalAllocation: 5000000,
+  },
+  {
+    id: "quant-fund",
+    name: "Quant Fund",
+    orgId: "odum",
+    status: "active",
+    capitalAllocation: 8000000,
+  },
+  {
+    id: "sports-desk",
+    name: "Sports Desk",
+    orgId: "odum",
+    status: "active",
+    capitalAllocation: 2000000,
+  },
+  {
+    id: "defi-desk",
+    name: "DeFi Desk",
+    orgId: "odum",
+    status: "active",
+    capitalAllocation: 3000000,
+  },
+  {
+    id: "alpha-main",
+    name: "Main Fund",
+    orgId: "alpha-capital",
+    status: "active",
+    capitalAllocation: 10000000,
+  },
+  {
+    id: "alpha-crypto",
+    name: "Crypto Desk",
+    orgId: "alpha-capital",
+    status: "onboarding",
+    capitalAllocation: 5000000,
+  },
+  {
+    id: "vertex-core",
+    name: "Core Strategy",
+    orgId: "vertex-partners",
+    status: "active",
+    capitalAllocation: 15000000,
+  },
+];
 
 // Helper to map archetype from registry format to trading-data format
-function mapArchetype(archetype: RegistryStrategy["archetype"]): StrategyArchetype | string {
+function mapArchetype(
+  archetype: RegistryStrategy["archetype"],
+): StrategyArchetype | string {
   const archetypeMap: Record<RegistryStrategy["archetype"], string> = {
-    "BASIS_TRADE": "basis-trade",
-    "RECURSIVE_STAKED_BASIS": "recursive-staked-basis",
-    "MARKET_MAKING": "market-making",
-    "AMM_LP": "amm-lp",
-    "DIRECTIONAL": "ml-directional",
-    "ML_DIRECTIONAL": "ml-directional",
-    "OPTIONS": "market-making-options",
-    "ARBITRAGE": "arbitrage",
-    "SPORTS_ARB": "sports-arb",
-    "PREDICTION_ARB": "prediction-arb",
-    "YIELD": "aave-lending",
-    "MOMENTUM": "momentum",
-    "MEAN_REVERSION": "mean-reversion",
-    "STATISTICAL_ARB": "statistical-arb",
-  }
-  return archetypeMap[archetype] || archetype.toLowerCase()
+    BASIS_TRADE: "basis-trade",
+    RECURSIVE_STAKED_BASIS: "recursive-staked-basis",
+    MARKET_MAKING: "market-making",
+    AMM_LP: "amm-lp",
+    DIRECTIONAL: "ml-directional",
+    ML_DIRECTIONAL: "ml-directional",
+    OPTIONS: "market-making-options",
+    ARBITRAGE: "arbitrage",
+    SPORTS_ARB: "sports-arb",
+    PREDICTION_ARB: "prediction-arb",
+    YIELD: "aave-lending",
+    MOMENTUM: "momentum",
+    MEAN_REVERSION: "mean-reversion",
+    STATISTICAL_ARB: "statistical-arb",
+  };
+  return archetypeMap[archetype] || archetype.toLowerCase();
 }
 
 // Helper to extract underlyings from instruments
-function extractUnderlyings(instruments: RegistryStrategy["instruments"]): string[] {
-  const underlyings = new Set<string>()
+function extractUnderlyings(
+  instruments: RegistryStrategy["instruments"],
+): string[] {
+  const underlyings = new Set<string>();
   for (const inst of instruments) {
     // Extract underlying from instrument key (e.g., "BINANCE:SPOT:BTC-USDT" -> "BTC")
-    const parts = inst.key.split(":")
-    const lastPart = parts[parts.length - 1]
-    const underlying = lastPart.split("-")[0].split("@")[0]
+    const parts = inst.key.split(":");
+    const lastPart = parts[parts.length - 1];
+    const underlying = lastPart.split("-")[0].split("@")[0];
     if (underlying && !["USDT", "USDC", "USD"].includes(underlying)) {
-      underlyings.add(underlying)
+      underlyings.add(underlying);
     }
   }
-  return Array.from(underlyings)
+  return Array.from(underlyings);
 }
 
 // Derive STRATEGIES from strategy-registry.ts (single source of truth)
-export const STRATEGIES: TradingStrategy[] = REGISTRY_STRATEGIES.map((rs): TradingStrategy => ({
-  id: rs.id,
-  name: rs.name,
-  clientId: rs.clientId,
-  archetype: mapArchetype(rs.archetype),
-  assetClass: rs.assetClass,
-  executionMode: rs.executionMode,
-  status: rs.status === "development" ? "paused" : rs.status as StrategyStatus,
-  configVersion: rs.version,
-  underlyings: extractUnderlyings(rs.instruments),
-  venues: rs.venues.map(v => v.toLowerCase()),
-  baseCapital: rs.performance.netExposure,
-  expectedSharpe: rs.performance.sharpe,
-  expectedVolatility: rs.performance.maxDrawdown / 100,
-}))
+export const STRATEGIES: TradingStrategy[] = REGISTRY_STRATEGIES.map(
+  (rs): TradingStrategy => ({
+    id: rs.id,
+    name: rs.name,
+    clientId: rs.clientId,
+    archetype: mapArchetype(rs.archetype),
+    assetClass: rs.assetClass,
+    executionMode: rs.executionMode,
+    status:
+      rs.status === "development" ? "paused" : (rs.status as StrategyStatus),
+    configVersion: rs.version,
+    underlyings: extractUnderlyings(rs.instruments),
+    venues: rs.venues.map((v) => v.toLowerCase()),
+    baseCapital: rs.performance.netExposure,
+    expectedSharpe: rs.performance.sharpe,
+    expectedVolatility: rs.performance.maxDrawdown / 100,
+  }),
+);
 
 // =============================================================================
 // P&L ATTRIBUTION TYPES - Strategy-specific breakdowns
 // =============================================================================
 
 export interface PnLBreakdown {
-  strategyId: string
-  clientId: string
-  orgId: string
-  date: string
-  mode: "live" | "batch"
+  strategyId: string;
+  clientId: string;
+  orgId: string;
+  date: string;
+  mode: "live" | "batch";
   // Canonical factors (always present)
-  delta: number
-  funding: number
-  basis: number
-  interest_rate: number
-  greeks: number
-  mark_to_market: number
+  delta: number;
+  funding: number;
+  basis: number;
+  interest_rate: number;
+  greeks: number;
+  mark_to_market: number;
   // Extended factors
-  carry: number
-  fx: number
-  fees: number
-  slippage: number
-  residual: number
+  carry: number;
+  fx: number;
+  fees: number;
+  slippage: number;
+  residual: number;
   // Strategy-specific (only populated when relevant)
-  funding_pnl?: number
-  basis_spread_pnl?: number
-  trading_pnl?: number
-  transaction_costs?: number
-  lending_yield_pnl?: number
-  pre_game_pnl?: number
-  halftime_pnl?: number
-  commission?: number
-  closing_line_value?: number
-  delta_pnl?: number
-  gamma_pnl?: number
-  vega_pnl?: number
-  theta_pnl?: number
-  il_pnl?: number
-  swap_fees_pnl?: number
+  funding_pnl?: number;
+  basis_spread_pnl?: number;
+  trading_pnl?: number;
+  transaction_costs?: number;
+  lending_yield_pnl?: number;
+  pre_game_pnl?: number;
+  halftime_pnl?: number;
+  commission?: number;
+  closing_line_value?: number;
+  delta_pnl?: number;
+  gamma_pnl?: number;
+  vega_pnl?: number;
+  theta_pnl?: number;
+  il_pnl?: number;
+  swap_fees_pnl?: number;
   // Total
-  total: number
+  total: number;
 }
 
 export interface TimeSeriesPoint {
-  timestamp: string
-  value: number
+  timestamp: string;
+  value: number;
 }
 
 export interface StrategyTimeSeries {
-  strategyId: string
-  clientId: string
-  orgId: string
-  date: string
-  mode: "live" | "batch"
-  pnl: TimeSeriesPoint[]
-  nav: TimeSeriesPoint[]
-  exposure: TimeSeriesPoint[]
+  strategyId: string;
+  clientId: string;
+  orgId: string;
+  date: string;
+  mode: "live" | "batch";
+  pnl: TimeSeriesPoint[];
+  nav: TimeSeriesPoint[];
+  exposure: TimeSeriesPoint[];
 }
 
 // =============================================================================
@@ -272,74 +482,110 @@ export interface StrategyTimeSeries {
 function generatePnLBreakdown(
   strategy: TradingStrategy,
   date: string,
-  mode: "live" | "batch"
+  mode: "live" | "batch",
 ): PnLBreakdown {
-  const seed = `${strategy.id}-${date}-${mode}`
-  const rand = seededRandom(seed)
-  
-  const client = CLIENTS.find(c => c.id === strategy.clientId)!
-  const org = ORGANIZATIONS.find(o => o.id === client.orgId)!
-  
+  const seed = `${strategy.id}-${date}-${mode}`;
+  const rand = seededRandom(seed);
+
+  const client = CLIENTS.find((c) => c.id === strategy.clientId)!;
+  const org = ORGANIZATIONS.find((o) => o.id === client.orgId)!;
+
   // Generate base P&L components with variance
-  const dailyVol = strategy.baseCapital * strategy.expectedVolatility / Math.sqrt(252)
-  const drift = strategy.baseCapital * (strategy.expectedSharpe * strategy.expectedVolatility / 252)
-  
+  const dailyVol =
+    (strategy.baseCapital * strategy.expectedVolatility) / Math.sqrt(252);
+  const drift =
+    strategy.baseCapital *
+    ((strategy.expectedSharpe * strategy.expectedVolatility) / 252);
+
   // Canonical factors with realistic distributions
-  const delta = (rand() - 0.4) * dailyVol * 0.3
-  const funding = strategy.archetype.includes("basis") ? (rand() - 0.2) * dailyVol * 0.4 : (rand() - 0.5) * dailyVol * 0.05
-  const basis = strategy.archetype.includes("basis") ? (rand() - 0.3) * dailyVol * 0.3 : 0
-  const interest_rate = (rand() - 0.5) * dailyVol * 0.05
-  const greeks = strategy.archetype.includes("options") ? (rand() - 0.5) * dailyVol * 0.2 : 0
-  const mark_to_market = (rand() - 0.5) * dailyVol * 0.2
-  
+  const delta = (rand() - 0.4) * dailyVol * 0.3;
+  const funding = strategy.archetype.includes("basis")
+    ? (rand() - 0.2) * dailyVol * 0.4
+    : (rand() - 0.5) * dailyVol * 0.05;
+  const basis = strategy.archetype.includes("basis")
+    ? (rand() - 0.3) * dailyVol * 0.3
+    : 0;
+  const interest_rate = (rand() - 0.5) * dailyVol * 0.05;
+  const greeks = strategy.archetype.includes("options")
+    ? (rand() - 0.5) * dailyVol * 0.2
+    : 0;
+  const mark_to_market = (rand() - 0.5) * dailyVol * 0.2;
+
   // Extended factors
-  const carry = strategy.archetype.includes("lending") || strategy.archetype.includes("staked") ? drift * 0.5 + (rand() - 0.3) * dailyVol * 0.1 : 0
-  const fx = strategy.assetClass === "TradFi" ? (rand() - 0.5) * dailyVol * 0.05 : 0
-  const fees = -Math.abs((rand() * 0.002 + 0.0005) * strategy.baseCapital / 252)
-  const slippage = -Math.abs((rand() * 0.001 + 0.0002) * strategy.baseCapital / 252)
-  const residual = (rand() - 0.5) * dailyVol * 0.05
-  
+  const carry =
+    strategy.archetype.includes("lending") ||
+    strategy.archetype.includes("staked")
+      ? drift * 0.5 + (rand() - 0.3) * dailyVol * 0.1
+      : 0;
+  const fx =
+    strategy.assetClass === "TradFi" ? (rand() - 0.5) * dailyVol * 0.05 : 0;
+  const fees = -Math.abs(
+    ((rand() * 0.002 + 0.0005) * strategy.baseCapital) / 252,
+  );
+  const slippage = -Math.abs(
+    ((rand() * 0.001 + 0.0002) * strategy.baseCapital) / 252,
+  );
+  const residual = (rand() - 0.5) * dailyVol * 0.05;
+
   // Strategy-specific components
-  let strategySpecific: Partial<PnLBreakdown> = {}
-  
-  if (strategy.archetype === "basis-trade" || strategy.archetype === "recursive-staked-basis") {
+  let strategySpecific: Partial<PnLBreakdown> = {};
+
+  if (
+    strategy.archetype === "basis-trade" ||
+    strategy.archetype === "recursive-staked-basis"
+  ) {
     strategySpecific = {
       funding_pnl: funding * 0.8,
       basis_spread_pnl: basis * 0.9,
       trading_pnl: delta * 0.5,
       transaction_costs: fees + slippage,
-    }
+    };
   } else if (strategy.archetype.includes("lending")) {
     strategySpecific = {
       lending_yield_pnl: carry * 1.2,
       transaction_costs: fees + slippage,
-    }
-  } else if (strategy.archetype === "sports-ml" || strategy.assetClass === "Sports") {
+    };
+  } else if (
+    strategy.archetype === "sports-ml" ||
+    strategy.assetClass === "Sports"
+  ) {
     strategySpecific = {
       pre_game_pnl: delta * 0.6,
       halftime_pnl: delta * 0.4,
       commission: fees,
       closing_line_value: (rand() - 0.4) * dailyVol * 0.15,
-    }
+    };
   } else if (strategy.archetype.includes("options")) {
     strategySpecific = {
       delta_pnl: delta,
       gamma_pnl: (rand() - 0.5) * dailyVol * 0.15,
       vega_pnl: (rand() - 0.5) * dailyVol * 0.2,
       theta_pnl: dailyVol * 0.05 * (rand() - 0.3),
-    }
+    };
   } else if (strategy.archetype === "market-making-lp") {
     strategySpecific = {
       swap_fees_pnl: Math.abs(rand() * dailyVol * 0.3),
       il_pnl: -(rand() * dailyVol * 0.15),
-    }
+    };
   }
-  
+
   // Add batch variance (batch should be similar but not identical to live)
-  const batchMultiplier = mode === "batch" ? 1 + (rand() - 0.5) * 0.1 : 1
-  
-  const total = (delta + funding + basis + interest_rate + greeks + mark_to_market + carry + fx + fees + slippage + residual) * batchMultiplier
-  
+  const batchMultiplier = mode === "batch" ? 1 + (rand() - 0.5) * 0.1 : 1;
+
+  const total =
+    (delta +
+      funding +
+      basis +
+      interest_rate +
+      greeks +
+      mark_to_market +
+      carry +
+      fx +
+      fees +
+      slippage +
+      residual) *
+    batchMultiplier;
+
   return {
     strategyId: strategy.id,
     clientId: strategy.clientId,
@@ -359,71 +605,83 @@ function generatePnLBreakdown(
     residual: residual * batchMultiplier,
     total,
     ...Object.fromEntries(
-      Object.entries(strategySpecific).map(([k, v]) => [k, (v as number) * batchMultiplier])
+      Object.entries(strategySpecific).map(([k, v]) => [
+        k,
+        (v as number) * batchMultiplier,
+      ]),
     ),
-  } as PnLBreakdown
+  } as PnLBreakdown;
 }
 
 function generateIntradayTimeSeries(
   strategy: TradingStrategy,
   date: string,
   mode: "live" | "batch",
-  numPoints: number = 96 // 15-minute intervals
+  numPoints: number = 96, // 15-minute intervals
 ): StrategyTimeSeries {
-  const seed = `${strategy.id}-${date}-${mode}-ts`
-  const rand = seededRandom(seed)
-  
-  const client = CLIENTS.find(c => c.id === strategy.clientId)!
-  const org = ORGANIZATIONS.find(o => o.id === client.orgId)!
-  
+  const seed = `${strategy.id}-${date}-${mode}-ts`;
+  const rand = seededRandom(seed);
+
+  const client = CLIENTS.find((c) => c.id === strategy.clientId)!;
+  const org = ORGANIZATIONS.find((o) => o.id === client.orgId)!;
+
   // Generate cumulative P&L with actual movement
-  const dailyVol = strategy.baseCapital * strategy.expectedVolatility / Math.sqrt(252)
-  const drift = strategy.baseCapital * (strategy.expectedSharpe * strategy.expectedVolatility / 252)
-  const pointVol = dailyVol / Math.sqrt(numPoints)
-  const pointDrift = drift / numPoints
-  
-  const pnl: TimeSeriesPoint[] = []
-  const nav: TimeSeriesPoint[] = []
-  const exposure: TimeSeriesPoint[] = []
-  
-  let cumPnl = 0
-  let baseNav = strategy.baseCapital
-  let baseExposure = strategy.baseCapital * (0.5 + rand() * 0.4) // 50-90% utilized
-  
-  const dateObj = new Date(date)
-  
+  const dailyVol =
+    (strategy.baseCapital * strategy.expectedVolatility) / Math.sqrt(252);
+  const drift =
+    strategy.baseCapital *
+    ((strategy.expectedSharpe * strategy.expectedVolatility) / 252);
+  const pointVol = dailyVol / Math.sqrt(numPoints);
+  const pointDrift = drift / numPoints;
+
+  const pnl: TimeSeriesPoint[] = [];
+  const nav: TimeSeriesPoint[] = [];
+  const exposure: TimeSeriesPoint[] = [];
+
+  let cumPnl = 0;
+  let baseNav = strategy.baseCapital;
+  let baseExposure = strategy.baseCapital * (0.5 + rand() * 0.4); // 50-90% utilized
+
+  const dateObj = new Date(date);
+
   for (let i = 0; i < numPoints; i++) {
     // Generate realistic intraday movement
-    const hourOfDay = (i * 15 / 60) % 24
-    
+    const hourOfDay = ((i * 15) / 60) % 24;
+
     // Higher volatility during market hours (simplified)
-    const volMultiplier = hourOfDay >= 9 && hourOfDay <= 16 ? 1.5 : 0.7
-    
+    const volMultiplier = hourOfDay >= 9 && hourOfDay <= 16 ? 1.5 : 0.7;
+
     // P&L change with mean reversion tendency
-    const meanReversionForce = -cumPnl * 0.001
-    const change = pointDrift + meanReversionForce + (rand() - 0.48) * pointVol * volMultiplier
-    cumPnl += change
-    
+    const meanReversionForce = -cumPnl * 0.001;
+    const change =
+      pointDrift +
+      meanReversionForce +
+      (rand() - 0.48) * pointVol * volMultiplier;
+    cumPnl += change;
+
     // NAV and exposure changes (correlated with P&L)
-    baseNav += change
-    const exposureChange = (rand() - 0.5) * baseExposure * 0.02
-    baseExposure = Math.max(0, baseExposure + exposureChange)
-    
-    const timestamp = new Date(dateObj.getTime() + i * 15 * 60 * 1000)
-    const timeStr = timestamp.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-    
-    pnl.push({ timestamp: timeStr, value: cumPnl })
-    nav.push({ timestamp: timeStr, value: baseNav })
-    exposure.push({ timestamp: timeStr, value: baseExposure })
+    baseNav += change;
+    const exposureChange = (rand() - 0.5) * baseExposure * 0.02;
+    baseExposure = Math.max(0, baseExposure + exposureChange);
+
+    const timestamp = new Date(dateObj.getTime() + i * 15 * 60 * 1000);
+    const timeStr = timestamp.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    pnl.push({ timestamp: timeStr, value: cumPnl });
+    nav.push({ timestamp: timeStr, value: baseNav });
+    exposure.push({ timestamp: timeStr, value: baseExposure });
   }
-  
+
   // Batch mode: similar but offset
   if (mode === "batch") {
-    const offset = (rand() - 0.5) * dailyVol * 0.1
-    pnl.forEach(p => p.value += offset)
-    nav.forEach(p => p.value += offset)
+    const offset = (rand() - 0.5) * dailyVol * 0.1;
+    pnl.forEach((p) => (p.value += offset));
+    nav.forEach((p) => (p.value += offset));
   }
-  
+
   return {
     strategyId: strategy.id,
     clientId: strategy.clientId,
@@ -433,7 +691,7 @@ function generateIntradayTimeSeries(
     pnl,
     nav,
     exposure,
-  }
+  };
 }
 
 // =============================================================================
@@ -441,50 +699,55 @@ function generateIntradayTimeSeries(
 // =============================================================================
 
 export interface FilterContext {
-  organizationIds: string[]
-  clientIds: string[]
-  strategyIds: string[]
-  mode: "live" | "batch"
-  date: string
+  organizationIds: string[];
+  clientIds: string[];
+  strategyIds: string[];
+  mode: "live" | "batch";
+  date: string;
 }
 
-export function getFilteredStrategies(filter: FilterContext): TradingStrategy[] {
-  let result = [...STRATEGIES]
-  
+export function getFilteredStrategies(
+  filter: FilterContext,
+): TradingStrategy[] {
+  let result = [...STRATEGIES];
+
   // Filter by organization
   if (filter.organizationIds.length > 0) {
-    const clientIds = CLIENTS
-      .filter(c => filter.organizationIds.includes(c.orgId))
-      .map(c => c.id)
-    result = result.filter(s => clientIds.includes(s.clientId))
+    const clientIds = CLIENTS.filter((c) =>
+      filter.organizationIds.includes(c.orgId),
+    ).map((c) => c.id);
+    result = result.filter((s) => clientIds.includes(s.clientId));
   }
-  
+
   // Filter by client
   if (filter.clientIds.length > 0) {
-    result = result.filter(s => filter.clientIds.includes(s.clientId))
+    result = result.filter((s) => filter.clientIds.includes(s.clientId));
   }
-  
+
   // Filter by strategy
   if (filter.strategyIds.length > 0) {
-    result = result.filter(s => filter.strategyIds.includes(s.id))
+    result = result.filter((s) => filter.strategyIds.includes(s.id));
   }
-  
-  return result
+
+  return result;
 }
 
 export function getAggregatedPnL(filter: FilterContext): PnLBreakdown {
-  const strategies = getFilteredStrategies(filter)
-  
+  const strategies = getFilteredStrategies(filter);
+
   // Generate individual breakdowns and sum
-  const breakdowns = strategies.map(s => 
-    generatePnLBreakdown(s, filter.date, filter.mode)
-  )
-  
+  const breakdowns = strategies.map((s) =>
+    generatePnLBreakdown(s, filter.date, filter.mode),
+  );
+
   // Aggregate all numeric fields
   const aggregated: PnLBreakdown = {
     strategyId: "AGGREGATE",
     clientId: filter.clientIds.length === 1 ? filter.clientIds[0] : "MULTIPLE",
-    orgId: filter.organizationIds.length === 1 ? filter.organizationIds[0] : "MULTIPLE",
+    orgId:
+      filter.organizationIds.length === 1
+        ? filter.organizationIds[0]
+        : "MULTIPLE",
     date: filter.date,
     mode: filter.mode,
     delta: 0,
@@ -499,88 +762,98 @@ export function getAggregatedPnL(filter: FilterContext): PnLBreakdown {
     slippage: 0,
     residual: 0,
     total: 0,
-  }
-  
-  breakdowns.forEach(b => {
-    aggregated.delta += b.delta
-    aggregated.funding += b.funding
-    aggregated.basis += b.basis
-    aggregated.interest_rate += b.interest_rate
-    aggregated.greeks += b.greeks
-    aggregated.mark_to_market += b.mark_to_market
-    aggregated.carry += b.carry
-    aggregated.fx += b.fx
-    aggregated.fees += b.fees
-    aggregated.slippage += b.slippage
-    aggregated.residual += b.residual
-    aggregated.total += b.total
-    
+  };
+
+  breakdowns.forEach((b) => {
+    aggregated.delta += b.delta;
+    aggregated.funding += b.funding;
+    aggregated.basis += b.basis;
+    aggregated.interest_rate += b.interest_rate;
+    aggregated.greeks += b.greeks;
+    aggregated.mark_to_market += b.mark_to_market;
+    aggregated.carry += b.carry;
+    aggregated.fx += b.fx;
+    aggregated.fees += b.fees;
+    aggregated.slippage += b.slippage;
+    aggregated.residual += b.residual;
+    aggregated.total += b.total;
+
     // Strategy-specific fields
-    if (b.funding_pnl) aggregated.funding_pnl = (aggregated.funding_pnl || 0) + b.funding_pnl
-    if (b.basis_spread_pnl) aggregated.basis_spread_pnl = (aggregated.basis_spread_pnl || 0) + b.basis_spread_pnl
-    if (b.trading_pnl) aggregated.trading_pnl = (aggregated.trading_pnl || 0) + b.trading_pnl
-    if (b.lending_yield_pnl) aggregated.lending_yield_pnl = (aggregated.lending_yield_pnl || 0) + b.lending_yield_pnl
-    if (b.delta_pnl) aggregated.delta_pnl = (aggregated.delta_pnl || 0) + b.delta_pnl
-    if (b.gamma_pnl) aggregated.gamma_pnl = (aggregated.gamma_pnl || 0) + b.gamma_pnl
-    if (b.vega_pnl) aggregated.vega_pnl = (aggregated.vega_pnl || 0) + b.vega_pnl
-    if (b.theta_pnl) aggregated.theta_pnl = (aggregated.theta_pnl || 0) + b.theta_pnl
-  })
-  
-  return aggregated
+    if (b.funding_pnl)
+      aggregated.funding_pnl = (aggregated.funding_pnl || 0) + b.funding_pnl;
+    if (b.basis_spread_pnl)
+      aggregated.basis_spread_pnl =
+        (aggregated.basis_spread_pnl || 0) + b.basis_spread_pnl;
+    if (b.trading_pnl)
+      aggregated.trading_pnl = (aggregated.trading_pnl || 0) + b.trading_pnl;
+    if (b.lending_yield_pnl)
+      aggregated.lending_yield_pnl =
+        (aggregated.lending_yield_pnl || 0) + b.lending_yield_pnl;
+    if (b.delta_pnl)
+      aggregated.delta_pnl = (aggregated.delta_pnl || 0) + b.delta_pnl;
+    if (b.gamma_pnl)
+      aggregated.gamma_pnl = (aggregated.gamma_pnl || 0) + b.gamma_pnl;
+    if (b.vega_pnl)
+      aggregated.vega_pnl = (aggregated.vega_pnl || 0) + b.vega_pnl;
+    if (b.theta_pnl)
+      aggregated.theta_pnl = (aggregated.theta_pnl || 0) + b.theta_pnl;
+  });
+
+  return aggregated;
 }
 
 export function getAggregatedTimeSeries(filter: FilterContext): {
-  pnl: TimeSeriesPoint[]
-  nav: TimeSeriesPoint[]
-  exposure: TimeSeriesPoint[]
+  pnl: TimeSeriesPoint[];
+  nav: TimeSeriesPoint[];
+  exposure: TimeSeriesPoint[];
 } {
-  const strategies = getFilteredStrategies(filter)
-  
+  const strategies = getFilteredStrategies(filter);
+
   if (strategies.length === 0) {
-    return { pnl: [], nav: [], exposure: [] }
+    return { pnl: [], nav: [], exposure: [] };
   }
-  
+
   // Generate individual time series and aggregate
-  const allSeries = strategies.map(s => 
-    generateIntradayTimeSeries(s, filter.date, filter.mode)
-  )
-  
+  const allSeries = strategies.map((s) =>
+    generateIntradayTimeSeries(s, filter.date, filter.mode),
+  );
+
   // Aggregate by timestamp
-  const numPoints = allSeries[0].pnl.length
-  const pnl: TimeSeriesPoint[] = []
-  const nav: TimeSeriesPoint[] = []
-  const exposure: TimeSeriesPoint[] = []
-  
+  const numPoints = allSeries[0].pnl.length;
+  const pnl: TimeSeriesPoint[] = [];
+  const nav: TimeSeriesPoint[] = [];
+  const exposure: TimeSeriesPoint[] = [];
+
   for (let i = 0; i < numPoints; i++) {
-    const timestamp = allSeries[0].pnl[i].timestamp
-    
-    let pnlSum = 0
-    let navSum = 0
-    let exposureSum = 0
-    
-    allSeries.forEach(s => {
-      pnlSum += s.pnl[i]?.value || 0
-      navSum += s.nav[i]?.value || 0
-      exposureSum += s.exposure[i]?.value || 0
-    })
-    
-    pnl.push({ timestamp, value: pnlSum })
-    nav.push({ timestamp, value: navSum })
-    exposure.push({ timestamp, value: exposureSum })
+    const timestamp = allSeries[0].pnl[i].timestamp;
+
+    let pnlSum = 0;
+    let navSum = 0;
+    let exposureSum = 0;
+
+    allSeries.forEach((s) => {
+      pnlSum += s.pnl[i]?.value || 0;
+      navSum += s.nav[i]?.value || 0;
+      exposureSum += s.exposure[i]?.value || 0;
+    });
+
+    pnl.push({ timestamp, value: pnlSum });
+    nav.push({ timestamp, value: navSum });
+    exposure.push({ timestamp, value: exposureSum });
   }
-  
-  return { pnl, nav, exposure }
+
+  return { pnl, nav, exposure };
 }
 
 // Get delta between live and batch
 export function getLiveBatchDelta(filter: FilterContext): {
-  pnl: TimeSeriesPoint[]
-  nav: TimeSeriesPoint[]
-  exposure: TimeSeriesPoint[]
+  pnl: TimeSeriesPoint[];
+  nav: TimeSeriesPoint[];
+  exposure: TimeSeriesPoint[];
 } {
-  const liveData = getAggregatedTimeSeries({ ...filter, mode: "live" })
-  const batchData = getAggregatedTimeSeries({ ...filter, mode: "batch" })
-  
+  const liveData = getAggregatedTimeSeries({ ...filter, mode: "live" });
+  const batchData = getAggregatedTimeSeries({ ...filter, mode: "batch" });
+
   const delta = {
     pnl: liveData.pnl.map((p, i) => ({
       timestamp: p.timestamp,
@@ -594,39 +867,39 @@ export function getLiveBatchDelta(filter: FilterContext): {
       timestamp: p.timestamp,
       value: p.value - (batchData.exposure[i]?.value || 0),
     })),
-  }
-  
-  return delta
+  };
+
+  return delta;
 }
 
 // Get strategy-level performance for table
 export function getStrategyPerformance(filter: FilterContext): Array<{
-  id: string
-  name: string
-  assetClass: string
-  archetype: string
-  clientName: string
-  orgName: string
-  status: string
-  executionMode: string
-  pnl: number
-  pnlChange: number
-  sharpe: number
-  maxDrawdown: number
-  nav: number
-  exposure: number
+  id: string;
+  name: string;
+  assetClass: string;
+  archetype: string;
+  clientName: string;
+  orgName: string;
+  status: string;
+  executionMode: string;
+  pnl: number;
+  pnlChange: number;
+  sharpe: number;
+  maxDrawdown: number;
+  nav: number;
+  exposure: number;
 }> {
-  const strategies = getFilteredStrategies(filter)
-  
-  return strategies.map(s => {
-    const breakdown = generatePnLBreakdown(s, filter.date, filter.mode)
-    const client = CLIENTS.find(c => c.id === s.clientId)!
-    const org = ORGANIZATIONS.find(o => o.id === client.orgId)!
-    
+  const strategies = getFilteredStrategies(filter);
+
+  return strategies.map((s) => {
+    const breakdown = generatePnLBreakdown(s, filter.date, filter.mode);
+    const client = CLIENTS.find((c) => c.id === s.clientId)!;
+    const org = ORGANIZATIONS.find((o) => o.id === client.orgId)!;
+
     // Generate some derived metrics
-    const seed = `${s.id}-${filter.date}-metrics`
-    const rand = seededRandom(seed)
-    
+    const seed = `${s.id}-${filter.date}-metrics`;
+    const rand = seededRandom(seed);
+
     return {
       id: s.id,
       name: s.name,
@@ -642,20 +915,20 @@ export function getStrategyPerformance(filter: FilterContext): Array<{
       maxDrawdown: s.expectedVolatility * 100 * (1 + rand() * 0.5),
       nav: s.baseCapital + breakdown.total,
       exposure: s.baseCapital * (0.5 + rand() * 0.4),
-    }
-  })
+    };
+  });
 }
 
 // Export helper to get today's date
 export function getToday(): string {
-  return new Date().toISOString().split("T")[0]
+  return new Date().toISOString().split("T")[0];
 }
 
 // Export helper to get yesterday's date
 export function getYesterday(): string {
-  const d = new Date()
-  d.setDate(d.getDate() - 1)
-  return d.toISOString().split("T")[0]
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().split("T")[0];
 }
 
 // =============================================================================
@@ -669,7 +942,7 @@ export const SERVICE_ASSET_CLASS_MAP: Record<string, string[]> = {
   "Risk Engine": ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"],
   "P&L Attribution": ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"],
   "ML Inference": ["CeFi", "TradFi"], // Only used by ML strategies
-  "Alerting": ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"],
+  Alerting: ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"],
   "DeFi Gateway": ["DeFi"],
   "Sports Odds Feed": ["Sports"],
   "Prediction Market Feed": ["Prediction"],
@@ -681,7 +954,7 @@ export const SERVICE_ASSET_CLASS_MAP: Record<string, string[]> = {
   "Uniswap Connector": ["DeFi"],
   "IBKR Connector": ["TradFi"],
   "Sports API Gateway": ["Sports"],
-}
+};
 
 // Map of services to the specific venues they connect to
 export const SERVICE_VENUE_MAP: Record<string, string[]> = {
@@ -700,75 +973,84 @@ export const SERVICE_VENUE_MAP: Record<string, string[]> = {
   "FanDuel Connector": ["fanduel"],
   "Polymarket Connector": ["polymarket"],
   "Kalshi Connector": ["kalshi"],
-}
+};
 
 // Get services relevant to a strategy
 export function getStrategyServices(strategyId: string): string[] {
-  const strategy = STRATEGIES.find(s => s.id === strategyId)
-  if (!strategy) return []
-  
-  const services: string[] = []
-  
+  const strategy = STRATEGIES.find((s) => s.id === strategyId);
+  if (!strategy) return [];
+
+  const services: string[] = [];
+
   // Add core services based on asset class
   Object.entries(SERVICE_ASSET_CLASS_MAP).forEach(([service, assetClasses]) => {
     if (assetClasses.includes(strategy.assetClass)) {
-      services.push(service)
+      services.push(service);
     }
-  })
-  
+  });
+
   // Add venue-specific connectors
-  strategy.venues.forEach(venue => {
+  strategy.venues.forEach((venue) => {
     Object.entries(SERVICE_VENUE_MAP).forEach(([service, venues]) => {
       if (venues.includes(venue.toLowerCase()) && !services.includes(service)) {
-        services.push(service)
+        services.push(service);
       }
-    })
-  })
-  
-  return services
+    });
+  });
+
+  return services;
 }
 
 // Get services relevant to a filtered set of strategies
 export function getFilteredServices(filter: FilterContext): string[] {
-  const strategies = getFilteredStrategies(filter)
-  const servicesSet = new Set<string>()
-  
-  strategies.forEach(s => {
-    getStrategyServices(s.id).forEach(service => servicesSet.add(service))
-  })
-  
-  return Array.from(servicesSet)
+  const strategies = getFilteredStrategies(filter);
+  const servicesSet = new Set<string>();
+
+  strategies.forEach((s) => {
+    getStrategyServices(s.id).forEach((service) => servicesSet.add(service));
+  });
+
+  return Array.from(servicesSet);
 }
 
 // Filter alerts by strategy context
 export interface Alert {
-  id: string
-  message: string
-  severity: "critical" | "high" | "medium" | "low"
-  timestamp: string
-  source: string
-  strategyId?: string
-  clientId?: string
-  orgId?: string
-  assetClass?: string
+  id: string;
+  message: string;
+  severity: "critical" | "high" | "medium" | "low";
+  timestamp: string;
+  source: string;
+  strategyId?: string;
+  clientId?: string;
+  orgId?: string;
+  assetClass?: string;
 }
 
-export function getFilteredAlerts(alerts: Alert[], filter: FilterContext): Alert[] {
-  const strategies = getFilteredStrategies(filter)
-  const strategyIds = new Set(strategies.map(s => s.id))
-  const clientIds = new Set(strategies.map(s => s.clientId))
-  const orgIds = new Set(CLIENTS.filter(c => clientIds.has(c.id)).map(c => c.orgId))
-  const assetClasses = new Set(strategies.map(s => s.assetClass))
-  
-  return alerts.filter(alert => {
+export function getFilteredAlerts(
+  alerts: Alert[],
+  filter: FilterContext,
+): Alert[] {
+  const strategies = getFilteredStrategies(filter);
+  const strategyIds = new Set(strategies.map((s) => s.id));
+  const clientIds = new Set(strategies.map((s) => s.clientId));
+  const orgIds = new Set(
+    CLIENTS.filter((c) => clientIds.has(c.id)).map((c) => c.orgId),
+  );
+  const assetClasses = new Set(strategies.map((s) => s.assetClass));
+
+  return alerts.filter((alert) => {
     // If alert has a strategy ID, check if it matches
-    if (alert.strategyId && !strategyIds.has(alert.strategyId)) return false
+    if (alert.strategyId && !strategyIds.has(alert.strategyId)) return false;
     // If alert has a client ID, check if it matches
-    if (alert.clientId && !clientIds.has(alert.clientId)) return false
+    if (alert.clientId && !clientIds.has(alert.clientId)) return false;
     // If alert has an org ID, check if it matches
-    if (alert.orgId && !orgIds.has(alert.orgId)) return false
+    if (alert.orgId && !orgIds.has(alert.orgId)) return false;
     // If alert has an asset class, check if it matches
-    if (alert.assetClass && !assetClasses.has(alert.assetClass as TradingStrategy["assetClass"])) return false
-    return true
-  })
+    if (
+      alert.assetClass &&
+      !assetClasses.has(alert.assetClass as TradingStrategy["assetClass"])
+    )
+      return false;
+    return true;
+  });
 }

@@ -1,9 +1,9 @@
 /**
  * CANONICAL TAXONOMY - Single Source of Truth
- * 
+ *
  * All domain terminology, enumerations, and type definitions live here.
  * Import from this file in all other modules to ensure consistency.
- * 
+ *
  * Categories:
  * - Asset Classes (DeFi, CeFi, TradFi, Sports, Prediction)
  * - Strategy Types (Basis, MarketMaking, Directional, etc.)
@@ -18,15 +18,24 @@
 // ASSET CLASSES
 // =============================================================================
 
-export const ASSET_CLASSES = ["DeFi", "CeFi", "TradFi", "Sports", "Prediction"] as const
-export type AssetClass = typeof ASSET_CLASSES[number]
+export const ASSET_CLASSES = [
+  "DeFi",
+  "CeFi",
+  "TradFi",
+  "Sports",
+  "Prediction",
+] as const;
+export type AssetClass = (typeof ASSET_CLASSES)[number];
 
-export const ASSET_CLASS_CONFIG: Record<AssetClass, {
-  label: string
-  description: string
-  color: string
-  icon: string
-}> = {
+export const ASSET_CLASS_CONFIG: Record<
+  AssetClass,
+  {
+    label: string;
+    description: string;
+    color: string;
+    icon: string;
+  }
+> = {
   DeFi: {
     label: "DeFi",
     description: "Decentralized Finance - on-chain protocols",
@@ -57,7 +66,7 @@ export const ASSET_CLASS_CONFIG: Record<AssetClass, {
     color: "#ec4899", // pink
     icon: "Target",
   },
-}
+};
 
 // =============================================================================
 // STRATEGY TYPES / ARCHETYPES
@@ -78,100 +87,104 @@ export const STRATEGY_ARCHETYPES = [
   "MOMENTUM",
   "MEAN_REVERSION",
   "STATISTICAL_ARB",
-] as const
-export type StrategyArchetype = typeof STRATEGY_ARCHETYPES[number]
+] as const;
+export type StrategyArchetype = (typeof STRATEGY_ARCHETYPES)[number];
 
-export const STRATEGY_ARCHETYPE_CONFIG: Record<StrategyArchetype, {
-  label: string
-  shortLabel: string
-  description: string
-  assetClasses: AssetClass[]
-}> = {
-  "BASIS_TRADE": {
+export const STRATEGY_ARCHETYPE_CONFIG: Record<
+  StrategyArchetype,
+  {
+    label: string;
+    shortLabel: string;
+    description: string;
+    assetClasses: AssetClass[];
+  }
+> = {
+  BASIS_TRADE: {
     label: "Basis Trade",
     shortLabel: "Basis",
     description: "Exploit price differences between spot and derivatives",
     assetClasses: ["DeFi", "CeFi"],
   },
-  "RECURSIVE_STAKED_BASIS": {
+  RECURSIVE_STAKED_BASIS: {
     label: "Recursive Staked Basis",
     shortLabel: "Recursive",
     description: "Leveraged basis via recursive lending/borrowing",
     assetClasses: ["DeFi"],
   },
-  "MARKET_MAKING": {
+  MARKET_MAKING: {
     label: "Market Making",
     shortLabel: "MM",
     description: "Provide liquidity and capture spreads",
     assetClasses: ["CeFi", "TradFi"],
   },
-  "AMM_LP": {
+  AMM_LP: {
     label: "AMM Liquidity Provision",
     shortLabel: "LP",
     description: "Concentrated liquidity provision on DEXs",
     assetClasses: ["DeFi"],
   },
-  "DIRECTIONAL": {
+  DIRECTIONAL: {
     label: "Directional",
     shortLabel: "Dir",
     description: "Take directional positions based on signals",
     assetClasses: ["CeFi", "TradFi", "DeFi"],
   },
-  "ML_DIRECTIONAL": {
+  ML_DIRECTIONAL: {
     label: "ML Directional",
     shortLabel: "ML",
     description: "Machine learning driven directional trading",
     assetClasses: ["CeFi", "TradFi"],
   },
-  "OPTIONS": {
+  OPTIONS: {
     label: "Options Market Making",
     shortLabel: "Opt MM",
     description: "Market making in options with delta hedging",
     assetClasses: ["TradFi", "CeFi"],
   },
-  "ARBITRAGE": {
+  ARBITRAGE: {
     label: "Arbitrage",
     shortLabel: "Arb",
     description: "Risk-free cross-venue arbitrage",
     assetClasses: ["CeFi", "DeFi"],
   },
-  "SPORTS_ARB": {
+  SPORTS_ARB: {
     label: "Sports Arbitrage",
     shortLabel: "Sports",
     description: "Cross-bookmaker odds arbitrage",
     assetClasses: ["Sports"],
   },
-  "PREDICTION_ARB": {
+  PREDICTION_ARB: {
     label: "Prediction Arbitrage",
     shortLabel: "Pred",
-    description: "Cross-platform prediction market arbitrage (includes BTC prediction vs CeFi derivatives)",
+    description:
+      "Cross-platform prediction market arbitrage (includes BTC prediction vs CeFi derivatives)",
     assetClasses: ["Prediction", "CeFi"],
   },
-  "YIELD": {
+  YIELD: {
     label: "Yield Optimization",
     shortLabel: "Yield",
     description: "Optimize lending yields across protocols",
     assetClasses: ["DeFi"],
   },
-  "MOMENTUM": {
+  MOMENTUM: {
     label: "Momentum",
     shortLabel: "Mom",
     description: "Trend-following momentum strategies",
     assetClasses: ["CeFi", "TradFi"],
   },
-  "MEAN_REVERSION": {
+  MEAN_REVERSION: {
     label: "Mean Reversion",
     shortLabel: "MR",
     description: "Fade extremes via z-scores, bands, or cointegration",
     assetClasses: ["CeFi", "TradFi"],
   },
-  "STATISTICAL_ARB": {
+  STATISTICAL_ARB: {
     label: "Statistical Arbitrage",
     shortLabel: "StatArb",
     description: "Pairs trading and statistical relationships",
     assetClasses: ["CeFi", "DeFi"],
   },
-}
+};
 
 // =============================================================================
 // CROSS-ASSET-CLASS ARBITRAGE LINKS
@@ -180,11 +193,11 @@ export const STRATEGY_ARCHETYPE_CONFIG: Record<StrategyArchetype, {
 // Used for topology visualization and strategy validation
 
 export interface CrossAssetLink {
-  from: AssetClass
-  to: AssetClass
-  instruments: string[]
-  description: string
-  archetypes: StrategyArchetype[]
+  from: AssetClass;
+  to: AssetClass;
+  instruments: string[];
+  description: string;
+  archetypes: StrategyArchetype[];
 }
 
 export const CROSS_ASSET_CLASS_LINKS: CrossAssetLink[] = [
@@ -192,7 +205,8 @@ export const CROSS_ASSET_CLASS_LINKS: CrossAssetLink[] = [
     from: "Prediction",
     to: "CeFi",
     instruments: ["BTC", "ETH", "SOL"],
-    description: "BTC/ETH prediction markets (up/down binary) vs CeFi futures/options",
+    description:
+      "BTC/ETH prediction markets (up/down binary) vs CeFi futures/options",
     archetypes: ["PREDICTION_ARB", "ARBITRAGE"],
   },
   {
@@ -206,7 +220,8 @@ export const CROSS_ASSET_CLASS_LINKS: CrossAssetLink[] = [
     from: "Sports",
     to: "Prediction",
     instruments: ["NFL", "NBA", "Soccer", "Tennis"],
-    description: "Traditional sportsbook odds vs prediction market implied probabilities",
+    description:
+      "Traditional sportsbook odds vs prediction market implied probabilities",
     archetypes: ["SPORTS_ARB", "PREDICTION_ARB"],
   },
   {
@@ -216,20 +231,23 @@ export const CROSS_ASSET_CLASS_LINKS: CrossAssetLink[] = [
     description: "CME/CBOE futures vs crypto exchange derivatives",
     archetypes: ["BASIS_TRADE", "ARBITRAGE"],
   },
-]
+];
 
 // =============================================================================
 // EXECUTION MODES (Strategy-Level)
 // =============================================================================
 
-export const STRATEGY_EXECUTION_MODES = ["SCE", "HUF", "EVT"] as const
-export type StrategyExecutionMode = typeof STRATEGY_EXECUTION_MODES[number]
+export const STRATEGY_EXECUTION_MODES = ["SCE", "HUF", "EVT"] as const;
+export type StrategyExecutionMode = (typeof STRATEGY_EXECUTION_MODES)[number];
 
-export const STRATEGY_EXECUTION_MODE_CONFIG: Record<StrategyExecutionMode, {
-  label: string
-  fullName: string
-  description: string
-}> = {
+export const STRATEGY_EXECUTION_MODE_CONFIG: Record<
+  StrategyExecutionMode,
+  {
+    label: string;
+    fullName: string;
+    description: string;
+  }
+> = {
   SCE: {
     label: "SCE",
     fullName: "Same Candle Exit",
@@ -245,22 +263,25 @@ export const STRATEGY_EXECUTION_MODE_CONFIG: Record<StrategyExecutionMode, {
     fullName: "Event-Driven Continuous",
     description: "Continuous event-driven execution with no fixed intervals",
   },
-}
+};
 
 // =============================================================================
 // SYSTEM EXECUTION MODES (Live vs Batch)
 // =============================================================================
 
-export const SYSTEM_MODES = ["live", "batch"] as const
-export type SystemMode = typeof SYSTEM_MODES[number]
+export const SYSTEM_MODES = ["live", "batch"] as const;
+export type SystemMode = (typeof SYSTEM_MODES)[number];
 
-export const SYSTEM_MODE_CONFIG: Record<SystemMode, {
-  label: string
-  description: string
-  dataSource: string
-  latency: string
-  color: string
-}> = {
+export const SYSTEM_MODE_CONFIG: Record<
+  SystemMode,
+  {
+    label: string;
+    description: string;
+    dataSource: string;
+    latency: string;
+    color: string;
+  }
+> = {
   live: {
     label: "Live",
     description: "Real-time market data and execution",
@@ -275,7 +296,7 @@ export const SYSTEM_MODE_CONFIG: Record<SystemMode, {
     latency: "T+1 by 08:00",
     color: "var(--surface-markets)",
   },
-}
+};
 
 // =============================================================================
 // INSTRUCTION TYPES
@@ -296,14 +317,17 @@ export const INSTRUCTION_TYPES = [
   "REBALANCE",
   "HEDGE",
   "SETTLE",
-] as const
-export type InstructionType = typeof INSTRUCTION_TYPES[number]
+] as const;
+export type InstructionType = (typeof INSTRUCTION_TYPES)[number];
 
-export const INSTRUCTION_TYPE_CONFIG: Record<InstructionType, {
-  label: string
-  description: string
-  assetClasses: AssetClass[]
-}> = {
+export const INSTRUCTION_TYPE_CONFIG: Record<
+  InstructionType,
+  {
+    label: string;
+    description: string;
+    assetClasses: AssetClass[];
+  }
+> = {
   SWAP: {
     label: "Swap",
     description: "Exchange one asset for another",
@@ -374,7 +398,7 @@ export const INSTRUCTION_TYPE_CONFIG: Record<InstructionType, {
     description: "Settle position or contract",
     assetClasses: ["TradFi", "Sports", "Prediction"],
   },
-}
+};
 
 // =============================================================================
 // TESTING STAGES
@@ -388,15 +412,18 @@ export const TESTING_STAGES = [
   "LIVE_TESTNET",
   "STAGING",
   "LIVE_REAL",
-] as const
-export type TestingStage = typeof TESTING_STAGES[number]
+] as const;
+export type TestingStage = (typeof TESTING_STAGES)[number];
 
-export const TESTING_STAGE_CONFIG: Record<TestingStage, {
-  label: string
-  description: string
-  order: number
-  color: string
-}> = {
+export const TESTING_STAGE_CONFIG: Record<
+  TestingStage,
+  {
+    label: string;
+    description: string;
+    order: number;
+    color: string;
+  }
+> = {
   MOCK: {
     label: "Mock",
     description: "Unit tests with mocked data",
@@ -433,21 +460,30 @@ export const TESTING_STAGE_CONFIG: Record<TestingStage, {
     order: 6,
     color: "#22c55e",
   },
-}
+};
 
 // =============================================================================
 // STATUS VALUES
 // =============================================================================
 
-export const STRATEGY_STATUSES = ["live", "warning", "error", "paused", "stopped"] as const
-export type StrategyStatus = typeof STRATEGY_STATUSES[number]
+export const STRATEGY_STATUSES = [
+  "live",
+  "warning",
+  "error",
+  "paused",
+  "stopped",
+] as const;
+export type StrategyStatus = (typeof STRATEGY_STATUSES)[number];
 
-export const STRATEGY_STATUS_CONFIG: Record<StrategyStatus, {
-  label: string
-  description: string
-  color: string
-  canTrade: boolean
-}> = {
+export const STRATEGY_STATUS_CONFIG: Record<
+  StrategyStatus,
+  {
+    label: string;
+    description: string;
+    color: string;
+    canTrade: boolean;
+  }
+> = {
   live: {
     label: "Live",
     description: "Actively trading",
@@ -478,7 +514,7 @@ export const STRATEGY_STATUS_CONFIG: Record<StrategyStatus, {
     color: "var(--muted-foreground)",
     canTrade: false,
   },
-}
+};
 
 // =============================================================================
 // VENUES
@@ -492,7 +528,7 @@ export const VENUES = {
   bybit: { label: "Bybit", assetClass: "CeFi", type: "exchange" },
   kraken: { label: "Kraken", assetClass: "CeFi", type: "exchange" },
   coinbase: { label: "Coinbase", assetClass: "CeFi", type: "exchange" },
-  
+
   // DeFi Protocols
   hyperliquid: { label: "Hyperliquid", assetClass: "DeFi", type: "perp-dex" },
   uniswap: { label: "Uniswap", assetClass: "DeFi", type: "amm" },
@@ -501,27 +537,35 @@ export const VENUES = {
   compound: { label: "Compound", assetClass: "DeFi", type: "lending" },
   curve: { label: "Curve", assetClass: "DeFi", type: "amm" },
   gmx: { label: "GMX", assetClass: "DeFi", type: "perp-dex" },
-  
+
   // TradFi
   ibkr: { label: "Interactive Brokers", assetClass: "TradFi", type: "broker" },
   cme: { label: "CME", assetClass: "TradFi", type: "exchange" },
   cboe: { label: "CBOE", assetClass: "TradFi", type: "exchange" },
-  
+
   // Sports Betting
   betfair: { label: "Betfair", assetClass: "Sports", type: "exchange" },
   pinnacle: { label: "Pinnacle", assetClass: "Sports", type: "bookmaker" },
   draftkings: { label: "DraftKings", assetClass: "Sports", type: "bookmaker" },
   fanduel: { label: "FanDuel", assetClass: "Sports", type: "bookmaker" },
   bet365: { label: "Bet365", assetClass: "Sports", type: "bookmaker" },
-  
-  // Prediction Markets
-  polymarket: { label: "Polymarket", assetClass: "Prediction", type: "prediction" },
-  kalshi: { label: "Kalshi", assetClass: "Prediction", type: "prediction" },
-  metaculus: { label: "Metaculus", assetClass: "Prediction", type: "prediction" },
-} as const
 
-export type VenueId = keyof typeof VENUES
-export type VenueConfig = typeof VENUES[VenueId]
+  // Prediction Markets
+  polymarket: {
+    label: "Polymarket",
+    assetClass: "Prediction",
+    type: "prediction",
+  },
+  kalshi: { label: "Kalshi", assetClass: "Prediction", type: "prediction" },
+  metaculus: {
+    label: "Metaculus",
+    assetClass: "Prediction",
+    type: "prediction",
+  },
+} as const;
+
+export type VenueId = keyof typeof VENUES;
+export type VenueConfig = (typeof VENUES)[VenueId];
 
 // =============================================================================
 // P&L FACTORS
@@ -549,15 +593,18 @@ export const PNL_FACTORS = [
   "rewards",
   "gas",
   "commission",
-] as const
-export type PnLFactor = typeof PNL_FACTORS[number]
+] as const;
+export type PnLFactor = (typeof PNL_FACTORS)[number];
 
-export const PNL_FACTOR_CONFIG: Record<PnLFactor, {
-  label: string
-  description: string
-  color: string
-  isExpense: boolean
-}> = {
+export const PNL_FACTOR_CONFIG: Record<
+  PnLFactor,
+  {
+    label: string;
+    description: string;
+    color: string;
+    isExpense: boolean;
+  }
+> = {
   funding: {
     label: "Funding",
     description: "Funding rate payments (perps)",
@@ -684,22 +731,31 @@ export const PNL_FACTOR_CONFIG: Record<PnLFactor, {
     color: "#a8a29e",
     isExpense: true,
   },
-}
+};
 
 // =============================================================================
 // ALERT SEVERITIES
 // =============================================================================
 
-export const ALERT_SEVERITIES = ["critical", "high", "medium", "low", "info"] as const
-export type AlertSeverity = typeof ALERT_SEVERITIES[number]
+export const ALERT_SEVERITIES = [
+  "critical",
+  "high",
+  "medium",
+  "low",
+  "info",
+] as const;
+export type AlertSeverity = (typeof ALERT_SEVERITIES)[number];
 
-export const ALERT_SEVERITY_CONFIG: Record<AlertSeverity, {
-  label: string
-  color: string
-  priority: number
-  autoEscalate: boolean
-  escalateAfterMinutes: number | null
-}> = {
+export const ALERT_SEVERITY_CONFIG: Record<
+  AlertSeverity,
+  {
+    label: string;
+    color: string;
+    priority: number;
+    autoEscalate: boolean;
+    escalateAfterMinutes: number | null;
+  }
+> = {
   critical: {
     label: "Critical",
     color: "var(--status-error)",
@@ -735,7 +791,7 @@ export const ALERT_SEVERITY_CONFIG: Record<AlertSeverity, {
     autoEscalate: false,
     escalateAfterMinutes: null,
   },
-}
+};
 
 // =============================================================================
 // UNDERLYINGS
@@ -748,53 +804,79 @@ export const UNDERLYINGS = {
   SOL: { label: "Solana", symbol: "SOL", assetClass: "CeFi" as AssetClass },
   ARB: { label: "Arbitrum", symbol: "ARB", assetClass: "DeFi" as AssetClass },
   OP: { label: "Optimism", symbol: "OP", assetClass: "DeFi" as AssetClass },
-  MATIC: { label: "Polygon", symbol: "MATIC", assetClass: "DeFi" as AssetClass },
-  AVAX: { label: "Avalanche", symbol: "AVAX", assetClass: "DeFi" as AssetClass },
-  
+  MATIC: {
+    label: "Polygon",
+    symbol: "MATIC",
+    assetClass: "DeFi" as AssetClass,
+  },
+  AVAX: {
+    label: "Avalanche",
+    symbol: "AVAX",
+    assetClass: "DeFi" as AssetClass,
+  },
+
   // TradFi
   SPX: { label: "S&P 500", symbol: "SPX", assetClass: "TradFi" as AssetClass },
-  NDX: { label: "Nasdaq 100", symbol: "NDX", assetClass: "TradFi" as AssetClass },
+  NDX: {
+    label: "Nasdaq 100",
+    symbol: "NDX",
+    assetClass: "TradFi" as AssetClass,
+  },
   VIX: { label: "VIX", symbol: "VIX", assetClass: "TradFi" as AssetClass },
-  
+
   // Sports
   NBA: { label: "NBA", symbol: "NBA", assetClass: "Sports" as AssetClass },
   NFL: { label: "NFL", symbol: "NFL", assetClass: "Sports" as AssetClass },
   MLB: { label: "MLB", symbol: "MLB", assetClass: "Sports" as AssetClass },
-  EPL: { label: "English Premier League", symbol: "EPL", assetClass: "Sports" as AssetClass },
-  
-  // Prediction
-  POLITICS: { label: "Politics", symbol: "POL", assetClass: "Prediction" as AssetClass },
-  ECONOMICS: { label: "Economics", symbol: "ECON", assetClass: "Prediction" as AssetClass },
-} as const
+  EPL: {
+    label: "English Premier League",
+    symbol: "EPL",
+    assetClass: "Sports" as AssetClass,
+  },
 
-export type UnderlyingId = keyof typeof UNDERLYINGS
+  // Prediction
+  POLITICS: {
+    label: "Politics",
+    symbol: "POL",
+    assetClass: "Prediction" as AssetClass,
+  },
+  ECONOMICS: {
+    label: "Economics",
+    symbol: "ECON",
+    assetClass: "Prediction" as AssetClass,
+  },
+} as const;
+
+export type UnderlyingId = keyof typeof UNDERLYINGS;
 
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
 
 export function getAssetClassColor(assetClass: AssetClass): string {
-  return ASSET_CLASS_CONFIG[assetClass].color
+  return ASSET_CLASS_CONFIG[assetClass].color;
 }
 
 export function getStrategyStatusColor(status: StrategyStatus): string {
-  return STRATEGY_STATUS_CONFIG[status].color
+  return STRATEGY_STATUS_CONFIG[status].color;
 }
 
 export function getTestingStageProgress(stage: TestingStage): number {
-  return (TESTING_STAGE_CONFIG[stage].order / TESTING_STAGES.length) * 100
+  return (TESTING_STAGE_CONFIG[stage].order / TESTING_STAGES.length) * 100;
 }
 
 export function getVenuesByAssetClass(assetClass: AssetClass): VenueId[] {
   return (Object.keys(VENUES) as VenueId[]).filter(
-    (id) => VENUES[id].assetClass === assetClass
-  )
+    (id) => VENUES[id].assetClass === assetClass,
+  );
 }
 
-export function getUnderlyingsByAssetClass(assetClass: AssetClass): UnderlyingId[] {
+export function getUnderlyingsByAssetClass(
+  assetClass: AssetClass,
+): UnderlyingId[] {
   return (Object.keys(UNDERLYINGS) as UnderlyingId[]).filter(
-    (id) => UNDERLYINGS[id].assetClass === assetClass
-  )
+    (id) => UNDERLYINGS[id].assetClass === assetClass,
+  );
 }
 
 // =============================================================================
@@ -808,15 +890,18 @@ export const NAVIGATION_SURFACES = [
   "ml",
   "config",
   "reports",
-] as const
-export type NavigationSurface = typeof NAVIGATION_SURFACES[number]
+] as const;
+export type NavigationSurface = (typeof NAVIGATION_SURFACES)[number];
 
-export const NAVIGATION_SURFACE_CONFIG: Record<NavigationSurface, {
-  label: string
-  description: string
-  color: string
-  href: string
-}> = {
+export const NAVIGATION_SURFACE_CONFIG: Record<
+  NavigationSurface,
+  {
+    label: string;
+    description: string;
+    color: string;
+    href: string;
+  }
+> = {
   strategy: {
     label: "Strategy",
     description: "Strategy catalogue and configuration",
@@ -853,7 +938,7 @@ export const NAVIGATION_SURFACE_CONFIG: Record<NavigationSurface, {
     color: "var(--surface-reports)",
     href: "/reports",
   },
-}
+};
 
 // =============================================================================
 // LIFECYCLE PHASES
@@ -865,14 +950,17 @@ export const LIFECYCLE_PHASES = [
   "run",
   "explain",
   "reconcile",
-] as const
-export type LifecyclePhase = typeof LIFECYCLE_PHASES[number]
+] as const;
+export type LifecyclePhase = (typeof LIFECYCLE_PHASES)[number];
 
-export const LIFECYCLE_PHASE_CONFIG: Record<LifecyclePhase, {
-  label: string
-  description: string
-  order: number
-}> = {
+export const LIFECYCLE_PHASE_CONFIG: Record<
+  LifecyclePhase,
+  {
+    label: string;
+    description: string;
+    order: number;
+  }
+> = {
   build: {
     label: "Build",
     description: "Design and configure strategies",
@@ -898,4 +986,4 @@ export const LIFECYCLE_PHASE_CONFIG: Record<LifecyclePhase, {
     description: "Settle and report",
     order: 5,
   },
-}
+};

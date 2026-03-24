@@ -1,6 +1,6 @@
-import Link from "next/link"
-import { SiteHeader } from "@/components/shell/site-header"
-import { ChatWidgetPublic } from "@/components/chat/chat-widget-public"
+import Link from "next/link";
+import { SiteHeader } from "@/components/shell/site-header";
+import { ChatWidgetPublic } from "@/components/chat/chat-widget-public";
 
 /**
  * Public shell — unauthenticated pages (landing, login, signup, docs, etc.)
@@ -9,7 +9,7 @@ import { ChatWidgetPublic } from "@/components/chat/chat-widget-public"
 export default function PublicLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <>
@@ -19,18 +19,39 @@ export default function PublicLayout({
         <div className="container px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Odum Research Ltd. All rights reserved.
+              &copy; {new Date().getFullYear()} Odum Research Ltd. All rights
+              reserved.
             </p>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-              <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-              <Link href="/services/regulatory" className="hover:text-foreground transition-colors">FCA 975797</Link>
-              <Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link>
+              <Link
+                href="/privacy"
+                className="hover:text-foreground transition-colors"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="hover:text-foreground transition-colors"
+              >
+                Terms
+              </Link>
+              <Link
+                href="/services/regulatory"
+                className="hover:text-foreground transition-colors"
+              >
+                FCA 975797
+              </Link>
+              <Link
+                href="/contact"
+                className="hover:text-foreground transition-colors"
+              >
+                Contact
+              </Link>
             </div>
           </div>
         </div>
       </footer>
       <ChatWidgetPublic />
     </>
-  )
+  );
 }

@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { useChat } from "@/hooks/api/use-chat"
-import { ChatMessages } from "./chat-messages"
-import { ChatInput } from "./chat-input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { useChat } from "@/hooks/api/use-chat";
+import { ChatMessages } from "./chat-messages";
+import { ChatInput } from "./chat-input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   MessageCircle,
   Minus,
@@ -14,51 +14,49 @@ import {
   Trash2,
   Maximize2,
   Minimize2,
-} from "lucide-react"
+} from "lucide-react";
 
-type ChatTier = "public" | "client" | "internal"
+type ChatTier = "public" | "client" | "internal";
 
 interface ChatWidgetProps {
-  tier?: ChatTier
+  tier?: ChatTier;
 }
 
 const TIER_LABELS: Record<ChatTier, string> = {
   public: "General Help",
   client: "Client Support",
   internal: "Internal Assistant",
-}
+};
 
 const TIER_COLORS: Record<ChatTier, string> = {
   public: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   client: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
   internal: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-}
+};
 
 const TIER_PLACEHOLDERS: Record<ChatTier, string> = {
-  public:
-    "Ask about our services, capabilities, or trading concepts...",
-  client:
-    "Ask about your portfolio, UI navigation, or features...",
+  public: "Ask about our services, capabilities, or trading concepts...",
+  client: "Ask about your portfolio, UI navigation, or features...",
   internal:
     "Ask about backend ops, compliance, architecture, or troubleshooting...",
-}
+};
 
 export function ChatWidget({ tier = "public" }: ChatWidgetProps) {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [isExpanded, setIsExpanded] = React.useState(false)
-  const { messages, isStreaming, sendMessage, clearHistory, error } = useChat()
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const { messages, isStreaming, sendMessage, clearHistory, error } = useChat();
 
   // Cmd+? shortcut to toggle
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "/" && (e.metaKey || e.ctrlKey) && e.shiftKey) {
-        e.preventDefault()
-        setIsOpen((prev) => !prev)
+        e.preventDefault();
+        setIsOpen((prev) => !prev);
       }
-    }
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [])
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Floating button when closed
   if (!isOpen) {
@@ -78,7 +76,7 @@ export function ChatWidget({ tier = "public" }: ChatWidgetProps) {
           </span>
         )}
       </div>
-    )
+    );
   }
 
   return (
@@ -140,8 +138,8 @@ export function ChatWidget({ tier = "public" }: ChatWidgetProps) {
             variant="ghost"
             size="icon-sm"
             onClick={() => {
-              setIsOpen(false)
-              clearHistory()
+              setIsOpen(false);
+              clearHistory();
             }}
             className="size-7"
             title="Close"
@@ -173,5 +171,5 @@ export function ChatWidget({ tier = "public" }: ChatWidgetProps) {
         Powered by Claude &middot; Cmd+Shift+/ to toggle
       </div>
     </div>
-  )
+  );
 }

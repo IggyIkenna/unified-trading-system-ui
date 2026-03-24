@@ -1,27 +1,32 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Inbox, CheckCircle2, XCircle, Clock } from "lucide-react"
-import { useAccessRequests, useReviewRequest } from "@/hooks/api/use-user-management"
-import { toast } from "@/hooks/use-toast"
-import type { AccessRequest } from "@/lib/types/user-management"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Inbox, CheckCircle2, XCircle, Clock } from "lucide-react";
+import {
+  useAccessRequests,
+  useReviewRequest,
+} from "@/hooks/api/use-user-management";
+import { toast } from "@/hooks/use-toast";
+import type { AccessRequest } from "@/lib/types/user-management";
 
 function statusIcon(status: string) {
-  if (status === "pending") return <Clock className="h-4 w-4 text-yellow-500" />
-  if (status === "approved") return <CheckCircle2 className="h-4 w-4 text-green-500" />
-  if (status === "denied") return <XCircle className="h-4 w-4 text-red-500" />
-  return <CheckCircle2 className="h-4 w-4 text-blue-500" />
+  if (status === "pending")
+    return <Clock className="h-4 w-4 text-yellow-500" />;
+  if (status === "approved")
+    return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+  if (status === "denied") return <XCircle className="h-4 w-4 text-red-500" />;
+  return <CheckCircle2 className="h-4 w-4 text-blue-500" />;
 }
 
 function statusVariant(status: string) {
-  if (status === "pending") return "secondary" as const
-  if (status === "approved") return "default" as const
-  if (status === "denied") return "destructive" as const
-  return "outline" as const
+  if (status === "pending") return "secondary" as const;
+  if (status === "approved") return "default" as const;
+  if (status === "denied") return "destructive" as const;
+  return "outline" as const;
 }
 
 const ENTITLEMENT_LABELS: Record<string, string> = {
@@ -31,27 +36,28 @@ const ENTITLEMENT_LABELS: Record<string, string> = {
   "execution-full": "Execution (Full)",
   "ml-full": "ML & Backtesting",
   "strategy-full": "Strategy Platform",
-  "reporting": "Reporting & Analytics",
-}
+  reporting: "Reporting & Analytics",
+};
 
 export default function AccessRequestsPage() {
-  const [filter, setFilter] = React.useState<string>("")
-  const { data, isLoading } = useAccessRequests(filter || undefined)
-  const review = useReviewRequest()
+  const [filter, setFilter] = React.useState<string>("");
+  const { data, isLoading } = useAccessRequests(filter || undefined);
+  const review = useReviewRequest();
 
   const handleReview = (id: string, action: "approve" | "deny") => {
-    const request = (data?.requests ?? []).find(r => r.id === id)
-    const note = action === "deny" ? "Denied by admin" : "Approved by admin"
-    review.mutate({ id, action, admin_note: note })
+    const request = (data?.requests ?? []).find((r) => r.id === id);
+    const note = action === "deny" ? "Denied by admin" : "Approved by admin";
+    review.mutate({ id, action, admin_note: note });
     if (request) {
       toast({
         title: action === "approve" ? "Approved" : "Denied",
-        description: action === "approve"
-          ? `Confirmation email would be sent to ${request.requester_email}`
-          : `Notification email would be sent to ${request.requester_email}`,
-      })
+        description:
+          action === "approve"
+            ? `Confirmation email would be sent to ${request.requester_email}`
+            : `Notification email would be sent to ${request.requester_email}`,
+      });
     }
-  }
+  };
 
   return (
     <div className="px-6 py-6 space-y-6">
@@ -60,7 +66,9 @@ export default function AccessRequestsPage() {
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Inbox className="h-6 w-6" /> Access Requests
           </h1>
-          <p className="text-muted-foreground">Review and approve pending access requests from users</p>
+          <p className="text-muted-foreground">
+            Review and approve pending access requests from users
+          </p>
         </div>
         <div className="flex gap-2">
           {["", "pending", "approved", "denied"].map((s) => (
@@ -81,7 +89,12 @@ export default function AccessRequestsPage() {
       ) : (
         <div className="grid gap-3">
           {(data?.requests ?? []).map((req) => (
-            <RequestCard key={req.id} request={req} onReview={handleReview} isPending={review.isPending} />
+            <RequestCard
+              key={req.id}
+              request={req}
+              onReview={handleReview}
+              isPending={review.isPending}
+            />
           ))}
           {(data?.requests ?? []).length === 0 && (
             <Card>
@@ -93,7 +106,7 @@ export default function AccessRequestsPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function RequestCard({
@@ -101,9 +114,9 @@ function RequestCard({
   onReview,
   isPending,
 }: {
-  request: AccessRequest
-  onReview: (id: string, action: "approve" | "deny") => void
-  isPending: boolean
+  request: AccessRequest;
+  onReview: (id: string, action: "approve" | "deny") => void;
+  isPending: boolean;
 }) {
   return (
     <Card>
@@ -113,7 +126,9 @@ function RequestCard({
             <div className="flex items-center gap-2">
               {statusIcon(request.status)}
               <span className="font-medium">{request.requester_name}</span>
-              <span className="text-sm text-muted-foreground">{request.requester_email}</span>
+              <span className="text-sm text-muted-foreground">
+                {request.requester_email}
+              </span>
             </div>
             <div className="flex gap-2 flex-wrap">
               {request.requested_entitlements.map((e) => (
@@ -122,7 +137,9 @@ function RequestCard({
                 </Badge>
               ))}
               {request.requested_role && (
-                <Badge variant="secondary">Role: {request.requested_role}</Badge>
+                <Badge variant="secondary">
+                  Role: {request.requested_role}
+                </Badge>
               )}
             </div>
             {request.reason && (
@@ -135,8 +152,12 @@ function RequestCard({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={statusVariant(request.status)}>{request.status}</Badge>
-            <span className="text-xs text-muted-foreground">{request.created_at.split("T")[0]}</span>
+            <Badge variant={statusVariant(request.status)}>
+              {request.status}
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              {request.created_at.split("T")[0]}
+            </span>
           </div>
         </div>
 
@@ -162,5 +183,5 @@ function RequestCard({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

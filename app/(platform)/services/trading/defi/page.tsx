@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { DeFiOpsPanel } from "@/components/trading/defi-ops-panel"
+import { DeFiOpsPanel } from "@/components/trading/defi-ops-panel";
 
 export default function DeFiOpsPage() {
   return (
@@ -15,5 +15,5 @@ export default function DeFiOpsPage() {
       </div>
       <DeFiOpsPanel />
     </div>
-  )
+  );
 }

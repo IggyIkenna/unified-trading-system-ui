@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ArrowLeft, Shield, Maximize2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useRef } from "react"
+import Link from "next/link";
+import { ArrowLeft, Shield, Maximize2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useRef } from "react";
 
 export default function DisasterRecoveryPage() {
-  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const toggleFullscreen = () => {
     if (iframeRef.current) {
-      iframeRef.current.requestFullscreen()
+      iframeRef.current.requestFullscreen();
     }
-  }
+  };
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -50,5 +50,5 @@ export default function DisasterRecoveryPage() {
         allow="fullscreen"
       />
     </div>
-  )
+  );
 }

@@ -1,12 +1,16 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { DimensionalGrid, type DimensionDef, type MetricDef } from "@/components/trading/dimensional-grid"
-import { PromoteFlowModal } from "@/components/trading/promote-flow-modal"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Rocket, Download, Grid3X3 } from "lucide-react"
-import { useStrategyPerformance } from "@/hooks/api/use-strategies"
+import * as React from "react";
+import {
+  DimensionalGrid,
+  type DimensionDef,
+  type MetricDef,
+} from "@/components/trading/dimensional-grid";
+import { PromoteFlowModal } from "@/components/trading/promote-flow-modal";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Rocket, Download, Grid3X3 } from "lucide-react";
+import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 
 // Default backtest result data
 const DEFAULT_BACKTEST_RESULTS = [
@@ -122,7 +126,7 @@ const DEFAULT_BACKTEST_RESULTS = [
     winRate: 67.8,
     alphaNet: 4.1,
   },
-]
+];
 
 const METRICS: MetricDef[] = [
   { key: "sharpe", label: "Sharpe", format: "decimal", colorize: true },
@@ -131,41 +135,67 @@ const METRICS: MetricDef[] = [
   { key: "trades", label: "Trades", format: "number" },
   { key: "winRate", label: "Win Rate", format: "percent" },
   { key: "alphaNet", label: "Alpha (bps)", format: "decimal", colorize: true },
-]
+];
 
 export default function StrategyGridPage() {
-  const { data: perfData, isLoading } = useStrategyPerformance()
-  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.backtests ?? []
-  const mockBacktestResults = perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RESULTS
+  const { data: perfData, isLoading } = useStrategyPerformance();
+  const perfRaw: any[] =
+    (perfData as any)?.data ?? (perfData as any)?.backtests ?? [];
+  const mockBacktestResults =
+    perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RESULTS;
 
-  const dimensions: DimensionDef[] = React.useMemo(() => [
-    { key: "strategy", label: "Strategy", values: [...new Set(mockBacktestResults.map((r: any) => r.strategy))] },
-    { key: "venue", label: "Venue", values: [...new Set(mockBacktestResults.map((r: any) => r.venue))] },
-    { key: "shard", label: "Shard", values: [...new Set(mockBacktestResults.map((r: any) => r.shard))] },
-    { key: "config", label: "Config", values: [...new Set(mockBacktestResults.map((r: any) => r.config))] },
-  ], [mockBacktestResults])
+  const dimensions: DimensionDef[] = React.useMemo(
+    () => [
+      {
+        key: "strategy",
+        label: "Strategy",
+        values: [...new Set(mockBacktestResults.map((r: any) => r.strategy))],
+      },
+      {
+        key: "venue",
+        label: "Venue",
+        values: [...new Set(mockBacktestResults.map((r: any) => r.venue))],
+      },
+      {
+        key: "shard",
+        label: "Shard",
+        values: [...new Set(mockBacktestResults.map((r: any) => r.shard))],
+      },
+      {
+        key: "config",
+        label: "Config",
+        values: [...new Set(mockBacktestResults.map((r: any) => r.config))],
+      },
+    ],
+    [mockBacktestResults],
+  );
 
-  const metrics = METRICS
+  const metrics = METRICS;
 
   const [pinnedDimensions, setPinnedDimensions] = React.useState<
     Record<string, string[]>
-  >({})
-  const [promoteModalOpen, setPromoteModalOpen] = React.useState(false)
-  const [selectedForPromotion, setSelectedForPromotion] = React.useState<string[]>([])
+  >({});
+  const [promoteModalOpen, setPromoteModalOpen] = React.useState(false);
+  const [selectedForPromotion, setSelectedForPromotion] = React.useState<
+    string[]
+  >([]);
 
   const handleDimensionPin = (dimension: string, values: string[]) => {
     setPinnedDimensions((prev) => ({
       ...prev,
       [dimension]: values,
-    }))
-  }
+    }));
+  };
 
   const handlePromote = (selectedIds: string[]) => {
-    setSelectedForPromotion(selectedIds)
-    setPromoteModalOpen(true)
-  }
+    setSelectedForPromotion(selectedIds);
+    setPromoteModalOpen(true);
+  };
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading)
+    return (
+      <div className="p-8 text-center text-muted-foreground">Loading...</div>
+    );
 
   return (
     <div className="p-6">
@@ -175,7 +205,8 @@ export default function StrategyGridPage() {
           <div>
             <h1 className="text-2xl font-semibold">DimensionalGrid</h1>
             <p className="text-sm text-muted-foreground">
-              Compare backtest results across strategies, venues, and time periods
+              Compare backtest results across strategies, venues, and time
+              periods
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -227,7 +258,7 @@ export default function StrategyGridPage() {
                 </div>
               )}
               onRowClick={(id) => {
-                console.log("View experiment:", id)
+                console.log("View experiment:", id);
               }}
             />
           </CardContent>
@@ -241,9 +272,10 @@ export default function StrategyGridPage() {
               <div className="space-y-1">
                 <p className="text-sm font-medium">Promotion Flow</p>
                 <p className="text-xs text-muted-foreground">
-                  Select the best-performing configs, then click "Promote to Live" to
-                  generate a cross-link to Operations Hub. The deploy form will be
-                  pre-filled with your selected configurations for review.
+                  Select the best-performing configs, then click "Promote to
+                  Live" to generate a cross-link to Operations Hub. The deploy
+                  form will be pre-filled with your selected configurations for
+                  review.
                 </p>
               </div>
             </div>
@@ -253,18 +285,21 @@ export default function StrategyGridPage() {
         {selectedForPromotion.length > 0 && (
           <PromoteFlowModal
             strategyId={selectedForPromotion[0]}
-            strategyName={mockBacktestResults.find(r => r.id === selectedForPromotion[0])?.strategy || "Selected Strategies"}
+            strategyName={
+              mockBacktestResults.find((r) => r.id === selectedForPromotion[0])
+                ?.strategy || "Selected Strategies"
+            }
             currentStage="STAGING"
             onPromote={async () => {
               // In real implementation: call API to promote
-              console.log("Promoting:", selectedForPromotion)
-              setPromoteModalOpen(false)
-              setSelectedForPromotion([])
+              console.log("Promoting:", selectedForPromotion);
+              setPromoteModalOpen(false);
+              setSelectedForPromotion([]);
             }}
             trigger={<></>}
           />
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Activity,
   AlertTriangle,
@@ -12,10 +12,10 @@ import {
   Play,
   Target,
   TrendingUp,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -23,16 +23,16 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -40,11 +40,22 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
-import { useStrategyBacktests, useStrategyTemplates, useStrategyCandidates, useCreateBacktest } from "@/hooks/api/use-strategies"
-import { Skeleton } from "@/components/ui/skeleton"
-import type { BacktestRun, StrategyConfig, StrategyTemplate, StrategyCandidate, StrategyAlert } from "@/lib/strategy-platform-types"
+import {
+  useStrategyBacktests,
+  useStrategyTemplates,
+  useStrategyCandidates,
+  useCreateBacktest,
+} from "@/hooks/api/use-strategies";
+import { Skeleton } from "@/components/ui/skeleton";
+import type {
+  BacktestRun,
+  StrategyConfig,
+  StrategyTemplate,
+  StrategyCandidate,
+  StrategyAlert,
+} from "@/lib/strategy-platform-types";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -53,60 +64,60 @@ import type { BacktestRun, StrategyConfig, StrategyTemplate, StrategyCandidate, 
 function statusColor(status: StrategyConfig["status"]) {
   switch (status) {
     case "live":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
     case "shadow":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
     case "paper":
-      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30";
     case "validated":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     case "backtest":
-      return "bg-purple-500/15 text-purple-400 border-purple-500/30"
+      return "bg-purple-500/15 text-purple-400 border-purple-500/30";
     case "draft":
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
     case "deprecated":
-      return "bg-red-500/15 text-red-400 border-red-500/30"
+      return "bg-red-500/15 text-red-400 border-red-500/30";
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
   }
 }
 
 function backtestStatusColor(status: BacktestRun["status"]) {
   switch (status) {
     case "completed":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
     case "running":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
     case "queued":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     case "failed":
-      return "bg-red-500/15 text-red-400 border-red-500/30"
+      return "bg-red-500/15 text-red-400 border-red-500/30";
     case "cancelled":
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
   }
 }
 
 function alertSeverityColor(severity: string) {
   switch (severity) {
     case "critical":
-      return "bg-red-500/15 text-red-400 border-red-500/30"
+      return "bg-red-500/15 text-red-400 border-red-500/30";
     case "warning":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     case "info":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
   }
 }
 
 function fmtPct(v: number) {
-  return `${(v * 100).toFixed(1)}%`
+  return `${(v * 100).toFixed(1)}%`;
 }
 
 function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals)
+  return v.toFixed(decimals);
 }
 
 // ---------------------------------------------------------------------------
@@ -114,11 +125,11 @@ function fmtNum(v: number, decimals = 2) {
 // ---------------------------------------------------------------------------
 
 interface BacktestFormState {
-  templateId: string
-  instrument: string
-  venue: string
-  dateStart: string
-  dateEnd: string
+  templateId: string;
+  instrument: string;
+  venue: string;
+  dateStart: string;
+  dateEnd: string;
 }
 
 const INITIAL_FORM: BacktestFormState = {
@@ -127,89 +138,101 @@ const INITIAL_FORM: BacktestFormState = {
   venue: "",
   dateStart: "2024-01-01",
   dateEnd: "2024-12-31",
-}
+};
 
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
 export default function StrategyOverviewPage() {
-  const { data: backtestsData, isLoading: backtestsLoading } = useStrategyBacktests()
-  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates()
-  const { data: candidatesData, isLoading: candidatesLoading } = useStrategyCandidates()
-  const createBacktest = useCreateBacktest()
+  const { data: backtestsData, isLoading: backtestsLoading } =
+    useStrategyBacktests();
+  const { data: templatesData, isLoading: templatesLoading } =
+    useStrategyTemplates();
+  const { data: candidatesData, isLoading: candidatesLoading } =
+    useStrategyCandidates();
+  const createBacktest = useCreateBacktest();
 
-  const backtestsFromApi: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
-  const STRATEGY_CONFIGS: StrategyConfig[] = (templatesData as any)?.data ?? (templatesData as any)?.configs ?? []
-  const STRATEGY_TEMPLATES: StrategyTemplate[] = (templatesData as any)?.data ?? (templatesData as any)?.templates ?? []
-  const STRATEGY_CANDIDATES: StrategyCandidate[] = (candidatesData as any)?.data ?? (candidatesData as any)?.candidates ?? []
-  const STRATEGY_ALERTS: StrategyAlert[] = (templatesData as any)?.alerts ?? []
+  const backtestsFromApi: BacktestRun[] =
+    (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
+  const STRATEGY_CONFIGS: StrategyConfig[] =
+    (templatesData as any)?.data ?? (templatesData as any)?.configs ?? [];
+  const STRATEGY_TEMPLATES: StrategyTemplate[] =
+    (templatesData as any)?.data ?? (templatesData as any)?.templates ?? [];
+  const STRATEGY_CANDIDATES: StrategyCandidate[] =
+    (candidatesData as any)?.data ?? (candidatesData as any)?.candidates ?? [];
+  const STRATEGY_ALERTS: StrategyAlert[] = (templatesData as any)?.alerts ?? [];
 
-  const isLoading = backtestsLoading || templatesLoading || candidatesLoading
+  const isLoading = backtestsLoading || templatesLoading || candidatesLoading;
 
-  const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([])
-  const backtests = [...localBacktests, ...backtestsFromApi]
-  const [dialogOpen, setDialogOpen] = React.useState(false)
-  const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM)
-  const [sortField, setSortField] = React.useState<"sharpe" | "return" | "drawdown">("sharpe")
-  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc")
+  const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([]);
+  const backtests = [...localBacktests, ...backtestsFromApi];
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM);
+  const [sortField, setSortField] = React.useState<
+    "sharpe" | "return" | "drawdown"
+  >("sharpe");
+  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
 
   // Derived KPIs
   const activeStrategies = STRATEGY_CONFIGS.filter(
-    (c) => c.status === "live" || c.status === "shadow"
-  ).length
-  const runningBacktests = backtests.filter((b) => b.status === "running").length
+    (c) => c.status === "live" || c.status === "shadow",
+  ).length;
+  const runningBacktests = backtests.filter(
+    (b) => b.status === "running",
+  ).length;
   const candidatesPending = STRATEGY_CANDIDATES.filter(
-    (c) => c.reviewState === "pending" || c.reviewState === "in_review"
-  ).length
-  const unresolvedAlerts = STRATEGY_ALERTS.filter((a) => !a.resolvedAt).length
+    (c) => c.reviewState === "pending" || c.reviewState === "in_review",
+  ).length;
+  const unresolvedAlerts = STRATEGY_ALERTS.filter((a) => !a.resolvedAt).length;
 
   // Recent completed backtests sorted
   const completedBacktests = backtests
     .filter((b) => b.status === "completed" && b.metrics)
     .sort((a, b) => {
-      const aM = a.metrics!
-      const bM = b.metrics!
-      let aV: number, bV: number
+      const aM = a.metrics!;
+      const bM = b.metrics!;
+      let aV: number, bV: number;
       switch (sortField) {
         case "sharpe":
-          aV = aM.sharpe
-          bV = bM.sharpe
-          break
+          aV = aM.sharpe;
+          bV = bM.sharpe;
+          break;
         case "return":
-          aV = aM.totalReturn
-          bV = bM.totalReturn
-          break
+          aV = aM.totalReturn;
+          bV = bM.totalReturn;
+          break;
         case "drawdown":
-          aV = aM.maxDrawdown
-          bV = bM.maxDrawdown
-          break
+          aV = aM.maxDrawdown;
+          bV = bM.maxDrawdown;
+          break;
       }
-      return sortDir === "desc" ? bV - aV : aV - bV
-    })
+      return sortDir === "desc" ? bV - aV : aV - bV;
+    });
 
   function handleSort(field: "sharpe" | "return" | "drawdown") {
     if (sortField === field) {
-      setSortDir((d) => (d === "desc" ? "asc" : "desc"))
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"));
     } else {
-      setSortField(field)
-      setSortDir("desc")
+      setSortField(field);
+      setSortDir("desc");
     }
   }
 
   function SortIcon({ field }: { field: string }) {
-    if (sortField !== field) return <ChevronDown className="size-3 opacity-30" />
+    if (sortField !== field)
+      return <ChevronDown className="size-3 opacity-30" />;
     return sortDir === "desc" ? (
       <ChevronDown className="size-3" />
     ) : (
       <ChevronUp className="size-3" />
-    )
+    );
   }
 
   function handleSubmitBacktest() {
-    if (!form.templateId) return
-    const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
-    if (!tpl) return
+    if (!form.templateId) return;
+    const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId);
+    if (!tpl) return;
 
     const newBt: BacktestRun = {
       id: `bt-new-${Date.now()}`,
@@ -236,7 +259,7 @@ export default function StrategyOverviewPage() {
       configHash: `cfg-hash-${Date.now()}`,
       liveAnalogId: null,
       driftScore: null,
-    }
+    };
 
     createBacktest.mutate({
       templateId: tpl.id,
@@ -244,15 +267,17 @@ export default function StrategyOverviewPage() {
       venue: form.venue || tpl.venues[0],
       dateStart: form.dateStart,
       dateEnd: form.dateEnd,
-    })
+    });
 
     // Optimistically add to local list
-    setLocalBacktests((prev) => [newBt, ...prev])
-    setForm(INITIAL_FORM)
-    setDialogOpen(false)
+    setLocalBacktests((prev) => [newBt, ...prev]);
+    setForm(INITIAL_FORM);
+    setDialogOpen(false);
   }
 
-  const selectedTemplate = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
+  const selectedTemplate = STRATEGY_TEMPLATES.find(
+    (t) => t.id === form.templateId,
+  );
 
   if (isLoading) {
     return (
@@ -260,7 +285,7 @@ export default function StrategyOverviewPage() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
-    )
+    );
   }
 
   return (
@@ -269,7 +294,9 @@ export default function StrategyOverviewPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Strategy Research Platform</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Strategy Research Platform
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
               Backtest, validate, and promote trading strategies
             </p>
@@ -359,11 +386,21 @@ export default function StrategyOverviewPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-border/50 hover:bg-transparent">
-                  <TableHead className="text-xs text-muted-foreground">Name</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Archetype</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Asset Class</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
-                  <TableHead className="text-xs text-muted-foreground">Version</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Name
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Archetype
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Asset Class
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Status
+                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">
+                    Version
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -412,9 +449,15 @@ export default function StrategyOverviewPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-border/50 hover:bg-transparent">
-                      <TableHead className="text-xs text-muted-foreground">Strategy</TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Venue</TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                      <TableHead className="text-xs text-muted-foreground">
+                        Strategy
+                      </TableHead>
+                      <TableHead className="text-xs text-muted-foreground">
+                        Venue
+                      </TableHead>
+                      <TableHead className="text-xs text-muted-foreground">
+                        Status
+                      </TableHead>
                       <TableHead
                         className="text-xs text-muted-foreground cursor-pointer select-none"
                         onClick={() => handleSort("sharpe")}
@@ -444,8 +487,12 @@ export default function StrategyOverviewPage() {
                   <TableBody>
                     {completedBacktests.map((bt) => (
                       <TableRow key={bt.id} className="border-border/30">
-                        <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
-                        <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
+                        <TableCell className="font-medium text-sm">
+                          {bt.templateName}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground text-xs">
+                          {bt.venue}
+                        </TableCell>
                         <TableCell>
                           <Badge
                             variant="outline"
@@ -467,22 +514,36 @@ export default function StrategyOverviewPage() {
                     ))}
                     {/* Show running backtests */}
                     {backtests
-                      .filter((b) => b.status === "running" || b.status === "queued")
+                      .filter(
+                        (b) => b.status === "running" || b.status === "queued",
+                      )
                       .map((bt) => (
                         <TableRow key={bt.id} className="border-border/30">
-                          <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
-                          <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
+                          <TableCell className="font-medium text-sm">
+                            {bt.templateName}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground text-xs">
+                            {bt.venue}
+                          </TableCell>
                           <TableCell>
                             <Badge
                               variant="outline"
                               className={backtestStatusColor(bt.status)}
                             >
-                              {bt.status === "running" ? `running ${bt.progress}%` : bt.status}
+                              {bt.status === "running"
+                                ? `running ${bt.progress}%`
+                                : bt.status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-muted-foreground">--</TableCell>
-                          <TableCell className="text-muted-foreground">--</TableCell>
-                          <TableCell className="text-muted-foreground">--</TableCell>
+                          <TableCell className="text-muted-foreground">
+                            --
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            --
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            --
+                          </TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -566,7 +627,9 @@ export default function StrategyOverviewPage() {
                     <Label>Instrument</Label>
                     <Select
                       value={form.instrument}
-                      onValueChange={(v) => setForm((f) => ({ ...f, instrument: v }))}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, instrument: v }))
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select instrument..." />
@@ -585,7 +648,9 @@ export default function StrategyOverviewPage() {
                     <Label>Venue</Label>
                     <Select
                       value={form.venue}
-                      onValueChange={(v) => setForm((f) => ({ ...f, venue: v }))}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, venue: v }))
+                      }
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select venue..." />
@@ -608,7 +673,9 @@ export default function StrategyOverviewPage() {
                   <Input
                     type="date"
                     value={form.dateStart}
-                    onChange={(e) => setForm((f) => ({ ...f, dateStart: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, dateStart: e.target.value }))
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -616,7 +683,9 @@ export default function StrategyOverviewPage() {
                   <Input
                     type="date"
                     value={form.dateEnd}
-                    onChange={(e) => setForm((f) => ({ ...f, dateEnd: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, dateEnd: e.target.value }))
+                    }
                   />
                 </div>
               </div>
@@ -625,7 +694,10 @@ export default function StrategyOverviewPage() {
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmitBacktest} disabled={!form.templateId}>
+              <Button
+                onClick={handleSubmitBacktest}
+                disabled={!form.templateId}
+              >
                 <Play className="size-4" />
                 Run Backtest
               </Button>
@@ -634,5 +706,5 @@ export default function StrategyOverviewPage() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

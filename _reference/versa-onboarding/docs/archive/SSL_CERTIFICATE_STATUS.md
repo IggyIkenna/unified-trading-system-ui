@@ -2,7 +2,7 @@
 
 ## Current Status
 
-✅ **DNS is correct**: Domain resolves to `199.36.158.100` (Firebase Hosting IP)  
+✅ **DNS is correct**: Domain resolves to `199.36.158.100` (Firebase Hosting IP)
 ❌ **SSL Certificate issue**: Certificate is for `firebaseapp.com`, not `odum-research.co.uk`
 
 ## Problem

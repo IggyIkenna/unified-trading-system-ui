@@ -16,20 +16,20 @@ export async function apiFetch(
 ): Promise<unknown> {
   const headers: Record<string, string> = {
     ...((options?.headers as Record<string, string>) ?? {}),
-  }
+  };
 
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
   const res = await fetch(url, {
     ...options,
     headers,
-  })
+  });
 
   if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
+    throw new Error(`${res.status} ${res.statusText}`);
   }
 
-  return res.json()
+  return res.json();
 }

@@ -1,8 +1,11 @@
-"use client"
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import * as api from "@/hooks/deployment/_api-stub";
-import type { CategoryVenuesResponse, StartDatesResponse } from "@/lib/types/deployment";
+import type {
+  CategoryVenuesResponse,
+  StartDatesResponse,
+} from "@/lib/types/deployment";
 
 export function useVenuesByCategory(category: string | null) {
   const [venues, setVenues] = useState<CategoryVenuesResponse | null>(null);

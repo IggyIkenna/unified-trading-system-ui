@@ -1,15 +1,12 @@
 // IMPORT THIS — do not create custom loading states
-import * as React from 'react'
+import * as React from "react";
 
-import { cn } from '@/lib/utils'
-import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function ChartSkeleton() {
   return (
-    <div
-      data-slot="chart-skeleton"
-      className={cn('flex flex-col gap-3')}
-    >
+    <div data-slot="chart-skeleton" className={cn("flex flex-col gap-3")}>
       {/* Chart title placeholder */}
       <Skeleton className="h-4 w-1/4" />
       {/* Chart area */}
@@ -36,7 +33,7 @@ function ChartSkeleton() {
         <Skeleton className="h-3 w-16" />
       </div>
     </div>
-  )
+  );
 }
 
-export { ChartSkeleton }
+export { ChartSkeleton };

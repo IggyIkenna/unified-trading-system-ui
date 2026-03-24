@@ -1,28 +1,37 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { LineChart } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useCorrelationMatrix } from "@/hooks/api/use-risk"
+import * as React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { LineChart } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useCorrelationMatrix } from "@/hooks/api/use-risk";
 
 function correlationColor(value: number): string {
   if (value < 0) {
-    const intensity = Math.abs(value)
-    const r = Math.round(255 * (1 - intensity))
-    const g = Math.round(255 * (1 - intensity))
-    return `rgb(${r}, ${g}, 255)`
+    const intensity = Math.abs(value);
+    const r = Math.round(255 * (1 - intensity));
+    const g = Math.round(255 * (1 - intensity));
+    return `rgb(${r}, ${g}, 255)`;
   }
-  const intensity = value
-  const g = Math.round(255 * (1 - intensity))
-  const b = Math.round(255 * (1 - intensity))
-  return `rgb(255, ${g}, ${b})`
+  const intensity = value;
+  const g = Math.round(255 * (1 - intensity));
+  const b = Math.round(255 * (1 - intensity));
+  return `rgb(255, ${g}, ${b})`;
 }
 
 export function CorrelationHeatmap() {
-  const { data: correlationData, isLoading } = useCorrelationMatrix()
-  const [hoveredCell, setHoveredCell] = React.useState<{ row: number; col: number } | null>(null)
+  const { data: correlationData, isLoading } = useCorrelationMatrix();
+  const [hoveredCell, setHoveredCell] = React.useState<{
+    row: number;
+    col: number;
+  } | null>(null);
 
   return (
     <Card>
@@ -32,7 +41,8 @@ export function CorrelationHeatmap() {
           Strategy Correlation Heatmap
         </CardTitle>
         <CardDescription>
-          NxN correlation matrix across strategies. Blue = negative, White = zero, Red = positive.
+          NxN correlation matrix across strategies. Blue = negative, White =
+          zero, Red = positive.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -42,7 +52,9 @@ export function CorrelationHeatmap() {
               <Skeleton key={i} className="h-8 w-full" />
             ))}
           </div>
-        ) : correlationData && correlationData.labels && correlationData.labels.length > 0 ? (
+        ) : correlationData &&
+          correlationData.labels &&
+          correlationData.labels.length > 0 ? (
           <div className="overflow-x-auto">
             <div
               className="inline-grid gap-px bg-border"
@@ -53,7 +65,10 @@ export function CorrelationHeatmap() {
               {/* Header row */}
               <div className="bg-card p-2 text-xs font-medium text-muted-foreground" />
               {correlationData.labels.map((label) => (
-                <div key={`header-${label}`} className="bg-card p-2 text-xs font-medium text-center truncate">
+                <div
+                  key={`header-${label}`}
+                  className="bg-card p-2 text-xs font-medium text-center truncate"
+                >
                   {label}
                 </div>
               ))}
@@ -66,7 +81,8 @@ export function CorrelationHeatmap() {
                   </div>
                   {row.map((value, colIdx) => {
                     const isHovered =
-                      hoveredCell?.row === rowIdx && hoveredCell?.col === colIdx
+                      hoveredCell?.row === rowIdx &&
+                      hoveredCell?.col === colIdx;
                     return (
                       <div
                         key={`cell-${rowIdx}-${colIdx}`}
@@ -75,22 +91,29 @@ export function CorrelationHeatmap() {
                           isHovered && "ring-2 ring-primary z-10",
                         )}
                         style={{ backgroundColor: correlationColor(value) }}
-                        onMouseEnter={() => setHoveredCell({ row: rowIdx, col: colIdx })}
+                        onMouseEnter={() =>
+                          setHoveredCell({ row: rowIdx, col: colIdx })
+                        }
                         onMouseLeave={() => setHoveredCell(null)}
                       >
                         {isHovered && (
                           <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-card border rounded px-2 py-1 text-xs font-mono whitespace-nowrap z-20 shadow-lg">
-                            {correlationData.labels[rowIdx]} / {correlationData.labels[colIdx]}: {value.toFixed(3)}
+                            {correlationData.labels[rowIdx]} /{" "}
+                            {correlationData.labels[colIdx]}: {value.toFixed(3)}
                           </div>
                         )}
-                        <span className={cn(
-                          "text-[10px]",
-                          Math.abs(value) > 0.5 ? "text-white" : "text-foreground",
-                        )}>
+                        <span
+                          className={cn(
+                            "text-[10px]",
+                            Math.abs(value) > 0.5
+                              ? "text-white"
+                              : "text-foreground",
+                          )}
+                        >
                           {value.toFixed(2)}
                         </span>
                       </div>
-                    )
+                    );
                   })}
                 </React.Fragment>
               ))}
@@ -99,15 +122,24 @@ export function CorrelationHeatmap() {
             {/* Legend */}
             <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: correlationColor(-1) }} />
+                <div
+                  className="w-4 h-4 rounded"
+                  style={{ backgroundColor: correlationColor(-1) }}
+                />
                 <span>-1.0</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: correlationColor(0) }} />
+                <div
+                  className="w-4 h-4 rounded"
+                  style={{ backgroundColor: correlationColor(0) }}
+                />
                 <span>0.0</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-4 h-4 rounded" style={{ backgroundColor: correlationColor(1) }} />
+                <div
+                  className="w-4 h-4 rounded"
+                  style={{ backgroundColor: correlationColor(1) }}
+                />
                 <span>+1.0</span>
               </div>
             </div>
@@ -119,5 +151,5 @@ export function CorrelationHeatmap() {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

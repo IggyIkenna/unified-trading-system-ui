@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import * as React from 'react'
+import * as React from "react";
 import {
   type ColumnDef,
   type SortingState,
@@ -9,11 +9,11 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { ArrowUpDown, ArrowUp, ArrowDown, Columns } from 'lucide-react'
+} from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { ArrowUpDown, ArrowUp, ArrowDown, Columns } from "lucide-react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -21,24 +21,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from "@/components/ui/dropdown-menu";
 
 interface DataTableProps<TData> {
-  columns: ColumnDef<TData, unknown>[]
-  data: TData[]
-  enableSorting?: boolean
-  enableColumnVisibility?: boolean
-  enableVirtualization?: boolean
-  virtualRowHeight?: number
-  className?: string
-  emptyMessage?: string
+  columns: ColumnDef<TData, unknown>[];
+  data: TData[];
+  enableSorting?: boolean;
+  enableColumnVisibility?: boolean;
+  enableVirtualization?: boolean;
+  virtualRowHeight?: number;
+  className?: string;
+  emptyMessage?: string;
 }
 
 function DataTable<TData>({
@@ -49,11 +49,11 @@ function DataTable<TData>({
   enableVirtualization = false,
   virtualRowHeight = 35,
   className,
-  emptyMessage = 'No results.',
+  emptyMessage = "No results.",
 }: DataTableProps<TData>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+    React.useState<VisibilityState>({});
 
   const table = useReactTable({
     data,
@@ -67,11 +67,11 @@ function DataTable<TData>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: enableSorting ? getSortedRowModel() : undefined,
     enableSorting,
-  })
+  });
 
-  const { rows } = table.getRowModel()
+  const { rows } = table.getRowModel();
 
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
     count: rows.length,
@@ -79,10 +79,10 @@ function DataTable<TData>({
     estimateSize: () => virtualRowHeight,
     enabled: enableVirtualization,
     overscan: 20,
-  })
+  });
 
   return (
-    <div className={cn('w-full space-y-2', className)}>
+    <div className={cn("w-full space-y-2", className)}>
       {enableColumnVisibility && (
         <div className="flex items-center justify-end">
           <DropdownMenu>
@@ -116,8 +116,8 @@ function DataTable<TData>({
       <div
         ref={scrollContainerRef}
         className={cn(
-          'rounded-md border',
-          enableVirtualization && 'max-h-[600px] overflow-auto',
+          "rounded-md border",
+          enableVirtualization && "max-h-[600px] overflow-auto",
         )}
       >
         <Table>
@@ -129,9 +129,9 @@ function DataTable<TData>({
                     {header.isPlaceholder ? null : (
                       <div
                         className={cn(
-                          'flex items-center gap-1',
+                          "flex items-center gap-1",
                           header.column.getCanSort() &&
-                            'cursor-pointer select-none',
+                            "cursor-pointer select-none",
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                       >
@@ -141,9 +141,9 @@ function DataTable<TData>({
                         )}
                         {header.column.getCanSort() && (
                           <span className="ml-1">
-                            {header.column.getIsSorted() === 'asc' ? (
+                            {header.column.getIsSorted() === "asc" ? (
                               <ArrowUp className="size-3.5" />
-                            ) : header.column.getIsSorted() === 'desc' ? (
+                            ) : header.column.getIsSorted() === "desc" ? (
                               <ArrowDown className="size-3.5" />
                             ) : (
                               <ArrowUpDown className="size-3.5 opacity-40" />
@@ -177,19 +177,19 @@ function DataTable<TData>({
                       style={{
                         height: `${virtualizer.getVirtualItems()[0]?.start ?? 0}px`,
                         padding: 0,
-                        border: 'none',
+                        border: "none",
                       }}
                     />
                   </tr>
                 )}
                 {virtualizer.getVirtualItems().map((virtualRow) => {
-                  const row = rows[virtualRow.index]
-                  if (!row) return null
+                  const row = rows[virtualRow.index];
+                  if (!row) return null;
                   return (
                     <TableRow
                       key={row.id}
                       data-index={virtualRow.index}
-                      data-state={row.getIsSelected() ? 'selected' : undefined}
+                      data-state={row.getIsSelected() ? "selected" : undefined}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -200,7 +200,7 @@ function DataTable<TData>({
                         </TableCell>
                       ))}
                     </TableRow>
-                  )
+                  );
                 })}
                 {virtualizer.getVirtualItems().length > 0 && (
                   <tr>
@@ -209,7 +209,7 @@ function DataTable<TData>({
                       style={{
                         height: `${virtualizer.getTotalSize() - (virtualizer.getVirtualItems().at(-1)?.end ?? 0)}px`,
                         padding: 0,
-                        border: 'none',
+                        border: "none",
                       }}
                     />
                   </tr>
@@ -219,7 +219,7 @@ function DataTable<TData>({
               rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() ? 'selected' : undefined}
+                  data-state={row.getIsSelected() ? "selected" : undefined}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -236,7 +236,7 @@ function DataTable<TData>({
         </Table>
       </div>
     </div>
-  )
+  );
 }
 
-export { DataTable, type DataTableProps }
+export { DataTable, type DataTableProps };

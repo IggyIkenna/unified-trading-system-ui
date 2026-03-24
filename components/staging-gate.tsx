@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { usePathname } from "next/navigation"
-import { Sparkles, Lock } from "lucide-react"
+import * as React from "react";
+import { usePathname } from "next/navigation";
+import { Sparkles, Lock } from "lucide-react";
 
 /**
  * Staging auth gate — wraps the entire app when NEXT_PUBLIC_STAGING_AUTH=true.
@@ -13,53 +13,53 @@ import { Sparkles, Lock } from "lucide-react"
  * Does NOT replace the app's persona/entitlement auth system.
  */
 
-const STAGING_USER = "odum"
-const STAGING_PASS = "QGeF2!@61"
-const STORAGE_KEY = "staging-authenticated"
+const STAGING_USER = "odum";
+const STAGING_PASS = "QGeF2!@61";
+const STORAGE_KEY = "staging-authenticated";
 
-const IS_STAGING = process.env.NEXT_PUBLIC_STAGING_AUTH === "true"
+const IS_STAGING = process.env.NEXT_PUBLIC_STAGING_AUTH === "true";
 
 // Public pages that don't require the staging password
-const PUBLIC_PATHS = ["/"]
+const PUBLIC_PATHS = ["/"];
 
 export function StagingGate({ children }: { children: React.ReactNode }) {
   if (!IS_STAGING) {
-    return <>{children}</>
+    return <>{children}</>;
   }
-  return <StagingAuthWall>{children}</StagingAuthWall>
+  return <StagingAuthWall>{children}</StagingAuthWall>;
 }
 
 /** Inner component — only mounted when staging auth is enabled */
 function StagingAuthWall({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname() || ""
-  const [authenticated, setAuthenticated] = React.useState(false)
-  const [checking, setChecking] = React.useState(true)
-  const [username, setUsername] = React.useState("")
-  const [password, setPassword] = React.useState("")
-  const [error, setError] = React.useState("")
+  const pathname = usePathname() || "";
+  const [authenticated, setAuthenticated] = React.useState(false);
+  const [checking, setChecking] = React.useState(true);
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
+    const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === "true") {
-      setAuthenticated(true)
+      setAuthenticated(true);
     }
-    setChecking(false)
-  }, [])
+    setChecking(false);
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     if (username === STAGING_USER && password === STAGING_PASS) {
-      localStorage.setItem(STORAGE_KEY, "true")
-      setAuthenticated(true)
+      localStorage.setItem(STORAGE_KEY, "true");
+      setAuthenticated(true);
     } else {
-      setError("Invalid credentials")
+      setError("Invalid credentials");
     }
   }
 
-  if (checking) return null
+  if (checking) return null;
   // Landing page is always accessible
-  if (PUBLIC_PATHS.includes(pathname)) return <>{children}</>
-  if (authenticated) return <>{children}</>
+  if (PUBLIC_PATHS.includes(pathname)) return <>{children}</>;
+  if (authenticated) return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center p-4">
@@ -77,7 +77,7 @@ function StagingAuthWall({ children }: { children: React.ReactNode }) {
             type="text"
             placeholder="Username"
             value={username}
-            onChange={e => setUsername(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
             required
             autoFocus
             className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 text-sm"
@@ -86,7 +86,7 @@ function StagingAuthWall({ children }: { children: React.ReactNode }) {
             type="password"
             placeholder="Password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 text-sm"
           />
@@ -105,5 +105,5 @@ function StagingAuthWall({ children }: { children: React.ReactNode }) {
         </p>
       </div>
     </div>
-  )
+  );
 }

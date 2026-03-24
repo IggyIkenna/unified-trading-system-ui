@@ -15,44 +15,44 @@ Open http://localhost:5174 — runs fully in mock mode by default (no backend re
 
 This is an npm workspaces monorepo. The `packages/` directory contains three vendored libraries that were originally separate workspace repos:
 
-| Package | Source | Purpose |
-|---|---|---|
-| `@unified-trading/ui-kit` | `packages/ui-kit/` | Radix-based component library (AppShell, Badge, Button, Card, Select, Tabs, etc.) |
-| `@unified-trading/ui-auth` | `packages/ui-auth/` | OAuth 2.0 PKCE auth (Google + AWS Cognito) |
-| `@unified-admin/core` | `packages/admin-core/` | API client, auth helpers, stress data generators |
+| Package                    | Source                 | Purpose                                                                           |
+| -------------------------- | ---------------------- | --------------------------------------------------------------------------------- |
+| `@unified-trading/ui-kit`  | `packages/ui-kit/`     | Radix-based component library (AppShell, Badge, Button, Card, Select, Tabs, etc.) |
+| `@unified-trading/ui-auth` | `packages/ui-auth/`    | OAuth 2.0 PKCE auth (Google + AWS Cognito)                                        |
+| `@unified-admin/core`      | `packages/admin-core/` | API client, auth helpers, stress data generators                                  |
 
 The app source lives in `src/` and is identical to the original `execution-analytics-ui` repo.
 
 ## Pages / Routes
 
-| Route | Page | Description |
-|---|---|---|
-| `/run` | RunBacktest | Configure and trigger backtest runs |
-| `/results` | Analysis | Browse and analyze execution results |
-| `/load` | LoadResults | Load results from GCS/S3 buckets |
-| `/grid` | GridResults | Grid search parameter exploration |
-| `/grid-results` | GridResults | Grid search results viewer |
-| `/analysis` | Analysis | Deep execution analysis |
-| `/deep-dive` | DeepDive | Per-order deep dive |
-| `/deep-dive/:configId` | DeepDive | Config-specific deep dive |
-| `/compare` | AlgorithmComparison | Side-by-side algorithm comparison |
-| `/configs` | ConfigBrowser | Browse and edit strategy configs |
-| `/generate` | ConfigGenerator | Generate new configs |
-| `/instruments` | InstrumentDefinitions | Instrument metadata browser |
-| `/availability` | InstructionAvailability | Data availability heatmap |
-| `/instructions` | InstructionAvailability | Instruction set browser |
-| `/tick-data` | MarketTickData | Tick data explorer |
-| `/deployments` | DeploymentsPage | Deployment status panel |
+| Route                  | Page                    | Description                          |
+| ---------------------- | ----------------------- | ------------------------------------ |
+| `/run`                 | RunBacktest             | Configure and trigger backtest runs  |
+| `/results`             | Analysis                | Browse and analyze execution results |
+| `/load`                | LoadResults             | Load results from GCS/S3 buckets     |
+| `/grid`                | GridResults             | Grid search parameter exploration    |
+| `/grid-results`        | GridResults             | Grid search results viewer           |
+| `/analysis`            | Analysis                | Deep execution analysis              |
+| `/deep-dive`           | DeepDive                | Per-order deep dive                  |
+| `/deep-dive/:configId` | DeepDive                | Config-specific deep dive            |
+| `/compare`             | AlgorithmComparison     | Side-by-side algorithm comparison    |
+| `/configs`             | ConfigBrowser           | Browse and edit strategy configs     |
+| `/generate`            | ConfigGenerator         | Generate new configs                 |
+| `/instruments`         | InstrumentDefinitions   | Instrument metadata browser          |
+| `/availability`        | InstructionAvailability | Data availability heatmap            |
+| `/instructions`        | InstructionAvailability | Instruction set browser              |
+| `/tick-data`           | MarketTickData          | Tick data explorer                   |
+| `/deployments`         | DeploymentsPage         | Deployment status panel              |
 
 ## Environment Variables
 
 Copy `.env.example` to `.env.development` (already done). The defaults enable full mock mode:
 
-| Variable | Default | Description |
-|---|---|---|
-| `VITE_MOCK_API` | `true` | Intercept all `/api/` calls with local mock data |
-| `VITE_SKIP_AUTH` | `true` | Bypass OAuth login |
-| `VITE_API_URL` | `http://localhost:8006` | Backend URL (only used when `VITE_MOCK_API=false`) |
+| Variable         | Default                 | Description                                        |
+| ---------------- | ----------------------- | -------------------------------------------------- |
+| `VITE_MOCK_API`  | `true`                  | Intercept all `/api/` calls with local mock data   |
+| `VITE_SKIP_AUTH` | `true`                  | Bypass OAuth login                                 |
+| `VITE_API_URL`   | `http://localhost:8006` | Backend URL (only used when `VITE_MOCK_API=false`) |
 
 ## Mock API
 
@@ -102,13 +102,13 @@ Runs `tsc && vite build`. Output lands in `dist/`.
 
 Both `vite.config.ts` and `tsconfig.json` declare matching aliases so IDE intellisense and the build tool agree:
 
-| Import | Resolves to |
-|---|---|
-| `@unified-trading/ui-kit` | `packages/ui-kit/src/index.ts` |
-| `@unified-trading/ui-kit/globals.css` | `packages/ui-kit/src/globals.css` |
-| `@unified-trading/ui-auth` | `packages/ui-auth/src/index.ts` |
-| `@unified-admin/core` | `packages/admin-core/src/index.ts` |
-| `@/*` | `src/*` |
+| Import                                | Resolves to                        |
+| ------------------------------------- | ---------------------------------- |
+| `@unified-trading/ui-kit`             | `packages/ui-kit/src/index.ts`     |
+| `@unified-trading/ui-kit/globals.css` | `packages/ui-kit/src/globals.css`  |
+| `@unified-trading/ui-auth`            | `packages/ui-auth/src/index.ts`    |
+| `@unified-admin/core`                 | `packages/admin-core/src/index.ts` |
+| `@/*`                                 | `src/*`                            |
 
 ## Directory Structure
 

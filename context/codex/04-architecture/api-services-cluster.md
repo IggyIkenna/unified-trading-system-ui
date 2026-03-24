@@ -1,6 +1,6 @@
 # API Services Cluster
 
-**Last updated:** 2026-02-28  
+**Last updated:** 2026-02-28
 **Topological level:** L10 **SSOT:** `unified-trading-pm/workspace-manifest.json` (cluster=api-services)
 
 ---

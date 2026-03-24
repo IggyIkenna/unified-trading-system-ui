@@ -24,7 +24,10 @@ export default defineConfig({
       },
       {
         find: "@unified-admin/core",
-        replacement: path.resolve(__dirname, "packages/admin-core/src/index.ts"),
+        replacement: path.resolve(
+          __dirname,
+          "packages/admin-core/src/index.ts",
+        ),
       },
       {
         find: "@",

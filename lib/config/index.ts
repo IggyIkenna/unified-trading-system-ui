@@ -1,5 +1,5 @@
-export { SERVICE_ENDPOINTS, API_TIMEOUT, type ServiceKey } from "./api"
-export { COMPANY, BRAND_COLORS, FONTS, USP } from "./branding"
+export { SERVICE_ENDPOINTS, API_TIMEOUT, type ServiceKey } from "./api";
+export { COMPANY, BRAND_COLORS, FONTS, USP } from "./branding";
 export {
   ENTITLEMENTS,
   ALL_ENTITLEMENTS,
@@ -8,9 +8,9 @@ export {
   type Entitlement,
   type Org,
   type AuthPersona,
-} from "./auth"
+} from "./auth";
 export {
   SERVICE_REGISTRY,
   getVisibleServices,
   type ServiceDefinition,
-} from "./services"
+} from "./services";

@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import type { ColumnDef } from "@tanstack/react-table"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DataTable } from "@/components/ui/data-table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
-import { cn } from "@/lib/utils"
-import { useRegulatoryReports } from "@/hooks/api/use-reports"
+import * as React from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/ui/data-table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { cn } from "@/lib/utils";
+import { useRegulatoryReports } from "@/hooks/api/use-reports";
 import {
   Shield,
   FileText,
@@ -21,32 +21,37 @@ import {
   ChevronRight,
   Calendar,
   RefreshCw,
-} from "lucide-react"
+} from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type ReportStatus = "submitted" | "pending" | "overdue" | "draft"
-type ReportType = "MIFID_II_ART26" | "MIFID_II_ART27" | "FCA_BEST_EXEC" | "EMIR_DERIVATIVE" | "FCA_TRANSACTION"
-type Jurisdiction = "EU" | "UK"
+type ReportStatus = "submitted" | "pending" | "overdue" | "draft";
+type ReportType =
+  | "MIFID_II_ART26"
+  | "MIFID_II_ART27"
+  | "FCA_BEST_EXEC"
+  | "EMIR_DERIVATIVE"
+  | "FCA_TRANSACTION";
+type Jurisdiction = "EU" | "UK";
 
 interface RegulatoryReport {
-  id: string
-  reportType: ReportType
-  jurisdiction: Jurisdiction
-  period: string
-  filingDate: string | null
-  nextDueDate: string
-  status: ReportStatus
-  filingReference: string | null
-  instrumentsCovered: string[]
+  id: string;
+  reportType: ReportType;
+  jurisdiction: Jurisdiction;
+  period: string;
+  filingDate: string | null;
+  nextDueDate: string;
+  status: ReportStatus;
+  filingReference: string | null;
+  instrumentsCovered: string[];
   bestExecutionMetrics: {
-    avgSlippage: string
-    fillRate: string
-    priceImprovement: string
-    venueScore: string
-  } | null
+    avgSlippage: string;
+    fillRate: string;
+    priceImprovement: string;
+    venueScore: string;
+  } | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -59,7 +64,7 @@ const REPORT_TYPE_LABELS: Record<ReportType, string> = {
   FCA_BEST_EXEC: "FCA Best Execution",
   EMIR_DERIVATIVE: "EMIR Derivative Reporting",
   FCA_TRANSACTION: "FCA Transaction Reporting",
-}
+};
 
 const REPORT_TYPE_SHORT: Record<ReportType, string> = {
   MIFID_II_ART26: "MiFID II",
@@ -67,14 +72,33 @@ const REPORT_TYPE_SHORT: Record<ReportType, string> = {
   FCA_BEST_EXEC: "FCA",
   EMIR_DERIVATIVE: "EMIR",
   FCA_TRANSACTION: "FCA",
-}
+};
 
-const STATUS_CONFIG: Record<ReportStatus, { label: string; className: string; icon: React.ElementType }> = {
-  submitted: { label: "Submitted", className: "bg-emerald-500/15 text-emerald-400 border-transparent", icon: CheckCircle },
-  pending: { label: "Pending", className: "bg-amber-500/15 text-amber-400 border-transparent", icon: Clock },
-  overdue: { label: "Overdue", className: "bg-rose-500/15 text-rose-400 border-transparent", icon: AlertTriangle },
-  draft: { label: "Draft", className: "bg-slate-500/15 text-slate-400 border-transparent", icon: FileText },
-}
+const STATUS_CONFIG: Record<
+  ReportStatus,
+  { label: string; className: string; icon: React.ElementType }
+> = {
+  submitted: {
+    label: "Submitted",
+    className: "bg-emerald-500/15 text-emerald-400 border-transparent",
+    icon: CheckCircle,
+  },
+  pending: {
+    label: "Pending",
+    className: "bg-amber-500/15 text-amber-400 border-transparent",
+    icon: Clock,
+  },
+  overdue: {
+    label: "Overdue",
+    className: "bg-rose-500/15 text-rose-400 border-transparent",
+    icon: AlertTriangle,
+  },
+  draft: {
+    label: "Draft",
+    className: "bg-slate-500/15 text-slate-400 border-transparent",
+    icon: FileText,
+  },
+};
 
 // ---------------------------------------------------------------------------
 // Mock data (fallback when API is unavailable)
@@ -119,7 +143,14 @@ const MOCK_REPORTS: RegulatoryReport[] = [
     nextDueDate: "2026-03-20",
     status: "overdue",
     filingReference: null,
-    instrumentsCovered: ["BTC-GBP", "ETH-GBP", "BTC-USD", "ETH-USD", "SOL-USD", "AVAX-USD"],
+    instrumentsCovered: [
+      "BTC-GBP",
+      "ETH-GBP",
+      "BTC-USD",
+      "ETH-USD",
+      "SOL-USD",
+      "AVAX-USD",
+    ],
     bestExecutionMetrics: {
       avgSlippage: "1.5 bps",
       fillRate: "97.1%",
@@ -213,7 +244,13 @@ const MOCK_REPORTS: RegulatoryReport[] = [
     nextDueDate: "2027-03-31",
     status: "submitted",
     filingReference: "EU-ART27-2025-ANN-00012",
-    instrumentsCovered: ["BTC-USD", "ETH-USD", "SOL-USD", "AVAX-USD", "LINK-USD"],
+    instrumentsCovered: [
+      "BTC-USD",
+      "ETH-USD",
+      "SOL-USD",
+      "AVAX-USD",
+      "LINK-USD",
+    ],
     bestExecutionMetrics: {
       avgSlippage: "1.3 bps",
       fillRate: "97.9%",
@@ -221,21 +258,25 @@ const MOCK_REPORTS: RegulatoryReport[] = [
       venueScore: "A-",
     },
   },
-]
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
 function formatDate(iso: string | null): string {
-  if (!iso) return "--"
-  return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+  if (!iso) return "--";
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function daysUntil(iso: string): number {
-  const now = new Date()
-  const target = new Date(iso)
-  return Math.ceil((target.getTime() - now.getTime()) / 86_400_000)
+  const now = new Date();
+  const target = new Date(iso);
+  return Math.ceil((target.getTime() - now.getTime()) / 86_400_000);
 }
 
 // ---------------------------------------------------------------------------
@@ -243,25 +284,25 @@ function daysUntil(iso: string): number {
 // ---------------------------------------------------------------------------
 
 function StatusBadge({ status }: { status: ReportStatus }) {
-  const config = STATUS_CONFIG[status]
-  const Icon = config.icon
+  const config = STATUS_CONFIG[status];
+  const Icon = config.icon;
   return (
     <Badge className={cn("gap-1", config.className)}>
       <Icon className="size-3" />
       {config.label}
     </Badge>
-  )
+  );
 }
 
 function ReportTypeBadge({ reportType }: { reportType: ReportType }) {
-  const short = REPORT_TYPE_SHORT[reportType]
+  const short = REPORT_TYPE_SHORT[reportType];
   const colorClass =
     short === "MiFID II"
       ? "bg-blue-500/15 text-blue-400 border-transparent"
       : short === "FCA"
         ? "bg-violet-500/15 text-violet-400 border-transparent"
-        : "bg-cyan-500/15 text-cyan-400 border-transparent"
-  return <Badge className={colorClass}>{short}</Badge>
+        : "bg-cyan-500/15 text-cyan-400 border-transparent";
+  return <Badge className={colorClass}>{short}</Badge>;
 }
 
 function JurisdictionBadge({ jurisdiction }: { jurisdiction: Jurisdiction }) {
@@ -270,12 +311,14 @@ function JurisdictionBadge({ jurisdiction }: { jurisdiction: Jurisdiction }) {
       variant="outline"
       className={cn(
         "text-xs",
-        jurisdiction === "EU" ? "border-blue-500/40 text-blue-400" : "border-violet-500/40 text-violet-400",
+        jurisdiction === "EU"
+          ? "border-blue-500/40 text-blue-400"
+          : "border-violet-500/40 text-violet-400",
       )}
     >
       {jurisdiction}
     </Badge>
-  )
+  );
 }
 
 function DetailPanel({ report }: { report: RegulatoryReport }) {
@@ -284,15 +327,21 @@ function DetailPanel({ report }: { report: RegulatoryReport }) {
       <div className="grid grid-cols-3 gap-6">
         {/* Filing info */}
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filing Details</h4>
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            Filing Details
+          </h4>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Report</span>
-              <span className="font-medium">{REPORT_TYPE_LABELS[report.reportType]}</span>
+              <span className="font-medium">
+                {REPORT_TYPE_LABELS[report.reportType]}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Reference</span>
-              <span className="font-mono text-xs">{report.filingReference ?? "Not yet assigned"}</span>
+              <span className="font-mono text-xs">
+                {report.filingReference ?? "Not yet assigned"}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Period</span>
@@ -323,29 +372,43 @@ function DetailPanel({ report }: { report: RegulatoryReport }) {
           {report.bestExecutionMetrics ? (
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-md border px-3 py-2">
-                <div className="text-xs text-muted-foreground">Avg Slippage</div>
-                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.avgSlippage}</div>
+                <div className="text-xs text-muted-foreground">
+                  Avg Slippage
+                </div>
+                <div className="text-sm font-mono font-medium">
+                  {report.bestExecutionMetrics.avgSlippage}
+                </div>
               </div>
               <div className="rounded-md border px-3 py-2">
                 <div className="text-xs text-muted-foreground">Fill Rate</div>
-                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.fillRate}</div>
+                <div className="text-sm font-mono font-medium">
+                  {report.bestExecutionMetrics.fillRate}
+                </div>
               </div>
               <div className="rounded-md border px-3 py-2">
-                <div className="text-xs text-muted-foreground">Price Improvement</div>
-                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.priceImprovement}</div>
+                <div className="text-xs text-muted-foreground">
+                  Price Improvement
+                </div>
+                <div className="text-sm font-mono font-medium">
+                  {report.bestExecutionMetrics.priceImprovement}
+                </div>
               </div>
               <div className="rounded-md border px-3 py-2">
                 <div className="text-xs text-muted-foreground">Venue Score</div>
-                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.venueScore}</div>
+                <div className="text-sm font-mono font-medium">
+                  {report.bestExecutionMetrics.venueScore}
+                </div>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground italic">Not applicable for this report type</p>
+            <p className="text-sm text-muted-foreground italic">
+              Not applicable for this report type
+            </p>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -362,14 +425,14 @@ function makeColumns(
       header: "",
       enableSorting: false,
       cell: ({ row }) => {
-        const isExpanded = expandedId === row.original.id
+        const isExpanded = expandedId === row.original.id;
         return (
           <button
             type="button"
             className="p-0 bg-transparent border-none cursor-pointer"
             onClick={(e) => {
-              e.stopPropagation()
-              onToggleExpand(row.original.id)
+              e.stopPropagation();
+              onToggleExpand(row.original.id);
             }}
           >
             {isExpanded ? (
@@ -378,7 +441,7 @@ function makeColumns(
               <ChevronRight className="size-4 text-muted-foreground" />
             )}
           </button>
-        )
+        );
       },
     },
     {
@@ -387,14 +450,18 @@ function makeColumns(
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <ReportTypeBadge reportType={row.original.reportType} />
-          <span className="text-sm">{REPORT_TYPE_LABELS[row.original.reportType]}</span>
+          <span className="text-sm">
+            {REPORT_TYPE_LABELS[row.original.reportType]}
+          </span>
         </div>
       ),
     },
     {
       accessorKey: "jurisdiction",
       header: "Jurisdiction",
-      cell: ({ row }) => <JurisdictionBadge jurisdiction={row.original.jurisdiction} />,
+      cell: ({ row }) => (
+        <JurisdictionBadge jurisdiction={row.original.jurisdiction} />
+      ),
     },
     {
       accessorKey: "period",
@@ -405,18 +472,22 @@ function makeColumns(
       accessorKey: "filingDate",
       header: "Filed",
       cell: ({ row }) => (
-        <span className="text-sm font-mono">{formatDate(row.original.filingDate)}</span>
+        <span className="text-sm font-mono">
+          {formatDate(row.original.filingDate)}
+        </span>
       ),
     },
     {
       accessorKey: "nextDueDate",
       header: "Next Due",
       cell: ({ row }) => {
-        const report = row.original
-        const dueDays = daysUntil(report.nextDueDate)
+        const report = row.original;
+        const dueDays = daysUntil(report.nextDueDate);
         return (
           <div className="flex items-center gap-2">
-            <span className="text-sm font-mono">{formatDate(report.nextDueDate)}</span>
+            <span className="text-sm font-mono">
+              {formatDate(report.nextDueDate)}
+            </span>
             {report.status !== "submitted" && dueDays <= 14 && dueDays > 0 && (
               <span className="text-xs text-amber-400">({dueDays}d)</span>
             )}
@@ -424,7 +495,7 @@ function makeColumns(
               <span className="text-xs text-rose-400">(past due)</span>
             )}
           </div>
-        )
+        );
       },
     },
     {
@@ -432,7 +503,7 @@ function makeColumns(
       header: "Status",
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
-  ]
+  ];
 }
 
 // ---------------------------------------------------------------------------
@@ -440,60 +511,65 @@ function makeColumns(
 // ---------------------------------------------------------------------------
 
 export default function RegulatoryPage() {
-  const { data: rawData, isLoading, isError, refetch } = useRegulatoryReports()
-  const [expandedId, setExpandedId] = React.useState<string | null>(null)
-  const [activeTab, setActiveTab] = React.useState("all")
+  const { data: rawData, isLoading, isError, refetch } = useRegulatoryReports();
+  const [expandedId, setExpandedId] = React.useState<string | null>(null);
+  const [activeTab, setActiveTab] = React.useState("all");
 
   // Resolve API data or fall back to mock
   const reports: RegulatoryReport[] = React.useMemo(() => {
-    const apiReports = (rawData as { data?: RegulatoryReport[] } | undefined)?.data
-    if (Array.isArray(apiReports) && apiReports.length > 0) return apiReports
-    return MOCK_REPORTS
-  }, [rawData])
+    const apiReports = (rawData as { data?: RegulatoryReport[] } | undefined)
+      ?.data;
+    if (Array.isArray(apiReports) && apiReports.length > 0) return apiReports;
+    return MOCK_REPORTS;
+  }, [rawData]);
 
   // Summary counts
   const counts = React.useMemo(() => {
-    let submitted = 0
-    let pending = 0
-    let overdue = 0
+    let submitted = 0;
+    let pending = 0;
+    let overdue = 0;
     for (const r of reports) {
-      if (r.status === "submitted") submitted++
-      else if (r.status === "pending") pending++
-      else if (r.status === "overdue") overdue++
+      if (r.status === "submitted") submitted++;
+      else if (r.status === "pending") pending++;
+      else if (r.status === "overdue") overdue++;
     }
-    return { submitted, pending, overdue }
-  }, [reports])
+    return { submitted, pending, overdue };
+  }, [reports]);
 
   // Filter by tab
   const filtered = React.useMemo(() => {
-    if (activeTab === "all") return reports
-    return reports.filter((r) => r.status === activeTab)
-  }, [reports, activeTab])
+    if (activeTab === "all") return reports;
+    return reports.filter((r) => r.status === activeTab);
+  }, [reports, activeTab]);
 
   // Upcoming deadlines (next 5)
   const upcomingDeadlines = React.useMemo(() => {
     return [...reports]
       .filter((r) => r.status !== "submitted")
-      .sort((a, b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime())
-      .slice(0, 5)
-  }, [reports])
+      .sort(
+        (a, b) =>
+          new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime(),
+      )
+      .slice(0, 5);
+  }, [reports]);
 
   // Toggle expand handler
   const handleToggleExpand = React.useCallback((id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id))
-  }, [])
+    setExpandedId((prev) => (prev === id ? null : id));
+  }, []);
 
   // Column definitions (depend on expandedId for chevron state)
   const columns = React.useMemo(
     () => makeColumns(expandedId, handleToggleExpand),
     [expandedId, handleToggleExpand],
-  )
+  );
 
   // Currently expanded report
   const expandedReport = React.useMemo(
-    () => (expandedId ? filtered.find((r) => r.id === expandedId) ?? null : null),
+    () =>
+      expandedId ? (filtered.find((r) => r.id === expandedId) ?? null) : null,
     [expandedId, filtered],
-  )
+  );
 
   // Loading state
   if (isLoading) {
@@ -509,7 +585,7 @@ export default function RegulatoryPage() {
           <Skeleton key={i} className="h-14 w-full" />
         ))}
       </div>
-    )
+    );
   }
 
   // Error state
@@ -519,7 +595,9 @@ export default function RegulatoryPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
             <AlertTriangle className="size-10 text-rose-400" />
-            <p className="text-sm text-muted-foreground">Failed to load regulatory reports</p>
+            <p className="text-sm text-muted-foreground">
+              Failed to load regulatory reports
+            </p>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               <RefreshCw className="size-4 mr-2" />
               Retry
@@ -527,7 +605,7 @@ export default function RegulatoryPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   // Empty state
@@ -537,14 +615,16 @@ export default function RegulatoryPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 space-y-3">
             <Shield className="size-10 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">No regulatory reports found</p>
+            <p className="text-sm text-muted-foreground">
+              No regulatory reports found
+            </p>
             <p className="text-xs text-muted-foreground/70">
               Reports will appear here once compliance filings are generated
             </p>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -555,7 +635,9 @@ export default function RegulatoryPage() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold font-mono text-emerald-400">{counts.submitted}</div>
+                <div className="text-2xl font-bold font-mono text-emerald-400">
+                  {counts.submitted}
+                </div>
                 <div className="text-xs text-muted-foreground">Submitted</div>
               </div>
               <CheckCircle className="size-8 text-emerald-500/40" />
@@ -566,7 +648,9 @@ export default function RegulatoryPage() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold font-mono text-amber-400">{counts.pending}</div>
+                <div className="text-2xl font-bold font-mono text-amber-400">
+                  {counts.pending}
+                </div>
                 <div className="text-xs text-muted-foreground">Pending</div>
               </div>
               <Clock className="size-8 text-amber-500/40" />
@@ -577,7 +661,9 @@ export default function RegulatoryPage() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold font-mono text-rose-400">{counts.overdue}</div>
+                <div className="text-2xl font-bold font-mono text-rose-400">
+                  {counts.overdue}
+                </div>
                 <div className="text-xs text-muted-foreground">Overdue</div>
               </div>
               <AlertTriangle className="size-8 text-rose-500/40" />
@@ -633,9 +719,7 @@ export default function RegulatoryPage() {
                   />
                 </CardContent>
               </Card>
-              {expandedReport && (
-                <DetailPanel report={expandedReport} />
-              )}
+              {expandedReport && <DetailPanel report={expandedReport} />}
             </TabsContent>
           </Tabs>
         </div>
@@ -651,31 +735,41 @@ export default function RegulatoryPage() {
             </CardHeader>
             <CardContent>
               {upcomingDeadlines.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">All filings up to date</p>
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  All filings up to date
+                </p>
               ) : (
                 <div className="space-y-3">
                   {upcomingDeadlines.map((report) => {
-                    const dueDays = daysUntil(report.nextDueDate)
-                    const isOverdue = dueDays <= 0
+                    const dueDays = daysUntil(report.nextDueDate);
+                    const isOverdue = dueDays <= 0;
                     return (
                       <div
                         key={report.id}
                         className={cn(
                           "flex items-start gap-3 rounded-md border p-3",
                           isOverdue && "border-rose-500/30 bg-rose-500/5",
-                          !isOverdue && dueDays <= 7 && "border-amber-500/30 bg-amber-500/5",
+                          !isOverdue &&
+                            dueDays <= 7 &&
+                            "border-amber-500/30 bg-amber-500/5",
                         )}
                       >
                         <div
                           className={cn(
                             "mt-0.5 size-2 rounded-full shrink-0",
-                            isOverdue ? "bg-rose-400" : dueDays <= 7 ? "bg-amber-400" : "bg-muted-foreground/50",
+                            isOverdue
+                              ? "bg-rose-400"
+                              : dueDays <= 7
+                                ? "bg-amber-400"
+                                : "bg-muted-foreground/50",
                           )}
                         />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
                             <ReportTypeBadge reportType={report.reportType} />
-                            <JurisdictionBadge jurisdiction={report.jurisdiction} />
+                            <JurisdictionBadge
+                              jurisdiction={report.jurisdiction}
+                            />
                           </div>
                           <p className="text-xs text-muted-foreground mt-1 truncate">
                             {REPORT_TYPE_LABELS[report.reportType]}
@@ -687,15 +781,21 @@ export default function RegulatoryPage() {
                             <span
                               className={cn(
                                 "text-xs font-medium",
-                                isOverdue ? "text-rose-400" : dueDays <= 7 ? "text-amber-400" : "text-muted-foreground",
+                                isOverdue
+                                  ? "text-rose-400"
+                                  : dueDays <= 7
+                                    ? "text-amber-400"
+                                    : "text-muted-foreground",
                               )}
                             >
-                              {isOverdue ? `${Math.abs(dueDays)}d overdue` : `${dueDays}d left`}
+                              {isOverdue
+                                ? `${Math.abs(dueDays)}d overdue`
+                                : `${dueDays}d left`}
                             </span>
                           </div>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               )}
@@ -712,10 +812,16 @@ export default function RegulatoryPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {(Object.entries(REPORT_TYPE_LABELS) as Array<[ReportType, string]>).map(([key, label]) => (
+                {(
+                  Object.entries(REPORT_TYPE_LABELS) as Array<
+                    [ReportType, string]
+                  >
+                ).map(([key, label]) => (
                   <div key={key} className="flex items-center gap-2">
                     <ReportTypeBadge reportType={key} />
-                    <span className="text-xs text-muted-foreground">{label}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -724,5 +830,5 @@ export default function RegulatoryPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

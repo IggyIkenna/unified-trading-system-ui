@@ -126,4 +126,3 @@ logs/
 *.tsbuildinfo
 playwright-report/
 test-results/
-

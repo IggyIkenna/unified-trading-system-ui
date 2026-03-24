@@ -111,7 +111,7 @@ echo "[4/6] Storing OAuth credentials in Secret Manager..."
 create_or_update_secret() {
     local secret_name="$1"
     local secret_value="$2"
-    
+
     # Check if secret exists
     if gcloud secrets describe "$secret_name" --project="$PROJECT_ID" &>/dev/null; then
         echo "  Updating secret: $secret_name"

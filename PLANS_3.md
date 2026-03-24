@@ -3,6 +3,7 @@
 **Purpose:** Implement the generalized service architecture across all service areas, build the post-login service hub, and establish lifecycle-aligned entry-point logic.
 
 **Prerequisites:**
+
 - Phase 2 complete (structural foundation) ✅
 - PLANS_1 (structural refactor) ✅
 - PLANS_2 (React Query wiring, MSW handlers) ✅
@@ -50,6 +51,7 @@ The hub IS the subscription overview. The service detail IS the same page for ev
 The only difference is data filtering. See ARCHITECTURE_HARDENING.md §2A-PRE for full spec.
 
 **This means:** Every service page must handle three states:
+
 - **Subscribed:** Full functionality, org-scoped data
 - **Not subscribed:** Locked overlay with "Upgrade" CTA showing what they'd get
 - **Internal:** Full data, no restrictions, plus admin/ops links
@@ -82,12 +84,12 @@ Build the core service hub component that renders the service grid:
 
 **Service card states:**
 
-| State | Condition | Visual | Interaction |
-|-------|-----------|--------|-------------|
-| Available | User has entitlement | Full color, active stats | Click → navigate to service |
-| Locked | No entitlement, but service is client-visible | Grayed, lock icon, "Upgrade" badge | Click → upgrade modal |
-| Hidden | Service visibility = "internal" AND user is client | Not rendered | N/A |
-| Degraded | Service health = warning/error | Yellow/red border + warning icon | Click → navigate (banner shows status) |
+| State     | Condition                                          | Visual                             | Interaction                            |
+| --------- | -------------------------------------------------- | ---------------------------------- | -------------------------------------- |
+| Available | User has entitlement                               | Full color, active stats           | Click → navigate to service            |
+| Locked    | No entitlement, but service is client-visible      | Grayed, lock icon, "Upgrade" badge | Click → upgrade modal                  |
+| Hidden    | Service visibility = "internal" AND user is client | Not rendered                       | N/A                                    |
+| Degraded  | Service health = warning/error                     | Yellow/red border + warning icon   | Click → navigate (banner shows status) |
 
 **Design reference:** Use institutional card grid layout. Each card should feel like a Bloomberg terminal panel — dense, information-forward, dark palette. NOT a SaaS pricing grid.
 
@@ -96,6 +98,7 @@ Build the core service hub component that renders the service grid:
 **File:** `components/platform/upgrade-modal.tsx` (NEW)
 
 When a client clicks a locked service:
+
 - Modal shows: service name, description, what it includes
 - "Contact Sales" CTA button
 - "Request Trial" secondary CTA (future)
@@ -107,12 +110,14 @@ When a client clicks a locked service:
 **File:** `components/platform/activity-feed.tsx` (NEW)
 
 Cross-service activity stream:
+
 - Recent events from all subscribed services
 - Each event shows: timestamp, service icon, lifecycle stage color, description
 - Events are persona-scoped (client sees own org events, internal sees all)
 - MSW handler: add activity events to existing handlers or create `handlers/activity.ts`
 
 Mock events should span the lifecycle:
+
 - Design: "New strategy template created: Mean-Reversion-V3"
 - Simulate: "Backtest completed: Alpha-7 → Sharpe 2.1"
 - Promote: "Candidate Alpha-7 promoted to paper trading"
@@ -126,23 +131,25 @@ Mock events should span the lifecycle:
 **File:** `components/platform/quick-actions.tsx` (NEW)
 
 Role-aware shortcuts rendered below service grid:
+
 - Derives actions from `useAuth()` role and entitlements
 - Each action: icon + label + route
 - Max 6 actions visible (overflow into "More" dropdown)
 
-| Role | Actions |
-|------|---------|
-| Internal Admin | Manage Users, System Health, Audit Log, Config, Deployment |
-| Internal Trader | Trading Dashboard, Risk Overview, Positions, Alerts |
-| Internal Quant | New Backtest, Model Registry, Feature Lab, Data Catalogue |
-| Client PM | Portfolio Overview, Reports, Settlement Status, Data |
-| Client Analyst | Data Catalogue, Research, Market Data |
+| Role            | Actions                                                    |
+| --------------- | ---------------------------------------------------------- |
+| Internal Admin  | Manage Users, System Health, Audit Log, Config, Deployment |
+| Internal Trader | Trading Dashboard, Risk Overview, Positions, Alerts        |
+| Internal Quant  | New Backtest, Model Registry, Feature Lab, Data Catalogue  |
+| Client PM       | Portfolio Overview, Reports, Settlement Status, Data       |
+| Client Analyst  | Data Catalogue, Research, Market Data                      |
 
 ### 5A.5: Build System Health Bar
 
 **File:** `components/platform/health-bar.tsx` (NEW)
 
 Thin bar at the top of the service hub showing aggregate health:
+
 - One colored dot per service (green/yellow/red)
 - Hover shows service name + status
 - Click expands to full health dashboard (`/health`)
@@ -154,6 +161,7 @@ Thin bar at the top of the service hub showing aggregate health:
 **File:** `app/(platform)/overview/page.tsx` (MODIFY — exists, needs rebuild)
 
 Compose the hub from the components above:
+
 1. SystemHealthBar
 2. ServiceHub (grid)
 3. QuickActions
@@ -162,6 +170,7 @@ Compose the hub from the components above:
 This page is the post-login landing. `app/(platform)/layout.tsx` should redirect `/` to `/overview` when authenticated.
 
 **Test with all 4 personas:**
+
 - admin → sees all services available, all health, admin quick actions
 - internal-trader → sees all services available, trader quick actions
 - client-full → sees most services available, some locked, client quick actions
@@ -172,6 +181,7 @@ This page is the post-login landing. `app/(platform)/layout.tsx` should redirect
 **File:** `components/shell/require-auth.tsx` (MODIFY)
 
 Ensure:
+
 - Unauthenticated user on `(platform)` route → redirect to `/login`
 - After login → redirect to `/overview` (service hub) NOT back to marketing
 - Deep link preservation: if user was trying to reach `/execution/tca`, redirect there after login (store intended destination in session/query param)
@@ -184,6 +194,7 @@ Ensure:
 **Current state:** Routes exist (`/strategy-platform/*`, `/ml/*`, `/quant/*`), marketing page exists (`/services/backtesting`), but pages are stubs or partially wired.
 
 **Reference UIs to consult:**
+
 - `_reference/versa-execution-analytics-ui/` — workflow visualization, candidate comparison
 - ML components already exist in `components/ml/`
 - Strategy components exist in `components/strategy-platform/`
@@ -193,6 +204,7 @@ Ensure:
 **File:** `app/(public)/services/backtesting/page.tsx` (MODIFY)
 
 Rename service from "Backtesting" to "Research & Simulation" in the UI. This page should:
+
 - Explain Design → Simulate → Promote lifecycle stages
 - Showcase capabilities: strategy backtesting, ML model training, execution simulation, signal development
 - Show example outputs (mock backtest results, model performance charts)
@@ -204,22 +216,24 @@ Rename service from "Backtesting" to "Research & Simulation" in the UI. This pag
 **Files:** `app/(platform)/strategy-platform/` pages (MODIFY existing stubs)
 
 **Already built (from PLANS_2):**
+
 - MSW handler: `lib/mocks/handlers/strategy.ts` (templates, configs, backtests, candidates, alerts)
 - React Query hooks: `hooks/api/use-strategies.ts` (useStrategyTemplates, useStrategyConfigs, useBacktests, useStrategyCandidates, useStrategyAlerts)
 
 Wire these existing hooks into the pages and deepen the UX:
 
-| Page | Purpose | Key Components | Lifecycle Stage |
-|------|---------|---------------|----------------|
-| `/strategy-platform` | Overview dashboard | Active strategies, recent backtests, candidate pipeline | Design |
-| `/strategy-platform/backtests` | Backtest management | Run new, view history, compare results | Simulate |
-| `/strategy-platform/results/[id]` | Backtest result detail | P&L curve, drawdown, Sharpe, trade log | Simulate |
-| `/strategy-platform/candidates` | Candidate pipeline | Candidates awaiting promotion, comparison view | Promote |
-| `/strategy-platform/compare` | Side-by-side comparison | Multiple backtest results compared | Simulate |
-| `/strategy-platform/heatmap` | Parameter sensitivity | Heatmap of strategy parameters vs performance | Simulate |
-| `/strategy-platform/handoff` | Promote to live | Candidate → paper → live promotion workflow | Promote |
+| Page                              | Purpose                 | Key Components                                          | Lifecycle Stage |
+| --------------------------------- | ----------------------- | ------------------------------------------------------- | --------------- |
+| `/strategy-platform`              | Overview dashboard      | Active strategies, recent backtests, candidate pipeline | Design          |
+| `/strategy-platform/backtests`    | Backtest management     | Run new, view history, compare results                  | Simulate        |
+| `/strategy-platform/results/[id]` | Backtest result detail  | P&L curve, drawdown, Sharpe, trade log                  | Simulate        |
+| `/strategy-platform/candidates`   | Candidate pipeline      | Candidates awaiting promotion, comparison view          | Promote         |
+| `/strategy-platform/compare`      | Side-by-side comparison | Multiple backtest results compared                      | Simulate        |
+| `/strategy-platform/heatmap`      | Parameter sensitivity   | Heatmap of strategy parameters vs performance           | Simulate        |
+| `/strategy-platform/handoff`      | Promote to live         | Candidate → paper → live promotion workflow             | Promote         |
 
 **Key UX patterns from references:**
+
 - Candidate comparison view: side-by-side metrics table + overlaid P&L curves
 - Promotion flow: candidate card → review → approve → deploy (status badges at each stage)
 - Backtest result: tabbed view (Summary | Trades | Risk | Parameters)
@@ -229,22 +243,24 @@ Wire these existing hooks into the pages and deepen the UX:
 **Files:** `app/(platform)/ml/` pages (MODIFY existing stubs)
 
 **Already built (from PLANS_2):**
+
 - MSW handler: `lib/mocks/handlers/ml.ts` (model-families, experiments, training-runs, versions, deployments, features, datasets)
 - React Query hooks: `hooks/api/use-ml-models.ts` (useModelFamilies, useExperiments, useTrainingRuns, useModelVersions, useMLDeployments, useFeatureProvenance, useDatasets)
 
-| Page | Purpose | Key Components | Lifecycle Stage |
-|------|---------|---------------|----------------|
-| `/ml` | ML overview | Model count, training status, inference health | Design |
-| `/ml/registry` | Model registry | All models with version, status, metrics | Design |
-| `/ml/features` | Feature catalogue | Available features, freshness, usage | Design |
-| `/ml/training` | Training management | Active training jobs, history, GPU usage | Simulate |
-| `/ml/experiments` | Experiment tracking | Compare experiments, metrics, hyperparameters | Simulate |
-| `/ml/validation` | Model validation | Validation results, A/B tests, drift detection | Promote |
-| `/ml/deploy` | Model deployment | Deploy models to inference, canary, rollback | Promote |
-| `/ml/monitoring` | Inference monitoring | Prediction latency, drift, error rates | Monitor |
-| `/ml/governance` | Model governance | Approval workflows, audit trail, lineage | Explain |
+| Page              | Purpose              | Key Components                                 | Lifecycle Stage |
+| ----------------- | -------------------- | ---------------------------------------------- | --------------- |
+| `/ml`             | ML overview          | Model count, training status, inference health | Design          |
+| `/ml/registry`    | Model registry       | All models with version, status, metrics       | Design          |
+| `/ml/features`    | Feature catalogue    | Available features, freshness, usage           | Design          |
+| `/ml/training`    | Training management  | Active training jobs, history, GPU usage       | Simulate        |
+| `/ml/experiments` | Experiment tracking  | Compare experiments, metrics, hyperparameters  | Simulate        |
+| `/ml/validation`  | Model validation     | Validation results, A/B tests, drift detection | Promote         |
+| `/ml/deploy`      | Model deployment     | Deploy models to inference, canary, rollback   | Promote         |
+| `/ml/monitoring`  | Inference monitoring | Prediction latency, drift, error rates         | Monitor         |
+| `/ml/governance`  | Model governance     | Approval workflows, audit trail, lineage       | Explain         |
 
 **Subscription filtering:**
+
 - `ml-full`: all pages accessible
 - `ml-restricted`: inference monitoring only (everything else locked)
 - No ML entitlement: entire section locked with upgrade CTA
@@ -254,6 +270,7 @@ Wire these existing hooks into the pages and deepen the UX:
 **File:** `app/(platform)/quant/page.tsx` (MODIFY)
 
 Quant tools page bridges Research and Run stages:
+
 - Signal analysis (feature importance, correlation)
 - Feature engineering workspace
 - Data exploration tools
@@ -270,6 +287,7 @@ Quant tools page bridges Research and Run stages:
 **File:** `app/(public)/services/execution/page.tsx` (MODIFY)
 
 Rename/expand to cover "Trading & Execution" holistically:
+
 - Live trading capabilities
 - Multi-venue execution (CeFi, TradFi, DeFi)
 - Position monitoring and risk management
@@ -281,10 +299,12 @@ Rename/expand to cover "Trading & Execution" holistically:
 **File:** `app/(platform)/trading/page.tsx` (MODIFY)
 
 **Already built (from PLANS_2):**
+
 - MSW handlers: `lib/mocks/handlers/trading.ts` (orgs, clients, P&L, timeseries, performance, live-batch-delta), `lib/mocks/handlers/market-data.ts` (candles, orderbook, trades, tickers), `lib/mocks/handlers/positions.ts`, `lib/mocks/handlers/alerts.ts`
 - React Query hooks: `hooks/api/use-trading.ts`, `hooks/api/use-market-data.ts`, `hooks/api/use-positions.ts`, `hooks/api/use-alerts.ts`
 
 This is the core Run stage page. Ensure it has:
+
 - Live P&L (simulated via client-side interval, documented as WebSocket gap)
 - Position summary (top positions by PnL, by risk)
 - Active strategy performance
@@ -299,12 +319,14 @@ This is the core Run stage page. Ensure it has:
 **Files:** `app/(platform)/positions/page.tsx`, `app/(platform)/risk/page.tsx` (MODIFY)
 
 Positions:
+
 - Position grid with real-time P&L
 - Group by: strategy, venue, instrument, asset class
 - Risk metrics per position (delta, vega, theta for options)
 - Historical position snapshots
 
 Risk:
+
 - Risk limits dashboard (utilization bars per limit type)
 - Exposure breakdown (by venue, by asset class, by strategy)
 - VaR components (mock — aspirational API)
@@ -316,6 +338,7 @@ Risk:
 **Files:** `app/(platform)/execution/` pages (MODIFY)
 
 Ensure these are wired and functional:
+
 - `/execution` — overview with key execution metrics
 - `/execution/algos` — algorithm performance comparison
 - `/execution/venues` — venue connectivity status, latency
@@ -350,6 +373,7 @@ Ensure these are wired and functional:
 **Current state:** `/reports` page has good content (700+ lines). Marketing page exists. Admin/ops surfaces are stubs.
 
 **Reference UIs:**
+
 - `_reference/versa-client-reporting/` — PRIMARY reference (P&L tabs, settlement workflow)
 - `_reference/versa-invoicing/` — Invoice generation and payment tracking
 
@@ -358,6 +382,7 @@ Ensure these are wired and functional:
 **File:** `app/(public)/services/investment/page.tsx` (MODIFY)
 
 Rename to "Reporting & Investment Management":
+
 - P&L and performance reporting
 - Settlement and reconciliation
 - Invoice and fee transparency
@@ -371,30 +396,35 @@ Rename to "Reporting & Investment Management":
 Current page has good tabs (Portfolio, Reports, Settlements, Invoices, Treasury). Deepen each:
 
 **Portfolio tab:**
+
 - AUM chart (time series)
 - Performance attribution (by strategy, by asset class, by venue)
 - Benchmark comparison
 - Risk-adjusted returns (Sharpe, Sortino, Max Drawdown)
 
 **Reports tab:**
+
 - Report generation wizard (select period, strategies, format)
 - Report templates (monthly performance, quarterly review, annual)
 - Download as PDF / send via email (mock actions)
 - Report history with status (draft, reviewed, sent)
 
 **Settlements tab:**
+
 - Settlement calendar (upcoming, overdue)
 - Settlement detail view (counterparty, amount, status)
 - Reconciliation status (matched, unmatched, disputed)
 - Auto-reconciliation results
 
 **Invoices tab (reference: `_reference/versa-invoicing/`):**
+
 - Invoice list with payment status (paid, pending, overdue)
 - Invoice detail view (line items, fees, taxes)
 - Fee schedule transparency
 - Download/send actions
 
 **Treasury tab:**
+
 - Capital allocation by venue/strategy
 - Cash flow projections
 - Recent transfers
@@ -405,6 +435,7 @@ Current page has good tabs (Portfolio, Reports, Settlements, Invoices, Treasury)
 **File:** `app/(platform)/executive/page.tsx` (MODIFY)
 
 C-level view:
+
 - Portfolio-level KPIs (AUM, MTD Return, YTD Return, Sharpe)
 - Top performing / worst performing strategies
 - Risk utilization summary
@@ -416,6 +447,7 @@ C-level view:
 **File:** `app/(ops)/manage/fees/page.tsx` (MODIFY)
 
 Internal fee management:
+
 - Fee schedule editor per client org
 - Fee type management (management fees, performance fees, data fees, compute fees)
 - Fee simulation (what-if analysis)
@@ -426,6 +458,7 @@ Internal fee management:
 **File:** `app/(ops)/manage/mandates/page.tsx` (MODIFY)
 
 Internal mandate management:
+
 - Client mandate configurations
 - Investment guidelines and restrictions
 - Benchmark assignments
@@ -438,6 +471,7 @@ Internal mandate management:
 **Current state:** `/admin` route exists with minimal stub. No onboarding flow beyond basic login/signup.
 
 **Reference UIs:**
+
 - `_reference/versa-admin-ui/` — PRIMARY (user management, org hierarchy, role assignment)
 - `_reference/versa-onboarding/` — Guided setup flows
 
@@ -446,6 +480,7 @@ Internal mandate management:
 **File:** `app/(ops)/admin/page.tsx` (MODIFY)
 
 Build the internal admin dashboard:
+
 - Organization list (all client orgs, with status, subscription tier, user count)
 - Quick actions: create org, manage subscriptions, view billing
 - System stats: total users, active orgs, MRR, service usage
@@ -455,6 +490,7 @@ Build the internal admin dashboard:
 **File:** `app/(ops)/manage/clients/page.tsx` (MODIFY)
 
 Per-organization management:
+
 - Org detail view (name, contact, subscription, billing)
 - User list within org (role, last login, status)
 - Subscription management (add/remove services, change tier)
@@ -466,6 +502,7 @@ Per-organization management:
 **File:** `app/(ops)/manage/users/page.tsx` (MODIFY)
 
 Cross-org user management (internal only):
+
 - User grid (name, org, role, last login, status)
 - Role assignment (owner, admin, trader, quant, compliance, viewer)
 - Invite flow (email invite with role pre-assignment)
@@ -479,11 +516,13 @@ Cross-org user management (internal only):
 Improve the signup → first-use experience:
 
 **Signup page:**
+
 - Organization registration form (company name, contact, size)
 - Interest selection (which services, what asset classes)
 - Demo mode entry (skip registration, use demo persona)
 
 **Post-signup onboarding wizard** (shown on first login):
+
 - Welcome step (explain the platform, show available services)
 - Service selection step (choose initial services to explore)
 - Data preferences (which asset classes, which venues)
@@ -491,6 +530,7 @@ Improve the signup → first-use experience:
 - Tutorial/demo option (guided tour of key features)
 
 Reference patterns from `_reference/versa-onboarding/`:
+
 - Progress indicator (step X of Y)
 - Skip option (experienced users can skip onboarding)
 - Role-specific paths (trader onboarding ≠ quant onboarding)
@@ -502,6 +542,7 @@ Reference patterns from `_reference/versa-onboarding/`:
 **Current state:** `/devops` and `/ops` routes exist with minimal stubs.
 
 **Reference UIs:**
+
 - `_reference/deployment-ui/` — PRIMARY (production-grade deployment UI)
 - `_reference/deployment-api/` — 92 API endpoints for deployment operations
 - `_reference/deployment-service/` — Orchestration patterns
@@ -509,6 +550,7 @@ Reference patterns from `_reference/versa-onboarding/`:
 **IMPORTANT:** This service area should be PORTED from `_reference/deployment-ui/`, not built from scratch. The deployment-ui has 17K+ lines of production-grade UI (20 components, 67 types, 5 hooks). See ARCHITECTURE_HARDENING.md §10 for the porting checklist.
 
 **Porting approach:**
+
 1. Copy component files from `_reference/deployment-ui/src/components/` to `components/ops/`
 2. Replace `react-router-dom` → Next.js `Link` + `useRouter`
 3. Replace `@unified-trading/ui-kit` → `@/components/ui/` (shadcn)
@@ -521,12 +563,14 @@ Reference patterns from `_reference/versa-onboarding/`:
 **File:** `app/(ops)/devops/page.tsx` (MODIFY)
 
 **Already built (from PLANS_2):**
+
 - MSW handlers: `lib/mocks/handlers/deployment.ts` (services, deployments, builds), `lib/mocks/handlers/service-status.ts` (overview, features)
 - React Query hooks: `hooks/api/use-deployments.ts` (useDeploymentServices, useDeployments, useBuildTriggers), `hooks/api/use-service-status.ts` (useServiceOverview, useFeatureFreshness)
 
 Build the deployment control center:
 
 **Tab structure (reference: deployment-ui):**
+
 1. **Deploy** — Trigger deployments, select environment, select services
 2. **Services** — Service inventory with current version, health, last deploy
 3. **Builds** — Cloud Build history, status, logs
@@ -535,6 +579,7 @@ Build the deployment control center:
 6. **History** — Deployment history with rollback option
 
 **Key patterns from deployment-ui reference:**
+
 - Service health aggregation (poll all services, show aggregate)
 - Deployment progress (SSE-style updates — mock with interval for now)
 - Rollback controls (one-click rollback to previous version with confirmation)
@@ -546,6 +591,7 @@ Build the deployment control center:
 **File:** `app/(ops)/ops/page.tsx` (MODIFY)
 
 Operational overview:
+
 - System health aggregate (all services)
 - Job queue status (pending, running, failed jobs)
 - Resource utilization (CPU, memory, disk — mock)
@@ -557,12 +603,14 @@ Operational overview:
 **Files:** `app/(ops)/ops/services/page.tsx`, `app/(ops)/ops/jobs/page.tsx` (MODIFY)
 
 Service status:
+
 - Per-service health detail (uptime, latency, error rate)
 - Health history (last 24h, 7d, 30d)
 - Dependency status (upstream/downstream services)
 - Configuration viewer
 
 Job monitoring:
+
 - Job queue overview (by service, by type)
 - Active jobs with progress
 - Failed jobs with error details
@@ -573,6 +621,7 @@ Job monitoring:
 **File:** `app/(ops)/config/page.tsx` (MODIFY)
 
 System configuration (internal only):
+
 - Feature flags (toggle features on/off)
 - Service toggles (enable/disable services)
 - Environment variables viewer (read-only, no secrets)
@@ -591,6 +640,7 @@ System configuration (internal only):
 **File:** `app/(public)/services/regulatory/page.tsx` (MODIFY)
 
 Explain compliance capabilities:
+
 - Full audit trail for all trading operations
 - Regulatory reporting (MiFID II, FCA)
 - Event provenance and lineage
@@ -604,12 +654,14 @@ Explain compliance capabilities:
 **Important architectural decision:** Compliance has BOTH client-facing and internal-only surfaces.
 
 **Client view** (in `(platform)`):
+
 - Own org's audit trail (filtered)
 - Compliance status summary
 - Regulatory reports (own org)
 - Evidence downloads (own org)
 
 **Internal view** (in `(ops)` or same page with role-aware depth):
+
 - Cross-org audit trail
 - Full event history with powerful filtering
 - Compliance report generation
@@ -618,6 +670,7 @@ Explain compliance capabilities:
 - Compliance rule management
 
 **Key patterns from `_reference/versa-audit-ui/`:**
+
 - Event timeline visualization (chronological event stream with filters)
 - Event detail modal (full event payload, related events, provenance chain)
 - Filter bar (date range, event type, severity, service, user, org)
@@ -629,6 +682,7 @@ Explain compliance capabilities:
 **File:** `app/(ops)/engagement/page.tsx` (MODIFY)
 
 Internal tool for client relationship management:
+
 - Client engagement metrics (logins, feature usage, support tickets)
 - Onboarding progress tracking
 - Churn risk indicators
@@ -692,6 +746,7 @@ Reconcile
 **File:** `lib/config/services.ts` (MODIFY)
 
 Ensure `PLATFORM_SERVICES` array includes ALL service areas with correct:
+
 - lifecycle_stage alignment
 - entitlement_required values
 - visibility (public/client/internal)
@@ -703,6 +758,7 @@ Ensure `PLATFORM_SERVICES` array includes ALL service areas with correct:
 **File:** `app/(platform)/layout.tsx` (MODIFY)
 
 Navigation items filtered by:
+
 1. `permission_level`: client can't see ops items
 2. `service_entitlements`: locked services shown as disabled (not hidden)
 3. `role`: role-specific quick actions
@@ -716,6 +772,7 @@ Navigation items filtered by:
 **File:** `components/platform/locked-service.tsx` (NEW)
 
 Reusable component for when a user visits a service they don't have access to:
+
 - Service name and description
 - What's included in the service
 - Which package includes this service
@@ -728,6 +785,7 @@ Reusable component for when a user visits a service they don't have access to:
 **File:** `components/platform/subscription-badge.tsx` (NEW)
 
 Small badge showing current subscription tier, shown in shell header:
+
 - Package name (e.g., "Data Pro", "Full Suite")
 - Quick link to subscription management
 - Usage summary (if applicable)
@@ -737,6 +795,7 @@ Small badge showing current subscription tier, shown in shell header:
 **File:** `components/data/export-modal.tsx` (NEW or MODIFY)
 
 On data pages, "Export Data" button shows modal:
+
 - Platform usage included in subscription
 - Cloud export (GCP/AWS) = premium add-on
 - CSV/Parquet download = premium add-on
@@ -769,6 +828,7 @@ PHASE 5I (Commercial)   ─── depends on 5A (locked states in hub)
 ```
 
 **Parallelization strategy:** After 5A is complete, all service-area phases (5B through 5G) can run in parallel using separate agents. Each agent needs only:
+
 1. Its service area's reference UI
 2. The hub component API (how to register in service grid)
 3. The MSW handler for its service (from PLANS_2)
@@ -781,6 +841,7 @@ PHASE 5I (Commercial)   ─── depends on 5A (locked states in hub)
 ### Per-Phase QG
 
 After completing each phase:
+
 ```bash
 pnpm lint && pnpm tsc --noEmit && pnpm build
 ```
@@ -788,6 +849,7 @@ pnpm lint && pnpm tsc --noEmit && pnpm build
 ### Persona Testing (after each service area)
 
 Test with all 4 personas:
+
 1. **admin** — sees all services, all data, ops surfaces
 2. **internal-trader** — sees all platform services, no ops
 3. **client-full** — sees most services, some locked, org-scoped data
@@ -840,18 +902,18 @@ After this plan is complete:
 Every page must have WORKING interactions, not just data display. Mock data changes
 when users take actions. State persists within the session (Zustand stores).
 
-| Action | What Must Happen |
-|--------|-----------------|
-| Create new strategy | Form → submit → new strategy appears in list → toast confirmation |
-| Run backtest | Select strategy → configure params → "Run" → progress bar → results appear |
-| Set up ML experiment | Configure model/features/target → "Train" → experiment appears in list |
-| Generate grid config | Select parameter ranges → "Generate" → grid configs appear |
-| Place trade | Order form → submit → fill appears in "Own Trades" → position updates |
-| Create user/org | Admin form → submit → new org/user in management list |
-| Generate report | Select params → "Generate" → report appears in list with "Ready" status |
-| Acknowledge alert | Click "Acknowledge" → alert status changes → count updates |
-| Confirm settlement | Click "Confirm" → status changes to "Confirmed" |
-| Deploy service | Select service/env → "Deploy" → deployment appears with progress |
+| Action               | What Must Happen                                                           |
+| -------------------- | -------------------------------------------------------------------------- |
+| Create new strategy  | Form → submit → new strategy appears in list → toast confirmation          |
+| Run backtest         | Select strategy → configure params → "Run" → progress bar → results appear |
+| Set up ML experiment | Configure model/features/target → "Train" → experiment appears in list     |
+| Generate grid config | Select parameter ranges → "Generate" → grid configs appear                 |
+| Place trade          | Order form → submit → fill appears in "Own Trades" → position updates      |
+| Create user/org      | Admin form → submit → new org/user in management list                      |
+| Generate report      | Select params → "Generate" → report appears in list with "Ready" status    |
+| Acknowledge alert    | Click "Acknowledge" → alert status changes → count updates                 |
+| Confirm settlement   | Click "Confirm" → status changes to "Confirmed"                            |
+| Deploy service       | Select service/env → "Deploy" → deployment appears with progress           |
 
 These use Zustand stores and MSW handlers to persist state within the demo session.
 The "Reset Demo" button (in shell debug panel) clears all state back to initial.

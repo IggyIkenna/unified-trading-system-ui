@@ -1,4 +1,4 @@
-# _reference/ — Backend Reference Implementations
+# \_reference/ — Backend Reference Implementations
 
 The `_reference/` folder contains complete Python FastAPI backend service implementations and supporting documentation. These are reference material — they exist so UI developers and agents can understand the real backend contracts and patterns without accessing other repos.
 
@@ -9,6 +9,7 @@ The `_reference/` folder contains complete Python FastAPI backend service implem
 ## Why This Folder Exists
 
 The UI makes API calls that are backed by real Python services. When building or debugging a UI feature, it helps to know:
+
 - What exactly the API endpoint does
 - What validation the backend applies
 - What mock data the backend returns in mock mode
@@ -114,15 +115,15 @@ deployment-api/
 
 ### Key things to read in deployment-api/
 
-| You need to know | Read |
-|---|---|
-| What auth headers the API needs | `deployment_api/auth.py` |
-| What roles can access which endpoints | `deployment_api/rbac.py` |
-| What mock data is returned in mock mode | `deployment_api/mock_data.py` |
-| What the `/services` endpoint returns | `deployment_api/routes/services.py` |
-| What the `/deployments` endpoint returns | `deployment_api/routes/deployments.py` |
-| What config fields are available | `deployment_api/routes/config_management.py` |
-| GCS paths used by the backend | `deployment_api/docs/GCS_PATHS.md` |
+| You need to know                         | Read                                         |
+| ---------------------------------------- | -------------------------------------------- |
+| What auth headers the API needs          | `deployment_api/auth.py`                     |
+| What roles can access which endpoints    | `deployment_api/rbac.py`                     |
+| What mock data is returned in mock mode  | `deployment_api/mock_data.py`                |
+| What the `/services` endpoint returns    | `deployment_api/routes/services.py`          |
+| What the `/deployments` endpoint returns | `deployment_api/routes/deployments.py`       |
+| What config fields are available         | `deployment_api/routes/config_management.py` |
+| GCS paths used by the backend            | `deployment_api/docs/GCS_PATHS.md`           |
 
 ---
 
@@ -144,18 +145,18 @@ Read `ARCHITECTURE.md` before building any deployment workflow UI to understand 
 
 ---
 
-## versa-* Services — Client-Facing Product Backends
+## versa-\* Services — Client-Facing Product Backends
 
 These are the backends for client-facing products. The UI surfaces for these live both in the `(platform)/portal/` routes and the `(ops)/` routes.
 
-| Service | What it does | Related UI |
-|---|---|---|
-| `versa-admin-ui/` | Admin dashboard: org management, cloud integration status | `(ops)/admin/` |
-| `versa-audit-ui/` | Audit log, event history, compliance evidence | `(ops)/compliance/` |
-| `versa-client-reporting/` | Client portfolio performance, statements, downloads | `(platform)/portal/` |
-| `versa-execution-analytics-ui/` | Fill analysis, slippage, venue comparison | `(platform)/execution/tca/` |
-| `versa-invoicing/` | Fee calculation, invoice generation, payment tracking | `(ops)/manage/fees/` |
-| `versa-onboarding/` | KYC, IMA signing, client account activation | `(ops)/manage/clients/` |
+| Service                         | What it does                                              | Related UI                  |
+| ------------------------------- | --------------------------------------------------------- | --------------------------- |
+| `versa-admin-ui/`               | Admin dashboard: org management, cloud integration status | `(ops)/admin/`              |
+| `versa-audit-ui/`               | Audit log, event history, compliance evidence             | `(ops)/compliance/`         |
+| `versa-client-reporting/`       | Client portfolio performance, statements, downloads       | `(platform)/portal/`        |
+| `versa-execution-analytics-ui/` | Fill analysis, slippage, venue comparison                 | `(platform)/execution/tca/` |
+| `versa-invoicing/`              | Fee calculation, invoice generation, payment tracking     | `(ops)/manage/fees/`        |
+| `versa-onboarding/`             | KYC, IMA signing, client account activation               | `(ops)/manage/clients/`     |
 
 For each versa service, read its README to understand the API surface before building the corresponding UI feature.
 
@@ -164,6 +165,7 @@ For each versa service, read its README to understand the API surface before bui
 ## How to Use This Folder Effectively
 
 ### Pattern: "I need to add a new field to the deploy form"
+
 1. Open `deployment_api/routes/deployments.py` — find the POST endpoint
 2. Check the request body schema to see what fields exist
 3. Check `deployment_api/mock_data.py` to add the field to mock responses
@@ -172,12 +174,14 @@ For each versa service, read its README to understand the API surface before bui
 6. Update the component in `components/ops/deployment/DeployForm.tsx`
 
 ### Pattern: "I need to understand what service health data looks like"
+
 1. Open `deployment_api/routes/service_status.py`
 2. Read the response model (Pydantic class) — this is the exact shape
 3. Check `deployment_api/mock_data.py` for example values
 4. The TypeScript type should match this shape — check `lib/types/deployment.ts`
 
 ### Pattern: "I need to know what RBAC roles the API enforces"
+
 1. Open `deployment_api/rbac.py`
 2. Find the role definitions and which endpoints each role can access
 3. The UI's role checks in `components/shell/require-auth.tsx` and the auth store should align
@@ -187,6 +191,7 @@ For each versa service, read its README to understand the API surface before bui
 ## Important: Do Not Modify
 
 These files are reference material from backend repos. Edits made here:
+
 - Will be overwritten when context is refreshed
 - Will not affect the real backend service
 - Will cause confusion for future agents

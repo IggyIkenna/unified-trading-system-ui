@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { SportsBetSlip } from "@/components/trading/sports-bet-slip"
+import { SportsBetSlip } from "@/components/trading/sports-bet-slip";
 
 export default function SportsBettingPage() {
   return (
@@ -9,11 +9,12 @@ export default function SportsBettingPage() {
         <div>
           <h1 className="text-lg font-semibold">Sports & Prediction Markets</h1>
           <p className="text-sm text-muted-foreground">
-            Back/Lay exchange, fixed odds, prediction markets, and cross-book arbitrage
+            Back/Lay exchange, fixed odds, prediction markets, and cross-book
+            arbitrage
           </p>
         </div>
       </div>
       <SportsBetSlip />
     </div>
-  )
+  );
 }

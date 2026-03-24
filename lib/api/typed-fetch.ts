@@ -33,19 +33,18 @@
  *   }
  */
 
-import type { paths } from "@/lib/types/api-generated"
+import type { paths } from "@/lib/types/api-generated";
 
 /**
  * Extract the 200 JSON response body type for a GET endpoint.
  *
  * Resolves to `never` when the path has no GET 200 JSON response.
  */
-export type ApiResponse<P extends keyof paths> =
-  paths[P] extends {
-    get: { responses: { 200: { content: { "application/json": infer R } } } }
-  }
-    ? R
-    : never
+export type ApiResponse<P extends keyof paths> = paths[P] extends {
+  get: { responses: { 200: { content: { "application/json": infer R } } } };
+}
+  ? R
+  : never;
 
 /**
  * Type-safe fetch that delegates to the standard fetch API with auth headers.
@@ -60,20 +59,20 @@ export async function typedFetch<T>(
 ): Promise<T> {
   const headers: Record<string, string> = {
     ...((options?.headers as Record<string, string>) ?? {}),
-  }
+  };
 
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
   const res = await fetch(url, {
     ...options,
     headers,
-  })
+  });
 
   if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}`)
+    throw new Error(`${res.status} ${res.statusText}`);
   }
 
-  return res.json() as Promise<T>
+  return res.json() as Promise<T>;
 }

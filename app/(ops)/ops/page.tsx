@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { EntityLink } from "@/components/trading/entity-link"
-import { EventStreamViewer } from "@/components/ops/event-stream-viewer"
-import { VenueConnectivity } from "@/components/ops/venue-connectivity"
+import * as React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { EntityLink } from "@/components/trading/entity-link";
+import { EventStreamViewer } from "@/components/ops/event-stream-viewer";
+import { VenueConnectivity } from "@/components/ops/venue-connectivity";
 import {
   Server,
   Activity,
@@ -24,7 +24,7 @@ import {
   GitBranch,
   Database,
   Radio,
-} from "lucide-react"
+} from "lucide-react";
 
 // Mock batch job data
 const batchJobs = [
@@ -60,7 +60,7 @@ const batchJobs = [
     startedAt: "04:00:00",
     error: "Connection timeout to data source",
   },
-]
+];
 
 // Mock services data
 const services = [
@@ -112,7 +112,7 @@ const services = [
     lastDeploy: "2d ago",
     env: "prod",
   },
-]
+];
 
 // Data completeness mock
 const dataCompleteness = [
@@ -121,26 +121,74 @@ const dataCompleteness = [
   { service: "risk-and-exposure", days: [100, 100, 100, 85] },
   { service: "pnl-attribution", days: [100, 100, 100, 100] },
   { service: "market-tick-data", days: [100, 100, 100, 90] },
-]
+];
 
 // Recent deployments
 const recentDeploys = [
-  { service: "execution-service", version: "v3.12.1", env: "prod", time: "2h ago", status: "success" },
-  { service: "risk-and-exposure", version: "v1.15.2", env: "prod", time: "3h ago", status: "success" },
-  { service: "pnl-attribution", version: "v2.4.0", env: "prod", time: "6h ago", status: "success" },
-  { service: "features-delta-one", version: "v2.8.0", env: "staging", time: "8h ago", status: "success" },
-]
+  {
+    service: "execution-service",
+    version: "v3.12.1",
+    env: "prod",
+    time: "2h ago",
+    status: "success",
+  },
+  {
+    service: "risk-and-exposure",
+    version: "v1.15.2",
+    env: "prod",
+    time: "3h ago",
+    status: "success",
+  },
+  {
+    service: "pnl-attribution",
+    version: "v2.4.0",
+    env: "prod",
+    time: "6h ago",
+    status: "success",
+  },
+  {
+    service: "features-delta-one",
+    version: "v2.8.0",
+    env: "staging",
+    time: "8h ago",
+    status: "success",
+  },
+];
 
 // Audit log mock
 const auditLog = [
-  { action: "Config Changed", entity: "BTC Basis v3", actor: "john.doe", time: "10m ago", type: "config" },
-  { action: "Strategy Paused", entity: "ML Directional", actor: "system", time: "25m ago", type: "intervention" },
-  { action: "Deployment", entity: "execution-service", actor: "ci-bot", time: "2h ago", type: "deploy" },
-  { action: "Kill Switch Armed", entity: "Sports Arb", actor: "jane.smith", time: "3h ago", type: "intervention" },
-]
+  {
+    action: "Config Changed",
+    entity: "BTC Basis v3",
+    actor: "john.doe",
+    time: "10m ago",
+    type: "config",
+  },
+  {
+    action: "Strategy Paused",
+    entity: "ML Directional",
+    actor: "system",
+    time: "25m ago",
+    type: "intervention",
+  },
+  {
+    action: "Deployment",
+    entity: "execution-service",
+    actor: "ci-bot",
+    time: "2h ago",
+    type: "deploy",
+  },
+  {
+    action: "Kill Switch Armed",
+    entity: "Sports Arb",
+    actor: "jane.smith",
+    time: "3h ago",
+    type: "intervention",
+  },
+];
 
 export default function OpsPage() {
-  const [dataMode, setDataMode] = React.useState<"live" | "batch">("live")
+  const [dataMode, setDataMode] = React.useState<"live" | "batch">("live");
 
   return (
     <div className="p-6">
@@ -180,7 +228,11 @@ export default function OpsPage() {
               <RefreshCw className="size-4" />
               Refresh
             </Button>
-            <Button size="sm" className="gap-2" style={{ backgroundColor: "var(--surface-ops)" }}>
+            <Button
+              size="sm"
+              className="gap-2"
+              style={{ backgroundColor: "var(--surface-ops)" }}
+            >
               <Rocket className="size-4" />
               Deploy Service
             </Button>
@@ -193,7 +245,10 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-live)]/10">
-                  <CheckCircle2 className="size-5" style={{ color: "var(--status-live)" }} />
+                  <CheckCircle2
+                    className="size-5"
+                    style={{ color: "var(--status-live)" }}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">47</p>
@@ -206,7 +261,10 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-running)]/10">
-                  <Activity className="size-5" style={{ color: "var(--status-running)" }} />
+                  <Activity
+                    className="size-5"
+                    style={{ color: "var(--status-running)" }}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">12</p>
@@ -219,7 +277,10 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-critical)]/10">
-                  <XCircle className="size-5" style={{ color: "var(--status-critical)" }} />
+                  <XCircle
+                    className="size-5"
+                    style={{ color: "var(--status-critical)" }}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">3</p>
@@ -232,7 +293,10 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                  <AlertTriangle className="size-5" style={{ color: "var(--status-warning)" }} />
+                  <AlertTriangle
+                    className="size-5"
+                    style={{ color: "var(--status-warning)" }}
+                  />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">1</p>
@@ -284,8 +348,8 @@ export default function OpsPage() {
                               service.status === "healthy"
                                 ? "bg-[var(--status-live)]"
                                 : service.status === "drift"
-                                ? "bg-[var(--status-warning)]"
-                                : "bg-[var(--status-idle)]"
+                                  ? "bg-[var(--status-warning)]"
+                                  : "bg-[var(--status-idle)]"
                             }`}
                           />
                           <div>
@@ -296,7 +360,9 @@ export default function OpsPage() {
                               className="font-mono text-sm"
                             />
                             <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-xs text-muted-foreground">{service.env}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {service.env}
+                              </span>
                               <span className="text-xs text-muted-foreground">
                                 Deployed {service.lastDeploy}
                               </span>
@@ -305,7 +371,9 @@ export default function OpsPage() {
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <div className="font-mono text-sm">{service.version}</div>
+                            <div className="font-mono text-sm">
+                              {service.version}
+                            </div>
                             {service.version !== service.expectedVersion && (
                               <div className="text-xs text-[var(--status-warning)]">
                                 Expected: {service.expectedVersion}
@@ -345,7 +413,9 @@ export default function OpsPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="text-xs text-muted-foreground">{deploy.time}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {deploy.time}
+                      </span>
                     </div>
                   ))}
                 </CardContent>
@@ -385,8 +455,8 @@ export default function OpsPage() {
                             job.status === "complete"
                               ? "default"
                               : job.status === "running"
-                              ? "secondary"
-                              : "destructive"
+                                ? "secondary"
+                                : "destructive"
                           }
                         >
                           {job.status}
@@ -396,9 +466,13 @@ export default function OpsPage() {
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>Started: {job.startedAt}</span>
                         {job.eta && <span>{job.eta}</span>}
-                        {job.completedAt && <span>Completed: {job.completedAt}</span>}
+                        {job.completedAt && (
+                          <span>Completed: {job.completedAt}</span>
+                        )}
                         {job.error && (
-                          <span className="text-[var(--status-critical)]">{job.error}</span>
+                          <span className="text-[var(--status-critical)]">
+                            {job.error}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -423,8 +497,13 @@ export default function OpsPage() {
                       </span>
                     </div>
                     {dataCompleteness.map((row) => (
-                      <div key={row.service} className="flex items-center gap-4">
-                        <span className="w-36 text-sm font-mono truncate">{row.service}</span>
+                      <div
+                        key={row.service}
+                        className="flex items-center gap-4"
+                      >
+                        <span className="w-36 text-sm font-mono truncate">
+                          {row.service}
+                        </span>
                         <div className="flex-1 grid grid-cols-4 gap-2">
                           {row.days.map((pct, i) => (
                             <div
@@ -433,8 +512,8 @@ export default function OpsPage() {
                                 pct === 100
                                   ? "bg-[var(--status-live)]/20 text-[var(--status-live)]"
                                   : pct >= 80
-                                  ? "bg-[var(--status-warning)]/20 text-[var(--status-warning)]"
-                                  : "bg-[var(--status-critical)]/20 text-[var(--status-critical)]"
+                                    ? "bg-[var(--status-warning)]/20 text-[var(--status-warning)]"
+                                    : "bg-[var(--status-critical)]/20 text-[var(--status-critical)]"
                               }`}
                             >
                               {pct}%
@@ -486,7 +565,9 @@ export default function OpsPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="text-xs text-muted-foreground">{entry.time}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {entry.time}
+                      </span>
                     </div>
                   ))}
                 </CardContent>
@@ -499,15 +580,24 @@ export default function OpsPage() {
                     <CardTitle className="text-lg">Compliance</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                    >
                       <Shield className="size-4" />
                       MiFID II Reporting
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                    >
                       <FileText className="size-4" />
                       FCA Transaction Reports
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                    >
                       <CheckCircle2 className="size-4" />
                       Best Execution Checks
                     </Button>
@@ -519,11 +609,17 @@ export default function OpsPage() {
                     <CardTitle className="text-lg">CI/CD</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                    >
                       <GitBranch className="size-4" />
                       Pipeline Status
                     </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start gap-2"
+                    >
                       <CheckCircle2 className="size-4" />
                       Quality Gates
                     </Button>
@@ -535,5 +631,5 @@ export default function OpsPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

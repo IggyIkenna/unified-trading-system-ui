@@ -19,7 +19,7 @@ import type {
   MLAlert,
   FeatureProvenance,
   AuditEvent,
-} from "./ml-types"
+} from "./ml-types";
 
 // =============================================================================
 // Model Families
@@ -29,7 +29,8 @@ export const MODEL_FAMILIES: ModelFamily[] = [
   {
     id: "mf-btc-direction",
     name: "BTC Direction Prediction",
-    description: "Multi-timeframe directional prediction for BTC using transformer architecture",
+    description:
+      "Multi-timeframe directional prediction for BTC using transformer architecture",
     archetype: "DIRECTIONAL",
     assetClasses: ["CeFi", "DeFi"],
     currentChampion: "mv-btc-dir-v3.2.1",
@@ -42,7 +43,8 @@ export const MODEL_FAMILIES: ModelFamily[] = [
   {
     id: "mf-eth-volatility",
     name: "ETH Volatility Surface",
-    description: "Real-time volatility surface prediction for ETH options pricing",
+    description:
+      "Real-time volatility surface prediction for ETH options pricing",
     archetype: "MARKET_MAKING",
     assetClasses: ["CeFi"],
     currentChampion: "mv-eth-vol-v2.1.0",
@@ -81,7 +83,8 @@ export const MODEL_FAMILIES: ModelFamily[] = [
   {
     id: "mf-sports-nfl",
     name: "NFL Outcome Predictor",
-    description: "Game outcome and spread prediction for NFL using ensemble methods",
+    description:
+      "Game outcome and spread prediction for NFL using ensemble methods",
     archetype: "SPORTS_ML",
     assetClasses: ["Sports"],
     currentChampion: "mv-nfl-v1.5.0",
@@ -104,7 +107,7 @@ export const MODEL_FAMILIES: ModelFamily[] = [
     createdAt: "2026-01-15T10:00:00Z",
     updatedAt: "2026-03-18T09:00:00Z",
   },
-]
+];
 
 // =============================================================================
 // Experiments
@@ -114,7 +117,8 @@ export const EXPERIMENTS: Experiment[] = [
   {
     id: "exp-456",
     name: "BTC Direction v3.3 - Attention Layers",
-    description: "Testing increased attention heads with reduced embedding dimension",
+    description:
+      "Testing increased attention heads with reduced embedding dimension",
     modelFamilyId: "mf-btc-direction",
     status: "running",
     progress: 72,
@@ -291,7 +295,8 @@ export const EXPERIMENTS: Experiment[] = [
   {
     id: "exp-452",
     name: "Funding Rate - LSTM vs Transformer",
-    description: "A/B comparison of LSTM and Transformer for funding prediction",
+    description:
+      "A/B comparison of LSTM and Transformer for funding prediction",
     modelFamilyId: "mf-funding-rate",
     status: "failed",
     progress: 23,
@@ -319,7 +324,7 @@ export const EXPERIMENTS: Experiment[] = [
     createdBy: "j.chen",
     createdAt: "2026-03-17T09:00:00Z",
   },
-]
+];
 
 // =============================================================================
 // Training Runs
@@ -341,15 +346,45 @@ export const TRAINING_RUNS: TrainingRun[] = [
     estimatedTimeRemaining: "2h 15m",
     startedAt: "2026-03-18T06:05:00Z",
     logs: [
-      { timestamp: "2026-03-18T09:30:00Z", level: "info", message: "Epoch 108/150 completed. Train loss: 0.298, Val loss: 0.312" },
-      { timestamp: "2026-03-18T09:28:00Z", level: "info", message: "Checkpoint saved: ckpt-108.pt" },
-      { timestamp: "2026-03-18T09:15:00Z", level: "warning", message: "GPU memory usage above 75%, consider reducing batch size" },
+      {
+        timestamp: "2026-03-18T09:30:00Z",
+        level: "info",
+        message: "Epoch 108/150 completed. Train loss: 0.298, Val loss: 0.312",
+      },
+      {
+        timestamp: "2026-03-18T09:28:00Z",
+        level: "info",
+        message: "Checkpoint saved: ckpt-108.pt",
+      },
+      {
+        timestamp: "2026-03-18T09:15:00Z",
+        level: "warning",
+        message: "GPU memory usage above 75%, consider reducing batch size",
+      },
     ],
     artifacts: [
-      { id: "art-1", type: "checkpoint", path: "s3://ml-artifacts/exp-456/ckpt-108.pt", size: 1200000000, createdAt: "2026-03-18T09:28:00Z" },
-      { id: "art-2", type: "metrics", path: "s3://ml-artifacts/exp-456/metrics.json", size: 45000, createdAt: "2026-03-18T09:30:00Z" },
+      {
+        id: "art-1",
+        type: "checkpoint",
+        path: "s3://ml-artifacts/exp-456/ckpt-108.pt",
+        size: 1200000000,
+        createdAt: "2026-03-18T09:28:00Z",
+      },
+      {
+        id: "art-2",
+        type: "metrics",
+        path: "s3://ml-artifacts/exp-456/metrics.json",
+        size: 45000,
+        createdAt: "2026-03-18T09:30:00Z",
+      },
     ],
-    checkpoints: ["ckpt-25.pt", "ckpt-50.pt", "ckpt-75.pt", "ckpt-100.pt", "ckpt-108.pt"],
+    checkpoints: [
+      "ckpt-25.pt",
+      "ckpt-50.pt",
+      "ckpt-75.pt",
+      "ckpt-100.pt",
+      "ckpt-108.pt",
+    ],
   },
   {
     id: "run-453-1",
@@ -366,15 +401,29 @@ export const TRAINING_RUNS: TrainingRun[] = [
     estimatedTimeRemaining: "3h 45m",
     startedAt: "2026-03-18T08:10:00Z",
     logs: [
-      { timestamp: "2026-03-18T09:35:00Z", level: "info", message: "Epoch 36/80 completed. Train loss: 0.521, Val loss: 0.548" },
-      { timestamp: "2026-03-18T09:00:00Z", level: "info", message: "Ensemble member 3/5 initialized" },
+      {
+        timestamp: "2026-03-18T09:35:00Z",
+        level: "info",
+        message: "Epoch 36/80 completed. Train loss: 0.521, Val loss: 0.548",
+      },
+      {
+        timestamp: "2026-03-18T09:00:00Z",
+        level: "info",
+        message: "Ensemble member 3/5 initialized",
+      },
     ],
     artifacts: [
-      { id: "art-3", type: "checkpoint", path: "s3://ml-artifacts/exp-453/ckpt-36.pt", size: 450000000, createdAt: "2026-03-18T09:35:00Z" },
+      {
+        id: "art-3",
+        type: "checkpoint",
+        path: "s3://ml-artifacts/exp-453/ckpt-36.pt",
+        size: 450000000,
+        createdAt: "2026-03-18T09:35:00Z",
+      },
     ],
     checkpoints: ["ckpt-25.pt", "ckpt-36.pt"],
   },
-]
+];
 
 // =============================================================================
 // Model Versions
@@ -496,7 +545,7 @@ export const MODEL_VERSIONS: ModelVersion[] = [
       sharpe: 2.0,
       maxDrawdown: 0.09,
       directionalAccuracy: 0.69,
-      calibration: 0.90,
+      calibration: 0.9,
       inferenceLatencyP50: 4.1,
       inferenceLatencyP99: 10.2,
       predictionCount: 45620,
@@ -517,7 +566,7 @@ export const MODEL_VERSIONS: ModelVersion[] = [
       codeCommitHash: "ghi9012",
     },
   },
-]
+];
 
 // =============================================================================
 // Live Deployments
@@ -546,9 +595,9 @@ export const LIVE_DEPLOYMENTS: LiveDeployment[] = [
       latencyP50: 3.4,
       latencyP99: 8.8,
       featureFreshness: {
-        "btc_price": "0.5s",
-        "funding_rate": "2s",
-        "orderbook_imbalance": "0.2s",
+        btc_price: "0.5s",
+        funding_rate: "2s",
+        orderbook_imbalance: "0.2s",
       },
       lastPredictionAt: "2026-03-18T09:45:00Z",
       errorRate: 0.001,
@@ -576,9 +625,9 @@ export const LIVE_DEPLOYMENTS: LiveDeployment[] = [
       latencyP50: 2.9,
       latencyP99: 6.8,
       featureFreshness: {
-        "eth_iv": "1s",
-        "eth_skew": "2s",
-        "eth_term_structure": "5s",
+        eth_iv: "1s",
+        eth_skew: "2s",
+        eth_term_structure: "5s",
       },
       lastPredictionAt: "2026-03-18T09:44:58Z",
       errorRate: 0.002,
@@ -606,15 +655,15 @@ export const LIVE_DEPLOYMENTS: LiveDeployment[] = [
       latencyP50: 4.2,
       latencyP99: 10.5,
       featureFreshness: {
-        "momentum_20d": "1m",
-        "regime_state": "5m",
-        "cross_asset_correlation": "1m",
+        momentum_20d: "1m",
+        regime_state: "5m",
+        cross_asset_correlation: "1m",
       },
       lastPredictionAt: "2026-03-18T08:00:00Z",
       errorRate: 0.0,
     },
   },
-]
+];
 
 // =============================================================================
 // Champion/Challenger Pairs
@@ -637,7 +686,7 @@ export const CHAMPION_CHALLENGER_PAIRS: ChampionChallengerPair[] = [
       significanceLevel: 0.82,
     },
   },
-]
+];
 
 // =============================================================================
 // ML Alerts
@@ -649,7 +698,8 @@ export const ML_ALERTS: MLAlert[] = [
     type: "drift",
     severity: "warning",
     modelId: "mv-eth-vol-v2.1.0",
-    message: "Prediction drift detected: model accuracy dropped 4% below baseline",
+    message:
+      "Prediction drift detected: model accuracy dropped 4% below baseline",
     metric: "accuracy",
     currentValue: 0.642,
     threshold: 0.68,
@@ -683,7 +733,7 @@ export const ML_ALERTS: MLAlert[] = [
     acknowledgedAt: null,
     resolvedAt: null,
   },
-]
+];
 
 // =============================================================================
 // Feature Provenance
@@ -768,7 +818,7 @@ export const FEATURE_PROVENANCE: FeatureProvenance[] = [
     computedBy: "orderbook-pipeline",
     version: "4.2.1",
   },
-]
+];
 
 // =============================================================================
 // Regime States
@@ -788,7 +838,7 @@ export const REGIME_STATES: RegimeState[] = [
     activeModels: ["mv-btc-dir-v3.2.1", "mv-momentum-v1.2.0"],
     startedAt: "2026-03-15T14:00:00Z",
   },
-]
+];
 
 // =============================================================================
 // Audit Events
@@ -814,8 +864,13 @@ export const AUDIT_EVENTS: AuditEvent[] = [
     entityId: "mv-btc-dir-v3.3.0-rc1",
     userId: "d.smith",
     userName: "David Smith",
-    details: { from_stage: "validated", to_stage: "shadow", traffic_split: "10%" },
-    rationale: "Challenger shows +2.3% accuracy improvement in validation. Starting shadow test.",
+    details: {
+      from_stage: "validated",
+      to_stage: "shadow",
+      traffic_split: "10%",
+    },
+    rationale:
+      "Challenger shows +2.3% accuracy improvement in validation. Starting shadow test.",
   },
   {
     id: "audit-003",
@@ -836,10 +891,13 @@ export const AUDIT_EVENTS: AuditEvent[] = [
     entityId: "ld-btc-dir-001",
     userId: "d.smith",
     userName: "David Smith",
-    details: { model_version: "3.2.1", strategies: ["CEFI_BTC_ML_DIR_HUF_4H", "CEFI_BTC_BASIS_SCE_1H"] },
+    details: {
+      model_version: "3.2.1",
+      strategies: ["CEFI_BTC_ML_DIR_HUF_4H", "CEFI_BTC_BASIS_SCE_1H"],
+    },
     rationale: "Production deployment after successful 1-week gate",
   },
-]
+];
 
 // =============================================================================
 // Signal States (for Signal State page)
@@ -858,19 +916,49 @@ export const SIGNAL_STATES: SignalState[] = [
     metaScore: 0.61,
     regimeState: "Risk-On Trending",
     thresholds: [
-      { name: "min_directional", currentValue: 0.68, threshold: 0.5, passed: true },
-      { name: "min_meta_score", currentValue: 0.61, threshold: 0.4, passed: true },
-      { name: "max_volatility", currentValue: 0.45, threshold: 0.8, passed: true },
-      { name: "min_confidence", currentValue: 0.82, threshold: 0.7, passed: true },
+      {
+        name: "min_directional",
+        currentValue: 0.68,
+        threshold: 0.5,
+        passed: true,
+      },
+      {
+        name: "min_meta_score",
+        currentValue: 0.61,
+        threshold: 0.4,
+        passed: true,
+      },
+      {
+        name: "max_volatility",
+        currentValue: 0.45,
+        threshold: 0.8,
+        passed: true,
+      },
+      {
+        name: "min_confidence",
+        currentValue: 0.82,
+        threshold: 0.7,
+        passed: true,
+      },
     ],
     blockers: [],
     confidence: 0.82,
     recentTransitions: [
-      { timestamp: "2026-03-18T08:00:00Z", from: "HOLD", to: "LONG", reason: "Directional signal crossed threshold" },
-      { timestamp: "2026-03-17T16:00:00Z", from: "LONG", to: "HOLD", reason: "Meta score dropped below threshold" },
+      {
+        timestamp: "2026-03-18T08:00:00Z",
+        from: "HOLD",
+        to: "LONG",
+        reason: "Directional signal crossed threshold",
+      },
+      {
+        timestamp: "2026-03-17T16:00:00Z",
+        from: "LONG",
+        to: "HOLD",
+        reason: "Meta score dropped below threshold",
+      },
     ],
   },
-]
+];
 
 // =============================================================================
 // Dataset Snapshots
@@ -880,12 +968,19 @@ export const DATASET_SNAPSHOTS: DatasetSnapshot[] = [
   {
     id: "ds-btc-2024-q1-q4",
     name: "BTC Training Data 2024 Q1-Q4",
-    description: "Full year BTC data with orderbook, funding, and price features",
+    description:
+      "Full year BTC data with orderbook, funding, and price features",
     instruments: ["BTCUSDT", "BTCUSD", "BTCUSDT-PERP"],
     dateRange: { start: "2024-01-01", end: "2024-12-31" },
     rowCount: 31536000,
     sizeBytes: 8500000000,
-    features: ["price", "volume", "orderbook_imbalance", "funding_rate", "oi_change"],
+    features: [
+      "price",
+      "volume",
+      "orderbook_imbalance",
+      "funding_rate",
+      "oi_change",
+    ],
     createdAt: "2025-01-05T10:00:00Z",
     createdBy: "data-pipeline",
   },
@@ -901,7 +996,7 @@ export const DATASET_SNAPSHOTS: DatasetSnapshot[] = [
     createdAt: "2025-01-10T14:00:00Z",
     createdBy: "data-pipeline",
   },
-]
+];
 
 // =============================================================================
 // Feature Set Versions
@@ -913,10 +1008,34 @@ export const FEATURE_SET_VERSIONS: FeatureSetVersion[] = [
     name: "Delta One Features",
     version: "4.2",
     features: [
-      { name: "btc_price", type: "numeric", source: "features-delta-one-service", sla: "1s", description: "BTC mid price" },
-      { name: "funding_rate", type: "numeric", source: "features-delta-one-service", sla: "5s", description: "Perp funding rate" },
-      { name: "orderbook_imbalance", type: "numeric", source: "features-delta-one-service", sla: "0.5s", description: "Top 10 level imbalance" },
-      { name: "oi_change", type: "numeric", source: "features-delta-one-service", sla: "5s", description: "Open interest change 1h" },
+      {
+        name: "btc_price",
+        type: "numeric",
+        source: "features-delta-one-service",
+        sla: "1s",
+        description: "BTC mid price",
+      },
+      {
+        name: "funding_rate",
+        type: "numeric",
+        source: "features-delta-one-service",
+        sla: "5s",
+        description: "Perp funding rate",
+      },
+      {
+        name: "orderbook_imbalance",
+        type: "numeric",
+        source: "features-delta-one-service",
+        sla: "0.5s",
+        description: "Top 10 level imbalance",
+      },
+      {
+        name: "oi_change",
+        type: "numeric",
+        source: "features-delta-one-service",
+        sla: "5s",
+        description: "Open interest change 1h",
+      },
     ],
     services: ["features-delta-one-service"],
     createdAt: "2026-02-01T10:00:00Z",
@@ -927,15 +1046,33 @@ export const FEATURE_SET_VERSIONS: FeatureSetVersion[] = [
     name: "Volatility Features",
     version: "3.1",
     features: [
-      { name: "eth_iv", type: "numeric", source: "features-volatility-service", sla: "2s", description: "ETH ATM implied vol" },
-      { name: "eth_skew", type: "numeric", source: "features-volatility-service", sla: "2s", description: "25-delta skew" },
-      { name: "eth_term_structure", type: "timeseries", source: "features-volatility-service", sla: "5s", description: "Term structure curve" },
+      {
+        name: "eth_iv",
+        type: "numeric",
+        source: "features-volatility-service",
+        sla: "2s",
+        description: "ETH ATM implied vol",
+      },
+      {
+        name: "eth_skew",
+        type: "numeric",
+        source: "features-volatility-service",
+        sla: "2s",
+        description: "25-delta skew",
+      },
+      {
+        name: "eth_term_structure",
+        type: "timeseries",
+        source: "features-volatility-service",
+        sla: "5s",
+        description: "Term structure curve",
+      },
     ],
     services: ["features-volatility-service"],
     createdAt: "2026-01-15T09:00:00Z",
     createdBy: "m.patel",
   },
-]
+];
 
 // =============================================================================
 // Validation Packages
@@ -950,10 +1087,34 @@ export const VALIDATION_PACKAGES: ValidationPackage[] = [
     periodStart: "2024-07-01",
     periodEnd: "2024-12-31",
     regimes: [
-      { regime: "Risk-On", sharpe: 2.45, accuracy: 0.74, drawdown: 0.06, sampleSize: 1200 },
-      { regime: "Risk-Off", sharpe: 1.85, accuracy: 0.71, drawdown: 0.09, sampleSize: 800 },
-      { regime: "High-Vol", sharpe: 2.1, accuracy: 0.69, drawdown: 0.12, sampleSize: 450 },
-      { regime: "Low-Vol", sharpe: 2.6, accuracy: 0.76, drawdown: 0.04, sampleSize: 950 },
+      {
+        regime: "Risk-On",
+        sharpe: 2.45,
+        accuracy: 0.74,
+        drawdown: 0.06,
+        sampleSize: 1200,
+      },
+      {
+        regime: "Risk-Off",
+        sharpe: 1.85,
+        accuracy: 0.71,
+        drawdown: 0.09,
+        sampleSize: 800,
+      },
+      {
+        regime: "High-Vol",
+        sharpe: 2.1,
+        accuracy: 0.69,
+        drawdown: 0.12,
+        sampleSize: 450,
+      },
+      {
+        regime: "Low-Vol",
+        sharpe: 2.6,
+        accuracy: 0.76,
+        drawdown: 0.04,
+        sampleSize: 950,
+      },
     ],
     factorSensitivity: [
       { factor: "BTC_trend", sensitivity: 0.82, pValue: 0.001 },
@@ -970,7 +1131,7 @@ export const VALIDATION_PACKAGES: ValidationPackage[] = [
     createdAt: "2026-03-10T10:00:00Z",
     completedAt: "2026-03-11T14:00:00Z",
   },
-]
+];
 
 // =============================================================================
 // Deployment Candidates
@@ -984,9 +1145,27 @@ export const DEPLOYMENT_CANDIDATES: DeploymentCandidate[] = [
     status: "shadow_running",
     configVersion: "cfg-btc-dir-v12",
     featureDependencies: [
-      { featureName: "btc_price", service: "features-delta-one-service", status: "available", latency: 3.2, freshness: "0.5s" },
-      { featureName: "funding_rate", service: "features-delta-one-service", status: "available", latency: 2.1, freshness: "2s" },
-      { featureName: "orderbook_imbalance", service: "features-delta-one-service", status: "available", latency: 1.8, freshness: "0.2s" },
+      {
+        featureName: "btc_price",
+        service: "features-delta-one-service",
+        status: "available",
+        latency: 3.2,
+        freshness: "0.5s",
+      },
+      {
+        featureName: "funding_rate",
+        service: "features-delta-one-service",
+        status: "available",
+        latency: 2.1,
+        freshness: "2s",
+      },
+      {
+        featureName: "orderbook_imbalance",
+        service: "features-delta-one-service",
+        status: "available",
+        latency: 1.8,
+        freshness: "0.2s",
+      },
     ],
     shadowResults: {
       duration: "3d",
@@ -1001,9 +1180,36 @@ export const DEPLOYMENT_CANDIDATES: DeploymentCandidate[] = [
       },
     },
     gates: [
-      { id: "g-shadow", name: "Shadow Test", type: "shadow", status: "passed", requiredMetric: "error_rate", threshold: 0.01, actualValue: 0.0008, passedAt: "2026-03-18T08:00:00Z" },
-      { id: "g-1d", name: "1-Day Gate", type: "1d", status: "pending", requiredMetric: "accuracy", threshold: 0.70, actualValue: 0.738, passedAt: null },
-      { id: "g-1w", name: "1-Week Gate", type: "1w", status: "pending", requiredMetric: "sharpe", threshold: 1.8, actualValue: null, passedAt: null },
+      {
+        id: "g-shadow",
+        name: "Shadow Test",
+        type: "shadow",
+        status: "passed",
+        requiredMetric: "error_rate",
+        threshold: 0.01,
+        actualValue: 0.0008,
+        passedAt: "2026-03-18T08:00:00Z",
+      },
+      {
+        id: "g-1d",
+        name: "1-Day Gate",
+        type: "1d",
+        status: "pending",
+        requiredMetric: "accuracy",
+        threshold: 0.7,
+        actualValue: 0.738,
+        passedAt: null,
+      },
+      {
+        id: "g-1w",
+        name: "1-Week Gate",
+        type: "1w",
+        status: "pending",
+        requiredMetric: "sharpe",
+        threshold: 1.8,
+        actualValue: null,
+        passedAt: null,
+      },
     ],
     blockingIssues: [],
     expectedImpact: {
@@ -1016,4 +1222,4 @@ export const DEPLOYMENT_CANDIDATES: DeploymentCandidate[] = [
     approvedAt: null,
     approvedBy: null,
   },
-]
+];

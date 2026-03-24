@@ -1,13 +1,18 @@
-import type { UserRole, Entitlement, EntitlementOrWildcard, Org } from "@/lib/config/auth"
+import type {
+  UserRole,
+  Entitlement,
+  EntitlementOrWildcard,
+  Org,
+} from "@/lib/config/auth";
 
 /** Authenticated user shape shared across all auth providers. */
 export interface AuthUser {
-  id: string
-  email: string
-  displayName: string
-  role: UserRole
-  org: Org
-  entitlements: readonly EntitlementOrWildcard[]
+  id: string;
+  email: string;
+  displayName: string;
+  role: UserRole;
+  org: Org;
+  entitlements: readonly EntitlementOrWildcard[];
 }
 
 /**
@@ -20,20 +25,20 @@ export interface AuthUser {
  */
 export interface AuthProvider {
   /** Attempt login. Returns the authenticated user or null on failure. */
-  login(credential: string, secret?: string): AuthUser | null
+  login(credential: string, secret?: string): AuthUser | null;
 
   /** Clear session state. */
-  logout(): void
+  logout(): void;
 
   /** Return a bearer token (or null if unauthenticated). */
-  getToken(): string | null
+  getToken(): string | null;
 
   /** Return the currently authenticated user (or null). */
-  getUser(): AuthUser | null
+  getUser(): AuthUser | null;
 
   /** Whether a valid session exists. */
-  isAuthenticated(): boolean
+  isAuthenticated(): boolean;
 
   /** Check a specific entitlement against the current user. */
-  hasEntitlement(entitlement: Entitlement): boolean
+  hasEntitlement(entitlement: Entitlement): boolean;
 }

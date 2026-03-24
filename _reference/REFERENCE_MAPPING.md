@@ -6,16 +6,16 @@ This document maps the reference repos to the service areas defined in the refac
 
 ## Service Areas in Refactoring Vision
 
-| Service Area | Audience | Visibility | Purpose | Lifecycle Alignment |
-|---|---|---|---|---|
-| **Data** | Clients + Internal | Polished catalog + deep internal access | Data subscriptions, API access, catalogue | Design, Run |
-| **Research / Simulation / Build** | Internal + Entitled Clients | Role-gated | Model training, backtesting, signal config | Design, Simulate, Promote |
-| **Trading / Run / Monitor** | Internal + Entitled Clients | Role-gated | Live operations, orders, positions | Run, Monitor |
-| **Execution / Execution Analytics** | Internal + Entitled Clients | Role-gated | Execution analysis, venue connectivity | Run, Monitor, Explain |
-| **Reporting / Explain / Reconcile / Investment Management** | Clients + Internal | Client view + internal operations | P&L, performance, fees, settlement | Explain, Reconcile |
-| **Admin / Onboarding / Organization Control** | Internal + Limited Admins | **HIDDEN from clients** | User management, subscriptions, settings | Onboarding |
-| **Deployment / DevOps / Operational Readiness** | Internal only | **HIDDEN from clients** | Infrastructure, deployment pipeline, health | Deployment |
-| **Audit / Compliance / Provenance** | Internal only | **HIDDEN from clients** | Event history, audit trail, compliance | Explain, Reconcile, Audit |
+| Service Area                                                | Audience                    | Visibility                              | Purpose                                     | Lifecycle Alignment       |
+| ----------------------------------------------------------- | --------------------------- | --------------------------------------- | ------------------------------------------- | ------------------------- |
+| **Data**                                                    | Clients + Internal          | Polished catalog + deep internal access | Data subscriptions, API access, catalogue   | Design, Run               |
+| **Research / Simulation / Build**                           | Internal + Entitled Clients | Role-gated                              | Model training, backtesting, signal config  | Design, Simulate, Promote |
+| **Trading / Run / Monitor**                                 | Internal + Entitled Clients | Role-gated                              | Live operations, orders, positions          | Run, Monitor              |
+| **Execution / Execution Analytics**                         | Internal + Entitled Clients | Role-gated                              | Execution analysis, venue connectivity      | Run, Monitor, Explain     |
+| **Reporting / Explain / Reconcile / Investment Management** | Clients + Internal          | Client view + internal operations       | P&L, performance, fees, settlement          | Explain, Reconcile        |
+| **Admin / Onboarding / Organization Control**               | Internal + Limited Admins   | **HIDDEN from clients**                 | User management, subscriptions, settings    | Onboarding                |
+| **Deployment / DevOps / Operational Readiness**             | Internal only               | **HIDDEN from clients**                 | Infrastructure, deployment pipeline, health | Deployment                |
+| **Audit / Compliance / Provenance**                         | Internal only               | **HIDDEN from clients**                 | Event history, audit trail, compliance      | Explain, Reconcile, Audit |
 
 ---
 
@@ -26,16 +26,19 @@ This document maps the reference repos to the service areas defined in the refac
 **Maps to:** Admin / Onboarding / Organization Control
 
 **Alignment: ✅ STRONG**
+
 - Correctly positioned as internal-only
 - Organization-first model aligns with vision
 - User role and subscription management patterns are relevant
 - Onboarding flows map to the vision
 
 **Value: HIGH**
+
 - Reference for: Admin surfaces, org hierarchy, user role assignment
 - Use for: Understanding how admins manage users, subscriptions, org settings
 
 **Current Codebase:** Already has `app/admin/` and `components/shell/role-layout.tsx`
+
 - **Assessment:** Current approach is basic. Reference repo shows richer patterns worth considering.
 - **Action:** Use as reference for deepening admin surfaces, but align with current structure first.
 
@@ -46,15 +49,18 @@ This document maps the reference repos to the service areas defined in the refac
 **Maps to:** Audit / Compliance / Provenance (Internal-only)
 
 **Alignment: ✅ STRONG**
+
 - Correctly positioned as internal-only
 - Audit trail and compliance surfaces align with vision
 - Provenance tracking is institutional-grade
 
 **Value: HIGH**
+
 - Reference for: Event history, audit trail visualization, compliance reporting
 - Use for: Understanding how to structure audit/compliance surfaces
 
 **Current Codebase:** Has `app/reports/` and references to compliance, but audit detail is minimal
+
 - **Assessment:** Current app lacks depth in audit surfaces. Reference is valuable.
 - **Action:** Use as reference for building out audit/compliance service area.
 
@@ -65,15 +71,18 @@ This document maps the reference repos to the service areas defined in the refac
 **Maps to:** Reporting / Explain / Reconcile / Investment Management
 
 **Alignment: ✅ STRONG**
+
 - Correctly partitions client view (read-only) from internal view (operational)
 - P&L, performance, fees, settlement UX is well-developed
 - Lifecycle alignment: Explain, Reconcile
 
 **Value: HIGH**
+
 - Reference for: P&L visualization, performance attribution, fee transparency, settlement UX
 - Use for: Understanding how to build client-facing reporting that aligns with internal ops
 
 **Current Codebase:** Has `app/reports/page.tsx` and some dashboards, but reporting depth is limited
+
 - **Assessment:** Current reporting is basic. Reference repo shows strong client/internal partitioning.
 - **Action:** Use as reference for building out reporting/investment management service area. Pay attention to how it partitions client vs internal views.
 
@@ -84,15 +93,18 @@ This document maps the reference repos to the service areas defined in the refac
 **Maps to:** Execution / Execution Analytics (Run + Monitor)
 
 **Alignment: ✅ STRONG**
+
 - Execution workflow visualization aligns with vision
 - Venue connectivity and order flow patterns are relevant
 - Live trading dashboard patterns are institutional-grade
 
 **Value: HIGH**
+
 - Reference for: Execution analytics, venue status, order book, fill analysis
 - Use for: Understanding execution workflow UX at institutional level
 
 **Current Codebase:** Has `app/execution/` with pages for algos, benchmarks, candidates, handoff, etc.
+
 - **Assessment:** Current execution service is well-structured but could deepen with reference patterns.
 - **Action:** Use as reference for execution analytics details. Assess whether current structure or reference structure is stronger. (Likely current structure is already good; reference is for deepening, not replacing.)
 
@@ -103,16 +115,19 @@ This document maps the reference repos to the service areas defined in the refac
 **Maps to:** Deployment / DevOps / Operational Readiness (Internal-only)
 
 **Alignment: ✅ EXCELLENT (Production Code)**
+
 - Full-stack reference (not just old patterns, but current production architecture)
 - Deployment pipeline, health monitoring, service orchestration all aligned with vision
 - Three-tier architecture: UI (frontend) + API (middleware) + Service (orchestration)
 
 **Value: VERY HIGH**
+
 - `deployment-ui/`: React/Next.js frontend patterns, dashboard UX, real-time status updates
 - `deployment-api/`: REST API design, health check aggregation, audit logging patterns
 - `deployment-service/`: Orchestration logic, multi-environment support, rollback strategies, IaC patterns
 
 **Current Codebase:** Has `app/devops/` and `app/ops/` but minimal implementation
+
 - **Assessment:** Current deployment/ops surfaces are stubs. This is production-grade reference for building operational readiness layer.
 - **Action:** Reference for full-stack deployment architecture. deployment-api endpoints can inform shell health aggregation. deployment-service patterns inform internal ops orchestration.
 
@@ -123,15 +138,18 @@ This document maps the reference repos to the service areas defined in the refac
 **Maps to:** Reporting / Explain / Reconcile (Invoice & Payment Operations)
 
 **Alignment: ✅ MODERATE**
+
 - Invoicing is a subset of Reporting/Settlement
 - Payment and billing cycle management are relevant
 - Client visibility of invoices aligns with vision
 
 **Value: MEDIUM**
+
 - Reference for: Invoice generation, billing cycle management, payment status
 - Use for: Understanding how to structure invoicing workflows
 
 **Current Codebase:** No dedicated invoicing service yet
+
 - **Assessment:** Current codebase doesn't have invoicing; reference is valuable for building it.
 - **Action:** Use as reference for invoicing component of reporting/settlement service area.
 
@@ -142,15 +160,18 @@ This document maps the reference repos to the service areas defined in the refac
 **Maps to:** Admin / Onboarding / Organization Control + Public Marketing
 
 **Alignment: ✅ STRONG**
+
 - Onboarding flows align with vision
 - Demo/walkthrough patterns are relevant for prospective users
 - Role-specific onboarding matches role-based model
 
 **Value: HIGH**
+
 - Reference for: New user onboarding flows, demo roles, permission explanations
 - Use for: Understanding how to guide users through signup and role assignment
 
 **Current Codebase:** Has `app/login/` and `app/signup/` but minimal onboarding flow
+
 - **Assessment:** Current onboarding is basic. Reference shows richer flow.
 - **Action:** Use as reference for building out user onboarding experience.
 
@@ -163,11 +184,13 @@ This document maps the reference repos to the service areas defined in the refac
 **Focus:** Routes, shells, role-aware architecture
 
 **Reference repos to consult:**
+
 1. `versa-admin-ui/` — How should admin shell be structured?
 2. `versa-onboarding/` — How should post-login flow guide users?
 3. Current codebase `app/` — What's already strong?
 
 **Action items:**
+
 - Audit current `app/` structure
 - Compare with reference repos for patterns
 - Plan shell and routing improvements
@@ -179,6 +202,7 @@ This document maps the reference repos to the service areas defined in the refac
 **Focus:** Public marketing pages, service catalogue, login flow
 
 **Reference repos to consult:**
+
 1. `versa-onboarding/` — How to structure public landing?
 2. `versa-client-reporting/` — How to showcase reporting service?
 3. `versa-execution-analytics-ui/` — How to showcase execution service?
@@ -190,6 +214,7 @@ This document maps the reference repos to the service areas defined in the refac
 **Focus:** Post-login service discovery, role-aware access
 
 **Reference repos to consult:**
+
 1. All repos — How do they show "what's available to me"?
 2. `versa-admin-ui/` — Role/permission model
 3. `versa-onboarding/` — Post-login flows
@@ -201,6 +226,7 @@ This document maps the reference repos to the service areas defined in the refac
 **Focus:** Client-facing surfaces for subscribed services
 
 **Reference repos to consult:**
+
 1. `versa-client-reporting/` — How to partition client view?
 2. `versa-execution-analytics-ui/` — What can clients access?
 
@@ -211,6 +237,7 @@ This document maps the reference repos to the service areas defined in the refac
 **Focus:** Admin, deployment, audit, compliance
 
 **Reference repos to consult:**
+
 1. `versa-admin-ui/` — Admin surfaces
 2. `versa-deployment-ui/` — Ops surfaces
 3. `versa-audit-ui/` — Compliance surfaces

@@ -1,23 +1,35 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { ChevronRight, Home } from "lucide-react"
-import { getRouteMapping, lifecycleStages } from "@/lib/lifecycle-mapping"
-import { GlobalScopeFilters } from "@/components/platform/global-scope-filters"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ChevronRight, Home } from "lucide-react";
+import { getRouteMapping, lifecycleStages } from "@/lib/lifecycle-mapping";
+import { GlobalScopeFilters } from "@/components/platform/global-scope-filters";
 
 export function Breadcrumbs() {
-  const pathname = usePathname() || ""
+  const pathname = usePathname() || "";
 
   // Don't show on dashboard or top-level routes
-  if (!pathname.startsWith("/services/") && !pathname.startsWith("/admin") && !pathname.startsWith("/config") && !pathname.startsWith("/devops") && !pathname.startsWith("/ops") && !pathname.startsWith("/internal") && !pathname.startsWith("/investor")) return null
+  if (
+    !pathname.startsWith("/services/") &&
+    !pathname.startsWith("/admin") &&
+    !pathname.startsWith("/config") &&
+    !pathname.startsWith("/devops") &&
+    !pathname.startsWith("/ops") &&
+    !pathname.startsWith("/internal") &&
+    !pathname.startsWith("/investor")
+  )
+    return null;
 
-  const mapping = getRouteMapping(pathname)
+  const mapping = getRouteMapping(pathname);
 
   // Build crumbs from URL segments: /services/data/coverage -> ["data", "coverage"]
-  const segments = pathname.replace("/services/", "").split("/").filter(Boolean)
-  const serviceName = segments[0]
-  const pageName = segments.length > 1 ? segments[segments.length - 1] : null
+  const segments = pathname
+    .replace("/services/", "")
+    .split("/")
+    .filter(Boolean);
+  const serviceName = segments[0];
+  const pageName = segments.length > 1 ? segments[segments.length - 1] : null;
 
   const serviceLabels: Record<string, string> = {
     data: "Data",
@@ -27,33 +39,45 @@ export function Breadcrumbs() {
     observe: "Observe",
     manage: "Manage",
     reports: "Reports",
-  }
+  };
 
-  const formatLabel = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ")
+  const formatLabel = (s: string) =>
+    s.charAt(0).toUpperCase() + s.slice(1).replace(/-/g, " ");
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center justify-between flex-wrap gap-y-1 px-4 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border">
+    <nav
+      aria-label="Breadcrumb"
+      className="flex items-center justify-between flex-wrap gap-y-1 px-4 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border"
+    >
       <div className="flex items-center gap-1.5">
-      <Link href="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1">
-        <Home className="size-3" />
-        Services
-      </Link>
-      {serviceName && (
-        <>
-          <ChevronRight className="size-3" />
-          <Link href={`/services/${serviceName}/overview`} className="hover:text-foreground transition-colors">
-            {serviceLabels[serviceName] ?? formatLabel(serviceName)}
-          </Link>
-        </>
-      )}
-      {pageName && pageName !== "overview" && pageName !== serviceName && (
-        <>
-          <ChevronRight className="size-3" />
-          <span className="text-foreground font-medium">{mapping?.label || formatLabel(pageName)}</span>
-        </>
-      )}
+        <Link
+          href="/dashboard"
+          className="hover:text-foreground transition-colors flex items-center gap-1"
+        >
+          <Home className="size-3" />
+          Services
+        </Link>
+        {serviceName && (
+          <>
+            <ChevronRight className="size-3" />
+            <Link
+              href={`/services/${serviceName}/overview`}
+              className="hover:text-foreground transition-colors"
+            >
+              {serviceLabels[serviceName] ?? formatLabel(serviceName)}
+            </Link>
+          </>
+        )}
+        {pageName && pageName !== "overview" && pageName !== serviceName && (
+          <>
+            <ChevronRight className="size-3" />
+            <span className="text-foreground font-medium">
+              {mapping?.label || formatLabel(pageName)}
+            </span>
+          </>
+        )}
       </div>
       <GlobalScopeFilters />
     </nav>
-  )
+  );
 }

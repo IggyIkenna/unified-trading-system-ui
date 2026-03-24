@@ -1,7 +1,7 @@
 # GCS Lifecycle Cost Optimization
 
-**Purpose:** Automatic storage class transitions to reduce costs  
-**Status:** Ready to apply to all buckets  
+**Purpose:** Automatic storage class transitions to reduce costs
+**Status:** Ready to apply to all buckets
 **Estimated Savings:** $800-1,500/year (MVP: BTC + SPY)
 
 ---
@@ -69,8 +69,8 @@
 
 ### At Scale (Full MVP: 11 Venues)
 
-**Current (All STANDARD):** $14,000/year  
-**With Lifecycle Policy:** $8,540/year  
+**Current (All STANDARD):** $14,000/year
+**With Lifecycle Policy:** $8,540/year
 **Annual Savings:** **$5,460/year (39% reduction)**
 
 ---
@@ -393,8 +393,8 @@ gsutil ls -L gs://features-delta-one-cefi-{project}/by_date/day=2023-01-01/ | gr
 
 ### Cost-Benefit
 
-**Annual Storage Savings:** $767-5,460/year  
-**Estimated Retrieval Costs:** $50-200/year (quarterly training + occasional backtests)  
+**Annual Storage Savings:** $767-5,460/year
+**Estimated Retrieval Costs:** $50-200/year (quarterly training + occasional backtests)
 **Net Savings:** **$600-5,200/year**
 
 ---

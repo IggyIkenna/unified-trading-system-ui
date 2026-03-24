@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
-import { ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export interface PnLComponent {
-  name: string
-  pnl: number
-  exposure?: string
+  name: string;
+  pnl: number;
+  exposure?: string;
 }
 
 interface PnLAttributionPanelProps {
-  components: PnLComponent[]
-  totalPnl: number
-  showExposure?: boolean
-  onComponentClick?: (componentName: string) => void
-  className?: string
+  components: PnLComponent[];
+  totalPnl: number;
+  showExposure?: boolean;
+  onComponentClick?: (componentName: string) => void;
+  className?: string;
 }
 
 export function PnLAttributionPanel({
@@ -27,33 +27,40 @@ export function PnLAttributionPanel({
   onComponentClick,
   className,
 }: PnLAttributionPanelProps) {
-  const maxAbsPnl = Math.max(...components.map((c) => Math.abs(c.pnl)))
+  const maxAbsPnl = Math.max(...components.map((c) => Math.abs(c.pnl)));
 
   const formatPnL = (value: number) => {
     // Guard against NaN, undefined, or infinite values
-    if (value === null || value === undefined || !isFinite(value) || isNaN(value)) {
-      return "$0"
+    if (
+      value === null ||
+      value === undefined ||
+      !isFinite(value) ||
+      isNaN(value)
+    ) {
+      return "$0";
     }
-    const absVal = Math.abs(value)
-    const prefix = value >= 0 ? "+" : "-"
-    if (absVal >= 1_000_000) return `${prefix}$${(absVal / 1_000_000).toFixed(0)}m`
-    if (absVal >= 1_000) return `${prefix}$${(absVal / 1_000).toFixed(0)}k`
-    return `${prefix}$${absVal.toFixed(0)}`
-  }
+    const absVal = Math.abs(value);
+    const prefix = value >= 0 ? "+" : "-";
+    if (absVal >= 1_000_000)
+      return `${prefix}$${(absVal / 1_000_000).toFixed(0)}m`;
+    if (absVal >= 1_000) return `${prefix}$${(absVal / 1_000).toFixed(0)}k`;
+    return `${prefix}$${absVal.toFixed(0)}`;
+  };
 
   return (
     <div className={cn("space-y-4", className)}>
       <div className="space-y-2">
         {components.map((component) => {
-          const isPositive = component.pnl >= 0
-          const barWidth = maxAbsPnl > 0 ? (Math.abs(component.pnl) / maxAbsPnl) * 100 : 0
+          const isPositive = component.pnl >= 0;
+          const barWidth =
+            maxAbsPnl > 0 ? (Math.abs(component.pnl) / maxAbsPnl) * 100 : 0;
 
           return (
             <div
               key={component.name}
               className={cn(
                 "group cursor-pointer rounded-md p-2 transition-colors hover:bg-muted/30",
-                onComponentClick && "hover:bg-muted/50"
+                onComponentClick && "hover:bg-muted/50",
               )}
               onClick={() => onComponentClick?.(component.name)}
             >
@@ -68,7 +75,7 @@ export function PnLAttributionPanel({
                   <span
                     className={cn(
                       "text-sm font-mono tabular-nums font-medium",
-                      isPositive ? "pnl-positive" : "pnl-negative"
+                      isPositive ? "pnl-positive" : "pnl-negative",
                     )}
                   >
                     {formatPnL(component.pnl)}
@@ -87,7 +94,7 @@ export function PnLAttributionPanel({
                 />
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -98,7 +105,7 @@ export function PnLAttributionPanel({
           <span
             className={cn(
               "text-lg font-mono tabular-nums font-semibold",
-              totalPnl >= 0 ? "pnl-positive" : "pnl-negative"
+              totalPnl >= 0 ? "pnl-positive" : "pnl-negative",
             )}
           >
             {formatPnL(totalPnl)}
@@ -130,5 +137,5 @@ export function PnLAttributionPanel({
         </Link>
       </div>
     </div>
-  )
+  );
 }

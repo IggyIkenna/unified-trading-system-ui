@@ -12,6 +12,7 @@
 The repo has strong structural foundations (Phase 2 complete) but the documentation and rules still reflect a **Data-service-first world**. The Data service has four clean layers (public → portal → admin → internal/ETL). The other service areas do NOT yet have equivalent architectural clarity in the docs.
 
 An agent arriving fresh and reading the current docs would:
+
 - Know how to build Data pages (clear four-layer pattern)
 - NOT know how to consistently build Research/Simulate, Run/Monitor, Explain/Reconcile, Admin, Deployment, or Audit pages
 - NOT have clear guidance on the post-login service hub as a central experience
@@ -36,23 +37,25 @@ always converge on the SAME service detail page with data-driven filtering.
 
 ### The Three Doors
 
-| Door | Who | Entry Point | Journey |
-|------|-----|------------|---------|
-| **Prospect** | Unauthenticated visitor | Landing page → `/services/{domain}` | Sees marketing page → "Subscribe" CTA → Register → Login → Subscription overview → Service detail |
-| **Client** | Authenticated, subscribed | Login → `/overview` | Sees subscription overview (entitled vs locked) → Click entitled service → Service detail (org-scoped data) |
-| **Internal** | Authenticated, internal role | Login → `/overview` | Sees all services available → Click any service → Service detail (all data, plus admin/ops surfaces) |
+| Door         | Who                          | Entry Point                         | Journey                                                                                                     |
+| ------------ | ---------------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Prospect** | Unauthenticated visitor      | Landing page → `/services/{domain}` | Sees marketing page → "Subscribe" CTA → Register → Login → Subscription overview → Service detail           |
+| **Client**   | Authenticated, subscribed    | Login → `/overview`                 | Sees subscription overview (entitled vs locked) → Click entitled service → Service detail (org-scoped data) |
+| **Internal** | Authenticated, internal role | Login → `/overview`                 | Sees all services available → Click any service → Service detail (all data, plus admin/ops surfaces)        |
 
 ### The Subscription Overview (Hub)
 
 After authentication, ALL users land on `/overview` — the subscription-aware hub.
 
 **What clients see:**
+
 - Services they're subscribed to: full-color cards with quick stats → click for detail
 - Services they're NOT subscribed to: locked cards with "Upgrade" → click shows what they'd get + pricing
 - Option to subscribe to additional services (updates entitlements dynamically)
 - Link to the same detailed page internal users see, but with org-scoped data
 
 **What internal users see:**
+
 - All services available (wildcard entitlements)
 - Per-client view option (select a client org to see what they see)
 - Admin/ops links visible that clients never see
@@ -60,6 +63,7 @@ After authentication, ALL users land on `/overview` — the subscription-aware h
 ### The Service Detail (Same Page, Different Data)
 
 Once a user clicks through from the hub, they arrive at the SAME service page:
+
 - `/data/*` — same catalogue for everyone, filtered by subscription tier
 - `/strategy-platform/*` — same backtest/strategy UI, filtered by org's strategies
 - `/trading/*` — same trading terminal, filtered by org's positions/accounts
@@ -71,14 +75,14 @@ sees nearly the same thing as internal — minus the ops/admin surfaces.
 
 ### Example: Investment Management Service
 
-| Step | Prospect | Client | Internal |
-|------|----------|--------|----------|
-| 1. Discover | Landing page → `/services/investment` → sees capabilities, pricing, FCA registration | Already subscribed | Already has access |
-| 2. Subscribe | Clicks "Subscribe" → registration → chooses package | Already done | N/A (wildcard) |
-| 3. Hub | Logs in → `/overview` → sees Investment Management as "Available" | Same — sees it as "Available" with quick stats | Same — sees all services |
-| 4. Detail | Clicks card → `/reports` → sees own org's strategies, P&L, settlements | Same page, own org data | Same page, can switch between all client orgs |
-| 5. Deep dive | Clicks a strategy → sees detailed returns, attribution, backtest↔live diff | Same | Same, plus admin actions |
-| 6. Billing | Sees invoices for their org | Same | Can generate invoices for any org |
+| Step         | Prospect                                                                             | Client                                         | Internal                                      |
+| ------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------- | --------------------------------------------- |
+| 1. Discover  | Landing page → `/services/investment` → sees capabilities, pricing, FCA registration | Already subscribed                             | Already has access                            |
+| 2. Subscribe | Clicks "Subscribe" → registration → chooses package                                  | Already done                                   | N/A (wildcard)                                |
+| 3. Hub       | Logs in → `/overview` → sees Investment Management as "Available"                    | Same — sees it as "Available" with quick stats | Same — sees all services                      |
+| 4. Detail    | Clicks card → `/reports` → sees own org's strategies, P&L, settlements               | Same page, own org data                        | Same page, can switch between all client orgs |
+| 5. Deep dive | Clicks a strategy → sees detailed returns, attribution, backtest↔live diff          | Same                                           | Same, plus admin actions                      |
+| 6. Billing   | Sees invoices for their org                                                          | Same                                           | Can generate invoices for any org             |
 ```
 
 ### 2A. Add: Generalized Service Layer Model (new §6.1)
@@ -91,24 +95,24 @@ Insert after §6 "Service / Product Areas". This makes the Data pattern the cano
 Every service area MUST define up to four access layers. Not every service needs all four,
 but the pattern must be explicitly decided per service.
 
-| Layer | Route Pattern | Auth | Audience | Purpose |
-|-------|--------------|------|----------|---------|
-| **Public** | `(public)/services/{service}` | None | Prospects | Marketing, demo, capability showcase |
-| **Product** | `(platform)/{service}/*` | Required | Client + Internal | The actual product surface (same pages, API-scoped data) |
-| **Admin** | `(ops)/admin/{service}` | Internal + role | Internal admins | Cross-org management, billing, configuration |
-| **Internal Ops** | `(ops)/internal/{service}` | Internal + ops role | Ops team | Pipeline management, health, debugging |
+| Layer            | Route Pattern                 | Auth                | Audience          | Purpose                                                  |
+| ---------------- | ----------------------------- | ------------------- | ----------------- | -------------------------------------------------------- |
+| **Public**       | `(public)/services/{service}` | None                | Prospects         | Marketing, demo, capability showcase                     |
+| **Product**      | `(platform)/{service}/*`      | Required            | Client + Internal | The actual product surface (same pages, API-scoped data) |
+| **Admin**        | `(ops)/admin/{service}`       | Internal + role     | Internal admins   | Cross-org management, billing, configuration             |
+| **Internal Ops** | `(ops)/internal/{service}`    | Internal + ops role | Ops team          | Pipeline management, health, debugging                   |
 
 ### Per-Service Layer Decisions
 
-| Service Area | Public | Product | Admin | Internal Ops |
-|-------------|--------|---------|-------|--------------|
-| **Data** | ✅ `/services/data` | ✅ `/data/*`, `/portal/data` | 🟡 `/admin/data` (basic) | 🟡 `/internal/data-etl` (basic) |
-| **Research / Simulate** | ✅ `/services/backtesting` | ✅ `/strategy-platform/*`, `/ml/*`, `/quant/*` | ❌ (managed via platform) | ❌ (no separate ops surface) |
-| **Trading / Run / Monitor** | ✅ `/services/execution` | ✅ `/trading/*`, `/positions/*`, `/risk/*`, `/execution/*`, `/markets/*`, `/alerts/*` | ❌ | ✅ `/internal/trading-ops` (future: live intervention, kill switches) |
-| **Reporting / Explain / Reconcile** | ✅ `/services/investment` | ✅ `/reports/*`, `/executive/*` | ✅ `/manage/fees`, `/manage/mandates` | ✅ `/internal/settlement-ops` (future) |
-| **Admin / Onboarding** | ❌ (hidden) | ❌ (hidden from clients) | ✅ `/admin/*`, `/manage/*` | ❌ |
-| **Deployment / DevOps** | ❌ (hidden) | ❌ (hidden from clients) | ❌ | ✅ `/devops/*`, `/ops/*` |
-| **Audit / Compliance** | ✅ `/services/regulatory` (light) | ✅ `/compliance` (client: own org audit trail) | ❌ | ✅ `/compliance` (internal: full cross-org) |
+| Service Area                        | Public                            | Product                                                                               | Admin                                 | Internal Ops                                                          |
+| ----------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------- |
+| **Data**                            | ✅ `/services/data`               | ✅ `/data/*`, `/portal/data`                                                          | 🟡 `/admin/data` (basic)              | 🟡 `/internal/data-etl` (basic)                                       |
+| **Research / Simulate**             | ✅ `/services/backtesting`        | ✅ `/strategy-platform/*`, `/ml/*`, `/quant/*`                                        | ❌ (managed via platform)             | ❌ (no separate ops surface)                                          |
+| **Trading / Run / Monitor**         | ✅ `/services/execution`          | ✅ `/trading/*`, `/positions/*`, `/risk/*`, `/execution/*`, `/markets/*`, `/alerts/*` | ❌                                    | ✅ `/internal/trading-ops` (future: live intervention, kill switches) |
+| **Reporting / Explain / Reconcile** | ✅ `/services/investment`         | ✅ `/reports/*`, `/executive/*`                                                       | ✅ `/manage/fees`, `/manage/mandates` | ✅ `/internal/settlement-ops` (future)                                |
+| **Admin / Onboarding**              | ❌ (hidden)                       | ❌ (hidden from clients)                                                              | ✅ `/admin/*`, `/manage/*`            | ❌                                                                    |
+| **Deployment / DevOps**             | ❌ (hidden)                       | ❌ (hidden from clients)                                                              | ❌                                    | ✅ `/devops/*`, `/ops/*`                                              |
+| **Audit / Compliance**              | ✅ `/services/regulatory` (light) | ✅ `/compliance` (client: own org audit trail)                                        | ❌                                    | ✅ `/compliance` (internal: full cross-org)                           |
 ```
 
 ### 2B. Expand: Post-Login Service Hub (replace §7)
@@ -148,12 +152,12 @@ This is NOT a dashboard with random widgets. It is the **service discovery and e
 
 ### 7.3 Service Card States
 
-| State | Visual | Interaction | Who Sees It |
-|-------|--------|-------------|-------------|
-| **Available** | Full color, active | Click → product surface | Subscribed users |
-| **Locked** | Grayed, lock icon | Click → upgrade modal | Users without entitlement |
-| **Hidden** | Not rendered | N/A | Wrong role (client can't see admin) |
-| **Degraded** | Yellow border, warning icon | Click → product surface + status banner | Subscribed users when service is unhealthy |
+| State         | Visual                      | Interaction                             | Who Sees It                                |
+| ------------- | --------------------------- | --------------------------------------- | ------------------------------------------ |
+| **Available** | Full color, active          | Click → product surface                 | Subscribed users                           |
+| **Locked**    | Grayed, lock icon           | Click → upgrade modal                   | Users without entitlement                  |
+| **Hidden**    | Not rendered                | N/A                                     | Wrong role (client can't see admin)        |
+| **Degraded**  | Yellow border, warning icon | Click → product surface + status banner | Subscribed users when service is unhealthy |
 
 ### 7.4 Implementation
 
@@ -171,24 +175,26 @@ After §11 "Commercial Modularity":
 ```markdown
 ## 11.1 Commercial Packaging → UI Entitlement Mapping
 
-| Package | Entitlements | Services Visible | Services Locked |
-|---------|-------------|------------------|-----------------|
-| **Data Only** | `data-basic` | Data (basic catalogue, 180 instruments) | Research, Execution, Reporting |
-| **Data Pro** | `data-pro` | Data (full catalogue, 2400 instruments, API keys) | Research, Execution, Reporting |
-| **Data + Research** | `data-pro`, `strategy-full`, `ml-full` | Data, Research/Simulate (full backtest, ML) | Execution, Reporting |
-| **Data + Execution** | `data-pro`, `execution-full` | Data, Trading/Execution (live) | Research (limited), Reporting |
-| **Full Suite** | `data-pro`, `strategy-full`, `ml-full`, `execution-full`, `reporting-full` | All client-facing services | None |
-| **Custom** | Bespoke | As negotiated | As negotiated |
+| Package              | Entitlements                                                               | Services Visible                                  | Services Locked                |
+| -------------------- | -------------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------ |
+| **Data Only**        | `data-basic`                                                               | Data (basic catalogue, 180 instruments)           | Research, Execution, Reporting |
+| **Data Pro**         | `data-pro`                                                                 | Data (full catalogue, 2400 instruments, API keys) | Research, Execution, Reporting |
+| **Data + Research**  | `data-pro`, `strategy-full`, `ml-full`                                     | Data, Research/Simulate (full backtest, ML)       | Execution, Reporting           |
+| **Data + Execution** | `data-pro`, `execution-full`                                               | Data, Trading/Execution (live)                    | Research (limited), Reporting  |
+| **Full Suite**       | `data-pro`, `strategy-full`, `ml-full`, `execution-full`, `reporting-full` | All client-facing services                        | None                           |
+| **Custom**           | Bespoke                                                                    | As negotiated                                     | As negotiated                  |
 
 ### Compute Entitlements (Future)
 
 Beyond service access, compute-intensive features have usage limits:
+
 - Backtest compute hours (per month)
 - ML training GPU hours
 - Data API call limits
 - Export bandwidth
 
 These are NOT enforced in the current demo but the UI should show:
+
 - Usage meters on relevant service pages
 - "X of Y compute hours used this month"
 - Upgrade CTAs when approaching limits
@@ -310,14 +316,14 @@ The current Phase 5 is a one-line stub. Expand it:
 
 For each service area, implement the layers defined in ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md §6.1:
 
-| Service Area | What Needs Building | Reference |
-|-------------|-------------------|-----------|
-| Research / Simulate | Deepen `/strategy-platform/*` and `/ml/*` with lifecycle-aligned naming, candidate promotion flow, backtest comparison views | `_reference/versa-execution-analytics-ui/` (workflow viz) |
-| Trading / Run / Monitor | Wire `/trading/*`, `/positions/*`, `/risk/*` to React Query, add real-time simulation, alert acknowledgment | Current trading components |
-| Reporting / Explain / Reconcile | Deepen `/reports/*` with P&L attribution, settlement workflow, invoice generation | `_reference/versa-client-reporting/`, `_reference/versa-invoicing/` |
-| Admin / Onboarding | Build org management, user roles, subscription management, onboarding flow | `_reference/versa-admin-ui/`, `_reference/versa-onboarding/` |
-| Deployment / DevOps | Build deployment pipeline UI, service health aggregation, rollback controls | `_reference/deployment-ui/`, `_reference/deployment-api/` |
-| Audit / Compliance | Build audit trail viewer, compliance dashboard, evidence collection | `_reference/versa-audit-ui/` |
+| Service Area                    | What Needs Building                                                                                                          | Reference                                                           |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Research / Simulate             | Deepen `/strategy-platform/*` and `/ml/*` with lifecycle-aligned naming, candidate promotion flow, backtest comparison views | `_reference/versa-execution-analytics-ui/` (workflow viz)           |
+| Trading / Run / Monitor         | Wire `/trading/*`, `/positions/*`, `/risk/*` to React Query, add real-time simulation, alert acknowledgment                  | Current trading components                                          |
+| Reporting / Explain / Reconcile | Deepen `/reports/*` with P&L attribution, settlement workflow, invoice generation                                            | `_reference/versa-client-reporting/`, `_reference/versa-invoicing/` |
+| Admin / Onboarding              | Build org management, user roles, subscription management, onboarding flow                                                   | `_reference/versa-admin-ui/`, `_reference/versa-onboarding/`        |
+| Deployment / DevOps             | Build deployment pipeline UI, service health aggregation, rollback controls                                                  | `_reference/deployment-ui/`, `_reference/deployment-api/`           |
+| Audit / Compliance              | Build audit trail viewer, compliance dashboard, evidence collection                                                          | `_reference/versa-audit-ui/`                                        |
 
 ### 5.2 Service Hub Centralization
 
@@ -355,25 +361,25 @@ Last updated: 2026-03-19
 
 ## Service Layer Completion Matrix
 
-| Service Area | Public Marketing | Product Surface | Admin | Internal Ops | Overall |
-|-------------|-----------------|----------------|-------|-------------|---------|
-| **Data** | ✅ Complete | ✅ Complete | 🟡 Basic | 🟡 Basic | 🟡 MOSTLY DONE |
-| **Research / Simulate** | 🟡 Basic (`/services/backtesting`) | 🟡 Routes exist, stubs | ❌ N/A | ❌ N/A | 🟡 PARTIAL |
-| **Trading / Run / Monitor** | 🟡 Basic (`/services/execution`) | 🟡 Routes exist, some components | ❌ N/A | ❌ Not started | 🟡 PARTIAL |
-| **Reporting / Explain / Reconcile** | 🟡 Basic (`/services/investment`) | 🟡 `/reports` has content | 🟡 `/manage/fees` exists | ❌ Not started | 🟡 PARTIAL |
-| **Admin / Onboarding** | ❌ Hidden | ❌ Hidden | 🔴 Stub only | ❌ N/A | 🔴 STUB |
-| **Deployment / DevOps** | ❌ Hidden | ❌ Hidden | ❌ N/A | 🔴 Stub only | 🔴 STUB |
-| **Audit / Compliance** | 🟡 Basic (`/services/regulatory`) | 🔴 Stub | ❌ N/A | 🔴 Stub | 🔴 STUB |
+| Service Area                        | Public Marketing                   | Product Surface                  | Admin                    | Internal Ops   | Overall        |
+| ----------------------------------- | ---------------------------------- | -------------------------------- | ------------------------ | -------------- | -------------- |
+| **Data**                            | ✅ Complete                        | ✅ Complete                      | 🟡 Basic                 | 🟡 Basic       | 🟡 MOSTLY DONE |
+| **Research / Simulate**             | 🟡 Basic (`/services/backtesting`) | 🟡 Routes exist, stubs           | ❌ N/A                   | ❌ N/A         | 🟡 PARTIAL     |
+| **Trading / Run / Monitor**         | 🟡 Basic (`/services/execution`)   | 🟡 Routes exist, some components | ❌ N/A                   | ❌ Not started | 🟡 PARTIAL     |
+| **Reporting / Explain / Reconcile** | 🟡 Basic (`/services/investment`)  | 🟡 `/reports` has content        | 🟡 `/manage/fees` exists | ❌ Not started | 🟡 PARTIAL     |
+| **Admin / Onboarding**              | ❌ Hidden                          | ❌ Hidden                        | 🔴 Stub only             | ❌ N/A         | 🔴 STUB        |
+| **Deployment / DevOps**             | ❌ Hidden                          | ❌ Hidden                        | ❌ N/A                   | 🔴 Stub only   | 🔴 STUB        |
+| **Audit / Compliance**              | 🟡 Basic (`/services/regulatory`)  | 🔴 Stub                          | ❌ N/A                   | 🔴 Stub        | 🔴 STUB        |
 
 ## Post-Login Hub Status
 
-| Component | Status |
-|-----------|--------|
+| Component                            | Status             |
+| ------------------------------------ | ------------------ |
 | Service grid with entitlement states | 🔴 Not implemented |
-| Activity feed | 🔴 Not implemented |
-| Quick actions | 🔴 Not implemented |
-| System health bar | 🔴 Not implemented |
-| Locked service upgrade modals | 🔴 Not implemented |
+| Activity feed                        | 🔴 Not implemented |
+| Quick actions                        | 🔴 Not implemented |
+| System health bar                    | 🔴 Not implemented |
+| Locked service upgrade modals        | 🔴 Not implemented |
 
 ## Completion Legend
 
@@ -392,13 +398,48 @@ Add a new top-level key `service_completion` that tracks per-service status. Thi
 ```json
 {
   "service_completion": {
-    "data": { "public": "complete", "product": "complete", "admin": "complete", "ops": "complete" },
-    "research_simulate": { "public": "basic", "product": "stub", "admin": "n/a", "ops": "n/a" },
-    "trading_run_monitor": { "public": "basic", "product": "partial", "admin": "n/a", "ops": "not_started" },
-    "reporting_explain_reconcile": { "public": "basic", "product": "partial", "admin": "partial", "ops": "not_started" },
-    "admin_onboarding": { "public": "hidden", "product": "hidden", "admin": "stub", "ops": "n/a" },
-    "deployment_devops": { "public": "hidden", "product": "hidden", "admin": "n/a", "ops": "stub" },
-    "audit_compliance": { "public": "basic", "product": "stub", "admin": "n/a", "ops": "stub" },
+    "data": {
+      "public": "complete",
+      "product": "complete",
+      "admin": "complete",
+      "ops": "complete"
+    },
+    "research_simulate": {
+      "public": "basic",
+      "product": "stub",
+      "admin": "n/a",
+      "ops": "n/a"
+    },
+    "trading_run_monitor": {
+      "public": "basic",
+      "product": "partial",
+      "admin": "n/a",
+      "ops": "not_started"
+    },
+    "reporting_explain_reconcile": {
+      "public": "basic",
+      "product": "partial",
+      "admin": "partial",
+      "ops": "not_started"
+    },
+    "admin_onboarding": {
+      "public": "hidden",
+      "product": "hidden",
+      "admin": "stub",
+      "ops": "n/a"
+    },
+    "deployment_devops": {
+      "public": "hidden",
+      "product": "hidden",
+      "admin": "n/a",
+      "ops": "stub"
+    },
+    "audit_compliance": {
+      "public": "basic",
+      "product": "stub",
+      "admin": "n/a",
+      "ops": "stub"
+    },
     "service_hub": "not_started"
   }
 }
@@ -424,6 +465,7 @@ Before building any feature, check `SERVICE_COMPLETION_STATUS.md` to understand 
 
 The Data service is the canonical example. Every service should eventually have the same
 layered quality. When building a new service, follow Data's pattern:
+
 1. Public marketing page with capability showcase
 2. Product surface with org-scoped, subscription-filtered data
 3. Admin/internal ops layer where applicable
@@ -434,19 +476,19 @@ See ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md §6.1 for the per-service layer matrix
 ### 7B. Add: Reference UI Quick Guide
 
 ```markdown
-## Reference UIs (_reference/)
+## Reference UIs (\_reference/)
 
 Before building a service area, check the corresponding reference UI:
 
-| Service | Reference | What to Look For |
-|---------|-----------|-----------------|
-| Admin | `_reference/versa-admin-ui/` | User management UX, role grids |
-| Audit | `_reference/versa-audit-ui/` | Event timeline, compliance reporting |
-| Reporting | `_reference/versa-client-reporting/` | P&L tabs, settlement workflow |
-| Execution | `_reference/versa-execution-analytics-ui/` | TCA viz, order flow |
-| Invoicing | `_reference/versa-invoicing/` | Invoice templates, fee display |
-| Onboarding | `_reference/versa-onboarding/` | Guided setup flows |
-| DevOps | `_reference/deployment-ui/` | Pipeline status, health aggregation |
+| Service    | Reference                                  | What to Look For                     |
+| ---------- | ------------------------------------------ | ------------------------------------ |
+| Admin      | `_reference/versa-admin-ui/`               | User management UX, role grids       |
+| Audit      | `_reference/versa-audit-ui/`               | Event timeline, compliance reporting |
+| Reporting  | `_reference/versa-client-reporting/`       | P&L tabs, settlement workflow        |
+| Execution  | `_reference/versa-execution-analytics-ui/` | TCA viz, order flow                  |
+| Invoicing  | `_reference/versa-invoicing/`              | Invoice templates, fee display       |
+| Onboarding | `_reference/versa-onboarding/`             | Guided setup flows                   |
+| DevOps     | `_reference/deployment-ui/`                | Pipeline status, health aggregation  |
 
 These are design references — extract patterns, don't copy code.
 See REFERENCE_MAPPING.md for detailed assessment.
@@ -461,6 +503,7 @@ The current ROUTES.md is outdated (still references old route structure and "sep
 Replace with a comprehensive route map organized by service area and layer, showing status (complete/partial/stub/planned). Include the lifecycle stage alignment for each route.
 
 Key changes:
+
 - Remove "Routes to Delete" section (those routes were already handled in Phase 2)
 - Add all `(platform)` routes with their service area and lifecycle stage
 - Add all `(ops)` routes with their access requirements
@@ -498,14 +541,14 @@ Not all references are "design inspiration only." Some have production-grade UI 
 
 ### Portability Assessment
 
-| Reference | Lines | Portability | Action |
-|-----------|-------|-------------|--------|
-| `deployment-ui` | 23,299 | 4.5/5 | **PORT** — 20 components, 67 types, 5 hooks. Fills entire DevOps/Deployment service. Strip router, swap UI kit imports, adapt API calls to our fetch layer. |
-| `versa-client-reporting` | 2,222 | 3.5/5 | **PORT** — KPI card grid, cascading dropdowns, performance table. Fills reporting gaps. |
-| `versa-audit-ui` | 3,202 | 3/5 | **PARTIAL PORT** — JobCompletionChart (stacked bar), job tracking pattern. |
-| `versa-execution-analytics-ui` | 13,190 | 2/5 | **REFERENCE ONLY** — Navigation patterns, React Query usage. Too specialized to port. |
-| `versa-invoicing` | ~1,000 | 3/5 | **PORT** — Invoice template rendering, payment status display. |
-| `versa-onboarding` | 4,225 | 1/5 | **SKIP** — Marketing content, not operational UI. |
+| Reference                      | Lines  | Portability | Action                                                                                                                                                      |
+| ------------------------------ | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deployment-ui`                | 23,299 | 4.5/5       | **PORT** — 20 components, 67 types, 5 hooks. Fills entire DevOps/Deployment service. Strip router, swap UI kit imports, adapt API calls to our fetch layer. |
+| `versa-client-reporting`       | 2,222  | 3.5/5       | **PORT** — KPI card grid, cascading dropdowns, performance table. Fills reporting gaps.                                                                     |
+| `versa-audit-ui`               | 3,202  | 3/5         | **PARTIAL PORT** — JobCompletionChart (stacked bar), job tracking pattern.                                                                                  |
+| `versa-execution-analytics-ui` | 13,190 | 2/5         | **REFERENCE ONLY** — Navigation patterns, React Query usage. Too specialized to port.                                                                       |
+| `versa-invoicing`              | ~1,000 | 3/5         | **PORT** — Invoice template rendering, payment status display.                                                                                              |
+| `versa-onboarding`             | 4,225  | 1/5         | **SKIP** — Marketing content, not operational UI.                                                                                                           |
 
 ### What "Porting" Means
 
@@ -521,16 +564,16 @@ Not all references are "design inspiration only." Some have production-grade UI 
 
 The deployment-ui has 20 components. Priority order for porting:
 
-| Component | Lines | What it does | Port to |
-|-----------|-------|-------------|---------|
-| DataStatusTab | 4,013 | Data completeness heatmap + drill-down | `components/ops/data-status.tsx` |
-| DeploymentDetails | 3,685 | Deployment detail view with shard tracking | `components/ops/deployment-details.tsx` |
-| DeployForm | 1,759 | Deployment creation wizard | `components/ops/deploy-form.tsx` |
-| DeploymentHistory | 636 | Deployment list with bulk ops | `components/ops/deployment-history.tsx` |
-| ExecutionDataStatus | 1,573 | Execution results data status | `components/ops/execution-data-status.tsx` |
-| HeatmapCalendar | ~500 | Custom calendar heatmap | `components/ops/heatmap-calendar.tsx` |
-| EpicReadinessView | 491 | Service readiness scorecard | `components/ops/epic-readiness.tsx` |
-| BuildSelector | ~200 | Build tag selection | `components/ops/build-selector.tsx` |
+| Component           | Lines | What it does                               | Port to                                    |
+| ------------------- | ----- | ------------------------------------------ | ------------------------------------------ |
+| DataStatusTab       | 4,013 | Data completeness heatmap + drill-down     | `components/ops/data-status.tsx`           |
+| DeploymentDetails   | 3,685 | Deployment detail view with shard tracking | `components/ops/deployment-details.tsx`    |
+| DeployForm          | 1,759 | Deployment creation wizard                 | `components/ops/deploy-form.tsx`           |
+| DeploymentHistory   | 636   | Deployment list with bulk ops              | `components/ops/deployment-history.tsx`    |
+| ExecutionDataStatus | 1,573 | Execution results data status              | `components/ops/execution-data-status.tsx` |
+| HeatmapCalendar     | ~500  | Custom calendar heatmap                    | `components/ops/heatmap-calendar.tsx`      |
+| EpicReadinessView   | 491   | Service readiness scorecard                | `components/ops/epic-readiness.tsx`        |
+| BuildSelector       | ~200  | Build tag selection                        | `components/ops/build-selector.tsx`        |
 
 Types file (674 lines) ports directly to `lib/types/deployment.ts`.
 
@@ -538,17 +581,18 @@ Types file (674 lines) ports directly to `lib/types/deployment.ts`.
 
 ## 11. Summary of All Changes
 
-| File | Action | What Changes |
-|------|--------|-------------|
-| `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | UPDATE | Add §5.1 (universal service funnel), §6.1 (service layer model), expand §7 (service hub), add §11.1 (commercial mapping) |
-| `.cursorrules` | UPDATE | Add §0 (pre-flight), §1.5 (service layer pattern), §1.6 (reference usage), §1.7 (lifecycle naming) |
-| `REFACTORING_PLAN_PHASE_1-4.md` | UPDATE | Expand Phase 5 with service completion scope |
-| `SERVICE_COMPLETION_STATUS.md` | CREATE | Living tracker of per-service completion |
-| `UI_STRUCTURE_MANIFEST.json` | UPDATE | Add `service_completion` key |
-| `START_HERE.md` | UPDATE | Add service completion context, reference UI guide |
-| `ROUTES.md` | REWRITE | Full route map with service areas, lifecycle stages, status |
+| File                                    | Action  | What Changes                                                                                                             |
+| --------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md` | UPDATE  | Add §5.1 (universal service funnel), §6.1 (service layer model), expand §7 (service hub), add §11.1 (commercial mapping) |
+| `.cursorrules`                          | UPDATE  | Add §0 (pre-flight), §1.5 (service layer pattern), §1.6 (reference usage), §1.7 (lifecycle naming)                       |
+| `REFACTORING_PLAN_PHASE_1-4.md`         | UPDATE  | Expand Phase 5 with service completion scope                                                                             |
+| `SERVICE_COMPLETION_STATUS.md`          | CREATE  | Living tracker of per-service completion                                                                                 |
+| `UI_STRUCTURE_MANIFEST.json`            | UPDATE  | Add `service_completion` key                                                                                             |
+| `START_HERE.md`                         | UPDATE  | Add service completion context, reference UI guide                                                                       |
+| `ROUTES.md`                             | REWRITE | Full route map with service areas, lifecycle stages, status                                                              |
 
 **After these updates, any agent reading the docs will know:**
+
 1. What the full service architecture looks like (not just Data)
 2. Which services are complete, partial, or stub
 3. How to use reference UIs for design patterns

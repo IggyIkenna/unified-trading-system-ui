@@ -1,54 +1,57 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Clock, Radio } from "lucide-react"
-import { format, subHours, startOfDay, subDays } from "date-fns"
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Clock, Radio } from "lucide-react";
+import { format, subHours, startOfDay, subDays } from "date-fns";
 
 interface AsOfDatetimePickerProps {
-  className?: string
-  onChange?: (datetime: Date | null) => void
+  className?: string;
+  onChange?: (datetime: Date | null) => void;
 }
 
 const presets = [
   { label: "Live", value: null },
   { label: "1h ago", getValue: () => subHours(new Date(), 1) },
   { label: "Start of day", getValue: () => startOfDay(new Date()) },
-  { label: "Yesterday close", getValue: () => startOfDay(subDays(new Date(), 1)) },
+  {
+    label: "Yesterday close",
+    getValue: () => startOfDay(subDays(new Date(), 1)),
+  },
   { label: "Last week", getValue: () => subDays(new Date(), 7) },
-]
+];
 
 export function AsOfDatetimePicker({
   className,
   onChange,
 }: AsOfDatetimePickerProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [open, setOpen] = React.useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [open, setOpen] = React.useState(false);
 
-  const asOfParam = searchParams.get("as_of")
-  const selectedDate = asOfParam ? new Date(asOfParam) : null
-  const isLive = !selectedDate
+  const asOfParam = searchParams.get("as_of");
+  const selectedDate = asOfParam ? new Date(asOfParam) : null;
+  const isLive = !selectedDate;
 
   const handleSelect = (date: Date | null) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams(searchParams.toString());
     if (date) {
-      params.set("as_of", date.toISOString())
+      params.set("as_of", date.toISOString());
     } else {
-      params.delete("as_of")
+      params.delete("as_of");
     }
-    router.push(`?${params.toString()}`)
-    onChange?.(date)
-    setOpen(false)
-  }
+    router.push(`?${params.toString()}`);
+    onChange?.(date);
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -58,7 +61,7 @@ export function AsOfDatetimePicker({
           className={cn(
             "h-8 gap-2 px-3 text-xs font-medium",
             isLive && "border-status-live/50 text-status-live",
-            className
+            className,
           )}
         >
           {isLive ? (
@@ -85,7 +88,9 @@ export function AsOfDatetimePicker({
                 size="sm"
                 className={cn(
                   "h-7 text-xs",
-                  preset.value === null && isLive && "border-primary bg-primary/10"
+                  preset.value === null &&
+                    isLive &&
+                    "border-primary bg-primary/10",
                 )}
                 onClick={() =>
                   handleSelect(preset.getValue ? preset.getValue() : null)
@@ -104,5 +109,5 @@ export function AsOfDatetimePicker({
         />
       </PopoverContent>
     </Popover>
-  )
+  );
 }

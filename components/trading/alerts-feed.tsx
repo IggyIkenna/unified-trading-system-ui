@@ -1,59 +1,59 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { 
-  AlertTriangle, 
-  XCircle, 
-  AlertCircle, 
-  ChevronRight, 
-  X, 
-  Check, 
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  AlertTriangle,
+  XCircle,
+  AlertCircle,
+  ChevronRight,
+  X,
+  Check,
   Clock,
   Eye,
   TrendingDown,
   ExternalLink,
   Timer,
-} from "lucide-react"
-import Link from "next/link"
+} from "lucide-react";
+import Link from "next/link";
 
-type AlertSeverity = "critical" | "high" | "medium" | "low"
+type AlertSeverity = "critical" | "high" | "medium" | "low";
 
 export interface Alert {
-  id: string
-  severity: AlertSeverity
-  title?: string
-  message?: string // Support both title and message
-  description?: string
-  timestamp: Date | string
-  source?: string
-  acknowledged?: boolean
-  acknowledgedAt?: Date
-  acknowledgedBy?: string
-  escalatedAt?: Date
-  strategyId?: string
-  clientId?: string
-  assetClass?: string
+  id: string;
+  severity: AlertSeverity;
+  title?: string;
+  message?: string; // Support both title and message
+  description?: string;
+  timestamp: Date | string;
+  source?: string;
+  acknowledged?: boolean;
+  acknowledgedAt?: Date;
+  acknowledgedBy?: string;
+  escalatedAt?: Date;
+  strategyId?: string;
+  clientId?: string;
+  assetClass?: string;
   // Actions available for this alert
   actions?: {
-    canAcknowledge?: boolean
-    canReduce?: boolean
-    canInvestigate?: boolean
-    linkedEntity?: { type: string; id: string }
-  }
+    canAcknowledge?: boolean;
+    canReduce?: boolean;
+    canInvestigate?: boolean;
+    linkedEntity?: { type: string; id: string };
+  };
 }
 
 interface AlertsFeedProps {
-  alerts: Alert[]
-  onAcknowledge?: (alertId: string) => void
-  onReduce?: (alertId: string, percent: number) => void
-  onInvestigate?: (alertId: string) => void
-  onViewAll?: () => void
-  maxItems?: number
-  showEscalationTimers?: boolean
-  className?: string
+  alerts: Alert[];
+  onAcknowledge?: (alertId: string) => void;
+  onReduce?: (alertId: string, percent: number) => void;
+  onInvestigate?: (alertId: string) => void;
+  onViewAll?: () => void;
+  maxItems?: number;
+  showEscalationTimers?: boolean;
+  className?: string;
 }
 
 const severityConfig: Record<
@@ -84,7 +84,7 @@ const severityConfig: Record<
     bgColor: "rgba(161, 161, 170, 0.1)",
     label: "LOW",
   },
-}
+};
 
 // Escalation timing based on severity
 const escalationConfig: Record<AlertSeverity, { minutes: number | null }> = {
@@ -92,7 +92,7 @@ const escalationConfig: Record<AlertSeverity, { minutes: number | null }> = {
   high: { minutes: 15 },
   medium: { minutes: null },
   low: { minutes: null },
-}
+};
 
 export function AlertsFeed({
   alerts,
@@ -104,47 +104,52 @@ export function AlertsFeed({
   showEscalationTimers = true,
   className,
 }: AlertsFeedProps) {
-  const [now, setNow] = React.useState(new Date())
+  const [now, setNow] = React.useState(new Date());
 
   // Update time every 30 seconds for escalation timers
   React.useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 30000)
-    return () => clearInterval(interval)
-  }, [])
+    const interval = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const formatTime = (date: Date | string) => {
-    const dateObj = typeof date === "string" ? new Date(date) : date
-    const diff = now.getTime() - dateObj.getTime()
-    const minutes = Math.floor(diff / 60000)
-    if (minutes < 1) return "just now"
-    if (minutes < 60) return `${minutes}m ago`
-    const hours = Math.floor(minutes / 60)
-    if (hours < 24) return `${hours}h ago`
-    return dateObj.toLocaleDateString()
-  }
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+    const diff = now.getTime() - dateObj.getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return dateObj.toLocaleDateString();
+  };
 
   const getEscalationStatus = (alert: Alert) => {
-    if (alert.acknowledged) return null
-    const escalationMinutes = escalationConfig[alert.severity].minutes
-    if (!escalationMinutes) return null
-    
-    const alertDate = typeof alert.timestamp === "string" ? new Date(alert.timestamp) : alert.timestamp
-    const elapsedMinutes = (now.getTime() - alertDate.getTime()) / 60000
-    const remaining = escalationMinutes - elapsedMinutes
-    
+    if (alert.acknowledged) return null;
+    const escalationMinutes = escalationConfig[alert.severity].minutes;
+    if (!escalationMinutes) return null;
+
+    const alertDate =
+      typeof alert.timestamp === "string"
+        ? new Date(alert.timestamp)
+        : alert.timestamp;
+    const elapsedMinutes = (now.getTime() - alertDate.getTime()) / 60000;
+    const remaining = escalationMinutes - elapsedMinutes;
+
     if (remaining <= 0) {
-      return { escalated: true, remaining: 0 }
+      return { escalated: true, remaining: 0 };
     }
-    return { escalated: false, remaining: Math.ceil(remaining) }
-  }
+    return { escalated: false, remaining: Math.ceil(remaining) };
+  };
 
   return (
     <div className={cn("space-y-2", className)}>
       {alerts.slice(0, maxItems).map((alert) => {
-        const config = severityConfig[alert.severity]
-        const Icon = config.icon
-        const escalation = showEscalationTimers ? getEscalationStatus(alert) : null
-        const displayTitle = alert.title || alert.message || "Alert"
+        const config = severityConfig[alert.severity];
+        const Icon = config.icon;
+        const escalation = showEscalationTimers
+          ? getEscalationStatus(alert)
+          : null;
+        const displayTitle = alert.title || alert.message || "Alert";
 
         return (
           <Link
@@ -152,13 +157,19 @@ export function AlertsFeed({
             href="/services/trading/alerts"
             className={cn(
               "flex items-start gap-3 p-3 rounded-lg border transition-all hover:border-white/30 cursor-pointer block",
-              alert.acknowledged ? "opacity-50 border-border/30" : "border-border/50",
-              escalation?.escalated && "border-[var(--status-error)] animate-pulse"
+              alert.acknowledged
+                ? "opacity-50 border-border/30"
+                : "border-border/50",
+              escalation?.escalated &&
+                "border-[var(--status-error)] animate-pulse",
             )}
             style={{ backgroundColor: config.bgColor }}
           >
             <Icon
-              className={cn("size-4 mt-0.5 shrink-0", escalation?.escalated && "animate-pulse")}
+              className={cn(
+                "size-4 mt-0.5 shrink-0",
+                escalation?.escalated && "animate-pulse",
+              )}
               style={{ color: config.color }}
             />
             <div className="flex-1 min-w-0">
@@ -172,13 +183,19 @@ export function AlertsFeed({
                 >
                   {config.label}
                 </span>
-                <span className="text-xs text-muted-foreground" suppressHydrationWarning>
+                <span
+                  className="text-xs text-muted-foreground"
+                  suppressHydrationWarning
+                >
                   {formatTime(alert.timestamp)}
                 </span>
-                
+
                 {/* Escalation timer */}
                 {escalation && !escalation.escalated && (
-                  <Badge variant="outline" className="text-[10px] gap-1 border-[var(--status-warning)] text-[var(--status-warning)]">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] gap-1 border-[var(--status-warning)] text-[var(--status-warning)]"
+                  >
                     <Timer className="size-2.5" />
                     Escalates in {escalation.remaining}m
                   </Badge>
@@ -188,21 +205,24 @@ export function AlertsFeed({
                     ESCALATED
                   </Badge>
                 )}
-                
+
                 {/* Acknowledged badge */}
                 {alert.acknowledged && (
                   <Badge variant="secondary" className="text-[10px] gap-1">
                     <Check className="size-2.5" />
-                    Ack{alert.acknowledgedBy ? ` by ${alert.acknowledgedBy}` : ""}
+                    Ack
+                    {alert.acknowledgedBy ? ` by ${alert.acknowledgedBy}` : ""}
                   </Badge>
                 )}
               </div>
-              
+
               <p className="text-sm font-medium">{displayTitle}</p>
               {alert.description && (
-                <p className="text-xs text-muted-foreground truncate">{alert.description}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {alert.description}
+                </p>
               )}
-              
+
               {/* Source and linked entity */}
               <div className="flex items-center gap-2 mt-1">
                 {alert.source && (
@@ -211,7 +231,7 @@ export function AlertsFeed({
                   </span>
                 )}
                 {alert.strategyId && (
-                  <Link 
+                  <Link
                     href={`/services/trading/strategies/${alert.strategyId}`}
                     className="text-[10px] text-primary hover:underline flex items-center gap-0.5"
                   >
@@ -220,48 +240,51 @@ export function AlertsFeed({
                   </Link>
                 )}
               </div>
-              
+
               {/* Action buttons for unacknowledged alerts */}
-              {!alert.acknowledged && (onAcknowledge || onReduce || onInvestigate) && (
-                <div className="flex items-center gap-1 mt-2">
-                  {onAcknowledge && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-6 text-[10px] gap-1"
-                      onClick={() => onAcknowledge(alert.id)}
-                    >
-                      <Check className="size-3" />
-                      Acknowledge
-                    </Button>
-                  )}
-                  {onReduce && (alert.severity === "critical" || alert.severity === "high") && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-6 text-[10px] gap-1 border-[var(--status-warning)] text-[var(--status-warning)]"
-                      onClick={() => onReduce(alert.id, 50)}
-                    >
-                      <TrendingDown className="size-3" />
-                      Reduce 50%
-                    </Button>
-                  )}
-                  {onInvestigate && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 text-[10px] gap-1"
-                      onClick={() => onInvestigate(alert.id)}
-                    >
-                      <Eye className="size-3" />
-                      Investigate
-                    </Button>
-                  )}
-                </div>
-              )}
+              {!alert.acknowledged &&
+                (onAcknowledge || onReduce || onInvestigate) && (
+                  <div className="flex items-center gap-1 mt-2">
+                    {onAcknowledge && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-[10px] gap-1"
+                        onClick={() => onAcknowledge(alert.id)}
+                      >
+                        <Check className="size-3" />
+                        Acknowledge
+                      </Button>
+                    )}
+                    {onReduce &&
+                      (alert.severity === "critical" ||
+                        alert.severity === "high") && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-6 text-[10px] gap-1 border-[var(--status-warning)] text-[var(--status-warning)]"
+                          onClick={() => onReduce(alert.id, 50)}
+                        >
+                          <TrendingDown className="size-3" />
+                          Reduce 50%
+                        </Button>
+                      )}
+                    {onInvestigate && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 text-[10px] gap-1"
+                        onClick={() => onInvestigate(alert.id)}
+                      >
+                        <Eye className="size-3" />
+                        Investigate
+                      </Button>
+                    )}
+                  </div>
+                )}
             </div>
           </Link>
-        )
+        );
       })}
 
       {alerts.length === 0 && (
@@ -281,5 +304,5 @@ export function AlertsFeed({
         </Button>
       )}
     </div>
-  )
+  );
 }

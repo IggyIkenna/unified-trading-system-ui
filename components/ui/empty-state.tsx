@@ -1,14 +1,14 @@
-import * as React from 'react'
-import { Inbox } from 'lucide-react'
+import * as React from "react";
+import { Inbox } from "lucide-react";
 
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface EmptyStateProps {
-  icon?: React.ComponentType<{ className?: string }>
-  title: string
-  description?: string
-  action?: { label: string; onClick: () => void }
+  icon?: React.ComponentType<{ className?: string }>;
+  title: string;
+  description?: string;
+  action?: { label: string; onClick: () => void };
 }
 
 function EmptyState({
@@ -21,7 +21,7 @@ function EmptyState({
     <div
       data-slot="empty-state"
       className={cn(
-        'flex min-h-[300px] flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-8 text-center',
+        "flex min-h-[300px] flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-8 text-center",
       )}
     >
       <Icon className="text-muted-foreground size-10" />
@@ -37,7 +37,7 @@ function EmptyState({
         </Button>
       )}
     </div>
-  )
+  );
 }
 
-export { EmptyState }
+export { EmptyState };

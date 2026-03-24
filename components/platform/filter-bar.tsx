@@ -1,27 +1,27 @@
-"use client"
+"use client";
 
 // Unified Filter Bar - URL-persisted filters shared across platforms
 // Supports dimensions, date ranges, and search
 
-import * as React from "react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
+import * as React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import {
   Search,
   X,
@@ -29,30 +29,33 @@ import {
   Filter,
   ChevronDown,
   RotateCcw,
-} from "lucide-react"
-import { format } from "date-fns"
+} from "lucide-react";
+import { format } from "date-fns";
 
 export interface FilterOption {
-  value: string
-  label: string
-  count?: number
+  value: string;
+  label: string;
+  count?: number;
 }
 
 export interface FilterDefinition {
-  key: string
-  label: string
-  type: "select" | "multi-select" | "date" | "date-range" | "search"
-  options?: FilterOption[]
-  placeholder?: string
+  key: string;
+  label: string;
+  type: "select" | "multi-select" | "date" | "date-range" | "search";
+  options?: FilterOption[];
+  placeholder?: string;
 }
 
 interface FilterBarProps {
-  filters: FilterDefinition[]
-  values: Record<string, string | string[] | Date | { start: Date; end: Date } | undefined>
-  onChange: (key: string, value: unknown) => void
-  onReset: () => void
-  persistToUrl?: boolean
-  className?: string
+  filters: FilterDefinition[];
+  values: Record<
+    string,
+    string | string[] | Date | { start: Date; end: Date } | undefined
+  >;
+  onChange: (key: string, value: unknown) => void;
+  onReset: () => void;
+  persistToUrl?: boolean;
+  className?: string;
 }
 
 // Individual filter components
@@ -61,21 +64,21 @@ function SelectFilter({
   value,
   onChange,
 }: {
-  filter: FilterDefinition
-  value: string | undefined
-  onChange: (value: string) => void
+  filter: FilterDefinition;
+  value: string | undefined;
+  onChange: (value: string) => void;
 }) {
   // Ensure we never pass empty string to Select - always use __all__ for "no selection"
-  const selectValue = value && value !== "" ? value : "__all__"
-  
+  const selectValue = value && value !== "" ? value : "__all__";
+
   // Filter options to ensure no empty values
   const validOptions = (filter.options || []).filter(
-    (opt) => opt.value && opt.value !== ""
-  )
+    (opt) => opt.value && opt.value !== "",
+  );
 
   return (
-    <Select 
-      value={selectValue} 
+    <Select
+      value={selectValue}
       onValueChange={(v) => onChange(v === "__all__" ? "" : v)}
     >
       <SelectTrigger className="h-8 min-w-[140px] text-xs">
@@ -97,7 +100,7 @@ function SelectFilter({
         ))}
       </SelectContent>
     </Select>
-  )
+  );
 }
 
 function MultiSelectFilter({
@@ -105,12 +108,12 @@ function MultiSelectFilter({
   value,
   onChange,
 }: {
-  filter: FilterDefinition
-  value: string[] | undefined
-  onChange: (value: string[]) => void
+  filter: FilterDefinition;
+  value: string[] | undefined;
+  onChange: (value: string[]) => void;
 }) {
-  const [open, setOpen] = React.useState(false)
-  const selected = value || []
+  const [open, setOpen] = React.useState(false);
+  const selected = value || [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -120,7 +123,7 @@ function MultiSelectFilter({
           size="sm"
           className={cn(
             "h-8 min-w-[140px] justify-between text-xs",
-            selected.length > 0 && "border-primary/50"
+            selected.length > 0 && "border-primary/50",
           )}
         >
           {selected.length > 0 ? (
@@ -141,19 +144,19 @@ function MultiSelectFilter({
       <PopoverContent className="w-[200px] p-2" align="start">
         <div className="space-y-1">
           {filter.options?.map((opt) => {
-            const isSelected = selected.includes(opt.value)
+            const isSelected = selected.includes(opt.value);
             return (
               <button
                 key={opt.value}
                 className={cn(
                   "w-full flex items-center justify-between px-2 py-1.5 text-xs rounded hover:bg-muted/50",
-                  isSelected && "bg-primary/10 text-primary"
+                  isSelected && "bg-primary/10 text-primary",
                 )}
                 onClick={() => {
                   if (isSelected) {
-                    onChange(selected.filter((v) => v !== opt.value))
+                    onChange(selected.filter((v) => v !== opt.value));
                   } else {
-                    onChange([...selected, opt.value])
+                    onChange([...selected, opt.value]);
                   }
                 }}
               >
@@ -162,7 +165,7 @@ function MultiSelectFilter({
                   <span className="text-muted-foreground">({opt.count})</span>
                 )}
               </button>
-            )
+            );
           })}
         </div>
         {selected.length > 0 && (
@@ -177,7 +180,7 @@ function MultiSelectFilter({
         )}
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 function DateRangeFilter({
@@ -185,11 +188,11 @@ function DateRangeFilter({
   value,
   onChange,
 }: {
-  filter: FilterDefinition
-  value: { start: Date; end: Date } | undefined
-  onChange: (value: { start: Date; end: Date } | undefined) => void
+  filter: FilterDefinition;
+  value: { start: Date; end: Date } | undefined;
+  onChange: (value: { start: Date; end: Date } | undefined) => void;
 }) {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -199,13 +202,14 @@ function DateRangeFilter({
           size="sm"
           className={cn(
             "h-8 min-w-[180px] justify-start text-xs",
-            value && "border-primary/50"
+            value && "border-primary/50",
           )}
         >
           <CalendarIcon className="size-3 mr-2" />
           {value ? (
             <span>
-              {format(value.start, "MMM d")} - {format(value.end, "MMM d, yyyy")}
+              {format(value.start, "MMM d")} -{" "}
+              {format(value.end, "MMM d, yyyy")}
             </span>
           ) : (
             <span className="text-muted-foreground">
@@ -229,11 +233,11 @@ function DateRangeFilter({
               size="sm"
               className="h-6 text-xs"
               onClick={() => {
-                const end = new Date()
-                const start = new Date()
-                start.setDate(end.getDate() - preset.days)
-                onChange({ start, end })
-                setOpen(false)
+                const end = new Date();
+                const start = new Date();
+                start.setDate(end.getDate() - preset.days);
+                onChange({ start, end });
+                setOpen(false);
               }}
             >
               {preset.label}
@@ -245,7 +249,7 @@ function DateRangeFilter({
           selected={value ? { from: value.start, to: value.end } : undefined}
           onSelect={(range) => {
             if (range?.from && range?.to) {
-              onChange({ start: range.from, end: range.to })
+              onChange({ start: range.from, end: range.to });
             }
           }}
           numberOfMonths={2}
@@ -257,8 +261,8 @@ function DateRangeFilter({
               size="sm"
               className="w-full h-7 text-xs"
               onClick={() => {
-                onChange(undefined)
-                setOpen(false)
+                onChange(undefined);
+                setOpen(false);
               }}
             >
               Clear
@@ -267,7 +271,7 @@ function DateRangeFilter({
         )}
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 function SearchFilter({
@@ -275,9 +279,9 @@ function SearchFilter({
   value,
   onChange,
 }: {
-  filter: FilterDefinition
-  value: string | undefined
-  onChange: (value: string) => void
+  filter: FilterDefinition;
+  value: string | undefined;
+  onChange: (value: string) => void;
 }) {
   return (
     <div className="relative">
@@ -285,7 +289,9 @@ function SearchFilter({
       <Input
         value={value || ""}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={filter.placeholder || `Search ${filter.label.toLowerCase()}...`}
+        placeholder={
+          filter.placeholder || `Search ${filter.label.toLowerCase()}...`
+        }
         className="h-8 pl-7 pr-7 text-xs min-w-[180px]"
       />
       {value && (
@@ -297,7 +303,7 @@ function SearchFilter({
         </button>
       )}
     </div>
-  )
+  );
 }
 
 export function FilterBar({
@@ -308,43 +314,54 @@ export function FilterBar({
   persistToUrl = false,
   className,
 }: FilterBarProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Count active filters
   const activeCount = Object.values(values).filter((v) => {
-    if (Array.isArray(v)) return v.length > 0
-    if (typeof v === "object" && v !== null) return true
-    return !!v
-  }).length
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === "object" && v !== null) return true;
+    return !!v;
+  }).length;
 
   // Sync with URL if enabled
   React.useEffect(() => {
-    if (!persistToUrl) return
-    
-    const params = new URLSearchParams(searchParams.toString())
-    
+    if (!persistToUrl) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+
     filters.forEach((filter) => {
-      const value = values[filter.key]
-      if (value === undefined || value === "" || (Array.isArray(value) && value.length === 0)) {
-        params.delete(filter.key)
+      const value = values[filter.key];
+      if (
+        value === undefined ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0)
+      ) {
+        params.delete(filter.key);
       } else if (Array.isArray(value)) {
-        params.set(filter.key, value.join(","))
-      } else if (typeof value === "object" && "start" in value && "end" in value) {
-        params.set(filter.key, `${(value.start as Date).toISOString()}_${(value.end as Date).toISOString()}`)
+        params.set(filter.key, value.join(","));
+      } else if (
+        typeof value === "object" &&
+        "start" in value &&
+        "end" in value
+      ) {
+        params.set(
+          filter.key,
+          `${(value.start as Date).toISOString()}_${(value.end as Date).toISOString()}`,
+        );
       } else {
-        params.set(filter.key, String(value))
+        params.set(filter.key, String(value));
       }
-    })
-    
-    router.replace(`?${params.toString()}`, { scroll: false })
-  }, [values, persistToUrl, filters, router, searchParams])
+    });
+
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [values, persistToUrl, filters, router, searchParams]);
 
   return (
     <div
       className={cn(
         "flex items-center gap-2 px-4 py-2 border-b bg-muted/20 overflow-x-auto",
-        className
+        className,
       )}
     >
       <div className="flex items-center gap-1 text-xs text-muted-foreground mr-2">
@@ -362,7 +379,7 @@ export function FilterBar({
                 value={values[filter.key] as string | undefined}
                 onChange={(v) => onChange(filter.key, v)}
               />
-            )
+            );
           case "multi-select":
             return (
               <MultiSelectFilter
@@ -371,16 +388,18 @@ export function FilterBar({
                 value={values[filter.key] as string[] | undefined}
                 onChange={(v) => onChange(filter.key, v)}
               />
-            )
+            );
           case "date-range":
             return (
               <DateRangeFilter
                 key={filter.key}
                 filter={filter}
-                value={values[filter.key] as { start: Date; end: Date } | undefined}
+                value={
+                  values[filter.key] as { start: Date; end: Date } | undefined
+                }
                 onChange={(v) => onChange(filter.key, v)}
               />
-            )
+            );
           case "search":
             return (
               <SearchFilter
@@ -389,9 +408,9 @@ export function FilterBar({
                 value={values[filter.key] as string | undefined}
                 onChange={(v) => onChange(filter.key, v)}
               />
-            )
+            );
           default:
-            return null
+            return null;
         }
       })}
 
@@ -410,27 +429,27 @@ export function FilterBar({
         </>
       )}
     </div>
-  )
+  );
 }
 
 // Hook for managing filter state
 export function useFilterState<T extends Record<string, unknown>>(
-  initialFilters: T
+  initialFilters: T,
 ) {
-  const [filters, setFilters] = React.useState<T>(initialFilters)
+  const [filters, setFilters] = React.useState<T>(initialFilters);
 
   const updateFilter = React.useCallback((key: string, value: unknown) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }, [])
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  }, []);
 
   const resetFilters = React.useCallback(() => {
-    setFilters(initialFilters)
-  }, [initialFilters])
+    setFilters(initialFilters);
+  }, [initialFilters]);
 
   return {
     filters,
     updateFilter,
     resetFilters,
     setFilters,
-  }
+  };
 }

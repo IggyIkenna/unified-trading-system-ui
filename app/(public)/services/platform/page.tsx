@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import * as React from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Layers,
   ArrowRight,
@@ -16,58 +22,66 @@ import {
   Eye,
   Zap,
   GitCompareArrows,
-} from "lucide-react"
+} from "lucide-react";
 
 const HERO_METRICS = [
   { label: "P&L Factors", value: "10" },
   { label: "Connected Venues", value: "33" },
   { label: "Risk Dimensions", value: "6" },
   { label: "Latency", value: "<50ms" },
-]
+];
 
 const CATALOGUE_ITEMS = [
   {
     icon: TrendingUp,
     title: "Live P&L Attribution",
-    description: "Real-time P&L decomposed by factor: funding, carry, basis, delta, gamma, vega, theta, slippage, fees, and rebates.",
+    description:
+      "Real-time P&L decomposed by factor: funding, carry, basis, delta, gamma, vega, theta, slippage, fees, and rebates.",
   },
   {
     icon: Eye,
     title: "Position Monitoring",
-    description: "Cross-venue position grid with live mark-to-market, notional exposure, and margin utilisation across all connected venues.",
+    description:
+      "Cross-venue position grid with live mark-to-market, notional exposure, and margin utilisation across all connected venues.",
   },
   {
     icon: Shield,
     title: "Risk Analytics",
-    description: "Exposure heatmaps, VaR (parametric + historical), Greeks, position limits, and circuit breaker status in a single view.",
+    description:
+      "Exposure heatmaps, VaR (parametric + historical), Greeks, position limits, and circuit breaker status in a single view.",
   },
   {
     icon: GitCompareArrows,
     title: "T+1 Backtest-vs-Live Diff",
-    description: "Same-code execution in backtest and live. T+1 diff monitoring flags divergence in fills, slippage, and signal timing.",
+    description:
+      "Same-code execution in backtest and live. T+1 diff monitoring flags divergence in fills, slippage, and signal timing.",
   },
   {
     icon: Zap,
     title: "Model Acceptance",
-    description: "Accept promoted models from the batch pipeline. Light-touch approval: review champion/challenger metrics, then deploy to live.",
+    description:
+      "Accept promoted models from the batch pipeline. Light-touch approval: review champion/challenger metrics, then deploy to live.",
   },
   {
     icon: Activity,
     title: "Recent Fills & Trade History",
-    description: "Full order audit trail with fill prices, venue, algo used, slippage vs. arrival, and MiFID II best-execution fields.",
+    description:
+      "Full order audit trail with fill prices, venue, algo used, slippage vs. arrival, and MiFID II best-execution fields.",
   },
-]
+];
 
 export default function PlatformServicePage() {
   return (
     <div className="min-h-screen bg-background">
-
       {/* Hero */}
       <section className="relative border-b border-border overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-950/40 via-background to-background" />
         <div className="container relative px-4 py-20 md:px-6 md:py-28">
           <div className="mx-auto max-w-3xl text-center">
-            <Badge variant="outline" className="mb-4 border-amber-500/30 text-amber-400 text-xs">
+            <Badge
+              variant="outline"
+              className="mb-4 border-amber-500/30 text-amber-400 text-xs"
+            >
               <Layers className="mr-1.5 size-3" />
               Live Trading Platform
             </Badge>
@@ -76,9 +90,9 @@ export default function PlatformServicePage() {
               <span className="text-amber-400">Real-time control.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              P&L attribution by factor, position monitoring across all venues, risk analytics,
-              and same-code backtest-vs-live diff tracking -- everything you need to operate a
-              live systematic trading book.
+              P&L attribution by factor, position monitoring across all venues,
+              risk analytics, and same-code backtest-vs-live diff tracking --
+              everything you need to operate a live systematic trading book.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>
@@ -92,10 +106,17 @@ export default function PlatformServicePage() {
               </Button>
             </div>
             <div className="mt-12 grid grid-cols-4 gap-4">
-              {HERO_METRICS.map(m => (
-                <div key={m.label} className="rounded-lg border border-border bg-card/60 px-4 py-3">
-                  <div className="text-2xl font-bold font-mono text-amber-400">{m.value}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{m.label}</div>
+              {HERO_METRICS.map((m) => (
+                <div
+                  key={m.label}
+                  className="rounded-lg border border-border bg-card/60 px-4 py-3"
+                >
+                  <div className="text-2xl font-bold font-mono text-amber-400">
+                    {m.value}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {m.label}
+                  </div>
                 </div>
               ))}
             </div>
@@ -106,13 +127,15 @@ export default function PlatformServicePage() {
       {/* Block 1: Catalogue */}
       <section className="container px-4 py-16 md:px-6">
         <div className="mx-auto max-w-4xl">
-          <h2 className="text-2xl font-bold mb-2">What the Live Trading Platform Includes</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            What the Live Trading Platform Includes
+          </h2>
           <p className="text-sm text-muted-foreground mb-8">
             Six core capabilities for operating a live systematic trading book.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
             {CATALOGUE_ITEMS.map((item) => {
-              const Icon = item.icon
+              const Icon = item.icon;
               return (
                 <Card key={item.title}>
                   <CardHeader className="pb-2">
@@ -127,7 +150,7 @@ export default function PlatformServicePage() {
                     <CardDescription>{item.description}</CardDescription>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         </div>
@@ -147,27 +170,62 @@ export default function PlatformServicePage() {
             {/* P&L Waterfall Preview */}
             <Card className="mb-6 border-amber-500/20">
               <CardHeader>
-                <CardTitle className="text-base">P&L Attribution Waterfall</CardTitle>
-                <CardDescription>Today&apos;s P&L decomposed by factor</CardDescription>
+                <CardTitle className="text-base">
+                  P&L Attribution Waterfall
+                </CardTitle>
+                <CardDescription>
+                  Today&apos;s P&L decomposed by factor
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-2 md:grid-cols-5">
                   {[
-                    { factor: "Delta", value: "+$18,420", color: "text-emerald-400" },
-                    { factor: "Funding", value: "+$4,210", color: "text-emerald-400" },
-                    { factor: "Carry", value: "+$2,890", color: "text-emerald-400" },
-                    { factor: "Fees", value: "-$3,140", color: "text-rose-400" },
-                    { factor: "Slippage", value: "-$1,280", color: "text-rose-400" },
+                    {
+                      factor: "Delta",
+                      value: "+$18,420",
+                      color: "text-emerald-400",
+                    },
+                    {
+                      factor: "Funding",
+                      value: "+$4,210",
+                      color: "text-emerald-400",
+                    },
+                    {
+                      factor: "Carry",
+                      value: "+$2,890",
+                      color: "text-emerald-400",
+                    },
+                    {
+                      factor: "Fees",
+                      value: "-$3,140",
+                      color: "text-rose-400",
+                    },
+                    {
+                      factor: "Slippage",
+                      value: "-$1,280",
+                      color: "text-rose-400",
+                    },
                   ].map((f) => (
-                    <div key={f.factor} className="rounded-lg border border-border/50 bg-muted/30 p-3 text-center">
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{f.factor}</div>
-                      <div className={`text-sm font-bold font-mono mt-1 ${f.color}`}>{f.value}</div>
+                    <div
+                      key={f.factor}
+                      className="rounded-lg border border-border/50 bg-muted/30 p-3 text-center"
+                    >
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        {f.factor}
+                      </div>
+                      <div
+                        className={`text-sm font-bold font-mono mt-1 ${f.color}`}
+                      >
+                        {f.value}
+                      </div>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4 flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/5 px-4 py-3">
                   <span className="text-sm font-medium">Net P&L</span>
-                  <span className="text-lg font-bold font-mono text-emerald-400">+$21,100</span>
+                  <span className="text-lg font-bold font-mono text-emerald-400">
+                    +$21,100
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -177,24 +235,63 @@ export default function PlatformServicePage() {
               <Card className="border-amber-500/20">
                 <CardHeader>
                   <CardTitle className="text-base">Position Grid</CardTitle>
-                  <CardDescription>Live positions across venues</CardDescription>
+                  <CardDescription>
+                    Live positions across venues
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {[
-                      { instrument: "BTC-PERP", venue: "Binance", size: "+2.5", pnl: "+$8,420", color: "text-emerald-400" },
-                      { instrument: "ETH-PERP", venue: "OKX", size: "-1.8", pnl: "-$1,240", color: "text-rose-400" },
-                      { instrument: "ES H6", venue: "CME", size: "+4", pnl: "+$6,100", color: "text-emerald-400" },
-                      { instrument: "AAVE/USDC", venue: "Uniswap", size: "+850", pnl: "+$2,180", color: "text-emerald-400" },
+                      {
+                        instrument: "BTC-PERP",
+                        venue: "Binance",
+                        size: "+2.5",
+                        pnl: "+$8,420",
+                        color: "text-emerald-400",
+                      },
+                      {
+                        instrument: "ETH-PERP",
+                        venue: "OKX",
+                        size: "-1.8",
+                        pnl: "-$1,240",
+                        color: "text-rose-400",
+                      },
+                      {
+                        instrument: "ES H6",
+                        venue: "CME",
+                        size: "+4",
+                        pnl: "+$6,100",
+                        color: "text-emerald-400",
+                      },
+                      {
+                        instrument: "AAVE/USDC",
+                        venue: "Uniswap",
+                        size: "+850",
+                        pnl: "+$2,180",
+                        color: "text-emerald-400",
+                      },
                     ].map((p) => (
-                      <div key={`${p.instrument}-${p.venue}`} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                      <div
+                        key={`${p.instrument}-${p.venue}`}
+                        className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2"
+                      >
                         <div>
-                          <div className="text-sm font-medium font-mono">{p.instrument}</div>
-                          <div className="text-[10px] text-muted-foreground">{p.venue}</div>
+                          <div className="text-sm font-medium font-mono">
+                            {p.instrument}
+                          </div>
+                          <div className="text-[10px] text-muted-foreground">
+                            {p.venue}
+                          </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs text-muted-foreground">{p.size}</div>
-                          <div className={`text-sm font-mono font-medium ${p.color}`}>{p.pnl}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {p.size}
+                          </div>
+                          <div
+                            className={`text-sm font-mono font-medium ${p.color}`}
+                          >
+                            {p.pnl}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -217,9 +314,16 @@ export default function PlatformServicePage() {
                       { label: "Margin Utilisation", value: "62%" },
                       { label: "Circuit Breakers", value: "0 / 12 triggered" },
                     ].map((item) => (
-                      <div key={item.label} className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
-                        <span className="text-sm text-muted-foreground">{item.label}</span>
-                        <span className="text-sm font-medium font-mono">{item.value}</span>
+                      <div
+                        key={item.label}
+                        className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 px-3 py-2"
+                      >
+                        <span className="text-sm text-muted-foreground">
+                          {item.label}
+                        </span>
+                        <span className="text-sm font-medium font-mono">
+                          {item.value}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -235,41 +339,77 @@ export default function PlatformServicePage() {
         <div className="container px-4 md:px-6">
           <div className="mx-auto max-w-4xl">
             <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
-            <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
+            <p className="text-sm text-muted-foreground mb-6">
+              Choose your level of control. Mix and match as needed.
+            </p>
             <div className="grid md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Self-Service</CardTitle>
-                  <CardDescription className="text-xs">You deploy, we provide the infrastructure</CardDescription>
+                  <CardDescription className="text-xs">
+                    You deploy, we provide the infrastructure
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Deploy and configure your own strategies</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Full access to monitoring dashboards</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Self-managed risk limits and circuit breakers</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> API access for custom integrations</div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    Deploy and configure your own strategies
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    Full access to monitoring dashboards
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    Self-managed risk limits and circuit breakers
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    API access for custom integrations
+                  </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Managed</CardTitle>
-                  <CardDescription className="text-xs">We operate the platform for you</CardDescription>
+                  <CardDescription className="text-xs">
+                    We operate the platform for you
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Odum team monitors and manages live trading</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> 24/7 operational support</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Proactive risk intervention</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Monthly performance reviews</div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    Odum team monitors and manages live trading
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    24/7 operational support
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    Proactive risk intervention
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
+                    Monthly performance reviews
+                  </div>
                 </CardContent>
               </Card>
               <Card className="border-muted">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">BYO Infrastructure</CardTitle>
-                  <CardDescription className="text-xs">Not available</CardDescription>
+                  <CardTitle className="text-sm text-muted-foreground">
+                    BYO Infrastructure
+                  </CardTitle>
+                  <CardDescription className="text-xs">
+                    Not available
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <p>
-                    The live trading platform requires our integrated infrastructure for real-time
-                    risk controls, venue connectivity, and regulatory compliance. BYO is not supported.
+                    The live trading platform requires our integrated
+                    infrastructure for real-time risk controls, venue
+                    connectivity, and regulatory compliance. BYO is not
+                    supported.
                   </p>
                 </CardContent>
               </Card>
@@ -282,9 +422,12 @@ export default function PlatformServicePage() {
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 text-center max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Ready to get started?
+            </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Book a live demo to see the platform, or create your account to start exploring.
+              Book a live demo to see the platform, or create your account to
+              start exploring.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild>
@@ -304,5 +447,5 @@ export default function PlatformServicePage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

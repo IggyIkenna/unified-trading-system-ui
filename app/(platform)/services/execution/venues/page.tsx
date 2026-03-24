@@ -1,15 +1,34 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { cn } from "@/lib/utils"
-import { ExecutionNav } from "@/components/execution-platform/execution-nav"
-import { useVenues } from "@/hooks/api/use-orders"
+import * as React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { ExecutionNav } from "@/components/execution-platform/execution-nav";
+import { useVenues } from "@/hooks/api/use-orders";
 import {
   Building2,
   CheckCircle2,
@@ -21,14 +40,21 @@ import {
   BarChart3,
   Globe,
   RefreshCw,
-} from "lucide-react"
+} from "lucide-react";
 
 export default function ExecutionVenuesPage() {
-  const { data: venuesData, isLoading, error: venuesError, refetch: refetchVenues } = useVenues()
-  const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? []
+  const {
+    data: venuesData,
+    isLoading,
+    error: venuesError,
+    refetch: refetchVenues,
+  } = useVenues();
+  const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? [];
 
   // Venue routing matrix derived from API response or fallback
-  const VENUE_MATRIX: { instrument: string; venues: Array<any> } = (venuesData as any)?.routingMatrix ?? {
+  const VENUE_MATRIX: { instrument: string; venues: Array<any> } = (
+    venuesData as any
+  )?.routingMatrix ?? {
     instrument: "ETH-PERP",
     venues: MOCK_VENUES.slice(0, 5).map((v: any) => ({
       venueId: v.id ?? "",
@@ -38,11 +64,15 @@ export default function ExecutionVenuesPage() {
       fillProb: v.quality?.fillRate ?? 0,
       score: v.quality?.score ?? 0,
     })),
-  }
+  };
 
-  const [selectedInstrument, setSelectedInstrument] = React.useState("ETH-PERP")
+  const [selectedInstrument, setSelectedInstrument] =
+    React.useState("ETH-PERP");
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>
+  if (isLoading)
+    return (
+      <div className="p-8 text-center text-muted-foreground">Loading...</div>
+    );
 
   if (venuesError) {
     return (
@@ -54,7 +84,7 @@ export default function ExecutionVenuesPage() {
           Retry
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -64,7 +94,7 @@ export default function ExecutionVenuesPage() {
           <ExecutionNav />
         </div>
       </div>
-      
+
       <div className="max-w-[1800px] mx-auto p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -78,7 +108,10 @@ export default function ExecutionVenuesPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Select value={selectedInstrument} onValueChange={setSelectedInstrument}>
+            <Select
+              value={selectedInstrument}
+              onValueChange={setSelectedInstrument}
+            >
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
               </SelectTrigger>
@@ -99,31 +132,43 @@ export default function ExecutionVenuesPage() {
         {MOCK_VENUES.length === 0 && (
           <Card>
             <CardContent className="py-12">
-              <p className="text-sm text-muted-foreground text-center">No venues available. Venue connections will appear here once configured.</p>
+              <p className="text-sm text-muted-foreground text-center">
+                No venues available. Venue connections will appear here once
+                configured.
+              </p>
             </CardContent>
           </Card>
         )}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {MOCK_VENUES.map(venue => (
+          {MOCK_VENUES.map((venue) => (
             <Card key={venue.id}>
               <CardContent className="pt-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <div className={cn(
-                      "size-2 rounded-full",
-                      venue.connectivity.status === "connected" && "bg-emerald-500",
-                      venue.connectivity.status === "degraded" && "bg-amber-500",
-                      venue.connectivity.status === "disconnected" && "bg-red-500"
-                    )} />
+                    <div
+                      className={cn(
+                        "size-2 rounded-full",
+                        venue.connectivity.status === "connected" &&
+                          "bg-emerald-500",
+                        venue.connectivity.status === "degraded" &&
+                          "bg-amber-500",
+                        venue.connectivity.status === "disconnected" &&
+                          "bg-red-500",
+                      )}
+                    />
                     <span className="font-medium">{venue.name}</span>
                   </div>
-                  <Badge variant="outline" className="text-xs">{venue.type}</Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {venue.type}
+                  </Badge>
                 </div>
-                
+
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Latency</span>
-                    <span className="font-mono">{venue.connectivity.latency}ms</span>
+                    <span className="font-mono">
+                      {venue.connectivity.latency}ms
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Fill Rate</span>
@@ -131,11 +176,15 @@ export default function ExecutionVenuesPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Slippage</span>
-                    <span className="font-mono">{venue.quality.avgSlippage} bps</span>
+                    <span className="font-mono">
+                      {venue.quality.avgSlippage} bps
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Maker Fee</span>
-                    <span className="font-mono">{venue.capabilities.makerFee} bps</span>
+                    <span className="font-mono">
+                      {venue.capabilities.makerFee} bps
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -146,8 +195,12 @@ export default function ExecutionVenuesPage() {
         {/* Venue Comparison Matrix */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Routing Matrix: {VENUE_MATRIX.instrument}</CardTitle>
-            <CardDescription>Best execution venue selection based on current market conditions</CardDescription>
+            <CardTitle className="text-base">
+              Routing Matrix: {VENUE_MATRIX.instrument}
+            </CardTitle>
+            <CardDescription>
+              Best execution venue selection based on current market conditions
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -166,23 +219,35 @@ export default function ExecutionVenuesPage() {
                 {VENUE_MATRIX.venues
                   .sort((a, b) => b.score - a.score)
                   .map((v, i) => {
-                    const venue = MOCK_VENUES.find(mv => mv.id === v.venueId)
+                    const venue = MOCK_VENUES.find((mv) => mv.id === v.venueId);
                     return (
                       <TableRow key={v.venueId}>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <div className={cn(
-                              "size-2 rounded-full",
-                              venue?.connectivity.status === "connected" && "bg-emerald-500",
-                              venue?.connectivity.status === "degraded" && "bg-amber-500"
-                            )} />
+                            <div
+                              className={cn(
+                                "size-2 rounded-full",
+                                venue?.connectivity.status === "connected" &&
+                                  "bg-emerald-500",
+                                venue?.connectivity.status === "degraded" &&
+                                  "bg-amber-500",
+                              )}
+                            />
                             <span className="font-medium">{venue?.name}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-right font-mono">{v.spread.toFixed(3)}%</TableCell>
-                        <TableCell className="text-right font-mono">${(v.bidDepth / 1e6).toFixed(2)}M</TableCell>
-                        <TableCell className="text-right font-mono">${(v.askDepth / 1e6).toFixed(2)}M</TableCell>
-                        <TableCell className="text-right font-mono">{v.fillProb}%</TableCell>
+                        <TableCell className="text-right font-mono">
+                          {v.spread.toFixed(3)}%
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          ${(v.bidDepth / 1e6).toFixed(2)}M
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          ${(v.askDepth / 1e6).toFixed(2)}M
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          {v.fillProb}%
+                        </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Progress value={v.score} className="h-2 w-16" />
@@ -193,13 +258,17 @@ export default function ExecutionVenuesPage() {
                           {i === 0 ? (
                             <Badge className="bg-emerald-500">Primary</Badge>
                           ) : i === 1 ? (
-                            <Badge variant="outline" className="text-blue-500">Secondary</Badge>
+                            <Badge variant="outline" className="text-blue-500">
+                              Secondary
+                            </Badge>
                           ) : (
-                            <span className="text-muted-foreground text-sm">Backup</span>
+                            <span className="text-muted-foreground text-sm">
+                              Backup
+                            </span>
                           )}
                         </TableCell>
                       </TableRow>
-                    )
+                    );
                   })}
               </TableBody>
             </Table>
@@ -212,7 +281,9 @@ export default function ExecutionVenuesPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Quality Metrics</CardTitle>
-              <CardDescription>Historical execution quality by venue</CardDescription>
+              <CardDescription>
+                Historical execution quality by venue
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -225,15 +296,25 @@ export default function ExecutionVenuesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {MOCK_VENUES.map(venue => (
+                  {MOCK_VENUES.map((venue) => (
                     <TableRow key={venue.id}>
-                      <TableCell className="font-medium">{venue.name}</TableCell>
-                      <TableCell className="text-right font-mono">{venue.quality.latencyP50}ms</TableCell>
-                      <TableCell className="text-right font-mono">{venue.quality.latencyP99}ms</TableCell>
-                      <TableCell className={cn(
-                        "text-right font-mono",
-                        venue.quality.rejectRate > 0.5 ? "text-amber-500" : "text-emerald-500"
-                      )}>
+                      <TableCell className="font-medium">
+                        {venue.name}
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        {venue.quality.latencyP50}ms
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        {venue.quality.latencyP99}ms
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right font-mono",
+                          venue.quality.rejectRate > 0.5
+                            ? "text-amber-500"
+                            : "text-emerald-500",
+                        )}
+                      >
                         {venue.quality.rejectRate}%
                       </TableCell>
                     </TableRow>
@@ -260,17 +341,26 @@ export default function ExecutionVenuesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {MOCK_VENUES.map(venue => (
+                  {MOCK_VENUES.map((venue) => (
                     <TableRow key={venue.id}>
-                      <TableCell className="font-medium">{venue.name}</TableCell>
-                      <TableCell className={cn(
-                        "text-right font-mono",
-                        venue.capabilities.makerFee === 0 && "text-emerald-500"
-                      )}>
+                      <TableCell className="font-medium">
+                        {venue.name}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right font-mono",
+                          venue.capabilities.makerFee === 0 &&
+                            "text-emerald-500",
+                        )}
+                      >
                         {venue.capabilities.makerFee} bps
                       </TableCell>
-                      <TableCell className="text-right font-mono">{venue.capabilities.takerFee} bps</TableCell>
-                      <TableCell className="text-right font-mono">${(venue.capabilities.maxOrderSize / 1e6).toFixed(0)}M</TableCell>
+                      <TableCell className="text-right font-mono">
+                        {venue.capabilities.takerFee} bps
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        ${(venue.capabilities.maxOrderSize / 1e6).toFixed(0)}M
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -283,43 +373,64 @@ export default function ExecutionVenuesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Market Share</CardTitle>
-            <CardDescription>Volume distribution across connected venues</CardDescription>
+            <CardDescription>
+              Volume distribution across connected venues
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
               <div className="flex-1 h-8 rounded-lg overflow-hidden flex">
-                {MOCK_VENUES
-                  .sort((a, b) => b.volume.marketShare - a.volume.marketShare)
-                  .map((venue, i) => {
-                    const colors = ["bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500", "bg-red-500"]
-                    return (
-                      <div 
-                        key={venue.id}
-                        className={cn("h-full", colors[i % colors.length])}
-                        style={{ width: `${venue.volume.marketShare}%` }}
-                        title={`${venue.name}: ${venue.volume.marketShare}%`}
-                      />
-                    )
-                  })}
+                {MOCK_VENUES.sort(
+                  (a, b) => b.volume.marketShare - a.volume.marketShare,
+                ).map((venue, i) => {
+                  const colors = [
+                    "bg-blue-500",
+                    "bg-emerald-500",
+                    "bg-violet-500",
+                    "bg-amber-500",
+                    "bg-red-500",
+                  ];
+                  return (
+                    <div
+                      key={venue.id}
+                      className={cn("h-full", colors[i % colors.length])}
+                      style={{ width: `${venue.volume.marketShare}%` }}
+                      title={`${venue.name}: ${venue.volume.marketShare}%`}
+                    />
+                  );
+                })}
               </div>
             </div>
             <div className="flex flex-wrap gap-4 mt-4">
-              {MOCK_VENUES
-                .sort((a, b) => b.volume.marketShare - a.volume.marketShare)
-                .map((venue, i) => {
-                  const colors = ["bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500", "bg-red-500"]
-                  return (
-                    <div key={venue.id} className="flex items-center gap-2">
-                      <div className={cn("size-3 rounded", colors[i % colors.length])} />
-                      <span className="text-sm">{venue.name}</span>
-                      <span className="text-sm text-muted-foreground">{venue.volume.marketShare}%</span>
-                    </div>
-                  )
-                })}
+              {MOCK_VENUES.sort(
+                (a, b) => b.volume.marketShare - a.volume.marketShare,
+              ).map((venue, i) => {
+                const colors = [
+                  "bg-blue-500",
+                  "bg-emerald-500",
+                  "bg-violet-500",
+                  "bg-amber-500",
+                  "bg-red-500",
+                ];
+                return (
+                  <div key={venue.id} className="flex items-center gap-2">
+                    <div
+                      className={cn(
+                        "size-3 rounded",
+                        colors[i % colors.length],
+                      )}
+                    />
+                    <span className="text-sm">{venue.name}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {venue.volume.marketShare}%
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -35,18 +35,18 @@
 
 Visit these after login (replace `[id]` with any strategy id visible in the list).
 
-| Area | Paths |
-| --- | --- |
-| Hub | `/dashboard`, `/service/overview` |
-| Strategies | `/strategies`, `/strategies/grid`, `/strategies/[id]` |
-| Data | `/service/data/overview`, `/service/data/venues`, `/service/data/markets` |
-| Trading | `/service/trading/overview`, `/service/trading/positions`, `/service/trading/risk`, `/service/trading/orders` |
-| Execution | `/service/execution/overview`, `/service/execution/tca` |
-| Research | `/service/research/overview` and every **`/service/research/strategy/...`** link from that hub |
-| ML | `/service/research/ml/...` links from research |
-| Reports | `/service/reports/overview`, `/service/reports/reconciliation` |
-| Observe | `/service/observe/...` from the shell |
-| Ops (if visible) | `/admin`, `/devops` |
+| Area             | Paths                                                                                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------- |
+| Hub              | `/dashboard`, `/service/overview`                                                                             |
+| Strategies       | `/strategies`, `/strategies/grid`, `/strategies/[id]`                                                         |
+| Data             | `/service/data/overview`, `/service/data/venues`, `/service/data/markets`                                     |
+| Trading          | `/service/trading/overview`, `/service/trading/positions`, `/service/trading/risk`, `/service/trading/orders` |
+| Execution        | `/service/execution/overview`, `/service/execution/tca`                                                       |
+| Research         | `/service/research/overview` and every **`/service/research/strategy/...`** link from that hub                |
+| ML               | `/service/research/ml/...` links from research                                                                |
+| Reports          | `/service/reports/overview`, `/service/reports/reconciliation`                                                |
+| Observe          | `/service/observe/...` from the shell                                                                         |
+| Ops (if visible) | `/admin`, `/devops`                                                                                           |
 
 **Redirects:** Old paths like `/trading/...` may redirect to `/service/trading/...`. A **404** on canonical `/service/...` routes is a failure.
 
@@ -56,12 +56,12 @@ Visit these after login (replace `[id]` with any strategy id visible in the list
 
 Exercise **at least one internal** (admin or internal trader) and **one client** persona.
 
-| Persona | What to verify |
-| --- | --- |
+| Persona                     | What to verify                                                                                 |
+| --------------------------- | ---------------------------------------------------------------------------------------------- |
 | **Admin / internal trader** | Full nav: Data, Research, Trading, Execution, Reports, Observe; strategy list; risk/positions. |
-| **Client full** | Entitled areas visible; strategy/risk may be scoped. |
-| **Client data-only** | Narrower nav; data-heavy screens OK; trading may hide or empty-state. |
-| **Client premium** | Variant entitlements vs full (differences should be visible). |
+| **Client full**             | Entitled areas visible; strategy/risk may be scoped.                                           |
+| **Client data-only**        | Narrower nav; data-heavy screens OK; trading may hide or empty-state.                          |
+| **Client premium**          | Variant entitlements vs full (differences should be visible).                                  |
 
 ---
 
@@ -69,30 +69,30 @@ Exercise **at least one internal** (admin or internal trader) and **one client**
 
 These are **architectural truths**. The UI should **not** imply violations (e.g. “raw tick stream in strategy screen” as the sole data source).
 
-| # | Rule | What the UI should suggest |
-| --- | --- | --- |
-| G1 | Strategies do **not** consume raw market-tick or candle assembly directly. | Copy references **features**, **ML inference**, **monitors** — not “websocket orderbook” as strategy input. |
-| G2 | Strategies are **event-driven** (updates when upstream features/events change), not blind timer-first. | Schedules may appear as **feature publication** or **pipeline** timing. |
-| G3 | Strategy **receives** positions, risk, PnL from monitors/calculators; it **emits instructions**. | Screens separate **signal / instruction** from **execution / fills**. |
-| G4 | **Execution-service** chooses venue routing and order type; strategy sets constraints (slippage, allowed venues). | Execution analytics (TCA, venues) complement strategy views. |
-| G5 | Unit of deployment is **`(strategy_id, client_id, config)`** — same template, isolated instances. | Filters for org, client, strategy; multiple rows per template. |
-| G6 | **Live and batch** share the same logical model; mode is a data/window distinction. | Mode toggle or labels: live vs batch / backtest. |
-| G7 | **Balance-based PnL** is source of truth; attribution should **reconcile** (tolerance ~2% in docs). | PnL breakdown + total equity consistent across pages. |
-| G8 | **Index-based yield** (e.g. Aave index, LST rate); APY is display, not PnL math. | DeFi lending shows **index / balance growth**, not fake APY compounding in PnL. |
+| #   | Rule                                                                                                              | What the UI should suggest                                                                                  |
+| --- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| G1  | Strategies do **not** consume raw market-tick or candle assembly directly.                                        | Copy references **features**, **ML inference**, **monitors** — not “websocket orderbook” as strategy input. |
+| G2  | Strategies are **event-driven** (updates when upstream features/events change), not blind timer-first.            | Schedules may appear as **feature publication** or **pipeline** timing.                                     |
+| G3  | Strategy **receives** positions, risk, PnL from monitors/calculators; it **emits instructions**.                  | Screens separate **signal / instruction** from **execution / fills**.                                       |
+| G4  | **Execution-service** chooses venue routing and order type; strategy sets constraints (slippage, allowed venues). | Execution analytics (TCA, venues) complement strategy views.                                                |
+| G5  | Unit of deployment is **`(strategy_id, client_id, config)`** — same template, isolated instances.                 | Filters for org, client, strategy; multiple rows per template.                                              |
+| G6  | **Live and batch** share the same logical model; mode is a data/window distinction.                               | Mode toggle or labels: live vs batch / backtest.                                                            |
+| G7  | **Balance-based PnL** is source of truth; attribution should **reconcile** (tolerance ~2% in docs).               | PnL breakdown + total equity consistent across pages.                                                       |
+| G8  | **Index-based yield** (e.g. Aave index, LST rate); APY is display, not PnL math.                                  | DeFi lending shows **index / balance growth**, not fake APY compounding in PnL.                             |
 
 ---
 
 ## 5. Cross-cutting themes the UI should surface
 
-| Theme | Operator need | UI signals to look for |
-| --- | --- | --- |
-| **PnL attribution** | Buckets (funding, basis, fees, directional, sports settle, etc.) reconcile to equity. | Stacked or tabbed attribution; same total as dashboard. |
-| **Cost model** | Fees, gas, slippage, sports commission. | Cost / fee columns or breakdowns on execution and reports. |
-| **ML pipeline** | Model version, features, deployment, live vs shadow. | Research → ML: experiments, runs, deployments. |
-| **Latency** | Data → feature → signal → instruction → fill. | Optional SLA copy or monitoring tiles (Observe / health). |
-| **Margin & health** | LTV, health factor, liquidation proximity (DeFi/CeFi/TradFi). | Risk pages: margin utilization, health factor for DeFi-style rows. |
-| **Operational modes** | Mock, testnet, paper, staging — alignment with `TestingStage`-style labels. | Badges or environment indicators on strategies or deployments. |
-| **Sharding** | CeFi / DeFi / Sports / TradFi / OnChain isolation. | Filters, badges, or section headers by **asset class** or **shard**. |
+| Theme                 | Operator need                                                                         | UI signals to look for                                               |
+| --------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **PnL attribution**   | Buckets (funding, basis, fees, directional, sports settle, etc.) reconcile to equity. | Stacked or tabbed attribution; same total as dashboard.              |
+| **Cost model**        | Fees, gas, slippage, sports commission.                                               | Cost / fee columns or breakdowns on execution and reports.           |
+| **ML pipeline**       | Model version, features, deployment, live vs shadow.                                  | Research → ML: experiments, runs, deployments.                       |
+| **Latency**           | Data → feature → signal → instruction → fill.                                         | Optional SLA copy or monitoring tiles (Observe / health).            |
+| **Margin & health**   | LTV, health factor, liquidation proximity (DeFi/CeFi/TradFi).                         | Risk pages: margin utilization, health factor for DeFi-style rows.   |
+| **Operational modes** | Mock, testnet, paper, staging — alignment with `TestingStage`-style labels.           | Badges or environment indicators on strategies or deployments.       |
+| **Sharding**          | CeFi / DeFi / Sports / TradFi / OnChain isolation.                                    | Filters, badges, or section headers by **asset class** or **shard**. |
 
 ---
 
@@ -104,58 +104,58 @@ These are **architectural truths**. The UI should **not** imply violations (e.g.
 
 ### 6.1 Basis trade (delta-neutral funding)
 
-| Field | Value |
-| --- | --- |
-| **Strategy ID pattern** | `DEFI_BASIS_{ASSET}` (e.g. ETH) |
-| **Asset class** | DeFi |
-| **Archetype** | Basis — long spot (or spot-like) + short perpetual, delta-neutral |
+| Field                   | Value                                                             |
+| ----------------------- | ----------------------------------------------------------------- |
+| **Strategy ID pattern** | `DEFI_BASIS_{ASSET}` (e.g. ETH)                                   |
+| **Asset class**         | DeFi                                                              |
+| **Archetype**           | Basis — long spot (or spot-like) + short perpetual, delta-neutral |
 
 **Overview:** Earns **perp funding** when the perpetual trades rich vs spot; maintains delta near zero via spot long vs perp short. Primary signal is **funding rate** and **basis** vs spot.
 
 **Instruments (typical)**
 
-| Pattern | Venue family | Role |
-| --- | --- | --- |
-| Spot / spot-like ETH (or configured asset) | DEX (Uniswap-style) or CEX spot | Long delta leg |
-| `HYPERLIQUID:PERPETUAL:ETH-USD` (or configured perp) | Perp venue | Short hedge, funding receiver/payer |
+| Pattern                                              | Venue family                    | Role                                |
+| ---------------------------------------------------- | ------------------------------- | ----------------------------------- |
+| Spot / spot-like ETH (or configured asset)           | DEX (Uniswap-style) or CEX spot | Long delta leg                      |
+| `HYPERLIQUID:PERPETUAL:ETH-USD` (or configured perp) | Perp venue                      | Short hedge, funding receiver/payer |
 
 **Key features consumed**
 
-| Feature | Source (logical) | Trigger / SLA | Used for |
-| --- | --- | --- | --- |
-| `funding_rate` | features-delta-one | New 1H candle (or venue publish) | Enter / scale / exit funding carry |
-| `basis_spot_perp` | features-delta-one | With funding update | Rich/cheap perp vs spot |
-| `eth_spot_price` (or asset) | features-delta-one | Candle | Sizing, MTM |
-| `realized_vol` | features-volatility | Periodic | Risk / position limits |
+| Feature                     | Source (logical)    | Trigger / SLA                    | Used for                           |
+| --------------------------- | ------------------- | -------------------------------- | ---------------------------------- |
+| `funding_rate`              | features-delta-one  | New 1H candle (or venue publish) | Enter / scale / exit funding carry |
+| `basis_spot_perp`           | features-delta-one  | With funding update              | Rich/cheap perp vs spot            |
+| `eth_spot_price` (or asset) | features-delta-one  | Candle                           | Sizing, MTM                        |
+| `realized_vol`              | features-volatility | Periodic                         | Risk / position limits             |
 
 **PnL attribution**
 
-| Component | Settlement | Mechanism |
-| --- | --- | --- |
-| `funding_pnl` | Per funding interval | `position_size * funding_rate * time` |
-| `basis_pnl` | MTM | Mark change on spot vs perp spread |
-| `trading_pnl` | Realized | Rebalance legs, roll, fees |
-| `transaction_costs` | Per fill | DEX gas + swap fees; perp fees |
+| Component           | Settlement           | Mechanism                             |
+| ------------------- | -------------------- | ------------------------------------- |
+| `funding_pnl`       | Per funding interval | `position_size * funding_rate * time` |
+| `basis_pnl`         | MTM                  | Mark change on spot vs perp spread    |
+| `trading_pnl`       | Realized             | Rebalance legs, roll, fees            |
+| `transaction_costs` | Per fill             | DEX gas + swap fees; perp fees        |
 
 Balance-based truth: `total_pnl ≈ balance - initial` (attribution should reconcile within ~2% annualized per platform docs).
 
 **Risk profile targets (typical doc ranges)**
 
-| Metric | Target | Notes |
-| --- | --- | --- |
-| Annual return | 8–25% | Funding regime dependent |
-| Sharpe | 1.5+ | Smooth if delta-neutral holds |
-| Max drawdown | 15% | Basis blowout, negative funding persistence |
-| Leverage | 1–3x notional | Config caps |
+| Metric        | Target        | Notes                                       |
+| ------------- | ------------- | ------------------------------------------- |
+| Annual return | 8–25%         | Funding regime dependent                    |
+| Sharpe        | 1.5+          | Smooth if delta-neutral holds               |
+| Max drawdown  | 15%           | Basis blowout, negative funding persistence |
+| Leverage      | 1–3x notional | Config caps                                 |
 
 **Latency**
 
-| Segment | p50 / p99 (order of magnitude) | Co-lo? |
-| --- | --- | --- |
-| Feature → strategy | ~1s / ~5s (hourly candle driven) | No |
-| Strategy → instruction | ~100ms / ~500ms | No |
-| Instruction → fill (perp) | ~100ms / ~500ms | Optional for Tier-1 perps |
-| **E2E** | **~1.2s / ~6s** | **No** (not HFT) |
+| Segment                   | p50 / p99 (order of magnitude)   | Co-lo?                    |
+| ------------------------- | -------------------------------- | ------------------------- |
+| Feature → strategy        | ~1s / ~5s (hourly candle driven) | No                        |
+| Strategy → instruction    | ~100ms / ~500ms                  | No                        |
+| Instruction → fill (perp) | ~100ms / ~500ms                  | Optional for Tier-1 perps |
+| **E2E**                   | **~1.2s / ~6s**                  | **No** (not HFT)          |
 
 **Execution & rebalancing**
 
@@ -165,21 +165,21 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 **Exposure subscriptions (conceptual)**
 
-| Instrument pattern | Exposure type | Used for |
-| --- | --- | --- |
-| Spot ETH | Inventory / notional | Delta, basis |
-| Perp ETH-USD | Perp notional + funding | Funding PnL, leverage |
+| Instrument pattern | Exposure type           | Used for              |
+| ------------------ | ----------------------- | --------------------- |
+| Spot ETH           | Inventory / notional    | Delta, basis          |
+| Perp ETH-USD       | Perp notional + funding | Funding PnL, leverage |
 
 **Risk type subscriptions**
 
-| Risk type | Subscribed? | Typical action |
-| --- | --- | --- |
-| `delta` | Yes | Resize hedge |
-| `funding` | Yes | Scale / exit |
-| `basis` | Yes | Reduce if structural break |
-| `liquidity` | Yes | Widen slippage or pause |
-| `protocol_risk` / `venue_protocol` | Yes | Pause |
-| `aave_liquidation` | No | N/A (no Aave in pure basis) |
+| Risk type                          | Subscribed? | Typical action              |
+| ---------------------------------- | ----------- | --------------------------- |
+| `delta`                            | Yes         | Resize hedge                |
+| `funding`                          | Yes         | Scale / exit                |
+| `basis`                            | Yes         | Reduce if structural break  |
+| `liquidity`                        | Yes         | Widen slippage or pause     |
+| `protocol_risk` / `venue_protocol` | Yes         | Pause                       |
+| `aave_liquidation`                 | No          | N/A (no Aave in pure basis) |
 
 **Margin & liquidation:** Perp **margin** applies on short leg; spot leg **no** DeFi health factor unless borrowed. Liquidation = perp margin breach on hedge venue.
 
@@ -195,46 +195,46 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 ### 6.2 Staked basis (LST + short perp)
 
-| Field | Value |
-| --- | --- |
-| **Strategy ID pattern** | `DEFI_STAKED_BASIS_{LST}` |
-| **Archetype** | LST carry + perp hedge (delta-neutral) |
+| Field                   | Value                                  |
+| ----------------------- | -------------------------------------- |
+| **Strategy ID pattern** | `DEFI_STAKED_BASIS_{LST}`              |
+| **Archetype**           | LST carry + perp hedge (delta-neutral) |
 
 **Overview:** Holds **LST** (e.g. weETH) for **staking yield** (exchange-rate appreciation) while **short perp** neutralizes ETH delta. PnL combines **funding**, **staking carry**, **LST discount/premium**, minus **fees**.
 
 **Instruments**
 
-| Leg | Example | Role |
-| --- | --- | --- |
-| LST | weETH (or rETH, stETH per config) | Staking yield (index / rate) |
-| Perp | `HYPERLIQUID:PERPETUAL:ETH-USD` | Delta hedge, funding |
+| Leg  | Example                           | Role                         |
+| ---- | --------------------------------- | ---------------------------- |
+| LST  | weETH (or rETH, stETH per config) | Staking yield (index / rate) |
+| Perp | `HYPERLIQUID:PERPETUAL:ETH-USD`   | Delta hedge, funding         |
 
 **Features**
 
-| Feature | Source | Used for |
-| --- | --- | --- |
-| `lst_eth_exchange_rate` / staking metrics | features-onchain | Yield, depeg watch |
-| `funding_rate`, `basis` | features-delta-one | Carry quality |
-| `eth_spot_price` | features-delta-one | Sizing, MTM |
+| Feature                                   | Source             | Used for           |
+| ----------------------------------------- | ------------------ | ------------------ |
+| `lst_eth_exchange_rate` / staking metrics | features-onchain   | Yield, depeg watch |
+| `funding_rate`, `basis`                   | features-delta-one | Carry quality      |
+| `eth_spot_price`                          | features-delta-one | Sizing, MTM        |
 
 **PnL attribution**
 
-| Component | Type | Notes |
-| --- | --- | --- |
+| Component           | Type                | Notes                           |
+| ------------------- | ------------------- | ------------------------------- |
 | `staking_yield_pnl` | Accrual / ER change | Not “APY display” — index-based |
-| `funding_pnl` | Interval | Same as basis |
-| `lst_depeg_pnl` | MTM | LST vs ETH basis risk |
-| `trading_pnl` | Realized | Rebalances |
-| `fees_gas` | Costs | DEX + perp + gas |
+| `funding_pnl`       | Interval            | Same as basis                   |
+| `lst_depeg_pnl`     | MTM                 | LST vs ETH basis risk           |
+| `trading_pnl`       | Realized            | Rebalances                      |
+| `fees_gas`          | Costs               | DEX + perp + gas                |
 
 **Risk targets (typical)**
 
-| Metric | Target | Notes |
-| --- | --- | --- |
-| Annual return | 10–30% | Staking + funding |
-| Sharpe | 1.5+ | Depeg is tail risk |
-| Max drawdown | 20% | LST depeg simultaneous with wrong-way funding |
-| Leverage | 1–2.5x | Lower than recursive |
+| Metric        | Target | Notes                                         |
+| ------------- | ------ | --------------------------------------------- |
+| Annual return | 10–30% | Staking + funding                             |
+| Sharpe        | 1.5+   | Depeg is tail risk                            |
+| Max drawdown  | 20%    | LST depeg simultaneous with wrong-way funding |
+| Leverage      | 1–2.5x | Lower than recursive                          |
 
 **Latency:** Similar to **6.1** (hourly / event on feature cadence); not co-lo dependent.
 
@@ -250,34 +250,34 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 ### 6.3 Aave V3 lending (pure supply yield)
 
-| Field | Value |
-| --- | --- |
-| **Pattern** | `DEFI_AAVE_SUPPLY_{ASSET}` |
+| Field         | Value                                        |
+| ------------- | -------------------------------------------- |
+| **Pattern**   | `DEFI_AAVE_SUPPLY_{ASSET}`                   |
 | **Archetype** | Money-market supply; **aToken** index growth |
 
 **Overview:** Supplies stablecoin (e.g. USDC) to **Aave V3**; earns via **liquidity index** increasing **aToken** balance. **No perp**; **no SOR** for core loop (deposit/withdraw direct).
 
 **Instruments**
 
-| Pattern | Role |
-| --- | --- |
-| `AAVE_V3:aUSDC` (conceptual) | Supply position |
-| Underlying stable | Deposit/withdraw |
+| Pattern                      | Role             |
+| ---------------------------- | ---------------- |
+| `AAVE_V3:aUSDC` (conceptual) | Supply position  |
+| Underlying stable            | Deposit/withdraw |
 
 **Features**
 
-| Feature | Used for |
-| --- | --- |
-| `aave_supply_apy` | Monitoring only — **not** PnL math |
-| `aave_utilization` | Rate regime |
-| `liquidity_index` / aToken rebasing | **Accrual** |
+| Feature                             | Used for                           |
+| ----------------------------------- | ---------------------------------- |
+| `aave_supply_apy`                   | Monitoring only — **not** PnL math |
+| `aave_utilization`                  | Rate regime                        |
+| `liquidity_index` / aToken rebasing | **Accrual**                        |
 
 **PnL**
 
-| Component | Settlement |
-| --- | --- |
+| Component          | Settlement             |
+| ------------------ | ---------------------- |
 | `interest_accrual` | Index growth on aToken |
-| `withdrawal_fee` | If any route fee |
+| `withdrawal_fee`   | If any route fee       |
 
 **Risk profile:** Low vol; targets often **single-digit %** APR; drawdowns from **depeg** (stable), **smart contract**, **governance**.
 
@@ -293,33 +293,33 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 ### 6.4 Recursive staked basis (flash + Aave + perp)
 
-| Field | Value |
-| --- | --- |
-| **Pattern** | `DEFI_RECURSIVE_BASIS_{CLIENT}` |
+| Field         | Value                                                               |
+| ------------- | ------------------------------------------------------------------- |
+| **Pattern**   | `DEFI_RECURSIVE_BASIS_{CLIENT}`                                     |
 | **Archetype** | Leveraged LST collateral, WETH debt, perp hedge; **atomic bundles** |
 
 **Overview:** **Flash loan** bootstraps or rebalances **weETH collateral** vs **WETH debt** on Aave, with **short perp** for delta. **Highest** operational and **liquidation** sensitivity among DeFi catalog strategies.
 
 **Instruments**
 
-| Pattern | Role |
-| --- | --- |
-| `AAVE_V3:A_TOKEN:*` (weETH) | Collateral, HF numerator |
-| `AAVE_V3:DEBT_TOKEN:*` (WETH) | Debt, HF denominator |
-| `HYPERLIQUID:PERPETUAL:*` | Hedge |
-| `WALLET:LST:*` | Staking yield tracking |
-| Morpho / flash source | Atomic liquidity |
+| Pattern                       | Role                     |
+| ----------------------------- | ------------------------ |
+| `AAVE_V3:A_TOKEN:*` (weETH)   | Collateral, HF numerator |
+| `AAVE_V3:DEBT_TOKEN:*` (WETH) | Debt, HF denominator     |
+| `HYPERLIQUID:PERPETUAL:*`     | Hedge                    |
+| `WALLET:LST:*`                | Staking yield tracking   |
+| Morpho / flash source         | Atomic liquidity         |
 
 **Features:** Health factor inputs, borrow **APR**, **weETH/ETH** rate, **funding**, pool liquidity for flash.
 
 **PnL**
 
-| Component | Notes |
-| --- | --- |
-| Staking (LST) | Collateral side |
-| Funding | Perp |
-| Borrow cost | WETH variable |
-| Trading / swap | Rebalances |
+| Component           | Notes                    |
+| ------------------- | ------------------------ |
+| Staking (LST)       | Collateral side          |
+| Funding             | Perp                     |
+| Borrow cost         | WETH variable            |
+| Trading / swap      | Rebalances               |
 | Liquidation penalty | If HF breaches in stress |
 
 **Risk targets:** Higher return band than 6.2 with **lower max drawdown tolerance** in ops (often stricter monitoring); leverage **~2–2.5x** typical doc range.
@@ -330,25 +330,25 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 **Exposure subscriptions (representative)**
 
-| Instrument pattern | Exposure type | Used for |
-| --- | --- | --- |
-| `AAVE_V3:A_TOKEN:*` | Collateral value | HF |
-| `AAVE_V3:DEBT_TOKEN:*` | Debt value | HF |
-| `HYPERLIQUID:PERPETUAL:*` | Perp notional | Net delta |
-| `WALLET:LST:*` | LST appreciation | Yield |
+| Instrument pattern        | Exposure type    | Used for  |
+| ------------------------- | ---------------- | --------- |
+| `AAVE_V3:A_TOKEN:*`       | Collateral value | HF        |
+| `AAVE_V3:DEBT_TOKEN:*`    | Debt value       | HF        |
+| `HYPERLIQUID:PERPETUAL:*` | Perp notional    | Net delta |
+| `WALLET:LST:*`            | LST appreciation | Yield     |
 
 **Risk type subscriptions (representative)**
 
-| Risk type | Critical? | Typical threshold / action |
-| --- | --- | --- |
-| `aave_liquidation` | **YES** | HF below 1.5: deleverage; HF below 1.2: emergency exit |
-| `delta` | Yes | Drift vs band → resize perp |
-| `funding` | Signal | Negative net carry |
-| `borrow_cost` | Yes | Spike erodes net |
-| `staking_yield` | Signal | Below minimum |
-| `protocol_risk` | Yes | weETH depeg, Morpho liquidity |
-| `venue_protocol` | Yes | HL / Aave governance or halts |
-| `liquidity` | Yes | Flash availability |
+| Risk type          | Critical? | Typical threshold / action                             |
+| ------------------ | --------- | ------------------------------------------------------ |
+| `aave_liquidation` | **YES**   | HF below 1.5: deleverage; HF below 1.2: emergency exit |
+| `delta`            | Yes       | Drift vs band → resize perp                            |
+| `funding`          | Signal    | Negative net carry                                     |
+| `borrow_cost`      | Yes       | Spike erodes net                                       |
+| `staking_yield`    | Signal    | Below minimum                                          |
+| `protocol_risk`    | Yes       | weETH depeg, Morpho liquidity                          |
+| `venue_protocol`   | Yes       | HL / Aave governance or halts                          |
+| `liquidity`        | Yes       | Flash availability                                     |
 
 **Custom risks (documented intent):** borrow rate sensitivity; **HF degradation velocity**; flash liquidity; recursive leverage stress; **depeg cascade** scenarios.
 
@@ -360,8 +360,8 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 ### 6.5 AMM LP (concentrated / StableSwap)
 
-| Field | Value |
-| --- | --- |
+| Field         | Value                                  |
+| ------------- | -------------------------------------- |
 | **Archetype** | AMM liquidity provision; **fees + IL** |
 
 **Instruments:** Uniswap V3/V4 positions, Curve / Balancer pools (config-specific).
@@ -370,11 +370,11 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 **PnL**
 
-| Component | Type |
-| --- | --- |
-| `fee_income` | Accumulated fees |
-| `impermanent_loss` | MTM vs HODL |
-| `gas` | Add/remove/rebalance |
+| Component          | Type                 |
+| ------------------ | -------------------- |
+| `fee_income`       | Accumulated fees     |
+| `impermanent_loss` | MTM vs HODL          |
+| `gas`              | Add/remove/rebalance |
 
 **Risk:** `delta` (range), `concentration`, `protocol_risk`, **`inventory`** (token mix), **`gamma`**-like exposure in tight ranges (conceptual).
 
@@ -436,32 +436,32 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 **Features**
 
-| Feature | Used for |
-| --- | --- |
-| `mid_price` | Quote center |
-| `bid_ask_spread` | Width |
-| `realized_vol` | Widen in high vol |
-| `orderbook_imbalance` | Skew |
-| `inventory_skew` | Risk reduction |
+| Feature               | Used for          |
+| --------------------- | ----------------- |
+| `mid_price`           | Quote center      |
+| `bid_ask_spread`      | Width             |
+| `realized_vol`        | Widen in high vol |
+| `orderbook_imbalance` | Skew              |
+| `inventory_skew`      | Risk reduction    |
 
 **PnL**
 
-| Component | Type |
-| --- | --- |
-| `spread_pnl` | Per fill |
-| `inventory_pnl` | MTM |
-| `trading_pnl` | Inventory dumps |
-| `transaction_costs` | Fees |
+| Component           | Type            |
+| ------------------- | --------------- |
+| `spread_pnl`        | Per fill        |
+| `inventory_pnl`     | MTM             |
+| `trading_pnl`       | Inventory dumps |
+| `transaction_costs` | Fees            |
 
 **Risk targets (doc-style):** Return 15–30% ann; Sharpe **3+**; max DD ~5%; **1x** leverage spot MM.
 
 **Latency**
 
-| Segment | p50 / p99 |
-| --- | --- |
-| Feature → strategy | ~5ms / ~20ms |
-| Instruction → order | ~10ms / ~50ms |
-| **E2E** | **~26ms / ~125ms** |
+| Segment             | p50 / p99          |
+| ------------------- | ------------------ |
+| Feature → strategy  | ~5ms / ~20ms       |
+| Instruction → order | ~10ms / ~50ms      |
+| **E2E**             | **~26ms / ~125ms** |
 
 **Co-location:** **Often YES** for competitive Tier-1 crypto CLOB.
 
@@ -493,12 +493,12 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 **Latency**
 
-| Segment | p50 / p99 |
-| --- | --- |
-| Feature → strategy | ~30ms / ~150ms |
-| ML inference | ~50ms / ~200ms |
-| Instruction → fill | ~100ms / ~500ms |
-| **E2E** | **~155ms / ~720ms** |
+| Segment            | p50 / p99           |
+| ------------------ | ------------------- |
+| Feature → strategy | ~30ms / ~150ms      |
+| ML inference       | ~50ms / ~200ms      |
+| Instruction → fill | ~100ms / ~500ms     |
+| **E2E**            | **~155ms / ~720ms** |
 
 **Execution:** IBKR / FIX **futures**; **no** atomic multi-leg default; **rebalance every N bars** when signal persists.
 
@@ -538,15 +538,15 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 **Greeks risk table (subscribed)**
 
-| Risk | Action on breach |
-| --- | --- |
-| `delta` | Hedge underlying |
-| `gamma` | Reduce ATM cluster |
-| `vega` | Cut vol exposure |
-| `theta` | Monitor decay PnL |
+| Risk              | Action on breach              |
+| ----------------- | ----------------------------- |
+| `delta`           | Hedge underlying              |
+| `gamma`           | Reduce ATM cluster            |
+| `vega`            | Cut vol exposure              |
+| `theta`           | Monitor decay PnL             |
 | `volga` / `vanna` | Skew / vol-of-vol adjustments |
-| `venue_protocol` | Cancel all |
-| `concentration` | Reduce strike concentration |
+| `venue_protocol`  | Cancel all                    |
+| `concentration`   | Reduce strike concentration   |
 
 **Risk targets:** Return ~20–40%; Sharpe 2+; max DD ~10%; capital per underlying ~$5M doc-style.
 
@@ -600,37 +600,37 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 ### 9.4 Halftime ML (two-phase) — detailed
 
-| Field | Value |
-| --- | --- |
+| Field       | Value                     |
+| ----------- | ------------------------- |
 | **Pattern** | `SPORTS_HT_ML_{MODEL_ID}` |
-| **Phases** | Pre-game + halftime |
+| **Phases**  | Pre-game + halftime       |
 
 **Instruments**
 
-| Key | Role |
-| --- | --- |
-| `SPORTS:HT_ML:{MODEL_ID}` | Strategy anchor |
-| `BETFAIR:EXCHANGE:{EVENT_ID}` | BACK/LAY |
-| `PINNACLE:BOOKMAKER:{EVENT_ID}` | BACK |
-| `BET365:BOOKMAKER:{EVENT_ID}` | BACK |
+| Key                             | Role            |
+| ------------------------------- | --------------- |
+| `SPORTS:HT_ML:{MODEL_ID}`       | Strategy anchor |
+| `BETFAIR:EXCHANGE:{EVENT_ID}`   | BACK/LAY        |
+| `PINNACLE:BOOKMAKER:{EVENT_ID}` | BACK            |
+| `BET365:BOOKMAKER:{EVENT_ID}`   | BACK            |
 
 **Features**
 
-| Feature | SLA (order) | Phase |
-| --- | --- | --- |
-| `team_form_5`, `head_to_head`, `xg_rolling` | ~60s | Pre |
-| `odds_movement` | ~10s | Pre |
-| `possession_pct`, `shots_on_target`, `ht_score` | ~5–10s | Halftime |
-| `ml_prediction_probs` | ~30s | Both |
+| Feature                                         | SLA (order) | Phase    |
+| ----------------------------------------------- | ----------- | -------- |
+| `team_form_5`, `head_to_head`, `xg_rolling`     | ~60s        | Pre      |
+| `odds_movement`                                 | ~10s        | Pre      |
+| `possession_pct`, `shots_on_target`, `ht_score` | ~5–10s      | Halftime |
+| `ml_prediction_probs`                           | ~30s        | Both     |
 
 **PnL**
 
-| Component | Type |
-| --- | --- |
+| Component      | Type          |
+| -------------- | ------------- |
 | `pre_game_pnl` | Sports settle |
 | `halftime_pnl` | Sports settle |
-| `commission` | Exchange fee |
-| `closing_line` | CLV tracking |
+| `commission`   | Exchange fee  |
+| `closing_line` | CLV tracking  |
 
 **Risk targets:** ROI 5–15% ann on bankroll; Sharpe 1.5+; max DD **20%**; max stake **~5%** bankroll; scalability **~$100K** doc-class.
 
@@ -662,11 +662,11 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 **Three roles (same venues, different jobs):**
 
-| Role | Operator meaning | UI may show |
-| --- | --- | --- |
-| **Features source** | PM prices feed **other** strategies (e.g. crowd sentiment) | **Feature** / **signal** cards referencing Polymarket/Kalshi |
-| **Execution venue** | Trade **YES/NO** directly | **Positions** in binary contracts |
-| **Arb surface** | Same economic event, **two platforms** or vs traditional equivalent | **Arb** pairs, **implied prob** comparison |
+| Role                | Operator meaning                                                    | UI may show                                                  |
+| ------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Features source** | PM prices feed **other** strategies (e.g. crowd sentiment)          | **Feature** / **signal** cards referencing Polymarket/Kalshi |
+| **Execution venue** | Trade **YES/NO** directly                                           | **Positions** in binary contracts                            |
+| **Arb surface**     | Same economic event, **two platforms** or vs traditional equivalent | **Arb** pairs, **implied prob** comparison                   |
 
 **Classification dimensions (intent):**
 
@@ -684,11 +684,11 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 ## 11. Kelly criterion (sports sizing)
 
-| Aspect | Detail |
-| --- | --- |
-| **Role** | **Policy inside** value / halftime / generic sports ML — not always its own strategy row |
-| **Inputs** | Model prob, implied prob, **fractional Kelly** (e.g. 0.5), **max stake %** |
-| **Risk** | Without cap, Kelly tail risk — UI should show **fraction** and **max bet** |
+| Aspect     | Detail                                                                                   |
+| ---------- | ---------------------------------------------------------------------------------------- |
+| **Role**   | **Policy inside** value / halftime / generic sports ML — not always its own strategy row |
+| **Inputs** | Model prob, implied prob, **fractional Kelly** (e.g. 0.5), **max stake %**               |
+| **Risk**   | Without cap, Kelly tail risk — UI should show **fraction** and **max bet**               |
 
 **UI:** **Kelly** or **stake sizing** section; **max bet %** of bankroll; stakes scale with **edge** in mock tables.
 
@@ -698,16 +698,16 @@ Balance-based truth: `total_pnl ≈ balance - initial` (attribution should recon
 
 For **each** family above, record **PASS / PARTIAL / FAIL**:
 
-| Check | Question |
-| --- | --- |
-| **Discover** | Row, template, or filter maps clearly to this family? |
-| **Shard** | DeFi / CeFi / Sports / TradFi / OnChain / Prediction correct? |
-| **Inputs** | Right **feature families** (funding, LST, Aave index, odds, ML, vol surface, PM sentiment)? |
-| **Execution** | Venue families credible (DEX+perp, Aave, HL, IBKR, Betfair, Polymarket, Kalshi)? |
-| **Risk** | Right dimensions (delta/basis, **HF**, greeks, **suspension**, drawdown, arb legging)? |
-| **Attribution** | PnL buckets match strategy (funding, staking, borrow, directional, **pre-game vs halftime**, fees)? |
+| Check             | Question                                                                                            |
+| ----------------- | --------------------------------------------------------------------------------------------------- |
+| **Discover**      | Row, template, or filter maps clearly to this family?                                               |
+| **Shard**         | DeFi / CeFi / Sports / TradFi / OnChain / Prediction correct?                                       |
+| **Inputs**        | Right **feature families** (funding, LST, Aave index, odds, ML, vol surface, PM sentiment)?         |
+| **Execution**     | Venue families credible (DEX+perp, Aave, HL, IBKR, Betfair, Polymarket, Kalshi)?                    |
+| **Risk**          | Right dimensions (delta/basis, **HF**, greeks, **suspension**, drawdown, arb legging)?              |
+| **Attribution**   | PnL buckets match strategy (funding, staking, borrow, directional, **pre-game vs halftime**, fees)? |
 | **Latency story** | UI does not imply **tick-scrape** in strategy layer; MM / options show **fast** path where relevant |
-| **Consistency** | Numbers align across list, detail, trading, reports |
+| **Consistency**   | Numbers align across list, detail, trading, reports                                                 |
 
 ---
 

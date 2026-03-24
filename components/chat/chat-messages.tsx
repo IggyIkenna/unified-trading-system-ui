@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import type { ChatMessage } from "@/hooks/api/use-chat"
-import { Bot, User } from "lucide-react"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import type { ChatMessage } from "@/hooks/api/use-chat";
+import { Bot, User } from "lucide-react";
 
 interface ChatMessagesProps {
-  messages: ChatMessage[]
-  isStreaming: boolean
+  messages: ChatMessage[];
+  isStreaming: boolean;
 }
 
 export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
-  const scrollRef = React.useRef<HTMLDivElement>(null)
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom on new messages
   React.useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages])
+  }, [messages]);
 
   if (messages.length === 0) {
     return (
@@ -33,7 +33,7 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
           </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -61,13 +61,14 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
                 : "bg-muted text-foreground",
             )}
           >
-            {msg.content || (isStreaming && msg.role === "assistant" ? (
-              <span className="inline-flex gap-1">
-                <span className="size-1.5 rounded-full bg-current animate-bounce [animation-delay:0ms]" />
-                <span className="size-1.5 rounded-full bg-current animate-bounce [animation-delay:150ms]" />
-                <span className="size-1.5 rounded-full bg-current animate-bounce [animation-delay:300ms]" />
-              </span>
-            ) : null)}
+            {msg.content ||
+              (isStreaming && msg.role === "assistant" ? (
+                <span className="inline-flex gap-1">
+                  <span className="size-1.5 rounded-full bg-current animate-bounce [animation-delay:0ms]" />
+                  <span className="size-1.5 rounded-full bg-current animate-bounce [animation-delay:150ms]" />
+                  <span className="size-1.5 rounded-full bg-current animate-bounce [animation-delay:300ms]" />
+                </span>
+              ) : null)}
             <WhitespacePreserved text={msg.content} />
           </div>
           {msg.role === "user" && (
@@ -80,14 +81,14 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 function WhitespacePreserved({ text }: { text: string }) {
-  if (!text) return null
+  if (!text) return null;
 
   // Split on double newlines for paragraphs, preserve single newlines
-  const paragraphs = text.split("\n\n")
+  const paragraphs = text.split("\n\n");
   return (
     <>
       {paragraphs.map((para, i) => (
@@ -103,5 +104,5 @@ function WhitespacePreserved({ text }: { text: string }) {
         </span>
       ))}
     </>
-  )
+  );
 }

@@ -4,6 +4,7 @@
 
 Internal and external users use the SAME platform, SAME tools, SAME pages.
 The only difference is:
+
 - **What services are visible** (based on role/subscription)
 - **What data is scoped** (based on org)
 - **The entry experience** (marketing vs subscription management)
@@ -140,6 +141,7 @@ After login → /overview (Service Hub) with entitlements applied.
 ## Post-Login: What Each Role Sees
 
 ### Internal (Admin/Trader)
+
 ```
 /overview:
   Quick Actions: [Trading] [Risk] [Backtest] [ML] [Admin] [DevOps]
@@ -149,6 +151,7 @@ After login → /overview (Service Hub) with entitlements applied.
 ```
 
 ### External Client (Full Subscription)
+
 ```
 /overview:
   Subscription Banner: "Alpha Capital — Full Suite"
@@ -164,6 +167,7 @@ After login → /overview (Service Hub) with entitlements applied.
 ```
 
 ### External Client (Data Only)
+
 ```
 /overview:
   Subscription Banner: "Beta Fund — Data Basic"

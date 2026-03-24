@@ -93,7 +93,14 @@
           "file": "app/(platform)/services/research/ml/page.tsx",
           "state": "REAL",
           "lines": 599,
-          "api_hooks": ["useExperiments", "useModelFamilies", "useTrainingRuns", "useFeatureProvenance", "useMLMonitoring", "useCreateTrainingJob"]
+          "api_hooks": [
+            "useExperiments",
+            "useModelFamilies",
+            "useTrainingRuns",
+            "useFeatureProvenance",
+            "useMLMonitoring",
+            "useCreateTrainingJob"
+          ]
         },
         {
           "label": "Strategies",
@@ -101,7 +108,11 @@
           "file": "app/(platform)/services/research/strategy/backtests/page.tsx",
           "state": "REAL",
           "lines": 740,
-          "api_hooks": ["useStrategyBacktests", "useStrategyTemplates", "useCreateBacktest"]
+          "api_hooks": [
+            "useStrategyBacktests",
+            "useStrategyTemplates",
+            "useCreateBacktest"
+          ]
         },
         {
           "label": "Backtests",
@@ -137,21 +148,86 @@
         }
       ],
       "ml_sub_tabs": [
-        { "route": "/services/research/ml/overview", "file": "app/(platform)/services/research/ml/overview/page.tsx", "state": "REAL", "lines": 642 },
-        { "route": "/services/research/ml/experiments", "file": "app/(platform)/services/research/ml/experiments/page.tsx", "state": "REAL", "lines": 736 },
-        { "route": "/services/research/ml/experiments/[id]", "file": "app/(platform)/services/research/ml/experiments/[id]/page.tsx", "state": "REAL", "lines": 672 },
-        { "route": "/services/research/ml/training", "file": "app/(platform)/services/research/ml/training/page.tsx", "state": "REAL", "lines": 625 },
-        { "route": "/services/research/ml/features", "file": "app/(platform)/services/research/ml/features/page.tsx", "state": "REAL", "lines": 678 },
-        { "route": "/services/research/ml/registry", "file": "app/(platform)/services/research/ml/registry/page.tsx", "state": "REAL", "lines": 643 },
-        { "route": "/services/research/ml/monitoring", "file": "app/(platform)/services/research/ml/monitoring/page.tsx", "state": "REAL", "lines": 537 },
-        { "route": "/services/research/ml/deploy", "file": "app/(platform)/services/research/ml/deploy/page.tsx", "state": "REAL", "lines": 474 },
-        { "route": "/services/research/ml/governance", "file": "app/(platform)/services/research/ml/governance/page.tsx", "state": "REAL", "lines": 510 },
-        { "route": "/services/research/ml/config", "file": "app/(platform)/services/research/ml/config/page.tsx", "state": "REAL", "lines": 611 }
+        {
+          "route": "/services/research/ml/overview",
+          "file": "app/(platform)/services/research/ml/overview/page.tsx",
+          "state": "REAL",
+          "lines": 642
+        },
+        {
+          "route": "/services/research/ml/experiments",
+          "file": "app/(platform)/services/research/ml/experiments/page.tsx",
+          "state": "REAL",
+          "lines": 736
+        },
+        {
+          "route": "/services/research/ml/experiments/[id]",
+          "file": "app/(platform)/services/research/ml/experiments/[id]/page.tsx",
+          "state": "REAL",
+          "lines": 672
+        },
+        {
+          "route": "/services/research/ml/training",
+          "file": "app/(platform)/services/research/ml/training/page.tsx",
+          "state": "REAL",
+          "lines": 625
+        },
+        {
+          "route": "/services/research/ml/features",
+          "file": "app/(platform)/services/research/ml/features/page.tsx",
+          "state": "REAL",
+          "lines": 678
+        },
+        {
+          "route": "/services/research/ml/registry",
+          "file": "app/(platform)/services/research/ml/registry/page.tsx",
+          "state": "REAL",
+          "lines": 643
+        },
+        {
+          "route": "/services/research/ml/monitoring",
+          "file": "app/(platform)/services/research/ml/monitoring/page.tsx",
+          "state": "REAL",
+          "lines": 537
+        },
+        {
+          "route": "/services/research/ml/deploy",
+          "file": "app/(platform)/services/research/ml/deploy/page.tsx",
+          "state": "REAL",
+          "lines": 474
+        },
+        {
+          "route": "/services/research/ml/governance",
+          "file": "app/(platform)/services/research/ml/governance/page.tsx",
+          "state": "REAL",
+          "lines": 510
+        },
+        {
+          "route": "/services/research/ml/config",
+          "file": "app/(platform)/services/research/ml/config/page.tsx",
+          "state": "REAL",
+          "lines": 611
+        }
       ],
       "strategy_sub_tabs": [
-        { "route": "/services/research/strategy/overview", "file": "app/(platform)/services/research/strategy/overview/page.tsx", "state": "REAL", "lines": 638 },
-        { "route": "/services/research/strategy/results", "file": "app/(platform)/services/research/strategy/results/page.tsx", "state": "REAL", "lines": 570 },
-        { "route": "/services/research/strategy/heatmap", "file": "app/(platform)/services/research/strategy/heatmap/page.tsx", "state": "REAL", "lines": 429 }
+        {
+          "route": "/services/research/strategy/overview",
+          "file": "app/(platform)/services/research/strategy/overview/page.tsx",
+          "state": "REAL",
+          "lines": 638
+        },
+        {
+          "route": "/services/research/strategy/results",
+          "file": "app/(platform)/services/research/strategy/results/page.tsx",
+          "state": "REAL",
+          "lines": 570
+        },
+        {
+          "route": "/services/research/strategy/heatmap",
+          "file": "app/(platform)/services/research/strategy/heatmap/page.tsx",
+          "state": "REAL",
+          "lines": 429
+        }
       ]
     },
     "promote": {
@@ -160,10 +236,30 @@
       "tab_set": "PROMOTE_TABS",
       "live_asof_toggle": false,
       "tabs": [
-        { "label": "Review Queue", "route": "/services/research/strategy/candidates", "state": "REAL", "lines": 566 },
-        { "label": "Execution Analysis", "route": "/services/execution/tca", "state": "REAL", "lines": 405 },
-        { "label": "Risk Review", "route": "/services/trading/risk", "state": "REAL", "lines": 1967 },
-        { "label": "Approval Status", "route": "/services/research/strategy/handoff", "state": "REAL", "lines": 465 }
+        {
+          "label": "Review Queue",
+          "route": "/services/research/strategy/candidates",
+          "state": "REAL",
+          "lines": 566
+        },
+        {
+          "label": "Execution Analysis",
+          "route": "/services/execution/tca",
+          "state": "REAL",
+          "lines": 405
+        },
+        {
+          "label": "Risk Review",
+          "route": "/services/trading/risk",
+          "state": "REAL",
+          "lines": 1967
+        },
+        {
+          "label": "Approval Status",
+          "route": "/services/research/strategy/handoff",
+          "state": "REAL",
+          "lines": 465
+        }
       ]
     },
     "trading": {
@@ -181,7 +277,18 @@
           "file": "app/(platform)/services/trading/overview/page.tsx",
           "state": "REAL",
           "lines": 555,
-          "api_hooks": ["useTradingOrgs", "useTradingClients", "useTradingPnl", "useTradingTimeseries", "useTradingPerformance", "useTradingLiveBatchDelta", "useAlerts", "usePositions", "useServiceHealth", "useWebSocket"],
+          "api_hooks": [
+            "useTradingOrgs",
+            "useTradingClients",
+            "useTradingPnl",
+            "useTradingTimeseries",
+            "useTradingPerformance",
+            "useTradingLiveBatchDelta",
+            "useAlerts",
+            "usePositions",
+            "useServiceHealth",
+            "useWebSocket"
+          ],
           "description": "Command center — P&L, strategy performance, alerts, health, live batch comparison"
         },
         {
@@ -190,7 +297,17 @@
           "file": "app/(platform)/services/trading/terminal/page.tsx",
           "state": "REAL",
           "lines": 1090,
-          "api_hooks": ["useTickers", "useCandles", "useOrderBook", "useInstruments", "usePositions", "useAlerts", "useStrategyPerformance", "useBalances", "useWebSocket"],
+          "api_hooks": [
+            "useTickers",
+            "useCandles",
+            "useOrderBook",
+            "useInstruments",
+            "usePositions",
+            "useAlerts",
+            "useStrategyPerformance",
+            "useBalances",
+            "useWebSocket"
+          ],
           "description": "Live trading — candlestick chart, order book, order entry, manual trading panel"
         },
         {
@@ -215,7 +332,11 @@
           "file": "app/(platform)/services/trading/book/page.tsx",
           "state": "REAL",
           "lines": 770,
-          "api_hooks": ["usePlaceOrder", "usePreTradeCheck", "useOrganizationsList"]
+          "api_hooks": [
+            "usePlaceOrder",
+            "usePreTradeCheck",
+            "useOrganizationsList"
+          ]
         },
         {
           "label": "Accounts",
@@ -231,15 +352,44 @@
           "file": "app/(platform)/services/trading/pnl/page.tsx",
           "state": "REAL",
           "lines": 2162,
-          "api_hooks": ["useTickers", "useStrategyPerformance", "useOrganizationsList"]
+          "api_hooks": [
+            "useTickers",
+            "useStrategyPerformance",
+            "useOrganizationsList"
+          ]
         }
       ],
       "sub_routes": [
-        { "route": "/services/trading/strategies", "file": "app/(platform)/services/trading/strategies/page.tsx", "state": "REAL", "lines": 561 },
-        { "route": "/services/trading/strategies/grid", "file": "app/(platform)/services/trading/strategies/grid/page.tsx", "state": "REAL", "lines": 270 },
-        { "route": "/services/trading/strategies/[id]", "file": "app/(platform)/services/trading/strategies/[id]/page.tsx", "state": "REAL", "lines": 764 },
-        { "route": "/services/trading/alerts", "file": "app/(platform)/services/trading/alerts/page.tsx", "state": "REAL", "lines": 806 },
-        { "route": "/services/trading/risk", "file": "app/(platform)/services/trading/risk/page.tsx", "state": "REAL", "lines": 1967 }
+        {
+          "route": "/services/trading/strategies",
+          "file": "app/(platform)/services/trading/strategies/page.tsx",
+          "state": "REAL",
+          "lines": 561
+        },
+        {
+          "route": "/services/trading/strategies/grid",
+          "file": "app/(platform)/services/trading/strategies/grid/page.tsx",
+          "state": "REAL",
+          "lines": 270
+        },
+        {
+          "route": "/services/trading/strategies/[id]",
+          "file": "app/(platform)/services/trading/strategies/[id]/page.tsx",
+          "state": "REAL",
+          "lines": 764
+        },
+        {
+          "route": "/services/trading/alerts",
+          "file": "app/(platform)/services/trading/alerts/page.tsx",
+          "state": "REAL",
+          "lines": 806
+        },
+        {
+          "route": "/services/trading/risk",
+          "file": "app/(platform)/services/trading/risk/page.tsx",
+          "state": "REAL",
+          "lines": 1967
+        }
       ]
     },
     "execution": {
@@ -250,13 +400,60 @@
       "live_asof_toggle": true,
       "api_gateway": "unified-trading-api",
       "tabs": [
-        { "label": "Analytics", "route": "/services/execution/overview", "state": "REAL", "lines": 372, "api_hooks": ["useAlgos", "useExecutionMetrics", "useOrders", "useVenues"] },
-        { "label": "Algos", "route": "/services/execution/algos", "state": "REAL", "lines": 330, "api_hooks": ["useAlgos", "useExecutionBacktests"] },
-        { "label": "Venues", "route": "/services/execution/venues", "state": "REAL", "lines": 325, "api_hooks": ["useVenues"] },
-        { "label": "TCA", "route": "/services/execution/tca", "state": "REAL", "lines": 405, "api_hooks": ["useOrders"] },
-        { "label": "Benchmarks", "route": "/services/execution/benchmarks", "state": "REAL", "lines": 362, "api_hooks": ["useAlgos", "useOrders"] },
-        { "label": "Candidates", "route": "/services/execution/candidates", "state": "REAL", "lines": 262, "api_hooks": ["useExecutionCandidates"] },
-        { "label": "Handoff", "route": "/services/execution/handoff", "state": "REAL", "lines": 335, "api_hooks": ["useExecutionHandoff"] }
+        {
+          "label": "Analytics",
+          "route": "/services/execution/overview",
+          "state": "REAL",
+          "lines": 372,
+          "api_hooks": [
+            "useAlgos",
+            "useExecutionMetrics",
+            "useOrders",
+            "useVenues"
+          ]
+        },
+        {
+          "label": "Algos",
+          "route": "/services/execution/algos",
+          "state": "REAL",
+          "lines": 330,
+          "api_hooks": ["useAlgos", "useExecutionBacktests"]
+        },
+        {
+          "label": "Venues",
+          "route": "/services/execution/venues",
+          "state": "REAL",
+          "lines": 325,
+          "api_hooks": ["useVenues"]
+        },
+        {
+          "label": "TCA",
+          "route": "/services/execution/tca",
+          "state": "REAL",
+          "lines": 405,
+          "api_hooks": ["useOrders"]
+        },
+        {
+          "label": "Benchmarks",
+          "route": "/services/execution/benchmarks",
+          "state": "REAL",
+          "lines": 362,
+          "api_hooks": ["useAlgos", "useOrders"]
+        },
+        {
+          "label": "Candidates",
+          "route": "/services/execution/candidates",
+          "state": "REAL",
+          "lines": 262,
+          "api_hooks": ["useExecutionCandidates"]
+        },
+        {
+          "label": "Handoff",
+          "route": "/services/execution/handoff",
+          "state": "REAL",
+          "lines": 335,
+          "api_hooks": ["useExecutionHandoff"]
+        }
       ]
     },
     "observe": {
@@ -267,11 +464,62 @@
       "live_asof_toggle": true,
       "api_gateway": "unified-trading-api",
       "tabs": [
-        { "label": "Risk Dashboard", "route": "/services/trading/risk", "state": "REAL", "lines": 1967, "api_hooks": ["useRiskLimits", "useVaR", "useGreeks", "useStressScenarios", "useStressTest", "useRegime", "usePortfolioGreeks", "useVenueCircuitBreakers", "useCircuitBreakerMutation", "useKillSwitchMutation", "useVarSummary"] },
-        { "label": "Alerts", "route": "/services/trading/alerts", "state": "REAL", "lines": 806, "api_hooks": ["useAlerts", "useAcknowledgeAlert", "useEscalateAlert", "useResolveAlert"] },
-        { "label": "News", "route": "/services/observe/news", "state": "REAL", "lines": 201, "api_hooks": ["useNewsFeed"] },
-        { "label": "Strategy Health", "route": "/services/observe/strategy-health", "state": "REAL", "lines": 416, "api_hooks": ["useStrategyHealth"] },
-        { "label": "System Health", "route": "/services/observe/health", "state": "REAL", "lines": 1047, "api_hooks": ["useServiceHealth", "useFeatureFreshness", "useServiceActivity"] }
+        {
+          "label": "Risk Dashboard",
+          "route": "/services/trading/risk",
+          "state": "REAL",
+          "lines": 1967,
+          "api_hooks": [
+            "useRiskLimits",
+            "useVaR",
+            "useGreeks",
+            "useStressScenarios",
+            "useStressTest",
+            "useRegime",
+            "usePortfolioGreeks",
+            "useVenueCircuitBreakers",
+            "useCircuitBreakerMutation",
+            "useKillSwitchMutation",
+            "useVarSummary"
+          ]
+        },
+        {
+          "label": "Alerts",
+          "route": "/services/trading/alerts",
+          "state": "REAL",
+          "lines": 806,
+          "api_hooks": [
+            "useAlerts",
+            "useAcknowledgeAlert",
+            "useEscalateAlert",
+            "useResolveAlert"
+          ]
+        },
+        {
+          "label": "News",
+          "route": "/services/observe/news",
+          "state": "REAL",
+          "lines": 201,
+          "api_hooks": ["useNewsFeed"]
+        },
+        {
+          "label": "Strategy Health",
+          "route": "/services/observe/strategy-health",
+          "state": "REAL",
+          "lines": 416,
+          "api_hooks": ["useStrategyHealth"]
+        },
+        {
+          "label": "System Health",
+          "route": "/services/observe/health",
+          "state": "REAL",
+          "lines": 1047,
+          "api_hooks": [
+            "useServiceHealth",
+            "useFeatureFreshness",
+            "useServiceActivity"
+          ]
+        }
       ]
     },
     "manage": {
@@ -282,11 +530,41 @@
       "live_asof_toggle": false,
       "api_gateway": "unified-trading-api",
       "tabs": [
-        { "label": "Clients", "route": "/services/manage/clients", "state": "REAL", "lines": 772, "api_hooks": ["useOrganizationsList", "useSubscriptions"] },
-        { "label": "Mandates", "route": "/services/manage/mandates", "state": "REAL", "lines": 597, "api_hooks": ["useQuery"] },
-        { "label": "Fees", "route": "/services/manage/fees", "state": "REAL", "lines": 383, "api_hooks": ["useOrganizationsList", "useSubscriptions"] },
-        { "label": "Users", "route": "/services/manage/users", "state": "REAL", "lines": 389, "api_hooks": ["useOrganizationsList", "useOrgMembers"] },
-        { "label": "Compliance", "route": "/services/manage/compliance", "state": "REAL", "lines": 441, "api_hooks": ["useQuery"] }
+        {
+          "label": "Clients",
+          "route": "/services/manage/clients",
+          "state": "REAL",
+          "lines": 772,
+          "api_hooks": ["useOrganizationsList", "useSubscriptions"]
+        },
+        {
+          "label": "Mandates",
+          "route": "/services/manage/mandates",
+          "state": "REAL",
+          "lines": 597,
+          "api_hooks": ["useQuery"]
+        },
+        {
+          "label": "Fees",
+          "route": "/services/manage/fees",
+          "state": "REAL",
+          "lines": 383,
+          "api_hooks": ["useOrganizationsList", "useSubscriptions"]
+        },
+        {
+          "label": "Users",
+          "route": "/services/manage/users",
+          "state": "REAL",
+          "lines": 389,
+          "api_hooks": ["useOrganizationsList", "useOrgMembers"]
+        },
+        {
+          "label": "Compliance",
+          "route": "/services/manage/compliance",
+          "state": "REAL",
+          "lines": 441,
+          "api_hooks": ["useQuery"]
+        }
       ]
     },
     "reports": {
@@ -297,11 +575,41 @@
       "live_asof_toggle": false,
       "api_gateway": "unified-trading-api",
       "tabs": [
-        { "label": "P&L Attribution", "route": "/services/reports/overview", "state": "REAL", "lines": 667, "api_hooks": ["useReports", "useSettlements"] },
-        { "label": "Executive", "route": "/services/reports/executive", "state": "DELEGATE", "lines": 7, "api_hooks": [] },
-        { "label": "Settlement", "route": "/services/reports/settlement", "state": "REAL", "lines": 525, "api_hooks": ["useSettlements"] },
-        { "label": "Reconciliation", "route": "/services/reports/reconciliation", "state": "REAL", "lines": 632, "api_hooks": ["useReconciliation"] },
-        { "label": "Regulatory", "route": "/services/reports/regulatory", "state": "REAL", "lines": 728, "api_hooks": ["useRegulatoryReports"] }
+        {
+          "label": "P&L Attribution",
+          "route": "/services/reports/overview",
+          "state": "REAL",
+          "lines": 667,
+          "api_hooks": ["useReports", "useSettlements"]
+        },
+        {
+          "label": "Executive",
+          "route": "/services/reports/executive",
+          "state": "DELEGATE",
+          "lines": 7,
+          "api_hooks": []
+        },
+        {
+          "label": "Settlement",
+          "route": "/services/reports/settlement",
+          "state": "REAL",
+          "lines": 525,
+          "api_hooks": ["useSettlements"]
+        },
+        {
+          "label": "Reconciliation",
+          "route": "/services/reports/reconciliation",
+          "state": "REAL",
+          "lines": 632,
+          "api_hooks": ["useReconciliation"]
+        },
+        {
+          "label": "Regulatory",
+          "route": "/services/reports/regulatory",
+          "state": "REAL",
+          "lines": 728,
+          "api_hooks": ["useRegulatoryReports"]
+        }
       ]
     },
     "admin": {
@@ -312,16 +620,82 @@
       "live_asof_toggle": false,
       "requires_role": "admin",
       "tabs": [
-        { "label": "Dashboard", "route": "/admin", "state": "REAL", "lines": 504, "api_hooks": ["usePositionsSummary", "useStrategyPerformance", "useServiceHealth", "useAuditEvents", "useOrganizationsList"] },
-        { "label": "Data Admin", "route": "/admin/data", "state": "REAL", "lines": 285, "api_hooks": [] },
-        { "label": "Config", "route": "/config", "state": "REAL", "lines": 815, "api_hooks": ["useAuth"] },
-        { "label": "DevOps", "route": "/devops", "state": "REAL", "lines": 126, "api_hooks": [] },
-        { "label": "Engagement", "route": "/engagement", "state": "DELEGATE", "lines": 7, "api_hooks": [] },
-        { "label": "Internal", "route": "/internal", "state": "REAL", "lines": 149, "api_hooks": [] },
-        { "label": "Internal Data ETL", "route": "/internal/data-etl", "state": "REAL", "lines": 593, "api_hooks": [] },
-        { "label": "Operations", "route": "/ops", "state": "REAL", "lines": 539, "api_hooks": [] },
-        { "label": "Batch Jobs", "route": "/ops/jobs", "state": "REAL", "lines": 333, "api_hooks": ["useBatchJobs"] },
-        { "label": "Service Registry", "route": "/ops/services", "state": "REAL", "lines": 412, "api_hooks": ["useServicesList"] }
+        {
+          "label": "Dashboard",
+          "route": "/admin",
+          "state": "REAL",
+          "lines": 504,
+          "api_hooks": [
+            "usePositionsSummary",
+            "useStrategyPerformance",
+            "useServiceHealth",
+            "useAuditEvents",
+            "useOrganizationsList"
+          ]
+        },
+        {
+          "label": "Data Admin",
+          "route": "/admin/data",
+          "state": "REAL",
+          "lines": 285,
+          "api_hooks": []
+        },
+        {
+          "label": "Config",
+          "route": "/config",
+          "state": "REAL",
+          "lines": 815,
+          "api_hooks": ["useAuth"]
+        },
+        {
+          "label": "DevOps",
+          "route": "/devops",
+          "state": "REAL",
+          "lines": 126,
+          "api_hooks": []
+        },
+        {
+          "label": "Engagement",
+          "route": "/engagement",
+          "state": "DELEGATE",
+          "lines": 7,
+          "api_hooks": []
+        },
+        {
+          "label": "Internal",
+          "route": "/internal",
+          "state": "REAL",
+          "lines": 149,
+          "api_hooks": []
+        },
+        {
+          "label": "Internal Data ETL",
+          "route": "/internal/data-etl",
+          "state": "REAL",
+          "lines": 593,
+          "api_hooks": []
+        },
+        {
+          "label": "Operations",
+          "route": "/ops",
+          "state": "REAL",
+          "lines": 539,
+          "api_hooks": []
+        },
+        {
+          "label": "Batch Jobs",
+          "route": "/ops/jobs",
+          "state": "REAL",
+          "lines": 333,
+          "api_hooks": ["useBatchJobs"]
+        },
+        {
+          "label": "Service Registry",
+          "route": "/ops/services",
+          "state": "REAL",
+          "lines": 412,
+          "api_hooks": ["useServicesList"]
+        }
       ]
     }
   },
@@ -349,25 +723,83 @@
     }
   },
   "public_pages": [
-    { "route": "/", "file": "app/(public)/page.tsx", "lines": 457, "description": "Landing page" },
-    { "route": "/login", "file": "app/(public)/login/page.tsx", "lines": 224, "description": "Persona-based demo login" },
-    { "route": "/signup", "file": "app/(public)/signup/page.tsx", "lines": 245 },
-    { "route": "/contact", "file": "app/(public)/contact/page.tsx", "lines": 355 },
+    {
+      "route": "/",
+      "file": "app/(public)/page.tsx",
+      "lines": 457,
+      "description": "Landing page"
+    },
+    {
+      "route": "/login",
+      "file": "app/(public)/login/page.tsx",
+      "lines": 224,
+      "description": "Persona-based demo login"
+    },
+    {
+      "route": "/signup",
+      "file": "app/(public)/signup/page.tsx",
+      "lines": 245
+    },
+    {
+      "route": "/contact",
+      "file": "app/(public)/contact/page.tsx",
+      "lines": 355
+    },
     { "route": "/docs", "file": "app/(public)/docs/page.tsx", "lines": 766 },
     { "route": "/demo", "file": "app/(public)/demo/page.tsx", "lines": 178 },
-    { "route": "/demo/preview", "file": "app/(public)/demo/preview/page.tsx", "lines": 425 },
-    { "route": "/privacy", "file": "app/(public)/privacy/page.tsx", "lines": 47 },
+    {
+      "route": "/demo/preview",
+      "file": "app/(public)/demo/preview/page.tsx",
+      "lines": 425
+    },
+    {
+      "route": "/privacy",
+      "file": "app/(public)/privacy/page.tsx",
+      "lines": 47
+    },
     { "route": "/terms", "file": "app/(public)/terms/page.tsx", "lines": 51 },
-    { "route": "/investor-relations", "file": "app/(public)/investor-relations/page.tsx", "lines": 1238 }
+    {
+      "route": "/investor-relations",
+      "file": "app/(public)/investor-relations/page.tsx",
+      "lines": 1238
+    }
   ],
   "commercial_landing_pages": [
-    { "route": "/services/data", "lines": 359, "description": "Data service commercial landing" },
-    { "route": "/services/backtesting", "lines": 329, "description": "Backtesting service commercial landing" },
-    { "route": "/services/execution", "lines": 349, "description": "Execution service commercial landing" },
-    { "route": "/services/platform", "lines": 308, "description": "Platform service commercial landing" },
-    { "route": "/services/investment", "lines": 380, "description": "Investment service commercial landing" },
-    { "route": "/services/regulatory", "lines": 340, "description": "Regulatory service commercial landing" },
-    { "route": "/services/engagement", "lines": 392, "description": "Engagement model landing" }
+    {
+      "route": "/services/data",
+      "lines": 359,
+      "description": "Data service commercial landing"
+    },
+    {
+      "route": "/services/backtesting",
+      "lines": 329,
+      "description": "Backtesting service commercial landing"
+    },
+    {
+      "route": "/services/execution",
+      "lines": 349,
+      "description": "Execution service commercial landing"
+    },
+    {
+      "route": "/services/platform",
+      "lines": 308,
+      "description": "Platform service commercial landing"
+    },
+    {
+      "route": "/services/investment",
+      "lines": 380,
+      "description": "Investment service commercial landing"
+    },
+    {
+      "route": "/services/regulatory",
+      "lines": 340,
+      "description": "Regulatory service commercial landing"
+    },
+    {
+      "route": "/services/engagement",
+      "lines": 392,
+      "description": "Engagement model landing"
+    }
   ],
   "redirects": {
     "legacy_flat_routes": [

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Shield, Presentation, ShieldAlert, ArrowRight } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { Shield, Presentation, ShieldAlert, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const PRESENTATIONS = [
   {
@@ -30,9 +30,14 @@ const PRESENTATIONS = [
     color: "from-cyan-500/20 to-cyan-600/5",
     border: "border-cyan-500/30 hover:border-cyan-500/60",
     iconColor: "text-cyan-500",
-    tags: ["Circuit Breaker", "Access Matrix", "Client Alerts", "FCA Compliant"],
+    tags: [
+      "Circuit Breaker",
+      "Access Matrix",
+      "Client Alerts",
+      "FCA Compliant",
+    ],
   },
-]
+];
 
 export default function InvestorRelationsPage() {
   return (
@@ -77,14 +82,14 @@ export default function InvestorRelationsPage() {
               className={cn(
                 "group relative flex flex-col rounded-xl border bg-gradient-to-br p-8 transition-all duration-200",
                 p.color,
-                p.border
+                p.border,
               )}
             >
               <div className="flex items-start justify-between mb-4">
                 <div
                   className={cn(
                     "flex size-12 items-center justify-center rounded-lg bg-background/80 border border-border",
-                    p.iconColor
+                    p.iconColor,
                   )}
                 >
                   <p.icon className="size-6" />
@@ -121,5 +126,5 @@ export default function InvestorRelationsPage() {
         </p>
       </main>
     </div>
-  )
+  );
 }

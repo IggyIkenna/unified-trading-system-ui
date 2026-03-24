@@ -74,7 +74,10 @@
       "time_hours": 6,
       "difficulty": "medium-high",
       "category": "architecture",
-      "files": ["market-tick-data-service/pyproject.toml:98", "market-tick-data-service/pyproject.toml:167"],
+      "files": [
+        "market-tick-data-service/pyproject.toml:98",
+        "market-tick-data-service/pyproject.toml:167"
+      ],
       "fix_steps": [
         "Identify which symbols MTDS imports from instruments-service",
         "Extract shared types into unified-reference-data-interface",
@@ -159,7 +162,10 @@
         "features-sports-service/features_sports_service/scripts/validation.py:127,171,184",
         "ml-inference-service/ml_inference_service/app/core/prediction_publisher.py:224"
       ],
-      "fix_steps": ["Validate table names against regex ^[a-zA-Z0-9_.-]+$", "Remove # noqa: S608 suppressions"]
+      "fix_steps": [
+        "Validate table names against regex ^[a-zA-Z0-9_.-]+$",
+        "Remove # noqa: S608 suppressions"
+      ]
     },
     {
       "id": "ISS-009",

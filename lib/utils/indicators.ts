@@ -7,10 +7,7 @@
  * Simple Moving Average.
  * Returns null for indices where fewer than `period` data points are available.
  */
-export function sma(
-  closes: number[],
-  period: number
-): (number | null)[] {
+export function sma(closes: number[], period: number): (number | null)[] {
   const result: (number | null)[] = new Array(closes.length).fill(null);
   if (period <= 0 || closes.length < period) return result;
 
@@ -32,10 +29,7 @@ export function sma(
  * Exponential Moving Average.
  * Seeded with SMA for the first `period` values; null before that.
  */
-export function ema(
-  closes: number[],
-  period: number
-): (number | null)[] {
+export function ema(closes: number[], period: number): (number | null)[] {
   const result: (number | null)[] = new Array(closes.length).fill(null);
   if (period <= 0 || closes.length < period) return result;
 
@@ -67,7 +61,7 @@ export function ema(
 export function bollingerBands(
   closes: number[],
   period: number,
-  stdDev: number
+  stdDev: number,
 ): {
   upper: (number | null)[];
   middle: (number | null)[];

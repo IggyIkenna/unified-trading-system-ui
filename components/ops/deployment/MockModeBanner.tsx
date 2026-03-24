@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * Mock mode banner for deployment UI.

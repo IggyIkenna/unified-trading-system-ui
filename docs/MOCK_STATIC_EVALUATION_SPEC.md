@@ -16,11 +16,11 @@ Maintainers cloning the UI repo: quick **env**, **personas**, and **URL sweep** 
 
 ### Mock mode
 
-| Item | Detail |
-| --- | --- |
-| Flag | `NEXT_PUBLIC_MOCK_API=true` (baked in at **Next.js build** for static deploys) |
+| Item      | Detail                                                                                                 |
+| --------- | ------------------------------------------------------------------------------------------------------ |
+| Flag      | `NEXT_PUBLIC_MOCK_API=true` (baked in at **Next.js build** for static deploys)                         |
 | Mechanism | Client `installMockHandler()` intercepts `/api/*` (see `lib/providers.tsx`, `lib/api/mock-handler.ts`) |
-| Fixtures | `lib/trading-data.ts`, `lib/*-mock-data.ts`, `lib/strategy-registry.ts` |
+| Fixtures  | `lib/trading-data.ts`, `lib/*-mock-data.ts`, `lib/strategy-registry.ts`                                |
 
 ### Run locally
 

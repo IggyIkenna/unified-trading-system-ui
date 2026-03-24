@@ -20,5 +20,3 @@ class CanonicalOnChainMetric(CanonicalBase):
     chain: str | None = None
     raw: dict[str, float | int | str | None] | None = Field(default=None, description="Original fields as-is")
     schema_version: str = "1.0"
-
-

@@ -1,21 +1,18 @@
-import { ALL_ENTITLEMENTS } from "@/lib/config/auth"
-import type { Entitlement } from "@/lib/config/auth"
-import {
-  getPersonaById,
-  getPersonaByEmail,
-} from "@/lib/auth/personas"
-import type { AuthProvider, AuthUser } from "./types"
+import { ALL_ENTITLEMENTS } from "@/lib/config/auth";
+import type { Entitlement } from "@/lib/config/auth";
+import { getPersonaById, getPersonaByEmail } from "@/lib/auth/personas";
+import type { AuthProvider, AuthUser } from "./types";
 
-const STORAGE_KEY = "portal_user"
-const TOKEN_KEY = "portal_token"
+const STORAGE_KEY = "portal_user";
+const TOKEN_KEY = "portal_token";
 
 function personaToAuthUser(persona: {
-  id: string
-  email: string
-  displayName: string
-  role: "internal" | "client" | "admin"
-  org: { id: string; name: string }
-  entitlements: readonly string[]
+  id: string;
+  email: string;
+  displayName: string;
+  role: "internal" | "client" | "admin";
+  org: { id: string; name: string };
+  entitlements: readonly string[];
 }): AuthUser {
   return {
     id: persona.id,
@@ -24,7 +21,7 @@ function personaToAuthUser(persona: {
     role: persona.role,
     org: persona.org,
     entitlements: persona.entitlements as AuthUser["entitlements"],
-  }
+  };
 }
 
 /**
@@ -35,26 +32,26 @@ function personaToAuthUser(persona: {
  * deterministic demo tokens.
  */
 export class DemoAuthProvider implements AuthProvider {
-  private user: AuthUser | null = null
-  private token: string | null = null
+  private user: AuthUser | null = null;
+  private token: string | null = null;
 
   constructor() {
-    this.restore()
+    this.restore();
   }
 
   /** Restore session from localStorage (SSR-safe). */
   private restore(): void {
-    if (typeof window === "undefined") return
+    if (typeof window === "undefined") return;
     try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      const savedToken = localStorage.getItem(TOKEN_KEY)
-      if (!raw) return
-      const stored = JSON.parse(raw) as { id: string; email: string }
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const savedToken = localStorage.getItem(TOKEN_KEY);
+      if (!raw) return;
+      const stored = JSON.parse(raw) as { id: string; email: string };
       const persona =
-        getPersonaById(stored.id) ?? getPersonaByEmail(stored.email)
+        getPersonaById(stored.id) ?? getPersonaByEmail(stored.email);
       if (persona) {
-        this.user = personaToAuthUser(persona)
-        this.token = savedToken ?? `demo-token-${persona.id}`
+        this.user = personaToAuthUser(persona);
+        this.token = savedToken ?? `demo-token-${persona.id}`;
       }
     } catch {
       // Corrupted localStorage — start fresh
@@ -69,48 +66,48 @@ export class DemoAuthProvider implements AuthProvider {
    */
   login(credential: string, secret?: string): AuthUser | null {
     // Try persona ID first
-    let persona = getPersonaById(credential)
+    let persona = getPersonaById(credential);
 
     // Fall back to email+password
     if (!persona) {
-      persona = getPersonaByEmail(credential)
+      persona = getPersonaByEmail(credential);
       if (persona && secret !== undefined && persona.password !== secret) {
-        return null
+        return null;
       }
     }
 
-    if (!persona) return null
+    if (!persona) return null;
 
-    this.user = personaToAuthUser(persona)
-    this.token = `demo-token-${persona.id}`
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.user))
-    localStorage.setItem(TOKEN_KEY, this.token)
-    return this.user
+    this.user = personaToAuthUser(persona);
+    this.token = `demo-token-${persona.id}`;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.user));
+    localStorage.setItem(TOKEN_KEY, this.token);
+    return this.user;
   }
 
   logout(): void {
-    this.user = null
-    this.token = null
-    localStorage.removeItem(STORAGE_KEY)
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem("odum_user")
+    this.user = null;
+    this.token = null;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem("odum_user");
   }
 
   getToken(): string | null {
-    return this.token
+    return this.token;
   }
 
   getUser(): AuthUser | null {
-    return this.user
+    return this.user;
   }
 
   isAuthenticated(): boolean {
-    return this.user !== null
+    return this.user !== null;
   }
 
   hasEntitlement(entitlement: Entitlement): boolean {
-    if (!this.user) return false
-    if (this.user.entitlements.includes(ALL_ENTITLEMENTS)) return true
-    return this.user.entitlements.includes(entitlement)
+    if (!this.user) return false;
+    if (this.user.entitlements.includes(ALL_ENTITLEMENTS)) return true;
+    return this.user.entitlements.includes(entitlement);
   }
 }

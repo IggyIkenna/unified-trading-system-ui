@@ -367,8 +367,7 @@ steps:
     run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev
 
   - name: Pull image
-    run:
-      docker pull asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID
+    run: docker pull asia-northeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID
       }}/unified-trading-services/unified-trading-services:latest
 ```
 

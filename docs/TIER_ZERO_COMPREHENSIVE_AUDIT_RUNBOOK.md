@@ -66,14 +66,14 @@ Be harsh: “good enough for a hackathon” is an F for institutional categories
 
 ## 2. How the automated pieces fit together
 
-| Artifact | Role |
-| --- | --- |
-| `e2e/tier0-route-registry.ts` | **SSOT list** of URLs Tier 0 smoke must hit. Arrays (`PUBLIC_PAGES`, `DATA_PAGES`, …) roll up to `ALL_TIER0_ROUTES` and `TIER0_REGISTRY_PATHS`. `TIER0_DYNAMIC_SAMPLE_PATHS` = concrete URLs for dynamic segments (e.g. strategy id sample). |
+| Artifact                               | Role                                                                                                                                                                                                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `e2e/tier0-route-registry.ts`          | **SSOT list** of URLs Tier 0 smoke must hit. Arrays (`PUBLIC_PAGES`, `DATA_PAGES`, …) roll up to `ALL_TIER0_ROUTES` and `TIER0_REGISTRY_PATHS`. `TIER0_DYNAMIC_SAMPLE_PATHS` = concrete URLs for dynamic segments (e.g. strategy id sample).                 |
 | `e2e/tier0-app-route-coverage.spec.ts` | **Fails** if a **static-segment** `page.tsx` under `app/` is **not** in the registry, or if the registry lists a static path that **does not** exist (except dynamic samples). No browser needed for logic-only checks if you skip global setup (see below). |
-| `e2e/static-smoke.spec.ts` | Loads each registry URL (and auth gating); catches compile/runtime/unhandled-route noise at scale. |
-| `e2e/tier0-behavior-audit.spec.ts` | **Small** set of **interaction** assertions (approve access request, acknowledge alert + toast, reconciliation/backtests/manage-request heuristics). **Expand** this file as more capabilities become non-negotiable. |
-| `e2e/warmup.setup.ts` | Optional Turbopack warm-up before parallel smoke. Set `PLAYWRIGHT_SKIP_GLOBAL_SETUP=1` to skip when no server. |
-| `playwright.static.config.ts` | `baseURL` **3100**, `testMatch` includes the three spec files above. |
+| `e2e/static-smoke.spec.ts`             | Loads each registry URL (and auth gating); catches compile/runtime/unhandled-route noise at scale.                                                                                                                                                           |
+| `e2e/tier0-behavior-audit.spec.ts`     | **Small** set of **interaction** assertions (approve access request, acknowledge alert + toast, reconciliation/backtests/manage-request heuristics). **Expand** this file as more capabilities become non-negotiable.                                        |
+| `e2e/warmup.setup.ts`                  | Optional Turbopack warm-up before parallel smoke. Set `PLAYWRIGHT_SKIP_GLOBAL_SETUP=1` to skip when no server.                                                                                                                                               |
+| `playwright.static.config.ts`          | `baseURL` **3100**, `testMatch` includes the three spec files above.                                                                                                                                                                                         |
 
 ### Commands cheat sheet
 
@@ -108,15 +108,15 @@ bash scripts/quality-gates.sh
 
 ## 3. Multi-agent + browser split (token-efficient)
 
-| Agent / track | Suggested browser | Scope | MCP / Playwright use |
-| --- | --- | --- | --- |
-| **Coordinator** | n/a | Phases, merges scorecard, writes `docs/audits/TIER_ZERO_AUDIT_*.md` | Runs CLI Playwright once for full gate; collects logs |
-| **Track A** | Chromium | Public & marketing (§4 A) | MCP snapshot + console; spot-check Safari if policy requires |
-| **Track B** | Chromium | Trading & strategies | Same; **Firefox** optional for layout/CSS quirks |
-| **Track C** | Chromium | Research & ML | Same |
-| **Track D** | Chromium | Execution, observe, reports | Same |
-| **Track E** | Chromium | Manage, ops, admin | Same |
-| **Tooling agent** | n/a | Registry/coverage spec failures, fix `tier0-route-registry.ts` | Read-only codebase search + propose diffs |
+| Agent / track     | Suggested browser | Scope                                                               | MCP / Playwright use                                         |
+| ----------------- | ----------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Coordinator**   | n/a               | Phases, merges scorecard, writes `docs/audits/TIER_ZERO_AUDIT_*.md` | Runs CLI Playwright once for full gate; collects logs        |
+| **Track A**       | Chromium          | Public & marketing (§4 A)                                           | MCP snapshot + console; spot-check Safari if policy requires |
+| **Track B**       | Chromium          | Trading & strategies                                                | Same; **Firefox** optional for layout/CSS quirks             |
+| **Track C**       | Chromium          | Research & ML                                                       | Same                                                         |
+| **Track D**       | Chromium          | Execution, observe, reports                                         | Same                                                         |
+| **Track E**       | Chromium          | Manage, ops, admin                                                  | Same                                                         |
+| **Tooling agent** | n/a               | Registry/coverage spec failures, fix `tier0-route-registry.ts`      | Read-only codebase search + propose diffs                    |
 
 **Rules of thumb**
 
@@ -133,41 +133,41 @@ Score **A** = fully exercisable in Tier 0 mock with state mutation + consistent 
 
 Use every row; add sub-bullets in the dated audit if needed.
 
-| # | Category | Primary references (doc § / repo) |
-| --- | --- | --- |
-| 1 | Route registry & static smoke | §7, `tier0-route-registry.ts`, `tier0-app-route-coverage.spec.ts`, `static-smoke.spec.ts` |
-| 2 | Automated behavior audit coverage | `tier0-behavior-audit.spec.ts`, §1 P0 gap list |
-| 3 | Research & signal pillar | §1b pillars, research routes |
-| 4 | Book & risk (limits, stress placeholders) | §1b lattice, observe/risk |
-| 5 | Execution & TCA | execution routes, handbook |
-| 6 | Data, entitlements, coverage | data routes, marketing/service pages |
-| 7 | Org / book / fund scope model | global scope store, filters |
-| 8 | Personas, SoD, permissions | `lib/auth/personas.ts`, auth-api alignment |
-| 9 | Provisioning & access requests | `mock-provisioning-state`, admin requests |
-| 10 | Reporting & data subscriptions | manage + admin queues (§1b) |
-| 11 | User / client detail SSOT | single view: services, reporting, balances |
-| 12 | Strategies list/detail/registry | `lib/strategy-registry.ts`, Codex 09-strategy |
-| 13 | Per–strategy-class book trade | §1 P0 #4, handbook matrix |
-| 14 | Venues & execution config | execution + registry |
-| 15 | Positions & PnL narrative | trading PnL/positions |
-| 16 | Orders & instruction lifecycle | §1b P3, terminal |
-| 17 | Pre-trade / compliance / limits | §1b lattice |
-| 18 | Post-trade / confirm / break / settlement | §1b lattice, reports |
-| 19 | Reconciliation internal vs external | §1 P0 #5, reports/reconciliation |
-| 20 | Alerts (list, ack, leave active queue) | §1 P0 #6, alerts pages |
-| 21 | Audit trail & correlation_id | §1b P5 |
-| 22 | Market data entitlement / delayed / missing | §1b P6 |
-| 23 | Reference data / symbology | §1b lattice |
-| 24 | ML ops (version, drift, deploy narrative) | ML routes |
-| 25 | Sports / predictions / DeFi lanes | trading sub-routes |
-| 26 | Client IM onboarding & documents | §1 P0 #7, §1b |
-| 27 | Reset Demo completeness | `lib/reset-demo.ts`, §5a |
-| 28 | Cross-surface consistency | same user/entitlement everywhere |
-| 29 | Nav integrity (shell links) | layout/footer/header |
-| 30 | Mock API completeness (unhandled routes) | client mock handler, console |
-| 31 | Performance / perceived quality (blank shells, long spinners) | subjective but mandatory note |
-| 32 | Critical path accessibility | roles/labels for audit CTAs |
-| 33 | BlackRock/Citadel **layer-2** narrative extras | §1 “honest bar” extra table (mandate, liquidity, ISDAs, etc.) |
+| #   | Category                                                      | Primary references (doc § / repo)                                                         |
+| --- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | Route registry & static smoke                                 | §7, `tier0-route-registry.ts`, `tier0-app-route-coverage.spec.ts`, `static-smoke.spec.ts` |
+| 2   | Automated behavior audit coverage                             | `tier0-behavior-audit.spec.ts`, §1 P0 gap list                                            |
+| 3   | Research & signal pillar                                      | §1b pillars, research routes                                                              |
+| 4   | Book & risk (limits, stress placeholders)                     | §1b lattice, observe/risk                                                                 |
+| 5   | Execution & TCA                                               | execution routes, handbook                                                                |
+| 6   | Data, entitlements, coverage                                  | data routes, marketing/service pages                                                      |
+| 7   | Org / book / fund scope model                                 | global scope store, filters                                                               |
+| 8   | Personas, SoD, permissions                                    | `lib/auth/personas.ts`, auth-api alignment                                                |
+| 9   | Provisioning & access requests                                | `mock-provisioning-state`, admin requests                                                 |
+| 10  | Reporting & data subscriptions                                | manage + admin queues (§1b)                                                               |
+| 11  | User / client detail SSOT                                     | single view: services, reporting, balances                                                |
+| 12  | Strategies list/detail/registry                               | `lib/strategy-registry.ts`, Codex 09-strategy                                             |
+| 13  | Per–strategy-class book trade                                 | §1 P0 #4, handbook matrix                                                                 |
+| 14  | Venues & execution config                                     | execution + registry                                                                      |
+| 15  | Positions & PnL narrative                                     | trading PnL/positions                                                                     |
+| 16  | Orders & instruction lifecycle                                | §1b P3, terminal                                                                          |
+| 17  | Pre-trade / compliance / limits                               | §1b lattice                                                                               |
+| 18  | Post-trade / confirm / break / settlement                     | §1b lattice, reports                                                                      |
+| 19  | Reconciliation internal vs external                           | §1 P0 #5, reports/reconciliation                                                          |
+| 20  | Alerts (list, ack, leave active queue)                        | §1 P0 #6, alerts pages                                                                    |
+| 21  | Audit trail & correlation_id                                  | §1b P5                                                                                    |
+| 22  | Market data entitlement / delayed / missing                   | §1b P6                                                                                    |
+| 23  | Reference data / symbology                                    | §1b lattice                                                                               |
+| 24  | ML ops (version, drift, deploy narrative)                     | ML routes                                                                                 |
+| 25  | Sports / predictions / DeFi lanes                             | trading sub-routes                                                                        |
+| 26  | Client IM onboarding & documents                              | §1 P0 #7, §1b                                                                             |
+| 27  | Reset Demo completeness                                       | `lib/reset-demo.ts`, §5a                                                                  |
+| 28  | Cross-surface consistency                                     | same user/entitlement everywhere                                                          |
+| 29  | Nav integrity (shell links)                                   | layout/footer/header                                                                      |
+| 30  | Mock API completeness (unhandled routes)                      | client mock handler, console                                                              |
+| 31  | Performance / perceived quality (blank shells, long spinners) | subjective but mandatory note                                                             |
+| 32  | Critical path accessibility                                   | roles/labels for audit CTAs                                                               |
+| 33  | BlackRock/Citadel **layer-2** narrative extras                | §1 “honest bar” extra table (mandate, liquidity, ISDAs, etc.)                             |
 
 ---
 
@@ -178,15 +178,15 @@ Save as `docs/audits/TIER_ZERO_AUDIT_YYYY-MM-DD.md`.
 ```markdown
 # Tier 0 comprehensive audit — YYYY-MM-DD
 
-| Field | Value |
-| --- | --- |
-| Date | YYYY-MM-DD |
-| Repo | unified-trading-system-ui |
-| Commit | `<sha>` |
-| Branch | `<name>` |
-| Auditor(s) | `<names or agent run id>` |
-| Browsers | Chromium (+ optional Firefox/WebKit) |
-| Tier 0 URL | http://localhost:3100 |
+| Field      | Value                                |
+| ---------- | ------------------------------------ |
+| Date       | YYYY-MM-DD                           |
+| Repo       | unified-trading-system-ui            |
+| Commit     | `<sha>`                              |
+| Branch     | `<name>`                             |
+| Auditor(s) | `<names or agent run id>`            |
+| Browsers   | Chromium (+ optional Firefox/WebKit) |
+| Tier 0 URL | http://localhost:3100                |
 
 ## Executive summary
 
@@ -200,9 +200,9 @@ Save as `docs/audits/TIER_ZERO_AUDIT_YYYY-MM-DD.md`.
 
 ## Scorecard (A–F)
 
-| # | Category | Grade | Notes |
-| --- | --- | --- | --- |
-| 1 | … | | |
+| #   | Category | Grade | Notes |
+| --- | -------- | ----- | ----- |
+| 1   | …        |       |       |
 
 ## Gaps — no exceptions
 
@@ -268,29 +268,29 @@ After each audit, add one row to [`END_TO_END_STATIC_TIER_ZERO_TESTING.md`](./EN
 
 ### Issues the existing tests did NOT catch
 
-| Issue | Why tests missed it | New test / enhancement |
-| --- | --- | --- |
-| **Admin approve button invisible** (G-01) | `loginAsAdmin` didn't switch to Internal tab; persona card locator failed silently on External tab | Fixed: `loginAsAdmin` now clicks Internal tab first, then `admin@odum` card, then waits for URL redirect |
-| **Footer `/compliance` link → 404** (G-05) | `static-smoke.spec.ts` checks page content but never follows footer links to verify their targets | Added: `footer FCA link does not 404` test in behavior-audit |
-| **Venue count inconsistency** (G-06) | No test compares PLATFORM_STATS across landing page vs dashboard | Added: `landing page and dashboard venue counts are consistent` test; also `dashboard shows non-zero venue count` |
-| **10+ unhandled API routes** (G-08) | `static-smoke` logged warnings but did **not fail** (`// Note: we warn but don't fail`) | Changed: unhandled routes now **fail** the smoke test; added behavior-audit test scanning key pages |
-| **Pages stuck on "Loading"** (G-09/10/11) | Smoke test waits 2s then checks for content; persistent spinners pass because the spinner IS content | Added: check for `Loading dashboard` / `Loading...` text after wait; console log for persistent spinners |
-| **All stats zero** (G-04) | No test checks that mock data produces non-zero values on data-heavy pages | Added: `$0` widget counter in smoke as a warning signal |
-| **Reconciliation test strict mode** | Page had 2 `<main>` elements; `page.locator('main')` ambiguous | Fixed: use `.last()` for inner main in nested layouts |
-| **Deny round-trip** | Only Approve was tested; Deny path never exercised | Added: `admin approve → deny round-trip preserves state` test |
-| **Persona reflected in shell** | No test verified that the mock footer shows the logged-in persona | Added: `persona login sets correct role in authenticated shell` test |
-| **Reset Demo visibility** | No test checked that the Reset Demo button exists in mock mode | Added: `Reset Demo button is visible in mock footer` test |
+| Issue                                      | Why tests missed it                                                                                  | New test / enhancement                                                                                            |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Admin approve button invisible** (G-01)  | `loginAsAdmin` didn't switch to Internal tab; persona card locator failed silently on External tab   | Fixed: `loginAsAdmin` now clicks Internal tab first, then `admin@odum` card, then waits for URL redirect          |
+| **Footer `/compliance` link → 404** (G-05) | `static-smoke.spec.ts` checks page content but never follows footer links to verify their targets    | Added: `footer FCA link does not 404` test in behavior-audit                                                      |
+| **Venue count inconsistency** (G-06)       | No test compares PLATFORM_STATS across landing page vs dashboard                                     | Added: `landing page and dashboard venue counts are consistent` test; also `dashboard shows non-zero venue count` |
+| **10+ unhandled API routes** (G-08)        | `static-smoke` logged warnings but did **not fail** (`// Note: we warn but don't fail`)              | Changed: unhandled routes now **fail** the smoke test; added behavior-audit test scanning key pages               |
+| **Pages stuck on "Loading"** (G-09/10/11)  | Smoke test waits 2s then checks for content; persistent spinners pass because the spinner IS content | Added: check for `Loading dashboard` / `Loading...` text after wait; console log for persistent spinners          |
+| **All stats zero** (G-04)                  | No test checks that mock data produces non-zero values on data-heavy pages                           | Added: `$0` widget counter in smoke as a warning signal                                                           |
+| **Reconciliation test strict mode**        | Page had 2 `<main>` elements; `page.locator('main')` ambiguous                                       | Fixed: use `.last()` for inner main in nested layouts                                                             |
+| **Deny round-trip**                        | Only Approve was tested; Deny path never exercised                                                   | Added: `admin approve → deny round-trip preserves state` test                                                     |
+| **Persona reflected in shell**             | No test verified that the mock footer shows the logged-in persona                                    | Added: `persona login sets correct role in authenticated shell` test                                              |
+| **Reset Demo visibility**                  | No test checked that the Reset Demo button exists in mock mode                                       | Added: `Reset Demo button is visible in mock footer` test                                                         |
 
 ### Runbook instructions to improve for next auditor
 
-| Gap | Fix |
-| --- | --- |
-| **Runbook says "run `quality-gates.sh`"** but does not say what to expect for the UI repo | Add note: UI repo QG runs `tsc --noEmit` + ESLint. Expect TypeScript output, not pytest. |
-| **Phase 1 says "note console errors"** but no systematic method | Use `page.on('console')` in a Playwright `run_code` loop to capture errors across all routes. Export JSON. |
-| **"Persona matrix tested"** has no concrete instructions | Login as each persona → navigate to `/dashboard` → verify footer shows correct persona name + role. Then navigate to admin route and verify client persona gets redirect or empty state. |
-| **No data consistency checks** | Verify venue counts from `PLATFORM_STATS` match values on landing page, dashboard, and service cards. Flag hardcoded numbers. |
-| **"Loading" ≠ "rendered"** | A page showing only "Loading..." after 5s is a **broken data fetch**, not a partial render. Flag as P1. |
-| **Footer link validation missing** | Phase 2 says "no 404 on critical links" but doesn't say to follow every footer link to target. `/compliance` → 404 was missed by all tracks. |
-| **Lifecycle stage count never mentioned** | Add to scorecard #29: count stages on landing vs authenticated nav. Mismatches are a finding. |
-| **No rapid-scan recipe** | For agent audits: use `page.goto` + `body.textContent` in a `run_code` loop scanning all registry routes in ~2 min. Export JSON with `{ route, len, comingSoon, loading, errors }`. Deep-dive only flagged routes. |
-| **`dev-tiers.sh` exits but spawns background process** | Note: `dev-tiers.sh --tier 0` exits immediately after spawning Next.js. Verify server with `lsof -i :3100` before proceeding. |
+| Gap                                                                                       | Fix                                                                                                                                                                                                                |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Runbook says "run `quality-gates.sh`"** but does not say what to expect for the UI repo | Add note: UI repo QG runs `tsc --noEmit` + ESLint. Expect TypeScript output, not pytest.                                                                                                                           |
+| **Phase 1 says "note console errors"** but no systematic method                           | Use `page.on('console')` in a Playwright `run_code` loop to capture errors across all routes. Export JSON.                                                                                                         |
+| **"Persona matrix tested"** has no concrete instructions                                  | Login as each persona → navigate to `/dashboard` → verify footer shows correct persona name + role. Then navigate to admin route and verify client persona gets redirect or empty state.                           |
+| **No data consistency checks**                                                            | Verify venue counts from `PLATFORM_STATS` match values on landing page, dashboard, and service cards. Flag hardcoded numbers.                                                                                      |
+| **"Loading" ≠ "rendered"**                                                                | A page showing only "Loading..." after 5s is a **broken data fetch**, not a partial render. Flag as P1.                                                                                                            |
+| **Footer link validation missing**                                                        | Phase 2 says "no 404 on critical links" but doesn't say to follow every footer link to target. `/compliance` → 404 was missed by all tracks.                                                                       |
+| **Lifecycle stage count never mentioned**                                                 | Add to scorecard #29: count stages on landing vs authenticated nav. Mismatches are a finding.                                                                                                                      |
+| **No rapid-scan recipe**                                                                  | For agent audits: use `page.goto` + `body.textContent` in a `run_code` loop scanning all registry routes in ~2 min. Export JSON with `{ route, len, comingSoon, loading, errors }`. Deep-dive only flagged routes. |
+| **`dev-tiers.sh` exits but spawns background process**                                    | Note: `dev-tiers.sh --tier 0` exits immediately after spawning Next.js. Verify server with `lsof -i :3100` before proceeding.                                                                                      |

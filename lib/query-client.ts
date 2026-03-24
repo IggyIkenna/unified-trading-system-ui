@@ -1,4 +1,4 @@
-import { QueryClient } from "@tanstack/react-query"
+import { QueryClient } from "@tanstack/react-query";
 
 /**
  * Singleton React Query client with sensible defaults for demo mode.
@@ -16,10 +16,10 @@ export function makeQueryClient() {
         refetchOnWindowFocus: false,
       },
     },
-  })
+  });
 }
 
-let browserQueryClient: QueryClient | undefined
+let browserQueryClient: QueryClient | undefined;
 
 /**
  * Get the query client.
@@ -33,10 +33,10 @@ let browserQueryClient: QueryClient | undefined
  */
 export function getQueryClient() {
   if (typeof window === "undefined") {
-    return makeQueryClient()
+    return makeQueryClient();
   }
   if (!browserQueryClient) {
-    browserQueryClient = makeQueryClient()
+    browserQueryClient = makeQueryClient();
   }
-  return browserQueryClient
+  return browserQueryClient;
 }

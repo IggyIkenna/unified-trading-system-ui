@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useAuth } from "@/hooks/use-auth"
-import { ChatWidget } from "./chat-widget"
+import { useAuth } from "@/hooks/use-auth";
+import { ChatWidget } from "./chat-widget";
 
 /**
  * Auth-aware chat widget wrapper.
@@ -12,13 +12,13 @@ import { ChatWidget } from "./chat-widget"
  *   - Internal org → "internal"
  */
 export function ChatWidgetConnected() {
-  const auth = useAuth()
+  const auth = useAuth();
 
-  let tier: "public" | "client" | "internal" = "public"
+  let tier: "public" | "client" | "internal" = "public";
 
   if (auth.user) {
-    tier = auth.isInternal() ? "internal" : "client"
+    tier = auth.isInternal() ? "internal" : "client";
   }
 
-  return <ChatWidget tier={tier} />
+  return <ChatWidget tier={tier} />;
 }

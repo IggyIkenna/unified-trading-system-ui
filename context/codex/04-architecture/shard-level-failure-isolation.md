@@ -5,6 +5,7 @@
 **A failed shard MUST NOT kill other shards in the same batch.**
 
 Shards are the isolation boundary. When processing fails for one shard, the service:
+
 1. Logs the error with full details (venue, error message, shard ID, correlation ID) to the event stream
 2. Emits a `VENUE_PROCESSING_FAILED` or `DATE_PROCESSING_FAILED` event with error details
 3. Continues processing remaining shards
@@ -14,11 +15,11 @@ A **partially complete shard** should be killed — do not store partial data fo
 
 ## Sharding Dimensions
 
-| Service | Shard Dimensions | Example |
-|---------|-----------------|---------|
-| instruments-service | category x venue x date | CEFI x BINANCE-SPOT x 2026-01-05 |
-| market-tick-data-service | category x venue x instrument_type x data_type x date | CEFI x BINANCE-SPOT x SPOT_PAIR x trades x 2026-01-05 |
-| market-data-processing-service | category x venue x instrument_type x date x timeframe | CEFI x BINANCE-SPOT x SPOT_PAIR x 2026-01-05 x 1min |
+| Service                        | Shard Dimensions                                      | Example                                               |
+| ------------------------------ | ----------------------------------------------------- | ----------------------------------------------------- |
+| instruments-service            | category x venue x date                               | CEFI x BINANCE-SPOT x 2026-01-05                      |
+| market-tick-data-service       | category x venue x instrument_type x data_type x date | CEFI x BINANCE-SPOT x SPOT_PAIR x trades x 2026-01-05 |
+| market-data-processing-service | category x venue x instrument_type x date x timeframe | CEFI x BINANCE-SPOT x SPOT_PAIR x 2026-01-05 x 1min   |
 
 ## Error Handling Pattern
 
@@ -49,6 +50,7 @@ for venue in venues_to_process:
 ## Event Stream Requirements
 
 Failed shard events MUST include:
+
 - `venue`: Which venue/shard failed
 - `error`: Human-readable error message
 - `error_type`: Exception class name

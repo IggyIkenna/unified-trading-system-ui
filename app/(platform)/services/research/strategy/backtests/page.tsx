@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Filter,
   FlaskConical,
@@ -9,10 +9,10 @@ import {
   Search,
   Star,
   X,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,27 +20,35 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { type ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@/components/ui/data-table"
+} from "@/components/ui/select";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/data-table";
 
-import { useStrategyBacktests, useCreateBacktest, useStrategyTemplates } from "@/hooks/api/use-strategies"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ApiError } from "@/components/ui/api-error"
-import { EmptyState } from "@/components/ui/empty-state"
-import { StrategyWizard } from "@/components/research/strategy-wizard"
-import type { BacktestRun, StrategyArchetype, StrategyTemplate } from "@/lib/strategy-platform-types"
-import { ExportDropdown } from "@/components/ui/export-dropdown"
-import type { ExportColumn } from "@/lib/utils/export"
+import {
+  useStrategyBacktests,
+  useCreateBacktest,
+  useStrategyTemplates,
+} from "@/hooks/api/use-strategies";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StrategyWizard } from "@/components/research/strategy-wizard";
+import type {
+  BacktestRun,
+  StrategyArchetype,
+  StrategyTemplate,
+} from "@/lib/strategy-platform-types";
+import { ExportDropdown } from "@/components/ui/export-dropdown";
+import type { ExportColumn } from "@/lib/utils/export";
 
 // ---------------------------------------------------------------------------
 // Export columns
@@ -57,7 +65,7 @@ const backtestExportColumns: ExportColumn[] = [
   { key: "tradesCount", header: "Trades Count", format: "number" },
   { key: "sortino", header: "Sortino", format: "number" },
   { key: "hitRate", header: "Hit Rate", format: "percent" },
-]
+];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -66,26 +74,26 @@ const backtestExportColumns: ExportColumn[] = [
 function backtestStatusColor(status: BacktestRun["status"]) {
   switch (status) {
     case "completed":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
     case "running":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
     case "queued":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     case "failed":
-      return "bg-red-500/15 text-red-400 border-red-500/30"
+      return "bg-red-500/15 text-red-400 border-red-500/30";
     case "cancelled":
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
   }
 }
 
 function fmtPct(v: number) {
-  return `${(v * 100).toFixed(1)}%`
+  return `${(v * 100).toFixed(1)}%`;
 }
 
 function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals)
+  return v.toFixed(decimals);
 }
 
 // ---------------------------------------------------------------------------
@@ -93,11 +101,11 @@ function fmtNum(v: number, decimals = 2) {
 // ---------------------------------------------------------------------------
 
 interface FilterState {
-  archetype: string
-  assetClass: string
-  venue: string
-  stage: string
-  search: string
+  archetype: string;
+  assetClass: string;
+  venue: string;
+  stage: string;
+  search: string;
 }
 
 const EMPTY_FILTERS: FilterState = {
@@ -106,21 +114,21 @@ const EMPTY_FILTERS: FilterState = {
   venue: "",
   stage: "",
   search: "",
-}
+};
 
 // ---------------------------------------------------------------------------
 // New Backtest Form
 // ---------------------------------------------------------------------------
 
 interface BacktestFormState {
-  templateId: string
-  instrument: string
-  venue: string
-  dateStart: string
-  dateEnd: string
-  entryThreshold: string
-  exitThreshold: string
-  maxLeverage: string
+  templateId: string;
+  instrument: string;
+  venue: string;
+  dateStart: string;
+  dateEnd: string;
+  entryThreshold: string;
+  exitThreshold: string;
+  maxLeverage: string;
 }
 
 const INITIAL_FORM: BacktestFormState = {
@@ -132,73 +140,102 @@ const INITIAL_FORM: BacktestFormState = {
   entryThreshold: "0.05",
   exitThreshold: "0.02",
   maxLeverage: "3.0",
-}
+};
 
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
 export default function BacktestsPage() {
-  const { data: backtestsData, isLoading: backtestsLoading, isError: backtestsIsError, error: backtestsError, refetch: backtestsRefetch } = useStrategyBacktests()
-  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates()
-  const createBacktest = useCreateBacktest()
+  const {
+    data: backtestsData,
+    isLoading: backtestsLoading,
+    isError: backtestsIsError,
+    error: backtestsError,
+    refetch: backtestsRefetch,
+  } = useStrategyBacktests();
+  const { data: templatesData, isLoading: templatesLoading } =
+    useStrategyTemplates();
+  const createBacktest = useCreateBacktest();
 
-  const backtestsFromApi: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
-  const STRATEGY_TEMPLATES: StrategyTemplate[] = (templatesData as any)?.data ?? (templatesData as any)?.templates ?? []
+  const backtestsFromApi: BacktestRun[] =
+    (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
+  const STRATEGY_TEMPLATES: StrategyTemplate[] =
+    (templatesData as any)?.data ?? (templatesData as any)?.templates ?? [];
 
   // Derive filter options from data
   const ARCHETYPE_OPTIONS = React.useMemo(() => {
-    const counts: Record<string, number> = {}
-    backtestsFromApi.forEach((bt) => { counts[bt.archetype] = (counts[bt.archetype] || 0) + 1 })
-    return Object.entries(counts).map(([value, count]) => ({ value, label: value.replace(/_/g, " "), count }))
-  }, [backtestsFromApi])
+    const counts: Record<string, number> = {};
+    backtestsFromApi.forEach((bt) => {
+      counts[bt.archetype] = (counts[bt.archetype] || 0) + 1;
+    });
+    return Object.entries(counts).map(([value, count]) => ({
+      value,
+      label: value.replace(/_/g, " "),
+      count,
+    }));
+  }, [backtestsFromApi]);
 
   const VENUE_OPTIONS = React.useMemo(() => {
-    const counts: Record<string, number> = {}
-    backtestsFromApi.forEach((bt) => { counts[bt.venue] = (counts[bt.venue] || 0) + 1 })
-    return Object.entries(counts).map(([value, count]) => ({ value, label: value, count }))
-  }, [backtestsFromApi])
+    const counts: Record<string, number> = {};
+    backtestsFromApi.forEach((bt) => {
+      counts[bt.venue] = (counts[bt.venue] || 0) + 1;
+    });
+    return Object.entries(counts).map(([value, count]) => ({
+      value,
+      label: value,
+      count,
+    }));
+  }, [backtestsFromApi]);
 
   const TESTING_STAGE_OPTIONS = React.useMemo(() => {
-    const counts: Record<string, number> = {}
-    backtestsFromApi.forEach((bt) => { counts[bt.testingStage] = (counts[bt.testingStage] || 0) + 1 })
-    return Object.entries(counts).map(([value, count]) => ({ value, label: value.replace(/_/g, " "), count }))
-  }, [backtestsFromApi])
+    const counts: Record<string, number> = {};
+    backtestsFromApi.forEach((bt) => {
+      counts[bt.testingStage] = (counts[bt.testingStage] || 0) + 1;
+    });
+    return Object.entries(counts).map(([value, count]) => ({
+      value,
+      label: value.replace(/_/g, " "),
+      count,
+    }));
+  }, [backtestsFromApi]);
 
-  const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([])
-  const backtests = [...localBacktests, ...backtestsFromApi]
-  const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS)
-  const [dialogOpen, setDialogOpen] = React.useState(false)
-  const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM)
-  const [candidateBasket, setCandidateBasket] = React.useState<Set<string>>(new Set())
-  const [wizardOpen, setWizardOpen] = React.useState(false)
+  const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([]);
+  const backtests = [...localBacktests, ...backtestsFromApi];
+  const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM);
+  const [candidateBasket, setCandidateBasket] = React.useState<Set<string>>(
+    new Set(),
+  );
+  const [wizardOpen, setWizardOpen] = React.useState(false);
 
   // Filter logic
   const filtered = backtests.filter((bt) => {
-    if (filters.archetype && bt.archetype !== filters.archetype) return false
-    if (filters.venue && bt.venue !== filters.venue) return false
-    if (filters.stage && bt.testingStage !== filters.stage) return false
+    if (filters.archetype && bt.archetype !== filters.archetype) return false;
+    if (filters.venue && bt.venue !== filters.venue) return false;
+    if (filters.stage && bt.testingStage !== filters.stage) return false;
     if (filters.search) {
-      const q = filters.search.toLowerCase()
+      const q = filters.search.toLowerCase();
       if (
         !bt.templateName.toLowerCase().includes(q) &&
         !bt.instrument.toLowerCase().includes(q)
       )
-        return false
+        return false;
     }
-    return true
-  })
+    return true;
+  });
 
   function toggleCandidate(id: string) {
     setCandidateBasket((prev) => {
-      const next = new Set(prev)
+      const next = new Set(prev);
       if (next.has(id)) {
-        next.delete(id)
+        next.delete(id);
       } else {
-        next.add(id)
+        next.add(id);
       }
-      return next
-    })
+      return next;
+    });
   }
 
   const backtestColumns: ColumnDef<BacktestRun, unknown>[] = React.useMemo(
@@ -208,19 +245,23 @@ export default function BacktestsPage() {
         header: "",
         enableSorting: false,
         cell: ({ row }) => {
-          const bt = row.original
-          if (bt.status !== "completed") return null
+          const bt = row.original;
+          if (bt.status !== "completed") return null;
           return (
             <button
               onClick={() => toggleCandidate(bt.id)}
               className="p-0.5 rounded hover:bg-muted"
-              title={candidateBasket.has(bt.id) ? "Remove from basket" : "Add to candidate basket"}
+              title={
+                candidateBasket.has(bt.id)
+                  ? "Remove from basket"
+                  : "Add to candidate basket"
+              }
             >
               <Star
                 className={`size-3.5 ${candidateBasket.has(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
               />
             </button>
-          )
+          );
         },
       },
       {
@@ -228,7 +269,9 @@ export default function BacktestsPage() {
         header: "Strategy",
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="font-medium text-sm">{row.original.templateName}</span>
+          <span className="font-medium text-sm">
+            {row.original.templateName}
+          </span>
         ),
       },
       {
@@ -236,7 +279,9 @@ export default function BacktestsPage() {
         header: "Instrument",
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="text-muted-foreground text-xs font-mono">{row.original.instrument}</span>
+          <span className="text-muted-foreground text-xs font-mono">
+            {row.original.instrument}
+          </span>
         ),
       },
       {
@@ -244,7 +289,9 @@ export default function BacktestsPage() {
         header: "Venue",
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="text-muted-foreground text-xs">{row.original.venue}</span>
+          <span className="text-muted-foreground text-xs">
+            {row.original.venue}
+          </span>
         ),
       },
       {
@@ -252,8 +299,13 @@ export default function BacktestsPage() {
         header: "Status",
         enableSorting: false,
         cell: ({ row }) => (
-          <Badge variant="outline" className={backtestStatusColor(row.original.status)}>
-            {row.original.status === "running" ? `${row.original.progress}%` : row.original.status}
+          <Badge
+            variant="outline"
+            className={backtestStatusColor(row.original.status)}
+          >
+            {row.original.status === "running"
+              ? `${row.original.progress}%`
+              : row.original.status}
           </Badge>
         ),
       },
@@ -273,7 +325,9 @@ export default function BacktestsPage() {
         accessorFn: (row) => row.metrics?.totalReturn ?? -Infinity,
         cell: ({ row }) => (
           <span className="font-mono text-sm">
-            {row.original.metrics ? fmtPct(row.original.metrics.totalReturn) : "--"}
+            {row.original.metrics
+              ? fmtPct(row.original.metrics.totalReturn)
+              : "--"}
           </span>
         ),
       },
@@ -283,7 +337,9 @@ export default function BacktestsPage() {
         accessorFn: (row) => row.metrics?.maxDrawdown ?? Infinity,
         cell: ({ row }) => (
           <span className="font-mono text-sm text-red-400">
-            {row.original.metrics ? fmtPct(row.original.metrics.maxDrawdown) : "--"}
+            {row.original.metrics
+              ? fmtPct(row.original.metrics.maxDrawdown)
+              : "--"}
           </span>
         ),
       },
@@ -320,12 +376,12 @@ export default function BacktestsPage() {
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [candidateBasket],
-  )
+  );
 
   function handleSubmitBacktest() {
-    if (!form.templateId) return
-    const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
-    if (!tpl) return
+    if (!form.templateId) return;
+    const tpl = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId);
+    if (!tpl) return;
 
     const newBt: BacktestRun = {
       id: `bt-new-${Date.now()}`,
@@ -352,7 +408,7 @@ export default function BacktestsPage() {
       configHash: `cfg-hash-${Date.now()}`,
       liveAnalogId: null,
       driftScore: null,
-    }
+    };
 
     createBacktest.mutate({
       templateId: tpl.id,
@@ -363,17 +419,19 @@ export default function BacktestsPage() {
       entryThreshold: parseFloat(form.entryThreshold),
       exitThreshold: parseFloat(form.exitThreshold),
       maxLeverage: parseFloat(form.maxLeverage),
-    })
+    });
 
     // Optimistically add to local list
-    setLocalBacktests((prev) => [newBt, ...prev])
-    setForm(INITIAL_FORM)
-    setDialogOpen(false)
+    setLocalBacktests((prev) => [newBt, ...prev]);
+    setForm(INITIAL_FORM);
+    setDialogOpen(false);
   }
 
-  const isLoading = backtestsLoading || templatesLoading
-  const selectedTemplate = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId)
-  const activeFilterCount = Object.values(filters).filter(Boolean).length
+  const isLoading = backtestsLoading || templatesLoading;
+  const selectedTemplate = STRATEGY_TEMPLATES.find(
+    (t) => t.id === form.templateId,
+  );
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   if (isLoading) {
     return (
@@ -381,7 +439,7 @@ export default function BacktestsPage() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
-    )
+    );
   }
 
   if (backtestsIsError) {
@@ -389,7 +447,7 @@ export default function BacktestsPage() {
       <div className="p-6">
         <ApiError error={backtestsError} onRetry={() => backtestsRefetch()} />
       </div>
-    )
+    );
   }
 
   if (backtests.length === 0) {
@@ -398,11 +456,14 @@ export default function BacktestsPage() {
         <EmptyState
           title="No backtests"
           description="No backtests have been run yet. Create your first backtest to evaluate a strategy."
-          action={{ label: "Run New Backtest", onClick: () => setDialogOpen(true) }}
+          action={{
+            label: "Run New Backtest",
+            onClick: () => setDialogOpen(true),
+          }}
           icon={FlaskConical}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -411,25 +472,31 @@ export default function BacktestsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Backtest Management</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Backtest Management
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {filtered.length} backtests &middot; {backtests.filter((b) => b.status === "running").length} running
+              {filtered.length} backtests &middot;{" "}
+              {backtests.filter((b) => b.status === "running").length} running
             </p>
           </div>
           <div className="flex items-center gap-2">
             <ExportDropdown
-              data={filtered.map((bt) => ({
-                name: bt.templateName,
-                archetype: bt.archetype,
-                assetClass: bt.instrument,
-                status: bt.status,
-                sharpe: bt.metrics?.sharpe ?? null,
-                totalReturn: bt.metrics?.totalReturn ?? null,
-                maxDrawdown: bt.metrics?.maxDrawdown ?? null,
-                tradesCount: bt.metrics?.turnover ?? null,
-                sortino: bt.metrics?.sortino ?? null,
-                hitRate: bt.metrics?.hitRate ?? null,
-              } as Record<string, unknown>))}
+              data={filtered.map(
+                (bt) =>
+                  ({
+                    name: bt.templateName,
+                    archetype: bt.archetype,
+                    assetClass: bt.instrument,
+                    status: bt.status,
+                    sharpe: bt.metrics?.sharpe ?? null,
+                    totalReturn: bt.metrics?.totalReturn ?? null,
+                    maxDrawdown: bt.metrics?.maxDrawdown ?? null,
+                    tradesCount: bt.metrics?.turnover ?? null,
+                    sortino: bt.metrics?.sortino ?? null,
+                    hitRate: bt.metrics?.hitRate ?? null,
+                  }) as Record<string, unknown>,
+              )}
               columns={backtestExportColumns}
               filename="strategy-backtests"
             />
@@ -452,7 +519,10 @@ export default function BacktestsPage() {
                 <Filter className="size-3.5" />
                 Filters
                 {activeFilterCount > 0 && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] px-1.5 py-0"
+                  >
                     {activeFilterCount}
                   </Badge>
                 )}
@@ -460,7 +530,12 @@ export default function BacktestsPage() {
 
               <Select
                 value={filters.archetype}
-                onValueChange={(v) => setFilters((f) => ({ ...f, archetype: v === "__all__" ? "" : v }))}
+                onValueChange={(v) =>
+                  setFilters((f) => ({
+                    ...f,
+                    archetype: v === "__all__" ? "" : v,
+                  }))
+                }
               >
                 <SelectTrigger size="sm" className="w-40">
                   <SelectValue placeholder="Archetype" />
@@ -477,7 +552,9 @@ export default function BacktestsPage() {
 
               <Select
                 value={filters.venue}
-                onValueChange={(v) => setFilters((f) => ({ ...f, venue: v === "__all__" ? "" : v }))}
+                onValueChange={(v) =>
+                  setFilters((f) => ({ ...f, venue: v === "__all__" ? "" : v }))
+                }
               >
                 <SelectTrigger size="sm" className="w-36">
                   <SelectValue placeholder="Venue" />
@@ -494,7 +571,9 @@ export default function BacktestsPage() {
 
               <Select
                 value={filters.stage}
-                onValueChange={(v) => setFilters((f) => ({ ...f, stage: v === "__all__" ? "" : v }))}
+                onValueChange={(v) =>
+                  setFilters((f) => ({ ...f, stage: v === "__all__" ? "" : v }))
+                }
               >
                 <SelectTrigger size="sm" className="w-36">
                   <SelectValue placeholder="Stage" />
@@ -514,7 +593,9 @@ export default function BacktestsPage() {
                 <Input
                   placeholder="Search by name or instrument..."
                   value={filters.search}
-                  onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((f) => ({ ...f, search: e.target.value }))
+                  }
                   className="pl-8 h-8 text-sm"
                 />
               </div>
@@ -562,8 +643,8 @@ export default function BacktestsPage() {
             <CardContent>
               <div className="flex flex-wrap gap-2">
                 {Array.from(candidateBasket).map((btId) => {
-                  const bt = backtests.find((b) => b.id === btId)
-                  if (!bt) return null
+                  const bt = backtests.find((b) => b.id === btId);
+                  if (!bt) return null;
                   return (
                     <Badge
                       key={btId}
@@ -578,11 +659,15 @@ export default function BacktestsPage() {
                         <X className="size-3" />
                       </button>
                     </Badge>
-                  )
+                  );
                 })}
               </div>
               <div className="mt-3">
-                <Button size="sm" variant="outline" className="border-amber-500/30 text-amber-300">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-amber-500/30 text-amber-300"
+                >
                   <Plus className="size-3.5" />
                   Promote Selected to Candidates
                 </Button>
@@ -609,7 +694,12 @@ export default function BacktestsPage() {
                 <Select
                   value={form.templateId}
                   onValueChange={(v) =>
-                    setForm((f) => ({ ...f, templateId: v, instrument: "", venue: "" }))
+                    setForm((f) => ({
+                      ...f,
+                      templateId: v,
+                      instrument: "",
+                      venue: "",
+                    }))
                   }
                 >
                   <SelectTrigger className="w-full">
@@ -637,14 +727,18 @@ export default function BacktestsPage() {
                       <Label>Instrument</Label>
                       <Select
                         value={form.instrument}
-                        onValueChange={(v) => setForm((f) => ({ ...f, instrument: v }))}
+                        onValueChange={(v) =>
+                          setForm((f) => ({ ...f, instrument: v }))
+                        }
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select..." />
                         </SelectTrigger>
                         <SelectContent>
                           {selectedTemplate.instruments.map((inst) => (
-                            <SelectItem key={inst} value={inst}>{inst}</SelectItem>
+                            <SelectItem key={inst} value={inst}>
+                              {inst}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -653,14 +747,18 @@ export default function BacktestsPage() {
                       <Label>Venue</Label>
                       <Select
                         value={form.venue}
-                        onValueChange={(v) => setForm((f) => ({ ...f, venue: v }))}
+                        onValueChange={(v) =>
+                          setForm((f) => ({ ...f, venue: v }))
+                        }
                       >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select..." />
                         </SelectTrigger>
                         <SelectContent>
                           {selectedTemplate.venues.map((v) => (
-                            <SelectItem key={v} value={v}>{v}</SelectItem>
+                            <SelectItem key={v} value={v}>
+                              {v}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -673,7 +771,9 @@ export default function BacktestsPage() {
                       <Input
                         type="date"
                         value={form.dateStart}
-                        onChange={(e) => setForm((f) => ({ ...f, dateStart: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, dateStart: e.target.value }))
+                        }
                       />
                     </div>
                     <div className="space-y-2">
@@ -681,7 +781,9 @@ export default function BacktestsPage() {
                       <Input
                         type="date"
                         value={form.dateEnd}
-                        onChange={(e) => setForm((f) => ({ ...f, dateEnd: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, dateEnd: e.target.value }))
+                        }
                       />
                     </div>
                   </div>
@@ -697,7 +799,12 @@ export default function BacktestsPage() {
                           type="number"
                           step="0.01"
                           value={form.entryThreshold}
-                          onChange={(e) => setForm((f) => ({ ...f, entryThreshold: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              entryThreshold: e.target.value,
+                            }))
+                          }
                         />
                       </div>
                       <div className="space-y-1">
@@ -706,7 +813,12 @@ export default function BacktestsPage() {
                           type="number"
                           step="0.01"
                           value={form.exitThreshold}
-                          onChange={(e) => setForm((f) => ({ ...f, exitThreshold: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              exitThreshold: e.target.value,
+                            }))
+                          }
                         />
                       </div>
                       <div className="space-y-1">
@@ -715,7 +827,12 @@ export default function BacktestsPage() {
                           type="number"
                           step="0.5"
                           value={form.maxLeverage}
-                          onChange={(e) => setForm((f) => ({ ...f, maxLeverage: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              maxLeverage: e.target.value,
+                            }))
+                          }
                         />
                       </div>
                     </div>
@@ -727,7 +844,10 @@ export default function BacktestsPage() {
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSubmitBacktest} disabled={!form.templateId}>
+              <Button
+                onClick={handleSubmitBacktest}
+                disabled={!form.templateId}
+              >
                 <Play className="size-4" />
                 Run Backtest
               </Button>
@@ -736,5 +856,5 @@ export default function BacktestsPage() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

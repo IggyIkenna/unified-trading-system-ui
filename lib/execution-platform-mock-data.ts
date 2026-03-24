@@ -7,7 +7,7 @@ import type {
   VenueMatrix,
   ExecutionCandidate,
   ExecutionMetricsSnapshot,
-} from "./execution-platform-types"
+} from "./execution-platform-types";
 
 // ============================================================================
 // Execution Algos
@@ -42,7 +42,8 @@ export const MOCK_EXECUTION_ALGOS: ExecutionAlgo[] = [
     name: "VWAP Adaptive",
     type: "VWAP",
     version: "3.0.1",
-    description: "Volume-weighted average price with real-time volume prediction",
+    description:
+      "Volume-weighted average price with real-time volume prediction",
     params: {
       aggressiveness: 0.6,
       minFillRate: 0.92,
@@ -65,10 +66,11 @@ export const MOCK_EXECUTION_ALGOS: ExecutionAlgo[] = [
     name: "Implementation Shortfall",
     type: "IS",
     version: "1.2.0",
-    description: "Minimizes implementation shortfall with urgency-aware scheduling",
+    description:
+      "Minimizes implementation shortfall with urgency-aware scheduling",
     params: {
       aggressiveness: 0.7,
-      minFillRate: 0.90,
+      minFillRate: 0.9,
       maxSpread: 20,
     },
     supportedVenues: ["binance", "okx", "deribit", "bybit"],
@@ -126,7 +128,7 @@ export const MOCK_EXECUTION_ALGOS: ExecutionAlgo[] = [
     status: "live",
     lastUpdated: "2024-03-12T14:00:00Z",
   },
-]
+];
 
 // ============================================================================
 // Venues
@@ -288,7 +290,7 @@ export const MOCK_VENUES: Venue[] = [
       latencyP99: 80,
     },
   },
-]
+];
 
 // ============================================================================
 // Recent Orders
@@ -301,7 +303,7 @@ export const MOCK_RECENT_ORDERS: ExecutionOrder[] = [
     side: "BUY",
     quantity: 125000,
     filledQty: 125000,
-    avgPrice: 3245.50,
+    avgPrice: 3245.5,
     algo: "VWAP",
     venue: "binance",
     createdAt: "2024-03-18T11:45:00Z",
@@ -309,9 +311,9 @@ export const MOCK_RECENT_ORDERS: ExecutionOrder[] = [
     filledAt: "2024-03-18T11:52:00Z",
     status: "filled",
     tca: {
-      arrivalPrice: 3244.20,
-      vwap: 3245.80,
-      twap: 3245.40,
+      arrivalPrice: 3244.2,
+      vwap: 3245.8,
+      twap: 3245.4,
       slippage: 4.0,
       marketImpact: 2.5,
       timingCost: 0.8,
@@ -324,17 +326,17 @@ export const MOCK_RECENT_ORDERS: ExecutionOrder[] = [
     side: "SELL",
     quantity: 85000,
     filledQty: 72000,
-    avgPrice: 68420.00,
-    limitPrice: 68400.00,
+    avgPrice: 68420.0,
+    limitPrice: 68400.0,
     algo: "TWAP",
     venue: "okx",
     createdAt: "2024-03-18T11:30:00Z",
     updatedAt: "2024-03-18T11:55:00Z",
     status: "partial",
     tca: {
-      arrivalPrice: 68450.00,
-      vwap: 68415.00,
-      twap: 68425.00,
+      arrivalPrice: 68450.0,
+      vwap: 68415.0,
+      twap: 68425.0,
       slippage: -4.4,
       marketImpact: 1.2,
       timingCost: 1.5,
@@ -355,7 +357,7 @@ export const MOCK_RECENT_ORDERS: ExecutionOrder[] = [
     filledAt: "2024-03-18T11:50:02Z",
     status: "filled",
     tca: {
-      arrivalPrice: 142.90,
+      arrivalPrice: 142.9,
       vwap: 142.88,
       twap: 142.86,
       slippage: -3.5,
@@ -364,7 +366,7 @@ export const MOCK_RECENT_ORDERS: ExecutionOrder[] = [
       totalCost: -2.5,
     },
   },
-]
+];
 
 // ============================================================================
 // Algo Backtests
@@ -439,7 +441,7 @@ export const MOCK_ALGO_BACKTESTS: AlgoBacktest[] = [
     status: "completed",
     completedAt: "2024-03-16T10:00:00Z",
   },
-]
+];
 
 // ============================================================================
 // Execution Candidates
@@ -514,7 +516,7 @@ export const MOCK_EXECUTION_CANDIDATES: ExecutionCandidate[] = [
     status: "pending",
     notes: "Pending latency test on Hyperliquid under high load.",
   },
-]
+];
 
 // ============================================================================
 // Metrics Snapshot
@@ -548,4 +550,4 @@ export const MOCK_EXECUTION_METRICS: ExecutionMetricsSnapshot = {
     CLOSE: { orders: 35, volume: 3000000, slippage: 0.65, fillRate: 97.8 },
     ADAPTIVE: { orders: 0, volume: 0, slippage: 0, fillRate: 0 },
   },
-}
+};

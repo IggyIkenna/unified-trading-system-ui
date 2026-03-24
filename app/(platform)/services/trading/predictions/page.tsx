@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { PredictionMarketsPanel } from "@/components/trading/prediction-markets-panel"
+import { PredictionMarketsPanel } from "@/components/trading/prediction-markets-panel";
 
 export default function PredictionMarketsPage() {
   return (
@@ -15,5 +15,5 @@ export default function PredictionMarketsPage() {
       </div>
       <PredictionMarketsPanel />
     </div>
-  )
+  );
 }

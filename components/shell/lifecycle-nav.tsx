@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 /**
  * Lifecycle Navigation Shell
@@ -8,10 +8,10 @@
  * Acquire -> Build -> Promote -> Run -> Observe -> Manage -> Report
  */
 
-import { ApiStatusIndicator } from "./api-status-indicator"
-import { NotificationBell } from "./notification-bell"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { ApiStatusIndicator } from "./api-status-indicator";
+import { NotificationBell } from "./notification-bell";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,16 +22,16 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/hooks/use-auth"
+} from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/use-auth";
 import {
   buildLifecycleNav,
   domainLanes,
   getRouteMapping,
   type LifecycleStage,
   lifecycleStages,
-} from "@/lib/lifecycle-mapping"
-import { cn } from "@/lib/utils"
+} from "@/lib/lifecycle-mapping";
+import { cn } from "@/lib/utils";
 import {
   ArrowUpCircle,
   Bell,
@@ -49,13 +49,16 @@ import {
   User,
   Wrench,
   Zap,
-} from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import * as React from "react"
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import * as React from "react";
 
 // Icon mapping for lifecycle stages
-const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: string }>> = {
+const stageIcons: Record<
+  LifecycleStage,
+  React.ComponentType<{ className?: string }>
+> = {
   acquire: Database,
   build: Wrench,
   promote: ArrowUpCircle,
@@ -64,14 +67,14 @@ const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: strin
   observe: Eye,
   manage: Settings2,
   report: FileText,
-}
+};
 
 interface LifecycleNavProps {
-  orgName?: string
-  orgId?: string
-  userName?: string
-  userRole?: string
-  className?: string
+  orgName?: string;
+  orgId?: string;
+  userName?: string;
+  userRole?: string;
+  className?: string;
 }
 
 export function LifecycleNav({
@@ -81,68 +84,90 @@ export function LifecycleNav({
   userRole = "internal-trader",
   className,
 }: LifecycleNavProps) {
-  const pathname = usePathname() || ""
-  const [searchOpen, setSearchOpen] = React.useState(false)
-  const { user, hasEntitlement, isAdmin, isInternal, logout: doLogout } = useAuth()
+  const pathname = usePathname() || "";
+  const [searchOpen, setSearchOpen] = React.useState(false);
+  const {
+    user,
+    hasEntitlement,
+    isAdmin,
+    isInternal,
+    logout: doLogout,
+  } = useAuth();
 
   // Persona switch redirects to login page for proper JWT re-issue
   const switchPersonaViaLogin = React.useCallback((personaId: string) => {
-    localStorage.removeItem("portal_user")
-    localStorage.removeItem("portal_token")
-    localStorage.removeItem("odum_user")
-    window.location.href = `/login?persona=${personaId}`
-  }, [])
+    localStorage.removeItem("portal_user");
+    localStorage.removeItem("portal_token");
+    localStorage.removeItem("odum_user");
+    window.location.href = `/login?persona=${personaId}`;
+  }, []);
 
   // Build navigation from lifecycle mapping, filter by entitlements
-  const allNavItems = buildLifecycleNav(true)
+  const allNavItems = buildLifecycleNav(true);
 
   // Admin-only routes — hidden from internal traders
-  const adminOnlyRoutes = ["/admin", "/ops", "/devops", "/config"]
+  const adminOnlyRoutes = ["/admin", "/ops", "/devops", "/config"];
   // Internal-only routes — visible to internal traders AND admins, hidden from clients
-  const internalRoutes = ["/services/manage"]
+  const internalRoutes = ["/services/manage"];
 
   // Check if an item is accessible (unlocked) for the current user
   const isItemAccessible = (path: string): boolean => {
-    if (adminOnlyRoutes.some(r => path === r || path.startsWith(r + "/"))) return isAdmin()
-    if (internalRoutes.some(r => path === r || path.startsWith(r + "/"))) return isInternal()
-    if (path.startsWith("/services/research")) return hasEntitlement("strategy-full") || hasEntitlement("ml-full")
-    if (path.startsWith("/services/trading") || path.startsWith("/services/execution")) return hasEntitlement("execution-basic") || hasEntitlement("execution-full")
-    if (path.startsWith("/services/reports")) return hasEntitlement("reporting")
-    return true
-  }
+    if (adminOnlyRoutes.some((r) => path === r || path.startsWith(r + "/")))
+      return isAdmin();
+    if (internalRoutes.some((r) => path === r || path.startsWith(r + "/")))
+      return isInternal();
+    if (path.startsWith("/services/research"))
+      return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
+    if (
+      path.startsWith("/services/trading") ||
+      path.startsWith("/services/execution")
+    )
+      return (
+        hasEntitlement("execution-basic") || hasEntitlement("execution-full")
+      );
+    if (path.startsWith("/services/reports"))
+      return hasEntitlement("reporting");
+    return true;
+  };
 
   // Build nav items — keep locked items visible (except ops), mark them as locked
-  const navItems = allNavItems.map(nav => ({
-    ...nav,
-    items: nav.items
-      .filter(item => {
-        const isAdminRoute = adminOnlyRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))
-        const isInternalRoute = internalRoutes.some(r => item.path === r || item.path.startsWith(r + "/"))
-        if (isAdminRoute) return isAdmin()
-        if (isInternalRoute) return isInternal()
-        return true
-      })
-      .map(item => ({
-        ...item,
-        locked: !isItemAccessible(item.path),
-      })),
-  })).filter(nav => nav.items.length > 0)
+  const navItems = allNavItems
+    .map((nav) => ({
+      ...nav,
+      items: nav.items
+        .filter((item) => {
+          const isAdminRoute = adminOnlyRoutes.some(
+            (r) => item.path === r || item.path.startsWith(r + "/"),
+          );
+          const isInternalRoute = internalRoutes.some(
+            (r) => item.path === r || item.path.startsWith(r + "/"),
+          );
+          if (isAdminRoute) return isAdmin();
+          if (isInternalRoute) return isInternal();
+          return true;
+        })
+        .map((item) => ({
+          ...item,
+          locked: !isItemAccessible(item.path),
+        })),
+    }))
+    .filter((nav) => nav.items.length > 0);
 
   // Get current route mapping
-  const currentMapping = getRouteMapping(pathname)
-  const currentStage = currentMapping?.primaryStage
+  const currentMapping = getRouteMapping(pathname);
+  const currentStage = currentMapping?.primaryStage;
 
   // Keyboard shortcut for search
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setSearchOpen(o => !o)
+        e.preventDefault();
+        setSearchOpen((o) => !o);
       }
-    }
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+    };
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, []);
 
   return (
     <nav
@@ -166,10 +191,11 @@ export function LifecycleNav({
         {/* Lifecycle stage navigation */}
         <div className="flex items-center">
           {navItems.map((nav, idx) => {
-            const Icon = stageIcons[nav.stage]
-            const isActive = currentStage === nav.stage
-            const stageInfo = lifecycleStages[nav.stage]
-            const allLocked = nav.items.length > 0 && nav.items.every(item => item.locked)
+            const Icon = stageIcons[nav.stage];
+            const isActive = currentStage === nav.stage;
+            const stageInfo = lifecycleStages[nav.stage];
+            const allLocked =
+              nav.items.length > 0 && nav.items.every((item) => item.locked);
 
             return (
               <React.Fragment key={nav.stage}>
@@ -182,7 +208,7 @@ export function LifecycleNav({
                           ? "text-muted-foreground/40 cursor-not-allowed"
                           : isActive
                             ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted",
                       )}
                     >
                       <Icon className="size-3.5" />
@@ -199,31 +225,35 @@ export function LifecycleNav({
                       <Icon className={cn("size-4", stageInfo.color)} />
                       <div>
                         <div className="font-medium">{nav.label}</div>
-                        <div className="text-xs text-muted-foreground font-normal">{stageInfo.description}</div>
+                        <div className="text-xs text-muted-foreground font-normal">
+                          {stageInfo.description}
+                        </div>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {nav.items.map((item) => {
-                      const itemActive = pathname === item.path || pathname.startsWith(item.path + "/")
+                      const itemActive =
+                        pathname === item.path ||
+                        pathname.startsWith(item.path + "/");
                       if (item.locked) {
                         // Locked item — visible but not clickable, with upgrade hint
                         return (
-                          <DropdownMenuItem
-                            key={item.path}
-                            asChild
-                          >
+                          <DropdownMenuItem key={item.path} asChild>
                             <Link
                               href={`/services/${item.path.split("/services/")[1]?.split("/")[0] || "overview"}`}
                               className="flex items-center justify-between opacity-50 cursor-not-allowed"
                               title="Not part of your subscription — upgrade to access"
                             >
                               <span>{item.label}</span>
-                              <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
+                              <Badge
+                                variant="outline"
+                                className="text-[9px] px-1 py-0 h-4"
+                              >
                                 Upgrade
                               </Badge>
                             </Link>
                           </DropdownMenuItem>
-                        )
+                        );
                       }
                       return (
                         <DropdownMenuItem key={item.path} asChild>
@@ -231,20 +261,22 @@ export function LifecycleNav({
                             href={item.path}
                             className={cn(
                               "flex items-center justify-between",
-                              itemActive && "bg-primary/10 text-primary"
+                              itemActive && "bg-primary/10 text-primary",
                             )}
                           >
                             <span>{item.label}</span>
                             <div className="flex items-center gap-1">
-                              {item.lanes.slice(0, 2).map(lane => (
+                              {item.lanes.slice(0, 2).map((lane) => (
                                 <span
                                   key={lane}
                                   className={cn(
                                     "text-[9px] px-1 py-0.5 rounded",
                                     domainLanes[lane].color,
-                                    "bg-current/10"
+                                    "bg-current/10",
                                   )}
-                                  style={{ color: `var(--${lane}-color, currentColor)` }}
+                                  style={{
+                                    color: `var(--${lane}-color, currentColor)`,
+                                  }}
                                 >
                                   {domainLanes[lane].label}
                                 </span>
@@ -252,7 +284,7 @@ export function LifecycleNav({
                             </div>
                           </Link>
                         </DropdownMenuItem>
-                      )
+                      );
                     })}
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -262,7 +294,7 @@ export function LifecycleNav({
                   <div className="w-2 h-px bg-border mx-0.5 hidden lg:block" />
                 )}
               </React.Fragment>
-            )
+            );
           })}
         </div>
       </div>
@@ -297,7 +329,9 @@ export function LifecycleNav({
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
               <Building2 className="size-3.5" />
-              <span className="hidden sm:inline max-w-24 truncate">{orgName}</span>
+              <span className="hidden sm:inline max-w-24 truncate">
+                {orgName}
+              </span>
               <ChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -312,12 +346,18 @@ export function LifecycleNav({
                 >
                   <div>
                     <div className="text-sm">Odum Research</div>
-                    <div className="text-[10px] text-muted-foreground">Internal · All services</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      Internal · All services
+                    </div>
                   </div>
-                  {user?.org?.id === "odum-internal" && <Check className="size-4 text-primary" />}
+                  {user?.org?.id === "odum-internal" && (
+                    <Check className="size-4 text-primary" />
+                  )}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[10px] text-muted-foreground">View as Client</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-[10px] text-muted-foreground">
+                  View as Client
+                </DropdownMenuLabel>
               </>
             )}
             <DropdownMenuItem
@@ -326,9 +366,13 @@ export function LifecycleNav({
             >
               <div>
                 <div className="text-sm">Alpha Capital</div>
-                <div className="text-[10px] text-muted-foreground">Full Suite · 12 strategies</div>
+                <div className="text-[10px] text-muted-foreground">
+                  Full Suite · 12 strategies
+                </div>
               </div>
-              {user?.org?.id === "acme" && <Check className="size-4 text-primary" />}
+              {user?.org?.id === "acme" && (
+                <Check className="size-4 text-primary" />
+              )}
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex items-center justify-between"
@@ -336,9 +380,13 @@ export function LifecycleNav({
             >
               <div>
                 <div className="text-sm">Vertex Partners</div>
-                <div className="text-[10px] text-muted-foreground">Data + Execution + Strategy</div>
+                <div className="text-[10px] text-muted-foreground">
+                  Data + Execution + Strategy
+                </div>
               </div>
-              {user?.org?.id === "vertex" && <Check className="size-4 text-primary" />}
+              {user?.org?.id === "vertex" && (
+                <Check className="size-4 text-primary" />
+              )}
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex items-center justify-between"
@@ -346,9 +394,13 @@ export function LifecycleNav({
             >
               <div>
                 <div className="text-sm">Beta Fund</div>
-                <div className="text-[10px] text-muted-foreground">Data Basic · CEFI only</div>
+                <div className="text-[10px] text-muted-foreground">
+                  Data Basic · CEFI only
+                </div>
               </div>
-              {user?.org?.id === "beta" && <Check className="size-4 text-primary" />}
+              {user?.org?.id === "beta" && (
+                <Check className="size-4 text-primary" />
+              )}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -356,8 +408,16 @@ export function LifecycleNav({
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full bg-primary/10 text-primary font-semibold text-xs">
-              {userName.split(" ").map(n => n[0]).join("").slice(0, 2)}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 rounded-full bg-primary/10 text-primary font-semibold text-xs"
+            >
+              {userName
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
@@ -380,8 +440,8 @@ export function LifecycleNav({
             <DropdownMenuItem
               className="text-destructive"
               onClick={() => {
-                doLogout()
-                window.location.href = "/login"
+                doLogout();
+                window.location.href = "/login";
               }}
             >
               <LogOut className="mr-2 size-4" />
@@ -391,14 +451,17 @@ export function LifecycleNav({
         </DropdownMenu>
       </div>
     </nav>
-  )
+  );
 }
 
 // Legacy nav fallback - redirects to old nav during transition
 export function LegacyNavFallback() {
   return (
     <div className="px-4 py-1 bg-amber-500/10 border-b border-amber-500/30 text-amber-500 text-xs text-center">
-      Using legacy navigation. <Link href="/settings" className="underline">Switch to lifecycle nav</Link>
+      Using legacy navigation.{" "}
+      <Link href="/settings" className="underline">
+        Switch to lifecycle nav
+      </Link>
     </div>
-  )
+  );
 }

@@ -6,8 +6,8 @@ The following services have been removed or consolidated as part of the post-tra
 
 ### reconciliation-service
 
-**Status**: REMOVED  
-**Reason**: Functionality integrated into `position-balance-monitor-service`  
+**Status**: REMOVED
+**Reason**: Functionality integrated into `position-balance-monitor-service`
 **Date**: Feb 2026
 
 `position-balance-monitor-service` is now the **source of truth** for positions and handles:
@@ -27,8 +27,8 @@ The following services have been removed or consolidated as part of the post-tra
 
 ### risk-monitor-service + exposure-monitor-service
 
-**Status**: MERGED  
-**Reason**: Consolidated into `risk-and-exposure-service`  
+**Status**: MERGED
+**Reason**: Consolidated into `risk-and-exposure-service`
 **Date**: Feb 2026
 
 `risk-and-exposure-service` provides:

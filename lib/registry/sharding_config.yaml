@@ -27,7 +27,17 @@ services:
   features-sports-service:
     batch:
       dimensions: [league, feature_group, date]
-      league_values: [EPL, LA_LIGA, BUNDESLIGA, SERIE_A, LIGUE_1, CHAMPIONSHIP, EREDIVISIE, PRIMEIRA_LIGA]
+      league_values:
+        [
+          EPL,
+          LA_LIGA,
+          BUNDESLIGA,
+          SERIE_A,
+          LIGUE_1,
+          CHAMPIONSHIP,
+          EREDIVISIE,
+          PRIMEIRA_LIGA,
+        ]
       feature_group_values:
         [
           team_form,
@@ -127,7 +137,8 @@ services:
     batch:
       dimensions: [category, venue, feature_category, date]
       category_values: [cefi, defi, tradfi]
-      feature_category_values: [options_volatility, futures_basis, tradfi_vol_surface]
+      feature_category_values:
+        [options_volatility, futures_basis, tradfi_vol_surface]
     live:
       dimensions: [venue, feature_category]
       notes: Triggered by MDPS completion event
@@ -144,7 +155,13 @@ services:
     batch:
       dimensions: [category, feature_category, date]
       category_values: [cefi, defi, tradfi]
-      feature_category_values: [regime, cross_venue_spread, realized_vs_implied, cross_asset_correlation]
+      feature_category_values:
+        [
+          regime,
+          cross_venue_spread,
+          realized_vs_implied,
+          cross_asset_correlation,
+        ]
     live:
       dimensions: [feature_category]
       notes: Aggregates across venues/instruments. Triggered by FDS+FVS completion.
@@ -153,7 +170,13 @@ services:
     batch:
       dimensions: [category, feature_category, date]
       category_values: [cefi, defi, tradfi]
-      feature_category_values: [tf_momentum_alignment, tf_structure_context, tf_vol_compression, tf_session_context]
+      feature_category_values:
+        [
+          tf_momentum_alignment,
+          tf_structure_context,
+          tf_vol_compression,
+          tf_session_context,
+        ]
     live:
       dimensions: [feature_category]
       notes: L3b cross-TF aggregation. Triggered by FDS completion per instrument.

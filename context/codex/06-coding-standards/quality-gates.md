@@ -1045,14 +1045,14 @@ steps:
   # Step 1: Configure Docker auth
   - name: "gcr.io/cloud-builders/gcloud"
     id: "configure-docker"
-    args: ["auth", "configure-docker", "asia-northeast1-docker.pkg.dev", "--quiet"]
+    args:
+      ["auth", "configure-docker", "asia-northeast1-docker.pkg.dev", "--quiet"]
 
   # Step 2: Ensure artifact repo exists
   - name: "gcr.io/cloud-builders/gcloud"
     id: "ensure-repo"
     entrypoint: "bash"
-    args:
-      [
+    args: [
         "-c",
         "gcloud artifacts repositories describe {repo} --location=asia-northeast1 || gcloud artifacts repositories
         create {repo} ...",
@@ -1062,7 +1062,10 @@ steps:
   - name: "gcr.io/cloud-builders/docker"
     id: "pull-base-image"
     args:
-      ["pull", "asia-northeast1-docker.pkg.dev/$PROJECT_ID/unified-trading-services/unified-trading-services:latest"]
+      [
+        "pull",
+        "asia-northeast1-docker.pkg.dev/$PROJECT_ID/unified-trading-services/unified-trading-services:latest",
+      ]
     waitFor: ["configure-docker"]
 
   # Step 4: Build image (includes code + tests + dev deps)

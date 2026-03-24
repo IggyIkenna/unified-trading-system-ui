@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ArrowRight,
   CheckCircle2,
@@ -10,10 +10,10 @@ import {
   Shield,
   Target,
   XCircle,
-} from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -21,18 +21,29 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { type ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@/components/ui/data-table"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { type ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/data-table";
 
-import { useStrategyCandidates, useStrategyBacktests, usePromoteStrategy, useRejectStrategy } from "@/hooks/api/use-strategies"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ApiError } from "@/components/ui/api-error"
-import { EmptyState } from "@/components/ui/empty-state"
-import { CandidateBasket, useCandidateBasket } from "@/components/platform/candidate-basket"
-import type { StrategyCandidate, BacktestRun } from "@/lib/strategy-platform-types"
+import {
+  useStrategyCandidates,
+  useStrategyBacktests,
+  usePromoteStrategy,
+  useRejectStrategy,
+} from "@/hooks/api/use-strategies";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/ui/api-error";
+import { EmptyState } from "@/components/ui/empty-state";
+import {
+  CandidateBasket,
+  useCandidateBasket,
+} from "@/components/platform/candidate-basket";
+import type {
+  StrategyCandidate,
+  BacktestRun,
+} from "@/lib/strategy-platform-types";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -41,24 +52,24 @@ import type { StrategyCandidate, BacktestRun } from "@/lib/strategy-platform-typ
 function reviewStateColor(state: StrategyCandidate["reviewState"]) {
   switch (state) {
     case "approved":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
     case "in_review":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30"
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
     case "pending":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30"
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
     case "rejected":
-      return "bg-red-500/15 text-red-400 border-red-500/30"
+      return "bg-red-500/15 text-red-400 border-red-500/30";
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30"
+      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
   }
 }
 
 function fmtPct(v: number) {
-  return `${(v * 100).toFixed(1)}%`
+  return `${(v * 100).toFixed(1)}%`;
 }
 
 function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals)
+  return v.toFixed(decimals);
 }
 
 // Approval workflow stages
@@ -67,45 +78,54 @@ const WORKFLOW_STAGES = [
   { key: "in_review", label: "In Review", icon: Shield },
   { key: "approved", label: "Approved", icon: CheckCircle2 },
   { key: "promoted", label: "Promoted", icon: Rocket },
-] as const
+] as const;
 
-type PromotionTarget = "paper" | "live"
+type PromotionTarget = "paper" | "live";
 
 // ---------------------------------------------------------------------------
 // Page
 // ---------------------------------------------------------------------------
 
 export default function CandidatesPage() {
-  const { data: candidatesData, isLoading: candidatesLoading, isError: candidatesIsError, error: candidatesError, refetch: candidatesRefetch } = useStrategyCandidates()
-  const { data: backtestsData, isLoading: backtestsLoading } = useStrategyBacktests()
-  const promoteStrategy = usePromoteStrategy()
-  const rejectStrategy = useRejectStrategy()
+  const {
+    data: candidatesData,
+    isLoading: candidatesLoading,
+    isError: candidatesIsError,
+    error: candidatesError,
+    refetch: candidatesRefetch,
+  } = useStrategyCandidates();
+  const { data: backtestsData, isLoading: backtestsLoading } =
+    useStrategyBacktests();
+  const promoteStrategy = usePromoteStrategy();
+  const rejectStrategy = useRejectStrategy();
 
-  const candidatesFromApi: StrategyCandidate[] = (candidatesData as any)?.data ?? (candidatesData as any)?.candidates ?? []
-  const BACKTEST_RUNS: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? []
+  const candidatesFromApi: StrategyCandidate[] =
+    (candidatesData as any)?.data ?? (candidatesData as any)?.candidates ?? [];
+  const BACKTEST_RUNS: BacktestRun[] =
+    (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
 
-  const isLoading = candidatesLoading || backtestsLoading
-  const [candidates, setCandidates] = React.useState<StrategyCandidate[]>([])
-  const basket = useCandidateBasket()
+  const isLoading = candidatesLoading || backtestsLoading;
+  const [candidates, setCandidates] = React.useState<StrategyCandidate[]>([]);
+  const basket = useCandidateBasket();
 
   // Sync API data into local state when it arrives
   React.useEffect(() => {
     if (candidatesFromApi.length > 0) {
-      setCandidates(candidatesFromApi)
+      setCandidates(candidatesFromApi);
     }
-  }, [candidatesFromApi])
+  }, [candidatesFromApi]);
 
   const [promotionTargets, setPromotionTargets] = React.useState<
     Record<string, PromotionTarget | null>
-  >({})
-  const [commentDialog, setCommentDialog] = React.useState<string | null>(null)
-  const [commentText, setCommentText] = React.useState("")
+  >({});
+  const [commentDialog, setCommentDialog] = React.useState<string | null>(null);
+  const [commentText, setCommentText] = React.useState("");
 
   function promoteCandidate(candidateId: string, target: PromotionTarget) {
-    promoteStrategy.mutate(candidateId)
+    promoteStrategy.mutate(candidateId);
     setCandidates((prev) =>
       prev.map((c) => {
-        if (c.id !== candidateId) return c
+        if (c.id !== candidateId) return c;
         return {
           ...c,
           reviewState: "approved" as const,
@@ -119,27 +139,27 @@ export default function CandidatesPage() {
               createdAt: new Date().toISOString(),
             },
           ],
-        }
-      })
-    )
-    setPromotionTargets((prev) => ({ ...prev, [candidateId]: target }))
+        };
+      }),
+    );
+    setPromotionTargets((prev) => ({ ...prev, [candidateId]: target }));
   }
 
   function rejectCandidate(candidateId: string) {
-    rejectStrategy.mutate(candidateId)
+    rejectStrategy.mutate(candidateId);
     setCandidates((prev) =>
       prev.map((c) => {
-        if (c.id !== candidateId) return c
-        return { ...c, reviewState: "rejected" as const }
-      })
-    )
+        if (c.id !== candidateId) return c;
+        return { ...c, reviewState: "rejected" as const };
+      }),
+    );
   }
 
   function addComment(candidateId: string) {
-    if (!commentText.trim()) return
+    if (!commentText.trim()) return;
     setCandidates((prev) =>
       prev.map((c) => {
-        if (c.id !== candidateId) return c
+        if (c.id !== candidateId) return c;
         return {
           ...c,
           reviewComments: [
@@ -152,131 +172,136 @@ export default function CandidatesPage() {
               createdAt: new Date().toISOString(),
             },
           ],
-        }
-      })
-    )
-    setCommentText("")
-    setCommentDialog(null)
+        };
+      }),
+    );
+    setCommentText("");
+    setCommentDialog(null);
   }
 
   // Compute workflow stage for display
   function getWorkflowStageIndex(candidate: StrategyCandidate): number {
-    const target = promotionTargets[candidate.id]
-    if (target) return 3 // promoted
+    const target = promotionTargets[candidate.id];
+    if (target) return 3; // promoted
     switch (candidate.reviewState) {
       case "pending":
-        return 0
+        return 0;
       case "in_review":
-        return 1
+        return 1;
       case "approved":
-        return 2
+        return 2;
       case "rejected":
-        return -1
+        return -1;
       default:
-        return 0
+        return 0;
     }
   }
 
   const pendingCandidates = candidates.filter(
-    (c) => c.reviewState === "pending" || c.reviewState === "in_review"
-  )
+    (c) => c.reviewState === "pending" || c.reviewState === "in_review",
+  );
   const resolvedCandidates = candidates.filter(
-    (c) => c.reviewState === "approved" || c.reviewState === "rejected"
-  )
+    (c) => c.reviewState === "approved" || c.reviewState === "rejected",
+  );
 
-  const resolvedColumns: ColumnDef<StrategyCandidate, unknown>[] = React.useMemo(
-    () => [
-      {
-        id: "strategy",
-        header: "Strategy",
-        enableSorting: false,
-        cell: ({ row }) => {
-          const bt = BACKTEST_RUNS.find((b) => b.id === row.original.backtestRunId)
-          return (
-            <span className="font-medium">
-              {bt?.templateName ?? row.original.configId}
-            </span>
-          )
-        },
-      },
-      {
-        accessorKey: "configVersion",
-        header: "Version",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <span className="text-muted-foreground font-mono text-xs">
-            v{row.original.configVersion}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "reviewState",
-        header: "Status",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <Badge
-            variant="outline"
-            className={reviewStateColor(row.original.reviewState)}
-          >
-            {row.original.reviewState}
-          </Badge>
-        ),
-      },
-      {
-        id: "promotedTo",
-        header: "Promoted To",
-        enableSorting: false,
-        cell: ({ row }) => {
-          const target = promotionTargets[row.original.id]
-          if (target) {
+  const resolvedColumns: ColumnDef<StrategyCandidate, unknown>[] =
+    React.useMemo(
+      () => [
+        {
+          id: "strategy",
+          header: "Strategy",
+          enableSorting: false,
+          cell: ({ row }) => {
+            const bt = BACKTEST_RUNS.find(
+              (b) => b.id === row.original.backtestRunId,
+            );
             return (
-              <Badge
-                variant="outline"
-                className={
-                  target === "live"
-                    ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                    : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
-                }
-              >
-                {target}
-              </Badge>
-            )
-          }
-          return <span className="text-muted-foreground text-xs">--</span>
+              <span className="font-medium">
+                {bt?.templateName ?? row.original.configId}
+              </span>
+            );
+          },
         },
-      },
-      {
-        id: "sharpe",
-        header: "Sharpe",
-        accessorFn: (row) => row.metricsSnapshot.sharpe,
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {fmtNum(row.original.metricsSnapshot.sharpe)}
-          </span>
-        ),
-      },
-      {
-        id: "return",
-        header: "Return",
-        accessorFn: (row) => row.metricsSnapshot.totalReturn,
-        cell: ({ row }) => (
-          <span className="font-mono text-sm">
-            {fmtPct(row.original.metricsSnapshot.totalReturn)}
-          </span>
-        ),
-      },
-      {
-        accessorKey: "selectedBy",
-        header: "Selected By",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <span className="text-muted-foreground text-xs">{row.original.selectedBy}</span>
-        ),
-      },
-    ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [BACKTEST_RUNS, promotionTargets],
-  )
+        {
+          accessorKey: "configVersion",
+          header: "Version",
+          enableSorting: false,
+          cell: ({ row }) => (
+            <span className="text-muted-foreground font-mono text-xs">
+              v{row.original.configVersion}
+            </span>
+          ),
+        },
+        {
+          accessorKey: "reviewState",
+          header: "Status",
+          enableSorting: false,
+          cell: ({ row }) => (
+            <Badge
+              variant="outline"
+              className={reviewStateColor(row.original.reviewState)}
+            >
+              {row.original.reviewState}
+            </Badge>
+          ),
+        },
+        {
+          id: "promotedTo",
+          header: "Promoted To",
+          enableSorting: false,
+          cell: ({ row }) => {
+            const target = promotionTargets[row.original.id];
+            if (target) {
+              return (
+                <Badge
+                  variant="outline"
+                  className={
+                    target === "live"
+                      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                      : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+                  }
+                >
+                  {target}
+                </Badge>
+              );
+            }
+            return <span className="text-muted-foreground text-xs">--</span>;
+          },
+        },
+        {
+          id: "sharpe",
+          header: "Sharpe",
+          accessorFn: (row) => row.metricsSnapshot.sharpe,
+          cell: ({ row }) => (
+            <span className="font-mono text-sm">
+              {fmtNum(row.original.metricsSnapshot.sharpe)}
+            </span>
+          ),
+        },
+        {
+          id: "return",
+          header: "Return",
+          accessorFn: (row) => row.metricsSnapshot.totalReturn,
+          cell: ({ row }) => (
+            <span className="font-mono text-sm">
+              {fmtPct(row.original.metricsSnapshot.totalReturn)}
+            </span>
+          ),
+        },
+        {
+          accessorKey: "selectedBy",
+          header: "Selected By",
+          enableSorting: false,
+          cell: ({ row }) => (
+            <span className="text-muted-foreground text-xs">
+              {row.original.selectedBy}
+            </span>
+          ),
+        },
+      ],
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [BACKTEST_RUNS, promotionTargets],
+    );
 
   if (isLoading) {
     return (
@@ -284,7 +309,7 @@ export default function CandidatesPage() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
       </div>
-    )
+    );
   }
 
   if (candidatesIsError) {
@@ -292,7 +317,7 @@ export default function CandidatesPage() {
       <div className="p-6">
         <ApiError error={candidatesError} onRetry={() => candidatesRefetch()} />
       </div>
-    )
+    );
   }
 
   return (
@@ -301,9 +326,12 @@ export default function CandidatesPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Promotion Pipeline</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Promotion Pipeline
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {pendingCandidates.length} pending &middot; {resolvedCandidates.length} resolved
+              {pendingCandidates.length} pending &middot;{" "}
+              {resolvedCandidates.length} resolved
             </p>
           </div>
           <CandidateBasket
@@ -312,8 +340,12 @@ export default function CandidatesPage() {
             onRemove={basket.removeCandidate}
             onClearAll={basket.clearAll}
             onUpdateNote={basket.updateNote}
-            onSendToReview={() => {/* TODO: wire to review API */}}
-            onPreparePackage={() => {/* TODO: wire to package API */}}
+            onSendToReview={() => {
+              /* TODO: wire to review API */
+            }}
+            onPreparePackage={() => {
+              /* TODO: wire to package API */
+            }}
           />
         </div>
 
@@ -325,9 +357,11 @@ export default function CandidatesPage() {
               Awaiting Review
             </h2>
             {pendingCandidates.map((candidate) => {
-              const bt = BACKTEST_RUNS.find((b) => b.id === candidate.backtestRunId)
-              const m = candidate.metricsSnapshot
-              const stageIdx = getWorkflowStageIndex(candidate)
+              const bt = BACKTEST_RUNS.find(
+                (b) => b.id === candidate.backtestRunId,
+              );
+              const m = candidate.metricsSnapshot;
+              const stageIdx = getWorkflowStageIndex(candidate);
 
               return (
                 <Card key={candidate.id} className="border-border/50">
@@ -340,17 +374,26 @@ export default function CandidatesPage() {
                             <span className="font-semibold">
                               {bt?.templateName ?? candidate.configId}
                             </span>
-                            <Badge variant="outline" className={reviewStateColor(candidate.reviewState)}>
+                            <Badge
+                              variant="outline"
+                              className={reviewStateColor(
+                                candidate.reviewState,
+                              )}
+                            >
                               {candidate.reviewState.replace(/_/g, " ")}
                             </Badge>
                             <span className="text-xs text-muted-foreground font-mono">
                               v{candidate.configVersion}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground">{candidate.rationale}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {candidate.rationale}
+                          </p>
                           <p className="text-xs text-muted-foreground">
                             Selected by {candidate.selectedBy} on{" "}
-                            {new Date(candidate.selectedAt).toLocaleDateString()}
+                            {new Date(
+                              candidate.selectedAt,
+                            ).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
@@ -375,14 +418,18 @@ export default function CandidatesPage() {
                             size="sm"
                             variant="outline"
                             className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-                            onClick={() => promoteCandidate(candidate.id, "paper")}
+                            onClick={() =>
+                              promoteCandidate(candidate.id, "paper")
+                            }
                           >
                             Promote to Paper
                           </Button>
                           <Button
                             size="sm"
                             className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                            onClick={() => promoteCandidate(candidate.id, "live")}
+                            onClick={() =>
+                              promoteCandidate(candidate.id, "live")
+                            }
                           >
                             <Rocket className="size-3.5" />
                             Promote to Live
@@ -393,41 +440,61 @@ export default function CandidatesPage() {
                       {/* Metrics row */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 rounded-lg border border-border/30 p-3">
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sharpe</p>
-                          <p className="text-lg font-bold font-mono">{fmtNum(m.sharpe)}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            Sharpe
+                          </p>
+                          <p className="text-lg font-bold font-mono">
+                            {fmtNum(m.sharpe)}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Return</p>
-                          <p className="text-lg font-bold font-mono">{fmtPct(m.totalReturn)}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            Return
+                          </p>
+                          <p className="text-lg font-bold font-mono">
+                            {fmtPct(m.totalReturn)}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Max DD</p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            Max DD
+                          </p>
                           <p className="text-lg font-bold font-mono text-red-400">
                             {fmtPct(m.maxDrawdown)}
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sortino</p>
-                          <p className="text-lg font-bold font-mono">{fmtNum(m.sortino)}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            Sortino
+                          </p>
+                          <p className="text-lg font-bold font-mono">
+                            {fmtNum(m.sortino)}
+                          </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Hit Rate</p>
-                          <p className="text-lg font-bold font-mono">{fmtPct(m.hitRate)}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            Hit Rate
+                          </p>
+                          <p className="text-lg font-bold font-mono">
+                            {fmtPct(m.hitRate)}
+                          </p>
                         </div>
                         <div>
                           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
                             Profit Factor
                           </p>
-                          <p className="text-lg font-bold font-mono">{fmtNum(m.profitFactor)}</p>
+                          <p className="text-lg font-bold font-mono">
+                            {fmtNum(m.profitFactor)}
+                          </p>
                         </div>
                       </div>
 
                       {/* Approval Workflow Visualization */}
                       <div className="flex items-center gap-2">
                         {WORKFLOW_STAGES.map((stage, idx) => {
-                          const Icon = stage.icon
-                          const isActive = idx <= stageIdx
-                          const isCurrent = idx === stageIdx
+                          const Icon = stage.icon;
+                          const isActive = idx <= stageIdx;
+                          const isCurrent = idx === stageIdx;
                           return (
                             <React.Fragment key={stage.key}>
                               {idx > 0 && (
@@ -448,14 +515,16 @@ export default function CandidatesPage() {
                                 {stage.label}
                               </div>
                             </React.Fragment>
-                          )
+                          );
                         })}
                       </div>
 
                       {/* Review Comments */}
                       {candidate.reviewComments.length > 0 && (
                         <div className="space-y-2 border-t border-border/30 pt-3">
-                          <p className="text-xs font-medium text-muted-foreground">Comments</p>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Comments
+                          </p>
                           {candidate.reviewComments.map((rc) => (
                             <div
                               key={rc.id}
@@ -477,7 +546,7 @@ export default function CandidatesPage() {
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         )}
@@ -515,8 +584,8 @@ export default function CandidatesPage() {
           open={commentDialog !== null}
           onOpenChange={(open) => {
             if (!open) {
-              setCommentDialog(null)
-              setCommentText("")
+              setCommentDialog(null);
+              setCommentText("");
             }
           }}
         >
@@ -535,7 +604,7 @@ export default function CandidatesPage() {
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && commentDialog) {
-                    addComment(commentDialog)
+                    addComment(commentDialog);
                   }
                 }}
               />
@@ -544,8 +613,8 @@ export default function CandidatesPage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setCommentDialog(null)
-                  setCommentText("")
+                  setCommentDialog(null);
+                  setCommentText("");
                 }}
               >
                 Cancel
@@ -562,5 +631,5 @@ export default function CandidatesPage() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

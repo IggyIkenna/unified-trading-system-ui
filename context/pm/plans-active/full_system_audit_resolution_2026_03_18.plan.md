@@ -59,39 +59,39 @@ Full 31-section production readiness audit run on 2026-03-18. **Overall grade: F
 
 ### Audit Results Summary
 
-| § | Section | Grade | Key Issue |
-|---|---------|-------|-----------|
-| 1 | Workspace Governance | WARN | 2 repos missing semver_rules_ref |
-| 2 | Code Quality | WARN | 3 files >900L; ~3 repos not fully basedpyright strict |
-| 3 | Security | **FAIL** | 4 APIs missing AUTH_FAILURE; S2S events don't exist; 251 broad except Exception |
-| 4 | Architecture | PASS | deployment-api cloud SDK justified |
-| 5 | Schema Governance | WARN | 15 UIC float fields without float-ok annotation |
-| 6 | Observability | PASS | 2 services missing health endpoints (minor) |
-| 7 | Deployment | **FAIL** | 30 Dockerfiles using .[dev] extras |
-| 8 | Technical Debt | **FAIL** | RUN_INTEGRATION=false everywhere; 192 type:ignore; 7 except ImportError |
-| 9 | Cross-Repo Alignment | **FAIL** | 16/22 plans unregistered; 20 repos version drift |
-| 10 | Integration Tests | **FAIL** | RUN_INTEGRATION=false; 110 coverage-boost files; no integration_dependencies |
-| 11 | Coverage Regression | WARN | 13 repos default MIN_COVERAGE=70; 6 mismatches |
-| 12 | Cloud-Agnostic | PASS | SDK imports properly confined |
-| 13 | Stubs | WARN | 197 NotImplementedError; postgresql.py 9 concrete stubs |
-| 14 | Orphaned Code | WARN | No dead-code tooling; deprecated CloudTarget still exported |
-| 15 | CI/CD Pipeline | **FAIL** | 25 .[dev] in CI; zero concurrency groups |
-| 16 | UI/npm Governance | WARN | 1 repo missing vitest pool:"forks" |
-| 17 | Tooling SSOT | PASS | All repos use thin stubs + base scripts |
-| 18 | Semver Hardening | PASS | 2 repos missing semver_rules_ref (minor) |
-| 19 | Readiness Gates | **FAIL** | ALL 66 readiness files 100% unassessed |
-| 20 | Batch-Live Mode | PASS | All T4 services support both modes |
-| 21 | Position Recon | PASS | Full recon + recovery + rebalance chain |
-| 22 | CI/CD Versioning | **FAIL** | 0/37 Dockerfiles use uv sync --frozen |
-| 23 | Agent Infrastructure | PASS | Only 28/72 repos have agent-audit.yml (minor) |
-| 24 | VCR Cassettes | WARN | 5 interface repos zero cassettes |
-| 25 | Data Freshness | PASS | 32 sources, all 9 producers wired |
-| 26 | Performance Testing | PASS | Nightly CI, baseline.json, p99 assertions |
-| 27 | Contract Completeness | PASS | UIC + UAC completeness + adoption scripts |
-| 28 | E2E Smoke | WARN | Missing cefi/tradfi/defi portable backtests |
-| 29 | API Domain Coverage | WARN | Sports + DeFi lack dedicated APIs |
-| 30 | Config Architecture | WARN | 2 repos bypass UnifiedCloudConfig |
-| 31 | Infra Parity | WARN | 10 repos missing from topology service_flows |
+| §   | Section               | Grade    | Key Issue                                                                       |
+| --- | --------------------- | -------- | ------------------------------------------------------------------------------- |
+| 1   | Workspace Governance  | WARN     | 2 repos missing semver_rules_ref                                                |
+| 2   | Code Quality          | WARN     | 3 files >900L; ~3 repos not fully basedpyright strict                           |
+| 3   | Security              | **FAIL** | 4 APIs missing AUTH_FAILURE; S2S events don't exist; 251 broad except Exception |
+| 4   | Architecture          | PASS     | deployment-api cloud SDK justified                                              |
+| 5   | Schema Governance     | WARN     | 15 UIC float fields without float-ok annotation                                 |
+| 6   | Observability         | PASS     | 2 services missing health endpoints (minor)                                     |
+| 7   | Deployment            | **FAIL** | 30 Dockerfiles using .[dev] extras                                              |
+| 8   | Technical Debt        | **FAIL** | RUN_INTEGRATION=false everywhere; 192 type:ignore; 7 except ImportError         |
+| 9   | Cross-Repo Alignment  | **FAIL** | 16/22 plans unregistered; 20 repos version drift                                |
+| 10  | Integration Tests     | **FAIL** | RUN_INTEGRATION=false; 110 coverage-boost files; no integration_dependencies    |
+| 11  | Coverage Regression   | WARN     | 13 repos default MIN_COVERAGE=70; 6 mismatches                                  |
+| 12  | Cloud-Agnostic        | PASS     | SDK imports properly confined                                                   |
+| 13  | Stubs                 | WARN     | 197 NotImplementedError; postgresql.py 9 concrete stubs                         |
+| 14  | Orphaned Code         | WARN     | No dead-code tooling; deprecated CloudTarget still exported                     |
+| 15  | CI/CD Pipeline        | **FAIL** | 25 .[dev] in CI; zero concurrency groups                                        |
+| 16  | UI/npm Governance     | WARN     | 1 repo missing vitest pool:"forks"                                              |
+| 17  | Tooling SSOT          | PASS     | All repos use thin stubs + base scripts                                         |
+| 18  | Semver Hardening      | PASS     | 2 repos missing semver_rules_ref (minor)                                        |
+| 19  | Readiness Gates       | **FAIL** | ALL 66 readiness files 100% unassessed                                          |
+| 20  | Batch-Live Mode       | PASS     | All T4 services support both modes                                              |
+| 21  | Position Recon        | PASS     | Full recon + recovery + rebalance chain                                         |
+| 22  | CI/CD Versioning      | **FAIL** | 0/37 Dockerfiles use uv sync --frozen                                           |
+| 23  | Agent Infrastructure  | PASS     | Only 28/72 repos have agent-audit.yml (minor)                                   |
+| 24  | VCR Cassettes         | WARN     | 5 interface repos zero cassettes                                                |
+| 25  | Data Freshness        | PASS     | 32 sources, all 9 producers wired                                               |
+| 26  | Performance Testing   | PASS     | Nightly CI, baseline.json, p99 assertions                                       |
+| 27  | Contract Completeness | PASS     | UIC + UAC completeness + adoption scripts                                       |
+| 28  | E2E Smoke             | WARN     | Missing cefi/tradfi/defi portable backtests                                     |
+| 29  | API Domain Coverage   | WARN     | Sports + DeFi lack dedicated APIs                                               |
+| 30  | Config Architecture   | WARN     | 2 repos bypass UnifiedCloudConfig                                               |
+| 31  | Infra Parity          | WARN     | 10 repos missing from topology service_flows                                    |
 
 ## Phase 0 — Critical FAIL Resolution (P0, all PARALLEL)
 
@@ -174,8 +174,8 @@ P1 complete ──▶ P2-01 through P2-12 ALL PARALLEL ──▶ QG gate
 ```
 
 - [x] **P2-01** Float-ok annotations for 15 UIC risk.py fields
-- [ ] **P2-02** Document postgresql.py (2 classes, 9 stubs) as architectural placeholder — IS wired in persistence/__init__.py and has tests; implement when USE_DATABASE=true live path is needed
-- [ ] **P2-03** Audit noqa suppressions workspace-wide — custom qg-*/gs-uri codes already inline-documented; create BYPASS_AUDIT.md for repos with standard ruff codes (F401/E402/C901/N802/PLW0603)
+- [ ] **P2-02** Document postgresql.py (2 classes, 9 stubs) as architectural placeholder — IS wired in persistence/**init**.py and has tests; implement when USE_DATABASE=true live path is needed
+- [ ] **P2-03** Audit noqa suppressions workspace-wide — custom qg-\*/gs-uri codes already inline-documented; create BYPASS_AUDIT.md for repos with standard ruff codes (F401/E402/C901/N802/PLW0603)
 - [ ] **P2-04** Split 3 oversized files
 - [x] **P2-05** execution-results-api → UnifiedCloudConfig
 - [x] **P2-06** elysium-defi-system → UnifiedCloudConfig
@@ -200,6 +200,7 @@ P1 complete ──▶ P2-01 through P2-12 ALL PARALLEL ──▶ QG gate
 To prevent these issues from recurring, add the following checks to base-service.sh / base-library.sh:
 
 ### 1. RUN_INTEGRATION enforcement (prevents §8/§10 regression)
+
 ```bash
 # In base-service.sh, before test execution:
 if [ "$RUN_INTEGRATION" != "true" ]; then
@@ -209,6 +210,7 @@ fi
 ```
 
 ### 2. .[dev] extras ban (prevents §7/§15/§22 regression)
+
 ```bash
 # In base-service.sh codex checks:
 if rg '\.\[dev\]' "$REPO_ROOT/Dockerfile" "$REPO_ROOT/cloudbuild.yaml" "$REPO_ROOT/buildspec.aws.yaml" 2>/dev/null | grep -v '^#'; then
@@ -218,6 +220,7 @@ fi
 ```
 
 ### 3. AUTH_FAILURE enforcement for API services (prevents §3 regression)
+
 ```bash
 # In base-service.sh, for repos with api/ or routes/ directories:
 if [ -d "$SOURCE_DIR/api" ] || [ -d "$SOURCE_DIR/routes" ]; then
@@ -229,6 +232,7 @@ fi
 ```
 
 ### 4. Broad except Exception cap (prevents §3/§8 regression)
+
 ```bash
 # In base-service.sh codex checks:
 BROAD_EXCEPT=$(rg 'except Exception' "$SOURCE_DIR/" --type py --glob '!tests/**' -c 2>/dev/null | awk -F: '{s+=$2} END {print s+0}')
@@ -239,6 +243,7 @@ fi
 ```
 
 ### 5. Manifest version drift check (prevents §9 regression)
+
 ```bash
 # In overnight orchestrator or version-alignment:
 python3 -c "
@@ -265,6 +270,7 @@ if drift:
 ```
 
 ### 6. SSOT-INDEX plan registration check (prevents §9 regression)
+
 ```bash
 # In PM quality-gates.sh:
 ACTIVE=$(ls plans/active/*.plan.md 2>/dev/null | wc -l)
@@ -275,6 +281,7 @@ fi
 ```
 
 ### 7. Coverage-boost file ban (prevents §10 regression)
+
 ```bash
 # In base-service.sh:
 BOOST_FILES=$(find tests/ -name 'test_coverage_boost_*' -o -name 'test_*_coverage.py' -o -name 'test_boost_*' 2>/dev/null | wc -l)
@@ -285,6 +292,7 @@ fi
 ```
 
 ### 8. Concurrency group enforcement (prevents §15 regression)
+
 ```bash
 # In workflow template rollout:
 for wf in */.github/workflows/*.yml; do

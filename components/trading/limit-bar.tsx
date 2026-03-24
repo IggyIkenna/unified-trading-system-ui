@@ -1,30 +1,33 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
-import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react"
+import * as React from "react";
+import { cn } from "@/lib/utils";
+import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 
 interface LimitBarProps {
-  label: string
-  value?: number | null
-  limit?: number | null
-  unit?: string
-  showPercentage?: boolean
-  showStatus?: boolean
-  className?: string
+  label: string;
+  value?: number | null;
+  limit?: number | null;
+  unit?: string;
+  showPercentage?: boolean;
+  showStatus?: boolean;
+  className?: string;
 }
 
-function getUtilization(value: number | undefined | null, limit: number | undefined | null): number {
-  const safeValue = value ?? 0
-  const safeLimit = limit ?? 1
-  if (safeLimit === 0) return 0
-  return Math.min((safeValue / safeLimit) * 100, 100)
+function getUtilization(
+  value: number | undefined | null,
+  limit: number | undefined | null,
+): number {
+  const safeValue = value ?? 0;
+  const safeLimit = limit ?? 1;
+  if (safeLimit === 0) return 0;
+  return Math.min((safeValue / safeLimit) * 100, 100);
 }
 
 function getStatus(utilization: number): "healthy" | "warning" | "critical" {
-  if (utilization < 70) return "healthy"
-  if (utilization < 90) return "warning"
-  return "critical"
+  if (utilization < 70) return "healthy";
+  if (utilization < 90) return "warning";
+  return "critical";
 }
 
 const statusConfig = {
@@ -46,7 +49,7 @@ const statusConfig = {
     icon: XCircle,
     label: "CRITICAL",
   },
-}
+};
 
 export function LimitBar({
   label,
@@ -57,19 +60,19 @@ export function LimitBar({
   showStatus = true,
   className,
 }: LimitBarProps) {
-  const safeValue = value ?? 0
-  const safeLimit = limit ?? 1
-  const utilization = getUtilization(safeValue, safeLimit)
-  const status = getStatus(utilization)
-  const config = statusConfig[status]
-  const StatusIcon = config.icon
+  const safeValue = value ?? 0;
+  const safeLimit = limit ?? 1;
+  const utilization = getUtilization(safeValue, safeLimit);
+  const status = getStatus(utilization);
+  const config = statusConfig[status];
+  const StatusIcon = config.icon;
 
   const formatValue = (val: number | undefined | null): string => {
-    if (val == null || typeof val !== 'number' || isNaN(val)) return "-"
-    if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}m`
-    if (val >= 1_000) return `${(val / 1_000).toFixed(1)}k`
-    return val.toFixed(unit === "%" ? 0 : 2)
-  }
+    if (val == null || typeof val !== "number" || isNaN(val)) return "-";
+    if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}m`;
+    if (val >= 1_000) return `${(val / 1_000).toFixed(1)}k`;
+    return val.toFixed(unit === "%" ? 0 : 2);
+  };
 
   return (
     <div className={cn("space-y-1.5", className)}>
@@ -128,7 +131,7 @@ export function LimitBar({
         </div>
       )}
     </div>
-  )
+  );
 }
 
 // Compact limit display for tables
@@ -137,20 +140,20 @@ export function LimitCell({
   limit,
   unit = "",
 }: {
-  value?: number
-  limit?: number
-  unit?: string
+  value?: number;
+  limit?: number;
+  unit?: string;
 }) {
-  const utilization = getUtilization(value ?? 0, limit ?? 1)
-  const status = getStatus(utilization)
-  const config = statusConfig[status]
+  const utilization = getUtilization(value ?? 0, limit ?? 1);
+  const status = getStatus(utilization);
+  const config = statusConfig[status];
 
   const formatValue = (val: number | undefined | null): string => {
-    if (val == null || typeof val !== 'number' || isNaN(val)) return "-"
-    if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}m`
-    if (val >= 1_000) return `${(val / 1_000).toFixed(0)}k`
-    return val.toFixed(0)
-  }
+    if (val == null || typeof val !== "number" || isNaN(val)) return "-";
+    if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}m`;
+    if (val >= 1_000) return `${(val / 1_000).toFixed(0)}k`;
+    return val.toFixed(0);
+  };
 
   return (
     <div className="flex items-center gap-2">
@@ -168,5 +171,5 @@ export function LimitCell({
         {formatValue(value)}
       </span>
     </div>
-  )
+  );
 }

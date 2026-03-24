@@ -7,32 +7,89 @@
  * Install once at app startup via installMockHandler().
  */
 
-import { ORGANIZATIONS, CLIENTS, STRATEGIES, ACCOUNTS, getAggregatedPnL, getAggregatedTimeSeries, getLiveBatchDelta, getStrategyPerformance } from "@/lib/trading-data"
-import { MOCK_EXECUTION_ALGOS, MOCK_VENUES, MOCK_RECENT_ORDERS, MOCK_ALGO_BACKTESTS, MOCK_EXECUTION_METRICS, MOCK_EXECUTION_CANDIDATES } from "@/lib/execution-platform-mock-data"
-import { MODEL_FAMILIES, EXPERIMENTS, TRAINING_RUNS, MODEL_VERSIONS, DATASET_SNAPSHOTS, FEATURE_SET_VERSIONS, VALIDATION_PACKAGES, DEPLOYMENT_CANDIDATES, LIVE_DEPLOYMENTS } from "@/lib/ml-mock-data"
-import { STRATEGY_TEMPLATES, BACKTEST_RUNS, STRATEGY_CANDIDATES, STRATEGY_ALERTS } from "@/lib/strategy-platform-mock-data"
-import { MOCK_CATALOGUE, MOCK_INSTRUMENTS, MOCK_SHARD_AVAILABILITY } from "@/lib/data-service-mock-data"
-import { getState as getProvisioningState, addUser, updateUser, addRequest, updateRequest } from "@/lib/api/mock-provisioning-state"
-import type { MockUser } from "@/lib/api/mock-provisioning-state"
-import { getOrders as getLedgerOrders, placeMockOrder, cancelMockOrder, amendMockOrder } from "@/lib/api/mock-trade-ledger"
-import { getOnboardingState, addApplication, updateApplication, addDocument } from "@/lib/api/mock-onboarding-state"
-import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state"
+import {
+  ORGANIZATIONS,
+  CLIENTS,
+  STRATEGIES,
+  ACCOUNTS,
+  getAggregatedPnL,
+  getAggregatedTimeSeries,
+  getLiveBatchDelta,
+  getStrategyPerformance,
+} from "@/lib/trading-data";
+import {
+  MOCK_EXECUTION_ALGOS,
+  MOCK_VENUES,
+  MOCK_RECENT_ORDERS,
+  MOCK_ALGO_BACKTESTS,
+  MOCK_EXECUTION_METRICS,
+  MOCK_EXECUTION_CANDIDATES,
+} from "@/lib/execution-platform-mock-data";
+import {
+  MODEL_FAMILIES,
+  EXPERIMENTS,
+  TRAINING_RUNS,
+  MODEL_VERSIONS,
+  DATASET_SNAPSHOTS,
+  FEATURE_SET_VERSIONS,
+  VALIDATION_PACKAGES,
+  DEPLOYMENT_CANDIDATES,
+  LIVE_DEPLOYMENTS,
+} from "@/lib/ml-mock-data";
+import {
+  STRATEGY_TEMPLATES,
+  BACKTEST_RUNS,
+  STRATEGY_CANDIDATES,
+  STRATEGY_ALERTS,
+} from "@/lib/strategy-platform-mock-data";
+import {
+  MOCK_CATALOGUE,
+  MOCK_INSTRUMENTS,
+  MOCK_SHARD_AVAILABILITY,
+} from "@/lib/data-service-mock-data";
+import {
+  getState as getProvisioningState,
+  addUser,
+  updateUser,
+  addRequest,
+  updateRequest,
+} from "@/lib/api/mock-provisioning-state";
+import type { MockUser } from "@/lib/api/mock-provisioning-state";
+import {
+  getOrders as getLedgerOrders,
+  placeMockOrder,
+  cancelMockOrder,
+  amendMockOrder,
+} from "@/lib/api/mock-trade-ledger";
+import {
+  getOnboardingState,
+  addApplication,
+  updateApplication,
+  addDocument,
+} from "@/lib/api/mock-onboarding-state";
+import type {
+  OnboardingApplication,
+  DocumentArtifact,
+} from "@/lib/api/mock-onboarding-state";
 
-export const MOCK_MODE = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true"
+export const MOCK_MODE =
+  typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true";
 
 function json(data: unknown, delay = 50): Promise<Response> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(new Response(JSON.stringify(data), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }))
-    }, delay)
-  })
+      resolve(
+        new Response(JSON.stringify(data), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    }, delay);
+  });
 }
 
 function getToday(): string {
-  return new Date().toISOString().split("T")[0]
+  return new Date().toISOString().split("T")[0];
 }
 
 const defaultFilter = {
@@ -41,112 +98,167 @@ const defaultFilter = {
   strategyIds: [] as string[],
   mode: "live" as const,
   date: getToday(),
-}
+};
 
 function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // Pass through to real Next.js API routes that need server-side execution (file I/O)
-  if (path.startsWith("/api/onboarding/")) return null
+  if (path.startsWith("/api/onboarding/")) return null;
 
   // Strip query params for matching
-  const route = path.split("?")[0]
+  const route = path.split("?")[0];
 
   // ─── Shared computed data (single source of truth for all endpoints) ───
   // All position/PnL/exposure numbers derive from this so they're consistent
-  const perf = getStrategyPerformance(defaultFilter)
-  const totalExposure = perf.reduce((s, p) => s + p.exposure, 0)
-  const totalNav = perf.reduce((s, p) => s + p.nav, 0)
-  const totalPnl = perf.reduce((s, p) => s + p.pnl, 0)
-  const totalMargin = totalExposure * 0.22 // ~22% margin usage
-  const liveCount = perf.filter(p => p.status === "live").length
-  const pausedCount = perf.filter(p => p.status === "paused" || p.status === "stopped").length
+  const perf = getStrategyPerformance(defaultFilter);
+  const totalExposure = perf.reduce((s, p) => s + p.exposure, 0);
+  const totalNav = perf.reduce((s, p) => s + p.nav, 0);
+  const totalPnl = perf.reduce((s, p) => s + p.pnl, 0);
+  const totalMargin = totalExposure * 0.22; // ~22% margin usage
+  const liveCount = perf.filter((p) => p.status === "live").length;
+  const pausedCount = perf.filter(
+    (p) => p.status === "paused" || p.status === "stopped",
+  ).length;
 
   // Generate one position per strategy (consistent with perf data)
   // Map strategy names to domain-correct instruments and venues
-  function getStrategyInstrumentAndVenue(name: string): { instrument: string; venue: string } {
-    const n = name.toLowerCase()
+  function getStrategyInstrumentAndVenue(name: string): {
+    instrument: string;
+    venue: string;
+  } {
+    const n = name.toLowerCase();
     // Sports strategies
-    if (n.includes("nba")) return { instrument: "NBA:GAME:LAL-GSW", venue: "betfair" }
-    if (n.includes("nfl")) return { instrument: "NFL:GAME:KC-SF", venue: "pinnacle" }
-    if (n.includes("football") && !n.includes("market")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "bet365" }
-    if (n.includes("epl")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "betfair" }
-    if (n.includes("la liga") || n.includes("laliga")) return { instrument: "LALIGA:MATCH:BAR-RMA", venue: "pinnacle" }
+    if (n.includes("nba"))
+      return { instrument: "NBA:GAME:LAL-GSW", venue: "betfair" };
+    if (n.includes("nfl"))
+      return { instrument: "NFL:GAME:KC-SF", venue: "pinnacle" };
+    if (n.includes("football") && !n.includes("market"))
+      return { instrument: "EPL:MATCH:MUN-LIV", venue: "bet365" };
+    if (n.includes("epl"))
+      return { instrument: "EPL:MATCH:MUN-LIV", venue: "betfair" };
+    if (n.includes("la liga") || n.includes("laliga"))
+      return { instrument: "LALIGA:MATCH:BAR-RMA", venue: "pinnacle" };
     // Prediction market strategies
-    if (n.includes("prediction") && n.includes("cefi")) return { instrument: "POLYMARKET:BINARY:BTC-100K@YES", venue: "polymarket" }
-    if (n.includes("prediction")) return { instrument: "KALSHI:BINARY:FED-RATE-CUT@YES", venue: "kalshi" }
+    if (n.includes("prediction") && n.includes("cefi"))
+      return {
+        instrument: "POLYMARKET:BINARY:BTC-100K@YES",
+        venue: "polymarket",
+      };
+    if (n.includes("prediction"))
+      return { instrument: "KALSHI:BINARY:FED-RATE-CUT@YES", venue: "kalshi" };
     // DeFi strategies
-    if (n.includes("morpho")) return { instrument: "MORPHO:SUPPLY:USDC", venue: "morpho" }
-    if (n.includes("uniswap") || n.includes("uni v3") || n.includes("lp")) return { instrument: "UNISWAPV3:LP:ETH-USDC", venue: "uniswap" }
-    if (n.includes("aave") || n.includes("lending") && n.includes("aave")) return { instrument: "AAVE_V3:SUPPLY:USDT", venue: "aave" }
-    if (n.includes("recursive") || n.includes("staked basis")) return { instrument: "AAVE_V3:SUPPLY:WEETH", venue: "aave" }
-    if (n.includes("eth basis")) return { instrument: "ETH-PERP", venue: "hyperliquid" }
+    if (n.includes("morpho"))
+      return { instrument: "MORPHO:SUPPLY:USDC", venue: "morpho" };
+    if (n.includes("uniswap") || n.includes("uni v3") || n.includes("lp"))
+      return { instrument: "UNISWAPV3:LP:ETH-USDC", venue: "uniswap" };
+    if (n.includes("aave") || (n.includes("lending") && n.includes("aave")))
+      return { instrument: "AAVE_V3:SUPPLY:USDT", venue: "aave" };
+    if (n.includes("recursive") || n.includes("staked basis"))
+      return { instrument: "AAVE_V3:SUPPLY:WEETH", venue: "aave" };
+    if (n.includes("eth basis"))
+      return { instrument: "ETH-PERP", venue: "hyperliquid" };
     // CeFi strategies — match by asset name in strategy
-    if (n.includes("btc") && n.includes("basis")) return { instrument: "BTC-PERP", venue: "binance" }
-    if (n.includes("btc") && n.includes("market making")) return { instrument: "BTC-USDT", venue: "binance" }
-    if (n.includes("btc")) return { instrument: "BTC-PERP", venue: "binance" }
-    if (n.includes("eth") && n.includes("options")) return { instrument: "ETH-OPTIONS", venue: "deribit" }
-    if (n.includes("eth") && n.includes("momentum")) return { instrument: "ETH-PERP", venue: "binance" }
-    if (n.includes("eth") && n.includes("mean rev")) return { instrument: "ETH-USDT", venue: "okx" }
-    if (n.includes("eth")) return { instrument: "ETH-PERP", venue: "binance" }
-    if (n.includes("sol")) return { instrument: "SOL-PERP", venue: "binance" }
-    if (n.includes("doge")) return { instrument: "DOGE-USDT", venue: "binance" }
-    if (n.includes("avax")) return { instrument: "AVAX-PERP", venue: "binance" }
-    if (n.includes("link")) return { instrument: "LINK-PERP", venue: "hyperliquid" }
-    if (n.includes("arb") && n.includes("mean")) return { instrument: "ARB-USDT", venue: "okx" }
-    if (n.includes("spy")) return { instrument: "SPY", venue: "ibkr" }
-    if (n.includes("bond")) return { instrument: "TLT", venue: "ibkr" }
-    if (n.includes("multi-venue") || n.includes("arbitrage")) return { instrument: "BTC-USDT", venue: "binance" }
+    if (n.includes("btc") && n.includes("basis"))
+      return { instrument: "BTC-PERP", venue: "binance" };
+    if (n.includes("btc") && n.includes("market making"))
+      return { instrument: "BTC-USDT", venue: "binance" };
+    if (n.includes("btc")) return { instrument: "BTC-PERP", venue: "binance" };
+    if (n.includes("eth") && n.includes("options"))
+      return { instrument: "ETH-OPTIONS", venue: "deribit" };
+    if (n.includes("eth") && n.includes("momentum"))
+      return { instrument: "ETH-PERP", venue: "binance" };
+    if (n.includes("eth") && n.includes("mean rev"))
+      return { instrument: "ETH-USDT", venue: "okx" };
+    if (n.includes("eth")) return { instrument: "ETH-PERP", venue: "binance" };
+    if (n.includes("sol")) return { instrument: "SOL-PERP", venue: "binance" };
+    if (n.includes("doge"))
+      return { instrument: "DOGE-USDT", venue: "binance" };
+    if (n.includes("avax"))
+      return { instrument: "AVAX-PERP", venue: "binance" };
+    if (n.includes("link"))
+      return { instrument: "LINK-PERP", venue: "hyperliquid" };
+    if (n.includes("arb") && n.includes("mean"))
+      return { instrument: "ARB-USDT", venue: "okx" };
+    if (n.includes("spy")) return { instrument: "SPY", venue: "ibkr" };
+    if (n.includes("bond")) return { instrument: "TLT", venue: "ibkr" };
+    if (n.includes("multi-venue") || n.includes("arbitrage"))
+      return { instrument: "BTC-USDT", venue: "binance" };
     // Fallback
-    return { instrument: "BTC-PERP", venue: "binance" }
+    return { instrument: "BTC-PERP", venue: "binance" };
   }
 
-  const allPositions = perf.filter(p => p.status === "live").map((s, i) => {
-    const { instrument, venue } = getStrategyInstrumentAndVenue(s.name)
-    const basePrice = instrument.includes("BTC") ? 42000 : instrument.includes("ETH") ? 3200 : instrument.includes("SOL") ? 145 : instrument.includes("SPY") ? 520 : instrument.includes("TLT") ? 92 : 1
-    return {
-      id: `pos-${i}`,
-      strategy_id: s.id,
-      strategy_name: s.name,
-      instrument,
-      side: (s.pnl >= 0 ? "LONG" : "SHORT") as "LONG" | "SHORT",
-      quantity: basePrice > 0 ? Math.abs(s.exposure) / basePrice : Math.abs(s.exposure),
-      entry_price: basePrice,
-      current_price: basePrice * (1 + s.pnl / Math.max(s.nav, 1)),
-      pnl: s.pnl,
-      pnl_pct: s.nav > 0 ? (s.pnl / s.nav) * 100 : 0,
-      unrealized_pnl: s.pnl,
-      venue,
-      margin: s.exposure * 0.22,
-      leverage: Math.round(s.exposure / Math.max(s.nav * 0.3, 1)),
-      updated_at: new Date().toISOString(),
-      health_factor: s.assetClass === "DeFi" ? 1.45 : undefined,
-      venueLabel: venue,
-      used: s.exposure * 0.22,
-      available: s.nav - s.exposure * 0.22,
-      total: s.nav,
-      utilization: Math.round((s.exposure * 0.22 / Math.max(s.nav, 1)) * 100),
-      trend: (s.pnlChange > 1 ? "up" : s.pnlChange < -1 ? "down" : "stable") as "up" | "down" | "stable",
-      marginCallDistance: Math.max(5, 30 - Math.round((s.exposure * 0.22 / Math.max(s.nav, 1)) * 30)),
-      lastUpdate: new Date().toISOString(),
-    }
-  })
+  const allPositions = perf
+    .filter((p) => p.status === "live")
+    .map((s, i) => {
+      const { instrument, venue } = getStrategyInstrumentAndVenue(s.name);
+      const basePrice = instrument.includes("BTC")
+        ? 42000
+        : instrument.includes("ETH")
+          ? 3200
+          : instrument.includes("SOL")
+            ? 145
+            : instrument.includes("SPY")
+              ? 520
+              : instrument.includes("TLT")
+                ? 92
+                : 1;
+      return {
+        id: `pos-${i}`,
+        strategy_id: s.id,
+        strategy_name: s.name,
+        instrument,
+        side: (s.pnl >= 0 ? "LONG" : "SHORT") as "LONG" | "SHORT",
+        quantity:
+          basePrice > 0
+            ? Math.abs(s.exposure) / basePrice
+            : Math.abs(s.exposure),
+        entry_price: basePrice,
+        current_price: basePrice * (1 + s.pnl / Math.max(s.nav, 1)),
+        pnl: s.pnl,
+        pnl_pct: s.nav > 0 ? (s.pnl / s.nav) * 100 : 0,
+        unrealized_pnl: s.pnl,
+        venue,
+        margin: s.exposure * 0.22,
+        leverage: Math.round(s.exposure / Math.max(s.nav * 0.3, 1)),
+        updated_at: new Date().toISOString(),
+        health_factor: s.assetClass === "DeFi" ? 1.45 : undefined,
+        venueLabel: venue,
+        used: s.exposure * 0.22,
+        available: s.nav - s.exposure * 0.22,
+        total: s.nav,
+        utilization: Math.round(
+          ((s.exposure * 0.22) / Math.max(s.nav, 1)) * 100,
+        ),
+        trend: (s.pnlChange > 1
+          ? "up"
+          : s.pnlChange < -1
+            ? "down"
+            : "stable") as "up" | "down" | "stable",
+        marginCallDistance: Math.max(
+          5,
+          30 - Math.round(((s.exposure * 0.22) / Math.max(s.nav, 1)) * 30),
+        ),
+        lastUpdate: new Date().toISOString(),
+      };
+    });
 
   // Venue-level balance aggregation (from ACCOUNTS, consistent)
-  const totalAccountBalance = ACCOUNTS.reduce((s, a) => s + a.balanceUSD, 0)
-  const totalAccountMarginUsed = ACCOUNTS.reduce((s, a) => s + a.marginUsed, 0)
+  const totalAccountBalance = ACCOUNTS.reduce((s, a) => s + a.balanceUSD, 0);
+  const totalAccountMarginUsed = ACCOUNTS.reduce((s, a) => s + a.marginUsed, 0);
 
   // --- Positions ---
   if (route === "/api/positions/active") {
-    return json({ positions: allPositions })
+    return json({ positions: allPositions });
   }
 
   if (route === "/api/positions/summary") {
-    const byVenue: Record<string, number> = {}
-    let longCount = 0
-    let shortCount = 0
-    allPositions.forEach(p => {
-      byVenue[p.venue] = (byVenue[p.venue] || 0) + 1
-      if (p.side === "LONG") longCount++; else shortCount++
-    })
+    const byVenue: Record<string, number> = {};
+    let longCount = 0;
+    let shortCount = 0;
+    allPositions.forEach((p) => {
+      byVenue[p.venue] = (byVenue[p.venue] || 0) + 1;
+      if (p.side === "LONG") longCount++;
+      else shortCount++;
+    });
     return json({
       totalPositions: allPositions.length,
       totalExposure,
@@ -154,37 +266,39 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       totalMargin,
       byVenue,
       bySide: { long: longCount, short: shortCount },
-    })
+    });
   }
 
   if (route === "/api/positions/balances") {
-    return json(ACCOUNTS.map(a => ({
-      venue: a.venue,
-      account: a.name,
-      free: a.marginAvailable,
-      locked: a.marginUsed,
-      total: a.balanceUSD,
-      currency: "USD",
-    })))
+    return json(
+      ACCOUNTS.map((a) => ({
+        venue: a.venue,
+        account: a.name,
+        free: a.marginAvailable,
+        locked: a.marginUsed,
+        total: a.balanceUSD,
+        currency: "USD",
+      })),
+    );
   }
 
   // --- Trading ---
   if (route === "/api/trading/organizations") {
-    return json({ organizations: ORGANIZATIONS, total: ORGANIZATIONS.length })
+    return json({ organizations: ORGANIZATIONS, total: ORGANIZATIONS.length });
   }
   if (route === "/api/trading/clients") {
-    return json({ clients: CLIENTS, total: CLIENTS.length })
+    return json({ clients: CLIENTS, total: CLIENTS.length });
   }
   if (route === "/api/trading/pnl") {
-    return json(getAggregatedPnL(defaultFilter))
+    return json(getAggregatedPnL(defaultFilter));
   }
   if (route === "/api/trading/timeseries") {
-    const ts = getAggregatedTimeSeries(defaultFilter)
-    return json({ timeseries: ts })
+    const ts = getAggregatedTimeSeries(defaultFilter);
+    return json({ timeseries: ts });
   }
   if (route === "/api/trading/performance") {
     // Enrich with fields the strategies page needs (performance sub-object, venues, etc.)
-    const perf = getStrategyPerformance(defaultFilter)
+    const perf = getStrategyPerformance(defaultFilter);
     const enriched = perf.map((s, i) => ({
       ...s,
       description: `${s.archetype} strategy on ${s.assetClass}`,
@@ -199,23 +313,44 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         maxDrawdown: s.maxDrawdown,
         pnlMTD: s.pnl,
       },
-      sparklineData: Array.from({ length: 20 }, (_, j) => s.pnl * (0.5 + Math.sin(j * 0.3) * 0.5)),
-    }))
-    return json({ strategies: enriched, total: enriched.length })
+      sparklineData: Array.from(
+        { length: 20 },
+        (_, j) => s.pnl * (0.5 + Math.sin(j * 0.3) * 0.5),
+      ),
+    }));
+    return json({ strategies: enriched, total: enriched.length });
   }
   if (route === "/api/trading/live-batch-delta") {
-    return json(getLiveBatchDelta(defaultFilter))
+    return json(getLiveBatchDelta(defaultFilter));
   }
 
   // --- Market Data ---
   if (route === "/api/market-data/tickers") {
-    const RESTRICTED_SYMBOLS = ["DOGE-USDT", "SHIB-USDT"]
-    const DEFI_VENUES = ["Uniswap", "Aave", "Hyperliquid", "SushiSwap", "Curve", "Morpho"]
-    const tickers = ["BTC-USDT", "ETH-USDT", "SOL-USDT", "BNB-USDT", "XRP-USDT", "DOGE-USDT", "ADA-USDT", "AVAX-USDT"].map((sym, i) => {
-      const venueName = i % 2 === 0 ? "Binance" : "OKX"
+    const RESTRICTED_SYMBOLS = ["DOGE-USDT", "SHIB-USDT"];
+    const DEFI_VENUES = [
+      "Uniswap",
+      "Aave",
+      "Hyperliquid",
+      "SushiSwap",
+      "Curve",
+      "Morpho",
+    ];
+    const tickers = [
+      "BTC-USDT",
+      "ETH-USDT",
+      "SOL-USDT",
+      "BNB-USDT",
+      "XRP-USDT",
+      "DOGE-USDT",
+      "ADA-USDT",
+      "AVAX-USDT",
+    ].map((sym, i) => {
+      const venueName = i % 2 === 0 ? "Binance" : "OKX";
       const entitlement = RESTRICTED_SYMBOLS.includes(sym)
-        ? "restricted" as const
-        : DEFI_VENUES.includes(venueName) ? "delayed" as const : "live" as const
+        ? ("restricted" as const)
+        : DEFI_VENUES.includes(venueName)
+          ? ("delayed" as const)
+          : ("live" as const);
       return {
         symbol: sym,
         venue: venueName,
@@ -228,13 +363,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         low24h: 39000 / (i + 1),
         timestamp: new Date().toISOString(),
         entitlement,
-      }
-    })
-    return json(tickers)
+      };
+    });
+    return json(tickers);
   }
   if (route === "/api/market-data/candles") {
     const candles = Array.from({ length: 100 }, (_, i) => {
-      const base = 40000 + Math.sin(i * 0.15) * 2000
+      const base = 40000 + Math.sin(i * 0.15) * 2000;
       return {
         timestamp: new Date(Date.now() - (100 - i) * 3600000).toISOString(),
         open: base,
@@ -242,17 +377,23 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         low: base - 200 - Math.random() * 300,
         close: base + (Math.random() - 0.5) * 400,
         volume: 1000000 + Math.random() * 5000000,
-      }
-    })
-    return json({ candles })
+      };
+    });
+    return json({ candles });
   }
   if (route === "/api/market-data/orderbook") {
-    const mid = 42000
+    const mid = 42000;
     return json({
-      bids: Array.from({ length: 20 }, (_, i) => ({ price: mid - i * 5, size: 10 + Math.random() * 50 })),
-      asks: Array.from({ length: 20 }, (_, i) => ({ price: mid + i * 5, size: 10 + Math.random() * 50 })),
+      bids: Array.from({ length: 20 }, (_, i) => ({
+        price: mid - i * 5,
+        size: 10 + Math.random() * 50,
+      })),
+      asks: Array.from({ length: 20 }, (_, i) => ({
+        price: mid + i * 5,
+        size: 10 + Math.random() * 50,
+      })),
       timestamp: new Date().toISOString(),
-    })
+    });
   }
   if (route === "/api/market-data/trades") {
     return json({
@@ -263,71 +404,101 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         side: i % 2 === 0 ? "buy" : "sell",
         timestamp: new Date(Date.now() - i * 30000).toISOString(),
       })),
-    })
+    });
   }
 
   // --- Derivatives ---
   if (route === "/api/derivatives/options-chain") {
-    const strikes = [35000, 37500, 40000, 42500, 45000, 47500, 50000]
+    const strikes = [35000, 37500, 40000, 42500, 45000, 47500, 50000];
     return json({
-      options: strikes.flatMap(strike => ["call", "put"].map(type => ({
-        strike,
-        type,
-        expiry: "2026-04-25",
-        bid: type === "call" ? Math.max(0, 42000 - strike) + 500 : Math.max(0, strike - 42000) + 500,
-        ask: type === "call" ? Math.max(0, 42000 - strike) + 700 : Math.max(0, strike - 42000) + 700,
-        iv: 0.55 + Math.random() * 0.2,
-        delta: type === "call" ? 0.5 : -0.5,
-        gamma: 0.001,
-        theta: -50,
-        vega: 120,
-        volume: Math.round(Math.random() * 1000),
-        openInterest: Math.round(Math.random() * 5000),
-      }))),
-    })
+      options: strikes.flatMap((strike) =>
+        ["call", "put"].map((type) => ({
+          strike,
+          type,
+          expiry: "2026-04-25",
+          bid:
+            type === "call"
+              ? Math.max(0, 42000 - strike) + 500
+              : Math.max(0, strike - 42000) + 500,
+          ask:
+            type === "call"
+              ? Math.max(0, 42000 - strike) + 700
+              : Math.max(0, strike - 42000) + 700,
+          iv: 0.55 + Math.random() * 0.2,
+          delta: type === "call" ? 0.5 : -0.5,
+          gamma: 0.001,
+          theta: -50,
+          vega: 120,
+          volume: Math.round(Math.random() * 1000),
+          openInterest: Math.round(Math.random() * 5000),
+        })),
+      ),
+    });
   }
   if (route === "/api/derivatives/vol-surface") {
     return json({
-      surface: [7, 14, 30, 60, 90].map(dte => ({
+      surface: [7, 14, 30, 60, 90].map((dte) => ({
         dte,
-        strikes: [0.8, 0.9, 0.95, 1.0, 1.05, 1.1, 1.2].map(moneyness => ({
+        strikes: [0.8, 0.9, 0.95, 1.0, 1.05, 1.1, 1.2].map((moneyness) => ({
           moneyness,
           iv: 0.4 + (moneyness - 1) * (moneyness - 1) * 2 + dte * 0.001,
         })),
       })),
-    })
+    });
   }
   if (route === "/api/derivatives/portfolio-greeks") {
     return json({
-      portfolio: { delta: 12.5, gamma: 0.45, theta: -2400, vega: 85000, rho: 1200 },
+      portfolio: {
+        delta: 12.5,
+        gamma: 0.45,
+        theta: -2400,
+        vega: 85000,
+        rho: 1200,
+      },
       per_underlying: [
-        { underlying: "BTC", delta: 8.2, gamma: 0.3, theta: -1600, vega: 55000, rho: 800 },
-        { underlying: "ETH", delta: 4.3, gamma: 0.15, theta: -800, vega: 30000, rho: 400 },
+        {
+          underlying: "BTC",
+          delta: 8.2,
+          gamma: 0.3,
+          theta: -1600,
+          vega: 55000,
+          rho: 800,
+        },
+        {
+          underlying: "ETH",
+          delta: 4.3,
+          gamma: 0.15,
+          theta: -800,
+          vega: 30000,
+          rho: 400,
+        },
       ],
-    })
+    });
   }
 
   // --- Execution ---
 
   // Cancel order: PUT /api/execution/orders/{id}/cancel
-  const cancelMatch = route.match(/^\/api\/execution\/orders\/([^/]+)\/cancel$/)
+  const cancelMatch = route.match(
+    /^\/api\/execution\/orders\/([^/]+)\/cancel$/,
+  );
   if (cancelMatch && opts?.method === "PUT") {
-    const result = cancelMockOrder(cancelMatch[1])
-    return json({ order: result })
+    const result = cancelMockOrder(cancelMatch[1]);
+    return json({ order: result });
   }
 
   // Amend order: PUT /api/execution/orders/{id}/amend
-  const amendMatch = route.match(/^\/api\/execution\/orders\/([^/]+)\/amend$/)
+  const amendMatch = route.match(/^\/api\/execution\/orders\/([^/]+)\/amend$/);
   if (amendMatch && opts?.method === "PUT") {
-    const body = opts.body ? JSON.parse(opts.body as string) : {}
-    const result = amendMockOrder(amendMatch[1], body)
-    return json({ order: result })
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const result = amendMockOrder(amendMatch[1], body);
+    return json({ order: result });
   }
 
   if (route === "/api/execution/orders") {
     // POST: place a new order via the stateful ledger
     if (opts?.method === "POST") {
-      const body = opts.body ? JSON.parse(opts.body as string) : {}
+      const body = opts.body ? JSON.parse(opts.body as string) : {};
       const result = placeMockOrder({
         strategy_id: body.strategy_id ?? null,
         client_id: body.client_id ?? "internal-trader",
@@ -340,31 +511,79 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         asset_class: body.asset_class ?? "CeFi",
         lane: body.lane ?? "book",
         algo_type: body.algo ?? null,
-      })
-      return json({ order: result })
+      });
+      return json({ order: result });
     }
 
     // GET: merge static TCA orders with stateful ledger orders
-    const tcaVenues = ["binance", "okx", "hyperliquid", "deribit", "aave", "uniswap", "polymarket", "betfair"]
-    const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"]
-    const tcaInstruments = ["BTC-PERP", "ETH-PERP", "SOL-PERP", "BTC-USDT", "ETH-USDT", "DOGE-USDT", "BTC-26JUN26", "ETH-26JUN26-60000-C", "AAVE_V3:SUPPLY:USDC", "UNISWAPV3:LP:ETH-USDC", "POLYMARKET:BINARY:BTC-100K@YES", "BETFAIR:EPL:MUN-LIV"]
+    const tcaVenues = [
+      "binance",
+      "okx",
+      "hyperliquid",
+      "deribit",
+      "aave",
+      "uniswap",
+      "polymarket",
+      "betfair",
+    ];
+    const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"];
+    const tcaInstruments = [
+      "BTC-PERP",
+      "ETH-PERP",
+      "SOL-PERP",
+      "BTC-USDT",
+      "ETH-USDT",
+      "DOGE-USDT",
+      "BTC-26JUN26",
+      "ETH-26JUN26-60000-C",
+      "AAVE_V3:SUPPLY:USDC",
+      "UNISWAPV3:LP:ETH-USDC",
+      "POLYMARKET:BINARY:BTC-100K@YES",
+      "BETFAIR:EPL:MUN-LIV",
+    ];
     const tcaOrders = Array.from({ length: 24 }, (_, i) => {
-      const instrument = tcaInstruments[i % tcaInstruments.length]
-      const venue = tcaVenues[i % tcaVenues.length]
-      const algo = tcaAlgos[i % tcaAlgos.length]
-      const side = i % 3 === 0 ? "SELL" : "BUY"
-      const basePrice = instrument.includes("BTC") ? 42000 : instrument.includes("ETH") ? 3200 : instrument.includes("SOL") ? 145 : instrument.includes("DOGE") ? 0.18 : instrument.includes("AVAX") ? 38 : instrument.includes("LINK") ? 16 : instrument.includes("AAVE") ? 1 : instrument.includes("UNISWAP") ? 1 : instrument.includes("POLYMARKET") || instrument.includes("BETFAIR") ? 0.65 : 100
-      const arrivalPrice = basePrice * (1 + (Math.sin(i * 0.7) * 0.002))
-      const slippageBps = parseFloat(((Math.sin(i * 1.3) * 3) + 1.5).toFixed(1))
-      const avgFillPrice = arrivalPrice * (1 + slippageBps / 10000 * (side === "BUY" ? 1 : -1))
-      const quantity = instrument.includes("BTC") ? 0.5 + i * 0.1 : instrument.includes("ETH") ? 2 + i * 0.5 : 10 + i * 5
-      const fillRate = parseFloat((95 + Math.random() * 5).toFixed(1))
-      const durationMs = 500 + Math.round(Math.random() * 4500)
-      const marketImpact = parseFloat((slippageBps * 0.4).toFixed(1))
-      const timingCost = parseFloat((slippageBps * 0.25).toFixed(1))
-      const totalCost = parseFloat((Math.abs(slippageBps) + marketImpact * 0.3).toFixed(1))
-      const vwap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.001)
-      const twap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.0008)
+      const instrument = tcaInstruments[i % tcaInstruments.length];
+      const venue = tcaVenues[i % tcaVenues.length];
+      const algo = tcaAlgos[i % tcaAlgos.length];
+      const side = i % 3 === 0 ? "SELL" : "BUY";
+      const basePrice = instrument.includes("BTC")
+        ? 42000
+        : instrument.includes("ETH")
+          ? 3200
+          : instrument.includes("SOL")
+            ? 145
+            : instrument.includes("DOGE")
+              ? 0.18
+              : instrument.includes("AVAX")
+                ? 38
+                : instrument.includes("LINK")
+                  ? 16
+                  : instrument.includes("AAVE")
+                    ? 1
+                    : instrument.includes("UNISWAP")
+                      ? 1
+                      : instrument.includes("POLYMARKET") ||
+                          instrument.includes("BETFAIR")
+                        ? 0.65
+                        : 100;
+      const arrivalPrice = basePrice * (1 + Math.sin(i * 0.7) * 0.002);
+      const slippageBps = parseFloat((Math.sin(i * 1.3) * 3 + 1.5).toFixed(1));
+      const avgFillPrice =
+        arrivalPrice * (1 + (slippageBps / 10000) * (side === "BUY" ? 1 : -1));
+      const quantity = instrument.includes("BTC")
+        ? 0.5 + i * 0.1
+        : instrument.includes("ETH")
+          ? 2 + i * 0.5
+          : 10 + i * 5;
+      const fillRate = parseFloat((95 + Math.random() * 5).toFixed(1));
+      const durationMs = 500 + Math.round(Math.random() * 4500);
+      const marketImpact = parseFloat((slippageBps * 0.4).toFixed(1));
+      const timingCost = parseFloat((slippageBps * 0.25).toFixed(1));
+      const totalCost = parseFloat(
+        (Math.abs(slippageBps) + marketImpact * 0.3).toFixed(1),
+      );
+      const vwap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.001);
+      const twap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.0008);
       return {
         id: `ord-tca-${i + 1}`,
         order_id: `ord-tca-${i + 1}`,
@@ -376,14 +595,16 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         quantity,
         price: arrivalPrice,
         avgPrice: parseFloat(avgFillPrice.toFixed(4)),
-        filled: Math.round(quantity * fillRate / 100 * 100) / 100,
+        filled: Math.round(((quantity * fillRate) / 100) * 100) / 100,
         status: "FILLED",
         fillRate,
         durationMs,
         strategy_id: `strat-${i % 6}`,
         strategy_name: `Strategy ${i % 6}`,
         edge_bps: parseFloat((-slippageBps).toFixed(1)),
-        instant_pnl: Math.round((avgFillPrice - arrivalPrice) * quantity * (side === "SELL" ? -1 : 1)),
+        instant_pnl: Math.round(
+          (avgFillPrice - arrivalPrice) * quantity * (side === "SELL" ? -1 : 1),
+        ),
         created_at: new Date(Date.now() - i * 1800000).toISOString(),
         tca: {
           slippage: slippageBps,
@@ -393,11 +614,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           arrivalPrice: parseFloat(arrivalPrice.toFixed(4)),
           vwap: parseFloat(vwap.toFixed(4)),
           twap: parseFloat(twap.toFixed(4)),
-          implementationShortfall: parseFloat((slippageBps + marketImpact).toFixed(1)),
+          implementationShortfall: parseFloat(
+            (slippageBps + marketImpact).toFixed(1),
+          ),
         },
-      }
-    })
-    const ledgerOrders = getLedgerOrders().map(o => ({
+      };
+    });
+    const ledgerOrders = getLedgerOrders().map((o) => ({
       id: o.id,
       order_id: o.id,
       instrument: o.instrument_id,
@@ -418,7 +641,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       instant_pnl: 0,
       created_at: o.created_at,
       tca: null,
-    }))
+    }));
 
     return json({
       data: [...ledgerOrders, ...tcaOrders],
@@ -430,13 +653,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         { name: "Commission", value: 2100, color: "#6b7280" },
       ],
       executionTimeline: Array.from({ length: 20 }, (_, i) => {
-        const base = 42000 + Math.sin(i * 0.3) * 120
+        const base = 42000 + Math.sin(i * 0.3) * 120;
         return {
           time: i * 5,
           price: parseFloat((base + Math.sin(i * 0.7) * 40).toFixed(2)),
           vwap: parseFloat((base + 15 + Math.cos(i * 0.4) * 20).toFixed(2)),
           twap: parseFloat((base + 10).toFixed(2)),
-        }
+        };
       }),
       slippageDistribution: [
         { range: "<-2bps", count: 3, color: "#10b981" },
@@ -446,64 +669,128 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         { range: "4 to 6", count: 2, color: "#ef4444" },
         { range: ">6bps", count: 1, color: "#dc2626" },
       ],
-    })
+    });
   }
   if (route === "/api/execution/algos") {
-    return json({ data: MOCK_EXECUTION_ALGOS })
+    return json({ data: MOCK_EXECUTION_ALGOS });
   }
   if (route === "/api/execution/venues") {
-    return json({ data: MOCK_VENUES })
+    return json({ data: MOCK_VENUES });
   }
   if (route === "/api/execution/backtests") {
-    return json(MOCK_ALGO_BACKTESTS)
+    return json(MOCK_ALGO_BACKTESTS);
   }
   if (route === "/api/execution/metrics") {
-    return json({ data: { ordersExecuted: 847, volumeTraded: 124500000, avgSlippage: 1.2, avgFillRate: 98.5, avgLatency: 32, rejects: 3 } })
+    return json({
+      data: {
+        ordersExecuted: 847,
+        volumeTraded: 124500000,
+        avgSlippage: 1.2,
+        avgFillRate: 98.5,
+        avgLatency: 32,
+        rejects: 3,
+      },
+    });
   }
   if (route === "/api/execution/candidates") {
-    return json(MOCK_EXECUTION_CANDIDATES)
+    return json(MOCK_EXECUTION_CANDIDATES);
   }
   if (route.startsWith("/api/execution/handoff")) {
-    return json({ handoffs: [], total: 0 })
+    return json({ handoffs: [], total: 0 });
   }
   if (route === "/api/compliance/pre-trade-check") {
-    const body = opts?.body ? JSON.parse(opts.body as string) : {}
-    const instrument = (body.instrument ?? "") as string
-    const quantity = (body.quantity ?? 0) as number
-    const price = (body.price ?? 0) as number
-    if (instrument.toUpperCase().includes("DOGE") || instrument.toUpperCase().includes("SHIB")) {
-      return json({ approved: false, checks: [{ rule: "Restricted List", passed: false, reason: "Instrument on restricted list — requires risk committee override" }] })
+    const body = opts?.body ? JSON.parse(opts.body as string) : {};
+    const instrument = (body.instrument ?? "") as string;
+    const quantity = (body.quantity ?? 0) as number;
+    const price = (body.price ?? 0) as number;
+    if (
+      instrument.toUpperCase().includes("DOGE") ||
+      instrument.toUpperCase().includes("SHIB")
+    ) {
+      return json({
+        approved: false,
+        checks: [
+          {
+            rule: "Restricted List",
+            passed: false,
+            reason:
+              "Instrument on restricted list — requires risk committee override",
+          },
+        ],
+      });
     }
     if (quantity * price > 1_000_000) {
-      return json({ approved: true, checks: [{ rule: "Single Order Limit", passed: true, warning: "Order exceeds $1M — flagged for post-trade review" }, { rule: "Restricted List", passed: true }, { rule: "Position Limit", passed: true }] })
+      return json({
+        approved: true,
+        checks: [
+          {
+            rule: "Single Order Limit",
+            passed: true,
+            warning: "Order exceeds $1M — flagged for post-trade review",
+          },
+          { rule: "Restricted List", passed: true },
+          { rule: "Position Limit", passed: true },
+        ],
+      });
     }
-    return json({ approved: true, checks: [{ rule: "Restricted List", passed: true }, { rule: "Position Limit", passed: true }, { rule: "Concentration Limit", passed: true }] })
+    return json({
+      approved: true,
+      checks: [
+        { rule: "Restricted List", passed: true },
+        { rule: "Position Limit", passed: true },
+        { rule: "Concentration Limit", passed: true },
+      ],
+    });
   }
 
   // --- Instruments ---
   if (route === "/api/instruments/list") {
-    const DEFI_CATEGORIES = ["defi"]
-    const RESTRICTED_BASES = ["DOGE", "SHIB"]
-    const venueMap: Record<string, { venue: string; category: string; instruments: number; coverage: number }> = {}
-    const enrichedInstruments = MOCK_INSTRUMENTS.map(inst => {
-      if (!venueMap[inst.venue]) venueMap[inst.venue] = { venue: inst.venue, category: inst.category, instruments: 0, coverage: 85 + Math.random() * 15 }
-      venueMap[inst.venue].instruments++
+    const DEFI_CATEGORIES = ["defi"];
+    const RESTRICTED_BASES = ["DOGE", "SHIB"];
+    const venueMap: Record<
+      string,
+      { venue: string; category: string; instruments: number; coverage: number }
+    > = {};
+    const enrichedInstruments = MOCK_INSTRUMENTS.map((inst) => {
+      if (!venueMap[inst.venue])
+        venueMap[inst.venue] = {
+          venue: inst.venue,
+          category: inst.category,
+          instruments: 0,
+          coverage: 85 + Math.random() * 15,
+        };
+      venueMap[inst.venue].instruments++;
       const entitlement = RESTRICTED_BASES.includes(inst.baseCurrency)
-        ? "restricted" as const
-        : DEFI_CATEGORIES.includes(inst.category) ? "delayed" as const : "live" as const
-      return { ...inst, entitlement }
-    })
+        ? ("restricted" as const)
+        : DEFI_CATEGORIES.includes(inst.category)
+          ? ("delayed" as const)
+          : ("live" as const);
+      return { ...inst, entitlement };
+    });
     return json({
-      instruments: enrichedInstruments, total: enrichedInstruments.length, persona: "admin",
+      instruments: enrichedInstruments,
+      total: enrichedInstruments.length,
+      persona: "admin",
       venues: Object.values(venueMap),
-    })
+    });
   }
   if (route === "/api/instruments/catalogue") {
-    const DEFI_CATEGORIES = ["defi"]
-    const RESTRICTED_BASES = ["DOGE", "SHIB"]
-    const SYMBOLOGY_MAP: Record<string, { bloomberg: string | null; reuters: string | null; coingecko: string }> = {
-      BTC: { bloomberg: "BTCUSD Curncy", reuters: "BTC=", coingecko: "bitcoin" },
-      ETH: { bloomberg: "ETHUSD Curncy", reuters: "ETH=", coingecko: "ethereum" },
+    const DEFI_CATEGORIES = ["defi"];
+    const RESTRICTED_BASES = ["DOGE", "SHIB"];
+    const SYMBOLOGY_MAP: Record<
+      string,
+      { bloomberg: string | null; reuters: string | null; coingecko: string }
+    > = {
+      BTC: {
+        bloomberg: "BTCUSD Curncy",
+        reuters: "BTC=",
+        coingecko: "bitcoin",
+      },
+      ETH: {
+        bloomberg: "ETHUSD Curncy",
+        reuters: "ETH=",
+        coingecko: "ethereum",
+      },
       SOL: { bloomberg: null, reuters: null, coingecko: "solana" },
       BNB: { bloomberg: null, reuters: null, coingecko: "binancecoin" },
       XRP: { bloomberg: null, reuters: null, coingecko: "ripple" },
@@ -514,119 +801,325 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       ARB: { bloomberg: null, reuters: null, coingecko: "arbitrum" },
       USDT: { bloomberg: null, reuters: null, coingecko: "tether" },
       USDC: { bloomberg: null, reuters: null, coingecko: "usd-coin" },
-    }
-    const enrichedCatalogue = MOCK_CATALOGUE.map(entry => {
-      const inst = entry.instrument
+    };
+    const enrichedCatalogue = MOCK_CATALOGUE.map((entry) => {
+      const inst = entry.instrument;
       const entitlement = RESTRICTED_BASES.includes(inst.baseCurrency)
-        ? "restricted" as const
-        : DEFI_CATEGORIES.includes(inst.category) ? "delayed" as const : "live" as const
-      const symData = SYMBOLOGY_MAP[inst.baseCurrency]
+        ? ("restricted" as const)
+        : DEFI_CATEGORIES.includes(inst.category)
+          ? ("delayed" as const)
+          : ("live" as const);
+      const symData = SYMBOLOGY_MAP[inst.baseCurrency];
       const symbology = {
         internal: inst.instrumentKey,
         bloomberg: symData?.bloomberg ?? null,
         reuters: symData?.reuters ?? null,
         coingecko: symData?.coingecko ?? inst.baseCurrency.toLowerCase(),
-      }
-      return { ...entry, entitlement, symbology }
-    })
-    return json({ catalogue: enrichedCatalogue, total: enrichedCatalogue.length })
+      };
+      return { ...entry, entitlement, symbology };
+    });
+    return json({
+      catalogue: enrichedCatalogue,
+      total: enrichedCatalogue.length,
+    });
   }
 
   // --- Alerts ---
   if (route === "/api/alerts/active") {
     // Notification bell uses this — return unacknowledged alerts
-    const unacked = STRATEGY_ALERTS.filter(a => !a.acknowledgedAt)
-    return json({ alerts: unacked.map(a => ({
-      id: a.id,
-      severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
-      title: a.message,
-      timestamp: a.triggeredAt,
-      source: "strategy-service",
-    })), total: unacked.length })
+    const unacked = STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt);
+    return json({
+      alerts: unacked.map((a) => ({
+        id: a.id,
+        severity:
+          a.severity === "critical"
+            ? "critical"
+            : a.severity === "warning"
+              ? "high"
+              : "medium",
+        title: a.message,
+        timestamp: a.triggeredAt,
+        source: "strategy-service",
+      })),
+      total: unacked.length,
+    });
   }
   if (route === "/api/alerts/list") {
-    return json({ data: STRATEGY_ALERTS.map(a => ({
-      id: a.id,
-      severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
-      status: a.resolvedAt ? "resolved" : a.acknowledgedAt ? "acknowledged" : "active",
-      title: a.message,
-      description: a.message,
-      source: "strategy-service",
-      entity: a.configId ?? "unknown",
-      entityType: "strategy" as const,
-      timestamp: a.triggeredAt,
-      value: a.details ? JSON.stringify(a.details) : undefined,
-      threshold: undefined,
-      recommendedAction: "Review strategy configuration",
-    })) })
+    return json({
+      data: STRATEGY_ALERTS.map((a) => ({
+        id: a.id,
+        severity:
+          a.severity === "critical"
+            ? "critical"
+            : a.severity === "warning"
+              ? "high"
+              : "medium",
+        status: a.resolvedAt
+          ? "resolved"
+          : a.acknowledgedAt
+            ? "acknowledged"
+            : "active",
+        title: a.message,
+        description: a.message,
+        source: "strategy-service",
+        entity: a.configId ?? "unknown",
+        entityType: "strategy" as const,
+        timestamp: a.triggeredAt,
+        value: a.details ? JSON.stringify(a.details) : undefined,
+        threshold: undefined,
+        recommendedAction: "Review strategy configuration",
+      })),
+    });
   }
   if (route === "/api/alerts/summary") {
     // Use same severity mapping as /api/alerts/list (critical→critical, warning→high, info→medium)
-    const critCount = STRATEGY_ALERTS.filter(a => a.severity === "critical").length
-    const highCount = STRATEGY_ALERTS.filter(a => a.severity === "warning").length
-    const medCount = STRATEGY_ALERTS.filter(a => a.severity === "info").length
-    const unacked = STRATEGY_ALERTS.filter(a => !a.acknowledgedAt).length
-    return json({ total: STRATEGY_ALERTS.length, critical: critCount, high: highCount, medium: medCount, warning: highCount, info: medCount, unacknowledged: unacked })
+    const critCount = STRATEGY_ALERTS.filter(
+      (a) => a.severity === "critical",
+    ).length;
+    const highCount = STRATEGY_ALERTS.filter(
+      (a) => a.severity === "warning",
+    ).length;
+    const medCount = STRATEGY_ALERTS.filter(
+      (a) => a.severity === "info",
+    ).length;
+    const unacked = STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt).length;
+    return json({
+      total: STRATEGY_ALERTS.length,
+      critical: critCount,
+      high: highCount,
+      medium: medCount,
+      warning: highCount,
+      info: medCount,
+      unacknowledged: unacked,
+    });
   }
   // Acknowledge / escalate / resolve — mutate STRATEGY_ALERTS in place
-  if (route === "/api/alerts/acknowledge" || route === "/api/alerts/escalate" || route === "/api/alerts/resolve") {
-    const action = route.split("/").pop() as string
+  if (
+    route === "/api/alerts/acknowledge" ||
+    route === "/api/alerts/escalate" ||
+    route === "/api/alerts/resolve"
+  ) {
+    const action = route.split("/").pop() as string;
     // alertId from POST body
-    let alertId: string | undefined
-    try { alertId = opts?.body ? JSON.parse(opts.body as string).alertId : undefined } catch { /* noop */ }
-    const alert = alertId ? STRATEGY_ALERTS.find(a => a.id === alertId) : undefined
+    let alertId: string | undefined;
+    try {
+      alertId = opts?.body
+        ? JSON.parse(opts.body as string).alertId
+        : undefined;
+    } catch {
+      /* noop */
+    }
+    const alert = alertId
+      ? STRATEGY_ALERTS.find((a) => a.id === alertId)
+      : undefined;
     if (alert) {
-      if (action === "acknowledge") alert.acknowledgedAt = new Date().toISOString()
-      if (action === "resolve") { alert.acknowledgedAt = alert.acknowledgedAt ?? new Date().toISOString(); alert.resolvedAt = new Date().toISOString() }
+      if (action === "acknowledge")
+        alert.acknowledgedAt = new Date().toISOString();
+      if (action === "resolve") {
+        alert.acknowledgedAt = alert.acknowledgedAt ?? new Date().toISOString();
+        alert.resolvedAt = new Date().toISOString();
+      }
       if (action === "escalate") {
-        if (alert.severity === "info") alert.severity = "warning"
-        else if (alert.severity === "warning") alert.severity = "critical"
+        if (alert.severity === "info") alert.severity = "warning";
+        else if (alert.severity === "warning") alert.severity = "critical";
       }
     }
-    return json({ ok: true })
+    return json({ ok: true });
   }
   // Bell uses /api/alerts/{id}/acknowledge
   if (route.match(/^\/api\/alerts\/[^/]+\/acknowledge$/)) {
-    const alertId = route.split("/")[3]
-    const alert = STRATEGY_ALERTS.find(a => a.id === alertId)
-    if (alert) alert.acknowledgedAt = new Date().toISOString()
-    return json({ ok: true })
+    const alertId = route.split("/")[3];
+    const alert = STRATEGY_ALERTS.find((a) => a.id === alertId);
+    if (alert) alert.acknowledgedAt = new Date().toISOString();
+    return json({ ok: true });
   }
 
   // --- Risk ---
   if (route === "/api/risk/limits") {
-    return json({ limits: [
-      { id: "rl-1", name: "Max Position Size", value: 2500000, limit: 5000000, unit: "USD", category: "exposure", entity: "Odum Research", entityType: "company", level: 0 },
-      { id: "rl-2", name: "Max Drawdown", value: 3.2, limit: 10, unit: "%", category: "exposure", entity: "Quant Fund", entityType: "client", level: 1, parentId: "rl-1" },
-      { id: "rl-3", name: "Leverage Limit", value: 7.5, limit: 10, unit: "x", category: "margin", entity: "Delta One", entityType: "account", level: 1, parentId: "rl-1" },
-      { id: "rl-4", name: "Concentration Limit", value: 28, limit: 30, unit: "%", category: "concentration", entity: "BTC-PERP", entityType: "instrument", level: 2, parentId: "rl-3" },
-      { id: "rl-5", name: "DeFi LTV", value: 0.72, limit: 0.85, unit: "ratio", category: "ltv", entity: "Aave V3", entityType: "strategy", level: 1, parentId: "rl-1" },
-    ] })
+    return json({
+      limits: [
+        {
+          id: "rl-1",
+          name: "Max Position Size",
+          value: 2500000,
+          limit: 5000000,
+          unit: "USD",
+          category: "exposure",
+          entity: "Odum Research",
+          entityType: "company",
+          level: 0,
+        },
+        {
+          id: "rl-2",
+          name: "Max Drawdown",
+          value: 3.2,
+          limit: 10,
+          unit: "%",
+          category: "exposure",
+          entity: "Quant Fund",
+          entityType: "client",
+          level: 1,
+          parentId: "rl-1",
+        },
+        {
+          id: "rl-3",
+          name: "Leverage Limit",
+          value: 7.5,
+          limit: 10,
+          unit: "x",
+          category: "margin",
+          entity: "Delta One",
+          entityType: "account",
+          level: 1,
+          parentId: "rl-1",
+        },
+        {
+          id: "rl-4",
+          name: "Concentration Limit",
+          value: 28,
+          limit: 30,
+          unit: "%",
+          category: "concentration",
+          entity: "BTC-PERP",
+          entityType: "instrument",
+          level: 2,
+          parentId: "rl-3",
+        },
+        {
+          id: "rl-5",
+          name: "DeFi LTV",
+          value: 0.72,
+          limit: 0.85,
+          unit: "ratio",
+          category: "ltv",
+          entity: "Aave V3",
+          entityType: "strategy",
+          level: 1,
+          parentId: "rl-1",
+        },
+      ],
+    });
   }
   if (route === "/api/risk/var") {
-    return json({ portfolioVaR: 185000, confidence: 0.99, horizon: "1D", method: "Historical", breakdown: [{ asset: "BTC", var: 95000 }, { asset: "ETH", var: 55000 }, { asset: "SOL", var: 35000 }] })
+    return json({
+      portfolioVaR: 185000,
+      confidence: 0.99,
+      horizon: "1D",
+      method: "Historical",
+      breakdown: [
+        { asset: "BTC", var: 95000 },
+        { asset: "ETH", var: 55000 },
+        { asset: "SOL", var: 35000 },
+      ],
+    });
   }
   if (route === "/api/risk/greeks") {
-    return json({ portfolio: { delta: 12.5, gamma: 0.45, theta: -2400, vega: 85000, rho: 1200 }, positions: [], timeSeries: [], secondOrder: { volga: 0.02, vanna: 0.01, slide: 0.005 } })
+    return json({
+      portfolio: {
+        delta: 12.5,
+        gamma: 0.45,
+        theta: -2400,
+        vega: 85000,
+        rho: 1200,
+      },
+      positions: [],
+      timeSeries: [],
+      secondOrder: { volga: 0.02, vanna: 0.01, slide: 0.005 },
+    });
   }
   if (route === "/api/risk/stress") {
-    return json({ scenarios: [
-      { id: "covid-crash", name: "COVID Crash (Mar 2020)", description: "60% equity drawdown, crypto -50%", multiplier: -0.5, pnlImpact: -3200000, varImpact: -4200000, positionsBreaching: 18, largestLoss: "BTC-PERP: -$1.2M" },
-      { id: "btc-may-2021", name: "BTC Flash Crash (May 2021)", description: "BTC -35% in 24h, cascading liquidations", multiplier: -0.35, pnlImpact: -1800000, varImpact: -2500000, positionsBreaching: 14, largestLoss: "BTC-PERP: -$850K" },
-      { id: "ftx-collapse", name: "FTX Collapse (Nov 2022)", description: "Exchange failure, liquidity crisis", multiplier: -0.4, pnlImpact: -2600000, varImpact: -3400000, positionsBreaching: 16, largestLoss: "ETH-PERP: -$720K" },
-      { id: "rate-hike", name: "Fed Rate Shock (+200bp)", description: "Aggressive tightening, duration risk", multiplier: 0.02, pnlImpact: -900000, varImpact: -1300000, positionsBreaching: 8, largestLoss: "TLT: -$380K" },
-      { id: "market-crash-20", name: "Market Crash -20%", description: "Broad market selloff across all asset classes", multiplier: -0.2, pnlImpact: -2400000, varImpact: -3100000, positionsBreaching: 12, largestLoss: "BTC-PERP: -$850K" },
-      { id: "vol-spike", name: "Vol Spike +50%", description: "Volatility surge, option gamma squeeze", multiplier: 1.5, pnlImpact: -800000, varImpact: -1200000, positionsBreaching: 5, largestLoss: "ETH-PERP: -$320K" },
-    ] })
+    return json({
+      scenarios: [
+        {
+          id: "covid-crash",
+          name: "COVID Crash (Mar 2020)",
+          description: "60% equity drawdown, crypto -50%",
+          multiplier: -0.5,
+          pnlImpact: -3200000,
+          varImpact: -4200000,
+          positionsBreaching: 18,
+          largestLoss: "BTC-PERP: -$1.2M",
+        },
+        {
+          id: "btc-may-2021",
+          name: "BTC Flash Crash (May 2021)",
+          description: "BTC -35% in 24h, cascading liquidations",
+          multiplier: -0.35,
+          pnlImpact: -1800000,
+          varImpact: -2500000,
+          positionsBreaching: 14,
+          largestLoss: "BTC-PERP: -$850K",
+        },
+        {
+          id: "ftx-collapse",
+          name: "FTX Collapse (Nov 2022)",
+          description: "Exchange failure, liquidity crisis",
+          multiplier: -0.4,
+          pnlImpact: -2600000,
+          varImpact: -3400000,
+          positionsBreaching: 16,
+          largestLoss: "ETH-PERP: -$720K",
+        },
+        {
+          id: "rate-hike",
+          name: "Fed Rate Shock (+200bp)",
+          description: "Aggressive tightening, duration risk",
+          multiplier: 0.02,
+          pnlImpact: -900000,
+          varImpact: -1300000,
+          positionsBreaching: 8,
+          largestLoss: "TLT: -$380K",
+        },
+        {
+          id: "market-crash-20",
+          name: "Market Crash -20%",
+          description: "Broad market selloff across all asset classes",
+          multiplier: -0.2,
+          pnlImpact: -2400000,
+          varImpact: -3100000,
+          positionsBreaching: 12,
+          largestLoss: "BTC-PERP: -$850K",
+        },
+        {
+          id: "vol-spike",
+          name: "Vol Spike +50%",
+          description: "Volatility surge, option gamma squeeze",
+          multiplier: 1.5,
+          pnlImpact: -800000,
+          varImpact: -1200000,
+          positionsBreaching: 5,
+          largestLoss: "ETH-PERP: -$320K",
+        },
+      ],
+    });
   }
   if (route === "/api/risk/var-summary") {
-    return json({ historical_var_99: 2100000, parametric_var_99: 1850000, cvar_99: 2450000, monte_carlo_var_99: 1920000, marginalVaR: [{ asset: "BTC", mvar: 0.45 }, { asset: "ETH", mvar: 0.30 }] })
+    return json({
+      historical_var_99: 2100000,
+      parametric_var_99: 1850000,
+      cvar_99: 2450000,
+      monte_carlo_var_99: 1920000,
+      marginalVaR: [
+        { asset: "BTC", mvar: 0.45 },
+        { asset: "ETH", mvar: 0.3 },
+      ],
+    });
   }
   if (route.startsWith("/api/risk/stress-test")) {
-    return json({ scenario: "custom", pnlImpact: -1200000, positions: 24, worstPosition: { instrument: "BTC-PERP", loss: -450000 } })
+    return json({
+      scenario: "custom",
+      pnlImpact: -1200000,
+      positions: 24,
+      worstPosition: { instrument: "BTC-PERP", loss: -450000 },
+    });
   }
   if (route === "/api/risk/regime") {
-    return json({ regime: "normal", current: "normal", confidence: 0.78, indicators: { vix: 18.5, btcVol: 42, corrIndex: 0.65 } })
+    return json({
+      regime: "normal",
+      current: "normal",
+      confidence: 0.78,
+      indicators: { vix: 18.5, btcVol: 42, corrIndex: 0.65 },
+    });
   }
   if (route === "/api/risk/correlation-matrix") {
     return json({
@@ -634,43 +1127,222 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       matrix: [
         [1, 0.85, 0.72, 0.35, -0.15],
         [0.85, 1, 0.78, 0.32, -0.12],
-        [0.72, 0.78, 1, 0.28, -0.10],
+        [0.72, 0.78, 1, 0.28, -0.1],
         [0.35, 0.32, 0.28, 1, -0.45],
-        [-0.15, -0.12, -0.10, -0.45, 1],
+        [-0.15, -0.12, -0.1, -0.45, 1],
       ],
-    })
+    });
   }
   if (route === "/api/risk/venue-circuit-breakers") {
-    return json(["Binance", "OKX", "Hyperliquid", "Deribit"].map(v => ({ venue: v, status: "armed", tripCount: 0, lastTrip: null })))
+    return json(
+      ["Binance", "OKX", "Hyperliquid", "Deribit"].map((v) => ({
+        venue: v,
+        status: "armed",
+        tripCount: 0,
+        lastTrip: null,
+      })),
+    );
   }
-  if (route === "/api/risk/circuit-breaker" || route === "/api/risk/kill-switch") {
-    return json({ ok: true })
+  if (
+    route === "/api/risk/circuit-breaker" ||
+    route === "/api/risk/kill-switch"
+  ) {
+    return json({ ok: true });
   }
   if (route === "/api/risk/exposure-types") {
     return json({
       riskTypes: [
-        { id: "delta", name: "Delta", category: "first_order", currentValue: 12.5, threshold: 25, unit: "notional_pct", status: "OK", subscribedStrategies: ["CEFI_BTC_MM", "DEFI_ETH_BASIS", "TRADFI_SPY_ML"] },
-        { id: "gamma", name: "Gamma", category: "second_order", currentValue: 0.45, threshold: 1.0, unit: "notional_pct", status: "OK", subscribedStrategies: ["CEFI_ETH_OPT_MM"] },
-        { id: "vega", name: "Vega", category: "second_order", currentValue: 85000, threshold: 200000, unit: "usd", status: "OK", subscribedStrategies: ["CEFI_ETH_OPT_MM"] },
-        { id: "theta", name: "Theta", category: "second_order", currentValue: -2400, threshold: -5000, unit: "usd_per_day", status: "OK", subscribedStrategies: ["CEFI_ETH_OPT_MM"] },
-        { id: "funding", name: "Funding Rate", category: "first_order", currentValue: 0.012, threshold: -0.01, unit: "pct_8h", status: "OK", subscribedStrategies: ["DEFI_ETH_BASIS", "DEFI_ETH_STAKED_BASIS"] },
-        { id: "basis", name: "Basis Spread", category: "first_order", currentValue: 0.15, threshold: 0.5, unit: "pct", status: "OK", subscribedStrategies: ["DEFI_ETH_BASIS"] },
-        { id: "aave_liquidation", name: "Aave Health Factor", category: "structural", currentValue: 1.45, threshold: 1.2, unit: "ratio", status: "WARNING", subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"] },
-        { id: "protocol_risk", name: "Protocol Risk (LST Depeg)", category: "structural", currentValue: 0.3, threshold: 2.0, unit: "pct_deviation", status: "OK", subscribedStrategies: ["DEFI_ETH_STAKED_BASIS", "DEFI_ETH_RECURSIVE_BASIS"] },
-        { id: "liquidity", name: "Liquidity", category: "structural", currentValue: 15000000, threshold: 5000000, unit: "usd", status: "OK", subscribedStrategies: ["DEFI_ETH_BASIS", "CEFI_BTC_MM"] },
-        { id: "venue_protocol", name: "Venue Protocol Risk", category: "operational", currentValue: 0, threshold: 1, unit: "incidents", status: "OK", subscribedStrategies: ["ALL"] },
-        { id: "concentration", name: "Concentration", category: "operational", currentValue: 35, threshold: 50, unit: "pct", status: "OK", subscribedStrategies: ["CEFI_BTC_MM"] },
-        { id: "adverse_selection", name: "Adverse Selection", category: "domain_specific", currentValue: 12, threshold: 25, unit: "pct_toxic", status: "OK", subscribedStrategies: ["CEFI_BTC_MM"] },
-        { id: "bankroll_dd", name: "Bankroll Drawdown", category: "domain_specific", currentValue: 4.2, threshold: 20, unit: "pct", status: "OK", subscribedStrategies: ["SPORTS_NFL_ARB", "SPORTS_NBA_ML"] },
-        { id: "suspension", name: "Market Suspension", category: "domain_specific", currentValue: 0, threshold: 1, unit: "active_suspensions", status: "OK", subscribedStrategies: ["SPORTS_BETFAIR_MM"] },
-        { id: "model_confidence", name: "Model Confidence Decay", category: "domain_specific", currentValue: 0.82, threshold: 0.6, unit: "score", status: "OK", subscribedStrategies: ["TRADFI_SPY_ML", "SPORTS_NBA_ML"] },
-        { id: "borrow_cost", name: "Borrow Cost (WETH APR)", category: "first_order", currentValue: 3.2, threshold: 8.0, unit: "pct_annual", status: "OK", subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"] },
-        { id: "flash_liquidity", name: "Flash Loan Availability", category: "structural", currentValue: 50000000, threshold: 10000000, unit: "usd", status: "OK", subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"] },
-        { id: "regime", name: "Market Regime", category: "structural", currentValue: 0.78, threshold: 0.4, unit: "normal_prob", status: "OK", subscribedStrategies: ["TRADFI_BOND_MR"] },
+        {
+          id: "delta",
+          name: "Delta",
+          category: "first_order",
+          currentValue: 12.5,
+          threshold: 25,
+          unit: "notional_pct",
+          status: "OK",
+          subscribedStrategies: [
+            "CEFI_BTC_MM",
+            "DEFI_ETH_BASIS",
+            "TRADFI_SPY_ML",
+          ],
+        },
+        {
+          id: "gamma",
+          name: "Gamma",
+          category: "second_order",
+          currentValue: 0.45,
+          threshold: 1.0,
+          unit: "notional_pct",
+          status: "OK",
+          subscribedStrategies: ["CEFI_ETH_OPT_MM"],
+        },
+        {
+          id: "vega",
+          name: "Vega",
+          category: "second_order",
+          currentValue: 85000,
+          threshold: 200000,
+          unit: "usd",
+          status: "OK",
+          subscribedStrategies: ["CEFI_ETH_OPT_MM"],
+        },
+        {
+          id: "theta",
+          name: "Theta",
+          category: "second_order",
+          currentValue: -2400,
+          threshold: -5000,
+          unit: "usd_per_day",
+          status: "OK",
+          subscribedStrategies: ["CEFI_ETH_OPT_MM"],
+        },
+        {
+          id: "funding",
+          name: "Funding Rate",
+          category: "first_order",
+          currentValue: 0.012,
+          threshold: -0.01,
+          unit: "pct_8h",
+          status: "OK",
+          subscribedStrategies: ["DEFI_ETH_BASIS", "DEFI_ETH_STAKED_BASIS"],
+        },
+        {
+          id: "basis",
+          name: "Basis Spread",
+          category: "first_order",
+          currentValue: 0.15,
+          threshold: 0.5,
+          unit: "pct",
+          status: "OK",
+          subscribedStrategies: ["DEFI_ETH_BASIS"],
+        },
+        {
+          id: "aave_liquidation",
+          name: "Aave Health Factor",
+          category: "structural",
+          currentValue: 1.45,
+          threshold: 1.2,
+          unit: "ratio",
+          status: "WARNING",
+          subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"],
+        },
+        {
+          id: "protocol_risk",
+          name: "Protocol Risk (LST Depeg)",
+          category: "structural",
+          currentValue: 0.3,
+          threshold: 2.0,
+          unit: "pct_deviation",
+          status: "OK",
+          subscribedStrategies: [
+            "DEFI_ETH_STAKED_BASIS",
+            "DEFI_ETH_RECURSIVE_BASIS",
+          ],
+        },
+        {
+          id: "liquidity",
+          name: "Liquidity",
+          category: "structural",
+          currentValue: 15000000,
+          threshold: 5000000,
+          unit: "usd",
+          status: "OK",
+          subscribedStrategies: ["DEFI_ETH_BASIS", "CEFI_BTC_MM"],
+        },
+        {
+          id: "venue_protocol",
+          name: "Venue Protocol Risk",
+          category: "operational",
+          currentValue: 0,
+          threshold: 1,
+          unit: "incidents",
+          status: "OK",
+          subscribedStrategies: ["ALL"],
+        },
+        {
+          id: "concentration",
+          name: "Concentration",
+          category: "operational",
+          currentValue: 35,
+          threshold: 50,
+          unit: "pct",
+          status: "OK",
+          subscribedStrategies: ["CEFI_BTC_MM"],
+        },
+        {
+          id: "adverse_selection",
+          name: "Adverse Selection",
+          category: "domain_specific",
+          currentValue: 12,
+          threshold: 25,
+          unit: "pct_toxic",
+          status: "OK",
+          subscribedStrategies: ["CEFI_BTC_MM"],
+        },
+        {
+          id: "bankroll_dd",
+          name: "Bankroll Drawdown",
+          category: "domain_specific",
+          currentValue: 4.2,
+          threshold: 20,
+          unit: "pct",
+          status: "OK",
+          subscribedStrategies: ["SPORTS_NFL_ARB", "SPORTS_NBA_ML"],
+        },
+        {
+          id: "suspension",
+          name: "Market Suspension",
+          category: "domain_specific",
+          currentValue: 0,
+          threshold: 1,
+          unit: "active_suspensions",
+          status: "OK",
+          subscribedStrategies: ["SPORTS_BETFAIR_MM"],
+        },
+        {
+          id: "model_confidence",
+          name: "Model Confidence Decay",
+          category: "domain_specific",
+          currentValue: 0.82,
+          threshold: 0.6,
+          unit: "score",
+          status: "OK",
+          subscribedStrategies: ["TRADFI_SPY_ML", "SPORTS_NBA_ML"],
+        },
+        {
+          id: "borrow_cost",
+          name: "Borrow Cost (WETH APR)",
+          category: "first_order",
+          currentValue: 3.2,
+          threshold: 8.0,
+          unit: "pct_annual",
+          status: "OK",
+          subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"],
+        },
+        {
+          id: "flash_liquidity",
+          name: "Flash Loan Availability",
+          category: "structural",
+          currentValue: 50000000,
+          threshold: 10000000,
+          unit: "usd",
+          status: "OK",
+          subscribedStrategies: ["DEFI_ETH_RECURSIVE_BASIS"],
+        },
+        {
+          id: "regime",
+          name: "Market Regime",
+          category: "structural",
+          currentValue: 0.78,
+          threshold: 0.4,
+          unit: "normal_prob",
+          status: "OK",
+          subscribedStrategies: ["TRADFI_BOND_MR"],
+        },
       ],
       totalTypes: 23,
       populatedTypes: 18,
-    })
+    });
   }
   if (route === "/api/risk/defi-health") {
     return json({
@@ -687,8 +1359,18 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         { timestamp: "2026-03-22T00:00:00Z", hf: 1.45 },
       ],
       distanceToLiquidation: [
-        { venue: "Aave V3 (Ethereum)", healthFactor: 1.45, distancePct: 31, status: "warning" },
-        { venue: "Morpho (Ethereum)", healthFactor: 1.72, distancePct: 42, status: "ok" },
+        {
+          venue: "Aave V3 (Ethereum)",
+          healthFactor: 1.45,
+          distancePct: 31,
+          status: "warning",
+        },
+        {
+          venue: "Morpho (Ethereum)",
+          healthFactor: 1.72,
+          distancePct: 42,
+          status: "ok",
+        },
       ],
       collateralDebt: {
         totalCollateral: 2850000,
@@ -696,28 +1378,31 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         netEquity: 885000,
         leverage: 3.22,
       },
-    })
+    });
   }
 
   // --- Analytics / Strategy ---
   if (route === "/api/analytics/strategy-configs") {
-    return json(STRATEGY_TEMPLATES)
+    return json(STRATEGY_TEMPLATES);
   }
   if (route === "/api/analytics/strategy-candidates") {
-    return json(STRATEGY_CANDIDATES)
+    return json(STRATEGY_CANDIDATES);
   }
-  if (route.match(/\/api\/analytics\/strategies\/[^/]+\/promote/) || route.match(/\/api\/analytics\/strategies\/[^/]+\/reject/)) {
-    return json({ ok: true })
+  if (
+    route.match(/\/api\/analytics\/strategies\/[^/]+\/promote/) ||
+    route.match(/\/api\/analytics\/strategies\/[^/]+\/reject/)
+  ) {
+    return json({ ok: true });
   }
   if (route.match(/\/api\/analytics\/strategies\/[^/]+\/scale/)) {
-    return json({ ok: true })
+    return json({ ok: true });
   }
   if (route === "/api/analytics/strategy-handoffs") {
-    return json([])
+    return json([]);
   }
   if (route === "/api/analytics/strategies/health") {
     // Let the hook use its built-in SEED_STRATEGIES fallback
-    return json({ data: [] })
+    return json({ data: [] });
   }
 
   // --- ML ---
@@ -727,43 +1412,62 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       ...fam,
       activeExperiments: [3, 1, 2, 1, 4, 2][i] ?? 1,
       deployedVersions: [2, 1, 1, 1, 2, 1][i] ?? 1,
-    }))
-    return json({ data: enriched, families: enriched })
+    }));
+    return json({ data: enriched, families: enriched });
   }
-  if (route === "/api/ml/experiments") return json(EXPERIMENTS)
-  if (route.match(/\/api\/ml\/experiments\/[^/]+$/)) return json(EXPERIMENTS[0])
-  if (route === "/api/ml/training-runs") return json(TRAINING_RUNS)
-  if (route === "/api/ml/training-jobs") return json({ ok: true, jobId: "job-mock-001" })
-  if (route === "/api/ml/versions") return json(MODEL_VERSIONS)
-  if (route.match(/\/api\/ml\/models\/[^/]+\/promote/)) return json({ ok: true })
-  if (route === "/api/ml/deployments") return json(LIVE_DEPLOYMENTS)
-  if (route === "/api/ml/features") return json(FEATURE_SET_VERSIONS)
-  if (route === "/api/ml/datasets") return json(DATASET_SNAPSHOTS)
-  if (route === "/api/ml/validation-results") return json(VALIDATION_PACKAGES)
-  if (route === "/api/ml/monitoring") return json({ alerts: [], drift: [], performance: {} })
-  if (route === "/api/ml/governance") return json({ policies: [], approvals: [] })
-  if (route === "/api/ml/config") return json({ hyperparameters: {}, featureFlags: {} })
+  if (route === "/api/ml/experiments") return json(EXPERIMENTS);
+  if (route.match(/\/api\/ml\/experiments\/[^/]+$/))
+    return json(EXPERIMENTS[0]);
+  if (route === "/api/ml/training-runs") return json(TRAINING_RUNS);
+  if (route === "/api/ml/training-jobs")
+    return json({ ok: true, jobId: "job-mock-001" });
+  if (route === "/api/ml/versions") return json(MODEL_VERSIONS);
+  if (route.match(/\/api\/ml\/models\/[^/]+\/promote/))
+    return json({ ok: true });
+  if (route === "/api/ml/deployments") return json(LIVE_DEPLOYMENTS);
+  if (route === "/api/ml/features") return json(FEATURE_SET_VERSIONS);
+  if (route === "/api/ml/datasets") return json(DATASET_SNAPSHOTS);
+  if (route === "/api/ml/validation-results") return json(VALIDATION_PACKAGES);
+  if (route === "/api/ml/monitoring")
+    return json({ alerts: [], drift: [], performance: {} });
+  if (route === "/api/ml/governance")
+    return json({ policies: [], approvals: [] });
+  if (route === "/api/ml/config")
+    return json({ hyperparameters: {}, featureFlags: {} });
 
   // --- Reports ---
   if (route === "/api/reporting/reports") {
     // Build per-client portfolio summary that sums to $45.2M AUM
-    const clientAums = [12500000, 9800000, 7600000, 5400000, 3900000, 2800000, 1500000, 900000, 500000, 200000, 60000, 40000]
+    const clientAums = [
+      12500000, 9800000, 7600000, 5400000, 3900000, 2800000, 1500000, 900000,
+      500000, 200000, 60000, 40000,
+    ];
     const portfolioSummary = CLIENTS.slice(0, 12).map((c, i) => ({
       clientId: c.id,
       name: c.name,
       aum: clientAums[i] ?? 500000,
       mtdReturn: parseFloat((1.0 + Math.sin(i * 0.8) * 3.5).toFixed(1)),
       ytdReturn: parseFloat((6 + Math.sin(i * 0.5) * 8).toFixed(1)),
-    }))
+    }));
     // Force average mtdReturn ≈ 3.2%
-    const avgMtd = portfolioSummary.reduce((s, c) => s + c.mtdReturn, 0) / portfolioSummary.length
-    const mtdDelta = 3.2 - avgMtd
-    portfolioSummary.forEach(c => { c.mtdReturn = parseFloat((c.mtdReturn + mtdDelta).toFixed(1)) })
+    const avgMtd =
+      portfolioSummary.reduce((s, c) => s + c.mtdReturn, 0) /
+      portfolioSummary.length;
+    const mtdDelta = 3.2 - avgMtd;
+    portfolioSummary.forEach((c) => {
+      c.mtdReturn = parseFloat((c.mtdReturn + mtdDelta).toFixed(1));
+    });
     return json({
       data: Array.from({ length: 47 }, (_, i) => ({
         id: `rpt-${i + 1}`,
         clientId: portfolioSummary[i % portfolioSummary.length].clientId,
-        type: ["daily-pnl", "risk-summary", "execution-quality", "regulatory-mifid", "settlement-summary"][i % 5],
+        type: [
+          "daily-pnl",
+          "risk-summary",
+          "execution-quality",
+          "regulatory-mifid",
+          "settlement-summary",
+        ][i % 5],
         name: `${["Daily PnL", "Risk Summary", "Execution Quality", "MiFID II", "Settlement"][i % 5]} Report`,
         status: i < 40 ? "delivered" : "pending",
         generatedAt: new Date(Date.now() - i * 86400000).toISOString(),
@@ -775,29 +1479,44 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         clientId: c.id,
         amount: 5000 + i * 2500,
         status: i < 3 ? "paid" : "pending",
-        dueDate: new Date(Date.now() + (30 - i * 7) * 86400000).toISOString().split("T")[0],
+        dueDate: new Date(Date.now() + (30 - i * 7) * 86400000)
+          .toISOString()
+          .split("T")[0],
       })),
-    })
+    });
   }
-  if (route.match(/^\/api\/reporting\/settlements\/[^/]+\/confirm$/) && opts?.method === "PUT") {
-    const settlementId = route.split("/").at(-2)
-    return json({ ok: true, settlement_id: settlementId, status: "confirmed" })
+  if (
+    route.match(/^\/api\/reporting\/settlements\/[^/]+\/confirm$/) &&
+    opts?.method === "PUT"
+  ) {
+    const settlementId = route.split("/").at(-2);
+    return json({ ok: true, settlement_id: settlementId, status: "confirmed" });
   }
   if (route === "/api/reporting/settlements") {
-    const statuses = ["confirmed", "pending", "failed", "disputed", "confirmed", "pending"] as const
+    const statuses = [
+      "confirmed",
+      "pending",
+      "failed",
+      "disputed",
+      "confirmed",
+      "pending",
+    ] as const;
     return json({
       settlements: CLIENTS.slice(0, 6).flatMap((c, ci) =>
         Array.from({ length: 3 }, (_, i) => ({
           id: `stl-${ci * 3 + i + 1}`,
           clientId: c.id,
-          amount: 50000 + Math.round((ci * 30000 + i * 80000)),
+          amount: 50000 + Math.round(ci * 30000 + i * 80000),
           currency: "USD",
           status: statuses[(ci + i) % statuses.length],
-          settledAt: statuses[(ci + i) % statuses.length] === "confirmed" ? new Date(Date.now() - i * 86400000).toISOString() : null,
+          settledAt:
+            statuses[(ci + i) % statuses.length] === "confirmed"
+              ? new Date(Date.now() - i * 86400000).toISOString()
+              : null,
           venue: ["binance", "okx", "deribit"][i % 3],
-        }))
+        })),
       ),
-      accountBalances: ACCOUNTS.map(a => ({
+      accountBalances: ACCOUNTS.map((a) => ({
         venue: a.venue,
         currency: "USD",
         balance: a.balanceUSD,
@@ -805,477 +1524,1807 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         locked: a.marginUsed,
       })),
       recentTransfers: [
-        { time: new Date(Date.now() - 120000).toISOString(), from: "Binance", to: "OKX", amount: "$250,000", status: "confirmed" as const, confirmations: "12/12", txHash: "0xabc...def" },
-        { time: new Date(Date.now() - 3600000).toISOString(), from: "OKX", to: "Deribit", amount: "$180,000", status: "settled" as const, confirmations: "6/6", txHash: "0x123...456" },
-        { time: new Date(Date.now() - 600000).toISOString(), from: "Hyperliquid", to: "Binance", amount: "$320,000", status: "confirming" as const, confirmations: "4/12", txHash: "0x789...abc" },
+        {
+          time: new Date(Date.now() - 120000).toISOString(),
+          from: "Binance",
+          to: "OKX",
+          amount: "$250,000",
+          status: "confirmed" as const,
+          confirmations: "12/12",
+          txHash: "0xabc...def",
+        },
+        {
+          time: new Date(Date.now() - 3600000).toISOString(),
+          from: "OKX",
+          to: "Deribit",
+          amount: "$180,000",
+          status: "settled" as const,
+          confirmations: "6/6",
+          txHash: "0x123...456",
+        },
+        {
+          time: new Date(Date.now() - 600000).toISOString(),
+          from: "Hyperliquid",
+          to: "Binance",
+          amount: "$320,000",
+          status: "confirming" as const,
+          confirmations: "4/12",
+          txHash: "0x789...abc",
+        },
       ],
-    })
+    });
   }
   // --- Reporting Subscriptions ---
-  if (route.match(/^\/api\/reporting\/subscriptions\/[^/]+\/approve$/) && opts?.method === "PUT") {
-    const subId = route.split("/").at(-2)
-    return json({ ok: true, subscription_id: subId, status: "active" })
+  if (
+    route.match(/^\/api\/reporting\/subscriptions\/[^/]+\/approve$/) &&
+    opts?.method === "PUT"
+  ) {
+    const subId = route.split("/").at(-2);
+    return json({ ok: true, subscription_id: subId, status: "active" });
   }
-  if (route === "/api/reporting/subscriptions/subscribe" && opts?.method === "POST") {
-    return json({ subscription: { id: `sub-new-${Date.now()}`, status: "pending_approval" } })
+  if (
+    route === "/api/reporting/subscriptions/subscribe" &&
+    opts?.method === "POST"
+  ) {
+    return json({
+      subscription: { id: `sub-new-${Date.now()}`, status: "pending_approval" },
+    });
   }
   if (route === "/api/reporting/subscriptions") {
     return json({
       subscriptions: [
-        { id: "sub-001", client_id: "alpha-main", org_id: "alpha-capital", package: "Daily Execution Summary", frequency: "daily", format: "PDF", status: "active", next_run: "2026-03-24T06:00:00Z", created_at: "2026-02-01T00:00:00Z" },
-        { id: "sub-002", client_id: "alpha-main", org_id: "alpha-capital", package: "Monthly Regulatory Pack", frequency: "monthly", format: "PDF+Excel", status: "active", next_run: "2026-04-01T00:00:00Z", created_at: "2026-01-15T00:00:00Z" },
-        { id: "sub-003", client_id: "vertex-core", org_id: "vertex-partners", package: "Weekly Risk Report", frequency: "weekly", format: "PDF", status: "pending_approval", next_run: null, created_at: "2026-03-20T00:00:00Z" },
+        {
+          id: "sub-001",
+          client_id: "alpha-main",
+          org_id: "alpha-capital",
+          package: "Daily Execution Summary",
+          frequency: "daily",
+          format: "PDF",
+          status: "active",
+          next_run: "2026-03-24T06:00:00Z",
+          created_at: "2026-02-01T00:00:00Z",
+        },
+        {
+          id: "sub-002",
+          client_id: "alpha-main",
+          org_id: "alpha-capital",
+          package: "Monthly Regulatory Pack",
+          frequency: "monthly",
+          format: "PDF+Excel",
+          status: "active",
+          next_run: "2026-04-01T00:00:00Z",
+          created_at: "2026-01-15T00:00:00Z",
+        },
+        {
+          id: "sub-003",
+          client_id: "vertex-core",
+          org_id: "vertex-partners",
+          package: "Weekly Risk Report",
+          frequency: "weekly",
+          format: "PDF",
+          status: "pending_approval",
+          next_run: null,
+          created_at: "2026-03-20T00:00:00Z",
+        },
       ],
       total: 3,
-    })
+    });
   }
 
-  if (route === "/api/reporting/reconciliation") return json({
-    breaks: [
-      { id: "BRK-001", type: "position", instrument: "BTC-PERP", venue: "binance", internal_qty: 2.5, external_qty: 2.3, diff: 0.2, status: "unresolved", severity: "high", detected_at: "2026-03-23T10:15:00Z", correlation_id: "corr-brk-001" },
-      { id: "BRK-002", type: "pnl", instrument: "ETH-USDT", venue: "hyperliquid", internal_qty: 15420.50, external_qty: 15380.25, diff: 40.25, status: "unresolved", severity: "medium", detected_at: "2026-03-23T09:30:00Z", correlation_id: "corr-brk-002" },
-      { id: "BRK-003", type: "fee", instrument: "SOL-PERP", venue: "binance", internal_qty: 125.00, external_qty: 132.50, diff: -7.50, status: "resolved", severity: "low", detected_at: "2026-03-22T16:00:00Z", correlation_id: "corr-brk-003" },
-      { id: "BRK-004", type: "position", instrument: "AAVE_V3:SUPPLY:USDT", venue: "aave", internal_qty: 50000, external_qty: 49850, diff: 150, status: "unresolved", severity: "medium", detected_at: "2026-03-23T08:00:00Z", correlation_id: "corr-brk-004" },
-    ],
-    total: 4,
-  })
-  if (route === "/api/reporting/reconciliation/resolve" && opts?.method === "POST") {
-    const body = opts.body ? JSON.parse(opts.body as string) : {}
-    return json({ ok: true, break_id: body.break_id, status: "resolved" })
+  if (route === "/api/reporting/reconciliation")
+    return json({
+      breaks: [
+        {
+          id: "BRK-001",
+          type: "position",
+          instrument: "BTC-PERP",
+          venue: "binance",
+          internal_qty: 2.5,
+          external_qty: 2.3,
+          diff: 0.2,
+          status: "unresolved",
+          severity: "high",
+          detected_at: "2026-03-23T10:15:00Z",
+          correlation_id: "corr-brk-001",
+        },
+        {
+          id: "BRK-002",
+          type: "pnl",
+          instrument: "ETH-USDT",
+          venue: "hyperliquid",
+          internal_qty: 15420.5,
+          external_qty: 15380.25,
+          diff: 40.25,
+          status: "unresolved",
+          severity: "medium",
+          detected_at: "2026-03-23T09:30:00Z",
+          correlation_id: "corr-brk-002",
+        },
+        {
+          id: "BRK-003",
+          type: "fee",
+          instrument: "SOL-PERP",
+          venue: "binance",
+          internal_qty: 125.0,
+          external_qty: 132.5,
+          diff: -7.5,
+          status: "resolved",
+          severity: "low",
+          detected_at: "2026-03-22T16:00:00Z",
+          correlation_id: "corr-brk-003",
+        },
+        {
+          id: "BRK-004",
+          type: "position",
+          instrument: "AAVE_V3:SUPPLY:USDT",
+          venue: "aave",
+          internal_qty: 50000,
+          external_qty: 49850,
+          diff: 150,
+          status: "unresolved",
+          severity: "medium",
+          detected_at: "2026-03-23T08:00:00Z",
+          correlation_id: "corr-brk-004",
+        },
+      ],
+      total: 4,
+    });
+  if (
+    route === "/api/reporting/reconciliation/resolve" &&
+    opts?.method === "POST"
+  ) {
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    return json({ ok: true, break_id: body.break_id, status: "resolved" });
   }
-  if (route === "/api/reporting/regulatory") return json([])
-  if (route === "/api/reporting/pnl-attribution") return json({ factors: [], total: 0 })
-  if (route === "/api/reporting/executive-summary") return json({ aum: 45200000, pnlMtd: 1446400, sharpe: 2.1, strategies: 12 })
-  if (route === "/api/reporting/invoices") return json([])
-  if (route.startsWith("/api/reporting/reconciliation/")) return json({ ok: true })
-  if (route === "/api/reporting/generate") return json({ ok: true, reportId: "rpt-mock-001" })
-  if (route === "/api/reporting/schedules") return json([])
+  if (route === "/api/reporting/regulatory") return json([]);
+  if (route === "/api/reporting/pnl-attribution")
+    return json({ factors: [], total: 0 });
+  if (route === "/api/reporting/executive-summary")
+    return json({
+      aum: 45200000,
+      pnlMtd: 1446400,
+      sharpe: 2.1,
+      strategies: 12,
+    });
+  if (route === "/api/reporting/invoices") return json([]);
+  if (route.startsWith("/api/reporting/reconciliation/"))
+    return json({ ok: true });
+  if (route === "/api/reporting/generate")
+    return json({ ok: true, reportId: "rpt-mock-001" });
+  if (route === "/api/reporting/schedules") return json([]);
 
   // --- Service Status ---
   if (route === "/api/service-status/health") {
-    const now = new Date().toISOString()
+    const now = new Date().toISOString();
     return json({
       data: [
-        { name: "instruments-service", tier: "core", category: "data", status: "healthy", coveragePct: 99.2, lastRun: "5s ago", shardsComplete: 48, shardsTotal: 48, shardsFailed: 0, latencyP50: 8, latencyP99: 28, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.4.12", cpuPct: 15, memoryPct: 30, connections: 12, queueDepth: 0 },
-        { name: "market-tick-data-service", tier: "core", category: "data", status: "healthy", coveragePct: 98.8, lastRun: "2s ago", shardsComplete: 120, shardsTotal: 122, shardsFailed: 0, latencyP50: 5, latencyP99: 22, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.3.8", cpuPct: 45, memoryPct: 55, connections: 64, queueDepth: 1 },
-        { name: "features-service", tier: "core", category: "data", status: "healthy", coveragePct: 97.5, lastRun: "12s ago", shardsComplete: 95, shardsTotal: 98, shardsFailed: 1, latencyP50: 22, latencyP99: 85, errorRate: 0.3, lastHealthCheck: now, uptime: "99.95%", version: "0.2.9", cpuPct: 58, memoryPct: 62, connections: 18, queueDepth: 4 },
-        { name: "strategy-service", tier: "critical", category: "trading", status: "healthy", coveragePct: 100, lastRun: "8s ago", shardsComplete: 24, shardsTotal: 24, shardsFailed: 0, latencyP50: 18, latencyP99: 62, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.5.1", cpuPct: 28, memoryPct: 41, connections: 22, queueDepth: 0, requiredForTier: "Tier 1" },
-        { name: "execution-service", tier: "critical", category: "trading", status: "healthy", coveragePct: 100, lastRun: "1s ago", shardsComplete: 16, shardsTotal: 16, shardsFailed: 0, latencyP50: 12, latencyP99: 45, errorRate: 0.1, lastHealthCheck: now, uptime: "99.98%", version: "0.6.3", cpuPct: 34, memoryPct: 52, connections: 48, queueDepth: 3, requiredForTier: "Tier 1" },
-        { name: "risk-monitoring-service", tier: "critical", category: "risk", status: "warning", coveragePct: 95.0, lastRun: "25s ago", shardsComplete: 18, shardsTotal: 20, shardsFailed: 2, latencyP50: 35, latencyP99: 180, errorRate: 1.2, lastHealthCheck: now, uptime: "99.7%", version: "0.3.4", cpuPct: 72, memoryPct: 68, connections: 31, queueDepth: 12, requiredForTier: "Tier 1", lastError: "Upstream timeout from position-monitor" },
-        { name: "alerting-service", tier: "support", category: "ops", status: "healthy", coveragePct: 100, lastRun: "3s ago", shardsComplete: 8, shardsTotal: 8, shardsFailed: 0, latencyP50: 10, latencyP99: 38, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.4.5", cpuPct: 12, memoryPct: 22, connections: 6, queueDepth: 0 },
-        { name: "position-monitor-service", tier: "support", category: "risk", status: "healthy", coveragePct: 99.5, lastRun: "4s ago", shardsComplete: 32, shardsTotal: 32, shardsFailed: 0, latencyP50: 20, latencyP99: 65, errorRate: 0.2, lastHealthCheck: now, uptime: "99.95%", version: "0.2.1", cpuPct: 38, memoryPct: 45, connections: 14, queueDepth: 2 },
-        { name: "features-onchain-service", tier: "core", category: "data", status: "healthy", coveragePct: 96.8, lastRun: "15s ago", shardsComplete: 28, shardsTotal: 30, shardsFailed: 0, latencyP50: 30, latencyP99: 120, errorRate: 0.5, lastHealthCheck: now, uptime: "99.9%", version: "0.1.7", cpuPct: 40, memoryPct: 48, connections: 8, queueDepth: 2 },
-        { name: "ml-inference-service", tier: "core", category: "ml", status: "healthy", coveragePct: 99.0, lastRun: "6s ago", shardsComplete: 10, shardsTotal: 10, shardsFailed: 0, latencyP50: 15, latencyP99: 55, errorRate: 0, lastHealthCheck: now, uptime: "99.97%", version: "0.2.4", cpuPct: 65, memoryPct: 72, connections: 10, queueDepth: 0 },
-        { name: "reporting-service", tier: "support", category: "ops", status: "healthy", coveragePct: 100, lastRun: "10s ago", shardsComplete: 4, shardsTotal: 4, shardsFailed: 0, latencyP50: 25, latencyP99: 95, errorRate: 0, lastHealthCheck: now, uptime: "99.98%", version: "0.3.2", cpuPct: 20, memoryPct: 35, connections: 8, queueDepth: 0 },
-        { name: "deployment-service", tier: "support", category: "ops", status: "healthy", coveragePct: 100, lastRun: "30s ago", shardsComplete: 2, shardsTotal: 2, shardsFailed: 0, latencyP50: 40, latencyP99: 150, errorRate: 0, lastHealthCheck: now, uptime: "99.99%", version: "0.5.0", cpuPct: 8, memoryPct: 18, connections: 3, queueDepth: 0 },
+        {
+          name: "instruments-service",
+          tier: "core",
+          category: "data",
+          status: "healthy",
+          coveragePct: 99.2,
+          lastRun: "5s ago",
+          shardsComplete: 48,
+          shardsTotal: 48,
+          shardsFailed: 0,
+          latencyP50: 8,
+          latencyP99: 28,
+          errorRate: 0,
+          lastHealthCheck: now,
+          uptime: "99.99%",
+          version: "0.4.12",
+          cpuPct: 15,
+          memoryPct: 30,
+          connections: 12,
+          queueDepth: 0,
+        },
+        {
+          name: "market-tick-data-service",
+          tier: "core",
+          category: "data",
+          status: "healthy",
+          coveragePct: 98.8,
+          lastRun: "2s ago",
+          shardsComplete: 120,
+          shardsTotal: 122,
+          shardsFailed: 0,
+          latencyP50: 5,
+          latencyP99: 22,
+          errorRate: 0,
+          lastHealthCheck: now,
+          uptime: "99.99%",
+          version: "0.3.8",
+          cpuPct: 45,
+          memoryPct: 55,
+          connections: 64,
+          queueDepth: 1,
+        },
+        {
+          name: "features-service",
+          tier: "core",
+          category: "data",
+          status: "healthy",
+          coveragePct: 97.5,
+          lastRun: "12s ago",
+          shardsComplete: 95,
+          shardsTotal: 98,
+          shardsFailed: 1,
+          latencyP50: 22,
+          latencyP99: 85,
+          errorRate: 0.3,
+          lastHealthCheck: now,
+          uptime: "99.95%",
+          version: "0.2.9",
+          cpuPct: 58,
+          memoryPct: 62,
+          connections: 18,
+          queueDepth: 4,
+        },
+        {
+          name: "strategy-service",
+          tier: "critical",
+          category: "trading",
+          status: "healthy",
+          coveragePct: 100,
+          lastRun: "8s ago",
+          shardsComplete: 24,
+          shardsTotal: 24,
+          shardsFailed: 0,
+          latencyP50: 18,
+          latencyP99: 62,
+          errorRate: 0,
+          lastHealthCheck: now,
+          uptime: "99.99%",
+          version: "0.5.1",
+          cpuPct: 28,
+          memoryPct: 41,
+          connections: 22,
+          queueDepth: 0,
+          requiredForTier: "Tier 1",
+        },
+        {
+          name: "execution-service",
+          tier: "critical",
+          category: "trading",
+          status: "healthy",
+          coveragePct: 100,
+          lastRun: "1s ago",
+          shardsComplete: 16,
+          shardsTotal: 16,
+          shardsFailed: 0,
+          latencyP50: 12,
+          latencyP99: 45,
+          errorRate: 0.1,
+          lastHealthCheck: now,
+          uptime: "99.98%",
+          version: "0.6.3",
+          cpuPct: 34,
+          memoryPct: 52,
+          connections: 48,
+          queueDepth: 3,
+          requiredForTier: "Tier 1",
+        },
+        {
+          name: "risk-monitoring-service",
+          tier: "critical",
+          category: "risk",
+          status: "warning",
+          coveragePct: 95.0,
+          lastRun: "25s ago",
+          shardsComplete: 18,
+          shardsTotal: 20,
+          shardsFailed: 2,
+          latencyP50: 35,
+          latencyP99: 180,
+          errorRate: 1.2,
+          lastHealthCheck: now,
+          uptime: "99.7%",
+          version: "0.3.4",
+          cpuPct: 72,
+          memoryPct: 68,
+          connections: 31,
+          queueDepth: 12,
+          requiredForTier: "Tier 1",
+          lastError: "Upstream timeout from position-monitor",
+        },
+        {
+          name: "alerting-service",
+          tier: "support",
+          category: "ops",
+          status: "healthy",
+          coveragePct: 100,
+          lastRun: "3s ago",
+          shardsComplete: 8,
+          shardsTotal: 8,
+          shardsFailed: 0,
+          latencyP50: 10,
+          latencyP99: 38,
+          errorRate: 0,
+          lastHealthCheck: now,
+          uptime: "99.99%",
+          version: "0.4.5",
+          cpuPct: 12,
+          memoryPct: 22,
+          connections: 6,
+          queueDepth: 0,
+        },
+        {
+          name: "position-monitor-service",
+          tier: "support",
+          category: "risk",
+          status: "healthy",
+          coveragePct: 99.5,
+          lastRun: "4s ago",
+          shardsComplete: 32,
+          shardsTotal: 32,
+          shardsFailed: 0,
+          latencyP50: 20,
+          latencyP99: 65,
+          errorRate: 0.2,
+          lastHealthCheck: now,
+          uptime: "99.95%",
+          version: "0.2.1",
+          cpuPct: 38,
+          memoryPct: 45,
+          connections: 14,
+          queueDepth: 2,
+        },
+        {
+          name: "features-onchain-service",
+          tier: "core",
+          category: "data",
+          status: "healthy",
+          coveragePct: 96.8,
+          lastRun: "15s ago",
+          shardsComplete: 28,
+          shardsTotal: 30,
+          shardsFailed: 0,
+          latencyP50: 30,
+          latencyP99: 120,
+          errorRate: 0.5,
+          lastHealthCheck: now,
+          uptime: "99.9%",
+          version: "0.1.7",
+          cpuPct: 40,
+          memoryPct: 48,
+          connections: 8,
+          queueDepth: 2,
+        },
+        {
+          name: "ml-inference-service",
+          tier: "core",
+          category: "ml",
+          status: "healthy",
+          coveragePct: 99.0,
+          lastRun: "6s ago",
+          shardsComplete: 10,
+          shardsTotal: 10,
+          shardsFailed: 0,
+          latencyP50: 15,
+          latencyP99: 55,
+          errorRate: 0,
+          lastHealthCheck: now,
+          uptime: "99.97%",
+          version: "0.2.4",
+          cpuPct: 65,
+          memoryPct: 72,
+          connections: 10,
+          queueDepth: 0,
+        },
+        {
+          name: "reporting-service",
+          tier: "support",
+          category: "ops",
+          status: "healthy",
+          coveragePct: 100,
+          lastRun: "10s ago",
+          shardsComplete: 4,
+          shardsTotal: 4,
+          shardsFailed: 0,
+          latencyP50: 25,
+          latencyP99: 95,
+          errorRate: 0,
+          lastHealthCheck: now,
+          uptime: "99.98%",
+          version: "0.3.2",
+          cpuPct: 20,
+          memoryPct: 35,
+          connections: 8,
+          queueDepth: 0,
+        },
+        {
+          name: "deployment-service",
+          tier: "support",
+          category: "ops",
+          status: "healthy",
+          coveragePct: 100,
+          lastRun: "30s ago",
+          shardsComplete: 2,
+          shardsTotal: 2,
+          shardsFailed: 0,
+          latencyP50: 40,
+          latencyP99: 150,
+          errorRate: 0,
+          lastHealthCheck: now,
+          uptime: "99.99%",
+          version: "0.5.0",
+          cpuPct: 8,
+          memoryPct: 18,
+          connections: 3,
+          queueDepth: 0,
+        },
       ],
-    })
+    });
   }
   if (route === "/api/service-status/feature-freshness") {
-    const now = new Date().toISOString()
-    const fiveMinAgo = new Date(Date.now() - 300000).toISOString()
-    const tenMinAgo = new Date(Date.now() - 600000).toISOString()
+    const now = new Date().toISOString();
+    const fiveMinAgo = new Date(Date.now() - 300000).toISOString();
+    const tenMinAgo = new Date(Date.now() - 600000).toISOString();
     return json({
       data: [
-        { service: "features-service", freshness: 8, sla: 30, status: "healthy", region: "asia-northeast1", lastUpdate: now },
-        { service: "features-service", freshness: 12, sla: 30, status: "healthy", region: "us-central1", lastUpdate: now },
-        { service: "features-onchain-service", freshness: 25, sla: 30, status: "healthy", region: "asia-northeast1", lastUpdate: fiveMinAgo },
-        { service: "market-tick-data-service", freshness: 2, sla: 10, status: "healthy", region: "asia-northeast1", lastUpdate: now },
-        { service: "market-tick-data-service", freshness: 5, sla: 10, status: "healthy", region: "us-central1", lastUpdate: now },
-        { service: "instruments-service", freshness: 15, sla: 60, status: "healthy", region: "Global", lastUpdate: fiveMinAgo },
-        { service: "ml-inference-service", freshness: 45, sla: 30, status: "degraded", region: "asia-northeast1", lastUpdate: tenMinAgo },
-        { service: "position-monitor", freshness: 120, sla: 30, status: "unhealthy", region: "asia-northeast1", lastUpdate: tenMinAgo },
+        {
+          service: "features-service",
+          freshness: 8,
+          sla: 30,
+          status: "healthy",
+          region: "asia-northeast1",
+          lastUpdate: now,
+        },
+        {
+          service: "features-service",
+          freshness: 12,
+          sla: 30,
+          status: "healthy",
+          region: "us-central1",
+          lastUpdate: now,
+        },
+        {
+          service: "features-onchain-service",
+          freshness: 25,
+          sla: 30,
+          status: "healthy",
+          region: "asia-northeast1",
+          lastUpdate: fiveMinAgo,
+        },
+        {
+          service: "market-tick-data-service",
+          freshness: 2,
+          sla: 10,
+          status: "healthy",
+          region: "asia-northeast1",
+          lastUpdate: now,
+        },
+        {
+          service: "market-tick-data-service",
+          freshness: 5,
+          sla: 10,
+          status: "healthy",
+          region: "us-central1",
+          lastUpdate: now,
+        },
+        {
+          service: "instruments-service",
+          freshness: 15,
+          sla: 60,
+          status: "healthy",
+          region: "Global",
+          lastUpdate: fiveMinAgo,
+        },
+        {
+          service: "ml-inference-service",
+          freshness: 45,
+          sla: 30,
+          status: "degraded",
+          region: "asia-northeast1",
+          lastUpdate: tenMinAgo,
+        },
+        {
+          service: "position-monitor",
+          freshness: 120,
+          sla: 30,
+          status: "unhealthy",
+          region: "asia-northeast1",
+          lastUpdate: tenMinAgo,
+        },
       ],
-    })
+    });
   }
   if (route === "/api/service-status/activity") {
-    const now = new Date().toISOString()
+    const now = new Date().toISOString();
     return json({
       data: [
-        { id: "log-001", service: "execution-service", severity: "info", message: "Order batch processed: 24 orders filled", timestamp: now, correlationId: "corr-a1b2c3" },
-        { id: "log-002", service: "risk-and-exposure-service", severity: "warn", message: "Position limit 85% utilized for strategy trend-follow-v3", timestamp: new Date(Date.now() - 60000).toISOString(), correlationId: "corr-d4e5f6" },
-        { id: "log-003", service: "position-monitor", severity: "error", message: "Connection pool exhausted — reconnecting", timestamp: new Date(Date.now() - 120000).toISOString(), correlationId: "corr-g7h8i9" },
-        { id: "log-004", service: "strategy-service", severity: "info", message: "Signal generated: momentum_breakout LONG BTC-USDT", timestamp: new Date(Date.now() - 180000).toISOString(), correlationId: "corr-j0k1l2" },
-        { id: "log-005", service: "alerting-service", severity: "info", message: "Telegram notification sent: daily PnL summary", timestamp: new Date(Date.now() - 300000).toISOString() },
-        { id: "log-006", service: "features-service", severity: "info", message: "Feature batch published: 12 features, avg latency 8ms", timestamp: new Date(Date.now() - 420000).toISOString() },
-        { id: "log-007", service: "position-monitor", severity: "critical", message: "Health check failed 3 consecutive times", timestamp: new Date(Date.now() - 600000).toISOString(), correlationId: "corr-m3n4o5" },
-        { id: "log-008", service: "market-tick-data-service", severity: "info", message: "WebSocket reconnected to Binance after 2s gap", timestamp: new Date(Date.now() - 900000).toISOString() },
+        {
+          id: "log-001",
+          service: "execution-service",
+          severity: "info",
+          message: "Order batch processed: 24 orders filled",
+          timestamp: now,
+          correlationId: "corr-a1b2c3",
+        },
+        {
+          id: "log-002",
+          service: "risk-and-exposure-service",
+          severity: "warn",
+          message: "Position limit 85% utilized for strategy trend-follow-v3",
+          timestamp: new Date(Date.now() - 60000).toISOString(),
+          correlationId: "corr-d4e5f6",
+        },
+        {
+          id: "log-003",
+          service: "position-monitor",
+          severity: "error",
+          message: "Connection pool exhausted — reconnecting",
+          timestamp: new Date(Date.now() - 120000).toISOString(),
+          correlationId: "corr-g7h8i9",
+        },
+        {
+          id: "log-004",
+          service: "strategy-service",
+          severity: "info",
+          message: "Signal generated: momentum_breakout LONG BTC-USDT",
+          timestamp: new Date(Date.now() - 180000).toISOString(),
+          correlationId: "corr-j0k1l2",
+        },
+        {
+          id: "log-005",
+          service: "alerting-service",
+          severity: "info",
+          message: "Telegram notification sent: daily PnL summary",
+          timestamp: new Date(Date.now() - 300000).toISOString(),
+        },
+        {
+          id: "log-006",
+          service: "features-service",
+          severity: "info",
+          message: "Feature batch published: 12 features, avg latency 8ms",
+          timestamp: new Date(Date.now() - 420000).toISOString(),
+        },
+        {
+          id: "log-007",
+          service: "position-monitor",
+          severity: "critical",
+          message: "Health check failed 3 consecutive times",
+          timestamp: new Date(Date.now() - 600000).toISOString(),
+          correlationId: "corr-m3n4o5",
+        },
+        {
+          id: "log-008",
+          service: "market-tick-data-service",
+          severity: "info",
+          message: "WebSocket reconnected to Binance after 2s gap",
+          timestamp: new Date(Date.now() - 900000).toISOString(),
+        },
       ],
       totalToday: 142,
-    })
+    });
   }
   if (route === "/api/service-status/services") {
     return json([
-      { name: "instruments-service", version: "0.4.12", uptime: "14d 6h", status: "running" },
-      { name: "market-tick-data-service", version: "0.3.8", uptime: "14d 6h", status: "running" },
-      { name: "strategy-service", version: "0.5.1", uptime: "14d 6h", status: "running" },
-      { name: "execution-service", version: "0.6.3", uptime: "14d 6h", status: "running" },
-    ])
+      {
+        name: "instruments-service",
+        version: "0.4.12",
+        uptime: "14d 6h",
+        status: "running",
+      },
+      {
+        name: "market-tick-data-service",
+        version: "0.3.8",
+        uptime: "14d 6h",
+        status: "running",
+      },
+      {
+        name: "strategy-service",
+        version: "0.5.1",
+        uptime: "14d 6h",
+        status: "running",
+      },
+      {
+        name: "execution-service",
+        version: "0.6.3",
+        uptime: "14d 6h",
+        status: "running",
+      },
+    ]);
   }
 
   // --- Audit ---
-  if (route === "/api/audit/events") return json([
-    { id: "evt-001", timestamp: "2026-03-23T10:30:00Z", actor: "admin@odum.internal", action: "order.placed", entity_type: "order", entity_id: "ord-001", correlation_id: "corr-ord-001", details: "BTC-PERP buy 2.5 @ $42,150 on Binance" },
-    { id: "evt-002", timestamp: "2026-03-23T10:30:01Z", actor: "system", action: "order.filled", entity_type: "order", entity_id: "ord-001", correlation_id: "corr-ord-001", details: "Filled 2.5 BTC-PERP @ avg $42,148.50" },
-    { id: "evt-003", timestamp: "2026-03-23T10:32:00Z", actor: "system", action: "position.updated", entity_type: "position", entity_id: "pos-btc-001", correlation_id: "corr-ord-001", details: "BTC-PERP position: 0 → 2.5 LONG" },
-    { id: "evt-004", timestamp: "2026-03-23T10:35:00Z", actor: "system", action: "alert.triggered", entity_type: "alert", entity_id: "alrt-001", correlation_id: "corr-alrt-001", details: "Margin utilisation 78% on Binance" },
-    { id: "evt-005", timestamp: "2026-03-23T10:36:00Z", actor: "admin@odum.internal", action: "alert.acknowledged", entity_type: "alert", entity_id: "alrt-001", correlation_id: "corr-alrt-001", details: "Admin acknowledged margin warning" },
-    { id: "evt-006", timestamp: "2026-03-23T09:00:00Z", actor: "system", action: "reconciliation.break_detected", entity_type: "break", entity_id: "BRK-001", correlation_id: "corr-brk-001", details: "Position mismatch: BTC-PERP internal=2.5 vs exchange=2.3" },
-    { id: "evt-007", timestamp: "2026-03-23T08:00:00Z", actor: "pm@alphacapital.com", action: "access.requested", entity_type: "access_request", entity_id: "req-001", correlation_id: "corr-req-001", details: "Requested execution-full, ml-full" },
-    { id: "evt-008", timestamp: "2026-03-23T07:00:00Z", actor: "admin@odum.internal", action: "access.approved", entity_type: "access_request", entity_id: "req-003", correlation_id: "corr-req-003", details: "Approved reporting access for Alpha Ops Manager" },
-    { id: "evt-009", timestamp: "2026-03-22T16:00:00Z", actor: "system", action: "strategy.deployed", entity_type: "strategy", entity_id: "DEFI_ETH_BASIS_SCE_1H", correlation_id: "corr-strat-001", details: "ETH Basis strategy promoted to live" },
-    { id: "evt-010", timestamp: "2026-03-22T14:00:00Z", actor: "system", action: "report.generated", entity_type: "report", entity_id: "rpt-001", correlation_id: "corr-rpt-001", details: "Monthly executive summary generated for March 2026" },
-    { id: "evt-011", timestamp: "2026-03-22T12:00:00Z", actor: "system", action: "settlement.confirmed", entity_type: "settlement", entity_id: "stl-001", correlation_id: "corr-stl-001", details: "BTC-PERP settlement confirmed on Binance" },
-    { id: "evt-012", timestamp: "2026-03-22T10:00:00Z", actor: "system", action: "model.deployed", entity_type: "ml_model", entity_id: "mdl-btc-v3", correlation_id: "corr-mdl-001", details: "BTC direction model v3 deployed to inference" },
-  ])
-  if (route === "/api/audit/compliance") return json({ status: "compliant", checks: [] })
-  if (route === "/api/audit/data-health") return json({ status: "healthy", gaps: 0 })
-  if (route === "/api/audit/batch-jobs") return json([])
+  if (route === "/api/audit/events")
+    return json([
+      {
+        id: "evt-001",
+        timestamp: "2026-03-23T10:30:00Z",
+        actor: "admin@odum.internal",
+        action: "order.placed",
+        entity_type: "order",
+        entity_id: "ord-001",
+        correlation_id: "corr-ord-001",
+        details: "BTC-PERP buy 2.5 @ $42,150 on Binance",
+      },
+      {
+        id: "evt-002",
+        timestamp: "2026-03-23T10:30:01Z",
+        actor: "system",
+        action: "order.filled",
+        entity_type: "order",
+        entity_id: "ord-001",
+        correlation_id: "corr-ord-001",
+        details: "Filled 2.5 BTC-PERP @ avg $42,148.50",
+      },
+      {
+        id: "evt-003",
+        timestamp: "2026-03-23T10:32:00Z",
+        actor: "system",
+        action: "position.updated",
+        entity_type: "position",
+        entity_id: "pos-btc-001",
+        correlation_id: "corr-ord-001",
+        details: "BTC-PERP position: 0 → 2.5 LONG",
+      },
+      {
+        id: "evt-004",
+        timestamp: "2026-03-23T10:35:00Z",
+        actor: "system",
+        action: "alert.triggered",
+        entity_type: "alert",
+        entity_id: "alrt-001",
+        correlation_id: "corr-alrt-001",
+        details: "Margin utilisation 78% on Binance",
+      },
+      {
+        id: "evt-005",
+        timestamp: "2026-03-23T10:36:00Z",
+        actor: "admin@odum.internal",
+        action: "alert.acknowledged",
+        entity_type: "alert",
+        entity_id: "alrt-001",
+        correlation_id: "corr-alrt-001",
+        details: "Admin acknowledged margin warning",
+      },
+      {
+        id: "evt-006",
+        timestamp: "2026-03-23T09:00:00Z",
+        actor: "system",
+        action: "reconciliation.break_detected",
+        entity_type: "break",
+        entity_id: "BRK-001",
+        correlation_id: "corr-brk-001",
+        details: "Position mismatch: BTC-PERP internal=2.5 vs exchange=2.3",
+      },
+      {
+        id: "evt-007",
+        timestamp: "2026-03-23T08:00:00Z",
+        actor: "pm@alphacapital.com",
+        action: "access.requested",
+        entity_type: "access_request",
+        entity_id: "req-001",
+        correlation_id: "corr-req-001",
+        details: "Requested execution-full, ml-full",
+      },
+      {
+        id: "evt-008",
+        timestamp: "2026-03-23T07:00:00Z",
+        actor: "admin@odum.internal",
+        action: "access.approved",
+        entity_type: "access_request",
+        entity_id: "req-003",
+        correlation_id: "corr-req-003",
+        details: "Approved reporting access for Alpha Ops Manager",
+      },
+      {
+        id: "evt-009",
+        timestamp: "2026-03-22T16:00:00Z",
+        actor: "system",
+        action: "strategy.deployed",
+        entity_type: "strategy",
+        entity_id: "DEFI_ETH_BASIS_SCE_1H",
+        correlation_id: "corr-strat-001",
+        details: "ETH Basis strategy promoted to live",
+      },
+      {
+        id: "evt-010",
+        timestamp: "2026-03-22T14:00:00Z",
+        actor: "system",
+        action: "report.generated",
+        entity_type: "report",
+        entity_id: "rpt-001",
+        correlation_id: "corr-rpt-001",
+        details: "Monthly executive summary generated for March 2026",
+      },
+      {
+        id: "evt-011",
+        timestamp: "2026-03-22T12:00:00Z",
+        actor: "system",
+        action: "settlement.confirmed",
+        entity_type: "settlement",
+        entity_id: "stl-001",
+        correlation_id: "corr-stl-001",
+        details: "BTC-PERP settlement confirmed on Binance",
+      },
+      {
+        id: "evt-012",
+        timestamp: "2026-03-22T10:00:00Z",
+        actor: "system",
+        action: "model.deployed",
+        entity_type: "ml_model",
+        entity_id: "mdl-btc-v3",
+        correlation_id: "corr-mdl-001",
+        details: "BTC direction model v3 deployed to inference",
+      },
+    ]);
+  if (route === "/api/audit/compliance")
+    return json({ status: "compliant", checks: [] });
+  if (route === "/api/audit/data-health")
+    return json({ status: "healthy", gaps: 0 });
+  if (route === "/api/audit/batch-jobs") return json([]);
 
   // --- Users / Orgs ---
   if (route === "/api/users/organizations") {
-    return json({ data: ORGANIZATIONS.map((o, i) => ({
-      ...o, status: "active", memberCount: 3 + i * 2,
-      subscriptionTier: i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
-      monthlyFee: [0, 15000, 8000][i] ?? 5000,
-      apiKeys: 2 + i, usageGb: 12 + i * 8,
-    })) })
+    return json({
+      data: ORGANIZATIONS.map((o, i) => ({
+        ...o,
+        status: "active",
+        memberCount: 3 + i * 2,
+        subscriptionTier:
+          i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
+        monthlyFee: [0, 15000, 8000][i] ?? 5000,
+        apiKeys: 2 + i,
+        usageGb: 12 + i * 8,
+      })),
+    });
   }
-  if (route.startsWith("/api/users/organizations/")) return json({ data: [] })
+  if (route.startsWith("/api/users/organizations/")) return json({ data: [] });
   if (route === "/api/users/subscriptions") {
-    return json({ data: ORGANIZATIONS.map((o, i) => ({
-      orgId: o.id, tier: i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
-      entitlements: i === 0 ? ["*"] : i === 1 ? ["data-pro", "execution-full", "strategy-full", "reporting"] : ["data-basic"],
-      startDate: "2025-06-01", renewalDate: "2026-06-01",
-      monthlyFee: [0, 15000, 8000][i] ?? 5000,
-    })) })
+    return json({
+      data: ORGANIZATIONS.map((o, i) => ({
+        orgId: o.id,
+        tier:
+          i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
+        entitlements:
+          i === 0
+            ? ["*"]
+            : i === 1
+              ? ["data-pro", "execution-full", "strategy-full", "reporting"]
+              : ["data-basic"],
+        startDate: "2025-06-01",
+        renewalDate: "2026-06-01",
+        monthlyFee: [0, 15000, 8000][i] ?? 5000,
+      })),
+    });
   }
 
   // --- Config ---
-  if (route === "/api/config/mandates") return json([])
-  if (route === "/api/config/fee-schedules") return json([])
-  if (route === "/api/config/reload") return json({ ok: true })
-  if (route === "/api/config/strategies") return json({ ok: true })
+  if (route === "/api/config/mandates") return json([]);
+  if (route === "/api/config/fee-schedules") return json([]);
+  if (route === "/api/config/reload") return json({ ok: true });
+  if (route === "/api/config/strategies") return json({ ok: true });
 
   // --- Documents ---
-  if (route === "/api/documents/list") return json([])
+  if (route === "/api/documents/list") return json([]);
 
   // --- Deployment ---
-  if (route === "/api/deployment/services") return json([])
-  if (route === "/api/deployment/deployments") return json([])
-  if (route === "/api/deployment/builds") return json([])
+  if (route === "/api/deployment/services") return json([]);
+  if (route === "/api/deployment/deployments") return json([]);
+  if (route === "/api/deployment/builds") return json([]);
 
   // --- News ---
-  if (route === "/api/news/feed") return json({ data: [] })
+  if (route === "/api/news/feed") return json({ data: [] });
 
   // --- Chat ---
-  if (route.startsWith("/api/chat")) return json({ message: "Mock mode — chat unavailable" })
+  if (route.startsWith("/api/chat"))
+    return json({ message: "Mock mode — chat unavailable" });
 
   // --- Permission Catalogue ---
 
   const MOCK_PERMISSION_CATALOGUE = {
     domains: [
       {
-        key: "platform", label: "Platform Services", description: "Which app sections accessible", icon: "Shield",
+        key: "platform",
+        label: "Platform Services",
+        description: "Which app sections accessible",
+        icon: "Shield",
         categories: [
           {
-            key: "services", label: "Service Access", description: "UI and API domain access",
+            key: "services",
+            label: "Service Access",
+            description: "UI and API domain access",
             permissions: [
-              { key: "data", label: "Data", description: "Instrument catalogue, market data", internal_only: false },
-              { key: "research", label: "Research & Backtesting", description: "ML, strategy, features", internal_only: false },
-              { key: "trading", label: "Trading", description: "Live trading terminal", internal_only: false },
-              { key: "execution", label: "Execution", description: "TCA, algos, venues", internal_only: false },
-              { key: "observe", label: "Observe", description: "Risk, alerts, health", internal_only: false },
-              { key: "manage", label: "Manage", description: "Clients, mandates, compliance", internal_only: false },
-              { key: "reports", label: "Reports", description: "P&L, settlement, regulatory", internal_only: false },
-              { key: "presentations", label: "Presentations", description: "Investor relations, pitch decks, fund materials", internal_only: false },
+              {
+                key: "data",
+                label: "Data",
+                description: "Instrument catalogue, market data",
+                internal_only: false,
+              },
+              {
+                key: "research",
+                label: "Research & Backtesting",
+                description: "ML, strategy, features",
+                internal_only: false,
+              },
+              {
+                key: "trading",
+                label: "Trading",
+                description: "Live trading terminal",
+                internal_only: false,
+              },
+              {
+                key: "execution",
+                label: "Execution",
+                description: "TCA, algos, venues",
+                internal_only: false,
+              },
+              {
+                key: "observe",
+                label: "Observe",
+                description: "Risk, alerts, health",
+                internal_only: false,
+              },
+              {
+                key: "manage",
+                label: "Manage",
+                description: "Clients, mandates, compliance",
+                internal_only: false,
+              },
+              {
+                key: "reports",
+                label: "Reports",
+                description: "P&L, settlement, regulatory",
+                internal_only: false,
+              },
+              {
+                key: "presentations",
+                label: "Presentations",
+                description: "Investor relations, pitch decks, fund materials",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "admin", label: "Admin Access", description: "Internal operations",
+            key: "admin",
+            label: "Admin Access",
+            description: "Internal operations",
             permissions: [
-              { key: "admin-dashboard", label: "Admin Dashboard", description: "System admin", internal_only: true },
-              { key: "user-management", label: "User Management", description: "User lifecycle", internal_only: true },
-              { key: "devops", label: "DevOps", description: "Deployments", internal_only: true },
+              {
+                key: "admin-dashboard",
+                label: "Admin Dashboard",
+                description: "System admin",
+                internal_only: true,
+              },
+              {
+                key: "user-management",
+                label: "User Management",
+                description: "User lifecycle",
+                internal_only: true,
+              },
+              {
+                key: "devops",
+                label: "DevOps",
+                description: "Deployments",
+                internal_only: true,
+              },
             ],
           },
         ],
       },
       {
-        key: "data", label: "Data Access", description: "Venues, instruments, data types", icon: "Database",
+        key: "data",
+        label: "Data Access",
+        description: "Venues, instruments, data types",
+        icon: "Database",
         categories: [
           {
-            key: "venues", label: "Venues", description: "Exchange and data source access",
+            key: "venues",
+            label: "Venues",
+            description: "Exchange and data source access",
             permissions: [
-              { key: "binance", label: "Binance", description: "CeFi exchange", internal_only: false },
-              { key: "coinbase", label: "Coinbase", description: "CeFi exchange", internal_only: false },
-              { key: "bybit", label: "Bybit", description: "CeFi exchange", internal_only: false },
-              { key: "okx", label: "OKX", description: "CeFi exchange", internal_only: false },
-              { key: "deribit", label: "Deribit", description: "CeFi derivatives", internal_only: false },
-              { key: "databento", label: "Databento", description: "TradFi data", internal_only: false },
-              { key: "tardis", label: "Tardis", description: "TradFi tick data", internal_only: false },
-              { key: "yahoo-finance", label: "Yahoo Finance", description: "TradFi equities", internal_only: false },
-              { key: "aave-v3", label: "Aave V3", description: "DeFi lending", internal_only: false },
-              { key: "uniswap-v3", label: "Uniswap V3", description: "DeFi AMM", internal_only: false },
-              { key: "hyperliquid", label: "Hyperliquid", description: "Onchain perps", internal_only: false },
-              { key: "polymarket", label: "Polymarket", description: "Prediction market", internal_only: false },
-              { key: "kalshi", label: "Kalshi", description: "Prediction market (regulated)", internal_only: false },
-              { key: "betfair", label: "Betfair", description: "Sports exchange", internal_only: false },
-              { key: "pinnacle", label: "Pinnacle", description: "Sports betting", internal_only: false },
-              { key: "ibkr", label: "Interactive Brokers", description: "TradFi multi-asset", internal_only: false },
+              {
+                key: "binance",
+                label: "Binance",
+                description: "CeFi exchange",
+                internal_only: false,
+              },
+              {
+                key: "coinbase",
+                label: "Coinbase",
+                description: "CeFi exchange",
+                internal_only: false,
+              },
+              {
+                key: "bybit",
+                label: "Bybit",
+                description: "CeFi exchange",
+                internal_only: false,
+              },
+              {
+                key: "okx",
+                label: "OKX",
+                description: "CeFi exchange",
+                internal_only: false,
+              },
+              {
+                key: "deribit",
+                label: "Deribit",
+                description: "CeFi derivatives",
+                internal_only: false,
+              },
+              {
+                key: "databento",
+                label: "Databento",
+                description: "TradFi data",
+                internal_only: false,
+              },
+              {
+                key: "tardis",
+                label: "Tardis",
+                description: "TradFi tick data",
+                internal_only: false,
+              },
+              {
+                key: "yahoo-finance",
+                label: "Yahoo Finance",
+                description: "TradFi equities",
+                internal_only: false,
+              },
+              {
+                key: "aave-v3",
+                label: "Aave V3",
+                description: "DeFi lending",
+                internal_only: false,
+              },
+              {
+                key: "uniswap-v3",
+                label: "Uniswap V3",
+                description: "DeFi AMM",
+                internal_only: false,
+              },
+              {
+                key: "hyperliquid",
+                label: "Hyperliquid",
+                description: "Onchain perps",
+                internal_only: false,
+              },
+              {
+                key: "polymarket",
+                label: "Polymarket",
+                description: "Prediction market",
+                internal_only: false,
+              },
+              {
+                key: "kalshi",
+                label: "Kalshi",
+                description: "Prediction market (regulated)",
+                internal_only: false,
+              },
+              {
+                key: "betfair",
+                label: "Betfair",
+                description: "Sports exchange",
+                internal_only: false,
+              },
+              {
+                key: "pinnacle",
+                label: "Pinnacle",
+                description: "Sports betting",
+                internal_only: false,
+              },
+              {
+                key: "ibkr",
+                label: "Interactive Brokers",
+                description: "TradFi multi-asset",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "market-categories", label: "Market Categories", description: "Asset class access",
+            key: "market-categories",
+            label: "Market Categories",
+            description: "Asset class access",
             permissions: [
-              { key: "cefi", label: "CeFi", description: "Centralised finance", internal_only: false },
-              { key: "tradfi", label: "TradFi", description: "Traditional finance", internal_only: false },
-              { key: "defi", label: "DeFi", description: "Decentralised finance", internal_only: false },
-              { key: "sports", label: "Sports", description: "Sports betting", internal_only: false },
-              { key: "prediction", label: "Prediction", description: "Prediction markets", internal_only: false },
+              {
+                key: "cefi",
+                label: "CeFi",
+                description: "Centralised finance",
+                internal_only: false,
+              },
+              {
+                key: "tradfi",
+                label: "TradFi",
+                description: "Traditional finance",
+                internal_only: false,
+              },
+              {
+                key: "defi",
+                label: "DeFi",
+                description: "Decentralised finance",
+                internal_only: false,
+              },
+              {
+                key: "sports",
+                label: "Sports",
+                description: "Sports betting",
+                internal_only: false,
+              },
+              {
+                key: "prediction",
+                label: "Prediction",
+                description: "Prediction markets",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "data-types", label: "Data Types", description: "Types of market data",
+            key: "data-types",
+            label: "Data Types",
+            description: "Types of market data",
             permissions: [
-              { key: "tick-ohlcv", label: "Tick OHLCV", description: "Open, high, low, close, volume", internal_only: false },
-              { key: "daily-candles", label: "Daily Candles", description: "End-of-day aggregates", internal_only: false },
-              { key: "order-book", label: "Order Book", description: "Level 2 depth", internal_only: false },
-              { key: "processed-data", label: "Processed Data", description: "Cleaned/normalised", internal_only: false },
-              { key: "features", label: "Features", description: "ML features and signals", internal_only: false },
+              {
+                key: "tick-ohlcv",
+                label: "Tick OHLCV",
+                description: "Open, high, low, close, volume",
+                internal_only: false,
+              },
+              {
+                key: "daily-candles",
+                label: "Daily Candles",
+                description: "End-of-day aggregates",
+                internal_only: false,
+              },
+              {
+                key: "order-book",
+                label: "Order Book",
+                description: "Level 2 depth",
+                internal_only: false,
+              },
+              {
+                key: "processed-data",
+                label: "Processed Data",
+                description: "Cleaned/normalised",
+                internal_only: false,
+              },
+              {
+                key: "features",
+                label: "Features",
+                description: "ML features and signals",
+                internal_only: false,
+              },
             ],
           },
         ],
       },
       {
-        key: "execution", label: "Execution & Trading", description: "Algos, instructions, trading gates", icon: "Zap",
+        key: "execution",
+        label: "Execution & Trading",
+        description: "Algos, instructions, trading gates",
+        icon: "Zap",
         categories: [
           {
-            key: "trading-gate", label: "Trading Gates", description: "Hard access controls",
+            key: "trading-gate",
+            label: "Trading Gates",
+            description: "Hard access controls",
             permissions: [
-              { key: "can-trade", label: "Can Trade", description: "Permission to submit orders", internal_only: false },
-              { key: "can-trade-live", label: "Can Trade Live", description: "Live market execution", internal_only: false },
-              { key: "paper-trading-only", label: "Paper Trading Only", description: "Simulated only", internal_only: false },
+              {
+                key: "can-trade",
+                label: "Can Trade",
+                description: "Permission to submit orders",
+                internal_only: false,
+              },
+              {
+                key: "can-trade-live",
+                label: "Can Trade Live",
+                description: "Live market execution",
+                internal_only: false,
+              },
+              {
+                key: "paper-trading-only",
+                label: "Paper Trading Only",
+                description: "Simulated only",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "algos", label: "Execution Algorithms", description: "Available algo strategies",
+            key: "algos",
+            label: "Execution Algorithms",
+            description: "Available algo strategies",
             permissions: [
-              { key: "twap", label: "TWAP", description: "Time-weighted average price", internal_only: false },
-              { key: "vwap", label: "VWAP", description: "Volume-weighted average price", internal_only: false },
-              { key: "sor", label: "SOR", description: "Smart order routing", internal_only: false },
-              { key: "iceberg", label: "Iceberg", description: "Hidden quantity", internal_only: false },
-              { key: "pov", label: "POV", description: "Participation of volume", internal_only: false },
-              { key: "passive-aggressive", label: "Passive Aggressive", description: "Adaptive spread capture", internal_only: false },
-              { key: "adaptive-twap", label: "Adaptive TWAP", description: "Market-aware TWAP", internal_only: false },
-              { key: "almgren-chriss", label: "Almgren-Chriss", description: "Optimal execution", internal_only: false },
+              {
+                key: "twap",
+                label: "TWAP",
+                description: "Time-weighted average price",
+                internal_only: false,
+              },
+              {
+                key: "vwap",
+                label: "VWAP",
+                description: "Volume-weighted average price",
+                internal_only: false,
+              },
+              {
+                key: "sor",
+                label: "SOR",
+                description: "Smart order routing",
+                internal_only: false,
+              },
+              {
+                key: "iceberg",
+                label: "Iceberg",
+                description: "Hidden quantity",
+                internal_only: false,
+              },
+              {
+                key: "pov",
+                label: "POV",
+                description: "Participation of volume",
+                internal_only: false,
+              },
+              {
+                key: "passive-aggressive",
+                label: "Passive Aggressive",
+                description: "Adaptive spread capture",
+                internal_only: false,
+              },
+              {
+                key: "adaptive-twap",
+                label: "Adaptive TWAP",
+                description: "Market-aware TWAP",
+                internal_only: false,
+              },
+              {
+                key: "almgren-chriss",
+                label: "Almgren-Chriss",
+                description: "Optimal execution",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "instruction-types", label: "Instruction Types", description: "Order types allowed",
+            key: "instruction-types",
+            label: "Instruction Types",
+            description: "Order types allowed",
             permissions: [
-              { key: "trade", label: "Trade", description: "Standard trade", internal_only: false },
-              { key: "swap", label: "Swap", description: "DeFi swap", internal_only: false },
-              { key: "futures-roll", label: "Futures Roll", description: "Roll futures position", internal_only: false },
-              { key: "options-combo", label: "Options Combo", description: "Multi-leg options", internal_only: false },
-              { key: "add-liquidity", label: "Add Liquidity", description: "LP provision", internal_only: false },
+              {
+                key: "trade",
+                label: "Trade",
+                description: "Standard trade",
+                internal_only: false,
+              },
+              {
+                key: "swap",
+                label: "Swap",
+                description: "DeFi swap",
+                internal_only: false,
+              },
+              {
+                key: "futures-roll",
+                label: "Futures Roll",
+                description: "Roll futures position",
+                internal_only: false,
+              },
+              {
+                key: "options-combo",
+                label: "Options Combo",
+                description: "Multi-leg options",
+                internal_only: false,
+              },
+              {
+                key: "add-liquidity",
+                label: "Add Liquidity",
+                description: "LP provision",
+                internal_only: false,
+              },
             ],
           },
         ],
       },
       {
-        key: "internal-services", label: "Internal Provisioning", description: "Slack, GitHub, M365, GCP, AWS", icon: "Lock",
+        key: "internal-services",
+        label: "Internal Provisioning",
+        description: "Slack, GitHub, M365, GCP, AWS",
+        icon: "Lock",
         categories: [
           {
-            key: "slack", label: "Slack", description: "Workspace and channel access",
+            key: "slack",
+            label: "Slack",
+            description: "Workspace and channel access",
             permissions: [
-              { key: "workspace-access", label: "Workspace Access", description: "Join Slack workspace", internal_only: true },
-              { key: "channel:engineering", label: "#engineering", description: "Engineering channel", internal_only: true },
-              { key: "channel:ops", label: "#ops", description: "Operations channel", internal_only: true },
-              { key: "channel:trading", label: "#trading", description: "Trading channel", internal_only: true },
-              { key: "channel:alerts", label: "#alerts", description: "System alerts", internal_only: true },
+              {
+                key: "workspace-access",
+                label: "Workspace Access",
+                description: "Join Slack workspace",
+                internal_only: true,
+              },
+              {
+                key: "channel:engineering",
+                label: "#engineering",
+                description: "Engineering channel",
+                internal_only: true,
+              },
+              {
+                key: "channel:ops",
+                label: "#ops",
+                description: "Operations channel",
+                internal_only: true,
+              },
+              {
+                key: "channel:trading",
+                label: "#trading",
+                description: "Trading channel",
+                internal_only: true,
+              },
+              {
+                key: "channel:alerts",
+                label: "#alerts",
+                description: "System alerts",
+                internal_only: true,
+              },
             ],
           },
           {
-            key: "github", label: "GitHub", description: "Org and team membership",
+            key: "github",
+            label: "GitHub",
+            description: "Org and team membership",
             permissions: [
-              { key: "org-membership", label: "Org Membership", description: "Join GitHub org", internal_only: true },
-              { key: "team:engineering", label: "Team: Engineering", description: "Engineering team", internal_only: true },
-              { key: "team:ops", label: "Team: Ops", description: "Operations team", internal_only: true },
-              { key: "team:platform", label: "Team: Platform", description: "Platform team", internal_only: true },
+              {
+                key: "org-membership",
+                label: "Org Membership",
+                description: "Join GitHub org",
+                internal_only: true,
+              },
+              {
+                key: "team:engineering",
+                label: "Team: Engineering",
+                description: "Engineering team",
+                internal_only: true,
+              },
+              {
+                key: "team:ops",
+                label: "Team: Ops",
+                description: "Operations team",
+                internal_only: true,
+              },
+              {
+                key: "team:platform",
+                label: "Team: Platform",
+                description: "Platform team",
+                internal_only: true,
+              },
             ],
           },
           {
-            key: "microsoft365", label: "Microsoft 365", description: "Email and productivity",
+            key: "microsoft365",
+            label: "Microsoft 365",
+            description: "Email and productivity",
             permissions: [
-              { key: "account", label: "M365 Account", description: "Create M365 account", internal_only: true },
-              { key: "email", label: "Email", description: "Outlook email", internal_only: true },
-              { key: "teams-access", label: "Teams", description: "Microsoft Teams", internal_only: true },
+              {
+                key: "account",
+                label: "M365 Account",
+                description: "Create M365 account",
+                internal_only: true,
+              },
+              {
+                key: "email",
+                label: "Email",
+                description: "Outlook email",
+                internal_only: true,
+              },
+              {
+                key: "teams-access",
+                label: "Teams",
+                description: "Microsoft Teams",
+                internal_only: true,
+              },
             ],
           },
           {
-            key: "gcp", label: "GCP", description: "Google Cloud Platform",
+            key: "gcp",
+            label: "GCP",
+            description: "Google Cloud Platform",
             permissions: [
-              { key: "project-access", label: "Project Access", description: "GCP project", internal_only: true },
-              { key: "iam:viewer", label: "IAM Viewer", description: "Read-only access", internal_only: true },
-              { key: "iam:editor", label: "IAM Editor", description: "Read-write access", internal_only: true },
-              { key: "iam:admin", label: "IAM Admin", description: "Full admin access", internal_only: true },
+              {
+                key: "project-access",
+                label: "Project Access",
+                description: "GCP project",
+                internal_only: true,
+              },
+              {
+                key: "iam:viewer",
+                label: "IAM Viewer",
+                description: "Read-only access",
+                internal_only: true,
+              },
+              {
+                key: "iam:editor",
+                label: "IAM Editor",
+                description: "Read-write access",
+                internal_only: true,
+              },
+              {
+                key: "iam:admin",
+                label: "IAM Admin",
+                description: "Full admin access",
+                internal_only: true,
+              },
             ],
           },
           {
-            key: "aws", label: "AWS", description: "Amazon Web Services",
+            key: "aws",
+            label: "AWS",
+            description: "Amazon Web Services",
             permissions: [
-              { key: "iam-user", label: "IAM User", description: "AWS IAM user", internal_only: true },
-              { key: "sso-access", label: "SSO Access", description: "AWS SSO login", internal_only: true },
-              { key: "permission-set:power-user", label: "Power User", description: "Full dev access", internal_only: true },
-              { key: "permission-set:read-only", label: "Read Only", description: "View-only access", internal_only: true },
+              {
+                key: "iam-user",
+                label: "IAM User",
+                description: "AWS IAM user",
+                internal_only: true,
+              },
+              {
+                key: "sso-access",
+                label: "SSO Access",
+                description: "AWS SSO login",
+                internal_only: true,
+              },
+              {
+                key: "permission-set:power-user",
+                label: "Power User",
+                description: "Full dev access",
+                internal_only: true,
+              },
+              {
+                key: "permission-set:read-only",
+                label: "Read Only",
+                description: "View-only access",
+                internal_only: true,
+              },
             ],
           },
         ],
       },
       {
-        key: "research", label: "Research & ML", description: "ML models, strategies, signals", icon: "FlaskConical",
+        key: "research",
+        label: "Research & ML",
+        description: "ML models, strategies, signals",
+        icon: "FlaskConical",
         categories: [
           {
-            key: "ml", label: "Machine Learning", description: "Model lifecycle",
+            key: "ml",
+            label: "Machine Learning",
+            description: "Model lifecycle",
             permissions: [
-              { key: "model-training", label: "Model Training", description: "Train ML models", internal_only: false },
-              { key: "experiments", label: "Experiments", description: "Run experiments", internal_only: false },
-              { key: "feature-store", label: "Feature Store", description: "Access feature store", internal_only: false },
-              { key: "model-registry", label: "Model Registry", description: "Browse models", internal_only: false },
-              { key: "deployment", label: "Model Deployment", description: "Deploy to production", internal_only: false },
+              {
+                key: "model-training",
+                label: "Model Training",
+                description: "Train ML models",
+                internal_only: false,
+              },
+              {
+                key: "experiments",
+                label: "Experiments",
+                description: "Run experiments",
+                internal_only: false,
+              },
+              {
+                key: "feature-store",
+                label: "Feature Store",
+                description: "Access feature store",
+                internal_only: false,
+              },
+              {
+                key: "model-registry",
+                label: "Model Registry",
+                description: "Browse models",
+                internal_only: false,
+              },
+              {
+                key: "deployment",
+                label: "Model Deployment",
+                description: "Deploy to production",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "strategy", label: "Strategy", description: "Backtesting and strategy management",
+            key: "strategy",
+            label: "Strategy",
+            description: "Backtesting and strategy management",
             permissions: [
-              { key: "backtesting", label: "Backtesting", description: "Run backtests", internal_only: false },
-              { key: "candidates", label: "Candidates", description: "Strategy candidates", internal_only: false },
-              { key: "handoff", label: "Handoff", description: "Promote to live", internal_only: false },
+              {
+                key: "backtesting",
+                label: "Backtesting",
+                description: "Run backtests",
+                internal_only: false,
+              },
+              {
+                key: "candidates",
+                label: "Candidates",
+                description: "Strategy candidates",
+                internal_only: false,
+              },
+              {
+                key: "handoff",
+                label: "Handoff",
+                description: "Promote to live",
+                internal_only: false,
+              },
             ],
           },
         ],
       },
       {
-        key: "reporting", label: "Reporting & Regulatory", description: "P&L, settlement, compliance", icon: "FileText",
+        key: "reporting",
+        label: "Reporting & Regulatory",
+        description: "P&L, settlement, compliance",
+        icon: "FileText",
         categories: [
           {
-            key: "reports", label: "Reports", description: "Financial reporting",
+            key: "reports",
+            label: "Reports",
+            description: "Financial reporting",
             permissions: [
-              { key: "pnl-attribution", label: "P&L Attribution", description: "Profit & loss breakdown", internal_only: false },
-              { key: "settlement", label: "Settlement", description: "Trade settlement", internal_only: false },
-              { key: "reconciliation", label: "Reconciliation", description: "Book reconciliation", internal_only: false },
-              { key: "regulatory", label: "Regulatory", description: "MiFID/FCA reporting", internal_only: false },
-              { key: "client-reporting", label: "Client Reporting", description: "Client-facing reports", internal_only: false },
+              {
+                key: "pnl-attribution",
+                label: "P&L Attribution",
+                description: "Profit & loss breakdown",
+                internal_only: false,
+              },
+              {
+                key: "settlement",
+                label: "Settlement",
+                description: "Trade settlement",
+                internal_only: false,
+              },
+              {
+                key: "reconciliation",
+                label: "Reconciliation",
+                description: "Book reconciliation",
+                internal_only: false,
+              },
+              {
+                key: "regulatory",
+                label: "Regulatory",
+                description: "MiFID/FCA reporting",
+                internal_only: false,
+              },
+              {
+                key: "client-reporting",
+                label: "Client Reporting",
+                description: "Client-facing reports",
+                internal_only: false,
+              },
             ],
           },
         ],
       },
       {
-        key: "regulatory-onboarding", label: "Regulatory & Onboarding", description: "Client onboarding, regulatory umbrella, fund structures", icon: "Shield",
+        key: "regulatory-onboarding",
+        label: "Regulatory & Onboarding",
+        description: "Client onboarding, regulatory umbrella, fund structures",
+        icon: "Shield",
         categories: [
           {
-            key: "onboarding", label: "Client Onboarding", description: "Onboarding programme access",
+            key: "onboarding",
+            label: "Client Onboarding",
+            description: "Onboarding programme access",
             permissions: [
-              { key: "regulatory-umbrella", label: "Regulatory Umbrella (AR)", description: "FCA Appointed Representative services", internal_only: false },
-              { key: "investment-management", label: "Investment Management", description: "FCA-authorised investment management", internal_only: false },
-              { key: "fund-crypto-spot", label: "Fund Structure — Crypto Spot", description: "Pure crypto spot fund vehicles", internal_only: false },
-              { key: "fund-derivatives-tradfi", label: "Fund Structure — Derivatives & TradFi (EU Regulated)", description: "Crypto derivatives, options, futures, traditional markets — EU-regulated fund vehicles", internal_only: false },
-              { key: "advisory-engagement", label: "Advisory Engagement", description: "Strategic advisory role under supervision", internal_only: false },
+              {
+                key: "regulatory-umbrella",
+                label: "Regulatory Umbrella (AR)",
+                description: "FCA Appointed Representative services",
+                internal_only: false,
+              },
+              {
+                key: "investment-management",
+                label: "Investment Management",
+                description: "FCA-authorised investment management",
+                internal_only: false,
+              },
+              {
+                key: "fund-crypto-spot",
+                label: "Fund Structure — Crypto Spot",
+                description: "Pure crypto spot fund vehicles",
+                internal_only: false,
+              },
+              {
+                key: "fund-derivatives-tradfi",
+                label: "Fund Structure — Derivatives & TradFi (EU Regulated)",
+                description:
+                  "Crypto derivatives, options, futures, traditional markets — EU-regulated fund vehicles",
+                internal_only: false,
+              },
+              {
+                key: "advisory-engagement",
+                label: "Advisory Engagement",
+                description: "Strategic advisory role under supervision",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "documents", label: "Document Types", description: "Required onboarding documents",
+            key: "documents",
+            label: "Document Types",
+            description: "Required onboarding documents",
             permissions: [
-              { key: "proof-of-address", label: "Proof of Address", description: "Utility bill, bank statement", internal_only: false },
-              { key: "identity", label: "Identity Document", description: "Passport, national ID", internal_only: false },
-              { key: "source-of-funds", label: "Source of Funds", description: "Wealth origin declaration", internal_only: false },
-              { key: "wealth-declaration", label: "Wealth Self-Declaration", description: "Net worth self-certification", internal_only: false },
-              { key: "management-agreement", label: "Management Agreement", description: "Signed advisory/management agreement", internal_only: false },
-              { key: "invoice-or-tax", label: "Invoicing / Tax", description: "W-9, VAT registration, invoice templates", internal_only: false },
+              {
+                key: "proof-of-address",
+                label: "Proof of Address",
+                description: "Utility bill, bank statement",
+                internal_only: false,
+              },
+              {
+                key: "identity",
+                label: "Identity Document",
+                description: "Passport, national ID",
+                internal_only: false,
+              },
+              {
+                key: "source-of-funds",
+                label: "Source of Funds",
+                description: "Wealth origin declaration",
+                internal_only: false,
+              },
+              {
+                key: "wealth-declaration",
+                label: "Wealth Self-Declaration",
+                description: "Net worth self-certification",
+                internal_only: false,
+              },
+              {
+                key: "management-agreement",
+                label: "Management Agreement",
+                description: "Signed advisory/management agreement",
+                internal_only: false,
+              },
+              {
+                key: "invoice-or-tax",
+                label: "Invoicing / Tax",
+                description: "W-9, VAT registration, invoice templates",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "tiers", label: "Subscription Tiers", description: "Service tier levels",
+            key: "tiers",
+            label: "Subscription Tiers",
+            description: "Service tier levels",
             permissions: [
-              { key: "tier-basic", label: "Basic", description: "Essential compliance and reporting", internal_only: false },
-              { key: "tier-professional", label: "Professional", description: "Full compliance + execution", internal_only: false },
-              { key: "tier-institutional", label: "Institutional", description: "Multi-strategy + fund admin", internal_only: false },
-              { key: "tier-enterprise", label: "Enterprise", description: "Custom engagement + dedicated support", internal_only: false },
+              {
+                key: "tier-basic",
+                label: "Basic",
+                description: "Essential compliance and reporting",
+                internal_only: false,
+              },
+              {
+                key: "tier-professional",
+                label: "Professional",
+                description: "Full compliance + execution",
+                internal_only: false,
+              },
+              {
+                key: "tier-institutional",
+                label: "Institutional",
+                description: "Multi-strategy + fund admin",
+                internal_only: false,
+              },
+              {
+                key: "tier-enterprise",
+                label: "Enterprise",
+                description: "Custom engagement + dedicated support",
+                internal_only: false,
+              },
             ],
           },
         ],
       },
       {
-        key: "presentations", label: "Presentations & Investor Relations", description: "Pitch decks, fund materials, investor updates", icon: "Presentation",
+        key: "presentations",
+        label: "Presentations & Investor Relations",
+        description: "Pitch decks, fund materials, investor updates",
+        icon: "Presentation",
         categories: [
           {
-            key: "decks", label: "Pitch Decks & Materials", description: "Presentation materials and fund documents",
+            key: "decks",
+            label: "Pitch Decks & Materials",
+            description: "Presentation materials and fund documents",
             permissions: [
-              { key: "pitch-deck", label: "Pitch Deck", description: "Main investor pitch deck", internal_only: false },
-              { key: "fund-factsheet", label: "Fund Factsheet", description: "Fund performance factsheet", internal_only: false },
-              { key: "strategy-overview", label: "Strategy Overview", description: "Strategy methodology", internal_only: false },
-              { key: "risk-framework", label: "Risk Framework", description: "Risk management framework", internal_only: false },
-              { key: "compliance-pack", label: "Compliance Pack", description: "Regulatory documentation", internal_only: false },
-              { key: "tech-architecture", label: "Tech Architecture", description: "Technology architecture", internal_only: true },
+              {
+                key: "pitch-deck",
+                label: "Pitch Deck",
+                description: "Main investor pitch deck",
+                internal_only: false,
+              },
+              {
+                key: "fund-factsheet",
+                label: "Fund Factsheet",
+                description: "Fund performance factsheet",
+                internal_only: false,
+              },
+              {
+                key: "strategy-overview",
+                label: "Strategy Overview",
+                description: "Strategy methodology",
+                internal_only: false,
+              },
+              {
+                key: "risk-framework",
+                label: "Risk Framework",
+                description: "Risk management framework",
+                internal_only: false,
+              },
+              {
+                key: "compliance-pack",
+                label: "Compliance Pack",
+                description: "Regulatory documentation",
+                internal_only: false,
+              },
+              {
+                key: "tech-architecture",
+                label: "Tech Architecture",
+                description: "Technology architecture",
+                internal_only: true,
+              },
             ],
           },
           {
-            key: "investor-portal", label: "Investor Portal", description: "Investor-facing portal and updates",
+            key: "investor-portal",
+            label: "Investor Portal",
+            description: "Investor-facing portal and updates",
             permissions: [
-              { key: "investor-dashboard", label: "Investor Dashboard", description: "Live investor performance", internal_only: false },
-              { key: "quarterly-letters", label: "Quarterly Letters", description: "Quarterly investor updates", internal_only: false },
-              { key: "monthly-reports", label: "Monthly Reports", description: "Monthly performance reports", internal_only: false },
-              { key: "nav-statements", label: "NAV Statements", description: "Net asset value statements", internal_only: false },
-              { key: "capital-calls", label: "Capital Calls & Distributions", description: "Capital call notices", internal_only: false },
+              {
+                key: "investor-dashboard",
+                label: "Investor Dashboard",
+                description: "Live investor performance",
+                internal_only: false,
+              },
+              {
+                key: "quarterly-letters",
+                label: "Quarterly Letters",
+                description: "Quarterly investor updates",
+                internal_only: false,
+              },
+              {
+                key: "monthly-reports",
+                label: "Monthly Reports",
+                description: "Monthly performance reports",
+                internal_only: false,
+              },
+              {
+                key: "nav-statements",
+                label: "NAV Statements",
+                description: "Net asset value statements",
+                internal_only: false,
+              },
+              {
+                key: "capital-calls",
+                label: "Capital Calls & Distributions",
+                description: "Capital call notices",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "meetings", label: "Meetings & Events", description: "Investor meetings and events",
+            key: "meetings",
+            label: "Meetings & Events",
+            description: "Investor meetings and events",
             permissions: [
-              { key: "annual-meeting", label: "Annual Meeting", description: "Annual investor meeting", internal_only: false },
-              { key: "quarterly-review", label: "Quarterly Review", description: "Quarterly review call", internal_only: false },
-              { key: "ad-hoc-meetings", label: "Ad-Hoc Meetings", description: "Request meeting with team", internal_only: false },
-              { key: "due-diligence", label: "Due Diligence", description: "DD materials and sessions", internal_only: false },
+              {
+                key: "annual-meeting",
+                label: "Annual Meeting",
+                description: "Annual investor meeting",
+                internal_only: false,
+              },
+              {
+                key: "quarterly-review",
+                label: "Quarterly Review",
+                description: "Quarterly review call",
+                internal_only: false,
+              },
+              {
+                key: "ad-hoc-meetings",
+                label: "Ad-Hoc Meetings",
+                description: "Request meeting with team",
+                internal_only: false,
+              },
+              {
+                key: "due-diligence",
+                label: "Due Diligence",
+                description: "DD materials and sessions",
+                internal_only: false,
+              },
             ],
           },
           {
-            key: "data-room", label: "Data Room", description: "Secure document sharing",
+            key: "data-room",
+            label: "Data Room",
+            description: "Secure document sharing",
             permissions: [
-              { key: "data-room-read", label: "Data Room (Read)", description: "Read access to data room", internal_only: false },
-              { key: "data-room-upload", label: "Data Room (Upload)", description: "Upload documents", internal_only: true },
-              { key: "data-room-admin", label: "Data Room (Admin)", description: "Manage data room", internal_only: true },
+              {
+                key: "data-room-read",
+                label: "Data Room (Read)",
+                description: "Read access to data room",
+                internal_only: false,
+              },
+              {
+                key: "data-room-upload",
+                label: "Data Room (Upload)",
+                description: "Upload documents",
+                internal_only: true,
+              },
+              {
+                key: "data-room-admin",
+                label: "Data Room (Admin)",
+                description: "Manage data room",
+                internal_only: true,
+              },
             ],
           },
         ],
       },
       {
-        key: "org-scoping", label: "Organisation Scoping", description: "Org-level access boundaries", icon: "Building2",
+        key: "org-scoping",
+        label: "Organisation Scoping",
+        description: "Org-level access boundaries",
+        icon: "Building2",
         categories: [
           {
-            key: "subscription-tier", label: "Subscription Tier", description: "Org subscription level",
+            key: "subscription-tier",
+            label: "Subscription Tier",
+            description: "Org subscription level",
             permissions: [
-              { key: "basic", label: "Basic", description: "Entry-level access", internal_only: false },
-              { key: "pro", label: "Pro", description: "Professional access", internal_only: false },
-              { key: "enterprise", label: "Enterprise", description: "Full enterprise", internal_only: false },
-              { key: "internal", label: "Internal", description: "Internal (wildcard)", internal_only: true },
+              {
+                key: "basic",
+                label: "Basic",
+                description: "Entry-level access",
+                internal_only: false,
+              },
+              {
+                key: "pro",
+                label: "Pro",
+                description: "Professional access",
+                internal_only: false,
+              },
+              {
+                key: "enterprise",
+                label: "Enterprise",
+                description: "Full enterprise",
+                internal_only: false,
+              },
+              {
+                key: "internal",
+                label: "Internal",
+                description: "Internal (wildcard)",
+                internal_only: true,
+              },
             ],
           },
         ],
       },
     ],
-  }
+  };
 
   if (route === "/api/auth/catalogue") {
-    return json(MOCK_PERMISSION_CATALOGUE)
+    return json(MOCK_PERMISSION_CATALOGUE);
   }
   if (route.match(/^\/api\/auth\/catalogue\/search\/[^/]+$/)) {
-    const queryStr = decodeURIComponent(route.split("/").pop() ?? "").toLowerCase()
-    const results: Array<{ domain: string; domain_label: string; category: string; category_label: string; key: string; label: string; description: string; internal_only: string }> = []
+    const queryStr = decodeURIComponent(
+      route.split("/").pop() ?? "",
+    ).toLowerCase();
+    const results: Array<{
+      domain: string;
+      domain_label: string;
+      category: string;
+      category_label: string;
+      key: string;
+      label: string;
+      description: string;
+      internal_only: string;
+    }> = [];
     for (const domain of MOCK_PERMISSION_CATALOGUE.domains) {
       for (const cat of domain.categories) {
         for (const perm of cat.permissions) {
-          if (perm.key.toLowerCase().includes(queryStr) || perm.label.toLowerCase().includes(queryStr) || perm.description.toLowerCase().includes(queryStr)) {
+          if (
+            perm.key.toLowerCase().includes(queryStr) ||
+            perm.label.toLowerCase().includes(queryStr) ||
+            perm.description.toLowerCase().includes(queryStr)
+          ) {
             results.push({
               domain: domain.key,
               domain_label: domain.label,
@@ -1285,54 +3334,72 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
               label: perm.label,
               description: perm.description,
               internal_only: perm.internal_only ? "True" : "False",
-            })
+            });
           }
         }
       }
     }
-    return json({ results, total: results.length })
+    return json({ results, total: results.length });
   }
-  if (route.match(/^\/api\/auth\/catalogue\/[^/]+$/) && !route.includes("search")) {
-    const domainKey = route.split("/").pop()
-    const domain = MOCK_PERMISSION_CATALOGUE.domains.find(d => d.key === domainKey)
-    if (domain) return json({ domain })
-    return json({ error: "Domain not found" })
+  if (
+    route.match(/^\/api\/auth\/catalogue\/[^/]+$/) &&
+    !route.includes("search")
+  ) {
+    const domainKey = route.split("/").pop();
+    const domain = MOCK_PERMISSION_CATALOGUE.domains.find(
+      (d) => d.key === domainKey,
+    );
+    if (domain) return json({ domain });
+    return json({ error: "Domain not found" });
   }
 
   // --- Provisioning (user lifecycle management) — stateful via mock-provisioning-state.ts ---
 
   if (route === "/api/auth/provisioning/users") {
-    const { users } = getProvisioningState()
-    return json({ users, total: users.length })
+    const { users } = getProvisioningState();
+    return json({ users, total: users.length });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/offboard$/)) {
-    const userId = route.split("/").at(-2)
-    if (!userId) return json({ error: "Missing user id" })
+    const userId = route.split("/").at(-2);
+    if (!userId) return json({ error: "Missing user id" });
     const offboardedServices: Record<string, string> = {
-      github: "not_applicable", slack: "not_applicable", microsoft365: "not_applicable",
-      gcp: "not_applicable", aws: "not_applicable", portal: "not_applicable",
-    }
-    const updated = updateUser(userId, { status: "offboarded", services: offboardedServices })
-    return json({ user: updated ?? { error: "User not found" } })
+      github: "not_applicable",
+      slack: "not_applicable",
+      microsoft365: "not_applicable",
+      gcp: "not_applicable",
+      aws: "not_applicable",
+      portal: "not_applicable",
+    };
+    const updated = updateUser(userId, {
+      status: "offboarded",
+      services: offboardedServices,
+    });
+    return json({ user: updated ?? { error: "User not found" } });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {
-    const userId = route.split("/").at(-2)
-    return json({ execution_name: `mock-reprovision-${userId}-${Date.now()}` })
+    const userId = route.split("/").at(-2);
+    return json({ execution_name: `mock-reprovision-${userId}-${Date.now()}` });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && !route.includes("onboard") && !route.includes("quota")) {
-    const userId = route.split("/").pop()
+  if (
+    route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) &&
+    !route.includes("onboard") &&
+    !route.includes("quota")
+  ) {
+    const userId = route.split("/").pop();
     if (opts?.method === "PUT") {
-      const body = opts.body ? JSON.parse(opts.body as string) : {}
-      const updated = updateUser(userId ?? "", body as Partial<MockUser>)
-      return json({ user: updated ?? { error: "User not found" } })
+      const body = opts.body ? JSON.parse(opts.body as string) : {};
+      const updated = updateUser(userId ?? "", body as Partial<MockUser>);
+      return json({ user: updated ?? { error: "User not found" } });
     }
-    const { users } = getProvisioningState()
-    const user = users.find(u => u.firebase_uid === userId || u.id === userId)
-    return json({ user: user ?? users[0] })
+    const { users } = getProvisioningState();
+    const user = users.find(
+      (u) => u.firebase_uid === userId || u.id === userId,
+    );
+    return json({ user: user ?? users[0] });
   }
   if (route === "/api/auth/provisioning/users/onboard") {
-    const body = opts?.body ? JSON.parse(opts.body as string) : {}
-    const now = new Date().toISOString()
+    const body = opts?.body ? JSON.parse(opts.body as string) : {};
+    const now = new Date().toISOString();
     const newUser: MockUser = {
       id: (body.email ?? "new").split("@")[0],
       firebase_uid: `uid-${Date.now()}`,
@@ -1344,31 +3411,68 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       status: "active",
       provisioned_at: now,
       last_modified: now,
-      services: { github: "provisioned", slack: "provisioned", microsoft365: "provisioned", gcp: "provisioned", aws: "provisioned", portal: "provisioned" },
-    }
-    addUser(newUser)
+      services: {
+        github: "provisioned",
+        slack: "provisioned",
+        microsoft365: "provisioned",
+        gcp: "provisioned",
+        aws: "provisioned",
+        portal: "provisioned",
+      },
+    };
+    addUser(newUser);
     return json({
       user: newUser,
       provisioning_steps: [
-        { service: "github", label: "GitHub", status: "success", message: "GitHub org/team mappings processed." },
-        { service: "slack", label: "Slack", status: "success", message: "Slack invite processed." },
-        { service: "microsoft365", label: "Microsoft 365", status: "success", message: "M365 user created." },
-        { service: "gcp", label: "GCP IAM", status: "success", message: "GCP IAM binding upserted." },
-        { service: "aws", label: "AWS IAM", status: "success", message: "AWS breakglass disabled." },
-        { service: "portal", label: "Portal", status: "success", message: "Portal provisioning processed." },
+        {
+          service: "github",
+          label: "GitHub",
+          status: "success",
+          message: "GitHub org/team mappings processed.",
+        },
+        {
+          service: "slack",
+          label: "Slack",
+          status: "success",
+          message: "Slack invite processed.",
+        },
+        {
+          service: "microsoft365",
+          label: "Microsoft 365",
+          status: "success",
+          message: "M365 user created.",
+        },
+        {
+          service: "gcp",
+          label: "GCP IAM",
+          status: "success",
+          message: "GCP IAM binding upserted.",
+        },
+        {
+          service: "aws",
+          label: "AWS IAM",
+          status: "success",
+          message: "AWS breakglass disabled.",
+        },
+        {
+          service: "portal",
+          label: "Portal",
+          status: "success",
+          message: "Portal provisioning processed.",
+        },
       ],
-    })
+    });
   }
   if (route === "/api/auth/provisioning/users/quota-check") {
-    return json({ quota: { ok: true, checks: [], message: "" } })
+    return json({ quota: { ok: true, checks: [], message: "" } });
   }
   if (route === "/api/auth/provisioning/access-templates") {
-    return json({ templates: [], total: 0 })
+    return json({ templates: [], total: 0 });
   }
   if (route === "/api/auth/provisioning/access-requests") {
     if (opts?.method === "POST") {
-      const body = opts?.body ? JSON.parse(opts.body as string) : {}
-      const now = new Date().toISOString()
+      const body = opts?.body ? JSON.parse(opts.body as string) : {};
+      const now = new Date().toISOString();
       const newReq = {
         id: `req-${Date.now()}`,
         requester_email: body.requester_email ?? "you@example.com",
@@ -1382,50 +3486,97 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         reviewed_by: "",
         created_at: now,
         updated_at: now,
-      }
-      addRequest(newReq)
-      return json({ request: newReq })
+      };
+      addRequest(newReq);
+      return json({ request: newReq });
     }
     // Support ?status= filter
-    const urlObj = new URL(route, "http://localhost")
-    const statusFilter = urlObj.searchParams.get("status")
-    const { requests } = getProvisioningState()
-    const filtered = statusFilter ? requests.filter(r => r.status === statusFilter) : requests
-    return json({ requests: filtered, total: filtered.length })
+    const urlObj = new URL(route, "http://localhost");
+    const statusFilter = urlObj.searchParams.get("status");
+    const { requests } = getProvisioningState();
+    const filtered = statusFilter
+      ? requests.filter((r) => r.status === statusFilter)
+      : requests;
+    return json({ requests: filtered, total: filtered.length });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
-    const reqId = route.split("/").at(-2)
-    const body = opts?.body ? JSON.parse(opts.body as string) : {}
-    const newStatus = body.action === "deny" ? "denied" : "approved"
+  if (
+    route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)
+  ) {
+    const reqId = route.split("/").at(-2);
+    const body = opts?.body ? JSON.parse(opts.body as string) : {};
+    const newStatus = body.action === "deny" ? "denied" : "approved";
     const updated = updateRequest(reqId ?? "", {
       status: newStatus,
       admin_note: body.admin_note ?? "",
       reviewed_by: "admin@odum.internal",
-    })
-    if (updated) return json({ request: updated })
+    });
+    if (updated) return json({ request: updated });
     // Fallback if request not found
-    return json({ request: { id: reqId, status: newStatus, admin_note: body.admin_note ?? "", reviewed_by: "admin@odum.internal", updated_at: new Date().toISOString() } })
+    return json({
+      request: {
+        id: reqId,
+        status: newStatus,
+        admin_note: body.admin_note ?? "",
+        reviewed_by: "admin@odum.internal",
+        updated_at: new Date().toISOString(),
+      },
+    });
   }
   if (route === "/api/auth/provisioning/admin/health-checks") {
     return json({
       checks: [
-        { service: "github", status: "healthy", latency_ms: 42, message: "GitHub API reachable" },
-        { service: "slack", status: "healthy", latency_ms: 38, message: "Slack API reachable" },
-        { service: "microsoft365", status: "healthy", latency_ms: 55, message: "M365 Graph API reachable" },
-        { service: "gcp", status: "healthy", latency_ms: 31, message: "GCP IAM reachable" },
-        { service: "aws", status: "healthy", latency_ms: 47, message: "AWS IAM reachable" },
-        { service: "portal", status: "healthy", latency_ms: 12, message: "Portal DB reachable" },
+        {
+          service: "github",
+          status: "healthy",
+          latency_ms: 42,
+          message: "GitHub API reachable",
+        },
+        {
+          service: "slack",
+          status: "healthy",
+          latency_ms: 38,
+          message: "Slack API reachable",
+        },
+        {
+          service: "microsoft365",
+          status: "healthy",
+          latency_ms: 55,
+          message: "M365 Graph API reachable",
+        },
+        {
+          service: "gcp",
+          status: "healthy",
+          latency_ms: 31,
+          message: "GCP IAM reachable",
+        },
+        {
+          service: "aws",
+          status: "healthy",
+          latency_ms: 47,
+          message: "AWS IAM reachable",
+        },
+        {
+          service: "portal",
+          status: "healthy",
+          latency_ms: 12,
+          message: "Portal DB reachable",
+        },
       ],
-    })
+    });
   }
   if (route === "/api/auth/provisioning/admin/health-checks/history") {
-    return json({ history: [] })
+    return json({ history: [] });
   }
 
   // --- Client Onboarding Applications ---
-  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/) && opts?.method === "POST") {
-    const appId = route.split("/").at(-2)!
-    const body = opts.body ? JSON.parse(opts.body as string) : {}
+  if (
+    route.match(
+      /^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/,
+    ) &&
+    opts?.method === "POST"
+  ) {
+    const appId = route.split("/").at(-2)!;
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
     const newDoc: DocumentArtifact = {
       id: `doc-${Date.now()}`,
       application_id: appId,
@@ -1434,30 +3585,44 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       uploaded_at: new Date().toISOString(),
       review_status: "pending",
       review_note: "",
-    }
-    addDocument(newDoc)
-    return json({ document: newDoc })
+    };
+    addDocument(newDoc);
+    return json({ document: newDoc });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/)) {
-    const appId = route.split("/").at(-2)!
-    const { documents } = getOnboardingState()
-    const appDocs = documents.filter(d => d.application_id === appId)
-    return json({ documents: appDocs, total: appDocs.length })
+  if (
+    route.match(
+      /^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/,
+    )
+  ) {
+    const appId = route.split("/").at(-2)!;
+    const { documents } = getOnboardingState();
+    const appDocs = documents.filter((d) => d.application_id === appId);
+    return json({ documents: appDocs, total: appDocs.length });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/review$/) && opts?.method === "PUT") {
-    const appId = route.split("/").at(-2)!
-    const body = opts.body ? JSON.parse(opts.body as string) : {}
-    const newStatus = body.action === "reject" ? "rejected" : "approved"
+  if (
+    route.match(
+      /^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/review$/,
+    ) &&
+    opts?.method === "PUT"
+  ) {
+    const appId = route.split("/").at(-2)!;
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const newStatus = body.action === "reject" ? "rejected" : "approved";
     const updated = updateApplication(appId, {
       status: newStatus as OnboardingApplication["status"],
       reviewer_id: body.reviewer_id ?? "admin",
       review_note: body.review_note ?? "",
-    })
-    return updated ? json({ application: updated }) : json({ error: "not found" })
+    });
+    return updated
+      ? json({ application: updated })
+      : json({ error: "not found" });
   }
-  if (route === "/api/auth/provisioning/onboarding-applications" && opts?.method === "POST") {
-    const body = opts.body ? JSON.parse(opts.body as string) : {}
-    const now = new Date().toISOString()
+  if (
+    route === "/api/auth/provisioning/onboarding-applications" &&
+    opts?.method === "POST"
+  ) {
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const now = new Date().toISOString();
     const newApp: OnboardingApplication = {
       id: `onb-${Date.now()}`,
       applicant_user_id: body.applicant_user_id ?? `uid-${Date.now()}`,
@@ -1473,209 +3638,571 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       correlation_id: `corr-onb-${Date.now()}`,
       created_at: now,
       updated_at: now,
-    }
-    addApplication(newApp)
-    return json({ application: newApp })
+    };
+    addApplication(newApp);
+    return json({ application: newApp });
   }
   if (route === "/api/auth/provisioning/onboarding-applications") {
-    const { applications } = getOnboardingState()
-    return json({ applications, total: applications.length })
+    const { applications } = getOnboardingState();
+    return json({ applications, total: applications.length });
   }
 
   // --- Options & Futures ---
   if (route === "/api/options/chain") {
     return json({
       asset: "BTC",
-      spotPrice: 71583.00,
+      spotPrice: 71583.0,
       ivIndex: 50.9,
       expiries: [
-        { date: "2026-03-24", label: "24 MAR 26", daysToExpiry: 1, hasPositions: false },
-        { date: "2026-03-25", label: "25 MAR 26", daysToExpiry: 2, hasPositions: false },
-        { date: "2026-03-26", label: "26 MAR 26", daysToExpiry: 3, hasPositions: false },
-        { date: "2026-03-27", label: "27 MAR 26", daysToExpiry: 4, hasPositions: false },
-        { date: "2026-04-03", label: "03 APR 26", daysToExpiry: 11, hasPositions: false },
-        { date: "2026-04-10", label: "10 APR 26", daysToExpiry: 18, hasPositions: false },
-        { date: "2026-04-24", label: "24 APR 26", daysToExpiry: 32, hasPositions: false },
-        { date: "2026-05-29", label: "29 MAY 26", daysToExpiry: 67, hasPositions: false },
-        { date: "2026-06-26", label: "26 JUN 26", daysToExpiry: 95, hasPositions: true },
-        { date: "2026-09-25", label: "25 SEP 26", daysToExpiry: 186, hasPositions: false },
-        { date: "2026-12-25", label: "25 DEC 26", daysToExpiry: 277, hasPositions: false },
+        {
+          date: "2026-03-24",
+          label: "24 MAR 26",
+          daysToExpiry: 1,
+          hasPositions: false,
+        },
+        {
+          date: "2026-03-25",
+          label: "25 MAR 26",
+          daysToExpiry: 2,
+          hasPositions: false,
+        },
+        {
+          date: "2026-03-26",
+          label: "26 MAR 26",
+          daysToExpiry: 3,
+          hasPositions: false,
+        },
+        {
+          date: "2026-03-27",
+          label: "27 MAR 26",
+          daysToExpiry: 4,
+          hasPositions: false,
+        },
+        {
+          date: "2026-04-03",
+          label: "03 APR 26",
+          daysToExpiry: 11,
+          hasPositions: false,
+        },
+        {
+          date: "2026-04-10",
+          label: "10 APR 26",
+          daysToExpiry: 18,
+          hasPositions: false,
+        },
+        {
+          date: "2026-04-24",
+          label: "24 APR 26",
+          daysToExpiry: 32,
+          hasPositions: false,
+        },
+        {
+          date: "2026-05-29",
+          label: "29 MAY 26",
+          daysToExpiry: 67,
+          hasPositions: false,
+        },
+        {
+          date: "2026-06-26",
+          label: "26 JUN 26",
+          daysToExpiry: 95,
+          hasPositions: true,
+        },
+        {
+          date: "2026-09-25",
+          label: "25 SEP 26",
+          daysToExpiry: 186,
+          hasPositions: false,
+        },
+        {
+          date: "2026-12-25",
+          label: "25 DEC 26",
+          daysToExpiry: 277,
+          hasPositions: false,
+        },
       ],
       underlyingFuture: 71583.87,
       chain: [],
-    })
+    });
   }
   if (route === "/api/options/positions") {
     return json({
       data: [
-        { id: "opt-pos-1", instrument: "BTC-26JUN26-80000-C", side: "long", quantity: 5, entryPrice: 2450.00, markPrice: 2180.00, pnl: -1350.00, iv: 52.3, delta: 0.32, gamma: 0.00004, theta: -28.50, vega: 85.20, expiry: "2026-06-26" },
-        { id: "opt-pos-2", instrument: "BTC-26JUN26-65000-P", side: "long", quantity: 10, entryPrice: 980.00, markPrice: 720.00, pnl: -2600.00, iv: 48.1, delta: -0.22, gamma: 0.00003, theta: -18.30, vega: 72.40, expiry: "2026-06-26" },
-        { id: "opt-pos-3", instrument: "BTC-26JUN26-75000-C", side: "short", quantity: 8, entryPrice: 3800.00, markPrice: 3450.00, pnl: 2800.00, iv: 51.0, delta: -0.45, gamma: -0.00005, theta: 32.10, vega: -92.80, expiry: "2026-06-26" },
-        { id: "opt-pos-4", instrument: "BTC-26JUN26-70000-C", side: "long", quantity: 3, entryPrice: 5200.00, markPrice: 5680.00, pnl: 1440.00, iv: 49.8, delta: 0.55, gamma: 0.00006, theta: -35.20, vega: 98.50, expiry: "2026-06-26" },
-        { id: "opt-pos-5", instrument: "BTC-26JUN26-60000-P", side: "short", quantity: 6, entryPrice: 450.00, markPrice: 380.00, pnl: 420.00, iv: 46.5, delta: 0.12, gamma: -0.00002, theta: 12.80, vega: -45.60, expiry: "2026-06-26" },
+        {
+          id: "opt-pos-1",
+          instrument: "BTC-26JUN26-80000-C",
+          side: "long",
+          quantity: 5,
+          entryPrice: 2450.0,
+          markPrice: 2180.0,
+          pnl: -1350.0,
+          iv: 52.3,
+          delta: 0.32,
+          gamma: 0.00004,
+          theta: -28.5,
+          vega: 85.2,
+          expiry: "2026-06-26",
+        },
+        {
+          id: "opt-pos-2",
+          instrument: "BTC-26JUN26-65000-P",
+          side: "long",
+          quantity: 10,
+          entryPrice: 980.0,
+          markPrice: 720.0,
+          pnl: -2600.0,
+          iv: 48.1,
+          delta: -0.22,
+          gamma: 0.00003,
+          theta: -18.3,
+          vega: 72.4,
+          expiry: "2026-06-26",
+        },
+        {
+          id: "opt-pos-3",
+          instrument: "BTC-26JUN26-75000-C",
+          side: "short",
+          quantity: 8,
+          entryPrice: 3800.0,
+          markPrice: 3450.0,
+          pnl: 2800.0,
+          iv: 51.0,
+          delta: -0.45,
+          gamma: -0.00005,
+          theta: 32.1,
+          vega: -92.8,
+          expiry: "2026-06-26",
+        },
+        {
+          id: "opt-pos-4",
+          instrument: "BTC-26JUN26-70000-C",
+          side: "long",
+          quantity: 3,
+          entryPrice: 5200.0,
+          markPrice: 5680.0,
+          pnl: 1440.0,
+          iv: 49.8,
+          delta: 0.55,
+          gamma: 0.00006,
+          theta: -35.2,
+          vega: 98.5,
+          expiry: "2026-06-26",
+        },
+        {
+          id: "opt-pos-5",
+          instrument: "BTC-26JUN26-60000-P",
+          side: "short",
+          quantity: 6,
+          entryPrice: 450.0,
+          markPrice: 380.0,
+          pnl: 420.0,
+          iv: 46.5,
+          delta: 0.12,
+          gamma: -0.00002,
+          theta: 12.8,
+          vega: -45.6,
+          expiry: "2026-06-26",
+        },
       ],
-    })
+    });
   }
   if (route === "/api/futures/contracts") {
     return json({
       data: [
-        { contract: "BTC-PERPETUAL", asset: "BTC", settlement: "BTC", markPrice: 71583.00, change24h: 3.66, volume24h: 654372520, openInterest: 42850, fundingRate: 0.0042, basis: null, isFavorite: false },
-        { contract: "BTC-27MAR26", asset: "BTC", settlement: "BTC", markPrice: 71650.00, change24h: 3.72, volume24h: 123456000, openInterest: 18500, fundingRate: null, basis: 4.2, isFavorite: false },
-        { contract: "BTC-26JUN26", asset: "BTC", settlement: "BTC", markPrice: 72100.00, change24h: 3.81, volume24h: 89234000, openInterest: 12300, fundingRate: null, basis: 5.8, isFavorite: false },
-        { contract: "BTC-25SEP26", asset: "BTC", settlement: "BTC", markPrice: 72850.00, change24h: 3.95, volume24h: 34567000, openInterest: 8900, fundingRate: null, basis: 7.1, isFavorite: false },
-        { contract: "BTC-25DEC26", asset: "BTC", settlement: "BTC", markPrice: 73500.00, change24h: 4.02, volume24h: 12345000, openInterest: 5600, fundingRate: null, basis: 8.4, isFavorite: false },
-        { contract: "ETH-PERPETUAL", asset: "ETH", settlement: "ETH", markPrice: 3456.78, change24h: 2.15, volume24h: 345678000, openInterest: 85600, fundingRate: 0.0038, basis: null, isFavorite: false },
-        { contract: "ETH-26JUN26", asset: "ETH", settlement: "ETH", markPrice: 3520.00, change24h: 2.31, volume24h: 56789000, openInterest: 15200, fundingRate: null, basis: 6.2, isFavorite: false },
-        { contract: "ETH-25DEC26", asset: "ETH", settlement: "ETH", markPrice: 3650.00, change24h: 2.48, volume24h: 23456000, openInterest: 9800, fundingRate: null, basis: 9.1, isFavorite: false },
-        { contract: "SOL-PERPETUAL", asset: "SOL", settlement: "USDC", markPrice: 156.42, change24h: 5.12, volume24h: 123456000, openInterest: 34500, fundingRate: 0.0055, basis: null, isFavorite: false },
-        { contract: "SOL-26JUN26", asset: "SOL", settlement: "USDC", markPrice: 159.80, change24h: 5.28, volume24h: 34567000, openInterest: 8900, fundingRate: null, basis: 8.6, isFavorite: false },
+        {
+          contract: "BTC-PERPETUAL",
+          asset: "BTC",
+          settlement: "BTC",
+          markPrice: 71583.0,
+          change24h: 3.66,
+          volume24h: 654372520,
+          openInterest: 42850,
+          fundingRate: 0.0042,
+          basis: null,
+          isFavorite: false,
+        },
+        {
+          contract: "BTC-27MAR26",
+          asset: "BTC",
+          settlement: "BTC",
+          markPrice: 71650.0,
+          change24h: 3.72,
+          volume24h: 123456000,
+          openInterest: 18500,
+          fundingRate: null,
+          basis: 4.2,
+          isFavorite: false,
+        },
+        {
+          contract: "BTC-26JUN26",
+          asset: "BTC",
+          settlement: "BTC",
+          markPrice: 72100.0,
+          change24h: 3.81,
+          volume24h: 89234000,
+          openInterest: 12300,
+          fundingRate: null,
+          basis: 5.8,
+          isFavorite: false,
+        },
+        {
+          contract: "BTC-25SEP26",
+          asset: "BTC",
+          settlement: "BTC",
+          markPrice: 72850.0,
+          change24h: 3.95,
+          volume24h: 34567000,
+          openInterest: 8900,
+          fundingRate: null,
+          basis: 7.1,
+          isFavorite: false,
+        },
+        {
+          contract: "BTC-25DEC26",
+          asset: "BTC",
+          settlement: "BTC",
+          markPrice: 73500.0,
+          change24h: 4.02,
+          volume24h: 12345000,
+          openInterest: 5600,
+          fundingRate: null,
+          basis: 8.4,
+          isFavorite: false,
+        },
+        {
+          contract: "ETH-PERPETUAL",
+          asset: "ETH",
+          settlement: "ETH",
+          markPrice: 3456.78,
+          change24h: 2.15,
+          volume24h: 345678000,
+          openInterest: 85600,
+          fundingRate: 0.0038,
+          basis: null,
+          isFavorite: false,
+        },
+        {
+          contract: "ETH-26JUN26",
+          asset: "ETH",
+          settlement: "ETH",
+          markPrice: 3520.0,
+          change24h: 2.31,
+          volume24h: 56789000,
+          openInterest: 15200,
+          fundingRate: null,
+          basis: 6.2,
+          isFavorite: false,
+        },
+        {
+          contract: "ETH-25DEC26",
+          asset: "ETH",
+          settlement: "ETH",
+          markPrice: 3650.0,
+          change24h: 2.48,
+          volume24h: 23456000,
+          openInterest: 9800,
+          fundingRate: null,
+          basis: 9.1,
+          isFavorite: false,
+        },
+        {
+          contract: "SOL-PERPETUAL",
+          asset: "SOL",
+          settlement: "USDC",
+          markPrice: 156.42,
+          change24h: 5.12,
+          volume24h: 123456000,
+          openInterest: 34500,
+          fundingRate: 0.0055,
+          basis: null,
+          isFavorite: false,
+        },
+        {
+          contract: "SOL-26JUN26",
+          asset: "SOL",
+          settlement: "USDC",
+          markPrice: 159.8,
+          change24h: 5.28,
+          volume24h: 34567000,
+          openInterest: 8900,
+          fundingRate: null,
+          basis: 8.6,
+          isFavorite: false,
+        },
       ],
-    })
+    });
   }
 
   // --- Auth Provisioning (access requests, users, templates) ---
   if (route === "/api/auth/provisioning/users") {
-    const state = getProvisioningState()
-    return json({ users: state.users, total: state.users.length })
+    const state = getProvisioningState();
+    return json({ users: state.users, total: state.users.length });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && !route.includes("/offboard") && !route.includes("/reprovision") && !route.includes("/workflows") && !route.includes("/quota-check")) {
-    const uid = route.split("/").pop()!
-    const state = getProvisioningState()
-    const user = state.users.find(u => u.id === uid || u.firebase_uid === uid)
-    return user ? json({ user }) : json({ error: "not found" })
+  if (
+    route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) &&
+    !route.includes("/offboard") &&
+    !route.includes("/reprovision") &&
+    !route.includes("/workflows") &&
+    !route.includes("/quota-check")
+  ) {
+    const uid = route.split("/").pop()!;
+    const state = getProvisioningState();
+    const user = state.users.find(
+      (u) => u.id === uid || u.firebase_uid === uid,
+    );
+    return user ? json({ user }) : json({ error: "not found" });
   }
-  if (route === "/api/auth/provisioning/users/onboard" && opts?.method === "POST") {
-    const body = opts.body ? JSON.parse(opts.body as string) : {}
+  if (
+    route === "/api/auth/provisioning/users/onboard" &&
+    opts?.method === "POST"
+  ) {
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
     const newUser: MockUser = {
-      id: `user-${Date.now()}`, firebase_uid: `uid-${Date.now()}`,
-      name: body.name || "New User", email: body.email || "new@example.com",
-      role: body.role || "client", product_slugs: body.product_slugs || [],
-      status: "active", provisioned_at: new Date().toISOString(), last_modified: new Date().toISOString(),
+      id: `user-${Date.now()}`,
+      firebase_uid: `uid-${Date.now()}`,
+      name: body.name || "New User",
+      email: body.email || "new@example.com",
+      role: body.role || "client",
+      product_slugs: body.product_slugs || [],
+      status: "active",
+      provisioned_at: new Date().toISOString(),
+      last_modified: new Date().toISOString(),
       services: { portal: "provisioned" },
-    }
-    addUser(newUser)
-    return json({ user: newUser, provisioning_steps: [{ service: "portal", status: "success" }] })
+    };
+    addUser(newUser);
+    return json({
+      user: newUser,
+      provisioning_steps: [{ service: "portal", status: "success" }],
+    });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && opts?.method === "PUT") {
-    const uid = route.split("/").pop()!
-    const body = opts.body ? JSON.parse(opts.body as string) : {}
-    const updated = updateUser(uid, body)
-    return updated ? json({ user: updated }) : json({ error: "not found" })
+  if (
+    route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) &&
+    opts?.method === "PUT"
+  ) {
+    const uid = route.split("/").pop()!;
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const updated = updateUser(uid, body);
+    return updated ? json({ user: updated }) : json({ error: "not found" });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/offboard$/)) {
-    const uid = route.split("/")[5]
-    const updated = updateUser(uid, { status: "offboarded" })
-    return updated ? json({ user: updated, revocation_steps: [{ service: "portal", status: "revoked" }] }) : json({ error: "not found" })
+    const uid = route.split("/")[5];
+    const updated = updateUser(uid, { status: "offboarded" });
+    return updated
+      ? json({
+          user: updated,
+          revocation_steps: [{ service: "portal", status: "revoked" }],
+        })
+      : json({ error: "not found" });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {
-    return json({ workflow_execution: `wf-${Date.now()}` })
+    return json({ workflow_execution: `wf-${Date.now()}` });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/workflows$/)) {
-    return json({ runs: [], total: 0 })
+    return json({ runs: [], total: 0 });
   }
   if (route === "/api/auth/provisioning/users/quota-check") {
-    return json({ quota: { allowed: true, currentUsers: 6, maxUsers: 50, reason: null } })
+    return json({
+      quota: { allowed: true, currentUsers: 6, maxUsers: 50, reason: null },
+    });
   }
   if (route === "/api/auth/provisioning/access-requests") {
     if (opts?.method === "POST") {
-      const body = opts.body ? JSON.parse(opts.body as string) : {}
-      const state = getProvisioningState()
+      const body = opts.body ? JSON.parse(opts.body as string) : {};
+      const state = getProvisioningState();
       const newReq = {
-        id: `req-${Date.now()}`, requester_email: body.requester_email || "user@example.com",
-        requester_name: body.requester_name || "User", org_id: body.org_id || "unknown",
+        id: `req-${Date.now()}`,
+        requester_email: body.requester_email || "user@example.com",
+        requester_name: body.requester_name || "User",
+        org_id: body.org_id || "unknown",
         requested_entitlements: body.requested_entitlements || [],
-        requested_role: body.requested_role || null, reason: body.reason || "",
-        status: "pending" as const, admin_note: "", reviewed_by: "",
-        created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-      }
-      addRequest(newReq)
-      return json({ request: newReq })
+        requested_role: body.requested_role || null,
+        reason: body.reason || "",
+        status: "pending" as const,
+        admin_note: "",
+        reviewed_by: "",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      addRequest(newReq);
+      return json({ request: newReq });
     }
-    const state = getProvisioningState()
-    const statusFilter = path.split("?status=")[1]
-    const filtered = statusFilter ? state.requests.filter(r => r.status === statusFilter) : state.requests
-    return json({ requests: filtered, total: filtered.length })
+    const state = getProvisioningState();
+    const statusFilter = path.split("?status=")[1];
+    const filtered = statusFilter
+      ? state.requests.filter((r) => r.status === statusFilter)
+      : state.requests;
+    return json({ requests: filtered, total: filtered.length });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
-    const reqId = route.split("/")[5]
-    const body = opts?.body ? JSON.parse(opts.body as string) : {}
-    const action = body.action as "approve" | "deny"
+  if (
+    route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)
+  ) {
+    const reqId = route.split("/")[5];
+    const body = opts?.body ? JSON.parse(opts.body as string) : {};
+    const action = body.action as "approve" | "deny";
     const updated = updateRequest(reqId, {
       status: action === "approve" ? "approved" : "denied",
       admin_note: body.admin_note || "",
       reviewed_by: "admin@odum.internal",
-    })
+    });
     if (updated && action === "approve") {
-      const state = getProvisioningState()
-      const existing = state.users.find(u => u.email === updated.requester_email)
+      const state = getProvisioningState();
+      const existing = state.users.find(
+        (u) => u.email === updated.requester_email,
+      );
       if (existing) {
-        const merged = [...new Set([...existing.product_slugs, ...updated.requested_entitlements])]
-        updateUser(existing.id, { product_slugs: merged })
+        const merged = [
+          ...new Set([
+            ...existing.product_slugs,
+            ...updated.requested_entitlements,
+          ]),
+        ];
+        updateUser(existing.id, { product_slugs: merged });
       } else {
         addUser({
-          id: `user-${Date.now()}`, firebase_uid: `uid-${Date.now()}`,
-          name: updated.requester_name, email: updated.requester_email,
+          id: `user-${Date.now()}`,
+          firebase_uid: `uid-${Date.now()}`,
+          name: updated.requester_name,
+          email: updated.requester_email,
           role: updated.requested_role || "client",
           product_slugs: updated.requested_entitlements,
-          status: "active", provisioned_at: new Date().toISOString(),
+          status: "active",
+          provisioned_at: new Date().toISOString(),
           last_modified: new Date().toISOString(),
           services: { portal: "provisioned" },
-        })
+        });
       }
     }
-    return updated ? json({ request: updated }) : json({ error: "not found" })
+    return updated ? json({ request: updated }) : json({ error: "not found" });
   }
   if (route === "/api/auth/provisioning/access-templates") {
-    return json({ templates: [{ id: "tpl-default", name: "Default Access", description: "Standard entitlements", github_teams: [], slack_channels: [], aws_permission_sets: [] }], total: 1 })
+    return json({
+      templates: [
+        {
+          id: "tpl-default",
+          name: "Default Access",
+          description: "Standard entitlements",
+          github_teams: [],
+          slack_channels: [],
+          aws_permission_sets: [],
+        },
+      ],
+      total: 1,
+    });
   }
   if (route.startsWith("/api/auth/provisioning/access-templates/")) {
-    return json({ template: { id: "tpl-default", name: "Default Access" } })
+    return json({ template: { id: "tpl-default", name: "Default Access" } });
   }
   if (route === "/api/auth/provisioning/admin/health-checks") {
-    if (opts?.method === "POST") return json({ result: { status: "healthy", checks: [], timestamp: new Date().toISOString() } })
-    return json({ result: { status: "healthy" } })
+    if (opts?.method === "POST")
+      return json({
+        result: {
+          status: "healthy",
+          checks: [],
+          timestamp: new Date().toISOString(),
+        },
+      });
+    return json({ result: { status: "healthy" } });
   }
   if (route === "/api/auth/provisioning/admin/health-checks/history") {
-    return json({ history: [], total: 0 })
+    return json({ history: [], total: 0 });
   }
   if (route === "/api/auth/catalogue") {
-    return json(MOCK_PERMISSION_CATALOGUE)
+    return json(MOCK_PERMISSION_CATALOGUE);
   }
   if (route.startsWith("/api/auth/catalogue/search/")) {
-    const query = decodeURIComponent(route.split("/api/auth/catalogue/search/")[1] || "").toLowerCase()
-    const results: Array<{ domain: string; domain_label: string; category: string; category_label: string; key: string; label: string; description: string; internal_only: string }> = []
+    const query = decodeURIComponent(
+      route.split("/api/auth/catalogue/search/")[1] || "",
+    ).toLowerCase();
+    const results: Array<{
+      domain: string;
+      domain_label: string;
+      category: string;
+      category_label: string;
+      key: string;
+      label: string;
+      description: string;
+      internal_only: string;
+    }> = [];
     for (const domain of MOCK_PERMISSION_CATALOGUE.domains) {
       for (const cat of domain.categories) {
         for (const perm of cat.permissions) {
-          if (perm.label.toLowerCase().includes(query) || perm.description.toLowerCase().includes(query) || perm.key.toLowerCase().includes(query)) {
-            results.push({ domain: domain.key, domain_label: domain.label, category: cat.key, category_label: cat.label, key: perm.key, label: perm.label, description: perm.description, internal_only: String(perm.internal_only) })
+          if (
+            perm.label.toLowerCase().includes(query) ||
+            perm.description.toLowerCase().includes(query) ||
+            perm.key.toLowerCase().includes(query)
+          ) {
+            results.push({
+              domain: domain.key,
+              domain_label: domain.label,
+              category: cat.key,
+              category_label: cat.label,
+              key: perm.key,
+              label: perm.label,
+              description: perm.description,
+              internal_only: String(perm.internal_only),
+            });
           }
         }
       }
     }
-    return json({ results, total: results.length })
+    return json({ results, total: results.length });
   }
 
   // --- Health (service health endpoints) ---
-  if (route === "/api/health") return json({ status: "healthy", mock: true })
-  if (route === "/api/auth/health") return json({ status: "healthy", service: "auth-api", mock: true })
-  if (route === "/api/reporting/health") return json({ status: "healthy", service: "client-reporting-api", mock: true })
-  if (route === "/api/execution/health") return json({ status: "healthy", service: "execution-service", mock: true })
-  if (route === "/api/deployment/health") return json({ status: "healthy", service: "deployment-service", mock: true })
-  if (route === "/api/config/health") return json({ status: "healthy", service: "config-interface", mock: true })
-  if (route === "/api/analytics/health") return json({ status: "healthy", service: "trading-analytics-api", mock: true })
-  if (route === "/api/audit/health") return json({ status: "healthy", service: "batch-audit-api", mock: true })
-  if (route === "/api/ml/health") return json({ status: "healthy", service: "ml-inference-api", mock: true })
-  if (route === "/api/market-data/health") return json({ status: "healthy", service: "market-data-api", mock: true })
-  if (route.endsWith("/health")) return json({ status: "healthy", mock: true })
+  if (route === "/api/health") return json({ status: "healthy", mock: true });
+  if (route === "/api/auth/health")
+    return json({ status: "healthy", service: "auth-api", mock: true });
+  if (route === "/api/reporting/health")
+    return json({
+      status: "healthy",
+      service: "client-reporting-api",
+      mock: true,
+    });
+  if (route === "/api/execution/health")
+    return json({
+      status: "healthy",
+      service: "execution-service",
+      mock: true,
+    });
+  if (route === "/api/deployment/health")
+    return json({
+      status: "healthy",
+      service: "deployment-service",
+      mock: true,
+    });
+  if (route === "/api/config/health")
+    return json({ status: "healthy", service: "config-interface", mock: true });
+  if (route === "/api/analytics/health")
+    return json({
+      status: "healthy",
+      service: "trading-analytics-api",
+      mock: true,
+    });
+  if (route === "/api/audit/health")
+    return json({ status: "healthy", service: "batch-audit-api", mock: true });
+  if (route === "/api/ml/health")
+    return json({ status: "healthy", service: "ml-inference-api", mock: true });
+  if (route === "/api/market-data/health")
+    return json({ status: "healthy", service: "market-data-api", mock: true });
+  if (route.endsWith("/health")) return json({ status: "healthy", mock: true });
 
   // --- Catch-all for reporting/execution/analytics/deployment with data ---
-  if (route.startsWith("/api/reporting/")) return json({ data: [], total: 0 })
-  if (route.startsWith("/api/execution/") && !route.includes("/algos") && !route.includes("/venues") && !route.includes("/tca") && !route.includes("/benchmarks") && !route.includes("/candidates") && !route.includes("/handoff")) return json({ data: [], total: 0 })
-  if (route.startsWith("/api/analytics/")) return json({ data: [], total: 0 })
-  if (route.startsWith("/api/market-data/")) return json({ data: [], total: 0 })
+  if (route.startsWith("/api/reporting/")) return json({ data: [], total: 0 });
+  if (
+    route.startsWith("/api/execution/") &&
+    !route.includes("/algos") &&
+    !route.includes("/venues") &&
+    !route.includes("/tca") &&
+    !route.includes("/benchmarks") &&
+    !route.includes("/candidates") &&
+    !route.includes("/handoff")
+  )
+    return json({ data: [], total: 0 });
+  if (route.startsWith("/api/analytics/")) return json({ data: [], total: 0 });
+  if (route.startsWith("/api/market-data/"))
+    return json({ data: [], total: 0 });
 
-  return null
+  return null;
 }
 
 /**
@@ -1683,29 +4210,39 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
  * Call once from the root layout/provider when NEXT_PUBLIC_MOCK_API=true.
  */
 export function installMockHandler(): void {
-  if (typeof window === "undefined") return
+  if (typeof window === "undefined") return;
 
-  const originalFetch = window.fetch.bind(window)
-  window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const url =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.toString()
+          : input.url;
     if (url.startsWith("/api/")) {
       // Let real Next.js API routes pass through to the server
       if (url.startsWith("/api/onboarding/")) {
-        return originalFetch(input, init)
+        return originalFetch(input, init);
       }
-      const mockResponse = mockRoute(url, init)
+      const mockResponse = mockRoute(url, init);
       if (mockResponse) {
-        return mockResponse
+        return mockResponse;
       }
       // Unhandled /api/ route — return empty 200 to prevent 502 errors
-      console.warn(`[mock] Unhandled API route: ${url}`)
+      console.warn(`[mock] Unhandled API route: ${url}`);
       return new Response(JSON.stringify({}), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      })
+      });
     }
-    return originalFetch(input, init)
-  }
+    return originalFetch(input, init);
+  };
 
-  console.info("[mock] Static visual preview mode active — all API calls intercepted")
+  console.info(
+    "[mock] Static visual preview mode active — all API calls intercepted",
+  );
 }
