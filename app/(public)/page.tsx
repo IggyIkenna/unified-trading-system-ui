@@ -301,10 +301,11 @@ export default function ServicesLandingPage() {
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
               Your backtests and your live strategies run the exact same code.
-              If it worked in testing, it works in production — and you can
-              check every morning. All your data comes through one clean
-              feed, no matter the source. Stocks, crypto, DeFi, sports — we
-              handle the messy parts so you just see numbers.
+              If it worked in testing, it works in production — and every
+              morning you can compare yesterday&apos;s live trades against what
+              the backtest would have done. All your data comes through one
+              clean feed, no matter the source. Stocks, crypto, DeFi,
+              sports — we handle the messy parts so you just see numbers.
             </p>
           </div>
           <div className="flex justify-center" suppressHydrationWarning>
