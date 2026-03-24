@@ -37,10 +37,14 @@ const isFirebaseMode = process.env.NEXT_PUBLIC_AUTH_PROVIDER === "firebase"
 export default function LoginPage() {
   const router = useRouter()
   const { user, loading, loginByEmail, login } = useAuth()
-  const searchParams = typeof window !== "undefined"
-    ? new URLSearchParams(window.location.search) : null
-  const redirectTo = searchParams?.get("redirect") || null
-  const personaParam = searchParams?.get("persona") || null
+  const [redirectTo, setRedirectTo] = React.useState<string | null>(null)
+  const [personaParam, setPersonaParam] = React.useState<string | null>(null)
+
+  React.useEffect(() => {
+    const sp = new URLSearchParams(window.location.search)
+    setRedirectTo(sp.get("redirect"))
+    setPersonaParam(sp.get("persona"))
+  }, [])
 
   const [loginType, setLoginType] = React.useState<"internal" | "external">("external")
   const [email, setEmail] = React.useState("")
@@ -153,6 +157,7 @@ export default function LoginPage() {
                     <Input
                       id="email"
                       type="email"
+                      autoComplete="email"
                       placeholder="you@company.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -168,6 +173,7 @@ export default function LoginPage() {
                     <Input
                       id="password"
                       type="password"
+                      autoComplete="current-password"
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
