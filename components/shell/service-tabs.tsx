@@ -107,21 +107,32 @@ export const DATA_TABS: ServiceTab[] = [
 
 // ── Build (Quant Developer) ──────────────────────────────────────────────────
 export const BUILD_TABS: ServiceTab[] = [
-  { label: "Research Hub", href: "/services/research/overview" },
-  { label: "Features", href: "/services/research/features" },
+  { label: "Overview", href: "/services/research/overview" },
   {
-    label: "ML Models",
+    label: "Features",
+    href: "/services/research/features",
+    matchPrefix: "/services/research/features",
+  },
+  {
+    label: "Feature ETL",
+    href: "/services/research/feature-etl",
+    matchPrefix: "/services/research/feature-etl",
+  },
+  {
+    label: "Models",
     href: "/services/research/ml",
     matchPrefix: "/services/research/ml",
-    requiredEntitlement: "ml-full",
   },
   {
     label: "Strategies",
-    href: "/services/research/strategy/overview",
-    matchPrefix: "/services/research/strategy",
-    requiredEntitlement: "strategy-full",
+    href: "/services/research/strategies",
+    matchPrefix: "/services/research/strategies",
   },
-  { label: "Signals", href: "/services/research/signals" },
+  {
+    label: "Execution",
+    href: "/services/research/execution",
+    matchPrefix: "/services/research/execution",
+  },
   { label: "Quant Workspace", href: "/services/research/quant" },
 ];
 

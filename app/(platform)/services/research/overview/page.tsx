@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 import {
   Card,
   CardContent,
@@ -11,381 +11,518 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Brain,
   FlaskConical,
   Zap,
-  ArrowRight,
-  BarChart3,
-  GitBranch,
-  Target,
+  Database,
   Layers,
   TrendingUp,
   Activity,
-  Beaker,
-  ChevronRight,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  XCircle,
+  Play,
+  Pause,
+  ArrowRight,
+  Clock,
 } from "lucide-react";
-import { useAuth } from "@/hooks/use-auth";
-import { useModelFamilies, useExperiments } from "@/hooks/api/use-ml-models";
+import {
+  BUILD_OVERVIEW_STATS,
+  BUILD_ACTIVE_JOBS,
+  BUILD_ALERTS,
+  BUILD_RECENT_ACTIVITY,
+} from "@/lib/build-mock-data";
+import type {
+  BuildActiveJob,
+  BuildAlert,
+  BuildActivity,
+} from "@/lib/build-mock-data";
+import { cn } from "@/lib/utils";
 
-const ML_WORKFLOWS = [
+// ─── Pipeline Stage Cards ─────────────────────────────────────────────────────
+
+const PIPELINE_STAGES = [
   {
-    label: "Select",
-    desc: "Choose model family, instruments, asset class",
-    icon: Target,
-    href: "/services/research/ml/overview",
-  },
-  {
+    id: "features",
     label: "Features",
-    desc: "Select features for the model",
     icon: Layers,
-    href: "/services/research/ml/features",
+    href: "/services/research/features",
+    color: "text-blue-400",
+    bgColor: "bg-blue-400/10",
+    stats: (s: typeof BUILD_OVERVIEW_STATS) => [
+      { label: "Defined", value: s.features.total_defined.toString() },
+      { label: "Computed", value: `${s.features.computed_pct}%` },
+      { label: "Stale", value: s.features.stale_count.toString() },
+    ],
+    badge: (s: typeof BUILD_OVERVIEW_STATS) =>
+      s.features.stale_count > 0
+        ? {
+            label: `${s.features.stale_count} stale`,
+            variant: "warning" as const,
+          }
+        : { label: "Healthy", variant: "success" as const },
   },
   {
-    label: "Train",
-    desc: "Configure hyperparameters, launch training",
+    id: "feature_etl",
+    label: "Feature ETL",
+    icon: Database,
+    href: "/services/research/feature-etl",
+    color: "text-cyan-400",
+    bgColor: "bg-cyan-400/10",
+    stats: (s: typeof BUILD_OVERVIEW_STATS) => [
+      { label: "Complete", value: `${s.feature_etl.overall_pct}%` },
+      {
+        label: "Shards",
+        value: `${s.feature_etl.shards_complete}/${s.feature_etl.shards_total}`,
+      },
+      { label: "Active Jobs", value: s.feature_etl.active_jobs.toString() },
+    ],
+    badge: (s: typeof BUILD_OVERVIEW_STATS) =>
+      s.feature_etl.active_jobs > 0
+        ? {
+            label: `${s.feature_etl.active_jobs} running`,
+            variant: "info" as const,
+          }
+        : { label: "Idle", variant: "default" as const },
+  },
+  {
+    id: "models",
+    label: "Models",
     icon: Brain,
-    href: "/services/research/ml/training",
+    href: "/services/research/ml",
+    color: "text-violet-400",
+    bgColor: "bg-violet-400/10",
+    stats: (s: typeof BUILD_OVERVIEW_STATS) => [
+      { label: "Trained", value: s.models.total_trained.toString() },
+      { label: "Champions", value: s.models.champion_count.toString() },
+      { label: "Training", value: s.models.active_jobs.toString() },
+    ],
+    badge: (s: typeof BUILD_OVERVIEW_STATS) =>
+      s.models.active_jobs > 0
+        ? {
+            label: `${s.models.active_jobs} training`,
+            variant: "info" as const,
+          }
+        : {
+            label: `${s.models.champion_count} champions`,
+            variant: "success" as const,
+          },
   },
   {
-    label: "Validate",
-    desc: "Evaluate model performance, compare runs",
-    icon: BarChart3,
-    href: "/services/research/ml/validation",
-  },
-  {
-    label: "Deploy",
-    desc: "Promote to registry, deploy to production",
-    icon: Zap,
-    href: "/services/research/ml/deploy",
-  },
-  {
-    label: "Monitor",
-    desc: "Track live performance, detect drift",
-    icon: Activity,
-    href: "/services/research/ml/monitoring",
-  },
-];
-
-const STRATEGY_WORKFLOWS = [
-  {
-    label: "Configure",
-    desc: "Choose strategy archetype, instruments, venues",
+    id: "strategies",
+    label: "Strategies",
     icon: FlaskConical,
-    href: "/services/research/strategy/backtests",
+    href: "/services/research/strategies",
+    color: "text-amber-400",
+    bgColor: "bg-amber-400/10",
+    stats: (s: typeof BUILD_OVERVIEW_STATS) => [
+      { label: "Backtests", value: s.strategies.total_run.toString() },
+      { label: "Candidates", value: s.strategies.candidates.toString() },
+      { label: "This Week", value: s.strategies.new_this_week.toString() },
+    ],
+    badge: (s: typeof BUILD_OVERVIEW_STATS) => ({
+      label: `${s.strategies.candidates} candidates`,
+      variant: "success" as const,
+    }),
   },
   {
-    label: "Backtest",
-    desc: "Run parameter grid backtests",
-    icon: Beaker,
-    href: "/services/research/strategy/heatmap",
-  },
-  {
-    label: "Compare",
-    desc: "Compare backtest results side-by-side",
-    icon: BarChart3,
-    href: "/services/research/strategy/compare",
-  },
-  {
-    label: "Candidates",
-    desc: "Review and promote winning strategies",
-    icon: Target,
-    href: "/services/research/strategy/candidates",
-  },
-  {
-    label: "Handoff",
-    desc: "Promote to live trading",
-    icon: ArrowRight,
-    href: "/services/research/strategy/handoff",
+    id: "execution",
+    label: "Execution",
+    icon: Zap,
+    href: "/services/research/execution",
+    color: "text-emerald-400",
+    bgColor: "bg-emerald-400/10",
+    stats: (s: typeof BUILD_OVERVIEW_STATS) => [
+      { label: "Backtested", value: s.execution.total_backtested.toString() },
+      { label: "In Progress", value: s.execution.in_progress.toString() },
+      { label: "Best Sharpe", value: s.execution.best_sharpe.toFixed(2) },
+    ],
+    badge: (s: typeof BUILD_OVERVIEW_STATS) =>
+      s.execution.in_progress > 0
+        ? {
+            label: `${s.execution.in_progress} running`,
+            variant: "info" as const,
+          }
+        : {
+            label: `Best: ${s.execution.best_sharpe.toFixed(2)}`,
+            variant: "success" as const,
+          },
   },
 ];
 
-const EXECUTION_WORKFLOWS = [
-  {
-    label: "Algos",
-    desc: "Compare execution algorithms",
-    icon: GitBranch,
-    href: "/services/execution/algos",
-  },
-  {
-    label: "Venues",
-    desc: "Venue selection and routing analysis",
-    icon: Layers,
-    href: "/services/execution/venues",
-  },
-  {
-    label: "TCA",
-    desc: "Transaction cost analysis",
-    icon: TrendingUp,
-    href: "/services/execution/tca",
-  },
-  {
-    label: "Benchmarks",
-    desc: "Benchmark comparison across algos",
-    icon: BarChart3,
-    href: "/services/execution/benchmarks",
-  },
-];
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function WorkflowPipeline({ steps }: { steps: typeof ML_WORKFLOWS }) {
+const JOB_TYPE_COLORS: Record<BuildActiveJob["type"], string> = {
+  feature_computation: "text-cyan-400",
+  model_training: "text-violet-400",
+  strategy_backtest: "text-amber-400",
+  execution_backtest: "text-emerald-400",
+};
+
+const JOB_TYPE_LABELS: Record<BuildActiveJob["type"], string> = {
+  feature_computation: "Feature ETL",
+  model_training: "Model Training",
+  strategy_backtest: "Strategy",
+  execution_backtest: "Execution",
+};
+
+const JOB_TYPE_HREFS: Record<BuildActiveJob["type"], string> = {
+  feature_computation: "/services/research/feature-etl",
+  model_training: "/services/research/ml/training",
+  strategy_backtest: "/services/research/strategies",
+  execution_backtest: "/services/research/execution",
+};
+
+const ALERT_ICONS: Record<BuildAlert["severity"], React.ElementType> = {
+  critical: XCircle,
+  warning: AlertTriangle,
+  info: Info,
+  success: CheckCircle2,
+};
+
+const ALERT_COLORS: Record<BuildAlert["severity"], string> = {
+  critical: "text-red-400",
+  warning: "text-amber-400",
+  info: "text-blue-400",
+  success: "text-emerald-400",
+};
+
+const BADGE_VARIANTS = {
+  warning: "border-amber-400/40 text-amber-400",
+  success: "border-emerald-400/40 text-emerald-400",
+  info: "border-blue-400/40 text-blue-400",
+  default: "border-muted-foreground/30 text-muted-foreground",
+} as const;
+
+function StatusBadge({
+  label,
+  variant,
+}: {
+  label: string;
+  variant: keyof typeof BADGE_VARIANTS;
+}) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {steps.map((step, i) => {
-        const Icon = step.icon;
-        return (
-          <Link key={step.label} href={step.href}>
-            <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-lg bg-primary/10 text-primary shrink-0">
-                    <span className="text-xs font-bold">{i + 1}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <Icon className="size-4 text-primary" />
-                      <span className="font-medium text-sm">{step.label}</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {step.desc}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        );
-      })}
-    </div>
+    <Badge variant="outline" className={cn("text-xs", BADGE_VARIANTS[variant])}>
+      {label}
+    </Badge>
   );
 }
 
-export default function ResearchOverviewPage() {
-  const { user, hasEntitlement } = useAuth();
-  const { data: modelFamiliesData, isLoading: familiesLoading } =
-    useModelFamilies();
-  const { data: experimentsData, isLoading: experimentsLoading } =
-    useExperiments();
-  const modelFamilies: any[] =
-    (modelFamiliesData as any)?.data ??
-    (modelFamiliesData as any)?.families ??
-    [];
-  const experiments: any[] =
-    (experimentsData as any)?.data ??
-    (experimentsData as any)?.experiments ??
-    [];
-  const hasML = hasEntitlement("ml-full");
-  const hasStrategy = hasEntitlement("strategy-full");
-  const hasExecution =
-    hasEntitlement("execution-basic") || hasEntitlement("execution-full");
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function BuildOverviewPage() {
+  const stats = BUILD_OVERVIEW_STATS;
+  const activeJobs = BUILD_ACTIVE_JOBS;
+  const alerts = BUILD_ALERTS;
+  const activity = BUILD_RECENT_ACTIVITY;
+
+  const runningJobs = activeJobs.filter((j) => j.status === "running");
+  const queuedJobs = activeJobs.filter((j) => j.status === "queued");
 
   return (
     <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">
-          Research & Backtesting
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          ML model training, strategy backtesting, and execution research — from
-          signal to trade.
-        </p>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Build Overview</h1>
+          <p className="text-muted-foreground mt-1">
+            Pipeline status across all Build stages — features, models,
+            strategies, and execution.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/services/research/feature-etl">
+              <Database className="size-4 mr-2" />
+              Feature ETL
+            </Link>
+          </Button>
+          <Button size="sm" asChild>
+            <Link href="/services/research/execution">
+              <Zap className="size-4 mr-2" />
+              New Backtest
+            </Link>
+          </Button>
+        </div>
       </div>
 
-      <Tabs defaultValue="ml" className="space-y-6">
-        <TabsList className="grid w-full max-w-lg grid-cols-3">
-          <TabsTrigger value="ml" className="gap-2">
-            <Brain className="size-4" />
-            ML Models
-          </TabsTrigger>
-          <TabsTrigger value="strategy" className="gap-2">
-            <FlaskConical className="size-4" />
-            Strategy
-          </TabsTrigger>
-          <TabsTrigger value="execution" className="gap-2">
-            <Zap className="size-4" />
-            Execution
-          </TabsTrigger>
-        </TabsList>
-
-        {/* ML Models & Training */}
-        <TabsContent value="ml" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Brain className="size-5 text-violet-400" />
-                    ML Models & Training
-                  </CardTitle>
-                  <CardDescription className="mt-1">
-                    Train prediction models on your data. Select → configure
-                    features → set targets → generate parameter grid → run
-                    training → analyse results.
-                  </CardDescription>
-                </div>
-                {hasML ? (
-                  <Badge
-                    variant="outline"
-                    className="text-emerald-400 border-emerald-400/30"
-                  >
-                    Active
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    <Link href="/services/ml">Upgrade to access</Link>
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <WorkflowPipeline steps={ML_WORKFLOWS} />
-              <div className="mt-4 flex gap-2">
-                <Button asChild size="sm">
-                  <Link href="/services/research/ml/overview">
-                    Open ML Dashboard <ChevronRight className="size-4 ml-1" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/services/research/ml/experiments">
-                    View Experiments
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                label: "Model Families",
-                value: String(modelFamilies.length || 6),
-                desc:
-                  modelFamilies.length > 0
-                    ? `${modelFamilies.length} families`
-                    : "BTC, ETH, Momentum, Funding, NFL, Polymarket",
-              },
-              {
-                label: "Active Experiments",
-                value: String(experiments.length || 12),
-                desc:
-                  experiments.length > 0
-                    ? `${experiments.length} experiments`
-                    : "Across 3 asset classes",
-              },
-              {
-                label: "Feature Sets",
-                value: "8",
-                desc: "Technical, volatility, momentum, on-chain",
-              },
-              { label: "Deployed Models", value: "4", desc: "Live inference" },
-            ].map((stat) => (
-              <Card key={stat.label}>
-                <CardContent className="p-4">
-                  <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className="text-sm font-medium">{stat.label}</p>
-                  <p className="text-xs text-muted-foreground">{stat.desc}</p>
+      {/* Pipeline Stage Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {PIPELINE_STAGES.map((stage) => {
+          const Icon = stage.icon;
+          const stageStats = stage.stats(stats);
+          const stageBadge = stage.badge(stats);
+          return (
+            <Link key={stage.id} href={stage.href}>
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div
+                      className={cn(
+                        "flex items-center justify-center size-8 rounded-lg",
+                        stage.bgColor,
+                      )}
+                    >
+                      <Icon className={cn("size-4", stage.color)} />
+                    </div>
+                    <StatusBadge
+                      label={stageBadge.label}
+                      variant={stageBadge.variant}
+                    />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">{stage.label}</p>
+                  </div>
+                  <div className="space-y-1">
+                    {stageStats.map((s) => (
+                      <div
+                        key={s.label}
+                        className="flex items-center justify-between text-xs"
+                      >
+                        <span className="text-muted-foreground">{s.label}</span>
+                        <span className="font-medium tabular-nums">
+                          {s.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Active Jobs + Alerts (two-column) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Active Jobs */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Activity className="size-4 text-primary" />
+                Active Jobs
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="outline"
+                  className="text-xs text-emerald-400 border-emerald-400/30"
+                >
+                  {runningJobs.length} running
+                </Badge>
+                {queuedJobs.length > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    {queuedJobs.length} queued
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {activeJobs.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                No active jobs
+              </p>
+            )}
+            {activeJobs.map((job) => {
+              const href = JOB_TYPE_HREFS[job.type];
+              return (
+                <Link key={job.id} href={href}>
+                  <div className="rounded-lg border border-border/50 p-3 hover:border-primary/30 transition-colors cursor-pointer space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "text-xs shrink-0",
+                              JOB_TYPE_COLORS[job.type],
+                            )}
+                          >
+                            {JOB_TYPE_LABELS[job.type]}
+                          </Badge>
+                          <span className="text-sm font-medium truncate">
+                            {job.name}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {job.detail}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        {job.status === "running" ? (
+                          <div className="flex items-center gap-1 text-xs text-emerald-400">
+                            <Play className="size-3" />
+                            {job.eta_minutes != null
+                              ? `~${job.eta_minutes}m`
+                              : "Running"}
+                          </div>
+                        ) : job.status === "queued" ? (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="size-3" />
+                            Queued
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 text-xs text-amber-400">
+                            <Pause className="size-3" />
+                            Paused
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {job.status === "running" && (
+                      <div className="space-y-1">
+                        <Progress value={job.progress_pct} className="h-1.5" />
+                        <p className="text-xs text-muted-foreground text-right">
+                          {job.progress_pct}%
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-xs"
+              asChild
+            >
+              <Link href="/services/research/feature-etl">
+                View all jobs <ArrowRight className="size-3 ml-1" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Alerts */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <AlertTriangle className="size-4 text-amber-400" />
+                Alerts
+              </CardTitle>
+              <div className="flex gap-1">
+                {(["critical", "warning"] as const).map((sev) => {
+                  const count = alerts.filter((a) => a.severity === sev).length;
+                  if (count === 0) return null;
+                  return (
+                    <Badge
+                      key={sev}
+                      variant="outline"
+                      className={cn("text-xs", ALERT_COLORS[sev])}
+                    >
+                      {count} {sev}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea className="h-[280px]">
+              <div className="space-y-2 pr-2">
+                {alerts.map((alert) => {
+                  const AlertIcon = ALERT_ICONS[alert.severity];
+                  return (
+                    <div
+                      key={alert.id}
+                      className="flex gap-3 rounded-lg border border-border/50 p-3"
+                    >
+                      <AlertIcon
+                        className={cn(
+                          "size-4 shrink-0 mt-0.5",
+                          ALERT_COLORS[alert.severity],
+                        )}
+                      />
+                      <div className="min-w-0 space-y-1">
+                        <p className="text-xs font-medium leading-snug">
+                          {alert.message}
+                        </p>
+                        {alert.detail && (
+                          <p className="text-xs text-muted-foreground leading-snug">
+                            {alert.detail}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="text-xs text-muted-foreground">
+                            {formatDistanceToNow(new Date(alert.timestamp), {
+                              addSuffix: true,
+                            })}
+                          </span>
+                          {alert.action_href && (
+                            <Link
+                              href={alert.action_href}
+                              className="text-xs text-primary hover:underline"
+                            >
+                              View →
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Activity */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <TrendingUp className="size-4 text-primary" />
+              Recent Activity
+            </CardTitle>
+          </div>
+          <CardDescription>
+            Latest changes across the Build pipeline
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-1">
+            {activity.map((item: BuildActivity, i) => (
+              <div
+                key={item.id}
+                className={cn(
+                  "flex items-start gap-3 py-2.5",
+                  i < activity.length - 1 && "border-b border-border/40",
+                )}
+              >
+                <div className="size-1.5 rounded-full bg-primary/60 mt-2 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  {item.href ? (
+                    <Link
+                      href={item.href}
+                      className="text-sm hover:text-primary transition-colors"
+                    >
+                      {item.action}
+                    </Link>
+                  ) : (
+                    <span className="text-sm">{item.action}</span>
+                  )}
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-xs text-muted-foreground">{item.actor}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDistanceToNow(new Date(item.timestamp), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
-        </TabsContent>
-
-        {/* Strategy Research */}
-        <TabsContent value="strategy" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <FlaskConical className="size-5 text-amber-400" />
-                    Strategy Research
-                  </CardTitle>
-                  <CardDescription className="mt-1">
-                    Configure strategy archetypes, run parameter grid backtests,
-                    compare results, and promote winners to live trading.
-                  </CardDescription>
-                </div>
-                {hasStrategy ? (
-                  <Badge
-                    variant="outline"
-                    className="text-emerald-400 border-emerald-400/30"
-                  >
-                    Active
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    <Link href="/services/research-backtesting">
-                      Upgrade to access
-                    </Link>
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <WorkflowPipeline steps={STRATEGY_WORKFLOWS} />
-              <div className="mt-4 flex gap-2">
-                <Button asChild size="sm">
-                  <Link href="/services/research/strategy/backtests">
-                    Open Backtests <ChevronRight className="size-4 ml-1" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/services/research/strategy/candidates">
-                    View Candidates
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Execution Research */}
-        <TabsContent value="execution" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="size-5 text-emerald-400" />
-                    Execution Research
-                  </CardTitle>
-                  <CardDescription className="mt-1">
-                    Analyse execution algorithms, compare venue performance, and
-                    optimise transaction costs.
-                  </CardDescription>
-                </div>
-                {hasExecution ? (
-                  <Badge
-                    variant="outline"
-                    className="text-emerald-400 border-emerald-400/30"
-                  >
-                    Active
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    <Link href="/services/execution">Upgrade to access</Link>
-                  </Badge>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <WorkflowPipeline steps={EXECUTION_WORKFLOWS} />
-              <div className="mt-4 flex gap-2">
-                <Button asChild size="sm">
-                  <Link href="/services/execution/algos">
-                    Open Algo Comparison{" "}
-                    <ChevronRight className="size-4 ml-1" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/services/execution/tca">View TCA</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
   );
 }
