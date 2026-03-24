@@ -53,8 +53,12 @@ import {
   updateUser,
   addRequest,
   updateRequest,
+  addOrganization,
+  updateOrganization,
+  addApiKey,
+  removeApiKey,
 } from "@/lib/api/mock-provisioning-state";
-import type { MockUser } from "@/lib/api/mock-provisioning-state";
+import type { MockUser, MockOrganization, MockVenueApiKey } from "@/lib/api/mock-provisioning-state";
 import {
   getOrders as getLedgerOrders,
   placeMockOrder,
@@ -3521,14 +3525,39 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       const existing = state.users.find(
         (u) => u.email === updated.requester_email,
       );
+      const entitlements = [
+        ...new Set([...updated.requested_entitlements, "reporting"]),
+      ];
+      const orgSlug = updated.org_id || updated.requester_email.split("@")[1]?.split(".")[0] || "unknown";
+      let orgId = "";
+      const existingOrg = state.organizations.find(
+        (o) => o.slug === orgSlug || o.contact_email === updated.requester_email,
+      );
+      if (existingOrg) {
+        orgId = existingOrg.id;
+      } else {
+        const orgName = orgSlug.charAt(0).toUpperCase() + orgSlug.slice(1);
+        const newOrg: MockOrganization = {
+          id: `org-${Date.now()}`,
+          name: orgName,
+          slug: orgSlug,
+          type: "external",
+          contact_email: updated.requester_email,
+          contact_name: updated.requester_name,
+          status: "onboarding",
+          tier: "Standard",
+          api_keys: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        addOrganization(newOrg);
+        orgId = newOrg.id;
+      }
       if (existing) {
         const merged = [
-          ...new Set([
-            ...existing.product_slugs,
-            ...updated.requested_entitlements,
-          ]),
+          ...new Set([...existing.product_slugs, ...entitlements]),
         ];
-        updateUser(existing.id, { product_slugs: merged });
+        updateUser(existing.id, { product_slugs: merged, org_id: orgId });
       } else {
         addUser({
           id: `user-${Date.now()}`,
@@ -3536,7 +3565,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           name: updated.requester_name,
           email: updated.requester_email,
           role: updated.requested_role || "client",
-          product_slugs: updated.requested_entitlements,
+          org_id: orgId,
+          product_slugs: entitlements,
           status: "active",
           provisioned_at: new Date().toISOString(),
           last_modified: new Date().toISOString(),
@@ -3555,6 +3585,79 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       },
     });
   }
+  // --- Organizations ---
+  if (route === "/api/auth/provisioning/organizations" && (!opts?.method || opts.method === "GET")) {
+    const state = getProvisioningState();
+    return json({ organizations: state.organizations, total: state.organizations.length });
+  }
+  if (route === "/api/auth/provisioning/organizations" && opts?.method === "POST") {
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const org: MockOrganization = {
+      id: `org-${Date.now()}`,
+      name: body.name,
+      slug: (body.name ?? "").toLowerCase().replace(/\s+/g, "-"),
+      type: "external",
+      contact_email: body.contact_email ?? "",
+      contact_name: body.contact_name ?? "",
+      status: "onboarding",
+      tier: body.tier ?? "Standard",
+      api_keys: [],
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    addOrganization(org);
+    return json({ organization: org });
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+$/) && !route.includes("api-keys")) {
+    const orgId = route.split("/").pop()!;
+    if (opts?.method === "PUT") {
+      const body = opts.body ? JSON.parse(opts.body as string) : {};
+      const updated = updateOrganization(orgId, body);
+      return updated ? json({ organization: updated }) : json({ error: "not found" });
+    }
+    const state = getProvisioningState();
+    const org = state.organizations.find((o) => o.id === orgId);
+    return org ? json({ organization: org }) : json({ error: "not found" });
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys$/) && opts?.method === "POST") {
+    const orgId = route.split("/").at(-2)!;
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const key: MockVenueApiKey = {
+      id: `key-${Date.now()}`,
+      venue: body.venue,
+      label: body.label || `${body.venue} Key`,
+      api_key_masked: `****...${(body.api_key ?? "").slice(-4) || "xxxx"}`,
+      status: "active",
+      added_at: new Date().toISOString(),
+    };
+    const org = addApiKey(orgId, key);
+    return org ? json({ organization: org }) : json({ error: "org not found" });
+  }
+  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys\/[^/]+$/) && opts?.method === "DELETE") {
+    const parts = route.split("/");
+    const keyId = parts.pop()!;
+    parts.pop(); // skip "api-keys"
+    const orgId = parts.pop()!;
+    const org = removeApiKey(orgId, keyId);
+    return org ? json({ organization: org }) : json({ error: "org not found" });
+  }
+  // --- My Org (for authenticated users) ---
+  if (route === "/api/auth/provisioning/my-org") {
+    const state = getProvisioningState();
+    let currentUserEmail: string | null = null;
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("portal_user");
+        if (raw) currentUserEmail = (JSON.parse(raw) as { email?: string }).email ?? null;
+      } catch { /* ignore */ }
+    }
+    const user = currentUserEmail
+      ? state.users.find((u) => u.email === currentUserEmail)
+      : null;
+    const org = user?.org_id ? state.organizations.find((o) => o.id === user.org_id) : null;
+    return org ? json({ organization: org }) : json({ organization: null });
+  }
+
   if (route === "/api/auth/provisioning/admin/health-checks") {
     return json({
       checks: [
@@ -4086,14 +4189,39 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       const existing = state.users.find(
         (u) => u.email === updated.requester_email,
       );
+      const entitlements = [
+        ...new Set([...updated.requested_entitlements, "reporting"]),
+      ];
+      const orgSlug = updated.org_id || updated.requester_email.split("@")[1]?.split(".")[0] || "unknown";
+      let orgId = "";
+      const existingOrg = state.organizations.find(
+        (o) => o.slug === orgSlug || o.contact_email === updated.requester_email,
+      );
+      if (existingOrg) {
+        orgId = existingOrg.id;
+      } else {
+        const orgName = orgSlug.charAt(0).toUpperCase() + orgSlug.slice(1);
+        const newOrg: MockOrganization = {
+          id: `org-${Date.now()}`,
+          name: orgName,
+          slug: orgSlug,
+          type: "external",
+          contact_email: updated.requester_email,
+          contact_name: updated.requester_name,
+          status: "onboarding",
+          tier: "Standard",
+          api_keys: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+        addOrganization(newOrg);
+        orgId = newOrg.id;
+      }
       if (existing) {
         const merged = [
-          ...new Set([
-            ...existing.product_slugs,
-            ...updated.requested_entitlements,
-          ]),
+          ...new Set([...existing.product_slugs, ...entitlements]),
         ];
-        updateUser(existing.id, { product_slugs: merged });
+        updateUser(existing.id, { product_slugs: merged, org_id: orgId });
       } else {
         addUser({
           id: `user-${Date.now()}`,
@@ -4101,7 +4229,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           name: updated.requester_name,
           email: updated.requester_email,
           role: updated.requested_role || "client",
-          product_slugs: updated.requested_entitlements,
+          org_id: orgId,
+          product_slugs: entitlements,
           status: "active",
           provisioned_at: new Date().toISOString(),
           last_modified: new Date().toISOString(),

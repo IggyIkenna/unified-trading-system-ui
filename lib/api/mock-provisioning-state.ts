@@ -5,9 +5,33 @@
 
 const STORAGE_KEY = "mock-provisioning-state";
 
+export interface MockOrganization {
+  id: string;
+  name: string;
+  slug: string;
+  type: "external";
+  contact_email: string;
+  contact_name: string;
+  status: "onboarding" | "active" | "suspended";
+  tier: string;
+  api_keys: MockVenueApiKey[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MockVenueApiKey {
+  id: string;
+  venue: string;
+  label: string;
+  api_key_masked: string;
+  status: "active" | "revoked" | "expired";
+  added_at: string;
+}
+
 export interface MockProvisioningState {
   users: MockUser[];
   requests: MockAccessRequest[];
+  organizations: MockOrganization[];
 }
 
 export interface MockUser {
@@ -16,6 +40,7 @@ export interface MockUser {
   name: string;
   email: string;
   role: string;
+  org_id?: string;
   github_handle?: string;
   product_slugs: string[];
   status: "active" | "offboarded" | "pending";
@@ -116,6 +141,7 @@ function defaultState(): MockProvisioningState {
         name: "Portfolio Manager",
         email: "pm@alphacapital.com",
         role: "client",
+        org_id: "org-alpha",
         product_slugs: [
           "data-pro",
           "execution-full",
@@ -160,6 +186,7 @@ function defaultState(): MockProvisioningState {
         name: "CIO",
         email: "cio@vertex.com",
         role: "client",
+        org_id: "org-vertex",
         product_slugs: ["data-pro", "execution-full", "strategy-full"],
         status: "active",
         provisioned_at: "2026-02-15T09:00:00Z",
@@ -172,6 +199,60 @@ function defaultState(): MockProvisioningState {
           aws: "not_applicable",
           portal: "provisioned",
         },
+      },
+    ],
+    organizations: [
+      {
+        id: "org-alpha",
+        name: "Alpha Capital",
+        slug: "alpha-capital",
+        type: "external",
+        contact_email: "pm@alphacapital.com",
+        contact_name: "Portfolio Manager",
+        status: "active",
+        tier: "Full Platform",
+        api_keys: [
+          {
+            id: "key-1",
+            venue: "Binance",
+            label: "Main Trading",
+            api_key_masked: "****...a3f2",
+            status: "active",
+            added_at: "2026-02-25T10:00:00Z",
+          },
+          {
+            id: "key-2",
+            venue: "OKX",
+            label: "Secondary",
+            api_key_masked: "****...b7e1",
+            status: "active",
+            added_at: "2026-03-01T14:00:00Z",
+          },
+        ],
+        created_at: "2026-02-20T09:00:00Z",
+        updated_at: "2026-03-10T12:00:00Z",
+      },
+      {
+        id: "org-vertex",
+        name: "Vertex Partners",
+        slug: "vertex-partners",
+        type: "external",
+        contact_email: "cio@vertex.com",
+        contact_name: "CIO",
+        status: "active",
+        tier: "Execution + Strategy",
+        api_keys: [
+          {
+            id: "key-3",
+            venue: "Deribit",
+            label: "Options Desk",
+            api_key_masked: "****...c9d4",
+            status: "active",
+            added_at: "2026-02-18T11:00:00Z",
+          },
+        ],
+        created_at: "2026-02-15T09:00:00Z",
+        updated_at: "2026-03-05T09:00:00Z",
       },
     ],
     requests: [
@@ -291,6 +372,52 @@ export function updateRequest(
   };
   persist();
   return state.requests[idx];
+}
+
+// --- Organization mutations ---
+
+export function addOrganization(org: MockOrganization): void {
+  getState().organizations.push(org);
+  persist();
+}
+
+export function updateOrganization(
+  id: string,
+  updates: Partial<MockOrganization>,
+): MockOrganization | null {
+  const state = getState();
+  const idx = state.organizations.findIndex((o) => o.id === id);
+  if (idx === -1) return null;
+  state.organizations[idx] = {
+    ...state.organizations[idx],
+    ...updates,
+    updated_at: new Date().toISOString(),
+  };
+  persist();
+  return state.organizations[idx];
+}
+
+export function addApiKey(orgId: string, key: MockVenueApiKey): MockOrganization | null {
+  const state = getState();
+  const org = state.organizations.find((o) => o.id === orgId);
+  if (!org) return null;
+  org.api_keys.push(key);
+  org.updated_at = new Date().toISOString();
+  persist();
+  return org;
+}
+
+export function removeApiKey(orgId: string, keyId: string): MockOrganization | null {
+  const state = getState();
+  const org = state.organizations.find((o) => o.id === orgId);
+  if (!org) return null;
+  const keyIdx = org.api_keys.findIndex((k) => k.id === keyId);
+  if (keyIdx !== -1) {
+    org.api_keys[keyIdx].status = "revoked";
+    org.updated_at = new Date().toISOString();
+    persist();
+  }
+  return org;
 }
 
 export function resetState(): void {
