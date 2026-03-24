@@ -37,6 +37,24 @@ export const DATA_CATEGORY_LABELS: Record<DataCategory, string> = {
   sports: "Sports",
 };
 
+/**
+ * Maps each data category to the entitlement required to access it.
+ * Internal/admin users (entitlements: ["*"]) bypass this check entirely.
+ * "data-basic" grants cefi only; "data-pro" grants cefi + tradfi + defi + onchain_perps.
+ * sports and prediction_market require explicit future entitlements (currently internal-only).
+ */
+export const CATEGORY_ENTITLEMENT_MAP: Record<
+  DataCategory,
+  "data-basic" | "data-pro" | "internal-only"
+> = {
+  cefi: "data-basic",
+  tradfi: "data-pro",
+  defi: "data-pro",
+  onchain_perps: "data-pro",
+  prediction_market: "internal-only",
+  sports: "internal-only",
+};
+
 export const VENUES_BY_CATEGORY: Record<DataCategory, string[]> = {
   cefi: ["binance", "bybit", "coinbase", "okx", "deribit", "upbit"],
   tradfi: [

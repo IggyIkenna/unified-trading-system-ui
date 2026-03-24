@@ -8,7 +8,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
+import { useScopedCategories } from "@/hooks/use-scoped-categories";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -299,18 +299,13 @@ function CategorySection({
 }
 
 export default function InstrumentsPage() {
-  const { isInternal, hasEntitlement } = useAuth();
-  const isAdmin = isInternal();
+  const { subscribed, locked } = useScopedCategories();
 
   const newInstrumentAlerts = MOCK_ALERTS.filter(
     (a) => a.type === "new_instruments",
   );
 
-  // Determine which categories the user can access
-  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
-  const accessibleCategories = isAdmin
-    ? categories
-    : categories.filter((cat) => hasEntitlement("data-pro") || cat === "cefi");
+  const accessibleCategories = subscribed;
 
   const totalAllInstruments = Object.values(MOCK_INSTRUMENT_COUNTS).reduce(
     (s, v) => s + v.total,
@@ -373,7 +368,7 @@ export default function InstrumentsPage() {
           <Card>
             <CardContent className="pt-4">
               <div className="text-2xl font-bold font-mono text-amber-400">
-                {categories.length}
+                {accessibleCategories.length}
               </div>
               <div className="text-xs text-muted-foreground">Asset Classes</div>
             </CardContent>
@@ -411,15 +406,9 @@ export default function InstrumentsPage() {
           ))}
 
           {/* Locked/unsubscribed categories below */}
-          {!isAdmin && (
-            <>
-              {categories
-                .filter((cat) => !accessibleCategories.includes(cat))
-                .map((cat) => (
-                  <CategorySection key={cat} category={cat} isLocked={true} />
-                ))}
-            </>
-          )}
+          {locked.map((cat) => (
+            <CategorySection key={cat} category={cat} isLocked={true} />
+          ))}
         </div>
       </div>
     </div>

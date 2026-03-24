@@ -27,6 +27,8 @@ import {
   type CoverageRow,
 } from "@/lib/data-service-types";
 import { MOCK_COVERAGE_ROWS } from "@/lib/data-service-mock-data";
+import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { Lock } from "lucide-react";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
 
 const STATUS_COLORS: Record<CoverageStatus, string> = {
@@ -117,8 +119,14 @@ export default function CoveragePage() {
   const [filterCategory, setFilterCategory] = React.useState<
     DataCategory | "all"
   >("all");
+  const { subscribed, locked } = useScopedCategories();
 
-  const filteredRows = MOCK_COVERAGE_ROWS.filter(
+  // Filter rows to only subscribed categories (backend would handle this in production)
+  const scopedRows = MOCK_COVERAGE_ROWS.filter(
+    (row) => subscribed.length === 0 || subscribed.includes(row.category),
+  );
+
+  const filteredRows = scopedRows.filter(
     (row) => filterCategory === "all" || row.category === filterCategory,
   );
 
@@ -133,7 +141,10 @@ export default function CoveragePage() {
     return rows;
   }, [filteredRows, groupBy]);
 
-  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
+  const categories =
+    subscribed.length > 0
+      ? subscribed
+      : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
 
   // Summary stats
   const totalCells = filteredRows.length;
@@ -359,6 +370,29 @@ export default function CoveragePage() {
           </Link>
           to manage feature calculation.
         </div>
+
+        {/* Locked categories notice */}
+        {locked.length > 0 && (
+          <div className="mt-4 p-3 rounded-lg border border-border/40 bg-muted/10">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+              <Lock className="size-3.5" />
+              <span className="font-medium">Not in your subscription:</span>
+              {locked.map((cat) => (
+                <Badge
+                  key={cat}
+                  variant="outline"
+                  className="text-[10px] opacity-60"
+                >
+                  {DATA_CATEGORY_LABELS[cat]}
+                </Badge>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground/70">
+              Upgrade your plan to see coverage data for additional asset
+              classes.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

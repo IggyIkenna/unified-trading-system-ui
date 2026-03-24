@@ -37,6 +37,8 @@ import {
   type AlertItem,
 } from "@/lib/data-service-types";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
+import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { Lock } from "lucide-react";
 
 const STAGE_HREFS: Record<string, string> = {
   instruments: "/services/data/instruments",
@@ -313,8 +315,13 @@ export default function AcquireOverviewPage() {
   const stages = MOCK_PIPELINE_STAGES;
   const jobs = MOCK_ACTIVE_JOBS;
   const alerts = MOCK_ALERTS;
+  const { subscribed, locked } = useScopedCategories();
 
-  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
+  // Use scoped categories if available; fall back to all categories for internal users
+  const categories =
+    subscribed.length > 0
+      ? subscribed
+      : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
   const unreadAlerts = alerts.filter((a) => !a.read).length;
 
   return (
@@ -363,6 +370,33 @@ export default function AcquireOverviewPage() {
             {categories.map((cat) => (
               <CategoryProgressRow key={cat} cat={cat} stages={stages} />
             ))}
+            {locked.length > 0 && (
+              <>
+                <div className="border-t border-border/50 pt-4">
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                    <Lock className="size-3" />
+                    Not subscribed
+                  </div>
+                  {locked.map((cat) => (
+                    <div
+                      key={cat}
+                      className="flex items-center justify-between py-2 opacity-50"
+                    >
+                      <Badge
+                        variant="outline"
+                        className={cn("text-xs", CATEGORY_COLORS[cat])}
+                      >
+                        {DATA_CATEGORY_LABELS[cat]}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Lock className="size-3" />
+                        Upgrade to access
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 

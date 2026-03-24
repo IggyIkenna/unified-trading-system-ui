@@ -33,6 +33,8 @@ import {
 import { FreshnessHeatmap } from "@/components/data/freshness-heatmap";
 import { MOCK_SHARD_AVAILABILITY } from "@/lib/data-service-mock-data";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
+import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { Lock } from "lucide-react";
 
 export interface PipelineStageConfig {
   stage: "raw" | "processing" | "features" | "training";
@@ -285,63 +287,94 @@ export function PipelineStatusView({
   const [selectedCategory, setSelectedCategory] = React.useState<
     DataCategory | "all"
   >("all");
-  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
+  const { subscribed, locked } = useScopedCategories();
 
   const activeJobs = jobs.filter(
     (j) => j.status === "running" || j.status === "queued",
   );
 
+  // Only show venue rows for subscribed categories
+  const visibleCategories =
+    subscribed.length > 0
+      ? subscribed
+      : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
+
   return (
     <div className={cn("space-y-6", className)}>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {stage.byCategory.map((catData) => {
-          const pct = catData.completionPct;
-          return (
-            <button
-              type="button"
-              key={catData.category}
-              onClick={() =>
-                setSelectedCategory(
+        {stage.byCategory
+          .filter(
+            (catData) =>
+              subscribed.length === 0 || subscribed.includes(catData.category),
+          )
+          .map((catData) => {
+            const pct = catData.completionPct;
+            return (
+              <button
+                type="button"
+                key={catData.category}
+                onClick={() =>
+                  setSelectedCategory(
+                    selectedCategory === catData.category
+                      ? "all"
+                      : catData.category,
+                  )
+                }
+                className={cn(
+                  "text-left p-3 rounded-lg border transition-colors",
                   selectedCategory === catData.category
-                    ? "all"
-                    : catData.category,
-                )
-              }
-              className={cn(
-                "text-left p-3 rounded-lg border transition-colors",
-                selectedCategory === catData.category
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:bg-accent/30",
-              )}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <Badge
-                  variant="outline"
-                  className={cn("text-xs", CATEGORY_COLORS[catData.category])}
-                >
-                  {DATA_CATEGORY_LABELS[catData.category]}
-                </Badge>
-                <span
-                  className={cn(
-                    "text-xs font-mono font-semibold",
-                    pct >= 95
-                      ? "text-emerald-400"
-                      : pct >= 80
-                        ? "text-yellow-400"
-                        : "text-red-400",
-                  )}
-                >
-                  {pct.toFixed(0)}%
-                </span>
-              </div>
-              <Progress value={pct} className="h-1.5" />
-              <div className="text-[10px] text-muted-foreground mt-1">
-                {catData.completedShards.toLocaleString()} /{" "}
-                {catData.totalShards.toLocaleString()} shards
-              </div>
-            </button>
-          );
-        })}
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:bg-accent/30",
+                )}
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <Badge
+                    variant="outline"
+                    className={cn("text-xs", CATEGORY_COLORS[catData.category])}
+                  >
+                    {DATA_CATEGORY_LABELS[catData.category]}
+                  </Badge>
+                  <span
+                    className={cn(
+                      "text-xs font-mono font-semibold",
+                      pct >= 95
+                        ? "text-emerald-400"
+                        : pct >= 80
+                          ? "text-yellow-400"
+                          : "text-red-400",
+                    )}
+                  >
+                    {pct.toFixed(0)}%
+                  </span>
+                </div>
+                <Progress value={pct} className="h-1.5" />
+                <div className="text-[10px] text-muted-foreground mt-1">
+                  {catData.completedShards.toLocaleString()} /{" "}
+                  {catData.totalShards.toLocaleString()} shards
+                </div>
+              </button>
+            );
+          })}
+
+        {locked.map((cat) => (
+          <div
+            key={cat}
+            className="p-3 rounded-lg border border-border/40 bg-muted/20 opacity-60 relative"
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <Badge
+                variant="outline"
+                className={cn("text-xs", CATEGORY_COLORS[cat])}
+              >
+                {DATA_CATEGORY_LABELS[cat]}
+              </Badge>
+              <Lock className="size-3 text-muted-foreground" />
+            </div>
+            <div className="text-[10px] text-muted-foreground">
+              Upgrade to access
+            </div>
+          </div>
+        ))}
       </div>
 
       {activeJobs.length > 0 && (
@@ -416,7 +449,7 @@ export function PipelineStatusView({
           </div>
         </CardHeader>
         <CardContent className="pt-0 px-0 pb-2">
-          {categories
+          {visibleCategories
             .filter(
               (cat) => selectedCategory === "all" || cat === selectedCategory,
             )

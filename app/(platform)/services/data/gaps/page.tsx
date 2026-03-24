@@ -33,6 +33,8 @@ import {
   type DataGap,
 } from "@/lib/data-service-types";
 import { MOCK_ENHANCED_GAPS, MOCK_ALERTS } from "@/lib/data-service-mock-data";
+import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { Lock } from "lucide-react";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
 
 const SEVERITY_CONFIG = {
@@ -95,10 +97,19 @@ export default function GapsPage() {
   const [categoryFilter, setCategoryFilter] = React.useState<
     DataCategory | "all"
   >("all");
+  const { subscribed, locked } = useScopedCategories();
 
-  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
+  const categories =
+    subscribed.length > 0
+      ? subscribed
+      : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
 
-  const filtered = MOCK_ENHANCED_GAPS.filter((gap) => {
+  // Scope gaps to subscribed categories
+  const scopedGaps = MOCK_ENHANCED_GAPS.filter(
+    (gap) => subscribed.length === 0 || subscribed.includes(gap.category),
+  );
+
+  const filtered = scopedGaps.filter((gap) => {
     if (severityFilter !== "all" && gap.severity !== severityFilter)
       return false;
     if (statusFilter !== "all" && gap.status !== statusFilter) return false;
