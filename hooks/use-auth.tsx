@@ -7,17 +7,16 @@ import { useAuthStore } from "@/lib/stores/auth-store"
 import { getAuthProvider } from "@/lib/auth/get-provider"
 import type { AuthUser } from "@/lib/auth/types"
 
-// Re-export AuthUser so existing consumers keep working
 export type { AuthUser } from "@/lib/auth/types"
 
 export interface AuthState {
   user: AuthUser | null
   token: string | null
   loading: boolean
-  login: (personaId: string) => boolean
-  loginByEmail: (email: string, password: string) => boolean
+  login: (personaId: string) => Promise<boolean>
+  loginByEmail: (email: string, password: string) => Promise<boolean>
   switchPersona: (personaId: string) => void
-  logout: () => void
+  logout: () => Promise<void>
   hasEntitlement: (entitlement: Entitlement) => boolean
   isAdmin: () => boolean
   isInternal: () => boolean
@@ -33,22 +32,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = React.useState(true)
   const syncZustand = useAuthStore((s) => s.setPersonaId)
 
-  // Restore session from provider on mount
   React.useEffect(() => {
+    const unsubscribe = provider.onAuthStateChanged((authUser) => {
+      setUser(authUser)
+      syncZustand(authUser?.id ?? null)
+      if (authUser) {
+        provider.getToken().then(setToken)
+      } else {
+        setToken(null)
+      }
+      setLoading(false)
+    })
+
     const restored = provider.getUser()
-    const restoredToken = provider.getToken()
-    setUser(restored)
-    setToken(restoredToken)
-    syncZustand(restored?.id ?? null)
-    setLoading(false)
+    if (restored) {
+      setUser(restored)
+      syncZustand(restored.id)
+      provider.getToken().then(setToken)
+      setLoading(false)
+    } else if (!provider.onAuthStateChanged.length) {
+      setLoading(false)
+    }
+
+    const timeout = setTimeout(() => setLoading(false), 3000)
+    return () => {
+      unsubscribe()
+      clearTimeout(timeout)
+    }
   }, [provider, syncZustand])
 
   const login = React.useCallback(
-    (personaId: string): boolean => {
-      const result = provider.login(personaId)
+    async (personaId: string): Promise<boolean> => {
+      const result = await provider.login(personaId)
       if (!result) return false
       setUser(result)
-      setToken(provider.getToken())
+      const newToken = await provider.getToken()
+      setToken(newToken)
       syncZustand(result.id)
       return true
     },
@@ -56,11 +75,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 
   const loginByEmail = React.useCallback(
-    (email: string, password: string): boolean => {
-      const result = provider.login(email, password)
+    async (email: string, password: string): Promise<boolean> => {
+      const result = await provider.login(email, password)
       if (!result) return false
       setUser(result)
-      setToken(provider.getToken())
+      const newToken = await provider.getToken()
+      setToken(newToken)
       syncZustand(result.id)
       return true
     },
@@ -74,8 +94,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [login],
   )
 
-  const logout = React.useCallback(() => {
-    provider.logout()
+  const logout = React.useCallback(async () => {
+    await provider.logout()
     setUser(null)
     setToken(null)
     syncZustand(null)

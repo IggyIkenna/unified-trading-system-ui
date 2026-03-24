@@ -42,7 +42,6 @@ export class DemoAuthProvider implements AuthProvider {
     this.restore()
   }
 
-  /** Restore session from localStorage (SSR-safe). */
   private restore(): void {
     if (typeof window === "undefined") return
     try {
@@ -61,17 +60,9 @@ export class DemoAuthProvider implements AuthProvider {
     }
   }
 
-  /**
-   * Login by persona ID (primary) or email+password (secondary).
-   *
-   * @param credential - Persona ID or email address
-   * @param secret     - Password (only checked for email-based login)
-   */
-  login(credential: string, secret?: string): AuthUser | null {
-    // Try persona ID first
+  async login(credential: string, secret?: string): Promise<AuthUser | null> {
     let persona = getPersonaById(credential)
 
-    // Fall back to email+password
     if (!persona) {
       persona = getPersonaByEmail(credential)
       if (persona && secret !== undefined && persona.password !== secret) {
@@ -88,7 +79,7 @@ export class DemoAuthProvider implements AuthProvider {
     return this.user
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
     this.user = null
     this.token = null
     localStorage.removeItem(STORAGE_KEY)
@@ -96,7 +87,7 @@ export class DemoAuthProvider implements AuthProvider {
     localStorage.removeItem("odum_user")
   }
 
-  getToken(): string | null {
+  async getToken(): Promise<string | null> {
     return this.token
   }
 
@@ -112,5 +103,9 @@ export class DemoAuthProvider implements AuthProvider {
     if (!this.user) return false
     if (this.user.entitlements.includes(ALL_ENTITLEMENTS)) return true
     return this.user.entitlements.includes(entitlement)
+  }
+
+  onAuthStateChanged(_callback: (user: AuthUser | null) => void): () => void {
+    return () => {}
   }
 }

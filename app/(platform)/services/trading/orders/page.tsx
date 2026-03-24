@@ -257,7 +257,7 @@ export default function OrdersPage() {
   const scopedOrders = React.useMemo(() => {
     if (globalScope.strategyIds.length === 0) return orders
     // Filter orders by strategy_id if available, otherwise show all
-    return orders.filter((o: Record<string, unknown>) =>
+    return orders.filter(o =>
       !o.strategy_id || globalScope.strategyIds.includes(String(o.strategy_id))
     )
   }, [orders, globalScope.strategyIds])
