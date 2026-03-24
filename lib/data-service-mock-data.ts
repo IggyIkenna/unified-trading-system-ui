@@ -1457,6 +1457,54 @@ export const MOCK_PIPELINE_STAGES: import("./data-service-types").PipelineStageS
         },
       ],
     },
+    {
+      stage: "events",
+      label: "Events",
+      totalShards: 94_200,
+      completedShards: 78_400,
+      inProgressShards: 36,
+      failedShards: 5,
+      completionPct: 83.2,
+      lastUpdated: "2026-03-23T07:30:00Z",
+      byCategory: [
+        {
+          category: "cefi",
+          totalShards: 46_000,
+          completedShards: 42_100,
+          completionPct: 91.5,
+        },
+        {
+          category: "tradfi",
+          totalShards: 27_200,
+          completedShards: 23_800,
+          completionPct: 87.5,
+        },
+        {
+          category: "defi",
+          totalShards: 13_800,
+          completedShards: 8_200,
+          completionPct: 59.4,
+        },
+        {
+          category: "onchain_perps",
+          totalShards: 9_100,
+          completedShards: 8_600,
+          completionPct: 94.5,
+        },
+        {
+          category: "prediction_market",
+          totalShards: 600,
+          completedShards: 120,
+          completionPct: 20.0,
+        },
+        {
+          category: "sports",
+          totalShards: 3_500,
+          completedShards: 1_580,
+          completionPct: 45.1,
+        },
+      ],
+    },
   ];
 
 // ─── Active Jobs ──────────────────────────────────────────────────────────────

@@ -23,6 +23,7 @@ import {
   Bell,
   ArrowRight,
   Loader2,
+  Zap,
 } from "lucide-react";
 import {
   MOCK_PIPELINE_STAGES,
@@ -44,12 +45,14 @@ const STAGE_HREFS: Record<string, string> = {
   instruments: "/services/data/instruments",
   raw: "/services/data/raw",
   processing: "/services/data/processing",
+  events: "/services/data/events",
 };
 
 const STAGE_ICONS: Record<string, React.ReactNode> = {
   instruments: <Database className="size-5" />,
   raw: <Activity className="size-5" />,
   processing: <Loader2 className="size-5" />,
+  events: <Zap className="size-5" />,
 };
 
 const JOB_STATUS_COLORS = {
@@ -189,7 +192,7 @@ function CategoryProgressRow({
           })}
         </div>
       </div>
-      <div className="grid grid-cols-3 gap-1.5">
+      <div className="grid grid-cols-4 gap-1.5">
         {stages.map((stage) => {
           const catData = stage.byCategory.find((c) => c.category === cat);
           const pct = catData?.completionPct ?? 0;
@@ -332,7 +335,8 @@ export default function AcquireOverviewPage() {
           <div>
             <h1 className="text-2xl font-bold">Acquire</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Data pipeline — instruments → raw data → processed candles
+              Data pipeline — instruments → raw data → processed candles →
+              events
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -344,7 +348,7 @@ export default function AcquireOverviewPage() {
         </div>
 
         {/* Pipeline Stage Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stages.map((stage) => (
             <StageCard key={stage.stage} stage={stage} />
           ))}

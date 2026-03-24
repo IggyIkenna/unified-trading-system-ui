@@ -1,33 +1,35 @@
 # Build / Research Section — Expanded Specification
 
-> **Purpose:** Detailed specification for the 6 tabs of the Build lifecycle stage.
-> **Status:** v3 — all design decisions finalized (see RESEARCH_BUILD_SECTION_AUDIT.md §4).
+> **Purpose:** Detailed specification for the 7 tabs of the Build lifecycle stage.
+> **Status:** v4 — all design decisions finalized (see RESEARCH_BUILD_SECTION_AUDIT.md §4).
 > **Companion:** `RESEARCH_BUILD_SECTION_AUDIT.md` (current state analysis + decisions)
 
 ---
 
 ## Pipeline Overview
 
-The Build section covers the research-to-backtest pipeline. Data flows left to right
-through 6 tabs:
+The Build section covers the research-to-backtest pipeline. Users land on an **Overview**
+tab showing pipeline status, then navigate into 5 pipeline tabs + a workspace tab.
 
 ```
-Processed Data (from Acquire)
-    │
-    ▼
-┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐
-│ 1. FEATURES│─▶│ 2. FEATURE │─▶│ 3. MODELS  │─▶│ 4.STRATEGY │─▶│ 5.EXECUTION│  │ 6. QUANT   │
-│ Catalogue  │  │ ETL        │  │ Training & │  │ Signal     │  │ Exec algo  │  │ WORKSPACE  │
-│ & Config   │  │ Pipeline   │  │ Evaluation │  │ Backtest   │  │ Backtest   │  │            │
-│            │  │            │  │            │  │            │  │            │  │ Research   │
-│ Define,    │  │ Compute    │  │ Config,    │  │ Generate   │  │ TWAP/VWAP  │  │ KPI dash   │
-│ version,   │  │ features,  │  │ train,     │  │ signals,   │  │ simulation,│  │ across all │
-│ presets,   │  │ track      │  │ evaluate,  │  │ compare    │  │ TradingView│  │ models &   │
-│ deps       │  │ progress   │  │ compare    │  │ strategies │  │ results    │  │ strategies │
-└────────────┘  └────────────┘  └────────────┘  └────────────┘  └────────────┘  └────────────┘
+                                    Processed Data (from Acquire)
+                                              │
+                                              ▼
+┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐
+│ 0. OVERVIEW│  │ 1. FEATURES│─▶│ 2. FEATURE │─▶│ 3. MODELS  │─▶│ 4.STRATEGY │─▶│ 5.EXECUTION│  │ 6. QUANT   │
+│ Pipeline   │  │ Catalogue  │  │ ETL        │  │ Training & │  │ Signal     │  │ Exec algo  │  │ WORKSPACE  │
+│ status,    │  │ & Config   │  │ Pipeline   │  │ Evaluation │  │ Backtest   │  │ Backtest   │  │            │
+│ active     │  │            │  │            │  │            │  │            │  │            │  │ Historical │
+│ jobs,      │  │ Define,    │  │ Compute    │  │ Config,    │  │ Generate   │  │ TWAP/VWAP  │  │ reports,   │
+│ alerts,    │  │ version,   │  │ features,  │  │ train,     │  │ signals,   │  │ simulation,│  │ saved      │
+│ activity   │  │ presets,   │  │ track      │  │ evaluate,  │  │ compare    │  │ TradingView│  │ comparisons│
+│ feed       │  │ deps       │  │ progress   │  │ compare    │  │ strategies │  │ results    │  │ governance │
+└────────────┘  └────────────┘  └────────────┘  └────────────┘  └────────────┘  └────────────┘  └────────────┘
 ```
 
-Tabs 1-5 form the pipeline. Tab 6 (Quant Workspace) is a cross-cutting KPI dashboard.
+Tab 0 is the landing page. Tabs 1-5 form the pipeline. Tab 6 is a workspace for historical
+reports, saved comparisons, and model governance. Each tab also has its own mini-overview
+at the top before drilling into detail.
 
 ### Core Principle: Everything is Configured, Versioned, and Linked
 
@@ -91,6 +93,76 @@ Before designing, here's what already exists in the codebase that we can reuse:
 
 ---
 
+## 0. Overview Tab (Landing Page)
+
+### What It Is
+
+The first thing users see when they enter the Build section. Shows pipeline status
+across all tabs, active jobs, alerts, and recent activity. More comprehensive than
+Acquire's simple overview — Build is detailed and covers many workflows.
+
+Each subsequent tab (Features, Models, etc.) also has its own mini-overview at the top
+of its landing page, so the Overview tab is the cross-cutting summary.
+
+### Page Content
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ BUILD — Research & Backtesting Pipeline                          │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─ PIPELINE STATUS (one card per stage) ────────────────────┐  │
+│  │                                                            │  │
+│  │  Features     Feature ETL    Models        Strategies      │  │
+│  │  ┌────────┐  ┌────────┐     ┌────────┐   ┌────────┐      │  │
+│  │  │  847   │  │ 72.9%  │     │   12   │   │    8   │      │  │
+│  │  │defined │  │computed│     │trained │   │ tested │      │  │
+│  │  │+23 new │  │+2.1%/d │     │3 active│   │5 cands │      │  │
+│  │  └────────┘  └────────┘     └────────┘   └────────┘      │  │
+│  │                                                            │  │
+│  │  Execution     Quant Workspace                             │  │
+│  │  ┌────────┐   ┌────────┐                                  │  │
+│  │  │    5   │   │   14   │                                  │  │
+│  │  │backtestd│  │ reports│                                  │  │
+│  │  │2 in prog│  │3 saved │                                  │  │
+│  │  └────────┘   └────────┘                                  │  │
+│  │                                                            │  │
+│  │  Cards are clickable → navigate to corresponding tab       │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                                                                  │
+│  ┌─ ACTIVE JOBS ─────────────────────────────────────────────┐  │
+│  │  Feature Computation  │ CeFi Delta-One │ 78% │ 2h remaining│  │
+│  │  Model Training       │ BTC Dir. v5    │ 45% │ epoch 29/65 │  │
+│  │  Strategy Backtest    │ Momentum v4    │ 100%│ Complete     │  │
+│  │  Execution Backtest   │ TWAP sim       │ 62% │ 1h remaining│  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                                                                  │
+│  ┌─ ALERTS ──────────────────────────────────────────────────┐  │
+│  │  ⚠ Model drift detected: BTC Basis v2 — accuracy dropped  │  │
+│  │  ⚠ Feature stale > 24h: funding_rate for SOL-PERP          │  │
+│  │  ✓ Backtest complete: ETH Momentum v3 — Sharpe 2.14        │  │
+│  └────────────────────────────────────────────────────────────┘  │
+│                                                                  │
+│  ┌─ RECENT ACTIVITY ─────────────────────────────────────────┐  │
+│  │  • Feature ema_50 updated to v2.1 (added SOL-PERP)  2h ago│  │
+│  │  • Model BTC Directional v5 training started         4h ago│  │
+│  │  • Strategy "Mean Reversion v2" marked as candidate  1d ago│  │
+│  └────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Design Notes
+
+- **Not a copy of Acquire's overview** — Build is more comprehensive.
+- **Cards are interactive** — clicking navigates to the corresponding tab.
+- **Active jobs span all pipeline stages** — feature computation, model training,
+  strategy backtests, execution backtests all show here.
+- **Alerts surface issues** across the entire pipeline, not just one stage.
+- Takes inspiration from the current ML Overview page (which has KPIs, model families,
+  training status, alerts) and extends it to cover the full Build pipeline.
+
+---
+
 ## 1. Feature Catalogue
 
 ### What It Is
@@ -122,7 +194,23 @@ These map directly to the backend feature services visible in the deployment-ui:
 | `features-cross-instrument-service` | All            | category × feature_group × date |
 | `features-commodity-service`        | TradFi         | category × feature_group × date |
 
-### Page Layout — Feature Catalogue
+### Three View Modes for 10K+ Features
+
+With potentially tens of thousands of features across all asset classes and categories,
+users need multiple ways to browse. All three views are available (toggle between them):
+
+1. **Card Grid** — Shard-level cards (CeFi: 312, DeFi: 198, Sports: 124...). Click to
+   drill into that shard's features. Best for high-level orientation.
+
+2. **Collapsible Tree** — Hierarchical accordion: Shard → Type → Group → Feature.
+   Like a file explorer. Best for browsing related features.
+
+3. **Filtered Table** — Flat table with multi-level filters (shard, type, group, status).
+   Click any row for detail panel. Best for searching/filtering specific features.
+
+Users can experience all three and we'll refine based on which gets used most.
+
+### Page Layout — Feature Catalogue (Table View)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -396,7 +484,16 @@ The deployment-ui at `localhost:5183` has an excellent pattern we reuse:
 The Feature ETL page reuses the same concepts (progress bars, heatmaps, sharding dimension
 filters, job management) through a research-oriented lens.
 
-### Page Layout — Feature ETL Pipeline
+### Sub-Tabs
+
+Feature ETL has its own sub-tabs:
+
+- **Progress Overview** — overall pipeline progress bars by shard + service breakdown
+- **Active Jobs** — running computation jobs with progress, ETA, controls
+- **Completion Heatmap** — venue × date × feature_group completion matrix
+- **History** — completed jobs, past runs, throughput trends
+
+### Page Layout — Feature ETL Pipeline (Progress Overview)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1295,39 +1392,36 @@ The candidate record captures the full lineage:
 
 ---
 
-## 6. Quant Workspace — Research KPI Dashboard
+## 6. Quant Workspace — Historical Reports, Comparisons & Governance
 
 ### What It Is
 
-A high-level research KPI dashboard that aggregates metrics across all features, models,
-strategies, and backtests. This is the "research productivity" view — it tells quants
-and team leads how the research pipeline is performing overall.
+The Quant Workspace covers what the other tabs do NOT — the long-term view:
 
-The existing `QuantDashboard` component (948 lines) has sub-views for Backtest, ConfigGrid,
-Training, Features, and Results. These sub-views will be cannibalized by the dedicated tabs
-(1-5). What remains in Quant Workspace is the cross-cutting overview.
+1. **Historical reports** — archived experiment results, past backtest outcomes, research logs
+2. **Saved comparisons** — bookmarked strategy comparisons, execution algo evaluations
+3. **Model governance** — audit trails, approval workflows, compliance tracking
+   (moved here from the old ML Deploy/Monitoring sub-tabs)
 
-### Key Metrics
+While the Overview tab shows live pipeline status and the other tabs handle active
+workflows, the Quant Workspace is the archival and governance layer.
 
-| Category               | Metrics                                                                | Purpose                         |
-| ---------------------- | ---------------------------------------------------------------------- | ------------------------------- |
-| **Feature Coverage**   | Total features defined, computed coverage %, staleness rate            | Are we computing what we need?  |
-| **Model Health**       | Models trained (active/deprecated), avg accuracy, retrain queue length | Are models performing?          |
-| **Strategy Pipeline**  | Strategies run this week, avg signal hit rate, best strategy P&L       | Signal generation productivity  |
-| **Execution Quality**  | Avg slippage across all backtests, best algo, fill rate trends         | Execution research progress     |
-| **Candidate Pipeline** | Strategy candidates pending promotion, avg time-to-promote             | Research-to-production velocity |
-| **Data Readiness**     | Instruments with processed data, Acquire pipeline completion %         | Data coverage for research      |
+### DEFERRED for initial build
 
-### Future Vision
+Focus is on tabs 0-5 (Overview + 5 pipeline tabs). The Quant Workspace will be built
+after the pipeline tabs are functional and we know exactly what gap remains.
 
-The Quant Workspace may evolve to include:
+The existing `QuantDashboard` component (948 lines) will be preserved but not
+restructured until we have clarity on what reports and governance views are needed.
 
-- Custom analysis views (user-configurable metric cards)
-- Team-level research attribution
-- Research experiment tracking (which approaches are being explored)
-- Integration with external tools (Jupyter, notebooks) if needed
+### Planned Content (when built)
 
-For now, it is a KPI dashboard — not a notebook or code editor.
+| Section               | Content                                                        | Source                                 |
+| --------------------- | -------------------------------------------------------------- | -------------------------------------- |
+| **Reports**           | Archived backtest results, experiment summaries, research logs | Saved from Strategies + Execution tabs |
+| **Saved Comparisons** | Bookmarked strategy comparisons, algo evaluations              | Saved from Compare views               |
+| **Governance**        | Model audit trail, approval workflows, compliance tracking     | Moved from ML Governance sub-tab       |
+| **Research Metrics**  | Experiments run, strategies tested, model accuracy trends      | Aggregated across all tabs             |
 
 ---
 
@@ -1366,14 +1460,14 @@ Each pipeline stage adapts to the asset class being researched:
 
 ---
 
-## Quick Reference — Tab Structure
+## Quick Reference — Tab Structure (7 tabs)
 
 ```
-Features (§1) │ Feature ETL (§2) │ Models (§3) │ Strategies (§4) │ Execution (§5) │ Quant Workspace (§6)
+Overview (§0) │ Features (§1) │ Feature ETL (§2) │ Models (§3) │ Strategies (§4) │ Execution (§5) │ Quant Workspace (§6)
 ```
 
 See the Pipeline Overview at the top of this document for the full tab table and
-individual sections §1-§6 for detailed wireframes and specifications.
+individual sections §0-§6 for detailed wireframes and specifications.
 
 ---
 
@@ -1403,8 +1497,8 @@ in `RESEARCH_BUILD_SECTION_AUDIT.md §4`.
 
 ### From Q&A Session (Round 2) — ALL RESOLVED
 
-9. **Tab structure:** 6 tabs — Features, Feature ETL, Models, Strategies, Execution, Quant Workspace.
-   Strategies and Execution are SEPARATE tabs (not combined as "Backtesting").
+9. **Tab structure:** 7 tabs — Overview, Features, Feature ETL, Models, Strategies, Execution,
+   Quant Workspace. Overview is the landing page. Strategies and Execution are SEPARATE tabs.
    → **Tab Structure section**
 
 10. **Feature ETL is the primary UI:** ETL pipeline views (Acquire and Build) are the main UI

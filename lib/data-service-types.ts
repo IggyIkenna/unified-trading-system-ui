@@ -467,7 +467,7 @@ export interface DataGap {
 
 // ─── Pipeline Stage Status (Acquire Overview) ────────────────────────────────
 
-export type PipelineStage = "instruments" | "raw" | "processing";
+export type PipelineStage = "instruments" | "raw" | "processing" | "events";
 
 export interface PipelineStageSummary {
   stage: PipelineStage;

@@ -1424,10 +1424,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }));
     return json({ data: enriched, families: enriched });
   }
-  if (route === "/api/ml/experiments") return json(EXPERIMENTS);
+  if (route === "/api/ml/experiments")
+    return json({ data: EXPERIMENTS, experiments: EXPERIMENTS });
   if (route.match(/\/api\/ml\/experiments\/[^/]+$/))
     return json(EXPERIMENTS[0]);
-  if (route === "/api/ml/training-runs") return json(TRAINING_RUNS);
+  if (route === "/api/ml/training-runs")
+    return json({ data: TRAINING_RUNS, runs: TRAINING_RUNS });
   if (route === "/api/ml/training-jobs")
     return json({ ok: true, jobId: "job-mock-001" });
   if (route === "/api/ml/versions") return json(MODEL_VERSIONS);

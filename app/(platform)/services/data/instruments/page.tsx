@@ -116,7 +116,7 @@ function VenueInstrumentRow({
 
       {expanded && (
         <div className="px-10 py-3 bg-accent/10 border-t border-border/30 space-y-2">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div className="grid grid-cols-3 gap-3 text-xs">
             <div>
               <div className="text-muted-foreground">Total</div>
               <div className="font-mono font-semibold text-foreground">
@@ -133,12 +133,6 @@ function VenueInstrumentRow({
               <div className="text-muted-foreground">Delisted</div>
               <div className="font-mono font-semibold text-muted-foreground">
                 {counts ? (counts.total - counts.active).toLocaleString() : "—"}
-              </div>
-            </div>
-            <div>
-              <div className="text-muted-foreground">Data Types</div>
-              <div className="font-mono font-semibold text-foreground">
-                {FOLDERS_BY_CATEGORY[category].length}
               </div>
             </div>
           </div>

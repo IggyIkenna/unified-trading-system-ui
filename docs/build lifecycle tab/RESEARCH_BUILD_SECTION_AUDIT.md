@@ -586,7 +586,96 @@ ETL pipeline views for triggering computes and monitoring progress.
 
 ---
 
+### Round 3 Decisions (Page-Level & UX Details — 2026-03-23)
+
+**Q12. Build layout style:** Build is more workflow-oriented than dashboard-oriented.
+Unlike Acquire's simple card layout, Build pages are detailed and comprehensive.
+No copy-paste from any one mature system — diversified approach taking the best
+from W&B, Tecton, MLflow, TradingView, and our own themes.
+
+**Q13. Locked shards:** Lock at the data level — can't compute features for locked
+shards since data isn't downloaded. But feature definitions are visible (show what
+would be available if they upgrade).
+
+**Q14. Job tracking components:** Build jobs are more complex than Acquire's download
+jobs (epochs, loss curves, validation) — need a different component, not reuse of
+PipelineStatusView directly.
+
+**Q15. Alerts:** Yes — similar alerts section: "Model drift detected", "Feature stale
+
+> 24h", "Backtest failed". On the overview page.
+
+**Q16. Entitlements:** One gate for entire Build section.
+
+**Q17. Data readiness cross-links:** Not for initial build, add later.
+
+**Q18. Implementation approach:** Define what each page should look like FIRST,
+then compare against current UI, then implement. Vision → diff → execute.
+
+**Q19. Mock data updates:** Use existing where possible, update when insufficient,
+and document changes for backend API alignment.
+
+**Q20. Deploy/Monitoring/Governance:** Deploy → Promote tab. Monitoring → Observe tab.
+Governance stays in Build under Quant Workspace.
+
+**Q21. Model workflow:** Defer detailed ML sub-tab restructuring until current pages
+are visible and working. Define ideal workflow first.
+
+**Q22. Feature lineage visualization:** Text-based dependency list for now. Tree/list
+toggle is appealing but needs proper mock data. Make everything work first, upgrade
+to visual graph later.
+
+**Q23. Comparison UX:** Simple for now — select 2-5 strategies, chart overlay + metrics
+table. No parallel coordinates or advanced features yet.
+
+**Q24. Sweep/auto-optimization:** Not needed for initial build. Could add later if
+backend supports it and it's useful for trading models specifically.
+
+**Q25. Real-time job updates:** Simulated real-time for now (mock progress), implement
+actual polling when backend exists.
+
+**Q26. Tab structure — 7 tabs with Overview:**
+
+```
+Overview | Features | Feature ETL | Models | Strategies | Execution | Quant Workspace
+```
+
+Overview is the landing page. Each tab also has its own mini-overview at the top
+before drilling into detail.
+
+**Q27. Features catalogue — drill-down with 10K+ features:** Support all three
+views (collapsible tree, filtered table, card grid). Show all three, let user
+experience drive future refinement on which to keep.
+
+**Q28. Feature ETL sub-tabs:** Yes — Progress Overview | Active Jobs | Completion
+Heatmap | History.
+
+**Q29. Strategies flow:** My Strategies as landing page. New Strategy is a full
+page (not modal). Compare is a full page.
+
+**Q30. Execution results:** TradingView-style sub-tabs (Overview, Performance,
+Trades, Execution Quality, Config).
+
+**Q31. Quant Workspace:** Historical reports, saved comparisons, research logs.
+Governance also lives here. Deferred for later — focus on 5 pipeline tabs + overview first.
+
+**Q32. Sub-tabs — keep minimal.** Only add sub-tabs where truly needed. Not every
+tab needs a full sub-tab bar.
+
+---
+
 ## 5. Implementation Plan
 
-See `BUILD_SECTION_SPEC.md` for the detailed specification of each tab.
-The implementation will follow the full refactor approach (Q10) with the 6-tab structure (Q2).
+See `BUILD_SECTION_SPEC.md` for the detailed specification.
+
+### Implementation order:
+
+1. Define vision for each page (what it should look like)
+2. Compare against current UI (what exists vs what's needed)
+3. Execute changes (update/migrate/remove)
+
+### Tab structure (final — 7 tabs):
+
+```
+Overview | Features | Feature ETL | Models | Strategies | Execution | Quant Workspace
+```
