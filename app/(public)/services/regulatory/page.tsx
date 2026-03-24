@@ -419,14 +419,18 @@ export default function RegulatoryServicePage() {
                 pace — proof of address, identity, source of funds. We review
                 everything and get you trading under our regulatory umbrella.
               </p>
-              <Link href="/signup?service=regulatory">
-                <Badge
-                  variant="outline"
-                  className="mt-4 border-primary/30 text-primary cursor-pointer hover:bg-primary/10"
-                >
-                  Apply Now
-                </Badge>
-              </Link>
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
+                <Button asChild>
+                  <Link href="/contact?service=regulatory&action=demo">
+                    Book a Live Demo <ArrowRight className="ml-2 size-4" />
+                  </Link>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/signup?service=regulatory">
+                    Apply Now
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

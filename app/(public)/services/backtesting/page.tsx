@@ -280,6 +280,11 @@ export default function BacktestingServicePage() {
                 Preview what your backtesting workflow looks like inside the
                 platform.
               </p>
+              <Button className="mt-4" asChild>
+                <Link href="/contact?service=backtesting&action=demo">
+                  Book a Live Demo <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
             </div>
 
             {/* Strategy Config Preview */}

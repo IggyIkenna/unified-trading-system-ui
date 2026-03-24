@@ -165,6 +165,11 @@ export default function PlatformServicePage() {
               <p className="mt-2 text-muted-foreground">
                 Preview the trading dashboard, P&L waterfall, and position grid.
               </p>
+              <Button className="mt-4" asChild>
+                <Link href="/contact?service=platform&action=demo">
+                  Book a Live Demo <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
             </div>
 
             {/* P&L Waterfall Preview */}

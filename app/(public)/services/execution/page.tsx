@@ -263,6 +263,11 @@ export default function ExecutionServicePage() {
                 Preview execution analytics, venue connectivity, and algo
                 performance inside the platform.
               </p>
+              <Button className="mt-4" asChild>
+                <Link href="/contact?service=execution&action=demo">
+                  Book a Live Demo <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
             </div>
 
             {/* Venue Connectivity Preview */}

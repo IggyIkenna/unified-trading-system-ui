@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 const NAV_ITEMS = [
   { href: "/", label: "Platform" },
   { href: "/signup", label: "Get Started" },
-  { href: "/docs", label: "Documentation" },
+  { href: "/docs", label: "Developer Docs" },
   { href: "/investor-relations", label: "Investor Relations" },
   { href: "/contact", label: "Contact" },
 ];

@@ -343,6 +343,11 @@ export default function InvestmentServicePage() {
                 Preview the investor portal with portfolio overview, P&amp;L
                 attribution, and settlement tracking.
               </p>
+              <Button className="mt-4" asChild>
+                <Link href="/contact?service=investment&action=demo">
+                  Book a Live Demo <ArrowRight className="ml-2 size-4" />
+                </Link>
+              </Button>
             </div>
 
             {/* Portfolio Overview Preview */}
