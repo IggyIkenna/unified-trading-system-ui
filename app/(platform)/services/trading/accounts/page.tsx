@@ -831,7 +831,7 @@ export default function AccountsPage() {
                   const utilization =
                     marginTotal > 0 ? (marginUsed / marginTotal) * 100 : 0;
                   return (
-                    <TableRow key={`${b.venue}-${(b as any).account ?? idx}`}>
+                    <TableRow key={`${b.venue}-${idx}`}>
                       <TableCell className="font-medium">{b.venue}</TableCell>
                       <TableCell className="text-right font-mono">
                         ${formatCurrency(b.free)}

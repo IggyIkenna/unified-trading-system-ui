@@ -140,9 +140,13 @@ export default function StrategyDetailPage({
       return generatePnLBreakdown(strategy);
     } catch {
       return {
+        strategyId: strategy.id,
         total: strategy.performance?.pnlMTD ?? 0,
         components: [],
-      } as unknown as PnLBreakdownData;
+        realized: 0,
+        unrealized: 0,
+        residual: 0,
+      } as PnLBreakdownData;
     }
   }, [strategy]);
   const positions = React.useMemo(
@@ -1087,6 +1091,7 @@ export default function StrategyDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {(() => { const arch = strategy.archetype as string; return (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
               {/* Common metrics */}
               <div>
@@ -1410,8 +1415,12 @@ export default function StrategyDetailPage({
               )}
 
               {/* Recursive Staked Basis (DeFi subset) */}
+<<<<<<< HEAD
               {(arch === "recursive-staked-basis" ||
                 arch === "RECURSIVE_STAKED_BASIS") && (
+=======
+              {(arch === "recursive-staked-basis" || arch === "RECURSIVE_STAKED_BASIS") && (
+>>>>>>> origin/main
                 <>
                   <div>
                     <span className="text-muted-foreground text-[10px]">
@@ -1476,6 +1485,7 @@ export default function StrategyDetailPage({
                 </>
               )}
             </div>
+            ); })()}
           </CardContent>
         </Card>
       </div>

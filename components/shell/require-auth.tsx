@@ -1,56 +1,57 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import Link from "next/link";
-import { Sparkles, Lock, ArrowRight, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import * as React from "react"
+import Link from "next/link"
+import { Sparkles, Lock, ArrowRight, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
-import { PERSONAS } from "@/lib/auth/personas";
+} from "@/components/ui/card"
+import { useAuth } from "@/hooks/use-auth"
+import { PERSONAS } from "@/lib/auth/personas"
+
+const isFirebaseMode = process.env.NEXT_PUBLIC_AUTH_PROVIDER === "firebase"
 
 interface RequireAuthProps {
-  children: React.ReactNode;
-  /** Optional login route override — defaults to /login */
-  loginHref?: string;
+  children: React.ReactNode
+  loginHref?: string
 }
 
-export function RequireAuth({
-  children,
-  loginHref = "/login",
-}: RequireAuthProps) {
-  const { user, loading, loginByEmail, switchPersona } = useAuth();
+export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps) {
+  const { user, loading, loginByEmail, switchPersona } = useAuth()
 
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [error, setError] = React.useState("");
-  const [submitting, setSubmitting] = React.useState(false);
+  const [email, setEmail] = React.useState("")
+  const [password, setPassword] = React.useState("")
+  const [error, setError] = React.useState("")
+  const [submitting, setSubmitting] = React.useState(false)
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
-    );
+    )
   }
 
-  if (user) return <>{children}</>;
+  if (user) return <>{children}</>
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError("");
-    await new Promise((r) => setTimeout(r, 400));
-    const ok = loginByEmail(email, password);
+    e.preventDefault()
+    setSubmitting(true)
+    setError("")
+    const ok = await loginByEmail(email, password)
     if (!ok) {
-      setError("Invalid credentials. Try one of the demo accounts below.");
+      setError(
+        isFirebaseMode
+          ? "Invalid credentials. Check your email and password."
+          : "Invalid credentials. Try one of the demo accounts below.",
+      )
     }
-    setSubmitting(false);
+    setSubmitting(false)
   }
 
   return (
@@ -129,38 +130,40 @@ export function RequireAuth({
             </CardContent>
           </Card>
 
-          <Card className="border-dashed">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Demo Accounts</CardTitle>
-              <CardDescription className="text-xs">
-                Click to sign in instantly
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {PERSONAS.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => switchPersona(p.id)}
-                  className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">
-                      {p.displayName}
+          {!isFirebaseMode && (
+            <Card className="border-dashed">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Demo Accounts</CardTitle>
+                <CardDescription className="text-xs">
+                  Click to sign in instantly
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {PERSONAS.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => switchPersona(p.id)}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">
+                        {p.displayName}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {p.email} &middot; {p.org.name}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
+                        {p.description}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {p.email} &middot; {p.org.name}
-                    </div>
-                    <div className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
-                      {p.description}
-                    </div>
-                  </div>
-                  <ArrowRight className="size-3.5 text-muted-foreground flex-shrink-0" />
-                </button>
-              ))}
-            </CardContent>
-          </Card>
+                    <ArrowRight className="size-3.5 text-muted-foreground flex-shrink-0" />
+                  </button>
+                ))}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>
-  );
+  )
 }
