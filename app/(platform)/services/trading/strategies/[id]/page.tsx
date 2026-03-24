@@ -92,7 +92,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
     try {
       return generatePnLBreakdown(strategy)
     } catch {
-      return { total: strategy.performance?.pnlMTD ?? 0, components: [] }
+      return { strategyId: strategy.id, total: strategy.performance?.pnlMTD ?? 0, components: [], realized: 0, unrealized: 0, residual: 0 }
     }
   }, [strategy])
   const positions = React.useMemo(() => generatePositionsForStrategy(strategy), [strategy])
@@ -774,23 +774,25 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">
-              {strategy.archetype === "market-making" || strategy.archetype === "MARKET_MAKING" ? "Market Making Analytics" :
+              {(() => { const a = strategy.archetype as string; return (
+               a === "market-making" || a === "MARKET_MAKING" ? "Market Making Analytics" :
                strategy.assetClass === "DeFi" ? "DeFi Protocol Analytics" :
                strategy.assetClass === "Sports" ? "Sports & Betting Analytics" :
                strategy.assetClass === "Prediction" ? "Prediction Market Analytics" :
-               strategy.archetype === "basis-trade" || strategy.archetype === "BASIS_TRADE" ? "Basis/Spread Analytics" :
-               strategy.archetype === "OPTIONS" || strategy.archetype === "market-making-options" ? "Derivatives Analytics" :
-               "Strategy Analytics"}
+               a === "basis-trade" || a === "BASIS_TRADE" ? "Basis/Spread Analytics" :
+               a === "OPTIONS" || a === "market-making-options" ? "Derivatives Analytics" :
+               "Strategy Analytics"); })()}
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {(() => { const arch = strategy.archetype as string; return (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
               {/* Common metrics */}
               <div><span className="text-muted-foreground text-[10px]">Win Rate</span><div className="font-mono font-medium text-lg">62%</div></div>
               <div><span className="text-muted-foreground text-[10px]">Avg Trade Duration</span><div className="font-mono font-medium text-lg">4.2h</div></div>
 
               {/* Market Making specific */}
-              {(strategy.archetype === "market-making" || strategy.archetype === "MARKET_MAKING") && (
+              {(arch === "market-making" || arch === "MARKET_MAKING") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Avg Spread Captured</span><div className="font-mono font-medium text-lg text-emerald-400">2.4 bps</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Inventory Turnover</span><div className="font-mono font-medium text-lg">8.2x/day</div></div>
@@ -830,7 +832,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               )}
 
               {/* Basis/Spread specific */}
-              {(strategy.archetype === "basis-trade" || strategy.archetype === "BASIS_TRADE") && (
+              {(arch === "basis-trade" || arch === "BASIS_TRADE") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Basis Spread</span><div className="font-mono font-medium text-lg text-emerald-400">+4.2 bps</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Funding Rate</span><div className="font-mono font-medium text-lg">0.012%</div></div>
@@ -840,7 +842,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               )}
 
               {/* Derivatives/Options specific */}
-              {(strategy.archetype === "OPTIONS" || strategy.archetype === "market-making-options") && (
+              {(arch === "OPTIONS" || arch === "market-making-options") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Net Delta</span><div className="font-mono font-medium text-lg">+2.4</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Net Gamma</span><div className="font-mono font-medium text-lg">0.15</div></div>
@@ -850,7 +852,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               )}
 
               {/* Momentum/Directional/ML */}
-              {(strategy.archetype === "momentum" || strategy.archetype === "ml-directional" || strategy.archetype === "ML_DIRECTIONAL" || strategy.archetype === "MOMENTUM" || strategy.archetype === "DIRECTIONAL") && (
+              {(arch === "momentum" || arch === "ml-directional" || arch === "ML_DIRECTIONAL" || arch === "MOMENTUM" || arch === "DIRECTIONAL") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Signal Strength</span><div className="font-mono font-medium text-lg text-emerald-400">0.72</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Regime</span><div className="font-mono font-medium text-lg">Trending</div></div>
@@ -860,7 +862,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               )}
 
               {/* Mean Reversion */}
-              {(strategy.archetype === "mean-reversion" || strategy.archetype === "MEAN_REVERSION") && (
+              {(arch === "mean-reversion" || arch === "MEAN_REVERSION") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Z-Score</span><div className="font-mono font-medium text-lg text-amber-400">1.8σ</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Half-Life</span><div className="font-mono font-medium text-lg">4.2h</div></div>
@@ -870,7 +872,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               )}
 
               {/* Arbitrage / Statistical Arb */}
-              {(strategy.archetype === "arbitrage" || strategy.archetype === "ARBITRAGE" || strategy.archetype === "statistical-arb" || strategy.archetype === "STATISTICAL_ARB") && (
+              {(arch === "arbitrage" || arch === "ARBITRAGE" || arch === "statistical-arb" || arch === "STATISTICAL_ARB") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Spread (Current)</span><div className="font-mono font-medium text-lg text-emerald-400">+1.8 bps</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Opportunities/hr</span><div className="font-mono font-medium text-lg">142</div></div>
@@ -880,7 +882,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               )}
 
               {/* Recursive Staked Basis (DeFi subset) */}
-              {(strategy.archetype === "recursive-staked-basis" || strategy.archetype === "RECURSIVE_STAKED_BASIS") && (
+              {(arch === "recursive-staked-basis" || arch === "RECURSIVE_STAKED_BASIS") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Leverage Loop</span><div className="font-mono font-medium text-lg">3.2x</div></div>
                   <div><span className="text-muted-foreground text-[10px]">Net APY</span><div className="font-mono font-medium text-lg text-emerald-400">12.4%</div></div>
@@ -890,7 +892,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
               )}
 
               {/* AMM LP */}
-              {(strategy.archetype === "amm-lp" || strategy.archetype === "AMM_LP") && (
+              {(arch === "amm-lp" || arch === "AMM_LP") && (
                 <>
                   <div><span className="text-muted-foreground text-[10px]">Fee APR</span><div className="font-mono font-medium text-lg text-emerald-400">18.2%</div></div>
                   <div><span className="text-muted-foreground text-[10px]">IL (Impermanent Loss)</span><div className="font-mono font-medium text-lg text-rose-400">-1.2%</div></div>
@@ -899,6 +901,7 @@ export default function StrategyDetailPage({ params }: { params: Promise<{ id: s
                 </>
               )}
             </div>
+            ); })()}
           </CardContent>
         </Card>
       </div>

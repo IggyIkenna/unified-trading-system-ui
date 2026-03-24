@@ -227,8 +227,8 @@ export default function OverviewPage() {
     const desc = strategySort.startsWith("-")
     const key = strategySort.replace("-", "") as string
     result.sort((a, b) => {
-      const av = Number((a as Record<string, unknown>)[key]) || 0
-      const bv = Number((b as Record<string, unknown>)[key]) || 0
+      const av = Number((a as unknown as Record<string, unknown>)[key]) || 0
+      const bv = Number((b as unknown as Record<string, unknown>)[key]) || 0
       if (key === "name") {
         return desc ? String(b.name ?? "").localeCompare(String(a.name ?? "")) : String(a.name ?? "").localeCompare(String(b.name ?? ""))
       }

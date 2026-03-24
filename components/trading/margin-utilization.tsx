@@ -98,10 +98,10 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
                       {venue.utilization >= 90 && (
                         <AlertTriangle className="size-3 text-[var(--status-error)] animate-pulse" />
                       )}
-                      {venue.trend === "up" && (
+                      {(venue.trend as string) === "up" && (
                         <TrendingUp className="size-3 text-[var(--status-warning)]" />
                       )}
-                      {venue.trend === "down" && (
+                      {(venue.trend as string) === "down" && (
                         <TrendingDown className="size-3 text-[var(--status-live)]" />
                       )}
                     </div>
