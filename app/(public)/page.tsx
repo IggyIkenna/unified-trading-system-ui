@@ -437,27 +437,15 @@ export default function ServicesLandingPage() {
         </div>
       </section>
 
-      {/* Commercial Offerings */}
-      <section className="container px-4 py-16 md:px-6 md:py-24 border-t border-border">
+      {/* Services */}
+      <section id="services" className="container px-4 py-16 md:px-6 md:py-24 border-t border-border">
         <div className="mx-auto max-w-2xl text-center">
-          <Badge variant="secondary" className="mb-3">
-            Services
-          </Badge>
           <h2 className="text-3xl font-bold tracking-tight">
-            Commercial Offerings
+            Services
           </h2>
           <p className="mt-4 text-muted-foreground">
-            From data feeds to FCA-authorised investment management. Each maps
-            to specific lifecycle stages.
-          </p>
-          <p className="mt-3 text-sm text-primary/80">
-            Every service has a no-code web interface — and is also fully
-            accessible via our{" "}
-            <Link href="/docs" className="underline hover:text-primary">
-              backend APIs
-            </Link>{" "}
-            for seamless integration with your development tools, around the
-            clock.
+            From market data to FCA-authorised investment management.
+            Every service comes with a no-code interface and full API access.
           </p>
         </div>
 
@@ -467,100 +455,49 @@ export default function ServicesLandingPage() {
             const isHovered = hoveredService === service.id;
 
             return (
-              <Card
-                key={service.id}
-                className={cn(
-                  "relative overflow-hidden transition-all duration-200",
-                  isHovered && service.borderColor,
-                  isHovered && "shadow-lg",
-                )}
-                onMouseEnter={() => setHoveredService(service.id)}
-                onMouseLeave={() => setHoveredService(null)}
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
+              <Link key={service.id} href={service.href}>
+                <Card
+                  className={cn(
+                    "relative overflow-hidden transition-all duration-200 h-full",
+                    isHovered && service.borderColor,
+                    isHovered && "shadow-lg",
+                  )}
+                  onMouseEnter={() => setHoveredService(service.id)}
+                  onMouseLeave={() => setHoveredService(null)}
+                >
+                  <CardHeader>
                     <div
                       className={cn(
-                        "flex size-12 items-center justify-center rounded-lg",
+                        "flex size-10 items-center justify-center rounded-lg",
                         service.bgColor,
                       )}
                     >
-                      <Icon className={cn("size-6", service.color)} />
+                      <Icon className={cn("size-5", service.color)} />
                     </div>
-                    {service.pricing.startsWith("From") ? (
-                      <Badge variant="outline" className="text-xs">
-                        {service.pricing}
-                      </Badge>
-                    ) : (
-                      <Link href="/contact">
-                        <Badge
-                          variant="outline"
-                          className="text-xs hover:bg-accent cursor-pointer"
-                        >
-                          {service.pricing} →
-                        </Badge>
-                      </Link>
-                    )}
-                  </div>
-                  <CardTitle className="mt-4">{service.name}</CardTitle>
-                  <CardDescription className="line-clamp-2">
-                    {service.description}
-                  </CardDescription>
-                  {/* Lifecycle stage indicators */}
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {service.lifecycle.map((stage: string) => (
-                      <span
-                        key={stage}
-                        className="text-[9px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
-                      >
-                        {stage}
-                      </span>
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {/* Metrics */}
-                  <div className="flex gap-4 border-y border-border py-3">
-                    {service.metrics.map((metric) => (
-                      <div key={metric.label} className="flex-1">
-                        <div className={cn("text-lg font-bold", service.color)}>
-                          {metric.value}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {metric.label}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Features */}
-                  <ul className="mt-4 space-y-2">
-                    {service.features.map((feature) => (
-                      <li
-                        key={feature}
-                        className="flex items-center gap-2 text-sm text-muted-foreground"
-                      >
-                        <CheckCircle2 className={cn("size-4", service.color)} />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <Button
-                    className="mt-6 w-full"
-                    variant={isHovered ? "default" : "outline"}
-                    asChild
-                  >
-                    <Link href={service.href}>
-                      Explore {service.name}
-                      <ArrowRight className="ml-2 size-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                    <CardTitle className="mt-3 text-base">{service.name}</CardTitle>
+                    <CardDescription className="line-clamp-2 text-sm">
+                      {service.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <span className={cn("text-sm font-medium inline-flex items-center gap-1", service.color)}>
+                      Learn more <ArrowRight className="size-3.5" />
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
             );
           })}
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Not sure where to start?{" "}
+            <Link href="/contact" className="text-primary hover:underline">
+              Talk to us
+            </Link>{" "}
+            — we&apos;ll help you find the right fit.
+          </p>
         </div>
       </section>
 

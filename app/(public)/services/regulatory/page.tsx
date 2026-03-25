@@ -36,8 +36,8 @@ export default function RegulatoryServicePage() {
             </Badge>
             <h1 className="text-3xl font-bold">Regulatory Umbrella</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              FCA Appointed Representative services for institutional algo
-              trading firms. Operate legally in weeks.
+              FCA Appointed Representative services for Professional clients.
+              Operational in weeks, not the 12-24 months of direct authorisation.
             </p>
           </div>
 
@@ -83,30 +83,13 @@ export default function RegulatoryServicePage() {
           {/* FCA Activities */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Regulated Activities Available</CardTitle>
+              <CardTitle>FCA-Authorised Activities</CardTitle>
               <CardDescription>
-                Activities you can conduct under our UK and EU regulatory
-                coverage
+                Regulated activities under our FCA authorisation (Ref 975797).
+                All activities are limited to Professional and Eligible Counterparty clients.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
-                <div>
-                  <div className="font-medium">
-                    Dealing in Investments as Principal{" "}
-                    <Badge
-                      variant="outline"
-                      className="ml-2 text-[10px] px-1.5 py-0"
-                    >
-                      UK — FCA
-                    </Badge>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Trade your own capital across regulated markets
-                  </div>
-                </div>
-              </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
@@ -116,11 +99,11 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      UK — FCA
+                      FCA
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Execute trades on behalf of clients
+                    Execute trades on behalf of clients across regulated markets
                   </div>
                 </div>
               </div>
@@ -128,16 +111,33 @@ export default function RegulatoryServicePage() {
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
                   <div className="font-medium">
-                    Arranging Deals in Investments{" "}
+                    Arranging (Bringing About) Deals in Investments{" "}
                     <Badge
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      UK — FCA
+                      FCA
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Introduce clients and arrange transactions
+                    Introduce clients and arrange transactions in investments
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
+                <div>
+                  <div className="font-medium">
+                    Making Arrangements with a View to Transactions{" "}
+                    <Badge
+                      variant="outline"
+                      className="ml-2 text-[10px] px-1.5 py-0"
+                    >
+                      FCA
+                    </Badge>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Facilitate investment transactions for clients
                   </div>
                 </div>
               </div>
@@ -150,17 +150,17 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      UK — FCA
+                      FCA
                     </Badge>{" "}
                     <Badge
                       variant="outline"
                       className="ml-1 text-[10px] px-1.5 py-0"
                     >
-                      EU Regulated
+                      EU Partner
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Discretionary portfolio management
+                    Discretionary portfolio management for professional clients
                   </div>
                 </div>
               </div>

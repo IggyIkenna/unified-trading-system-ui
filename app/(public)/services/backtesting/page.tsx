@@ -147,7 +147,6 @@ export default function BacktestingServicePage() {
             </Card>
             <Card className="border-primary">
               <CardHeader>
-                <Badge className="w-fit mb-2">Popular</Badge>
                 <CardTitle>Professional</CardTitle>
                 <div className="text-lg font-bold text-primary">
                   Contact Sales

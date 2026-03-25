@@ -102,9 +102,9 @@ const REG_ENGAGEMENT = [
   },
 ];
 const REG_ACTIVITIES = [
-  { id: "dealing_principal", label: "Dealing in Investments as Principal" },
   { id: "dealing_agent", label: "Dealing in Investments as Agent" },
-  { id: "arranging", label: "Arranging Deals in Investments" },
+  { id: "arranging", label: "Arranging (Bringing About) Deals in Investments" },
+  { id: "making_arrangements", label: "Making Arrangements with a View to Transactions" },
   {
     id: "managing",
     label:

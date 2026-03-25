@@ -507,18 +507,18 @@ export default function InvestmentServicePage() {
             <div className="grid md:grid-cols-3 gap-4">
               <Card className="border-muted">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">
-                    Self-Service
+                  <CardTitle className="text-sm">
+                    Why Managed Only
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Not available (regulated activity)
+                    FCA-regulated discretionary management
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <p>
-                    Investment management is a regulated activity under FCA
-                    authorisation. Self-directed trading is not offered -- all
-                    portfolios are managed by our licensed investment team.
+                    Investment management is a regulated activity. All portfolios
+                    are managed by our FCA-authorised team with full audit trail,
+                    best execution monitoring, and regulatory reporting built in.
                   </p>
                 </CardContent>
               </Card>
