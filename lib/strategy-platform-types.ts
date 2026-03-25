@@ -96,12 +96,11 @@ export interface ExecutionConfig {
 export interface BacktestRun {
   id: string;
   configId: string;
+  /** Optional display label (e.g. comparison matrix column title) */
   configName?: string;
   configVersion: string;
   templateId: string;
   templateName: string;
-  /** Optional display label (e.g. comparison matrix column title) */
-  configName?: string;
   archetype: StrategyArchetype;
   status: "queued" | "running" | "completed" | "failed" | "cancelled";
   progress: number;

@@ -3,10 +3,11 @@ import type { AuthProvider } from "./types";
 let _instance: AuthProvider | null = null;
 
 /**
- * Return the singleton FirebaseAuthProvider.
+ * Return the singleton auth provider.
  *
- * Firebase Auth is the sole identity provider. The lazy require()
- * avoids pulling the Firebase SDK into SSR bundles.
+ * When NEXT_PUBLIC_AUTH_PROVIDER=demo (local dev / mock mode),
+ * uses DemoAuthProvider with persona switching (no Firebase needed).
+ * Otherwise uses FirebaseAuthProvider.
  */
 export function getAuthProvider(): AuthProvider {
   if (typeof window === "undefined") {
@@ -19,6 +20,17 @@ export function getAuthProvider(): AuthProvider {
 }
 
 function createProvider(): AuthProvider {
+  const useDemo =
+    process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo" ||
+    process.env.NEXT_PUBLIC_MOCK_API === "true";
+
+  if (useDemo) {
+    const { DemoAuthProvider } = require("./demo-provider") as {
+      DemoAuthProvider: new () => AuthProvider;
+    };
+    return new DemoAuthProvider();
+  }
+
   const { FirebaseAuthProvider } = require("./firebase-provider") as {
     FirebaseAuthProvider: new () => AuthProvider;
   };
