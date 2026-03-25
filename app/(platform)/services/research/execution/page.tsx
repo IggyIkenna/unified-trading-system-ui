@@ -39,10 +39,8 @@ import {
   Zap,
   Plus,
   CheckCircle2,
-  Clock,
   Play,
   XCircle,
-  TrendingUp,
   BarChart3,
   GitCompare,
   Star,
@@ -69,8 +67,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   Cell,
@@ -78,6 +74,14 @@ import {
 } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { executionResultsToAnalytics } from "@/lib/execution-analytics-adapter";
+import { KpiBar } from "@/components/research/kpi-bar";
+import { EquityChartWithLayers } from "@/components/research/equity-chart-with-layers";
+import { PerformanceSection } from "@/components/research/performance-section";
+import { TradesAnalysisSection } from "@/components/research/trades-analysis-section";
+import { CapitalEfficiencySection } from "@/components/research/capital-efficiency-section";
+import { RunupsDrawdownsSection } from "@/components/research/runups-drawdowns-section";
+import { MonthlyReturnsHeatmap } from "@/components/research/monthly-returns-heatmap";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -598,7 +602,13 @@ function ResultsView({
 }) {
   const { toast } = useToast();
   const r = bt.results!;
-  const equityCurve = EXECUTION_EQUITY_CURVE;
+  const equityCurve = EXECUTION_COMPARE_CURVES[bt.id] ?? EXECUTION_EQUITY_CURVE;
+
+  const analytics = React.useMemo(
+    () => executionResultsToAnalytics(r, equityCurve),
+    [r, equityCurve],
+  );
+  const perf = analytics.performance_by_direction;
 
   const handleExportTradesCsv = () => {
     downloadExecutionTradesCsv(
@@ -612,798 +622,540 @@ function ResultsView({
   };
 
   return (
-    <Tabs defaultValue="overview" className="space-y-4">
-      <div className="flex items-start justify-between gap-2 flex-wrap">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="trades">Trades</TabsTrigger>
-          <TabsTrigger value="execution">Execution Quality</TabsTrigger>
-          <TabsTrigger value="config">Config</TabsTrigger>
-        </TabsList>
-        {isCandidate ? (
-          <Badge className="bg-amber-500/20 text-amber-400 border-amber-400/30 gap-1">
-            <Award className="size-3" /> Candidate
-          </Badge>
-        ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1.5 border-amber-400/30 text-amber-400 hover:bg-amber-400/10"
-            onClick={onPromote}
-          >
-            <Award className="size-3.5" />
-            Mark as Candidate
-          </Button>
-        )}
-      </div>
+    <div className="space-y-4">
+      {/* KPI Bar */}
+      <KpiBar items={analytics.kpi} />
 
-      {/* ── Overview ────────────────────────────────────────────────────────── */}
-      <TabsContent value="overview" className="space-y-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MetricCard
-            label="Net Profit"
-            value={`$${r.net_profit.toLocaleString()}`}
-            isGood={r.net_profit > 0}
-            sub={`${r.net_profit_pct.toFixed(1)}%`}
-          />
-          <MetricCard
-            label="Sharpe Ratio"
-            value={r.sharpe_ratio.toFixed(2)}
-            isGood={r.sharpe_ratio > 1.5}
-          />
-          <MetricCard
-            label="Max Drawdown"
-            value={`${r.max_drawdown_pct.toFixed(1)}%`}
-            isGood={r.max_drawdown_pct < 15}
-          />
-          <MetricCard
-            label="Win Rate"
-            value={`${r.win_rate.toFixed(1)}%`}
-            isGood={r.win_rate > 50}
-          />
+      <Tabs defaultValue="overview" className="space-y-4">
+        <div className="flex items-start justify-between gap-2 flex-wrap">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="trades">Trades</TabsTrigger>
+            <TabsTrigger value="execution">Execution Quality</TabsTrigger>
+            <TabsTrigger value="config">Config</TabsTrigger>
+          </TabsList>
+          {isCandidate ? (
+            <Badge className="bg-amber-500/20 text-amber-400 border-amber-400/30 gap-1">
+              <Award className="size-3" /> Candidate
+            </Badge>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5 border-amber-400/30 text-amber-400 hover:bg-amber-400/10"
+              onClick={onPromote}
+            >
+              <Award className="size-3.5" />
+              Mark as Candidate
+            </Button>
+          )}
         </div>
 
-        {/* Equity curve */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm">Equity Curve</CardTitle>
-              <span className="text-xs text-muted-foreground">
-                vs Buy &amp; Hold +{r.buy_hold_return_pct.toFixed(1)}%
-              </span>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={equityCurve}>
-                <defs>
-                  <linearGradient id="equityGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.1)"
-                />
-                <XAxis
-                  dataKey="date"
-                  tick={TICK_STYLE}
-                  tickFormatter={(v) => v.slice(5)}
-                  interval={14}
-                />
-                <YAxis
-                  tick={TICK_STYLE}
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-                  width={55}
-                />
-                <Tooltip
-                  contentStyle={TOOLTIP_STYLE}
-                  formatter={(v) => [
-                    `$${Number(v).toLocaleString()}`,
-                    "Equity",
-                  ]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="equity"
-                  stroke="#10b981"
-                  strokeWidth={2}
-                  fill="url(#equityGrad)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        {/* ── Overview ────────────────────────────────────────────────────────── */}
+        <TabsContent value="overview" className="space-y-4">
+          {/* Equity chart with TV Lightweight Charts */}
+          <EquityChartWithLayers
+            equityCurve={analytics.equity_curve}
+            tradeMarkers={analytics.trade_markers}
+            height={280}
+          />
 
-        {/* Execution summary inline */}
-        <div className="rounded-lg border border-border/50 p-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          {[
-            {
-              label: "Avg Slippage",
-              value: `${r.avg_slippage_bps.toFixed(1)} bps`,
-              good: r.avg_slippage_bps < 3,
-            },
-            {
-              label: "Fill Rate",
-              value: `${r.fill_rate_pct.toFixed(1)}%`,
-              good: r.fill_rate_pct > 97,
-            },
-            {
-              label: "Total Fees",
-              value: `$${r.total_commission.toLocaleString()}`,
-            },
-            {
-              label: "Avg Fill Time",
-              value: `${r.avg_fill_time_seconds.toFixed(1)}s`,
-            },
-          ].map((m) => (
-            <div key={m.label}>
-              <p className="text-xs text-muted-foreground">{m.label}</p>
-              <p
-                className={cn(
-                  "font-bold tabular-nums",
-                  m.good === true
-                    ? "text-emerald-400"
-                    : m.good === false
-                      ? "text-red-400"
-                      : "",
-                )}
-              >
-                {m.value}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MetricCard
-            label="Sortino Ratio"
-            value={r.sortino_ratio.toFixed(2)}
-            isGood={r.sortino_ratio > 2}
-          />
-          <MetricCard
-            label="Profit Factor"
-            value={r.profit_factor.toFixed(2)}
-            isGood={r.profit_factor > 1.5}
-          />
-          <MetricCard label="Total Trades" value={r.total_trades.toString()} />
-          <MetricCard
-            label="Avg Duration"
-            value={`${r.avg_trade_duration_hours.toFixed(1)}h`}
-          />
-        </div>
-      </TabsContent>
-
-      {/* ── Performance ─────────────────────────────────────────────────────── */}
-      <TabsContent value="performance" className="space-y-4">
-        {/* Long / Short split table */}
-        <Card>
-          <CardContent className="p-0 overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border/50">
-                  <th className="text-left text-xs text-muted-foreground font-medium p-3 w-44">
-                    Metric
-                  </th>
-                  {(["all", "long", "short"] as const).map((d) => (
-                    <th
-                      key={d}
-                      className="text-right text-xs font-semibold p-3 capitalize"
-                    >
-                      {d === "all"
-                        ? "All Trades"
-                        : `${d.charAt(0).toUpperCase() + d.slice(1)} Only`}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  {
-                    section: "RETURNS",
-                    rows: [
-                      {
-                        label: "Net Profit",
-                        key: "net_profit",
-                        fmt: (v: number) => `$${v.toLocaleString()}`,
-                      },
-                      {
-                        label: "Net Profit %",
-                        key: "net_profit_pct",
-                        fmt: (v: number) => `${v.toFixed(2)}%`,
-                      },
-                      {
-                        label: "Gross Profit",
-                        key: "gross_profit",
-                        fmt: (v: number) => `$${v.toLocaleString()}`,
-                      },
-                      {
-                        label: "Gross Loss",
-                        key: "gross_loss",
-                        fmt: (v: number) => `$${v.toLocaleString()}`,
-                      },
-                      {
-                        label: "Max Drawdown",
-                        key: "max_drawdown_pct",
-                        fmt: (v: number) => `${v.toFixed(1)}%`,
-                      },
-                    ],
-                  },
-                  {
-                    section: "RATIOS",
-                    rows: [
-                      {
-                        label: "Sharpe Ratio",
-                        key: "sharpe_ratio",
-                        fmt: (v: number) => v.toFixed(2),
-                      },
-                      {
-                        label: "Sortino Ratio",
-                        key: "sortino_ratio",
-                        fmt: (v: number) => v.toFixed(2),
-                      },
-                      {
-                        label: "Profit Factor",
-                        key: "profit_factor",
-                        fmt: (v: number) => v.toFixed(2),
-                      },
-                      {
-                        label: "Calmar Ratio",
-                        key: "calmar_ratio",
-                        fmt: (v: number) => v.toFixed(2),
-                      },
-                    ],
-                  },
-                  {
-                    section: "TRADES",
-                    rows: [
-                      {
-                        label: "Total Trades",
-                        key: "total_trades",
-                        fmt: (v: number) => v.toString(),
-                      },
-                      {
-                        label: "Win Rate",
-                        key: "win_rate",
-                        fmt: (v: number) => `${v.toFixed(1)}%`,
-                      },
-                      {
-                        label: "Avg Win",
-                        key: "avg_winning_trade",
-                        fmt: (v: number) => `$${v.toLocaleString()}`,
-                      },
-                      {
-                        label: "Avg Loss",
-                        key: "avg_losing_trade",
-                        fmt: (v: number) => `$${v.toLocaleString()}`,
-                      },
-                      {
-                        label: "Largest Winner",
-                        key: "largest_winner",
-                        fmt: (v: number) => `$${v.toLocaleString()}`,
-                      },
-                      {
-                        label: "Largest Loser",
-                        key: "largest_loser",
-                        fmt: (v: number) => `$${v.toLocaleString()}`,
-                      },
-                      {
-                        label: "Avg Duration",
-                        key: "avg_trade_duration_hours",
-                        fmt: (v: number) => `${v.toFixed(1)}h`,
-                      },
-                      {
-                        label: "Max Consec. Wins",
-                        key: "max_consec_wins",
-                        fmt: (v: number) => v.toString(),
-                      },
-                      {
-                        label: "Max Consec. Losses",
-                        key: "max_consec_losses",
-                        fmt: (v: number) => v.toString(),
-                      },
-                      {
-                        label: "Expectancy ($)",
-                        key: "expectancy",
-                        fmt: (v: number) => `$${v.toFixed(2)}`,
-                      },
-                    ],
-                  },
-                ].map(({ section, rows }) => (
-                  <React.Fragment key={section}>
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="text-xs font-semibold text-muted-foreground px-3 py-2 bg-muted/20 uppercase tracking-wide"
-                      >
-                        {section}
-                      </td>
-                    </tr>
-                    {rows.map(({ label, key, fmt }) => (
-                      <tr
-                        key={key}
-                        className="border-t border-border/30 hover:bg-muted/20"
-                      >
-                        <td className="text-xs text-muted-foreground p-3">
-                          {label}
-                        </td>
-                        {(["all", "long", "short"] as const).map((d) => {
-                          const dirStats = r.by_direction[
-                            d
-                          ] as unknown as Record<string, number>;
-                          const val =
-                            dirStats[key] ??
-                            (r as unknown as Record<string, number>)[key] ??
-                            0;
-                          return (
-                            <td
-                              key={d}
-                              className="text-right font-mono text-xs p-3 tabular-nums"
-                            >
-                              {fmt(val)}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-
-        {/* Drawdown chart */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Drawdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={120}>
-              <AreaChart data={equityCurve}>
-                <defs>
-                  <linearGradient id="ddGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.1)"
-                />
-                <XAxis
-                  dataKey="date"
-                  tick={TICK_STYLE}
-                  tickFormatter={(v) => v.slice(5)}
-                  interval={14}
-                />
-                <YAxis
-                  tick={TICK_STYLE}
-                  tickFormatter={(v) => `${v.toFixed(1)}%`}
-                  width={45}
-                />
-                <Tooltip
-                  contentStyle={TOOLTIP_STYLE}
-                  formatter={(v) => [`${Number(v).toFixed(2)}%`, "Drawdown"]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="drawdown"
-                  stroke="#ef4444"
-                  strokeWidth={1.5}
-                  fill="url(#ddGrad)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      {/* ── Trades ──────────────────────────────────────────────────────────── */}
-      <TabsContent value="trades" className="space-y-3">
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">
-            Showing {r.trades.length} trades · {r.total_trades} total
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-xs gap-1"
-            type="button"
-            onClick={handleExportTradesCsv}
-          >
-            <BarChart3 className="size-3" /> Export CSV
-          </Button>
-        </div>
-        <Card>
-          <CardContent className="p-0 overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-8">#</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Signal</TableHead>
-                  <TableHead>Instrument</TableHead>
-                  <TableHead className="text-right">Signal Price</TableHead>
-                  <TableHead className="text-right">Fill Price</TableHead>
-                  <TableHead className="text-right">Slippage</TableHead>
-                  <TableHead className="text-right">Fill Time</TableHead>
-                  <TableHead>Venue</TableHead>
-                  <TableHead className="text-right">Commission</TableHead>
-                  <TableHead className="text-right">P&amp;L</TableHead>
-                  <TableHead className="text-right">Cum. P&amp;L</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {r.trades.map((t, idx) => (
-                  <TableRow key={t.id}>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {idx + 1}
-                    </TableCell>
-                    <TableCell className="text-xs font-mono">
-                      {new Date(t.timestamp).toLocaleString("en-GB", {
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-xs",
-                          t.signal === "LONG"
-                            ? "border-emerald-400/30 text-emerald-400"
-                            : t.signal === "SHORT"
-                              ? "border-red-400/30 text-red-400"
-                              : "border-border/50 text-muted-foreground",
-                        )}
-                      >
-                        {t.signal}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-xs">{t.instrument}</TableCell>
-                    <TableCell className="text-right text-xs tabular-nums font-mono">
-                      {t.signal_price.toLocaleString()}
-                    </TableCell>
-                    <TableCell className="text-right text-xs tabular-nums font-mono">
-                      {t.fill_price.toLocaleString()}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "text-right text-xs tabular-nums",
-                        t.slippage_bps > 5
-                          ? "text-red-400"
-                          : t.slippage_bps < 2
-                            ? "text-emerald-400"
-                            : "",
-                      )}
-                    >
-                      {t.slippage_bps.toFixed(1)} bps
-                    </TableCell>
-                    <TableCell className="text-right text-xs tabular-nums">
-                      {(t.fill_time_ms / 1000).toFixed(1)}s
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="text-xs">
-                        {t.venue}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right text-xs tabular-nums text-muted-foreground">
-                      ${t.commission}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "text-right text-xs tabular-nums font-medium",
-                        t.pnl === null
-                          ? "text-muted-foreground"
-                          : t.pnl > 0
-                            ? "text-emerald-400"
-                            : "text-red-400",
-                      )}
-                    >
-                      {t.pnl === null
-                        ? "—"
-                        : `${t.pnl > 0 ? "+" : ""}$${Math.abs(t.pnl).toFixed(0)}`}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "text-right text-xs tabular-nums font-mono",
-                        t.cumulative_pnl >= 0
-                          ? "text-emerald-400"
-                          : "text-red-400",
-                      )}
-                    >
-                      ${t.cumulative_pnl.toFixed(0)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      {/* ── Execution Quality ────────────────────────────────────────────────── */}
-      <TabsContent value="execution" className="space-y-4">
-        {/* Summary stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MetricCard
-            label="Avg Slippage"
-            value={`${r.avg_slippage_bps.toFixed(1)} bps`}
-            isGood={r.avg_slippage_bps < 3}
-          />
-          <MetricCard
-            label="Avg Fill Time"
-            value={`${r.avg_fill_time_seconds.toFixed(1)}s`}
-            isGood={r.avg_fill_time_seconds < 10}
-          />
-          <MetricCard
-            label="Fill Rate"
-            value={`${r.fill_rate_pct.toFixed(1)}%`}
-            isGood={r.fill_rate_pct > 97}
-          />
-          <MetricCard
-            label="Maker %"
-            value={`${r.maker_pct.toFixed(1)}%`}
-            isGood={r.maker_pct > 50}
-          />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MetricCard
-            label="Total Slippage Cost"
-            value={`$${r.total_slippage_cost.toLocaleString()}`}
-            isGood={false}
-          />
-          <MetricCard
-            label="Impl. Shortfall"
-            value={`${r.implementation_shortfall_bps.toFixed(1)} bps`}
-            isGood={r.implementation_shortfall_bps < 3}
-          />
-          <MetricCard
-            label="Commission"
-            value={`$${r.total_commission.toLocaleString()}`}
-          />
-          <MetricCard
-            label="Partial Fill %"
-            value={`${r.partial_fill_pct.toFixed(1)}%`}
-            isGood={r.partial_fill_pct < 15}
-          />
-        </div>
-
-        {/* Slippage distribution */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm">Slippage Distribution</CardTitle>
-              <div className="flex gap-4 text-xs text-muted-foreground">
-                <span>
-                  Mean{" "}
-                  <span className="text-foreground font-medium">
-                    {r.slippage_mean_bps.toFixed(1)} bps
-                  </span>
-                </span>
-                <span>
-                  Median{" "}
-                  <span className="text-foreground font-medium">
-                    {r.slippage_median_bps.toFixed(1)} bps
-                  </span>
-                </span>
-                <span>
-                  P95{" "}
-                  <span className="text-foreground font-medium">
-                    {r.slippage_p95_bps.toFixed(1)} bps
-                  </span>
-                </span>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={r.slippage_distribution} barCategoryGap="20%">
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.1)"
-                  vertical={false}
-                />
-                <XAxis dataKey="label" tick={TICK_STYLE} />
-                <YAxis
-                  tick={TICK_STYLE}
-                  tickFormatter={(v) => `${v}`}
-                  label={{
-                    value: "Trades",
-                    angle: -90,
-                    position: "insideLeft",
-                    style: TICK_STYLE,
-                    offset: 10,
-                  }}
-                  width={50}
-                />
-                <Tooltip
-                  contentStyle={TOOLTIP_STYLE}
-                  formatter={(v, _n, p) => [
-                    `${v} trades (${(p.payload as { pct: number }).pct}%)`,
-                    "Count",
-                  ]}
-                />
-                <Bar dataKey="count" radius={[3, 3, 0, 0]}>
-                  {r.slippage_distribution.map((entry, i) => (
-                    <Cell
-                      key={i}
-                      fill={
-                        entry.label === "0–1 bps"
-                          ? "#10b981"
-                          : entry.label === "1–3 bps"
-                            ? "#22d3ee"
-                            : entry.label === "3–5 bps"
-                              ? "#f59e0b"
-                              : "#ef4444"
-                      }
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Implementation Shortfall decomposition */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">
-              Implementation Shortfall Breakdown
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between text-sm font-medium">
-              <span>Total shortfall</span>
-              <span className="font-mono text-red-400">
-                {r.is_breakdown.total_bps.toFixed(1)} bps ($
-                {r.is_breakdown.total_usd.toLocaleString()})
-              </span>
-            </div>
+          {/* Execution-specific summary */}
+          <div className="rounded-lg border border-border/50 p-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             {[
               {
-                label: "Delay cost",
-                bps: r.is_breakdown.delay_cost_bps,
-                usd: r.is_breakdown.delay_cost_usd,
-                color: "bg-amber-400",
+                label: "Avg Slippage",
+                value: `${r.avg_slippage_bps.toFixed(1)} bps`,
+                good: r.avg_slippage_bps < 3,
               },
               {
-                label: "Market impact",
-                bps: r.is_breakdown.market_impact_bps,
-                usd: r.is_breakdown.market_impact_usd,
-                color: "bg-orange-500",
+                label: "Fill Rate",
+                value: `${r.fill_rate_pct.toFixed(1)}%`,
+                good: r.fill_rate_pct > 97,
               },
               {
-                label: "Fees",
-                bps: r.is_breakdown.fees_bps,
-                usd: r.is_breakdown.fees_usd,
-                color: "bg-slate-400",
+                label: "Total Fees",
+                value: `$${r.total_commission.toLocaleString()}`,
               },
-            ].map((item) => {
-              const widthPct = (item.bps / r.is_breakdown.total_bps) * 100;
-              return (
-                <div key={item.label} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">{item.label}</span>
-                    <span className="font-mono text-muted-foreground">
-                      {item.bps.toFixed(1)} bps · ${item.usd.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-muted/40 overflow-hidden">
-                    <div
-                      className={cn("h-full rounded-full", item.color)}
-                      style={{ width: `${widthPct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-
-        {/* Venue Breakdown */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Venue Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Venue</TableHead>
-                  <TableHead className="text-right">Fills</TableHead>
-                  <TableHead className="text-right">Avg Slippage</TableHead>
-                  <TableHead className="text-right">Maker %</TableHead>
-                  <TableHead className="text-right">Avg Fill Time</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Object.entries(r.venue_breakdown).map(([venue, data]) => (
-                  <TableRow key={venue}>
-                    <TableCell>
-                      <Badge variant="secondary" className="text-xs">
-                        {venue}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-sm">
-                      {data.fills}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "text-right tabular-nums text-sm",
-                        data.avg_slippage_bps < 2 ? "text-emerald-400" : "",
-                      )}
-                    >
-                      {data.avg_slippage_bps.toFixed(1)} bps
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-sm">
-                      {data.maker_pct.toFixed(1)}%
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums text-sm">
-                      {data.avg_fill_time_s.toFixed(1)}s
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </TabsContent>
-
-      {/* ── Config ──────────────────────────────────────────────────────────── */}
-      <TabsContent value="config">
-        <Card>
-          <CardContent className="p-4 space-y-3">
-            {[
-              { label: "Algorithm", value: bt.algo },
-              { label: "Order Type", value: bt.order_type },
-              { label: "Venues", value: bt.venues.join(", ") },
-              { label: "Routing", value: bt.routing },
-              { label: "Slippage Model", value: bt.slippage_model },
-              { label: "Execution Delay", value: `${bt.execution_delay_ms}ms` },
-              { label: "Market Impact", value: bt.market_impact },
-              { label: "Instrument", value: bt.instrument },
               {
-                label: "Date Range",
-                value: `${bt.date_range.start} → ${bt.date_range.end}`,
+                label: "Impl. Shortfall",
+                value: `${r.implementation_shortfall_bps.toFixed(1)} bps`,
+                good: r.implementation_shortfall_bps < 3,
               },
-              { label: "Strategy", value: bt.strategy_name },
-            ].map((row) => (
-              <div
-                key={row.label}
-                className="flex items-center justify-between text-sm py-1.5 border-b border-border/40 last:border-0"
-              >
-                <span className="text-muted-foreground">{row.label}</span>
-                <span className="font-medium">{row.value}</span>
+            ].map((m) => (
+              <div key={m.label}>
+                <p className="text-xs text-muted-foreground">{m.label}</p>
+                <p
+                  className={cn(
+                    "font-bold tabular-nums",
+                    m.good === true
+                      ? "text-emerald-400"
+                      : m.good === false
+                        ? "text-red-400"
+                        : "",
+                  )}
+                >
+                  {m.value}
+                </p>
               </div>
             ))}
-            {Object.entries(bt.algo_params).length > 0 && (
-              <>
-                <p className="text-xs font-medium text-muted-foreground pt-1">
-                  Algorithm Parameters
-                </p>
-                {Object.entries(bt.algo_params).map(([k, v]) => (
-                  <div
-                    key={k}
-                    className="flex items-center justify-between text-sm py-1 border-b border-border/30 last:border-0"
-                  >
-                    <span className="text-muted-foreground font-mono text-xs">
-                      {k}
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <MetricCard
+              label="Sortino Ratio"
+              value={r.sortino_ratio.toFixed(2)}
+              isGood={r.sortino_ratio > 2}
+            />
+            <MetricCard
+              label="Profit Factor"
+              value={r.profit_factor.toFixed(2)}
+              isGood={r.profit_factor > 1.5}
+            />
+            <MetricCard
+              label="Total Trades"
+              value={r.total_trades.toString()}
+            />
+            <MetricCard
+              label="Avg Duration"
+              value={`${r.avg_trade_duration_hours.toFixed(1)}h`}
+            />
+          </div>
+        </TabsContent>
+
+        {/* ── Performance (shared components) ─────────────────────────────────── */}
+        <TabsContent value="performance" className="space-y-6">
+          <PerformanceSection
+            all={perf.all}
+            long={perf.long}
+            short={perf.short}
+            benchmark={analytics.benchmark}
+          />
+          <MonthlyReturnsHeatmap monthlyReturns={analytics.monthly_returns} />
+          <CapitalEfficiencySection data={analytics.capital_efficiency} />
+          <RunupsDrawdownsSection data={analytics.runup_drawdown} />
+        </TabsContent>
+
+        {/* ── Trades (shared TradesAnalysis + full log) ───────────────────────── */}
+        <TabsContent value="trades" className="space-y-4">
+          <TradesAnalysisSection
+            all={perf.all}
+            long={perf.long}
+            short={perf.short}
+            pnlBuckets={analytics.pnl_distribution}
+            avgProfitPct={analytics.avg_profit_pct}
+            avgLossPct={analytics.avg_loss_pct}
+          />
+
+          {/* Full trade log */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">
+              Showing {r.trades.length} trades · {r.total_trades} total
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs gap-1"
+              type="button"
+              onClick={handleExportTradesCsv}
+            >
+              <BarChart3 className="size-3" /> Export CSV
+            </Button>
+          </div>
+          <Card>
+            <CardContent className="p-0 overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-8">#</TableHead>
+                    <TableHead>Time</TableHead>
+                    <TableHead>Signal</TableHead>
+                    <TableHead>Instrument</TableHead>
+                    <TableHead className="text-right">Signal Price</TableHead>
+                    <TableHead className="text-right">Fill Price</TableHead>
+                    <TableHead className="text-right">Slippage</TableHead>
+                    <TableHead className="text-right">Fill Time</TableHead>
+                    <TableHead>Venue</TableHead>
+                    <TableHead className="text-right">Commission</TableHead>
+                    <TableHead className="text-right">P&amp;L</TableHead>
+                    <TableHead className="text-right">Cum. P&amp;L</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {r.trades.map((t, idx) => (
+                    <TableRow key={t.id}>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {idx + 1}
+                      </TableCell>
+                      <TableCell className="text-xs font-mono">
+                        {new Date(t.timestamp).toLocaleString("en-GB", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-xs",
+                            t.signal === "LONG"
+                              ? "border-emerald-400/30 text-emerald-400"
+                              : t.signal === "SHORT"
+                                ? "border-red-400/30 text-red-400"
+                                : "border-border/50 text-muted-foreground",
+                          )}
+                        >
+                          {t.signal}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs">{t.instrument}</TableCell>
+                      <TableCell className="text-right text-xs tabular-nums font-mono">
+                        {t.signal_price.toLocaleString()}
+                      </TableCell>
+                      <TableCell className="text-right text-xs tabular-nums font-mono">
+                        {t.fill_price.toLocaleString()}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right text-xs tabular-nums",
+                          t.slippage_bps > 5
+                            ? "text-red-400"
+                            : t.slippage_bps < 2
+                              ? "text-emerald-400"
+                              : "",
+                        )}
+                      >
+                        {t.slippage_bps.toFixed(1)} bps
+                      </TableCell>
+                      <TableCell className="text-right text-xs tabular-nums">
+                        {(t.fill_time_ms / 1000).toFixed(1)}s
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="text-xs">
+                          {t.venue}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right text-xs tabular-nums text-muted-foreground">
+                        ${t.commission}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right text-xs tabular-nums font-medium",
+                          t.pnl === null
+                            ? "text-muted-foreground"
+                            : t.pnl > 0
+                              ? "text-emerald-400"
+                              : "text-red-400",
+                        )}
+                      >
+                        {t.pnl === null
+                          ? "—"
+                          : `${t.pnl > 0 ? "+" : ""}$${Math.abs(t.pnl).toFixed(0)}`}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right text-xs tabular-nums font-mono",
+                          t.cumulative_pnl >= 0
+                            ? "text-emerald-400"
+                            : "text-red-400",
+                        )}
+                      >
+                        ${t.cumulative_pnl.toFixed(0)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ── Execution Quality ────────────────────────────────────────────────── */}
+        <TabsContent value="execution" className="space-y-4">
+          {/* Summary stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <MetricCard
+              label="Avg Slippage"
+              value={`${r.avg_slippage_bps.toFixed(1)} bps`}
+              isGood={r.avg_slippage_bps < 3}
+            />
+            <MetricCard
+              label="Avg Fill Time"
+              value={`${r.avg_fill_time_seconds.toFixed(1)}s`}
+              isGood={r.avg_fill_time_seconds < 10}
+            />
+            <MetricCard
+              label="Fill Rate"
+              value={`${r.fill_rate_pct.toFixed(1)}%`}
+              isGood={r.fill_rate_pct > 97}
+            />
+            <MetricCard
+              label="Maker %"
+              value={`${r.maker_pct.toFixed(1)}%`}
+              isGood={r.maker_pct > 50}
+            />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <MetricCard
+              label="Total Slippage Cost"
+              value={`$${r.total_slippage_cost.toLocaleString()}`}
+              isGood={false}
+            />
+            <MetricCard
+              label="Impl. Shortfall"
+              value={`${r.implementation_shortfall_bps.toFixed(1)} bps`}
+              isGood={r.implementation_shortfall_bps < 3}
+            />
+            <MetricCard
+              label="Commission"
+              value={`$${r.total_commission.toLocaleString()}`}
+            />
+            <MetricCard
+              label="Partial Fill %"
+              value={`${r.partial_fill_pct.toFixed(1)}%`}
+              isGood={r.partial_fill_pct < 15}
+            />
+          </div>
+
+          {/* Slippage distribution */}
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm">Slippage Distribution</CardTitle>
+                <div className="flex gap-4 text-xs text-muted-foreground">
+                  <span>
+                    Mean{" "}
+                    <span className="text-foreground font-medium">
+                      {r.slippage_mean_bps.toFixed(1)} bps
                     </span>
-                    <span className="font-mono text-xs">{String(v)}</span>
+                  </span>
+                  <span>
+                    Median{" "}
+                    <span className="text-foreground font-medium">
+                      {r.slippage_median_bps.toFixed(1)} bps
+                    </span>
+                  </span>
+                  <span>
+                    P95{" "}
+                    <span className="text-foreground font-medium">
+                      {r.slippage_p95_bps.toFixed(1)} bps
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={r.slippage_distribution} barCategoryGap="20%">
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="rgba(255,255,255,0.1)"
+                    vertical={false}
+                  />
+                  <XAxis dataKey="label" tick={TICK_STYLE} />
+                  <YAxis
+                    tick={TICK_STYLE}
+                    tickFormatter={(v) => `${v}`}
+                    label={{
+                      value: "Trades",
+                      angle: -90,
+                      position: "insideLeft",
+                      style: TICK_STYLE,
+                      offset: 10,
+                    }}
+                    width={50}
+                  />
+                  <Tooltip
+                    contentStyle={TOOLTIP_STYLE}
+                    formatter={(v, _n, p) => [
+                      `${v} trades (${(p.payload as { pct: number }).pct}%)`,
+                      "Count",
+                    ]}
+                  />
+                  <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+                    {r.slippage_distribution.map((entry, i) => (
+                      <Cell
+                        key={i}
+                        fill={
+                          entry.label === "0–1 bps"
+                            ? "#10b981"
+                            : entry.label === "1–3 bps"
+                              ? "#22d3ee"
+                              : entry.label === "3–5 bps"
+                                ? "#f59e0b"
+                                : "#ef4444"
+                        }
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Implementation Shortfall decomposition */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">
+                Implementation Shortfall Breakdown
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between text-sm font-medium">
+                <span>Total shortfall</span>
+                <span className="font-mono text-red-400">
+                  {r.is_breakdown.total_bps.toFixed(1)} bps ($
+                  {r.is_breakdown.total_usd.toLocaleString()})
+                </span>
+              </div>
+              {[
+                {
+                  label: "Delay cost",
+                  bps: r.is_breakdown.delay_cost_bps,
+                  usd: r.is_breakdown.delay_cost_usd,
+                  color: "bg-amber-400",
+                },
+                {
+                  label: "Market impact",
+                  bps: r.is_breakdown.market_impact_bps,
+                  usd: r.is_breakdown.market_impact_usd,
+                  color: "bg-orange-500",
+                },
+                {
+                  label: "Fees",
+                  bps: r.is_breakdown.fees_bps,
+                  usd: r.is_breakdown.fees_usd,
+                  color: "bg-slate-400",
+                },
+              ].map((item) => {
+                const widthPct = (item.bps / r.is_breakdown.total_bps) * 100;
+                return (
+                  <div key={item.label} className="space-y-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">
+                        {item.label}
+                      </span>
+                      <span className="font-mono text-muted-foreground">
+                        {item.bps.toFixed(1)} bps · ${item.usd.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-muted/40 overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full", item.color)}
+                        style={{ width: `${widthPct}%` }}
+                      />
+                    </div>
                   </div>
-                ))}
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+                );
+              })}
+            </CardContent>
+          </Card>
+
+          {/* Venue Breakdown */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm">Venue Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Venue</TableHead>
+                    <TableHead className="text-right">Fills</TableHead>
+                    <TableHead className="text-right">Avg Slippage</TableHead>
+                    <TableHead className="text-right">Maker %</TableHead>
+                    <TableHead className="text-right">Avg Fill Time</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Object.entries(r.venue_breakdown).map(([venue, data]) => (
+                    <TableRow key={venue}>
+                      <TableCell>
+                        <Badge variant="secondary" className="text-xs">
+                          {venue}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-sm">
+                        {data.fills}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right tabular-nums text-sm",
+                          data.avg_slippage_bps < 2 ? "text-emerald-400" : "",
+                        )}
+                      >
+                        {data.avg_slippage_bps.toFixed(1)} bps
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-sm">
+                        {data.maker_pct.toFixed(1)}%
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-sm">
+                        {data.avg_fill_time_s.toFixed(1)}s
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ── Config ──────────────────────────────────────────────────────────── */}
+        <TabsContent value="config">
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              {[
+                { label: "Algorithm", value: bt.algo },
+                { label: "Order Type", value: bt.order_type },
+                { label: "Venues", value: bt.venues.join(", ") },
+                { label: "Routing", value: bt.routing },
+                { label: "Slippage Model", value: bt.slippage_model },
+                {
+                  label: "Execution Delay",
+                  value: `${bt.execution_delay_ms}ms`,
+                },
+                { label: "Market Impact", value: bt.market_impact },
+                { label: "Instrument", value: bt.instrument },
+                {
+                  label: "Date Range",
+                  value: `${bt.date_range.start} → ${bt.date_range.end}`,
+                },
+                { label: "Strategy", value: bt.strategy_name },
+              ].map((row) => (
+                <div
+                  key={row.label}
+                  className="flex items-center justify-between text-sm py-1.5 border-b border-border/40 last:border-0"
+                >
+                  <span className="text-muted-foreground">{row.label}</span>
+                  <span className="font-medium">{row.value}</span>
+                </div>
+              ))}
+              {Object.entries(bt.algo_params).length > 0 && (
+                <>
+                  <p className="text-xs font-medium text-muted-foreground pt-1">
+                    Algorithm Parameters
+                  </p>
+                  {Object.entries(bt.algo_params).map(([k, v]) => (
+                    <div
+                      key={k}
+                      className="flex items-center justify-between text-sm py-1 border-b border-border/30 last:border-0"
+                    >
+                      <span className="text-muted-foreground font-mono text-xs">
+                        {k}
+                      </span>
+                      <span className="font-mono text-xs">{String(v)}</span>
+                    </div>
+                  ))}
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
 

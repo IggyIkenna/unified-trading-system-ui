@@ -462,3 +462,175 @@ All questions answered by user (2026-03-25).
 
 - **Bar count metrics**: We DO care about bar counts. Execution backtests run on configurable timeframes (e.g., "execute full signal in next 5 minutes" vs "next 30 minutes"). We care about both bar counts and time duration. Add `avg_bars_in_trade`, `avg_bars_in_winning_trades`, `avg_bars_in_losing_trades` to metrics.
 - **Margin calls**: Partially relevant — if slippage is extreme, signals may become unusable. However, this is decided by the backend; UI only displays what the API provides. Include margin/usability warning fields in mock data if the API sends them, but don't invent margin logic in the frontend.
+
+---
+
+## 11. Implementation Status & Delegation Guide
+
+_Updated 2026-03-25_
+
+### What Was Done (architectural bridge — completed)
+
+The **core architectural work** has been completed: a data adapter and shared component integration that lets the Execution tab reuse every shared `components/research/` component built for the Strategies tab, without modifying any shared component.
+
+#### Files created
+
+1. **`lib/execution-analytics-adapter.ts`** — Bridge function `executionResultsToAnalytics(r, equityCurve)`.
+   - Takes `ExecutionBacktestResults` + `ExecEquityPoint[]` (from `build-mock-data.ts`)
+   - Returns `BacktestAnalytics` (from `backtest-analytics-types.ts`)
+   - Helper functions: `mapDirectionStats`, `convertEquityCurve`, `extractTradeMarkers`, `buildPnlDistribution`, `buildMonthlyReturns`
+   - Derives values not in the execution model: `avg_bars_in_winning/losing`, `CapitalEfficiency`, `RunupDrawdownStats`, `BenchmarkComparison`, `MonthlyReturn[]`, `PnlBucket[]`, `KpiBarItem[]`
+   - Some derived values use approximations (e.g., `cagr_long = cagr * 0.65`). When the backend API provides real values, replace these with API data.
+
+#### Files modified
+
+2. **`app/(platform)/services/research/execution/page.tsx`** — `ResultsView` component refactored:
+   - **KpiBar** added above the Tabs container (hero stats always visible at top of results)
+   - **Overview tab**: `recharts` AreaChart replaced with `EquityChartWithLayers` (TradingView Lightweight Charts, multi-layer with toggles)
+   - **Performance tab**: Hand-rolled tables replaced with `PerformanceSection` + `MonthlyReturnsHeatmap` + `CapitalEfficiencySection` + `RunupsDrawdownsSection`
+   - **Trades tab**: `TradesAnalysisSection` (P&L distribution + win/loss donut) added above the existing trade log table
+   - **Execution Quality** and **Config** tabs: unchanged (execution-specific content, no shared component analogue)
+   - Removed: `recharts` AreaChart/Area imports, unused `TrendingUp` icon
+
+### Tab structure decision
+
+The team chose to **keep the existing 5-tab layout** (Overview, Performance, Trades, Execution Quality, Config). Do NOT switch to TradingView-style collapsible accordion sections. The Strategies page uses accordions — keeping both layouts lets the team compare approaches before choosing one.
+
+### What Remains — Delegated Tasks
+
+Each task below is independently implementable. They do NOT depend on each other. An agent can pick any task and complete it in isolation.
+
+#### TASK A: Entry/Exit Paired Trade Rows (Phase 3A — HIGH priority)
+
+**File:** `page.tsx` → Trades tab → existing `<Table>` (around line 990–1040)
+
+**Current:** One row per event (LONG, EXIT, SHORT, EXIT). Each row is flat.
+
+**Target:** Group trades into Entry/Exit pairs. Each trade pair gets a trade number (#). Entry row shows opening signal, price, venue. Exit row shows closing signal, price, P&L. Alternate row backgrounds per pair for visual grouping.
+
+**How:**
+
+1. In `ResultsView`, after the existing `r.trades` reference, write a grouping function that pairs consecutive LONG→EXIT and SHORT→EXIT events.
+2. Render each pair as two `<TableRow>` elements with a shared visual group (e.g., alternating `bg-muted/50`).
+3. Show trade # on the first row of each pair, span into the second row.
+4. Keep all existing columns. The current table structure is fine — just group the rows.
+
+**Mock data note:** `r.trades` already has alternating LONG→EXIT / SHORT→EXIT events. The pairing logic can iterate sequentially.
+
+#### TASK B: MFE/MAE Columns (Phase 3B — HIGH priority)
+
+**Files:**
+
+- `lib/build-mock-data.ts` — Add `mfe_pct` and `mae_pct` fields to `ExecutionTrade` interface and generate mock values for each trade in `EXECUTION_BACKTESTS[*].trades[]`.
+- `page.tsx` → Trades tab `<Table>` — Add two columns: "MFE" and "MAE" with conditional coloring.
+
+**How:**
+
+1. In `build-mock-data.ts`, extend the `ExecutionTrade` type: `mfe_pct: number; mae_pct: number;`
+2. Generate realistic mock values: MFE between 0.5% and 8% for winning trades, MAE between 0.1% and 5% for losing trades.
+3. In the trades table, add columns after "P&L" and before "Cumulative P&L".
+4. Color: green for high MFE (left money on the table indicator), red for high MAE (stop too loose indicator).
+
+#### TASK C: Pinned Hero Stats Bar (Phase 4A — MEDIUM priority)
+
+**File:** `page.tsx` → `ResultsView`
+
+**Current:** `KpiBar` is static at the top of the results area. When user scrolls, it scrolls away.
+
+**Target:** Make the KpiBar sticky. When the user scrolls past it, it should remain pinned at the top of the results panel.
+
+**How:** Wrap the `<KpiBar>` in a `sticky top-0 z-10 bg-background` container. The `ResultsView` container may need `overflow-y-auto` if not already set. Test that the sticky behavior works within the two-panel layout (left list + right results).
+
+#### TASK D: Dual-Value Display (Phase 4B — MEDIUM priority)
+
+**File:** `lib/execution-analytics-adapter.ts` — may need extended data, but mostly a display change in the shared components or the execution page's metric cards.
+
+**Current:** Most monetary metrics show either $ or %. TradingView shows both.
+
+**Target:** For key metrics (Net Profit, Gross Profit, Gross Loss, Avg Winning Trade, Avg Losing Trade, Largest Win, Largest Loss), show both formats: `$41,820` with `+41.8%` as a secondary line.
+
+**How:** This is primarily a display change in the components that render the three-column table (shared `PerformanceSection`). Check if the shared component already supports dual display. If not, either:
+
+- Extend the shared component (preferred if Strategies tab also benefits)
+- Or override at the Execution page level (if Strategies tab doesn't want it)
+
+#### TASK E: Profit Structure Toggle Chart (Phase 1D — MEDIUM priority)
+
+**Current:** Gross Profit, Gross Loss, and Commission are shown as numbers in the performance table.
+
+**Target:** A dedicated bar chart showing the profit structure (Gross Profit green, Gross Loss red, Commission blue, Net P&L outlined). User requested a toggle between full vertical bar chart and compact horizontal segments.
+
+**How:**
+
+1. Create a new component `components/research/profit-structure-chart.tsx` (or add to existing shared components).
+2. Use recharts `BarChart` for vertical mode, horizontal stacked bar for compact mode.
+3. Add a toggle (small icon button) in the top-right of the chart container.
+4. Data comes from `analytics.performance_by_direction.all`: `gross_profit`, `gross_loss`, `commission_paid`, `net_profit`.
+
+#### TASK F: Benchmark Comparison Visual (Phase 1 — MEDIUM priority)
+
+**Current:** Buy-and-hold is shown as a line overlay on the equity chart (via `EquityChartWithLayers`). The `BenchmarkComparison` object exists in the adapter output but has no dedicated visual section.
+
+**Target:** Below the equity chart in the Overview tab or as a sub-section in Performance, show:
+
+- Buy & Hold Return: $X (X%)
+- Strategy Outperformance: +$X (+X%)
+- Optional: stacked area chart showing the gap between strategy and benchmark over time.
+
+**How:** Data is already available in `analytics.benchmark`. Create a small card or sub-section. The shaded area chart is lower priority — the numeric comparison is sufficient for v1.
+
+### Pre-existing lint notes
+
+Lines 1077-1091 in `page.tsx` have `'data' is of type 'unknown'` errors from `Object.entries(r.venue_breakdown)`. These pre-date the shared component integration. To fix: cast the venue breakdown type or type the `Object.entries` call:
+
+```typescript
+Object.entries(
+  r.venue_breakdown as Record<
+    string,
+    {
+      fills: number;
+      avg_slippage_bps: number;
+      maker_pct: number;
+      avg_fill_time_s: number;
+    }
+  >,
+);
+```
+
+### Shared component reference
+
+All shared components live in `components/research/` and export from `components/research/index.ts`:
+
+- `KpiBar` — hero stats bar, takes `items: KpiBarItem[]`
+- `EquityChartWithLayers` — TradingView Lightweight Charts wrapper, takes `equityCurve`, `tradeMarkers`, `height`
+- `PerformanceSection` — three-column All/Long/Short table with Returns, Ratios, Trades sections
+- `TradesAnalysisSection` — P&L distribution histogram + win/loss donut + summary stats
+- `CapitalEfficiencySection` — CAGR, return on capital, account size required
+- `RunupsDrawdownsSection` — run-up and drawdown statistics tables
+- `MonthlyReturnsHeatmap` — month × year return heatmap
+- `PnlDistributionHistogram` — standalone P&L distribution (used inside TradesAnalysisSection)
+- `WinLossDonut` — standalone donut chart (used inside TradesAnalysisSection)
+
+Data types: `lib/backtest-analytics-types.ts` — all interfaces documented inline.
+
+### Adapter reference
+
+`lib/execution-analytics-adapter.ts` exports:
+
+```typescript
+function executionResultsToAnalytics(
+  r: ExecutionBacktestResults,
+  equityCurve: ExecEquityPoint[],
+): BacktestAnalytics;
+```
+
+The adapter is used in `ResultsView` via:
+
+```typescript
+const analytics = React.useMemo(
+  () => executionResultsToAnalytics(r, equityCurve),
+  [r, equityCurve],
+);
+```
+
+To extend: add fields to `BacktestAnalytics` (in `backtest-analytics-types.ts`), populate them in the adapter, and consume them in the relevant shared component or page-level component.
