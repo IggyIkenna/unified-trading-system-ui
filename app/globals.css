@@ -62,6 +62,8 @@
   --chart-5: #fbbf24;
   --chart-6: #f472b6;
 
+  /* Recharts / SVG: tokens above are hex — use fill: var(--foreground) etc., never hsl(var(--token)) */
+
   /* Updated radii for modern feel: 6/8/12/16px */
   --radius: 0.5rem;
 
@@ -74,6 +76,9 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #27272a;
   --sidebar-ring: #22d3ee;
+
+  /* Platform main column: fill the shell up to this cap (was implicit ~1280px via .container) */
+  --platform-page-max-width: 2400px;
 }
 
 .dark {
@@ -109,6 +114,8 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #27272a;
   --sidebar-ring: #22d3ee;
+
+  --platform-page-max-width: 2400px;
 }
 
 @theme inline {
@@ -193,12 +200,20 @@
     @apply bg-background text-foreground;
   }
   .container {
-    max-width: 80rem;
+    width: 100%;
+    max-width: min(100%, var(--platform-page-max-width));
     margin-inline: auto;
   }
 }
 
 /* Custom component styles - plain CSS for Tailwind v4 compatibility */
+
+/* Centered page shell: same max as .container — use instead of max-w-7xl / max-w-[1800px] */
+.platform-page-width {
+  width: 100%;
+  max-width: min(100%, var(--platform-page-max-width));
+  margin-inline: auto;
+}
 
 /* P&L formatting utilities */
 .pnl-positive {

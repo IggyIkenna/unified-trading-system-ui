@@ -19,7 +19,7 @@ import {
   Pause,
   Play,
   Shield,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -706,7 +706,7 @@ export default function PresentationPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-w-6xl"
+            className="w-full platform-page-width"
           >
             {/* Cover Slide */}
             {slide.type === "cover" && (

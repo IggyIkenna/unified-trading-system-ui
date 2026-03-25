@@ -302,7 +302,7 @@ export default function StrategyOverviewPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-7xl space-y-6 p-6">
+      <div className="platform-page-width space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

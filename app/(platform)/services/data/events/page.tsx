@@ -801,7 +801,7 @@ export default function EventsPage() {
   ).length;
 
   return (
-    <div className="p-6 space-y-6 max-w-5xl">
+    <div className="p-6 space-y-6 platform-page-width">
       {/* Page header */}
       <div>
         <h1 className="text-lg font-semibold flex items-center gap-2">

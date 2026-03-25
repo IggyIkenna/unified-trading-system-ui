@@ -232,7 +232,7 @@ export default function InstrumentsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container px-4 py-8 md:px-6 max-w-7xl">
+      <div className="container px-4 py-8 md:px-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>

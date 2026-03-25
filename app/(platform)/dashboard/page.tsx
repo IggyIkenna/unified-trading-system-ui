@@ -68,7 +68,7 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-background">
-      <main className="max-w-7xl mx-auto p-6 space-y-6">
+      <main className="platform-page-width p-6 space-y-6">
         {/* Header + KPIs in one row */}
         <div className="flex items-end justify-between gap-6">
           <div>

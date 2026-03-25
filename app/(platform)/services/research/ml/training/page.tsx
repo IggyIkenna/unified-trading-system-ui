@@ -276,7 +276,7 @@ export default function TrainingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-[1800px] space-y-5 p-6">
+      <div className="platform-page-width space-y-5 p-6">
         <Dialog open={newOpen} onOpenChange={setNewOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

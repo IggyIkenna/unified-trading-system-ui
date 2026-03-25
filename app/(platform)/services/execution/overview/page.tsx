@@ -125,12 +125,12 @@ export default function ExecutionOverviewPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b">
-        <div className="max-w-[1800px] mx-auto px-6 py-3">
+        <div className="platform-page-width px-6 py-3">
           <ExecutionNav />
         </div>
       </div>
 
-      <div className="max-w-[1800px] mx-auto p-6 space-y-6">
+      <div className="platform-page-width p-6 space-y-6">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">

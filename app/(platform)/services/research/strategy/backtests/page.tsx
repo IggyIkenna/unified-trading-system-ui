@@ -46,7 +46,7 @@ import {
 import { newOptimisticBacktestIds } from "@/lib/demo-ids";
 import type {
   BacktestRun,
-  StrategyTemplate
+  StrategyTemplate,
 } from "@/lib/strategy-platform-types";
 import type { ExportColumn } from "@/lib/utils/export";
 
@@ -268,9 +268,7 @@ export default function BacktestsPage() {
       header: "Strategy",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="font-medium text-sm">
-          {row.original.templateName}
-        </span>
+        <span className="font-medium text-sm">{row.original.templateName}</span>
       ),
     },
     {
@@ -465,7 +463,7 @@ export default function BacktestsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-7xl space-y-6 p-6">
+      <div className="platform-page-width space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
