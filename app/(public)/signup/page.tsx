@@ -84,36 +84,64 @@ const REG_ENGAGEMENT = [
     id: "ar",
     label: "Appointed Representative (AR)",
     desc: "Operate as our AR under our FCA authorisation",
+    tooltip: "You become an Appointed Representative of Odum Research under our FCA authorisation (975797). You can conduct regulated activities in your own name, with Odum providing regulatory oversight, compliance monitoring, and MLRO services.",
   },
   {
     id: "advisor",
     label: "Advisory",
     desc: "Contracted advisory role under our supervision",
+    tooltip: "A contracted advisory arrangement where you operate under Odum's regulatory supervision without full AR status. Lighter setup, faster onboarding, with access to our compliance infrastructure and reporting tools.",
   },
 ];
 const REG_ACTIVITIES = [
-  { id: "dealing_agent", label: "Dealing in Investments as Agent" },
-  { id: "arranging", label: "Arranging (Bringing About) Deals in Investments" },
+  {
+    id: "dealing_agent",
+    label: "Dealing in Investments as Agent",
+    tooltip: "Execute trades on behalf of your clients across regulated markets. You act as agent — Odum provides the regulatory framework, venue connectivity, and best execution oversight.",
+  },
+  {
+    id: "arranging",
+    label: "Arranging (Bringing About) Deals in Investments",
+    tooltip: "Introduce clients to investment opportunities and bring about transactions. Covers introductions, deal structuring, and transaction facilitation under FCA rules.",
+  },
   {
     id: "making_arrangements",
     label: "Making Arrangements with a View to Transactions",
+    tooltip: "Facilitate the process that leads to investment transactions — for example, providing research, platforms, or infrastructure that enables clients to trade.",
   },
   {
     id: "managing",
-    label:
-      "Managing Investments (SMA only — see Fund Management below for fund structures)",
+    label: "Managing Investments (SMA only — see Fund Management below for fund structures)",
+    tooltip: "Discretionary portfolio management for professional clients. You make investment decisions on behalf of clients within agreed mandates. Requires suitability assessment and ongoing reporting.",
   },
 ];
 const REG_ADDONS = [
-  { id: "compliance", label: "Compliance Monitoring" },
-  { id: "aml", label: "AML Monitoring" },
-  { id: "reporting", label: "P&L & Client Reporting" },
+  {
+    id: "compliance",
+    label: "Compliance Monitoring",
+    tooltip: "Ongoing compliance oversight including transaction monitoring, suspicious activity reporting, and regulatory change tracking. Odum's compliance team monitors your activity.",
+  },
+  {
+    id: "aml",
+    label: "AML Monitoring",
+    tooltip: "Anti-money laundering checks, ongoing customer due diligence, and suspicious transaction reporting as required under the Money Laundering Regulations.",
+  },
+  {
+    id: "reporting",
+    label: "P&L & Client Reporting",
+    tooltip: "Automated P&L attribution, client portfolio reports, settlement tracking, and MiFID II transaction reporting. Generated from your live trading data.",
+  },
 ];
 const REG_FUND_OPTS = [
-  { id: "fund_crypto_spot", label: "Crypto Spot Fund (FCA + EU ESMA)" },
+  {
+    id: "fund_crypto_spot",
+    label: "Crypto Spot Fund (FCA + EU ESMA)",
+    tooltip: "Regulated crypto spot fund vehicle managed by Odum under combined FCA and EU ESMA regulatory coverage. Includes fund administration, NAV calculation, and investor reporting.",
+  },
   {
     id: "fund_derivatives",
     label: "Derivatives & Traditional Markets Fund (EU ESMA)",
+    tooltip: "EU-regulated fund for crypto derivatives, options, futures, and traditional markets (equities, FX, fixed income, commodities). Full fund administration and regulatory reporting included.",
   },
 ];
 const INV_OPTS = [
@@ -969,13 +997,20 @@ function OnboardingWizard({
                 {REG_ACTIVITIES.map((a) => (
                   <label
                     key={a.id}
-                    className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors"
+                    className="group flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors relative"
                   >
                     <Checkbox
                       checked={selOpts.has(a.id)}
                       onCheckedChange={() => toggle(a.id)}
                     />
-                    <span className="text-sm">{a.label}</span>
+                    <div className="flex-1">
+                      <span className="text-sm">{a.label}</span>
+                      {a.tooltip && (
+                        <p className="text-[11px] text-muted-foreground mt-1 hidden group-hover:block">
+                          {a.tooltip}
+                        </p>
+                      )}
+                    </div>
                   </label>
                 ))}
               </div>
@@ -990,13 +1025,20 @@ function OnboardingWizard({
                 {REG_ADDONS.map((a) => (
                   <label
                     key={a.id}
-                    className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors"
+                    className="group flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors"
                   >
                     <Checkbox
                       checked={selOpts.has(a.id)}
                       onCheckedChange={() => toggle(a.id)}
                     />
-                    <span className="text-sm">{a.label}</span>
+                    <div className="flex-1">
+                      <span className="text-sm">{a.label}</span>
+                      {a.tooltip && (
+                        <p className="text-[11px] text-muted-foreground mt-1 hidden group-hover:block">
+                          {a.tooltip}
+                        </p>
+                      )}
+                    </div>
                   </label>
                 ))}
               </div>
@@ -1011,7 +1053,7 @@ function OnboardingWizard({
                 {REG_FUND_OPTS.map((f) => (
                   <label
                     key={f.id}
-                    className="flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors"
+                    className="group flex items-center gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent/30 transition-colors"
                   >
                     <Checkbox
                       checked={selOpts.has(f.id)}
@@ -1028,7 +1070,14 @@ function OnboardingWizard({
                         });
                       }}
                     />
-                    <span className="text-sm">{f.label}</span>
+                    <div className="flex-1">
+                      <span className="text-sm">{f.label}</span>
+                      {f.tooltip && (
+                        <p className="text-[11px] text-muted-foreground mt-1 hidden group-hover:block">
+                          {f.tooltip}
+                        </p>
+                      )}
+                    </div>
                   </label>
                 ))}
                 {(selOpts.has("fund_crypto_spot") ||
