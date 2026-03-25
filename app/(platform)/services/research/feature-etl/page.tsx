@@ -2,13 +2,8 @@
 
 import * as React from "react";
 import { formatDistanceToNow, format } from "date-fns";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -35,7 +30,6 @@ import {
   Play,
   RotateCcw,
   RefreshCw,
-  AlertTriangle,
   Cpu,
   Server,
 } from "lucide-react";
@@ -47,7 +41,6 @@ import {
   FEATURE_ETL_HEATMAP,
 } from "@/lib/build-mock-data";
 import type { FeatureEtlJob } from "@/lib/build-mock-data";
-import Link from "next/link";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -99,22 +92,37 @@ function JobStatusBadge({ status }: { status: FeatureEtlJob["status"] }) {
 
 function ProgressOverview() {
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {FEATURE_ETL_SERVICES.map((svc) => (
-          <Card key={svc.id}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Server className="size-4 text-muted-foreground" />
-                  <CardTitle className="text-sm font-mono">
+    <Card>
+      <CardContent className="p-0">
+        <div className="divide-y divide-border/60">
+          {FEATURE_ETL_SERVICES.map((svc) => (
+            <div key={svc.id} className="px-4 py-3 space-y-3">
+              {/* Row 1: identity + overall progress + actions */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <Server className="size-3.5 shrink-0 text-muted-foreground" />
+                  <span className="truncate font-mono text-xs font-medium">
                     {svc.name}
-                  </CardTitle>
+                  </span>
+                  <Badge variant="secondary" className="shrink-0 text-[10px]">
+                    {svc.shard}
+                  </Badge>
+                </div>
+                <div className="flex min-w-[140px] max-w-[220px] flex-1 flex-col gap-0.5 sm:min-w-[180px]">
+                  <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                    <span>
+                      {svc.shards_complete}/{svc.shards_total} shards
+                    </span>
+                    <span className="tabular-nums font-medium text-foreground">
+                      {svc.overall_pct}%
+                    </span>
+                  </div>
+                  <Progress value={svc.overall_pct} className="h-1.5" />
                 </div>
                 <Badge
                   variant="outline"
                   className={cn(
-                    "text-xs",
+                    "shrink-0 text-[10px]",
                     svc.active_jobs > 0
                       ? "border-emerald-400/30 text-emerald-400"
                       : svc.failed_jobs > 0
@@ -128,57 +136,39 @@ function ProgressOverview() {
                       ? `${svc.failed_jobs} failed`
                       : "idle"}
                 </Badge>
+                <span className="shrink-0 text-[10px] text-muted-foreground">
+                  {formatDistanceToNow(new Date(svc.last_updated), {
+                    addSuffix: true,
+                  })}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 shrink-0 gap-1 text-[10px]"
+                >
+                  <Play className="size-3" />
+                  Trigger
+                </Button>
               </div>
-              <CardDescription className="text-xs">
-                Shard: {svc.shard}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {/* Overall */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Overall</span>
-                  <span className="font-medium tabular-nums">
-                    {svc.shards_complete}/{svc.shards_total} shards (
-                    {svc.overall_pct}%)
-                  </span>
-                </div>
-                <Progress value={svc.overall_pct} className="h-2" />
-              </div>
-
-              {/* By category */}
-              <div className="space-y-1.5">
+              {/* Row 2: category breakdown — compact grid */}
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 {Object.entries(svc.by_category).map(([cat, data]) => (
                   <div key={cat} className="space-y-0.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">{cat}</span>
-                      <span className="tabular-nums">{data.pct}%</span>
+                    <div className="flex items-center justify-between gap-1 text-[10px] text-muted-foreground">
+                      <span className="truncate">{cat}</span>
+                      <span className="tabular-nums text-foreground">
+                        {data.pct}%
+                      </span>
                     </div>
                     <Progress value={data.pct} className="h-1" />
                   </div>
                 ))}
               </div>
-
-              <div className="text-xs text-muted-foreground pt-1">
-                Updated{" "}
-                {formatDistanceToNow(new Date(svc.last_updated), {
-                  addSuffix: true,
-                })}
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs gap-1"
-              >
-                <Play className="size-3" />
-                Trigger Compute
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -492,7 +482,7 @@ export default function FeatureEtlPage() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Feature ETL</h1>
           <p className="text-muted-foreground mt-1">
@@ -500,61 +490,58 @@ export default function FeatureEtlPage() {
             monitor completion.
           </p>
         </div>
-        <Button size="sm" asChild>
-          <Link href="/services/research/features">View Feature Catalogue</Link>
-        </Button>
-      </div>
-
-      {/* Summary stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          {
-            label: "Overall Completion",
-            value: `${overallPct}%`,
-            sub: `${FEATURE_ETL_SERVICES.length} services`,
-            color: "text-emerald-400",
-          },
-          {
-            label: "Active Jobs",
-            value: String(totalActive),
-            sub: "Currently running",
-            color: totalActive > 0 ? "text-blue-400" : "text-muted-foreground",
-          },
-          {
-            label: "Failed Jobs",
-            value: String(totalFailed),
-            sub: "Require attention",
-            color: totalFailed > 0 ? "text-red-400" : "text-muted-foreground",
-          },
-          {
-            label: "Services",
-            value: String(FEATURE_ETL_SERVICES.length),
-            sub: "Compute services",
-            color: "text-primary",
-          },
-        ].map((s) => (
-          <Card key={s.label}>
-            <CardContent className="p-4">
-              <p className={cn("text-2xl font-bold tabular-nums", s.color)}>
-                {s.value}
-              </p>
-              <p className="text-sm font-medium mt-0.5">{s.label}</p>
-              <p className="text-xs text-muted-foreground">{s.sub}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Alert banner for failed jobs */}
-      {totalFailed > 0 && (
-        <div className="flex items-center gap-3 rounded-lg border border-red-400/30 bg-red-400/5 p-3">
-          <AlertTriangle className="size-4 text-red-400 shrink-0" />
-          <p className="text-sm text-red-400">
-            {totalFailed} feature computation job{totalFailed > 1 ? "s" : ""}{" "}
-            failed. Check the Active Jobs tab to retry.
-          </p>
+        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:max-w-md sm:items-end">
+          <div className="flex flex-wrap items-baseline justify-end gap-x-4 gap-y-1 text-sm">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-muted-foreground">Completion</span>
+              <span className="font-bold tabular-nums text-emerald-400">
+                {overallPct}%
+              </span>
+              <span className="text-xs text-muted-foreground">
+                ({FEATURE_ETL_SERVICES.length} services)
+              </span>
+            </div>
+            <Separator orientation="vertical" className="hidden h-4 sm:block" />
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-muted-foreground">Active</span>
+              <span
+                className={cn(
+                  "font-bold tabular-nums",
+                  totalActive > 0 ? "text-blue-400" : "text-muted-foreground",
+                )}
+              >
+                {totalActive}
+              </span>
+            </div>
+            <Separator orientation="vertical" className="hidden h-4 sm:block" />
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-muted-foreground">Failed</span>
+              <span
+                className={cn(
+                  "font-bold tabular-nums",
+                  totalFailed > 0 ? "text-red-400" : "text-muted-foreground",
+                )}
+              >
+                {totalFailed}
+              </span>
+            </div>
+            <Separator orientation="vertical" className="hidden h-4 sm:block" />
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-muted-foreground">Services</span>
+              <span className="font-bold tabular-nums text-foreground">
+                {FEATURE_ETL_SERVICES.length}
+              </span>
+            </div>
+          </div>
+          <div className="w-full sm:w-[200px]">
+            <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+              <span>Pipeline avg</span>
+              <span className="tabular-nums">{overallPct}%</span>
+            </div>
+            <Progress value={overallPct} className="mt-0.5 h-1" />
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Tabs */}
       <Tabs defaultValue="progress" className="space-y-4">

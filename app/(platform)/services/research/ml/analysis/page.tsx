@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -37,6 +36,7 @@ import { useUnifiedTrainingRuns } from "@/hooks/api/use-ml-models";
 import type { RunAnalysis, UnifiedTrainingRun } from "@/lib/ml-types";
 
 import {
+  MLCompareSlotPicker,
   ML_COMPARE_MAX_OTHER_RUNS,
   RunAnalysisImportanceTab,
   RunAnalysisMetricsTab,
@@ -83,7 +83,8 @@ function AnalysisContent() {
 
   const [selectedRunId, setSelectedRunId] = React.useState<string>("");
   const [compareMode, setCompareMode] = React.useState(false);
-  const [compareRunIds, setCompareRunIds] = React.useState<string[]>([]);
+  /** Each slot is null until a run is chosen from the dropdown. */
+  const [compareSlots, setCompareSlots] = React.useState<(string | null)[]>([]);
 
   React.useEffect(() => {
     if (completedRuns.length === 0) return;
@@ -99,24 +100,27 @@ function AnalysisContent() {
   React.useEffect(() => {
     if (!compareMode) return;
     const others = completedRuns.filter((r) => r.id !== selectedRunId);
-    setCompareRunIds((prev) => {
-      const valid = prev.filter((id) => others.some((o) => o.id === id));
-      if (valid.length > 0) {
-        return valid.slice(0, ML_COMPARE_MAX_OTHER_RUNS);
-      }
-      return others.length ? [others[0].id] : [];
-    });
+    setCompareSlots((prev) =>
+      prev
+        .map((id) => (id && others.some((o) => o.id === id) ? id : null))
+        .slice(0, ML_COMPARE_MAX_OTHER_RUNS),
+    );
   }, [compareMode, selectedRunId, completedRuns]);
 
   const selectedRun = completedRuns.find((r) => r.id === selectedRunId);
   const analysis = selectedRun?.analysis;
-  const compareRuns = React.useMemo(
-    () =>
-      compareRunIds
-        .map((id) => completedRuns.find((r) => r.id === id))
-        .filter((r): r is UnifiedTrainingRun => !!r),
-    [compareRunIds, completedRuns],
-  );
+  const compareRuns = React.useMemo(() => {
+    const others = completedRuns.filter((r) => r.id !== selectedRunId);
+    const seen = new Set<string>();
+    const out: UnifiedTrainingRun[] = [];
+    for (const id of compareSlots) {
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      const r = others.find((o) => o.id === id);
+      if (r) out.push(r);
+    }
+    return out;
+  }, [compareSlots, completedRuns, selectedRunId]);
 
   if (runsLoading) {
     return (
@@ -165,7 +169,7 @@ function AnalysisContent() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-7xl space-y-5 p-6">
+      <div className="platform-page-width space-y-5 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -200,11 +204,8 @@ function AnalysisContent() {
               className="gap-1.5 text-xs"
               onClick={() => {
                 setCompareMode(!compareMode);
-                if (!compareMode && completedRuns.length > 1) {
-                  const firstOther = completedRuns.find(
-                    (r) => r.id !== selectedRunId,
-                  );
-                  setCompareRunIds(firstOther ? [firstOther.id] : []);
+                if (!compareMode) {
+                  setCompareSlots([]);
                 }
               }}
             >
@@ -215,50 +216,16 @@ function AnalysisContent() {
         </div>
 
         {/* Compare mode selector */}
-        {compareMode && (
-          <div className="flex flex-col gap-2 p-3 rounded-lg border border-purple-500/30 bg-purple-500/5">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted-foreground shrink-0">
-                Baseline is the run selected above. Compare with (up to{" "}
-                {ML_COMPARE_MAX_OTHER_RUNS}):
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {completedRuns
-                .filter((r) => r.id !== selectedRunId)
-                .map((r) => {
-                  const checked = compareRunIds.includes(r.id);
-                  const atCap =
-                    !checked &&
-                    compareRunIds.length >= ML_COMPARE_MAX_OTHER_RUNS;
-                  return (
-                    <label
-                      key={r.id}
-                      className={`flex items-center gap-2 text-xs cursor-pointer select-none ${atCap ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      <Checkbox
-                        checked={checked}
-                        disabled={atCap}
-                        onCheckedChange={(v) => {
-                          const on = v === true;
-                          setCompareRunIds((prev) => {
-                            if (on) {
-                              if (prev.includes(r.id)) return prev;
-                              if (prev.length >= ML_COMPARE_MAX_OTHER_RUNS)
-                                return prev;
-                              return [...prev, r.id];
-                            }
-                            return prev.filter((id) => id !== r.id);
-                          });
-                        }}
-                      />
-                      <span className="truncate max-w-[220px]" title={r.name}>
-                        {r.name}
-                      </span>
-                    </label>
-                  );
-                })}
-            </div>
+        {compareMode && selectedRun && (
+          <div className="p-3 rounded-lg border border-purple-500/30 bg-purple-500/5">
+            <MLCompareSlotPicker
+              baselineRunId={selectedRun.id}
+              baselineName={selectedRun.name}
+              candidates={completedRuns.filter((r) => r.id !== selectedRun.id)}
+              slots={compareSlots}
+              onSlotsChange={setCompareSlots}
+              maxSlots={ML_COMPARE_MAX_OTHER_RUNS}
+            />
           </div>
         )}
 
@@ -270,8 +237,8 @@ function AnalysisContent() {
         ) : compareMode ? (
           <Card className="border-border/50 p-8 text-center text-muted-foreground">
             <p className="text-sm">
-              Select at least one other completed run to compare against the
-              baseline.
+              Use <span className="font-medium">+</span> above and pick a run
+              from the dropdown to compare against the baseline.
             </p>
           </Card>
         ) : analysis ? (

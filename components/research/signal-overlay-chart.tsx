@@ -17,6 +17,7 @@ import type {
   CandlestickData,
 } from "lightweight-charts";
 import { cn } from "@/lib/utils";
+import { bumpDuplicateTimes } from "@/lib/lightweight-charts-series";
 import type { StrategySignal } from "@/lib/strategy-platform-types";
 
 /** Close-only bar input (e.g. from `generateSyntheticPriceSeries`) — converted to OHLC in-chart */
@@ -102,7 +103,10 @@ function buildMarkers(
       });
     }
   }
-  return markers.sort((a, b) => (a.time as number) - (b.time as number));
+  const sorted = [...markers].sort(
+    (a, b) => (a.time as number) - (b.time as number),
+  );
+  return bumpDuplicateTimes(sorted);
 }
 
 export function SignalOverlayChart({
@@ -120,7 +124,7 @@ export function SignalOverlayChart({
   const markersRef = React.useRef<ISeriesMarkersPluginApi<Time> | null>(null);
 
   const candleData = React.useMemo(
-    () => pricePointsToCandlesticks(priceSeries),
+    () => bumpDuplicateTimes(pricePointsToCandlesticks(priceSeries)),
     [priceSeries],
   );
 

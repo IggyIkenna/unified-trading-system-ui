@@ -16,15 +16,11 @@ import type { ModelFamily, UnifiedTrainingRun } from "@/lib/ml-types";
 import {
   Activity,
   AlertTriangle,
-  ArrowRight,
-  BarChart3,
   Brain,
   CheckCircle2,
   Clock,
   Cpu,
-  FlaskConical,
   Layers,
-  Package,
   Play,
   XCircle,
 } from "lucide-react";
@@ -145,7 +141,7 @@ export default function MLOverviewPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-7xl space-y-6 p-6">
+      <div className="platform-page-width space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -238,101 +234,6 @@ export default function MLOverviewPage() {
             ))}
           </div>
         )}
-
-        {/* Navigation Cards — the 3 sub-pages */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Link href="/services/research/ml/training" className="group">
-            <Card className="border-border/50 h-full transition-colors hover:border-blue-500/50 hover:bg-blue-500/5">
-              <CardContent className="pt-4 pb-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="rounded-lg bg-blue-500/10 p-2.5">
-                    <FlaskConical className="size-5 text-blue-400" />
-                  </div>
-                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
-                </div>
-                <h3 className="font-semibold">Training</h3>
-                <p className="text-xs text-muted-foreground">
-                  Configure, launch, and monitor training runs. Full config:
-                  architecture, features, data windows, hyperparameters.
-                </p>
-                <div className="flex gap-2 pt-1">
-                  <Badge
-                    variant="outline"
-                    className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
-                  >
-                    {stats.active_training_runs} active
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className="bg-amber-500/15 text-amber-400 border-amber-500/30 text-[10px]"
-                  >
-                    {stats.queued_jobs} queued
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/services/research/ml/analysis" className="group">
-            <Card className="border-border/50 h-full transition-colors hover:border-purple-500/50 hover:bg-purple-500/5">
-              <CardContent className="pt-4 pb-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="rounded-lg bg-purple-500/10 p-2.5">
-                    <BarChart3 className="size-5 text-purple-400" />
-                  </div>
-                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-purple-400 transition-colors" />
-                </div>
-                <h3 className="font-semibold">Analysis</h3>
-                <p className="text-xs text-muted-foreground">
-                  Deep-dive into completed runs. Feature importance, regime
-                  performance, walk-forward folds, significance tests.
-                </p>
-                <div className="flex gap-2 pt-1">
-                  <Badge
-                    variant="outline"
-                    className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
-                  >
-                    {stats.completed_today} ready to analyze
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/services/research/ml/registry" className="group">
-            <Card className="border-border/50 h-full transition-colors hover:border-emerald-500/50 hover:bg-emerald-500/5">
-              <CardContent className="pt-4 pb-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="rounded-lg bg-emerald-500/10 p-2.5">
-                    <Package className="size-5 text-emerald-400" />
-                  </div>
-                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-emerald-400 transition-colors" />
-                </div>
-                <h3 className="font-semibold">Model Registry</h3>
-                <p className="text-xs text-muted-foreground">
-                  Browse registered models. Version history, lineage, validation
-                  status, deployment state.
-                </p>
-                <div className="flex gap-2 pt-1">
-                  <Badge
-                    variant="outline"
-                    className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
-                  >
-                    {stats.models_in_production} live
-                  </Badge>
-                  {stats.models_in_shadow > 0 && (
-                    <Badge
-                      variant="outline"
-                      className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
-                    >
-                      {stats.models_in_shadow} shadow
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Recent Runs */}

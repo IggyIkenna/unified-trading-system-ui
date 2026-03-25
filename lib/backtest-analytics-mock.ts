@@ -85,7 +85,8 @@ export function generateTradeMarkers(
     const pnl = isWin ? magnitude : -magnitude * 0.7;
 
     markers.push({
-      time: startTime + day * 86400 + hour * 3600,
+      // +i keeps UNIX times unique when day/hour collide (LW charts requires strict order)
+      time: startTime + day * 86400 + hour * 3600 + i,
       direction: isLong ? "long" : "short",
       pnl: Math.round(pnl * 100) / 100,
       pnl_pct: Math.round(pnl * 100) / 10000,

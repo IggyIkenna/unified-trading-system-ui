@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
-import { getRouteMapping, lifecycleStages } from "@/lib/lifecycle-mapping";
+import { getRouteMapping } from "@/lib/lifecycle-mapping";
 import { GlobalScopeFilters } from "@/components/platform/global-scope-filters";
 
 export function Breadcrumbs() {
@@ -30,6 +30,13 @@ export function Breadcrumbs() {
     .filter(Boolean);
   const serviceName = segments[0];
   const pageName = segments.length > 1 ? segments[segments.length - 1] : null;
+
+  /** Research → ML has sub-tabs; keep hub crumb before Training / Analysis / Registry. */
+  const ML_HUB_PATH = "/services/research/ml";
+  const isResearchMlNested =
+    segments[0] === "research" && segments[1] === "ml" && segments.length >= 3;
+  const mlHubLabel =
+    getRouteMapping(ML_HUB_PATH)?.label ?? "ML Models & Training";
 
   const serviceLabels: Record<string, string> = {
     data: "Data",
@@ -68,14 +75,33 @@ export function Breadcrumbs() {
             </Link>
           </>
         )}
-        {pageName && pageName !== "overview" && pageName !== serviceName && (
+        {isResearchMlNested && (
           <>
             <ChevronRight className="size-3" />
+            <Link
+              href={ML_HUB_PATH}
+              className="hover:text-foreground transition-colors"
+            >
+              {mlHubLabel}
+            </Link>
+            <ChevronRight className="size-3" />
             <span className="text-foreground font-medium">
-              {mapping?.label || formatLabel(pageName)}
+              {mapping?.label ||
+                formatLabel(segments[segments.length - 1] ?? "")}
             </span>
           </>
         )}
+        {!isResearchMlNested &&
+          pageName &&
+          pageName !== "overview" &&
+          pageName !== serviceName && (
+            <>
+              <ChevronRight className="size-3" />
+              <span className="text-foreground font-medium">
+                {mapping?.label || formatLabel(pageName)}
+              </span>
+            </>
+          )}
       </div>
       <GlobalScopeFilters />
     </nav>

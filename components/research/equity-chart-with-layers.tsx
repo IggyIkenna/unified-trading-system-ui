@@ -16,6 +16,7 @@ import type {
   EquityChartLayers,
 } from "@/lib/backtest-analytics-types";
 import { DEFAULT_EQUITY_LAYERS } from "@/lib/backtest-analytics-types";
+import { bumpDuplicateTimes } from "@/lib/lightweight-charts-series";
 
 interface EquityChartWithLayersProps {
   equityCurve: EquityPoint[];
@@ -140,10 +141,12 @@ export function EquityChartWithLayers({
     });
 
     buyHoldSeriesRef.current.setData(
-      equityCurve.map((p) => ({
-        time: p.time as Time,
-        value: p.buy_hold,
-      })),
+      bumpDuplicateTimes(
+        equityCurve.map((p) => ({
+          time: p.time as Time,
+          value: p.buy_hold,
+        })),
+      ),
     );
     buyHoldSeriesRef.current.applyOptions({
       visible: layers.buy_hold,
@@ -151,12 +154,14 @@ export function EquityChartWithLayers({
 
     if (markerSeriesRef.current) {
       markerSeriesRef.current.setData(
-        tradeMarkers.map((m) => ({
-          time: m.time as Time,
-          value: Math.abs(m.pnl) * 10,
-          color:
-            m.pnl >= 0 ? "rgba(16, 185, 129, 0.6)" : "rgba(239, 68, 68, 0.6)",
-        })),
+        bumpDuplicateTimes(
+          tradeMarkers.map((m) => ({
+            time: m.time as Time,
+            value: Math.abs(m.pnl) * 10,
+            color:
+              m.pnl >= 0 ? "rgba(16, 185, 129, 0.6)" : "rgba(239, 68, 68, 0.6)",
+          })),
+        ),
       );
       markerSeriesRef.current.applyOptions({
         visible: layers.trade_markers,
@@ -165,13 +170,15 @@ export function EquityChartWithLayers({
 
     if (drawdownSeriesRef.current) {
       drawdownSeriesRef.current.setData(
-        equityCurve
-          .filter((p) => p.drawdown_pct < 0)
-          .map((p) => ({
-            time: p.time as Time,
-            value: Math.abs(p.drawdown_pct) * 100000,
-            color: "rgba(239, 68, 68, 0.25)",
-          })),
+        bumpDuplicateTimes(
+          equityCurve
+            .filter((p) => p.drawdown_pct < 0)
+            .map((p) => ({
+              time: p.time as Time,
+              value: Math.abs(p.drawdown_pct) * 100000,
+              color: "rgba(239, 68, 68, 0.25)",
+            })),
+        ),
       );
       drawdownSeriesRef.current.applyOptions({
         visible: layers.runup_drawdown,

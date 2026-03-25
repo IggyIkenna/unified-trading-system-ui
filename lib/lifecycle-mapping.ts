@@ -193,6 +193,13 @@ export const routeMappings: RouteMapping[] = [
     requiresAuth: true,
   },
   {
+    path: "/services/research/ml/analysis",
+    label: "Analysis",
+    primaryStage: "build",
+    lanes: ["ml"],
+    requiresAuth: true,
+  },
+  {
     path: "/services/research/ml/features",
     label: "Features",
     primaryStage: "build",

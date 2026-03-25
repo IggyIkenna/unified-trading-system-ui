@@ -1,13 +1,23 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertTriangle,
   ArrowUpDown,
   BarChart3,
   CheckCircle2,
+  Plus,
   Shield,
+  X,
   XCircle,
 } from "lucide-react";
 import * as React from "react";
@@ -24,6 +34,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { cn } from "@/lib/utils";
 import { useMLRunComparison } from "@/hooks/api/use-ml-models";
 import type {
   RunAnalysis,
@@ -568,6 +579,253 @@ const COMPARE_RUN_STYLES = [
   },
 ] as const;
 
+const COMPARE_SELECT_EMPTY = "__compare_none__";
+
+/** Baseline + add-slot (+) UI with searchable dropdowns (max `maxSlots` comparison runs). */
+export function MLCompareSlotPicker({
+  baselineName,
+  baselineRunId,
+  candidates,
+  slots,
+  onSlotsChange,
+  maxSlots = ML_COMPARE_MAX_OTHER_RUNS,
+}: {
+  baselineName: string;
+  baselineRunId: string;
+  candidates: UnifiedTrainingRun[];
+  slots: (string | null)[];
+  onSlotsChange: (next: (string | null)[]) => void;
+  maxSlots?: number;
+}) {
+  const takenExcept = (exceptIndex: number) => {
+    const s = new Set<string>();
+    slots.forEach((id, i) => {
+      if (i !== exceptIndex && id) s.add(id);
+    });
+    return s;
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-xs text-muted-foreground">
+        Baseline is selected above. Use <span className="font-medium">+</span>{" "}
+        to add a comparison slot, then choose a run (up to {maxSlots} vs
+        baseline).
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        {/* Baseline: same visual language as compare selects (no duplicate header row below). */}
+        <div
+          className="flex h-10 min-w-0 max-w-[min(100%,320px)] shrink-0 items-center gap-2 rounded-md border border-blue-500/40 bg-blue-500/10 px-3 shadow-sm"
+          title={baselineName}
+        >
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-blue-400">
+            Baseline
+          </span>
+          <span className="truncate text-xs font-medium text-blue-100">
+            {baselineName}
+          </span>
+        </div>
+
+        {slots.map((slotId, index) => {
+          const busy = takenExcept(index);
+          const options = candidates.filter(
+            (r) => !busy.has(r.id) || r.id === slotId,
+          );
+          const st = COMPARE_RUN_STYLES[index % COMPARE_RUN_STYLES.length];
+          return (
+            <div key={index} className="flex h-10 items-center gap-1">
+              <Select
+                value={slotId ?? COMPARE_SELECT_EMPTY}
+                onValueChange={(v) => {
+                  const next = [...slots];
+                  next[index] = v === COMPARE_SELECT_EMPTY ? null : v;
+                  onSlotsChange(next);
+                }}
+              >
+                <SelectTrigger
+                  className={cn(
+                    "h-10 w-[min(320px,100%)] border font-medium text-xs shadow-sm [&>span]:truncate",
+                    st.border,
+                    st.bg,
+                    slotId ? st.value : cn(st.label, "opacity-90"),
+                  )}
+                >
+                  <SelectValue placeholder="Select run…" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[min(60vh,320px)]">
+                  <SelectItem
+                    value={COMPARE_SELECT_EMPTY}
+                    className="text-xs text-muted-foreground"
+                  >
+                    — Select run —
+                  </SelectItem>
+                  {options.map((r) => (
+                    <SelectItem key={r.id} value={r.id} className="text-xs">
+                      {r.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-10 shrink-0"
+                aria-label={`Remove comparison slot ${index + 1}`}
+                onClick={() =>
+                  onSlotsChange(slots.filter((_, i) => i !== index))
+                }
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          );
+        })}
+
+        {slots.length < maxSlots ? (
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="size-10"
+              aria-label="Add comparison slot"
+              onClick={() => onSlotsChange([...slots, null])}
+            >
+              <Plus className="size-4" />
+            </Button>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function buildConfigDiffMatrix(
+  baseline: UnifiedTrainingRun,
+  compares: UnifiedTrainingRun[],
+): { key: string; baseline: string; values: string[] }[] {
+  if (compares.length === 0) return [];
+
+  const rows: { key: string; baseline: string; values: string[] }[] = [];
+
+  const std: { key: string; get: (r: UnifiedTrainingRun) => string }[] = [
+    { key: "Architecture", get: (r) => r.config.architecture },
+    { key: "Target", get: (r) => r.config.target_variable },
+    { key: "Timeframe", get: (r) => r.config.timeframe },
+  ];
+  for (const f of std) {
+    const b = f.get(baseline);
+    const vals = compares.map((c) => f.get(c));
+    if (vals.some((v) => v !== b)) {
+      rows.push({ key: f.key, baseline: b, values: vals });
+    }
+  }
+
+  const hpKeys = new Set<string>();
+  for (const r of [baseline, ...compares]) {
+    Object.keys(r.config.hyperparameters).forEach((k) => hpKeys.add(k));
+  }
+  for (const k of [...hpKeys].sort()) {
+    const b = String(baseline.config.hyperparameters[k] ?? "—");
+    const vals = compares.map((c) =>
+      String(c.config.hyperparameters[k] ?? "—"),
+    );
+    if (vals.some((v) => v !== b)) {
+      rows.push({ key: `hp.${k}`, baseline: b, values: vals });
+    }
+  }
+
+  return rows;
+}
+
+function ConfigDiffMultiTable({
+  baseline,
+  compares,
+}: {
+  baseline: UnifiedTrainingRun;
+  compares: UnifiedTrainingRun[];
+}) {
+  const matrix = React.useMemo(
+    () => buildConfigDiffMatrix(baseline, compares),
+    [baseline, compares],
+  );
+
+  if (compares.length === 0) {
+    return (
+      <p className="text-[10px] text-muted-foreground">
+        Add at least one comparison run to see config differences.
+      </p>
+    );
+  }
+
+  if (matrix.length === 0) {
+    return (
+      <p className="text-[10px] text-muted-foreground">
+        No config differences vs baseline.
+      </p>
+    );
+  }
+
+  return (
+    <div className="rounded-lg border border-border/50 overflow-x-auto">
+      <table className="w-full min-w-[520px] text-[10px] border-collapse">
+        <thead>
+          <tr className="border-b border-border/50 bg-muted/20 text-[9px] font-medium text-muted-foreground uppercase">
+            <th className="text-left px-2 py-1.5 w-[100px] sticky left-0 z-10 bg-muted/20 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.4)]">
+              Field
+            </th>
+            <th className="text-left px-2 py-1.5 min-w-[88px] text-blue-400">
+              Baseline
+            </th>
+            {compares.map((cr, i) => {
+              const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
+              return (
+                <th
+                  key={cr.id}
+                  className={`text-left px-2 py-1.5 border-l border-border/30 min-w-[100px] max-w-[200px] ${st.label}`}
+                  title={cr.name}
+                >
+                  <span className="line-clamp-2">
+                    {cr.name.length > 24 ? `${cr.name.slice(0, 22)}…` : cr.name}
+                  </span>
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {matrix.map((row) => (
+            <tr
+              key={row.key}
+              className="border-b border-border/20 hover:bg-muted/10 align-top"
+            >
+              <td className="px-2 py-1.5 text-muted-foreground font-mono text-[9px] sticky left-0 z-[1] bg-background shadow-[2px_0_8px_-4px_rgba(0,0,0,0.35)] max-w-[140px]">
+                {row.key}
+              </td>
+              <td className="px-2 py-1.5 font-mono text-blue-400 break-words">
+                {row.baseline}
+              </td>
+              {row.values.map((v, i) => {
+                const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
+                const diff = v !== row.baseline;
+                return (
+                  <td
+                    key={`${row.key}-${compares[i]?.id ?? i}`}
+                    className={`px-2 py-1.5 font-mono border-l border-border/30 break-words ${st.value} ${diff ? "bg-amber-500/5" : ""}`}
+                  >
+                    {v}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function RunComparisonView({
   baselineRun,
   compareRuns,
@@ -648,31 +906,6 @@ export function RunComparisonView({
 
   return (
     <div className="space-y-3 max-h-[min(70vh,560px)] overflow-y-auto pr-1">
-      <div className="flex flex-wrap gap-2">
-        <div className="rounded-lg border border-blue-500/30 bg-blue-500/5 p-2.5 min-w-[140px] flex-1">
-          <p className="text-[10px] text-blue-400 font-medium mb-0.5">
-            Baseline
-          </p>
-          <p className="font-semibold text-xs leading-tight">
-            {baselineRun.name}
-          </p>
-        </div>
-        {runs.map((cr, i) => {
-          const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
-          return (
-            <div
-              key={cr.id}
-              className={`rounded-lg border p-2.5 min-w-[140px] flex-1 ${st.border} ${st.bg}`}
-            >
-              <p className={`text-[10px] font-medium mb-0.5 ${st.label}`}>
-                Compare {i + 1}
-              </p>
-              <p className="font-semibold text-xs leading-tight">{cr.name}</p>
-            </div>
-          );
-        })}
-      </div>
-
       {fmA && runs.length > 0 && (
         <div className="rounded-lg border border-border/50 overflow-x-auto">
           <table className="w-full min-w-[520px] text-[10px] border-collapse">
@@ -813,87 +1046,12 @@ export function RunComparisonView({
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         <p className="text-[10px] font-medium text-muted-foreground uppercase">
           Config diff (vs baseline)
         </p>
-        {runs.map((cr, i) => {
-          const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
-          return (
-            <div key={cr.id} className="space-y-1">
-              <p className={`text-[10px] font-medium ${st.label}`}>{cr.name}</p>
-              <ConfigDiffPair baseline={baselineRun} compare={cr} />
-            </div>
-          );
-        })}
+        <ConfigDiffMultiTable baseline={baselineRun} compares={runs} />
       </div>
-    </div>
-  );
-}
-
-function ConfigDiffPair({
-  baseline,
-  compare,
-}: {
-  baseline: UnifiedTrainingRun;
-  compare: UnifiedTrainingRun;
-}) {
-  const diffs: { key: string; a: string; b: string }[] = [];
-
-  if (baseline.config.architecture !== compare.config.architecture) {
-    diffs.push({
-      key: "Architecture",
-      a: baseline.config.architecture,
-      b: compare.config.architecture,
-    });
-  }
-  if (baseline.config.target_variable !== compare.config.target_variable) {
-    diffs.push({
-      key: "Target",
-      a: baseline.config.target_variable,
-      b: compare.config.target_variable,
-    });
-  }
-  if (baseline.config.timeframe !== compare.config.timeframe) {
-    diffs.push({
-      key: "Timeframe",
-      a: baseline.config.timeframe,
-      b: compare.config.timeframe,
-    });
-  }
-
-  const allHpKeys = new Set([
-    ...Object.keys(baseline.config.hyperparameters),
-    ...Object.keys(compare.config.hyperparameters),
-  ]);
-  for (const k of allHpKeys) {
-    const va = String(baseline.config.hyperparameters[k] ?? "—");
-    const vb = String(compare.config.hyperparameters[k] ?? "—");
-    if (va !== vb) diffs.push({ key: `hp.${k}`, a: va, b: vb });
-  }
-
-  if (diffs.length === 0) {
-    return (
-      <p className="text-[10px] text-muted-foreground pl-0.5">
-        No config differences.
-      </p>
-    );
-  }
-
-  return (
-    <div className="space-y-1">
-      {diffs.map((d) => (
-        <div
-          key={d.key}
-          className="grid grid-cols-[100px_1fr_1fr] gap-1 px-1 py-1 text-[10px] rounded hover:bg-muted/20"
-        >
-          <span className="font-mono text-muted-foreground truncate">
-            {d.key}
-          </span>
-          <span className="font-mono text-blue-400 truncate">{d.a}</span>
-          <span className="font-mono text-purple-400 truncate">{d.b}</span>
-        </div>
-      ))}
     </div>
   );
 }

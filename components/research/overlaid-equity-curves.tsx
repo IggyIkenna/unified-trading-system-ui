@@ -5,6 +5,7 @@ import { createChart, LineSeries, ColorType } from "lightweight-charts";
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { cn } from "@/lib/utils";
 import type { EquityPoint } from "@/lib/backtest-analytics-types";
+import { bumpDuplicateTimes } from "@/lib/lightweight-charts-series";
 
 export interface EquityCurveSeries {
   id: string;
@@ -27,10 +28,12 @@ function toChartData(
 ): { time: Time; value: number }[] {
   if (points.length === 0) return [];
   const base = points[0].equity || 1;
-  return points.map((p) => ({
-    time: p.time as Time,
-    value: normalize ? (p.equity / base) * 100 : p.equity,
-  }));
+  return bumpDuplicateTimes(
+    points.map((p) => ({
+      time: p.time as Time,
+      value: normalize ? (p.equity / base) * 100 : p.equity,
+    })),
+  );
 }
 
 export function OverlaidEquityCurves({
