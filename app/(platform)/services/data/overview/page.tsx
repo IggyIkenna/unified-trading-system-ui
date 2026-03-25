@@ -458,9 +458,9 @@ export default function AcquireOverviewPage() {
                     </Badge>
                   )}
                 </CardTitle>
-                <Link href="/services/data/gaps">
+                <Link href="/services/observe/alerts">
                   <Button variant="ghost" size="sm" className="h-7 text-xs">
-                    View All
+                    View all in Observe
                     <ArrowRight className="ml-1 size-3" />
                   </Button>
                 </Link>
