@@ -87,7 +87,7 @@ const REG_ENGAGEMENT = [
   },
   {
     id: "advisor",
-    label: "Strategic Advisor",
+    label: "Advisory",
     desc: "Contracted advisory role under our supervision",
   },
 ];

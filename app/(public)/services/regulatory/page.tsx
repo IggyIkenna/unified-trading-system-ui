@@ -295,7 +295,7 @@ export default function RegulatoryServicePage() {
             <Card>
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">
-                  Strategic Advisor
+                  Advisory
                 </Badge>
                 <CardTitle>Advisory Engagement</CardTitle>
                 <div className="text-xl font-bold">From £3,000/mo</div>
