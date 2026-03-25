@@ -738,12 +738,15 @@ function OnboardingWizard({
       );
       return;
     }
-    const staleDraftDocs = Object.keys(docs).filter((key) => !pendingUploads[key]);
-    if (staleDraftDocs.length > 0) {
-      setSubmitError(
-        "This draft was resumed without file binaries. Please re-upload documents before submitting.",
-      );
-      return;
+    const isMock = process.env.NEXT_PUBLIC_MOCK_API === "true" || process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo";
+    if (!isMock) {
+      const staleDraftDocs = Object.keys(docs).filter((key) => !pendingUploads[key]);
+      if (staleDraftDocs.length > 0) {
+        setSubmitError(
+          "This draft was resumed without file binaries. Please re-upload documents before submitting.",
+        );
+        return;
+      }
     }
 
     setSubmitting(true);
