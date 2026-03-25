@@ -38,8 +38,14 @@ export default function InvestmentServicePage() {
             </Badge>
             <h1 className="text-3xl font-bold">Investment Management</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              FCA-authorised investment management for Professional clients.
-              Co-invest at same terms as house.
+              Deep dive into your portfolio performance. Every trade, every
+              order, every position — broken down by strategy, asset, and
+              venue with clear visuals.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              FCA-authorised discretionary management. Co-invest at the same
+              terms as our own capital. Full transparency through your
+              investor portal.
             </p>
           </div>
 

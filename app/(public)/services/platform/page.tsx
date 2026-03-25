@@ -86,16 +86,19 @@ export default function PlatformServicePage() {
               Live Trading Platform
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              Live analytics.{" "}
-              <span className="text-amber-400">Real-time control.</span>
+              One screen.{" "}
+              <span className="text-amber-400">Every venue. Every trade.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              P&amp;L attribution by factor, position monitoring across all venues,
-              risk analytics, and same-code backtest-vs-live diff tracking —
-              everything you need to operate a live systematic trading book.
+              See all your trades across every product in one normalised view.
+              Live P&amp;L, position monitoring, risk analytics — and every morning,
+              compare yesterday&apos;s live trades against what the backtest
+              would have done.
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
-              Full web dashboards for monitoring and control, with API access for custom integrations.
+              Full web dashboards for monitoring and control, with API access for
+              custom integrations. The same code runs your backtests and your
+              live strategies.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>

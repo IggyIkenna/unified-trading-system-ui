@@ -38,11 +38,14 @@ export default function ExecutionServicePage() {
             </Badge>
             <h1 className="text-3xl font-bold">Execution as a Service</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Institutional execution algorithms — TWAP, VWAP, SOR,
-              Almgren-Chriss — charged on alpha generated.
+              One terminal to execute across all your venues. Trades, DeFi
+              swaps, lending, borrowing — all through the same interface.
+              Subscribe to the algos you want, test the alpha, and we only
+              get paid when we save you money.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Configure and launch from the web dashboard, or integrate via our API.
+              TWAP, VWAP, SOR, Almgren-Chriss, DeFi MEV protection.
+              Web dashboard or API — your choice.
             </p>
           </div>
 

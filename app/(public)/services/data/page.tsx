@@ -70,9 +70,13 @@ export default function DataServicePublicPage() {
               <span className="text-sky-400">One schema.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Normalised tick, OHLCV, orderbook, DeFi, and sports data from 128
-              venues — queried in-system or exported to your cloud.
-              Cloud-agnostic. Paywall-free for what you subscribe to.
+              One unified feed for all your data. Stocks, crypto, DeFi, sports,
+              prediction markets — 128 venues, same format. Raw ticks or
+              processed candles, depending on what you need.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
+              Query in-platform, pull via API, or export straight to your cloud.
+              No per-query charges — subscribe and use as much as you want.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>

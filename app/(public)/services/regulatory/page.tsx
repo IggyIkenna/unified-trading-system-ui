@@ -415,9 +415,11 @@ export default function RegulatoryServicePage() {
             <div className="text-center">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Start your application online. Upload your documents at your own
-                pace — proof of address, identity, source of funds. We review
-                everything and get you trading under our regulatory umbrella.
+                Apply online, upload documents at your own pace, and get
+                operational in weeks. Once approved, your clients get their own
+                portal — portfolio performance, trade history, compliance
+                reports, and settlement tracking — the same institutional
+                reporting tools we use internally.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-3">
                 <Button asChild>

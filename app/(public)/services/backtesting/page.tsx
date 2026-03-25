@@ -33,10 +33,16 @@ export default function BacktestingServicePage() {
             <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-violet-400/10">
               <LineChart className="size-8 text-violet-400" />
             </div>
-            <h1 className="text-3xl font-bold">Backtesting as a Service</h1>
+            <h1 className="text-3xl font-bold">Research &amp; Backtesting</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              The world&apos;s only backtesting platform covering Sports, DeFi,
-              Options, Crypto Perps, and TradFi Futures
+              One place to build everything. Train ML models (gradient boost,
+              neural networks, regression — your choice), build signals from our
+              feature library, assemble strategies, and watch them run against
+              real historical data across every asset class.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              When you&apos;re happy with a strategy, promote it straight to live
+              trading. Same code, same data, same results.
             </p>
           </div>
 
