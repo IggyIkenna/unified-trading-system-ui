@@ -1,11 +1,11 @@
 "use client";
 
-import { ChatWidget } from "./chat-widget";
+import { HelpChat } from "@/components/shell/help-chat";
 
 /**
- * Public-tier chat widget — no auth context needed.
- * Used in the public layout (Server Component) via client boundary.
+ * Public-tier chat widget — guided navigation chatbot.
+ * No AI, no API calls — just clickable decision tree.
  */
 export function ChatWidgetPublic() {
-  return <ChatWidget tier="public" />;
+  return <HelpChat />;
 }
