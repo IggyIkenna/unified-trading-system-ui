@@ -186,10 +186,10 @@ export default function DemoPage() {
                         <SelectContent>
                           <SelectItem value="data">Data Provision</SelectItem>
                           <SelectItem value="backtesting">
-                            Backtesting as a Service
+                            Research &amp; Build
                           </SelectItem>
-                          <SelectItem value="execution">
-                            Execution as a Service
+                          <SelectItem value="platform">
+                            Trading Terminal
                           </SelectItem>
                           <SelectItem value="investment">
                             Investment Management

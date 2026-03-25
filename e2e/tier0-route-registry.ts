@@ -24,9 +24,7 @@ export const PUBLIC_MARKETING_PAGES: Tier0Route[] = [
   { path: "/services/platform", name: "Marketing Platform" },
   { path: "/services/investment", name: "Marketing Investment" },
   { path: "/services/backtesting", name: "Marketing Backtesting" },
-  { path: "/services/execution", name: "Marketing Execution" },
   { path: "/services/regulatory", name: "Marketing Regulatory" },
-  { path: "/services/engagement", name: "Marketing Engagement" },
 ];
 
 export const PLATFORM_PAGES: Tier0Route[] = [

@@ -238,14 +238,6 @@ export default function DataServicePublicPage() {
                       )}
                     >
                       <CardHeader className="pb-3">
-                        {plan.tier === "institutional" && (
-                          <Badge
-                            variant="outline"
-                            className="w-fit mb-2 border-sky-500/30 text-sky-400 text-[10px]"
-                          >
-                            Most Popular
-                          </Badge>
-                        )}
                         <CardTitle className="text-base">{plan.name}</CardTitle>
                         <CardDescription>
                           {plan.tier === "enterprise" ? (
