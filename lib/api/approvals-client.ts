@@ -108,7 +108,7 @@ export async function fetchRegisteredApps(
   token: string,
 ): Promise<{ applications: Array<{ app_id: string; name: string; category: string }> }> {
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/applications`,
+    `${USER_MGMT_API}/api/v1/apps`,
     { headers: await authHeaders(token) },
   );
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
