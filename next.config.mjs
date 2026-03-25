@@ -9,6 +9,31 @@ const nextConfig = {
   // Note: standalone output not supported with Next.js 16 Turbopack
   // Using `next start` in Dockerfile instead
 
+  async headers() {
+    return [
+      {
+        // HTML pages — always revalidate so deploys are visible immediately
+        source: "/((?!_next/static|_next/image|favicon|images/).*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-cache, must-revalidate",
+          },
+        ],
+      },
+      {
+        // Static assets (JS/CSS/fonts) — immutable, fingerprinted by Next.js
+        source: "/_next/static/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ];
+  },
+
   async rewrites() {
     const apiBase =
       process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8030";
