@@ -173,6 +173,19 @@ The equity chart uses `LineSeries` (not `CandlestickSeries`). It creates 4 serie
 
 Each series has a `visible` property toggled by checkboxes.
 
+#### Time ordering (do not skip)
+
+Lightweight Charts requires **strictly ascending** `time` for every series passed to `setData`.
+Duplicate UNIX timestamps (e.g. several markers on the same second) throw at runtime:
+`Assertion failed: data must be asc ordered by time`.
+
+- **Shared helper:** `lib/lightweight-charts-series.ts` exports `bumpDuplicateTimes` — sorts by time,
+  then bumps ties so each row is strictly greater than the previous (typically +1 second).
+- **Call sites:** `equity-chart-with-layers.tsx`, `overlaid-equity-curves.tsx`, `signal-overlay-chart.tsx`
+  all normalize series before chart updates.
+- **Mocks/API:** When generating OHLC, equity, or marker points, avoid duplicate `time` values at the
+  source where possible; still run through `bumpDuplicateTimes` at the chart boundary for safety.
+
 ### Recharts
 
 Used for P&L Distribution Histogram and Win/Loss Donut (inside `components/research/`).
@@ -208,20 +221,21 @@ The equity chart uses Lightweight Charts because it handles time-series financia
 
 ### New files
 
-| File                                                 | Purpose                                   |
-| ---------------------------------------------------- | ----------------------------------------- |
-| `lib/backtest-analytics-types.ts`                    | Shared types for both tabs                |
-| `lib/backtest-analytics-mock.ts`                     | Shared mock data generators               |
-| `components/research/kpi-bar.tsx`                    | Pinned KPI bar                            |
-| `components/research/equity-chart-with-layers.tsx`   | 4-layer equity chart (Lightweight Charts) |
-| `components/research/profit-structure-chart.tsx`     | Gross profit/loss/commission bar chart    |
-| `components/research/pnl-distribution-histogram.tsx` | P&L distribution (Recharts)               |
-| `components/research/win-loss-donut.tsx`             | Win/Loss/Break-even donut (Recharts)      |
-| `components/research/performance-section.tsx`        | Full Performance accordion content        |
-| `components/research/trades-analysis-section.tsx`    | Full Trades Analysis accordion content    |
-| `components/research/capital-efficiency-section.tsx` | Capital Efficiency section                |
-| `components/research/runups-drawdowns-section.tsx`   | Run-ups & Drawdowns section               |
-| `components/research/index.ts`                       | Barrel export                             |
+| File                                                 | Purpose                                              |
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| `lib/backtest-analytics-types.ts`                    | Shared types for both tabs                           |
+| `lib/backtest-analytics-mock.ts`                     | Shared mock data generators                          |
+| `lib/lightweight-charts-series.ts`                   | `bumpDuplicateTimes` — LWCharts ascending-time guard |
+| `components/research/kpi-bar.tsx`                    | Pinned KPI bar                                       |
+| `components/research/equity-chart-with-layers.tsx`   | 4-layer equity chart (Lightweight Charts)            |
+| `components/research/profit-structure-chart.tsx`     | Gross profit/loss/commission bar chart               |
+| `components/research/pnl-distribution-histogram.tsx` | P&L distribution (Recharts)                          |
+| `components/research/win-loss-donut.tsx`             | Win/Loss/Break-even donut (Recharts)                 |
+| `components/research/performance-section.tsx`        | Full Performance accordion content                   |
+| `components/research/trades-analysis-section.tsx`    | Full Trades Analysis accordion content               |
+| `components/research/capital-efficiency-section.tsx` | Capital Efficiency section                           |
+| `components/research/runups-drawdowns-section.tsx`   | Run-ups & Drawdowns section                          |
+| `components/research/index.ts`                       | Barrel export                                        |
 
 ### Modified files
 

@@ -8,6 +8,9 @@
 > signal confidence, multi-strategy comparison, ML lineage, shard-specific metrics).
 >
 > **Reference screenshots:** `assets/Screenshot_from_2026-03-25_11-3*` (6 images)
+>
+> **Implementation notes (Lightweight Charts, wrappers, time ordering):** see
+> `EXECUTION_AGENT_HANDOFF.md` §5 _Chart Library Notes_.
 
 ---
 
@@ -75,14 +78,15 @@ Under **List of Trades**, it's a detailed trade-by-trade table.
 
 **Our current state:**
 
-| Tab            | What we have                                       | What's missing                         |
-| -------------- | -------------------------------------------------- | -------------------------------------- |
-| **Strategies** | Total Backtests, Complete, Candidates, Best Sharpe | No per-backtest KPI bar in detail view |
-| **Execution**  | Total Backtests, Complete, Running, Best Sharpe    | No per-backtest KPI bar in detail view |
+| Tab            | What we have                                                                                                                               | What's missing                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| **Strategies** | **List:** toolbar row (search, filters, Compare, New Backtest) — no aggregate KPI strip. **Detail:** `KpiBar` when a backtest is selected. | —                                                                                    |
+| **Execution**  | **List:** KPI strip (Total Backtests, Complete, Running, Best Sharpe).                                                                     | Add `KpiBar` to results panel when aligned with Strategies (see Execution tab work). |
 
-**Action:** Add a KPI bar to BOTH the Strategies detail panel and the Execution results panel.
-When a backtest is selected, show: **Total P&L | Max DD | Total Signals/Trades | Win Rate | Profit Factor**
-These 5 numbers stay pinned at the top of the detail/results panel while the user scrolls sections below.
+**Action (original intent — largely done on Strategies):** Per-backtest KPI bar in the **detail/results**
+panel: **Total P&L | Max DD | Total Signals/Trades | Win Rate | Profit Factor**. These stay pinned
+while the user scrolls accordions below. **Strategies** implements this in the detail panel; **Execution**
+list still shows aggregate tiles until that tab is refactored to match.
 
 **Where it lives:**
 

@@ -1334,13 +1334,6 @@ export default function StrategiesPage() {
     );
   };
 
-  const complete = backtests.filter((b) => b.status === "completed").length;
-  const running = backtests.filter((b) => b.status === "running").length;
-  const candidates = backtests.filter((b) => b.isCandidate).length;
-  const bestSharpe = backtests
-    .filter((b) => b.status === "completed" && b.metrics)
-    .reduce((max, b) => Math.max(max, b.metrics?.sharpe ?? 0), 0);
-
   const selectedBacktest = selectedBt
     ? (backtests.find((b) => b.id === selectedBt) ?? null)
     : null;
@@ -1359,18 +1352,90 @@ export default function StrategiesPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 px-6 pt-6 pb-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Strategy Backtests
-          </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Signal generation research. Test models and rules against historical
-            data.
-          </p>
+      {/* Toolbar: search, filters, actions */}
+      <div className="flex flex-col gap-3 px-6 pt-6 pb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+          <div className="relative min-w-[200px] max-w-md flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              placeholder="Search backtests…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Archetype" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Archetypes</SelectItem>
+              {archetypes.map((a) => (
+                <SelectItem key={a} value={a}>
+                  {a}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="completed">Complete</SelectItem>
+              <SelectItem value="running">Running</SelectItem>
+              <SelectItem value="queued">Queued</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={shardFilter} onValueChange={setShardFilter}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Shard" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Shards</SelectItem>
+              {shards.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={strategyKindFilter}
+            onValueChange={setStrategyKindFilter}
+          >
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Strategy kind" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">ML & Rule</SelectItem>
+              <SelectItem value="ml">ML only</SelectItem>
+              <SelectItem value="rule">Rule only</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={sortKey}
+            onValueChange={(v) => setSortKey(v as SortKey)}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="recent">Recent first</SelectItem>
+              <SelectItem value="sharpe">Sharpe (high)</SelectItem>
+              <SelectItem value="return">Total return</SelectItem>
+              <SelectItem value="name">Name (A–Z)</SelectItem>
+            </SelectContent>
+          </Select>
+          {compareSelected.length > 0 && (
+            <Badge variant="outline" className="text-xs">
+              {compareSelected.length} selected for compare
+            </Badge>
+          )}
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
           {compareSelected.length >= 2 && (
             <Button
               variant="outline"
@@ -1387,124 +1452,6 @@ export default function StrategiesPage() {
             New Backtest
           </Button>
         </div>
-      </div>
-
-      {/* KPI Row */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 px-6 pb-4">
-        {[
-          {
-            label: "Total Backtests",
-            value: String(backtests.length),
-            color: "text-foreground",
-          },
-          {
-            label: "Complete",
-            value: String(complete),
-            color: "text-emerald-400",
-          },
-          { label: "Running", value: String(running), color: "text-blue-400" },
-          {
-            label: "Best Sharpe",
-            value: bestSharpe.toFixed(2),
-            color: "text-primary",
-          },
-          {
-            label: "Candidates",
-            value: String(candidates),
-            color: "text-amber-400",
-          },
-        ].map((s) => (
-          <Card key={s.label}>
-            <CardContent className="p-3">
-              <p className={cn("text-xl font-bold tabular-nums", s.color)}>
-                {s.value}
-              </p>
-              <p className="text-xs font-medium mt-0.5 text-muted-foreground">
-                {s.label}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 px-6 pb-4">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            placeholder="Search backtests…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Archetype" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Archetypes</SelectItem>
-            {archetypes.map((a) => (
-              <SelectItem key={a} value={a}>
-                {a}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="completed">Complete</SelectItem>
-            <SelectItem value="running">Running</SelectItem>
-            <SelectItem value="queued">Queued</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={shardFilter} onValueChange={setShardFilter}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Shard" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Shards</SelectItem>
-            {shards.map((s) => (
-              <SelectItem key={s} value={s}>
-                {s}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={strategyKindFilter}
-          onValueChange={setStrategyKindFilter}
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Strategy kind" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">ML & Rule</SelectItem>
-            <SelectItem value="ml">ML only</SelectItem>
-            <SelectItem value="rule">Rule only</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Sort" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="recent">Recent first</SelectItem>
-            <SelectItem value="sharpe">Sharpe (high)</SelectItem>
-            <SelectItem value="return">Total return</SelectItem>
-            <SelectItem value="name">Name (A–Z)</SelectItem>
-          </SelectContent>
-        </Select>
-        {compareSelected.length > 0 && (
-          <Badge variant="outline" className="text-xs">
-            {compareSelected.length} selected for compare
-          </Badge>
-        )}
       </div>
 
       {/* Two-Panel Layout */}

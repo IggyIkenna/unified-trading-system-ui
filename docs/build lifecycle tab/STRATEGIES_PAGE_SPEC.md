@@ -3,7 +3,7 @@
 > **Route:** `/services/research/strategies`
 > **Tab position:** Tab 4 of 7 in the Build lifecycle (`Overview | Features | Feature ETL | Models | **Strategies** | Execution | Quant Workspace`)
 > **Status:** v3 — Strategies tab implemented. Accordion layout, shared components built, TradingView-inspired detail view live.
-> **Companion docs:** `BUILD_SECTION_SPEC.md §4`, `ML_MODELS_TAB_SPEC.md`, `EXECUTION_TAB_SPEC.md`, `MOCK_DATA_TRACKING.md`, `TRADINGVIEW_AUDIT.md`, `EXECUTION_AGENT_HANDOFF.md`
+> **Companion docs:** `BUILD_SECTION_SPEC.md §4`, `ML_MODELS_TAB_SPEC.md`, `EXECUTION_TAB_SPEC.md`, `MOCK_DATA_TRACKING.md`, `TRADINGVIEW_AUDIT.md` (TV parity audit), `EXECUTION_AGENT_HANDOFF.md` (shared research components + **Lightweight Charts** time-ordering notes)
 
 ---
 
@@ -136,21 +136,10 @@ comparison workflow fast — you can select backtests from the list while viewin
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│ STRATEGY BACKTESTS                      [+ New Backtest]  [🔍 Compare Mode] │
-│ Signal generation research. Test models and rules against historical data.  │
+│ TOOLBAR (single row)                                                          │
+│  [Search...] [Archetype ▾] [Status ▾] [Shard ▾] [Kind ▾] [Sort ▾]   [Compare] [+ New Backtest] │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌─ KPI ROW ─────────────────────────────────────────────────────────────┐  │
-│  │  Total Backtests │ Complete     │ Running  │ Candidates │ Best Sharpe  │  │
-│  │  ┌────────┐      │ ┌────────┐  │ ┌──────┐ │ ┌────────┐ │ ┌────────┐  │  │
-│  │  │  24    │      │ │  18    │  │ │  2   │ │ │   5    │ │ │ 2.41   │  │  │
-│  │  │backtests│     │ │        │  │ │      │ │ │ ⭐     │ │ │        │  │  │
-│  │  └────────┘      │ └────────┘  │ └──────┘ │ └────────┘ │ └────────┘  │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-│                                                                              │
-│  ┌─ FILTERS ─────────────────────────────────────────────────────────────┐  │
-│  │  [Search...] [Archetype ▾] [Shard ▾] [Status ▾] [Type ▾ ML|Rule|All] │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
+│  (No page-level KPI strip — per-backtest metrics appear in the detail panel.) │
 │                                                                              │
 │  ┌─── LEFT PANEL: BACKTEST LIST ───┐  ┌─── RIGHT PANEL: DETAIL / COMPARE ─┐│
 │  │                                  │  │                                    ││
@@ -527,7 +516,7 @@ Key types: `StrategyTemplate`, `StrategyConfig`, `BacktestRun`, `BacktestMetrics
 
 ## 6. What Works Well (Keep)
 
-- **KPI stats row** — clean, informative. Extend with 5th stat.
+- **Per-backtest `KpiBar`** in the detail panel — list view has no aggregate KPI strip (toolbar only).
 - **StatusBadge + MetricValue** — good utility components.
 - **Compare checkbox pattern** — up to 3. Good UX.
 - **ComparePanel metric table** — extend, don't replace.
@@ -691,7 +680,7 @@ These behaviours **exist inline** on `strategies/page.tsx` or as built component
 ### Phase 1: Structural Foundation (Quick Wins)
 
 - [x] **P1-1.** Two-panel layout: split page into left list + right detail area ✅
-- [x] **P1-2.** Add shard filter, type filter (ML/Rule/All), KPI row stats ✅
+- [x] **P1-2.** Add shard filter, type filter (ML/Rule/All); list-level KPI strip later removed in favor of toolbar-only layout ✅
 - [x] **P1-3.** Add candidate badge (⭐) to list items — `isCandidate` data already exists ✅
 - [x] **P1-4.** Add model version + date range info to list items ✅
 - [x] **P1-5.** ComparePanel signal-quality rows (signals/day, hit rate, avg confidence) ✅
@@ -756,7 +745,7 @@ originally specified 4-tab layout. See `TRADINGVIEW_AUDIT.md` for the decision r
 ### Phase 5: Candidate Flow + Portfolio Mode
 
 - [x] **P5-1.** “Candidate” button → demo toast (lineage API TBD) ✅
-- [x] **P5-2.** Candidate badge on list + Candidates KPI card ✅
+- [x] **P5-2.** Candidate badge on list ✅ (aggregate “Candidates” tile removed from list header)
 - [ ] **P5-3.** Portfolio mode: multi-instrument backtest with cross-asset limits _(data/API)_
 - [ ] **P5-4.** Portfolio-level signal aggregation _(data/API)_
 
