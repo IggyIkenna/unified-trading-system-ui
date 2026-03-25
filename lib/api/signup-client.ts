@@ -27,6 +27,7 @@ export interface SignupPayload {
   company?: string;
   phone?: string;
   service_type?: string;
+  applicant_type?: string;
   selected_options?: string[];
   expected_aum?: string;
 }

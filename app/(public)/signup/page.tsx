@@ -723,7 +723,9 @@ function OnboardingWizard({
     passwordValid &&
     passwordMatch;
 
-  function onStep1Next(e: React.FormEvent) {
+  const [creatingAccount, setCreatingAccount] = React.useState(false);
+
+  async function onStep1Next(e: React.FormEvent) {
     e.preventDefault();
     const errors: Record<string, string> = {};
     if (!name.trim()) errors.name = "Required";
@@ -738,7 +740,87 @@ function OnboardingWizard({
     else if (!passwordMatch) errors.confirmPassword = "Passwords don't match";
     setStep1Errors(errors);
     if (Object.keys(errors).length > 0) return;
+
+    // Create account immediately so they can resume later
+    if (!firebaseUid) {
+      setCreatingAccount(true);
+      setSubmitError("");
+      try {
+        const result = await submitSignup({
+          name,
+          email,
+          password,
+          company,
+          phone,
+          service_type: serviceType,
+          applicant_type: applicantType,
+          expected_aum: expectedAum,
+        });
+        setFirebaseUid(result.user.firebase_uid);
+        setOnboardingRequestId(result.onboarding_request_id);
+        // Save draft with UID so resume works
+        localStorage.setItem(
+          "onboarding-draft",
+          JSON.stringify({
+            firebaseUid: result.user.firebase_uid,
+            onboardingRequestId: result.onboarding_request_id,
+            service: serviceType,
+            applicantType,
+            name,
+            email,
+            company,
+            phone,
+            expectedAum,
+            step: 2,
+          }),
+        );
+      } catch (err: unknown) {
+        setSubmitError(
+          err instanceof Error ? err.message : "Account creation failed. Please try again.",
+        );
+        setCreatingAccount(false);
+        return;
+      }
+      setCreatingAccount(false);
+    }
     setStep(2);
+  }
+
+  // Auto-save progress when advancing steps
+  async function saveProgress(nextStep: number) {
+    if (firebaseUid) {
+      try {
+        await fetch(`/api/v1/users/${firebaseUid}/application`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            current_step: nextStep,
+            selected_options: [...selOpts],
+            docs_uploaded: Object.keys(docs).filter((k) => docs[k]),
+          }),
+        });
+      } catch { /* best effort */ }
+    }
+    localStorage.setItem(
+      "onboarding-draft",
+      JSON.stringify({
+        firebaseUid,
+        onboardingRequestId,
+        service: serviceType,
+        applicantType,
+        name,
+        email,
+        company,
+        phone,
+        expectedAum,
+        selOpts: [...selOpts],
+        docs,
+        declarations,
+        signatures,
+        step: nextStep,
+      }),
+    );
+    setStep(nextStep);
   }
 
   return (
@@ -944,12 +1026,28 @@ function OnboardingWizard({
                   {step1Errors.confirmPassword && <p className="text-xs text-red-400">{step1Errors.confirmPassword}</p>}
                 </div>
               </div>
+              {submitError && (
+                <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm text-red-400">
+                  {submitError}
+                </div>
+              )}
               <div className="flex justify-end pt-2">
-                <OnboardingNextBtn type="submit" />
+                <OnboardingNextBtn
+                  type="submit"
+                  disabled={creatingAccount}
+                  label={creatingAccount ? "Creating account..." : "Continue"}
+                />
               </div>
               </form>
             </CardContent>
           </Card>
+        )}
+
+        {step >= 2 && firebaseUid && (
+          <div className="text-center text-xs text-emerald-400 mb-2 flex items-center justify-center gap-1.5">
+            <CheckCircle2 className="size-3" />
+            Account created — your progress is saved. You can close and resume anytime by logging in.
+          </div>
         )}
 
         {step === 2 && serviceType === "regulatory" && (
@@ -1101,7 +1199,7 @@ function OnboardingWizard({
                   </Link>
                   <OnboardingNextBtn
                     disabled={!selOpts.has("ar") && !selOpts.has("advisor")}
-                    onClick={() => setStep(3)}
+                    onClick={() => saveProgress(3)}
                   />
                 </div>
               </div>
@@ -1135,7 +1233,7 @@ function OnboardingWizard({
                 <OnboardingBackBtn onStep={setStep} to={1} />
                 <OnboardingNextBtn
                   disabled={selOpts.size === 0}
-                  onClick={() => setStep(3)}
+                  onClick={() => saveProgress(3)}
                 />
               </div>
             </CardContent>
@@ -1411,10 +1509,10 @@ function OnboardingWizard({
                     Too much paperwork? We can help — get in touch.
                   </Link>
                   <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => setStep(4)}>
+                    <Button variant="outline" onClick={() => saveProgress(4)}>
                       Skip for now
                     </Button>
-                    <OnboardingNextBtn onClick={() => setStep(4)} />
+                    <OnboardingNextBtn onClick={() => saveProgress(4)} />
                   </div>
                 </div>
               </div>

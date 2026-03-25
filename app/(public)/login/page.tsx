@@ -44,6 +44,30 @@ export default function LoginPage() {
 
     const success = await loginByEmail(email, password);
     if (success) {
+      // Check if user has a pending application to resume
+      const draft = localStorage.getItem("onboarding-draft");
+      if (draft) {
+        try {
+          const parsed = JSON.parse(draft);
+          if (parsed.email === email && parsed.step && parsed.step < 5) {
+            router.push(`/signup?service=${parsed.service || "regulatory"}&resume=true`);
+            setIsLoading(false);
+            return;
+          }
+        } catch { /* ignore */ }
+      }
+      // Check mock provisioning state for pending users
+      try {
+        const res = await fetch(`/api/v1/users/${email}/application`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.application && data.stage === "registered") {
+            router.push(`/signup?service=${data.application.service_type || "regulatory"}&resume=true`);
+            setIsLoading(false);
+            return;
+          }
+        }
+      } catch { /* no backend, continue */ }
       router.push(redirectTo || "/dashboard");
     } else if (!loginError) {
       setError("Invalid credentials. Check your email and password.");
