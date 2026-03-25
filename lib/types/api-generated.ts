@@ -5583,7 +5583,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/health": {
     parameters: {
       query?: never;
       header?: never;
@@ -5605,7 +5604,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/readiness": {
     parameters: {
       query?: never;
       header?: never;
@@ -5625,7 +5623,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/orderbook/{symbol}/snapshot": {
     parameters: {
       query?: never;
       header?: never;
@@ -5642,7 +5639,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/candles": {
     parameters: {
       query?: never;
       header?: never;
@@ -5665,7 +5661,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/venues": {
     parameters: {
       query?: never;
       header?: never;
@@ -5685,7 +5680,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/venues/{venue}/validate": {
     parameters: {
       query?: never;
       header?: never;
@@ -5707,7 +5701,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/stream/orderbook": {
     parameters: {
       query?: never;
       header?: never;
@@ -5724,7 +5717,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/data-contract": {
     parameters: {
       query?: never;
       header?: never;
@@ -5744,7 +5736,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/market-data-api/metrics": {
     parameters: {
       query?: never;
       header?: never;

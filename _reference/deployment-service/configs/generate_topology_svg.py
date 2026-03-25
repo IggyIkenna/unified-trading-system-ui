@@ -424,7 +424,6 @@ def build():
             "MDA",
             **svc(
                 "api",
-                "market-data-api  :8003  [CR Svc, OAuth]\\nHTTP REST + SSE orderbook + SSE candles\\nB: reads candles (GCS)\\nL: SSE orderbook (MTDH PS) + SSE candles (MDPS PS)",
                 tooltip=(
                     "Port 8003 | OAuth authenticated\\n"
                     "Batch: serves historical order book snapshots and candles via HTTP REST from GCS\\n"
@@ -506,8 +505,6 @@ def build():
                 "MLUI",
                 **svc(
                     "ui",
-                    "ml-training-ui  [CR Svc]\\ntrain + deploy batch->live\\nfeature/candle plots\\n-> deployment-api :8001 + market-data-api :8003",
-                    tooltip="Consumes: deployment-api (deploy hooks) + market-data-api (feature/candle plots)",
                 ),
             )
             b.node(
@@ -522,9 +519,7 @@ def build():
                 "EXANI",
                 **svc(
                     "ui",
-                    "execution-analytics-ui  [CR Svc]\\nTCA + alpha + execution backtest\\n-> execution-results-api :8002 + market-data-api :8003",
                     tooltip=(
-                        "Consumes: execution-results-api + market-data-api\\n"
                         "Content migration (execution-service/visualizer-ui/ extraction) tracked separately"
                     ),
                 ),
@@ -809,7 +804,6 @@ def _add_reference_panels(g: graphviz.Digraph) -> None:
             "  instruments | features-calendar | features-onchain\\l"
             "  pnl-attribution | strategy-validation\\l"
             "Cloud Run Svc (auto-scale, OAuth):\\l"
-            "  execution-results-api :8002 | market-data-api :8003\\l"
             "  deployment-api :8001 | client-reporting-api :8005\\l"
             "Cloud Run Svc (auto-scale) - UIs:\\l"
             "  ALL UIs serve React static build\\l"

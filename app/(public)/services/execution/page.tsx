@@ -40,12 +40,12 @@ export default function ExecutionServicePage() {
             <p className="mt-2 text-lg text-muted-foreground">
               One terminal to execute across all your venues. Trades, DeFi
               swaps, lending, borrowing — all through the same interface.
-              Subscribe to the algos you want, test the alpha, and we only
-              get paid when we save you money.
+              Subscribe to the algos you want, test the alpha, and we only get
+              paid when we save you money.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              TWAP, VWAP, SOR, Almgren-Chriss, DeFi MEV protection.
-              Web dashboard or API — your choice.
+              TWAP, VWAP, SOR, Almgren-Chriss, DeFi MEV protection. Web
+              dashboard or API — your choice.
             </p>
           </div>
 
@@ -447,7 +447,8 @@ export default function ExecutionServicePage() {
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Configure and launch algos from the web dashboard — no code required
+                    Configure and launch algos from the web dashboard — no code
+                    required
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}

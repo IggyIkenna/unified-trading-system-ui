@@ -1,7 +1,7 @@
 {
   "version": 1,
   "ssot_ref": "workspace-manifest.json (serves_ui, proxies_service) + runtime-topology.yaml",
-  "description": "Service domain data → API consuming that data → UI rendering that data. Covers both batch and live modes.",
+  "description": "Service domain data \u2192 API consuming that data \u2192 UI rendering that data. Covers both batch and live modes.",
   "data_flows": [
     {
       "id": "client-reporting",

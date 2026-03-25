@@ -167,23 +167,6 @@
         "completion_path": "cefi",
         "sit_level": "standard"
       },
-      "elysium-defi-system": {
-        "type": "service",
-        "tier": 3,
-        "role": "service",
-        "tags": ["defi", "standard"],
-        "version": "0.1.0",
-        "ci_status": "LOCAL_PASS",
-        "coverage_pct": 68,
-        "testing_level": "integration",
-        "status": "active",
-        "dependencies": ["unified-defi-execution-interface"],
-        "service_declaration": null,
-        "serves_ui": null,
-        "proxies_service": null,
-        "completion_path": "defi",
-        "sit_level": "standard"
-      },
       "execution-algo-library": {
         "type": "library",
         "tier": 2,
@@ -513,34 +496,6 @@
         "serves_ui": null,
         "proxies_service": null,
         "completion_path": "core",
-        "sit_level": "standard"
-      },
-      "market-data-api": {
-        "type": "api-service",
-        "tier": 3,
-        "role": "api",
-        "tags": ["cefi", "data-ingestion", "standard"],
-        "version": "0.1.0",
-        "ci_status": "LOCAL_PASS",
-        "coverage_pct": 77,
-        "testing_level": "unit",
-        "status": "active",
-        "dependencies": [
-          "unified-trading-library",
-          "unified-config-interface",
-          "unified-events-interface",
-          "unified-cloud-interface",
-          "unified-internal-contracts",
-          "unified-api-contracts"
-        ],
-        "service_declaration": {
-          "mode": "live",
-          "capabilities_needed": ["data_source", "event_bus", "cache"],
-          "protocol_default_set": "gcp_live"
-        },
-        "serves_ui": [],
-        "proxies_service": "market-data-processing-service",
-        "completion_path": "cefi",
         "sit_level": "standard"
       },
       "market-data-processing-service": {
@@ -1315,7 +1270,6 @@
       "deployment-api": "0.1.1",
       "deployment-service": "0.1.1",
       "deployment-ui": "0.1.0",
-      "elysium-defi-system": "0.1.0",
       "execution-algo-library": "0.1.6",
       "execution-service": "0.1.1",
       "features-cross-instrument-service": "0.1.1",
@@ -1444,7 +1398,6 @@
           "description": "Operational services + API gateways",
           "repos": [
             "client-reporting-api",
-            "market-data-api",
             "position-balance-monitor-service",
             "risk-and-exposure-service"
           ]
@@ -1466,11 +1419,7 @@
         {
           "level": 12,
           "description": "IaC + post-deploy validation (deploy last; references all service images)",
-          "repos": [
-            "elysium-defi-system",
-            "ibkr-gateway-infra",
-            "system-integration-tests"
-          ]
+          "repos": ["ibkr-gateway-infra", "system-integration-tests"]
         }
       ]
     },
@@ -1614,8 +1563,7 @@
           "unified-trading-api",
           "deployment-api",
           "auth-api",
-          "client-reporting-api",
-          "market-data-api"
+          "client-reporting-api"
         ],
         "required_uis": ["unified-trading-system-ui", "deployment-ui"],
         "not_required": [
@@ -5183,36 +5131,6 @@
         "internal_count": 5,
         "external_count": 20
       },
-      "market-data-api": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": ["bandit>=1.7.0,<2.0.0"],
-          "basedpyright": ["basedpyright==1.38.2"],
-          "fastapi<1.0.0,": ["fastapi<1.0.0,>=0.115.0"],
-          "google-auth": ["google-auth>=2.40.0,<3.0.0"],
-          "pip-audit": ["pip-audit>=2.7.0,<3.0.0"],
-          "prometheus-client": ["prometheus-client>=0.20.0,<1.0.0"],
-          "pyjwt": ["pyjwt>=2.12.0,<3.0.0"],
-          "pytest": ["pytest>=9.0.1,<10.0.0"],
-          "pytest-asyncio": ["pytest-asyncio>=0.25.0,<2.0.0"],
-          "pytest-cov": ["pytest-cov>=7.0.0,<8.0.0"],
-          "pytest-socket": ["pytest-socket>=0.7.0,<1.0.0"],
-          "pytest-timeout": ["pytest-timeout>=2.4.0,<3.0.0"],
-          "pytest-xdist": ["pytest-xdist>=3.6.0,<4.0.0"],
-          "ruff": ["ruff==0.15.0"],
-          "sse-starlette": ["sse-starlette>=1.6.1,<2.0.0"],
-          "uvicorn": ["uvicorn[standard]>=0.27.0,<1.0.0"]
-        },
-        "internal_count": 6,
-        "external_count": 16
-      },
       "position-balance-monitor-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.2.38,<1.0.0",
@@ -5400,10 +5318,6 @@
         "external_deps": {},
         "internal_count": 0,
         "external_count": 0
-      },
-      "elysium-defi-system": {
-        "skipped": true,
-        "reason": "not a directory"
       },
       "ibkr-gateway-infra": {
         "internal_deps": {

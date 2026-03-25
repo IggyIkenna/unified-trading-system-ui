@@ -13,7 +13,6 @@ contract:** `unified-trading-codex/04-architecture/PROTOCOL-INJECTION.md` **Cros
 `05-infrastructure/unified-libraries/INTERNAL_DEPENDENCY_GRAPH.md` · `05-infrastructure/UI-DEPENDENCY-MATRIX.md`
 
 **Last Updated:** 2026-03-24 (consolidated active UI/API surface: unified-trading-system-ui + deployment-ui;
-unified-trading-api + auth-api + market-data-api + client-reporting-api + deployment-api; legacy split UIs in
 workspace-root `archive/`). **Previous update:** 2026-03-06 (moved to PM; topology-dag-pm-ssot plan; CloudTarget deleted
 from UDC/UTL)
 
@@ -123,7 +122,6 @@ flowchart TB
     subgraph APIS["🔌 API Services  (FastAPI + SSE · active 2026-03)"]
         UTRAPI["unified-trading-api\nConsolidated domain gateway · SSE where exposed\nDev :8030 · SSOT: ui-api-mapping.json\nNote: execution-results-api / strategy-api surfaces absorbed or retired — use this API + services"]
         AUTHAPI["auth-api\nJWT · OAuth · persona / user lifecycle\nDev :8200\nRepo at workspace root (may be absent from manifest clone lists — still part of dev stack)"]
-        MDA["market-data-api\nSSE /stream/orderbook · /stream/candles\nDev :8016"]
         CRS["client-reporting-api\nPnL reports · portfolio summaries · per-client JWT\nDev :8014"]
         DEPAPI2["deployment-api v0.1\nthin FastAPI ← deployment-service\nGoogleOAuthMiddleware on writes · post-deploy triggers\nDev :8004"]
     end
@@ -133,7 +131,6 @@ flowchart TB
     %% ─────────────────────────────────────────────────────────────────
     subgraph UIS["🖥️ UIs — consolidated  (split UIs live under workspace-root archive/)"]
         direction LR
-        SYSUI["unified-trading-system-ui\nPrimary console · domain + reporting + trading flows\nDev :3000 (client-reporting stack) · :5174 (unified-trading stack)\n→ unified-trading-api · client-reporting-api · market-data-api · auth-api\nSSOT ports: scripts/dev/ui-api-mapping.json"]
         DEPUI["deployment-ui\nDeploy / ops · batch vs live selection\nDev :5183 → deployment-api :8004"]
     end
 
@@ -294,10 +291,9 @@ flowchart TB
 UIs use `VITE_*` base URLs injected at build time. **Port SSOT:** `unified-trading-pm/scripts/dev/ui-api-mapping.json`.
 In production, each API is a separate Cloud Run service URL.
 
-| Stack                                                        | UI dev (`localhost`)                                                   | API dev (`localhost`)                                                                                                   | Prod (pattern)                                        |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| **Deployment** — `deployment-ui` + `deployment-api`          | `:5183`                                                                | `:8004` (`deployment-api`)                                                                                              | `deployment-api-<hash>-*.run.app`                     |
-| **Unified console** — `unified-trading-system-ui` + gateways | `:3000` (client-reporting pairing) · `:5174` (unified-trading pairing) | `:8030` (`unified-trading-api`) · `:8200` (`auth-api`) · `:8014` (`client-reporting-api`) · `:8016` (`market-data-api`) | Per-service Cloud Run URLs (see deployment manifests) |
+| Stack                                               | UI dev (`localhost`) | API dev (`localhost`)      | Prod (pattern)                    |
+| --------------------------------------------------- | -------------------- | -------------------------- | --------------------------------- |
+| **Deployment** — `deployment-ui` + `deployment-api` | `:5183`              | `:8004` (`deployment-api`) | `deployment-api-<hash>-*.run.app` |
 
 ---
 

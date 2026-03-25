@@ -4549,8 +4549,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/ml/health")
     return json({ status: "healthy", service: "ml-inference-api", mock: true });
   if (route === "/api/market-data/health")
-    return json({ status: "healthy", service: "market-data-api", mock: true });
-  if (route.endsWith("/health")) return json({ status: "healthy", mock: true });
+    if (route.endsWith("/health"))
+      return json({ status: "healthy", mock: true });
 
   // --- Catch-all for reporting/execution/analytics/deployment with data ---
   if (route.startsWith("/api/reporting/")) return json({ data: [], total: 0 });

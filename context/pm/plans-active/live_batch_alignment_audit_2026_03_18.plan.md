@@ -118,7 +118,6 @@ repo_gates:
     code: C0
     deployment: none
     business: none
-  - repo: elysium-defi-system
     code: C0
     deployment: none
     business: none
@@ -512,7 +511,6 @@ todos:
 
   - id: p4a-defi-handler-stubs
     content: |
-      - [x] [AGENT] P1. Complete 8 Phase 2 execution handler stubs in elysium-defi-system
       Stubs: stake_handler, lend_handler, borrow_handler, swap_handler, flash_loan_handler
       (8 functions across 5 files).
       Target: full Web3 transaction building, signing, and broadcasting for each operation.
@@ -520,20 +518,17 @@ todos:
       (protocols/aave.py _Web3LiveExecutor).
       Each handler should work with paper_trading=True (sign but don't broadcast) and
       paper_trading=False (broadcast to chain).
-      Files: elysium-defi-system/src/execution/handlers/*.py
     status: done
     note: "Completed 2026-03-18. Protocol-to-handler routing, signal-to-order conversion, paper/live dispatch."
 
   - id: p4b-defi-reconnection
     content: |
-      - [x] [AGENT] P1. Add reconnection logic to elysium-defi-system
       Current: if any adapter connection drops, strategy loop continues but trades fail silently.
       No fault tolerance.
       Target: exponential backoff reconnection for RPC connections.
       AdapterRegistry.reconnect(adapter_name) method. Strategy loop catches connection
       failures, calls reconnect, retries. After max retries, emit CIRCUIT_BREAKER_OPEN event.
       Also add to unified-defi-execution-interface BaseConnector: reconnect() abstract method.
-      Files: elysium-defi-system/src/runner/scheduler.py (error handling + reconnect),
       unified-defi-execution-interface/protocols/base.py (reconnect abstract method),
       unified-defi-execution-interface/connectors/registry.py (reconnect_all method).
     status: done
@@ -542,7 +537,6 @@ todos:
       event."
 
   # === QG GATE: Phase 4 complete ===
-  # Run QG on: elysium-defi-system, unified-defi-execution-interface.
 
   # =================================================================
   # PHASE 5: ML LIVE READINESS (depends on Phase 3)

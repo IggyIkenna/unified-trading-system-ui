@@ -91,14 +91,14 @@ export default function PlatformServicePage() {
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               See all your trades across every product in one normalised view.
-              Live P&amp;L, position monitoring, risk analytics — and every morning,
-              compare yesterday&apos;s live trades against what the backtest
-              would have done.
+              Live P&amp;L, position monitoring, risk analytics — and every
+              morning, compare yesterday&apos;s live trades against what the
+              backtest would have done.
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
-              Full web dashboards for monitoring and control, with API access for
-              custom integrations. The same code runs your backtests and your
-              live strategies.
+              Full web dashboards for monitoring and control, with API access
+              for custom integrations. The same code runs your backtests and
+              your live strategies.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>
@@ -408,9 +408,7 @@ export default function PlatformServicePage() {
               </Card>
               <Card className="border-muted">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">
-                    Why Integrated
-                  </CardTitle>
+                  <CardTitle className="text-sm">Why Integrated</CardTitle>
                   <CardDescription className="text-xs">
                     Built-in controls and connectivity
                   </CardDescription>

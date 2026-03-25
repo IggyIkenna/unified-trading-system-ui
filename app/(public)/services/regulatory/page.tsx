@@ -37,7 +37,8 @@ export default function RegulatoryServicePage() {
             <h1 className="text-3xl font-bold">Regulatory Umbrella</h1>
             <p className="mt-2 text-lg text-muted-foreground">
               FCA Appointed Representative services for Professional clients.
-              Operational in weeks, not the 12-24 months of direct authorisation.
+              Operational in weeks, not the 12-24 months of direct
+              authorisation.
             </p>
           </div>
 
@@ -86,7 +87,8 @@ export default function RegulatoryServicePage() {
               <CardTitle>FCA-Authorised Activities</CardTitle>
               <CardDescription>
                 Regulated activities under our FCA authorisation (Ref 975797).
-                All activities are limited to Professional and Eligible Counterparty clients.
+                All activities are limited to Professional and Eligible
+                Counterparty clients.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">

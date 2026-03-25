@@ -207,27 +207,45 @@ export default function ServicesLandingPage() {
               to institutional clients at any entry point.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link href="/services/data" className="flex items-center gap-1.5 hover:text-sky-400 transition-colors">
+              <Link
+                href="/services/data"
+                className="flex items-center gap-1.5 hover:text-sky-400 transition-colors"
+              >
                 <Database className="size-3.5 text-sky-400" /> Data
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/backtesting" className="flex items-center gap-1.5 hover:text-violet-400 transition-colors">
+              <Link
+                href="/services/backtesting"
+                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
+              >
                 <Brain className="size-3.5 text-violet-400" /> Research
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/platform" className="flex items-center gap-1.5 hover:text-amber-400 transition-colors">
+              <Link
+                href="/services/platform"
+                className="flex items-center gap-1.5 hover:text-amber-400 transition-colors"
+              >
                 <Layers className="size-3.5 text-amber-400" /> Trading
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/execution" className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors">
+              <Link
+                href="/services/execution"
+                className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors"
+              >
                 <Zap className="size-3.5 text-emerald-400" /> Execution
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/investment" className="flex items-center gap-1.5 hover:text-rose-400 transition-colors">
+              <Link
+                href="/services/investment"
+                className="flex items-center gap-1.5 hover:text-rose-400 transition-colors"
+              >
                 <BarChart3 className="size-3.5 text-rose-400" /> Reporting
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/regulatory" className="flex items-center gap-1.5 hover:text-slate-400 transition-colors">
+              <Link
+                href="/services/regulatory"
+                className="flex items-center gap-1.5 hover:text-slate-400 transition-colors"
+              >
                 <Shield className="size-3.5 text-slate-400" /> Regulatory
               </Link>
             </div>
@@ -429,14 +447,15 @@ export default function ServicesLandingPage() {
       </section>
 
       {/* Services */}
-      <section id="services" className="container px-4 py-16 md:px-6 md:py-24 border-t border-border">
+      <section
+        id="services"
+        className="container px-4 py-16 md:px-6 md:py-24 border-t border-border"
+      >
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight">
-            Services
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight">Services</h2>
           <p className="mt-4 text-muted-foreground">
-            From market data to FCA-authorised investment management.
-            Every service comes with a no-code interface and full API access.
+            From market data to FCA-authorised investment management. Every
+            service comes with a no-code interface and full API access.
           </p>
         </div>
 
@@ -465,13 +484,20 @@ export default function ServicesLandingPage() {
                     >
                       <Icon className={cn("size-5", service.color)} />
                     </div>
-                    <CardTitle className="mt-3 text-base">{service.name}</CardTitle>
+                    <CardTitle className="mt-3 text-base">
+                      {service.name}
+                    </CardTitle>
                     <CardDescription className="line-clamp-2 text-sm">
                       {service.description}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <span className={cn("text-sm font-medium inline-flex items-center gap-1", service.color)}>
+                    <span
+                      className={cn(
+                        "text-sm font-medium inline-flex items-center gap-1",
+                        service.color,
+                      )}
+                    >
                       Learn more <ArrowRight className="size-3.5" />
                     </span>
                   </CardContent>

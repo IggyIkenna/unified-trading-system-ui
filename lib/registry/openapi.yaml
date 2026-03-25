@@ -10272,7 +10272,6 @@ paths:
               schema: {}
       tags:
         - client-reporting-api
-  /market-data-api/health:
     get:
       summary: Health
       description:
@@ -10291,8 +10290,6 @@ paths:
                 type: object
                 title: Response Health Health Get
       tags:
-        - market-data-api
-  /market-data-api/readiness:
     get:
       summary: Readiness Check
       description:
@@ -10310,8 +10307,6 @@ paths:
                 type: object
                 title: Response Readiness Check Readiness Get
       tags:
-        - market-data-api
-  /market-data-api/orderbook/{symbol}/snapshot:
     get:
       summary: Get Snapshot
       operationId: get_snapshot_orderbook__symbol__snapshot_get
@@ -10354,8 +10349,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
       tags:
-        - market-data-api
-  /market-data-api/candles:
     get:
       summary: Get Candles
       description: "Return OHLCV candle data.
@@ -10445,8 +10438,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
       tags:
-        - market-data-api
-  /market-data-api/venues:
     get:
       summary: List Venues
       description: Return the list of known venue names from the UAC VENUE_CATEGORY_MAP.
@@ -10487,8 +10478,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
       tags:
-        - market-data-api
-  /market-data-api/venues/{venue}/validate:
     get:
       summary: Validate Venue
       description: "Validate a venue name against UAC VENUE_CATEGORY_MAP.
@@ -10538,8 +10527,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
       tags:
-        - market-data-api
-  /market-data-api/stream/orderbook:
     get:
       summary: Stream Orderbook
       operationId: stream_orderbook_stream_orderbook_get
@@ -10586,8 +10573,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
       tags:
-        - market-data-api
-  /market-data-api/data-contract:
     get:
       summary: Data Contract
       description: Describe the upstream data contract for processed candles.
@@ -10603,8 +10588,6 @@ paths:
                 type: object
                 title: Response Data Contract Data Contract Get
       tags:
-        - market-data-api
-  /market-data-api/metrics:
     get:
       summary: Metrics
       description: Prometheus metrics endpoint.
@@ -10616,7 +10599,6 @@ paths:
             application/json:
               schema: {}
       tags:
-        - market-data-api
   /alerting-service/health:
     get:
       summary: Health
@@ -17738,7 +17720,6 @@ tags:
     description: Unified Trading API
   - name: client-reporting-api
     description: Client Reporting Service
-  - name: market-data-api
     description: Market Data API
   - name: alerting-service
     description: Alerting System

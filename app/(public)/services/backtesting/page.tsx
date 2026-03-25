@@ -41,8 +41,8 @@ export default function BacktestingServicePage() {
               real historical data across every asset class.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              When you&apos;re happy with a strategy, promote it straight to live
-              trading. Same code, same data, same results.
+              When you&apos;re happy with a strategy, promote it straight to
+              live trading. Same code, same data, same results.
             </p>
           </div>
 

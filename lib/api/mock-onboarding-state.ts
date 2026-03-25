@@ -91,12 +91,7 @@ function defaultState(): OnboardingState {
         applicant_name: "DeFi Desk Lead",
         applicant_email: "lead@deltaprotocol.io",
         org_name: "Delta Protocol",
-        desired_product_slugs: [
-          "advisor",
-          "dealing_agent",
-          "arranging",
-          "aml",
-        ],
+        desired_product_slugs: ["advisor", "dealing_agent", "arranging", "aml"],
         subscription_tier: "standard",
         engagement_type: "advisor",
         regulated_activities: ["dealing_agent", "arranging"],

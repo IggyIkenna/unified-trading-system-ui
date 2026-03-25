@@ -14,7 +14,6 @@ typed REST/SSE endpoints to UIs.
 | Repo                    | Abbrev | Port (dev) | Proxies                        | Serves UIs                                                                                       | Auth                          |
 | ----------------------- | ------ | ---------- | ------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------------- |
 | `execution-results-api` | ERA    | 8002       | execution-service              | trading-analytics-ui, live-health-monitor-ui, strategy-ui, execution-analytics-ui, settlement-ui | None (internal)               |
-| `market-data-api`       | MDA    | 8004       | market-data-processing-service | trading-analytics-ui                                                                             | None (internal)               |
 | `client-reporting-api`  | CRA    | 8003       | pnl-attribution-service output | client-reporting-ui                                                                              | Per-client JWT (Google OAuth) |
 
 > **Note:** `deployment-api` is **not** in this cluster — it sits at L8 (deployment infrastructure). The L10 API
@@ -38,9 +37,6 @@ typed REST/SSE endpoints to UIs.
 - **P0 outstanding:** Replace all `dict[str, Any]` at API boundaries with `TypedDict`/Pydantic models (task:
   `p0-exec-results-api-types`)
 
-### market-data-api (MDA)
-
-- **GitHub:** https://github.com/IggyIkenna/market-data-api
 - **Status:** active (in-progress)
 - **Dev port:** 8004
 - **Key routes:**

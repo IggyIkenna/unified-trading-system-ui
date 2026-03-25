@@ -14502,7 +14502,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/readiness": {
@@ -14526,7 +14526,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/orderbook/{symbol}/snapshot": {
@@ -14600,7 +14600,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/candles": {
@@ -14738,7 +14738,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/venues": {
@@ -14809,7 +14809,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/venues/{venue}/validate": {
@@ -14893,7 +14893,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/stream/orderbook": {
@@ -14973,7 +14973,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/data-contract": {
@@ -14997,7 +14997,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/market-data-api/metrics": {
@@ -15015,7 +15015,7 @@
             }
           }
         },
-        "tags": ["market-data-api"]
+        "tags": []
       }
     },
     "/alerting-service/health": {

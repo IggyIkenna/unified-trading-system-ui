@@ -39,13 +39,13 @@ export default function InvestmentServicePage() {
             <h1 className="text-3xl font-bold">Investment Management</h1>
             <p className="mt-2 text-lg text-muted-foreground">
               Deep dive into your portfolio performance. Every trade, every
-              order, every position — broken down by strategy, asset, and
-              venue with clear visuals.
+              order, every position — broken down by strategy, asset, and venue
+              with clear visuals.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               FCA-authorised discretionary management. Co-invest at the same
-              terms as our own capital. Full transparency through your
-              investor portal.
+              terms as our own capital. Full transparency through your investor
+              portal.
             </p>
           </div>
 
@@ -513,18 +513,17 @@ export default function InvestmentServicePage() {
             <div className="grid md:grid-cols-3 gap-4">
               <Card className="border-muted">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">
-                    Why Managed Only
-                  </CardTitle>
+                  <CardTitle className="text-sm">Why Managed Only</CardTitle>
                   <CardDescription className="text-xs">
                     FCA-regulated discretionary management
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <p>
-                    Investment management is a regulated activity. All portfolios
-                    are managed by our FCA-authorised team with full audit trail,
-                    best execution monitoring, and regulatory reporting built in.
+                    Investment management is a regulated activity. All
+                    portfolios are managed by our FCA-authorised team with full
+                    audit trail, best execution monitoring, and regulatory
+                    reporting built in.
                   </p>
                 </CardContent>
               </Card>

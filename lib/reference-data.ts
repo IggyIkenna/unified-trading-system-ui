@@ -285,7 +285,6 @@ export const SERVICE_PORTS: Record<string, number> = {
   "batch-audit-api": 8013,
   "client-reporting-api": 8014,
   "ml-inference-api": 8015,
-  "market-data-api": 8016,
   "risk-and-exposure-service": 8019,
   "position-balance-monitor-service": 8020,
   "strategy-service": 8025,
@@ -627,7 +626,6 @@ export const DATA_FLOWS: DataFlow[] = [
     mode: "batch",
     service: "market-data-processing-service",
     dataSource: "gcs",
-    api: "market-data-api",
     ui: ["trading-analytics-ui", "batch-audit-ui"],
   },
   {
@@ -636,7 +634,6 @@ export const DATA_FLOWS: DataFlow[] = [
     mode: "live",
     service: "market-data-processing-service",
     dataSource: "pubsub",
-    api: "market-data-api",
     ui: ["trading-analytics-ui", "batch-audit-ui"],
   },
   {
@@ -1064,7 +1061,6 @@ export const SERVICES: Service[] = [
     coveragePct: null,
   },
   {
-    id: "market-data-api",
     name: "Market Data API",
     type: "api-service",
     tier: 3,
