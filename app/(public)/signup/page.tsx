@@ -1765,7 +1765,14 @@ function GenericSignup() {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [company, setCompany] = React.useState("");
-  const [message, setMessage] = React.useState("");
+  const preServiceLabel = preService
+    ? SERVICES.find((s) => s.id === preService)?.name || preService
+    : "";
+  const [message, setMessage] = React.useState(
+    preService
+      ? `I'm interested in ${preServiceLabel}. I'd like to learn more about how it works and pricing.`
+      : "",
+  );
   const [submitted, setSubmitted] = React.useState(false);
   // Single service selection for signup
   const selectSvc = (id: string) =>
@@ -1889,8 +1896,10 @@ function GenericSignup() {
           <div className="flex flex-wrap justify-center gap-2 mb-4">
             {[...selectedServices].map((id) => {
               const s = SERVICES.find((sv) => sv.id === id);
+              const Icon = s?.icon;
               return s ? (
-                <Badge key={id} variant="secondary" className="text-xs">
+                <Badge key={id} variant="secondary" className="text-xs gap-1">
+                  {Icon && <Icon className={`size-3 ${s.color}`} />}
                   {s.name}
                 </Badge>
               ) : null;
