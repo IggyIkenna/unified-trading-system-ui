@@ -1,34 +1,28 @@
-# syntax=docker/dockerfile:1
 # Multi-stage build for Next.js 16 on Cloud Run (pnpm)
-# Uses BuildKit cache mounts to persist pnpm store + Next.js cache across builds
-
 FROM node:22-alpine AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Install dependencies — cached unless lockfile changes
+# Install ALL dependencies (needed for build)
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
-# Build the app — cached .next/cache persists Turbopack state
+# Build the app
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN --mount=type=cache,target=/app/.next/cache \
-    pnpm build
+RUN pnpm build
 
-# Production deps only
+# Production deps only (smaller than full node_modules)
 FROM base AS proddeps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --prod
 
 # Production runner — minimal image
 FROM node:22-alpine AS runner
