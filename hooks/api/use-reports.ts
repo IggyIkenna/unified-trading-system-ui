@@ -150,3 +150,90 @@ export function useBookCorrection() {
     },
   });
 }
+
+// ── Live reconciliation hooks (position-balance-monitor-service) ─────────────
+
+export function useReconciliationDeviations(status?: string) {
+  const { user, token } = useAuth();
+  const qs = status ? `?status=${encodeURIComponent(status)}` : "";
+
+  return useQuery({
+    queryKey: ["recon-deviations", status, user?.id],
+    queryFn: () =>
+      apiFetch(`/api/positions/reconciliation/deviations${qs}`, token),
+    enabled: !!user,
+    refetchInterval: 30_000,
+  });
+}
+
+export function useReconciliationBalances(venue?: string) {
+  const { user, token } = useAuth();
+  const qs = venue ? `?venue=${encodeURIComponent(venue)}` : "";
+
+  return useQuery({
+    queryKey: ["recon-balances", venue, user?.id],
+    queryFn: () =>
+      apiFetch(`/api/positions/reconciliation/balances${qs}`, token),
+    enabled: !!user,
+    refetchInterval: 30_000,
+  });
+}
+
+export function useReconciliationPnL(venue?: string) {
+  const { user, token } = useAuth();
+  const qs = venue ? `?venue=${encodeURIComponent(venue)}` : "";
+
+  return useQuery({
+    queryKey: ["recon-pnl", venue, user?.id],
+    queryFn: () => apiFetch(`/api/positions/reconciliation/pnl${qs}`, token),
+    enabled: !!user,
+    refetchInterval: 30_000,
+  });
+}
+
+export function useReconciliationSummary() {
+  const { user, token } = useAuth();
+
+  return useQuery({
+    queryKey: ["recon-summary", user?.id],
+    queryFn: () => apiFetch("/api/positions/reconciliation/summary", token),
+    enabled: !!user,
+    refetchInterval: 15_000,
+  });
+}
+
+export interface ResolveDeviationParams {
+  deviation_id: string;
+  action: string;
+  note: string;
+  resolved_by: string;
+}
+
+export function useResolveDeviation() {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: ResolveDeviationParams) =>
+      apiFetch("/api/positions/reconciliation/resolve", token, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["recon-deviations"] });
+      queryClient.invalidateQueries({ queryKey: ["recon-summary"] });
+    },
+  });
+}
+
+export function useAutoReconHistory() {
+  const { user, token } = useAuth();
+
+  return useQuery({
+    queryKey: ["recon-auto-history", user?.id],
+    queryFn: () =>
+      apiFetch("/api/positions/reconciliation/auto-recon/history", token),
+    enabled: !!user,
+  });
+}

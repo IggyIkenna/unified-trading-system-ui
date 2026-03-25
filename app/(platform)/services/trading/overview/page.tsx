@@ -303,9 +303,8 @@ export default function OverviewPage() {
     }
     if (context.clientIds.length > 0) {
       result = result.filter((s) => {
-        const clientHint = (s as unknown as Record<string, unknown>).clientId as
-          | string
-          | undefined;
+        const clientHint = (s as unknown as Record<string, unknown>)
+          .clientId as string | undefined;
         return clientHint ? context.clientIds.includes(clientHint) : true;
       });
     }

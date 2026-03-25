@@ -692,7 +692,9 @@ function ExecutionComparePanel({
           <tbody>
             {METRICS.map((m) => {
               const values = items.map(
-                (b) => (b.results as unknown as Record<string, number>)?.[m.key] ?? 0,
+                (b) =>
+                  (b.results as unknown as Record<string, number>)?.[m.key] ??
+                  0,
               );
               const best = m.low ? Math.min(...values) : Math.max(...values);
               return (

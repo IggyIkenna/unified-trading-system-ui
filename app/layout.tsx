@@ -1,11 +1,11 @@
-import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
+import { PreviewBanner } from "@/components/preview-banner";
+import { StagingGate } from "@/components/staging-gate";
+import { Toaster } from "@/components/ui/sonner";
 import { ExecutionModeProvider } from "@/lib/execution-mode-context";
 import { Providers } from "@/lib/providers";
-import { Toaster } from "@/components/ui/sonner";
-import { StagingGate } from "@/components/staging-gate";
-import { PreviewBanner } from "@/components/preview-banner";
+import { Analytics } from "@vercel/analytics/next";
+import type { Metadata, Viewport } from "next";
+import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -24,7 +24,9 @@ export const metadata: Metadata = {
   title: "Odum Research - Unified Trading Infrastructure",
   description:
     "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
-  metadataBase: new URL("https://odum-research.co.uk"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://odum-research.com",
+  ),
   openGraph: {
     title: "Odum Research",
     description:

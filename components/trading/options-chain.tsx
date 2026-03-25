@@ -308,7 +308,7 @@ function ExpirySection({
   // Find ATM strike (closest to spot)
   const atmStrike = group.rows.reduce((closest, row) =>
     Math.abs(row.strike - group.spotPrice) <
-      Math.abs(closest.strike - group.spotPrice)
+    Math.abs(closest.strike - group.spotPrice)
       ? row
       : closest,
   ).strike;
@@ -548,10 +548,10 @@ function MultiLegBuilder({
   const tickSize = ticks[chain.underlying] ?? 1;
   const atmStrike = firstExpiry
     ? firstExpiry.rows.reduce((closest, row) =>
-      Math.abs(row.strike - spotPrice) < Math.abs(closest.strike - spotPrice)
-        ? row
-        : closest,
-    ).strike
+        Math.abs(row.strike - spotPrice) < Math.abs(closest.strike - spotPrice)
+          ? row
+          : closest,
+      ).strike
     : spotPrice;
 
   // Available strikes from all expiries
@@ -815,7 +815,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.side === "call" &&
-                            "bg-emerald-600 hover:bg-emerald-700",
+                              "bg-emerald-600 hover:bg-emerald-700",
                           )}
                           onClick={() => updateLeg(leg.id, { side: "call" })}
                         >
@@ -827,7 +827,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.side === "put" &&
-                            "bg-rose-600 hover:bg-rose-700",
+                              "bg-rose-600 hover:bg-rose-700",
                           )}
                           onClick={() => updateLeg(leg.id, { side: "put" })}
                         >
@@ -849,7 +849,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.direction === "buy" &&
-                            "bg-emerald-600 hover:bg-emerald-700",
+                              "bg-emerald-600 hover:bg-emerald-700",
                           )}
                           onClick={() =>
                             updateLeg(leg.id, { direction: "buy" })
@@ -865,7 +865,7 @@ function MultiLegBuilder({
                           className={cn(
                             "h-6 text-[9px] px-1",
                             leg.direction === "sell" &&
-                            "bg-rose-600 hover:bg-rose-700",
+                              "bg-rose-600 hover:bg-rose-700",
                           )}
                           onClick={() =>
                             updateLeg(leg.id, { direction: "sell" })
@@ -993,8 +993,8 @@ function MultiLegBuilder({
                   <span className="font-mono text-right">
                     {pnlProfile.breakevens.length > 0
                       ? pnlProfile.breakevens
-                        .map((b) => `$${b.toLocaleString()}`)
-                        .join(", ")
+                          .map((b) => `$${b.toLocaleString()}`)
+                          .join(", ")
                       : "--"}
                   </span>
                 </div>
@@ -1153,5 +1153,10 @@ export function OptionsChain({
 
 export { generateMockOptionsChain };
 export type {
-  ExpiryGroup, OptionGreeks, OptionLeg, OptionsChainResponse, OptionsRow, SpreadLeg
+  ExpiryGroup,
+  OptionGreeks,
+  OptionLeg,
+  OptionsChainResponse,
+  OptionsRow,
+  SpreadLeg,
 };

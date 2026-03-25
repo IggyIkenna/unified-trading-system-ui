@@ -1,47 +1,44 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Lock, ArrowRight, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
-import { useAuth } from "@/hooks/use-auth"
+import * as React from "react";
+import Link from "next/link";
+import { Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
 
 interface RequireAuthProps {
-  children: React.ReactNode
-  loginHref?: string
+  children: React.ReactNode;
+  loginHref?: string;
 }
 
 export function RequireAuth({ children }: RequireAuthProps) {
-  const { user, loading, loginByEmail } = useAuth()
+  const { user, loading, loginByEmail } = useAuth();
 
-  const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
-  const [error, setError] = React.useState("")
-  const [submitting, setSubmitting] = React.useState(false)
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
-    )
+    );
   }
 
-  if (user) return <>{children}</>
+  if (user) return <>{children}</>;
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSubmitting(true)
-    setError("")
-    const ok = await loginByEmail(email, password)
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    const ok = await loginByEmail(email, password);
     if (!ok) {
-      setError("Invalid credentials. Check your email and password.")
+      setError("Invalid credentials. Check your email and password.");
     }
-    setSubmitting(false)
+    setSubmitting(false);
   }
 
   return (
@@ -49,7 +46,11 @@ export function RequireAuth({ children }: RequireAuthProps) {
       <header className="border-b border-border">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
+            <img
+              src="/images/odum-logo.png"
+              alt="Odum Research"
+              className="size-9"
+            />
             <span className="text-lg font-semibold">Odum Research</span>
           </Link>
           <Button variant="outline" size="sm" asChild>
@@ -127,5 +128,5 @@ export function RequireAuth({ children }: RequireAuthProps) {
         </div>
       </main>
     </div>
-  )
+  );
 }

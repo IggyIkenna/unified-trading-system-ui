@@ -70,7 +70,7 @@ import {
   RefreshCw,
   Search,
   Server,
-  XCircle
+  XCircle,
 } from "lucide-react";
 import * as React from "react";
 
@@ -255,9 +255,9 @@ function ServiceCard({ service }: { service: Service }) {
               "p-4 rounded-lg border cursor-pointer transition-colors hover:bg-muted/30",
               service.status === "healthy" && "border-[var(--status-live)]/30",
               service.status === "degraded" &&
-              "border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5",
+                "border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5",
               service.status === "unhealthy" &&
-              "border-[var(--status-error)]/30",
+                "border-[var(--status-error)]/30",
               service.status === "idle" && "border-muted-foreground/30",
             )}
           >
@@ -430,8 +430,8 @@ function DependencyDag() {
 
   const filteredNodes = searchTerm
     ? DEPENDENCY_GRAPH.filter((n) =>
-      n.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    )
+        n.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
     : DEPENDENCY_GRAPH;
 
   return (
@@ -1259,12 +1259,12 @@ export default function HealthPage() {
                                     className={cn(
                                       "h-2",
                                       utilization <= 100 &&
-                                      "[&>div]:bg-[var(--status-live)]",
+                                        "[&>div]:bg-[var(--status-live)]",
                                       utilization > 100 &&
-                                      utilization <= 200 &&
-                                      "[&>div]:bg-[var(--status-warning)]",
+                                        utilization <= 200 &&
+                                        "[&>div]:bg-[var(--status-warning)]",
                                       utilization > 200 &&
-                                      "[&>div]:bg-[var(--status-error)]",
+                                        "[&>div]:bg-[var(--status-error)]",
                                     )}
                                   />
                                 ) : (

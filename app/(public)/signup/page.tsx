@@ -414,12 +414,13 @@ function StepIndicator({
               type="button"
               disabled={!done || current === 5}
               onClick={() => done && onNavigate(num)}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${done
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                done
                   ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 cursor-pointer"
                   : active
                     ? "bg-primary/10 text-primary ring-1 ring-primary/30"
                     : "text-muted-foreground"
-                }`}
+              }`}
             >
               {done ? (
                 <Check className="size-3" />
@@ -496,7 +497,8 @@ function OnboardingWizard({
   const [signatures, setSignatures] = React.useState<Record<string, string>>(
     {},
   );
-  const [applicantType, setApplicantType] = React.useState<ApplicantType>("individual");
+  const [applicantType, setApplicantType] =
+    React.useState<ApplicantType>("individual");
   const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null);
   const [appId, setAppId] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -578,7 +580,9 @@ function OnboardingWizard({
     const storage = getFirebaseStorage();
     const storagePath = `onboarding-docs/${orgSlug}/${draftId}/${docType}-${fileName}`;
     const contentType =
-      file instanceof File ? file.type || "application/octet-stream" : "application/pdf";
+      file instanceof File
+        ? file.type || "application/octet-stream"
+        : "application/pdf";
 
     if (!storage) {
       console.warn("Firebase Storage not configured — skipping upload");
@@ -706,7 +710,9 @@ function OnboardingWizard({
       setStep(5);
       localStorage.removeItem("onboarding-draft");
     } catch (err: unknown) {
-      setSubmitError(err instanceof Error ? err.message : "Signup failed. Please try again.");
+      setSubmitError(
+        err instanceof Error ? err.message : "Signup failed. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -754,7 +760,9 @@ function OnboardingWizard({
                     <Button
                       size="sm"
                       onClick={() => {
-                        setApplicantType(resumeDraft.applicantType || "individual");
+                        setApplicantType(
+                          resumeDraft.applicantType || "individual",
+                        );
                         setName(resumeDraft.name || "");
                         setEmail(resumeDraft.email || "");
                         setCompany(resumeDraft.company || "");
@@ -794,8 +802,16 @@ function OnboardingWizard({
                 <div className="grid grid-cols-2 gap-3">
                   {(
                     [
-                      { id: "individual" as const, label: "Individual", desc: "Personal application" },
-                      { id: "company" as const, label: "Company / Organisation", desc: "Corporate application" },
+                      {
+                        id: "individual" as const,
+                        label: "Individual",
+                        desc: "Personal application",
+                      },
+                      {
+                        id: "company" as const,
+                        label: "Company / Organisation",
+                        desc: "Corporate application",
+                      },
                     ] as const
                   ).map((opt) => (
                     <button
@@ -805,7 +821,9 @@ function OnboardingWizard({
                       className={`text-left rounded-lg border p-3 transition-colors ${applicantType === opt.id ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "hover:bg-accent/30"}`}
                     >
                       <span className="text-sm font-medium">{opt.label}</span>
-                      <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {opt.desc}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -831,7 +849,11 @@ function OnboardingWizard({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">{applicantType === "company" ? "Company / Organisation *" : "Company (optional)"}</Label>
+                  <Label className="text-xs">
+                    {applicantType === "company"
+                      ? "Company / Organisation *"
+                      : "Company (optional)"}
+                  </Label>
                   <Input
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
@@ -885,7 +907,14 @@ function OnboardingWizard({
               </div>
               <div className="flex justify-end pt-2">
                 <OnboardingNextBtn
-                  disabled={!name || !email || !company || !password || password.length < 6 || password !== confirmPassword}
+                  disabled={
+                    !name ||
+                    !email ||
+                    !company ||
+                    !password ||
+                    password.length < 6 ||
+                    password !== confirmPassword
+                  }
                   onClick={() => setStep(2)}
                 />
               </div>
@@ -1188,7 +1217,7 @@ function OnboardingWizard({
                               />
                               {signatures[slot.key] &&
                                 signatures[slot.key].toLowerCase() !==
-                                name.toLowerCase() && (
+                                  name.toLowerCase() && (
                                   <p className="text-xs text-amber-400">
                                     Signature should match your full name:{" "}
                                     {name}
@@ -1400,7 +1429,8 @@ function OnboardingWizard({
               <div className="flex justify-between pt-2">
                 <OnboardingBackBtn onStep={setStep} to={3} />
                 <Button onClick={handleSubmit} disabled={submitting}>
-                  {submitting ? "Submitting..." : "Submit Application"} <ArrowRight className="ml-2 size-4" />
+                  {submitting ? "Submitting..." : "Submit Application"}{" "}
+                  <ArrowRight className="ml-2 size-4" />
                 </Button>
               </div>
             </CardContent>

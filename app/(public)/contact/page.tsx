@@ -141,7 +141,9 @@ function ContactPageContent() {
         message = `I'm interested in ${allLabels[0]}. I'd like to learn more about pricing and how it works.`;
       } else {
         const lines = allLabels.map((l) => `I'm interested in ${l}.`);
-        message = lines.join("\n") + "\n\nI'd like to learn more about pricing and how these services work together.";
+        message =
+          lines.join("\n") +
+          "\n\nI'd like to learn more about pricing and how these services work together.";
       }
     }
 

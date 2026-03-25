@@ -46,7 +46,7 @@ import {
 import { newOptimisticBacktestIds } from "@/lib/demo-ids";
 import type {
   BacktestRun,
-  StrategyTemplate
+  StrategyTemplate,
 } from "@/lib/strategy-platform-types";
 import type { ExportColumn } from "@/lib/utils/export";
 
@@ -268,9 +268,7 @@ export default function BacktestsPage() {
       header: "Strategy",
       enableSorting: false,
       cell: ({ row }) => (
-        <span className="font-medium text-sm">
-          {row.original.templateName}
-        </span>
+        <span className="font-medium text-sm">{row.original.templateName}</span>
       ),
     },
     {

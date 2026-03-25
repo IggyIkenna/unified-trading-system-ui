@@ -8,10 +8,7 @@
   "paths": {
     "/deployment-api/api/services": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "List Services",
         "description": "List all available services with their sharding configurations.\n\nReturns:\n    List of services with their descriptions and dimensions.",
         "operationId": "list_services_api_services_get",
@@ -34,10 +31,7 @@
     },
     "/deployment-api/api/services/{service_name}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Get Service Config",
         "description": "Get detailed configuration for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Full sharding configuration for the service.",
         "operationId": "get_service_config_api_services__service_name__get",
@@ -81,10 +75,7 @@
     },
     "/deployment-api/api/services/{service_name}/dimensions": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Get Service Dimensions",
         "description": "Get dimension values for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Dimension definitions with their possible values.",
         "operationId": "get_service_dimensions_api_services__service_name__dimensions_get",
@@ -128,10 +119,7 @@
     },
     "/deployment-api/api/services/{service_name}/discover-configs": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Discover Configs",
         "description": "Discover config files from a cloud storage path.\n\nThis endpoint lists all .json config files in a cloud storage directory\nand returns the count for shard estimation.\n\nArgs:\n    service_name: Name of the service (for validation)\n    cloud_path: Cloud storage path (gs://... or s3://...)\n\nReturns:\n    List of discovered config file paths and count.",
         "operationId": "discover_configs_api_services__service_name__discover_configs_get",
@@ -184,10 +172,7 @@
     },
     "/deployment-api/api/services/{service_name}/list-directories": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "List Directories",
         "description": "List subdirectories in a cloud storage path.\n\nThis enables hierarchical browsing of GCS directories for config selection.\n\nArgs:\n    service_name: Name of the service (for context)\n    cloud_path: Cloud storage path (gs://bucket/prefix/)\n\nReturns:\n    List of immediate subdirectory names.",
         "operationId": "list_directories_api_services__service_name__list_directories_get",
@@ -240,10 +225,7 @@
     },
     "/deployment-api/api/services/{service_name}/config-buckets": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Services"
-        ],
+        "tags": ["deployment-api", "Services"],
         "summary": "Get Config Buckets",
         "description": "Get the default config bucket(s) for a service.\n\nReturns the GCS bucket path where configs are typically stored.",
         "operationId": "get_config_buckets_api_services__service_name__config_buckets_get",
@@ -287,10 +269,7 @@
     },
     "/deployment-api/api/deployments": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "List Deployments",
         "description": "List deployments with optional filtering and pagination.",
         "operationId": "list_deployments_api_deployments_get",
@@ -390,10 +369,7 @@
         }
       },
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Create Deployment",
         "description": "Create a new deployment.",
         "operationId": "create_deployment_api_deployments_post",
@@ -438,10 +414,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Status",
         "description": "Get detailed status for a specific deployment.",
         "operationId": "get_deployment_status_api_deployments__deployment_id__get",
@@ -499,10 +472,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Update Deployment",
         "description": "Update deployment properties.",
         "operationId": "update_deployment_api_deployments__deployment_id__patch",
@@ -560,10 +530,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Delete Deployment",
         "description": "Delete a deployment and its resources.",
         "operationId": "delete_deployment_api_deployments__deployment_id__delete",
@@ -613,10 +580,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/verify": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Verify Deployment Completion",
         "description": "Verify deployment completion and data integrity.",
         "operationId": "verify_deployment_completion_api_deployments__deployment_id__verify_get",
@@ -676,10 +640,7 @@
     },
     "/deployment-api/api/deployments/quota-info": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Quota Info",
         "description": "Get quota requirements and recommendations for a deployment.",
         "operationId": "quota_info_api_deployments_quota_info_post",
@@ -726,10 +687,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/cancel": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Cancel Deployment",
         "description": "Cancel a running deployment.",
         "operationId": "cancel_deployment_api_deployments__deployment_id__cancel_post",
@@ -779,10 +737,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/resume": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Resume Deployment",
         "description": "Resume a cancelled or failed deployment.",
         "operationId": "resume_deployment_api_deployments__deployment_id__resume_post",
@@ -832,10 +787,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/retry-failed": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Retry Failed Shards",
         "description": "Retry failed shards in a deployment.",
         "operationId": "retry_failed_shards_api_deployments__deployment_id__retry_failed_post",
@@ -895,10 +847,7 @@
     },
     "/deployment-api/api/deployments/bulk-delete": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Bulk Delete Deployments",
         "description": "Delete multiple deployments.",
         "operationId": "bulk_delete_deployments_api_deployments_bulk_delete_post",
@@ -945,10 +894,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/refresh": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Refresh Deployment Status",
         "description": "Refresh deployment status from cloud provider.",
         "operationId": "refresh_deployment_status_api_deployments__deployment_id__refresh_post",
@@ -996,10 +942,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/logs": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Logs",
         "description": "Get deployment logs with filtering options.",
         "operationId": "get_deployment_logs_api_deployments__deployment_id__logs_get",
@@ -1103,10 +1046,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/report": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Report",
         "description": "Get a detailed deployment report with analysis and recommendations.",
         "operationId": "get_deployment_report_api_deployments__deployment_id__report_get",
@@ -1154,10 +1094,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/events": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Events",
         "description": "Return the full shard event stream for a deployment.\n\nEvents are written by deployment-service backends to GCS as JSONL and aggregated\nhere. Each event captures a lifecycle step (JOB_STARTED, VM_PREEMPTED, etc.)\nwith timestamp, message, and optional metadata.",
         "operationId": "get_deployment_events_api_deployments__deployment_id__events_get",
@@ -1223,10 +1160,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/vm-events": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Deployment Vm Events",
         "description": "Return VM-level infrastructure events for a deployment.\n\nFilters the full event stream to VM_PREEMPTED, VM_DELETED, VM_QUOTA_EXHAUSTED,\nVM_ZONE_UNAVAILABLE, VM_TIMEOUT, CONTAINER_OOM, CLOUD_RUN_REVISION_FAILED.\nUsed by the History tab to surface infrastructure failure badges on shard rows.",
         "operationId": "get_deployment_vm_events_api_deployments__deployment_id__vm_events_get",
@@ -1274,10 +1208,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/rollback": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Rollback Live Deployment",
         "description": "Roll back a live Cloud Run Service deployment to the previous revision.\n\nOnly valid for deployments with deploy_mode=\"live\". Calls the deployment-service\nLiveDeployer to revert traffic to the specified (or previous) Cloud Run revision.",
         "operationId": "rollback_live_deployment_api_deployments__deployment_id__rollback_post",
@@ -1335,10 +1266,7 @@
     },
     "/deployment-api/api/deployments/{deployment_id}/live-health": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Deployments"
-        ],
+        "tags": ["deployment-api", "Deployments"],
         "summary": "Get Live Deployment Health",
         "description": "Return the current health check status of a live Cloud Run Service.\n\nPolls the service /health endpoint and returns a structured response.\nUsed by DeploymentDetails to show a live health badge for live-mode deployments.",
         "operationId": "get_live_deployment_health_api_deployments__deployment_id__live_health_get",
@@ -1408,10 +1336,7 @@
     },
     "/deployment-api/api/config/region": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Region Config",
         "description": "Return the configured GCS region for UI validation.\n\nUsed by DeployForm and DataStatusTab to warn when user selects a different region\n(cross-region egress costs).",
         "operationId": "get_region_config_api_config_region_get",
@@ -1434,10 +1359,7 @@
     },
     "/deployment-api/api/config/validate-region": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Validate Region",
         "description": "Validate requested deployment region against GCS region.\n\nReturns cross_region flag and warning message when deploying to a different\nregion than GCS (incurs egress costs).",
         "operationId": "validate_region_api_config_validate_region_get",
@@ -1483,10 +1405,7 @@
     },
     "/deployment-api/api/config/venues": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Venues",
         "description": "Get all venues organized by category.\n\nReturns:\n    Venues grouped by category (CEFI, TRADFI, DEFI) with their data types.",
         "operationId": "get_venues_api_config_venues_get",
@@ -1509,10 +1428,7 @@
     },
     "/deployment-api/api/config/venues/{category}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Venues By Category",
         "description": "Get venues for a specific category.\n\nArgs:\n    category: Category name (CEFI, TRADFI, DEFI)\n\nReturns:\n    List of venues and their data types for the category.",
         "operationId": "get_venues_by_category_api_config_venues__category__get",
@@ -1556,10 +1472,7 @@
     },
     "/deployment-api/api/config/expected-start-dates": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Expected Start Dates",
         "description": "Get expected data start dates for all services.\n\nReturns:\n    Start dates by service, category, and venue.",
         "operationId": "get_expected_start_dates_api_config_expected_start_dates_get",
@@ -1582,10 +1495,7 @@
     },
     "/deployment-api/api/config/expected-start-dates/{service_name}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Service Start Dates",
         "description": "Get expected start dates for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Start dates by category and venue for the service.",
         "operationId": "get_service_start_dates_api_config_expected_start_dates__service_name__get",
@@ -1629,10 +1539,7 @@
     },
     "/deployment-api/api/config/dependencies": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Dependencies",
         "description": "Get service dependency graph.\n\nReturns:\n    Full dependencies configuration including execution order.",
         "operationId": "get_dependencies_api_config_dependencies_get",
@@ -1655,10 +1562,7 @@
     },
     "/deployment-api/api/config/dependencies/{service_name}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Configuration"
-        ],
+        "tags": ["deployment-api", "Configuration"],
         "summary": "Get Service Dependencies",
         "description": "Get dependencies for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n    Upstream dependencies, downstream dependents, and full DAG context.",
         "operationId": "get_service_dependencies_api_config_dependencies__service_name__get",
@@ -1702,10 +1606,7 @@
     },
     "/deployment-api/api/checklists/{service_name}/checklist": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Checklists"
-        ],
+        "tags": ["deployment-api", "Checklists"],
         "summary": "Get Service Checklist",
         "description": "Get production readiness checklist for a service.\n\nReads from unified-trading-codex/10-audit/repos/{service}.yaml (v3.0 schema).",
         "operationId": "get_service_checklist_api_checklists__service_name__checklist_get",
@@ -1753,10 +1654,7 @@
     },
     "/deployment-api/api/checklists/{service_name}/checklist/validate": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Checklists"
-        ],
+        "tags": ["deployment-api", "Checklists"],
         "summary": "Validate Service Checklist",
         "description": "Validate service readiness for deployment.\n\nReturns blocking items and overall readiness. Ready = no blocking items\nAND readiness >= 95% (threshold allows in-progress non-critical items).",
         "operationId": "validate_service_checklist_api_checklists__service_name__checklist_validate_get",
@@ -1804,10 +1702,7 @@
     },
     "/deployment-api/api/checklists": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Checklists"
-        ],
+        "tags": ["deployment-api", "Checklists"],
         "summary": "List Checklists",
         "description": "List all available service checklists with summary status.\n\nReads exclusively from codex v3.0 SSOT (unified-trading-codex/10-audit/repos/).",
         "operationId": "list_checklists_api_checklists_get",
@@ -1834,10 +1729,7 @@
     },
     "/deployment-api/api/epics": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Epics"
-        ],
+        "tags": ["deployment-api", "Epics"],
         "summary": "List Epics",
         "description": "List all epics with summary readiness percentages.\n\nReturns compact summaries: epic_id, display_name, mvp_priority,\nepic_pct, total_required, completed, epic_complete, blocking_count.\n\nReads from:\n  - codex_dir (10-audit/repos/) for per-repo data\n  - epics_dir (11-project-management/epics/) for epic definitions",
         "operationId": "list_epics_api_epics_get",
@@ -1867,10 +1759,7 @@
     },
     "/deployment-api/api/epics/{epic_id}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Epics"
-        ],
+        "tags": ["deployment-api", "Epics"],
         "summary": "Get Epic Detail",
         "description": "Get detailed epic status: per-repo CR/BR stages, branch status,\ndata availability, feature groups, ML models, and blocking reasons.",
         "operationId": "get_epic_detail_api_epics__epic_id__get",
@@ -1918,10 +1807,7 @@
     },
     "/deployment-api/api/data-status": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Data Status",
         "description": "Get data completion status for a service across a date range.\n\nReturns completion percentages broken down by category and venue,\nwith optional list of missing dates.",
         "operationId": "get_data_status_api_data_status_get",
@@ -2115,10 +2001,7 @@
     },
     "/deployment-api/api/data-status/missing-shards": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Calculate Missing Shards",
         "description": "Calculate missing shards for a service over a date range.",
         "operationId": "calculate_missing_shards_api_data_status_missing_shards_post",
@@ -2240,10 +2123,7 @@
     },
     "/deployment-api/api/data-status/last-updated": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Last Updated",
         "description": "Get last updated information for a service.",
         "operationId": "get_last_updated_api_data_status_last_updated_get",
@@ -2310,10 +2190,7 @@
     },
     "/deployment-api/api/data-status/turbo": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Data Status Turbo",
         "description": "Get data status with turbo mode caching (5-minute cache TTL).",
         "operationId": "get_data_status_turbo_api_data_status_turbo_get",
@@ -2471,10 +2348,7 @@
     },
     "/deployment-api/api/data-status/turbo/stats": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Turbo Cache Stats",
         "description": "Get turbo mode cache statistics.",
         "operationId": "get_turbo_cache_stats_api_data_status_turbo_stats_get",
@@ -2497,10 +2371,7 @@
     },
     "/deployment-api/api/data-status/turbo/clear": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Clear Turbo Cache",
         "description": "Clear the turbo mode cache.",
         "operationId": "clear_turbo_cache_api_data_status_turbo_clear_post",
@@ -2523,10 +2394,7 @@
     },
     "/deployment-api/api/data-status/venue-filters": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Venue Filters",
         "description": "Get available venue filters for a service.",
         "operationId": "get_venue_filters_api_data_status_venue_filters_get",
@@ -2572,10 +2440,7 @@
     },
     "/deployment-api/api/data-status/list-files": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "List Files In Path",
         "description": "List files in a specific GCS bucket path.",
         "operationId": "list_files_in_path_api_data_status_list_files_get",
@@ -2657,10 +2522,7 @@
     },
     "/deployment-api/api/data-status/instruments": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Instruments List",
         "description": "Get list of instruments for a category.",
         "operationId": "get_instruments_list_api_data_status_instruments_get",
@@ -2754,10 +2616,7 @@
     },
     "/deployment-api/api/data-status/instrument-availability": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Instrument Availability",
         "description": "Check instrument availability over a date range.",
         "operationId": "get_instrument_availability_api_data_status_instrument_availability_get",
@@ -2901,10 +2760,7 @@
     },
     "/deployment-api/api/data-status/analyze": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Analyze Data Patterns",
         "description": "Analyze data patterns and trends for a service.",
         "operationId": "analyze_data_patterns_api_data_status_analyze_post",
@@ -2993,10 +2849,7 @@
     },
     "/deployment-api/api/data-status/multi-service": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Data Status"
-        ],
+        "tags": ["deployment-api", "Data Status"],
         "summary": "Get Multi Service Status",
         "description": "Get aggregated data status across multiple services.",
         "operationId": "get_multi_service_status_api_data_status_multi_service_post",
@@ -3088,10 +2941,7 @@
     },
     "/deployment-api/api/service-status/{service}/status": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Get Service Status",
         "description": "Get comprehensive status for a service.\n\nReturns temporal audit trail with timestamps for:\n- Last data update (GCS)\n- Last deployment (state files)\n- Last build (Cloud Build API)\n- Last code push (GitHub API)\n\nPlus anomaly detection.",
         "operationId": "get_service_status_api_service_status__service__status_get",
@@ -3135,10 +2985,7 @@
     },
     "/deployment-api/api/service-status/overview": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Get Services Overview",
         "description": "Get FAST status overview for all services.\n\nReturns a lightweight summary - skips slow GitHub/Build lookups.\nFor full details, query individual service status.",
         "operationId": "get_services_overview_api_service_status_overview_get",
@@ -3161,10 +3008,7 @@
     },
     "/deployment-api/api/service-status/execution-service/data-status": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Get Execution Service Data Status Endpoint",
         "description": "Get execution-service data status by checking configs vs results.",
         "operationId": "get_execution_service_data_status_endpoint_api_service_status_execution_service_data_status_get",
@@ -3240,10 +3084,7 @@
     },
     "/deployment-api/api/service-status/execution-service/missing-shards": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Service Status"
-        ],
+        "tags": ["deployment-api", "Service Status"],
         "summary": "Calculate Execution Missing Shards Endpoint",
         "description": "Calculate missing config x date shards for execution-service.",
         "operationId": "calculate_execution_missing_shards_endpoint_api_service_status_execution_service_missing_shards_post",
@@ -3369,10 +3210,7 @@
     },
     "/deployment-api/api/capabilities": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Capabilities"
-        ],
+        "tags": ["deployment-api", "Capabilities"],
         "summary": "Get Capabilities",
         "description": "Get API capabilities for UI display.\n\nIncludes GCS Fuse status: whether the API is using FUSE mounts for GCS\nreads (faster) or falling back to GCS API.",
         "operationId": "get_capabilities_api_capabilities_get",
@@ -3395,10 +3233,7 @@
     },
     "/deployment-api/api/capabilities/service-categories/{service}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Capabilities"
-        ],
+        "tags": ["deployment-api", "Capabilities"],
         "summary": "Get Service Categories",
         "description": "Get supported categories for a service from its sharding config.\n\nReturns the categories that can be used for deployment and data status checks.\nThis allows the UI to hide irrelevant category filters (e.g., hide CEFI/DEFI\nwhen viewing corporate-actions which is TRADFI-only).\n\nArgs:\n    service: Service name (e.g., \"instruments-service\", \"corporate-actions\")\n\nReturns:\n    {\"service\": str, \"categories\": List[str]}\n\nExamples:\n    - instruments-service: [\"CEFI\", \"DEFI\", \"TRADFI\"]\n    - corporate-actions: [\"TRADFI\"]\n    - features-calendar-service: []  # No category dimension",
         "operationId": "get_service_categories_api_capabilities_service_categories__service__get",
@@ -3446,10 +3281,7 @@
     },
     "/deployment-api/api/cloud-builds/triggers": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "List Triggers",
         "description": "List all Cloud Build triggers with their current status.\n\nReturns a list of triggers with last build info.\nResults are cached for 5 minutes (TTL_BUILD_INFO) to avoid slow Cloud Build API calls.\nUse force_refresh=true to bypass cache.",
         "operationId": "list_triggers_api_cloud_builds_triggers_get",
@@ -3498,10 +3330,7 @@
     },
     "/deployment-api/api/cloud-builds/trigger": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Trigger Build",
         "description": "Manually trigger a Cloud Build for a service.\n\nThis runs the build trigger as if code was pushed to the specified branch.\n\nRequires: roles/cloudbuild.builds.editor on the service account.",
         "operationId": "trigger_build_api_cloud_builds_trigger_post",
@@ -3546,10 +3375,7 @@
     },
     "/deployment-api/api/cloud-builds/history/{service}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Get Build History",
         "description": "Get build history for a specific service.\n\nReturns the most recent builds for the service's trigger.",
         "operationId": "get_build_history_api_cloud_builds_history__service__get",
@@ -3605,10 +3431,7 @@
     },
     "/deployment-api/api/cloud-builds/library-status/{library}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Get Library Status",
         "description": "Get detailed status for a library/SDK (like unified-trading-library).\n\nReturns:\n- Package version from pyproject.toml\n- Latest commit info from GitHub\n- Recent build status from Cloud Build\n- Which services depend on this library",
         "operationId": "get_library_status_api_cloud_builds_library_status__library__get",
@@ -3654,10 +3477,7 @@
     },
     "/deployment-api/api/cloud-builds/dependency-check": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "cloud-builds"
-        ],
+        "tags": ["deployment-api", "cloud-builds"],
         "summary": "Check Dependencies",
         "description": "Check if any libraries have failing quality gates that could affect services.\n\nThis is useful for catching version mismatches before they cause runtime errors.",
         "operationId": "check_dependencies_api_cloud_builds_dependency_check_get",
@@ -3682,10 +3502,7 @@
     },
     "/deployment-api/api/builds/{service}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "Builds"
-        ],
+        "tags": ["deployment-api", "Builds"],
         "summary": "List Builds",
         "description": "List available builds for a service from Artifact Registry.\n\nReturns builds sorted by version descending. In mock mode (CLOUD_MOCK_MODE=true or\nCLOUD_PROVIDER=local), falls back to deployed_versions from the PM manifest.\n\nBuild display format: \"{version} @ {branch}\" \u2014 human-readable and idempotent\n(same version + branch = same artifact, enforced by immutable AR tags).",
         "operationId": "list_builds_api_builds__service__get",
@@ -3709,11 +3526,7 @@
             "in": "query",
             "required": true,
             "schema": {
-              "enum": [
-                "dev",
-                "staging",
-                "prod"
-              ],
+              "enum": ["dev", "staging", "prod"],
               "type": "string",
               "description": "Target environment: dev, staging, or prod",
               "title": "Env"
@@ -3751,10 +3564,7 @@
     },
     "/deployment-api/api/deployments/{service}/deploy": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Builds"
-        ],
+        "tags": ["deployment-api", "Builds"],
         "summary": "Deploy Build",
         "description": "Deploy a specific build tag to any environment.\n\nNo version gate \u2014 deployment is always a manual decision. Pre-1.0.0 builds\nare explicitly allowed for development and testing.\n\nThis triggers a Cloud Run revision update with the specified image tag.\nIn mock mode, returns a dry-run response without calling Cloud Run.",
         "operationId": "deploy_build_api_deployments__service__deploy_post",
@@ -3812,10 +3622,7 @@
     },
     "/deployment-api/api/config-store/{domain}": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Write Domain Config",
         "description": "Write a new version of the domain config.\n\nValidates the content against the domain schema, writes a versioned YAML\nblob to cloud storage, updates the active pointer, and publishes a\nconfig-domain-{domain} event to notify all subscribing services.",
         "operationId": "write_domain_config_api_config_store__domain__post",
@@ -3871,10 +3678,7 @@
         }
       },
       "get": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Read Domain Config",
         "description": "Read the active domain config from the config store.",
         "operationId": "read_domain_config_api_config_store__domain__get",
@@ -3922,10 +3726,7 @@
     },
     "/deployment-api/api/config-store/{domain}/versions": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "List Domain Config Versions",
         "description": "List config versions for the domain (newest first, up to 50).",
         "operationId": "list_domain_config_versions_api_config_store__domain__versions_get",
@@ -3977,10 +3778,7 @@
     },
     "/deployment-api/api/config-store/{domain}/versions/{ts1}/diff/{ts2}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Diff Domain Config Versions",
         "description": "Return a unified diff between two config versions.",
         "operationId": "diff_domain_config_versions_api_config_store__domain__versions__ts1__diff__ts2__get",
@@ -4050,10 +3848,7 @@
     },
     "/deployment-api/api/config-store/{domain}/rollback/{timestamp}": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "config-store"
-        ],
+        "tags": ["deployment-api", "config-store"],
         "summary": "Rollback Domain Config",
         "description": "Roll back domain config to a specific version by re-saving it as the new active.",
         "operationId": "rollback_domain_config_api_config_store__domain__rollback__timestamp__post",
@@ -4112,10 +3907,7 @@
     },
     "/deployment-api/api/commentary/pipeline-uat": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "Commentary"
-        ],
+        "tags": ["deployment-api", "Commentary"],
         "summary": "Pipeline Uat Commentary",
         "description": "Trigger pipeline UAT LLM commentary for a completed batch run.\n\nReturns 202 Accepted immediately. Commentary is generated asynchronously\nand written to GCS at:\n  gs://deployment-store-{project}/pipeline-uat/day={date}/run={run_id}.json\n\nArgs:\n    request: PipelineUATRequest with job_name, run_id, gcs_manifest_path.\n    background_tasks: FastAPI BackgroundTasks for async execution.\n\nReturns:\n    Accepted response with run_id and status.",
         "operationId": "pipeline_uat_commentary_api_commentary_pipeline_uat_post",
@@ -4162,10 +3954,7 @@
     },
     "/deployment-api/sports/venues": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "List Sports Venues",
         "description": "List all configured sports venues with their status.",
         "operationId": "list_sports_venues_sports_venues_get",
@@ -4222,10 +4011,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/credentials": {
       "put": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Update Venue Credentials",
         "description": "Update venue credential reference in Secret Manager.",
         "operationId": "update_venue_credentials_sports_venues__venue_key__credentials_put",
@@ -4285,10 +4071,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/health": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Check Venue Health",
         "description": "Health check for venue connectivity (login URL reachable, API responding).",
         "operationId": "check_venue_health_sports_venues__venue_key__health_get",
@@ -4336,10 +4119,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/enable": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Enable Venue",
         "description": "Enable a sports venue for betting.",
         "operationId": "enable_venue_sports_venues__venue_key__enable_post",
@@ -4389,10 +4169,7 @@
     },
     "/deployment-api/sports/venues/{venue_key}/disable": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "sports-venues"
-        ],
+        "tags": ["deployment-api", "sports-venues"],
         "summary": "Disable Venue",
         "description": "Disable a sports venue for betting.",
         "operationId": "disable_venue_sports_venues__venue_key__disable_post",
@@ -4442,10 +4219,7 @@
     },
     "/deployment-api/api/user-management/users": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "List Users",
         "description": "List all registered users.\n\nRequires USER_VIEW permission (ADMIN or SUPER_ADMIN).",
         "operationId": "list_users_api_user_management_users_get",
@@ -4470,10 +4244,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Create User",
         "description": "Create a new user.\n\nRequires USER_MANAGE permission (ADMIN or SUPER_ADMIN).",
         "operationId": "create_user_api_user_management_users_post",
@@ -4520,10 +4291,7 @@
     },
     "/deployment-api/api/user-management/users/{user_id}": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Get User",
         "description": "Get a single user by ID.\n\nRequires USER_VIEW permission.",
         "operationId": "get_user_api_user_management_users__user_id__get",
@@ -4569,10 +4337,7 @@
         }
       },
       "patch": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Update User",
         "description": "Update an existing user.\n\nRequires USER_MANAGE permission (ADMIN or SUPER_ADMIN).",
         "operationId": "update_user_api_user_management_users__user_id__patch",
@@ -4628,10 +4393,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Delete User",
         "description": "Deactivate a user (soft delete).\n\nRequires USER_MANAGE permission (ADMIN or SUPER_ADMIN).",
         "operationId": "delete_user_api_user_management_users__user_id__delete",
@@ -4679,10 +4441,7 @@
     },
     "/deployment-api/api/user-management/users/{user_id}/role": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "Assign Role",
         "description": "Assign a role to a user.\n\nRequires USER_ROLE_ASSIGN permission (ADMIN or SUPER_ADMIN).",
         "operationId": "assign_role_api_user_management_users__user_id__role_post",
@@ -4740,10 +4499,7 @@
     },
     "/deployment-api/api/user-management/roles": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "List Roles",
         "description": "List all available roles with their permissions.\n\nOpen to any authenticated user (for UI dropdowns).",
         "operationId": "list_roles_api_user_management_roles_get",
@@ -4770,10 +4526,7 @@
     },
     "/deployment-api/api/user-management/permissions": {
       "get": {
-        "tags": [
-          "deployment-api",
-          "User Management"
-        ],
+        "tags": ["deployment-api", "User Management"],
         "summary": "List Permissions",
         "description": "List all available permissions.\n\nOpen to any authenticated user (for reference).",
         "operationId": "list_permissions_api_user_management_permissions_get",
@@ -4813,9 +4566,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/health": {
@@ -4837,9 +4588,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/health": {
@@ -4861,9 +4610,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/version": {
@@ -4887,9 +4634,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/readiness": {
@@ -4913,9 +4658,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/readiness": {
@@ -4939,9 +4682,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/workers": {
@@ -4963,9 +4704,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/api/cache/clear": {
@@ -4983,9 +4722,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/{full_path}": {
@@ -5024,9 +4761,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/infra/health": {
@@ -5048,17 +4783,12 @@
             }
           }
         },
-        "tags": [
-          "deployment-api"
-        ]
+        "tags": ["deployment-api"]
       }
     },
     "/deployment-api/events": {
       "post": {
-        "tags": [
-          "deployment-api",
-          "events"
-        ],
+        "tags": ["deployment-api", "events"],
         "summary": "Relay Ui Event",
         "operationId": "relay_ui_event_events_post",
         "requestBody": {
@@ -5090,10 +4820,7 @@
     },
     "/auth-api/health": {
       "get": {
-        "tags": [
-          "auth-api",
-          "health"
-        ],
+        "tags": ["auth-api", "health"],
         "summary": "Health",
         "description": "Liveness probe.",
         "operationId": "health_health_get__2",
@@ -5124,10 +4851,7 @@
     },
     "/auth-api/readiness": {
       "get": {
-        "tags": [
-          "auth-api",
-          "health"
-        ],
+        "tags": ["auth-api", "health"],
         "summary": "Readiness",
         "description": "Readiness probe.",
         "operationId": "readiness_readiness_get__2",
@@ -5151,10 +4875,7 @@
     },
     "/auth-api/auth/login": {
       "post": {
-        "tags": [
-          "auth-api",
-          "auth"
-        ],
+        "tags": ["auth-api", "auth"],
         "summary": "Login",
         "description": "Authenticate with email + password (demo mode).",
         "operationId": "login_auth_login_post",
@@ -5194,10 +4915,7 @@
     },
     "/auth-api/auth/logout": {
       "post": {
-        "tags": [
-          "auth-api",
-          "auth"
-        ],
+        "tags": ["auth-api", "auth"],
         "summary": "Logout",
         "description": "Revoke the current session.\n\nIn mock mode this is a no-op \u2014 tokens are stateless JWTs.\nProduction would add the token JTI to a revocation list.",
         "operationId": "logout_auth_logout_post",
@@ -5221,10 +4939,7 @@
     },
     "/auth-api/auth/refresh": {
       "post": {
-        "tags": [
-          "auth-api",
-          "auth"
-        ],
+        "tags": ["auth-api", "auth"],
         "summary": "Refresh",
         "description": "Exchange a refresh token for a new access token.",
         "operationId": "refresh_auth_refresh_post",
@@ -5264,10 +4979,7 @@
     },
     "/auth-api/auth/me": {
       "get": {
-        "tags": [
-          "auth-api",
-          "auth"
-        ],
+        "tags": ["auth-api", "auth"],
         "summary": "Me",
         "description": "Return the current authenticated user's info.",
         "operationId": "me_auth_me_get",
@@ -5287,10 +4999,7 @@
     },
     "/auth-api/auth/oauth/google": {
       "get": {
-        "tags": [
-          "auth-api",
-          "oauth"
-        ],
+        "tags": ["auth-api", "oauth"],
         "summary": "Google Initiate",
         "description": "Initiate Google OAuth flow.",
         "operationId": "google_initiate_auth_oauth_google_get",
@@ -5336,10 +5045,7 @@
     },
     "/auth-api/auth/oauth/google/callback": {
       "get": {
-        "tags": [
-          "auth-api",
-          "oauth"
-        ],
+        "tags": ["auth-api", "oauth"],
         "summary": "Google Callback",
         "description": "Handle Google OAuth callback.\n\nTODO: Exchange code for tokens, validate ID token, create/lookup user.",
         "operationId": "google_callback_auth_oauth_google_callback_get",
@@ -5395,10 +5101,7 @@
     },
     "/auth-api/auth/oauth/microsoft": {
       "get": {
-        "tags": [
-          "auth-api",
-          "oauth"
-        ],
+        "tags": ["auth-api", "oauth"],
         "summary": "Microsoft Initiate",
         "description": "Initiate Microsoft 365 OAuth flow.",
         "operationId": "microsoft_initiate_auth_oauth_microsoft_get",
@@ -5444,10 +5147,7 @@
     },
     "/auth-api/auth/oauth/microsoft/callback": {
       "get": {
-        "tags": [
-          "auth-api",
-          "oauth"
-        ],
+        "tags": ["auth-api", "oauth"],
         "summary": "Microsoft Callback",
         "description": "Handle Microsoft OAuth callback.\n\nTODO: Exchange code for tokens, validate ID token, create/lookup user.",
         "operationId": "microsoft_callback_auth_oauth_microsoft_callback_get",
@@ -5503,10 +5203,7 @@
     },
     "/auth-api/auth/oauth/slack": {
       "get": {
-        "tags": [
-          "auth-api",
-          "oauth"
-        ],
+        "tags": ["auth-api", "oauth"],
         "summary": "Slack Initiate",
         "description": "Initiate Slack OAuth flow.",
         "operationId": "slack_initiate_auth_oauth_slack_get",
@@ -5552,10 +5249,7 @@
     },
     "/auth-api/auth/oauth/slack/callback": {
       "get": {
-        "tags": [
-          "auth-api",
-          "oauth"
-        ],
+        "tags": ["auth-api", "oauth"],
         "summary": "Slack Callback",
         "description": "Handle Slack OAuth callback.\n\nTODO: Exchange code for tokens, validate ID token, create/lookup user.",
         "operationId": "slack_callback_auth_oauth_slack_callback_get",
@@ -5611,10 +5305,7 @@
     },
     "/auth-api/organizations": {
       "get": {
-        "tags": [
-          "auth-api",
-          "organizations"
-        ],
+        "tags": ["auth-api", "organizations"],
         "summary": "List Organizations",
         "description": "List all organizations. Admin only in production.",
         "operationId": "list_organizations_organizations_get",
@@ -5636,10 +5327,7 @@
         }
       },
       "post": {
-        "tags": [
-          "auth-api",
-          "organizations"
-        ],
+        "tags": ["auth-api", "organizations"],
         "summary": "Create Organization",
         "description": "Create a new organization.",
         "operationId": "create_organization_organizations_post",
@@ -5679,10 +5367,7 @@
     },
     "/auth-api/organizations/{org_id}": {
       "get": {
-        "tags": [
-          "auth-api",
-          "organizations"
-        ],
+        "tags": ["auth-api", "organizations"],
         "summary": "Get Organization",
         "description": "Get organization by ID.",
         "operationId": "get_organization_organizations__org_id__get",
@@ -5721,10 +5406,7 @@
         }
       },
       "put": {
-        "tags": [
-          "auth-api",
-          "organizations"
-        ],
+        "tags": ["auth-api", "organizations"],
         "summary": "Update Organization",
         "description": "Update organization details.",
         "operationId": "update_organization_organizations__org_id__put",
@@ -5775,10 +5457,7 @@
     },
     "/auth-api/organizations/{org_id}/members": {
       "get": {
-        "tags": [
-          "auth-api",
-          "organizations"
-        ],
+        "tags": ["auth-api", "organizations"],
         "summary": "List Org Members",
         "description": "List members of an organization.",
         "operationId": "list_org_members_organizations__org_id__members_get",
@@ -5823,10 +5502,7 @@
     },
     "/auth-api/users": {
       "get": {
-        "tags": [
-          "auth-api",
-          "users"
-        ],
+        "tags": ["auth-api", "users"],
         "summary": "List Users",
         "description": "List all users. Admin only in production.",
         "operationId": "list_users_users_get",
@@ -5850,10 +5526,7 @@
     },
     "/auth-api/users/invite": {
       "post": {
-        "tags": [
-          "auth-api",
-          "users"
-        ],
+        "tags": ["auth-api", "users"],
         "summary": "Invite User",
         "description": "Invite a new user to an organization.",
         "operationId": "invite_user_users_invite_post",
@@ -5893,10 +5566,7 @@
     },
     "/auth-api/users/{user_id}": {
       "get": {
-        "tags": [
-          "auth-api",
-          "users"
-        ],
+        "tags": ["auth-api", "users"],
         "summary": "Get User",
         "description": "Get user by ID.",
         "operationId": "get_user_users__user_id__get",
@@ -5935,10 +5605,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "auth-api",
-          "users"
-        ],
+        "tags": ["auth-api", "users"],
         "summary": "Deactivate User",
         "description": "Deactivate a user (soft delete).",
         "operationId": "deactivate_user_users__user_id__delete",
@@ -5979,10 +5646,7 @@
     },
     "/auth-api/users/{user_id}/role": {
       "put": {
-        "tags": [
-          "auth-api",
-          "users"
-        ],
+        "tags": ["auth-api", "users"],
         "summary": "Update User Role",
         "description": "Change a user's role.",
         "operationId": "update_user_role_users__user_id__role_put",
@@ -6033,10 +5697,7 @@
     },
     "/auth-api/entitlements": {
       "get": {
-        "tags": [
-          "auth-api",
-          "entitlements"
-        ],
+        "tags": ["auth-api", "entitlements"],
         "summary": "List Entitlements",
         "description": "List all available entitlement definitions.",
         "operationId": "list_entitlements_entitlements_get",
@@ -6060,10 +5721,7 @@
     },
     "/auth-api/organizations/{org_id}/entitlements": {
       "get": {
-        "tags": [
-          "auth-api",
-          "entitlements"
-        ],
+        "tags": ["auth-api", "entitlements"],
         "summary": "Get Org Entitlements",
         "description": "Get an organization's current entitlements.",
         "operationId": "get_org_entitlements_organizations__org_id__entitlements_get",
@@ -6109,10 +5767,7 @@
         }
       },
       "put": {
-        "tags": [
-          "auth-api",
-          "entitlements"
-        ],
+        "tags": ["auth-api", "entitlements"],
         "summary": "Update Org Entitlements",
         "description": "Update an organization's entitlements.",
         "operationId": "update_org_entitlements_organizations__org_id__entitlements_put",
@@ -6170,10 +5825,7 @@
     },
     "/auth-api/api-keys": {
       "get": {
-        "tags": [
-          "auth-api",
-          "api-keys"
-        ],
+        "tags": ["auth-api", "api-keys"],
         "summary": "List Api Keys",
         "description": "List API keys for the current user.",
         "operationId": "list_api_keys_api_keys_get",
@@ -6195,10 +5847,7 @@
         }
       },
       "post": {
-        "tags": [
-          "auth-api",
-          "api-keys"
-        ],
+        "tags": ["auth-api", "api-keys"],
         "summary": "Create Api Key",
         "description": "Create a new API key for programmatic access.\n\nThe full key is returned only once. Store it securely.",
         "operationId": "create_api_key_api_keys_post",
@@ -6238,10 +5887,7 @@
     },
     "/auth-api/api-keys/{key_id}": {
       "delete": {
-        "tags": [
-          "auth-api",
-          "api-keys"
-        ],
+        "tags": ["auth-api", "api-keys"],
         "summary": "Revoke Api Key",
         "description": "Revoke an API key.",
         "operationId": "revoke_api_key_api_keys__key_id__delete",
@@ -6286,10 +5932,7 @@
     },
     "/auth-api/sessions": {
       "get": {
-        "tags": [
-          "auth-api",
-          "sessions"
-        ],
+        "tags": ["auth-api", "sessions"],
         "summary": "List Sessions",
         "description": "List active sessions for the current user.",
         "operationId": "list_sessions_sessions_get",
@@ -6313,10 +5956,7 @@
     },
     "/auth-api/sessions/{session_id}": {
       "delete": {
-        "tags": [
-          "auth-api",
-          "sessions"
-        ],
+        "tags": ["auth-api", "sessions"],
         "summary": "Revoke Session",
         "description": "Revoke a specific session.",
         "operationId": "revoke_session_sessions__session_id__delete",
@@ -6361,11 +6001,7 @@
     },
     "/auth-api/provisioning/users": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "List Provisioned Users",
         "description": "List all provisioned users with their service statuses.",
         "operationId": "list_provisioned_users_provisioning_users_get",
@@ -6399,11 +6035,7 @@
     },
     "/auth-api/provisioning/users/{user_id}": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Get Provisioned User",
         "description": "Get a provisioned user by ID or firebase UID.",
         "operationId": "get_provisioned_user_provisioning_users__user_id__get",
@@ -6446,11 +6078,7 @@
         }
       },
       "put": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Modify User",
         "description": "Modify a provisioned user.",
         "operationId": "modify_user_provisioning_users__user_id__put",
@@ -6505,11 +6133,7 @@
     },
     "/auth-api/provisioning/users/quota-check": {
       "post": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Check Quota",
         "description": "Check onboarding quota (Slack seats, M365 licenses).",
         "operationId": "check_quota_provisioning_users_quota_check_post",
@@ -6557,11 +6181,7 @@
     },
     "/auth-api/provisioning/users/onboard": {
       "post": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Onboard User",
         "description": "Onboard a new user \u2014 create profile + run provisioning.",
         "operationId": "onboard_user_provisioning_users_onboard_post",
@@ -6615,11 +6235,7 @@
     },
     "/auth-api/provisioning/users/{user_id}/offboard": {
       "post": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Offboard User",
         "description": "Offboard a user \u2014 revoke access across all services.",
         "operationId": "offboard_user_provisioning_users__user_id__offboard_post",
@@ -6684,11 +6300,7 @@
     },
     "/auth-api/provisioning/users/{user_id}/reprovision": {
       "post": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Reprovision User",
         "description": "Trigger reprovisioning workflow for a failed user.",
         "operationId": "reprovision_user_provisioning_users__user_id__reprovision_post",
@@ -6733,11 +6345,7 @@
     },
     "/auth-api/provisioning/users/{user_id}/workflows": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "List User Workflows",
         "description": "List workflow runs for a user.",
         "operationId": "list_user_workflows_provisioning_users__user_id__workflows_get",
@@ -6792,11 +6400,7 @@
     },
     "/auth-api/provisioning/access-templates": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "List Access Templates",
         "description": "List all access templates.",
         "operationId": "list_access_templates_provisioning_access_templates_get",
@@ -6828,11 +6432,7 @@
         }
       },
       "post": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Create Access Template",
         "description": "Create a new access template.",
         "operationId": "create_access_template_provisioning_access_templates_post",
@@ -6876,11 +6476,7 @@
     },
     "/auth-api/provisioning/access-templates/{template_id}": {
       "put": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Update Access Template",
         "description": "Update an access template.",
         "operationId": "update_access_template_provisioning_access_templates__template_id__put",
@@ -6933,11 +6529,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Delete Access Template",
         "description": "Delete an access template.",
         "operationId": "delete_access_template_provisioning_access_templates__template_id__delete",
@@ -6982,11 +6574,7 @@
     },
     "/auth-api/provisioning/admin/health-checks": {
       "post": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Run Health Checks",
         "description": "Run provider health checks.",
         "operationId": "run_health_checks_provisioning_admin_health_checks_post",
@@ -7010,11 +6598,7 @@
     },
     "/auth-api/provisioning/admin/health-checks/history": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Get Health Check History",
         "description": "Get health check run history.",
         "operationId": "get_health_check_history_provisioning_admin_health_checks_history_get",
@@ -7048,11 +6632,7 @@
     },
     "/auth-api/provisioning/access-requests": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "List Access Requests",
         "description": "List access requests, optionally filtered by status.",
         "operationId": "list_access_requests_provisioning_access_requests_get",
@@ -7112,11 +6692,7 @@
         }
       },
       "post": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Submit Access Request",
         "description": "Submit an access request (user self-service).",
         "operationId": "submit_access_request_provisioning_access_requests_post",
@@ -7160,11 +6736,7 @@
     },
     "/auth-api/provisioning/access-requests/{request_id}": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Get Access Request",
         "description": "Get a single access request.",
         "operationId": "get_access_request_provisioning_access_requests__request_id__get",
@@ -7209,11 +6781,7 @@
     },
     "/auth-api/provisioning/access-requests/{request_id}/review": {
       "put": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "Review Access Request",
         "description": "Admin approves or denies an access request.",
         "operationId": "review_access_request_provisioning_access_requests__request_id__review_put",
@@ -7268,11 +6836,7 @@
     },
     "/auth-api/provisioning/firebase-auth/users": {
       "get": {
-        "tags": [
-          "auth-api",
-          "provisioning",
-          "provisioning"
-        ],
+        "tags": ["auth-api", "provisioning", "provisioning"],
         "summary": "List Firebase Auth Users",
         "description": "List Firebase Auth users (real mode only).",
         "operationId": "list_firebase_auth_users_provisioning_firebase_auth_users_get",
@@ -7309,11 +6873,7 @@
     },
     "/auth-api/catalogue": {
       "get": {
-        "tags": [
-          "auth-api",
-          "catalogue",
-          "catalogue"
-        ],
+        "tags": ["auth-api", "catalogue", "catalogue"],
         "summary": "Get Full Catalogue",
         "description": "Return the full permission catalogue tree.",
         "operationId": "get_full_catalogue_catalogue_get",
@@ -7340,11 +6900,7 @@
     },
     "/auth-api/catalogue/{domain_key}": {
       "get": {
-        "tags": [
-          "auth-api",
-          "catalogue",
-          "catalogue"
-        ],
+        "tags": ["auth-api", "catalogue", "catalogue"],
         "summary": "Get Domain",
         "description": "Return a single permission domain.",
         "operationId": "get_domain_catalogue__domain_key__get",
@@ -7389,11 +6945,7 @@
     },
     "/auth-api/catalogue/search/{query}": {
       "get": {
-        "tags": [
-          "auth-api",
-          "catalogue",
-          "catalogue"
-        ],
+        "tags": ["auth-api", "catalogue", "catalogue"],
         "summary": "Search Permissions",
         "description": "Search permissions by name/key across all domains.",
         "operationId": "search_permissions_catalogue_search__query__get",
@@ -7451,10 +7003,7 @@
     },
     "/unified-trading-api/health": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "health"
-        ],
+        "tags": ["unified-trading-api", "health"],
         "summary": "Health",
         "description": "Standard Cloud Run liveness probe.",
         "operationId": "health_health_get__3",
@@ -7476,10 +7025,7 @@
     },
     "/unified-trading-api/readiness": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "health"
-        ],
+        "tags": ["unified-trading-api", "health"],
         "summary": "Readiness",
         "description": "Runtime readiness with tier detection.",
         "operationId": "readiness_readiness_get__3",
@@ -7501,10 +7047,7 @@
     },
     "/unified-trading-api/version": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "health"
-        ],
+        "tags": ["unified-trading-api", "health"],
         "summary": "Version",
         "description": "Return service version information.",
         "operationId": "version_version_get__2",
@@ -7528,10 +7071,7 @@
     },
     "/unified-trading-api/reporting/health": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Reporting Health",
         "description": "Health probe for client-reporting-api domain.\n\nMock mode: returns synthetic OK (no downstream service needed).\nReal mode: proxies to client-reporting-api at port 8014.\nReturns HTTP 503 when downstream is unreachable so the UI correctly detects \"down\".",
         "operationId": "reporting_health_reporting_health_get",
@@ -7549,10 +7089,7 @@
     },
     "/unified-trading-api/admin/reset": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "admin"
-        ],
+        "tags": ["unified-trading-api", "admin"],
         "summary": "Reset Demo",
         "description": "Reset mock state to seed data. Clears all mutations.\n\nOnly available in mock mode. In real mode, returns 403.\nThe UI's \"Reset Demo\" button calls this endpoint.",
         "operationId": "reset_demo_admin_reset_post",
@@ -7576,10 +7113,7 @@
     },
     "/unified-trading-api/market-data/candles": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "market-data"
-        ],
+        "tags": ["unified-trading-api", "market-data"],
         "summary": "Get Candles",
         "description": "Get OHLCV candles for an instrument.",
         "operationId": "get_candles_market_data_candles_get",
@@ -7658,10 +7192,7 @@
     },
     "/unified-trading-api/market-data/orderbook": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "market-data"
-        ],
+        "tags": ["unified-trading-api", "market-data"],
         "summary": "Get Orderbook",
         "description": "Get order book snapshot \u2014 generates dynamic depth in mock mode.",
         "operationId": "get_orderbook_market_data_orderbook_get",
@@ -7730,10 +7261,7 @@
     },
     "/unified-trading-api/market-data/trades": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "market-data"
-        ],
+        "tags": ["unified-trading-api", "market-data"],
         "summary": "Get Trades",
         "description": "Get recent trades.",
         "operationId": "get_trades_market_data_trades_get",
@@ -7813,10 +7341,7 @@
     },
     "/unified-trading-api/market-data/tickers": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "market-data"
-        ],
+        "tags": ["unified-trading-api", "market-data"],
         "summary": "Get Tickers",
         "description": "Get all tickers for a venue.",
         "operationId": "get_tickers_market_data_tickers_get",
@@ -7864,10 +7389,7 @@
     },
     "/unified-trading-api/market-data/fx-rates": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "market-data"
-        ],
+        "tags": ["unified-trading-api", "market-data"],
         "summary": "Get Fx Rates",
         "description": "Get FX rates for portfolio currency conversion.",
         "operationId": "get_fx_rates_market_data_fx_rates_get",
@@ -7894,10 +7416,7 @@
     },
     "/unified-trading-api/execution/orders": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "execution"
-        ],
+        "tags": ["unified-trading-api", "execution"],
         "summary": "Get Orders",
         "description": "Get orders with live/batch mode support.",
         "operationId": "get_orders_execution_orders_get",
@@ -7997,10 +7516,7 @@
         }
       },
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "execution"
-        ],
+        "tags": ["unified-trading-api", "execution"],
         "summary": "Create Order",
         "description": "Place a new order (mock: persists to store, real: routes to execution-service).",
         "operationId": "create_order_execution_orders_post",
@@ -8049,10 +7565,7 @@
     },
     "/unified-trading-api/execution/fills": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "execution"
-        ],
+        "tags": ["unified-trading-api", "execution"],
         "summary": "Get Fills",
         "description": "Get trade fills with live/batch mode support.",
         "operationId": "get_fills_execution_fills_get",
@@ -8154,10 +7667,7 @@
     },
     "/unified-trading-api/execution/venues": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "execution"
-        ],
+        "tags": ["unified-trading-api", "execution"],
         "summary": "Get Venues",
         "description": "Get configured execution venues.",
         "operationId": "get_venues_execution_venues_get",
@@ -8184,10 +7694,7 @@
     },
     "/unified-trading-api/execution/algos": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "execution"
-        ],
+        "tags": ["unified-trading-api", "execution"],
         "summary": "Get Algos",
         "description": "Get available execution algorithms.",
         "operationId": "get_algos_execution_algos_get",
@@ -8214,10 +7721,7 @@
     },
     "/unified-trading-api/execution/backtests": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "execution"
-        ],
+        "tags": ["unified-trading-api", "execution"],
         "summary": "Get Backtests",
         "description": "Get backtest runs.",
         "operationId": "get_backtests_execution_backtests_get",
@@ -8279,10 +7783,7 @@
     },
     "/unified-trading-api/positions/active": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "positions"
-        ],
+        "tags": ["unified-trading-api", "positions"],
         "summary": "Get Active Positions",
         "description": "Get currently active positions with live/batch mode.",
         "operationId": "get_active_positions_positions_active_get",
@@ -8384,10 +7885,7 @@
     },
     "/unified-trading-api/positions/summary": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "positions"
-        ],
+        "tags": ["unified-trading-api", "positions"],
         "summary": "Get Position Summary",
         "description": "Get aggregated position summary across venues.",
         "operationId": "get_position_summary_positions_summary_get",
@@ -8437,10 +7935,7 @@
     },
     "/unified-trading-api/positions/balances": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "positions"
-        ],
+        "tags": ["unified-trading-api", "positions"],
         "summary": "Get Balances",
         "description": "Get account balances across venues.",
         "operationId": "get_balances_positions_balances_get",
@@ -8522,10 +8017,7 @@
     },
     "/unified-trading-api/analytics/pnl": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Pnl",
         "description": "Get PnL breakdown with live/batch mode support.",
         "operationId": "get_pnl_analytics_pnl_get",
@@ -8626,10 +8118,7 @@
         }
       },
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Create Pnl Snapshot",
         "description": "Trigger a PnL snapshot calculation.",
         "operationId": "create_pnl_snapshot_analytics_pnl_post",
@@ -8656,10 +8145,7 @@
     },
     "/unified-trading-api/analytics/timeseries": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Timeseries",
         "description": "Get analytics timeseries data with live/batch mode support.",
         "operationId": "get_timeseries_analytics_timeseries_get",
@@ -8771,10 +8257,7 @@
         }
       },
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Create Timeseries Entry",
         "description": "Add a timeseries data point.",
         "operationId": "create_timeseries_entry_analytics_timeseries_post",
@@ -8801,10 +8284,7 @@
     },
     "/unified-trading-api/analytics/performance": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Performance",
         "description": "Get performance metrics.",
         "operationId": "get_performance_analytics_performance_get",
@@ -8851,10 +8331,7 @@
         }
       },
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Create Performance Snapshot",
         "description": "Trigger a performance snapshot.",
         "operationId": "create_performance_snapshot_analytics_performance_post",
@@ -8881,10 +8358,7 @@
     },
     "/unified-trading-api/analytics/organizations": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Organizations",
         "description": "Get analytics organizations.",
         "operationId": "get_organizations_analytics_organizations_get",
@@ -8911,10 +8385,7 @@
     },
     "/unified-trading-api/analytics/settlements": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Settlements",
         "description": "Get settlement records.",
         "operationId": "get_settlements_analytics_settlements_get",
@@ -8983,10 +8454,7 @@
         }
       },
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Create Settlement",
         "description": "Create a settlement record.",
         "operationId": "create_settlement_analytics_settlements_post",
@@ -9013,10 +8481,7 @@
     },
     "/unified-trading-api/analytics/instruments": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Instruments",
         "description": "Get analytics instrument list.",
         "operationId": "get_instruments_analytics_instruments_get",
@@ -9064,10 +8529,7 @@
     },
     "/unified-trading-api/analytics/strategies": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Strategies",
         "description": "Get all strategy configs with filtering.",
         "operationId": "get_strategies_analytics_strategies_get",
@@ -9147,10 +8609,7 @@
     },
     "/unified-trading-api/analytics/strategies/{strategy_id}": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Strategy Detail",
         "description": "Get a single strategy detail by ID.",
         "operationId": "get_strategy_detail_analytics_strategies__strategy_id__get",
@@ -9198,10 +8657,7 @@
     },
     "/unified-trading-api/analytics/strategies/{strategy_id}/promote": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Promote Strategy",
         "description": "Promote a strategy from staging to live.",
         "operationId": "promote_strategy_analytics_strategies__strategy_id__promote_post",
@@ -9249,10 +8705,7 @@
     },
     "/unified-trading-api/analytics/strategies/{strategy_id}/reject": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Reject Strategy",
         "description": "Reject a strategy.",
         "operationId": "reject_strategy_analytics_strategies__strategy_id__reject_post",
@@ -9300,10 +8753,7 @@
     },
     "/unified-trading-api/analytics/strategies/{strategy_id}/scale": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Scale Strategy",
         "description": "Scale a strategy's position size.",
         "operationId": "scale_strategy_analytics_strategies__strategy_id__scale_post",
@@ -9351,10 +8801,7 @@
     },
     "/unified-trading-api/analytics/strategy-configs": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "analytics"
-        ],
+        "tags": ["unified-trading-api", "analytics"],
         "summary": "Get Strategy Configs",
         "description": "Get all strategy configs for UI consumption.",
         "operationId": "get_strategy_configs_analytics_strategy_configs_get",
@@ -9381,10 +8828,7 @@
     },
     "/unified-trading-api/ml/model-families": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Model Families",
         "description": "Get registered model families.",
         "operationId": "get_model_families_ml_model_families_get",
@@ -9411,10 +8855,7 @@
     },
     "/unified-trading-api/ml/experiments": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Experiments",
         "description": "Get ML experiments.",
         "operationId": "get_experiments_ml_experiments_get",
@@ -9485,10 +8926,7 @@
     },
     "/unified-trading-api/ml/training-runs": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Training Runs",
         "description": "Get training runs.",
         "operationId": "get_training_runs_ml_training_runs_get",
@@ -9559,10 +8997,7 @@
     },
     "/unified-trading-api/ml/versions": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Model Versions",
         "description": "Get model versions.",
         "operationId": "get_model_versions_ml_versions_get",
@@ -9610,10 +9045,7 @@
     },
     "/unified-trading-api/ml/deployments": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Model Deployments",
         "description": "Get active model deployments.",
         "operationId": "get_model_deployments_ml_deployments_get",
@@ -9640,10 +9072,7 @@
     },
     "/unified-trading-api/ml/features": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Features",
         "description": "Get registered ML features.",
         "operationId": "get_features_ml_features_get",
@@ -9691,10 +9120,7 @@
     },
     "/unified-trading-api/ml/datasets": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Datasets",
         "description": "Get registered datasets.",
         "operationId": "get_datasets_ml_datasets_get",
@@ -9756,10 +9182,7 @@
     },
     "/unified-trading-api/ml/training-jobs": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Training Jobs",
         "description": "Get ML training jobs.",
         "operationId": "get_training_jobs_ml_training_jobs_get",
@@ -9828,10 +9251,7 @@
         }
       },
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Create Training Job",
         "description": "Create a new ML training job.",
         "operationId": "create_training_job_ml_training_jobs_post",
@@ -9858,10 +9278,7 @@
     },
     "/unified-trading-api/ml/validation-results": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Get Validation Results",
         "description": "Get model validation results.",
         "operationId": "get_validation_results_ml_validation_results_get",
@@ -9909,10 +9326,7 @@
     },
     "/unified-trading-api/ml/models/{model_id}/promote": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "ml"
-        ],
+        "tags": ["unified-trading-api", "ml"],
         "summary": "Promote Model",
         "description": "Promote a model version to production.",
         "operationId": "promote_model_ml_models__model_id__promote_post",
@@ -9960,10 +9374,7 @@
     },
     "/unified-trading-api/reporting/reports": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Reports",
         "description": "Get generated reports.",
         "operationId": "get_reports_reporting_reports_get",
@@ -10034,10 +9445,7 @@
     },
     "/unified-trading-api/reporting/settlements": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Settlements",
         "description": "Get settlement reports.",
         "operationId": "get_settlements_reporting_settlements_get",
@@ -10108,10 +9516,7 @@
     },
     "/unified-trading-api/reporting/reconciliation": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Reconciliation",
         "description": "Get reconciliation results.",
         "operationId": "get_reconciliation_reporting_reconciliation_get",
@@ -10182,10 +9587,7 @@
     },
     "/unified-trading-api/reporting/regulatory": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Regulatory Reports",
         "description": "Get regulatory report records (MiFID II, FCA, EMIR).",
         "operationId": "get_regulatory_reports_reporting_regulatory_get",
@@ -10256,10 +9658,7 @@
     },
     "/unified-trading-api/reporting/generate": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Generate Report",
         "description": "Generate a report (mock: creates record, real: proxies to client-reporting-api).",
         "operationId": "generate_report_reporting_generate_post",
@@ -10286,10 +9685,7 @@
     },
     "/unified-trading-api/reporting/download/{report_id}": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Download Report",
         "description": "Download a generated report. In mock mode serves a sample PDF.",
         "operationId": "download_report_reporting_download__report_id__get",
@@ -10335,10 +9731,7 @@
     },
     "/unified-trading-api/reporting/schedules": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Report Schedules",
         "description": "Get scheduled report configurations.",
         "operationId": "get_report_schedules_reporting_schedules_get",
@@ -10363,10 +9756,7 @@
         ]
       },
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Create Report Schedule",
         "description": "Create a scheduled report configuration.",
         "operationId": "create_report_schedule_reporting_schedules_post",
@@ -10393,10 +9783,7 @@
     },
     "/unified-trading-api/reporting/pnl-attribution": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Pnl Attribution",
         "description": "Get PnL attribution breakdown by strategy/venue/asset class.",
         "operationId": "get_pnl_attribution_reporting_pnl_attribution_get",
@@ -10445,10 +9832,7 @@
     },
     "/unified-trading-api/reporting/executive-summary": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Executive Summary",
         "description": "Get executive summary for reporting dashboard.",
         "operationId": "get_executive_summary_reporting_executive_summary_get",
@@ -10497,10 +9881,7 @@
     },
     "/unified-trading-api/reporting/invoices": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "reporting"
-        ],
+        "tags": ["unified-trading-api", "reporting"],
         "summary": "Get Invoices",
         "description": "Get invoice list.",
         "operationId": "get_invoices_reporting_invoices_get",
@@ -10571,10 +9952,7 @@
     },
     "/unified-trading-api/audit/events": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "audit"
-        ],
+        "tags": ["unified-trading-api", "audit"],
         "summary": "Get Audit Events",
         "description": "Get audit events.",
         "operationId": "get_audit_events_audit_events_get",
@@ -10645,10 +10023,7 @@
     },
     "/unified-trading-api/audit/compliance": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "audit"
-        ],
+        "tags": ["unified-trading-api", "audit"],
         "summary": "Get Compliance",
         "description": "Get compliance check results.",
         "operationId": "get_compliance_audit_compliance_get",
@@ -10675,10 +10050,7 @@
     },
     "/unified-trading-api/audit/data-health": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "audit"
-        ],
+        "tags": ["unified-trading-api", "audit"],
         "summary": "Get Data Health",
         "description": "Get data health metrics.",
         "operationId": "get_data_health_audit_data_health_get",
@@ -10705,10 +10077,7 @@
     },
     "/unified-trading-api/audit/logs": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "audit"
-        ],
+        "tags": ["unified-trading-api", "audit"],
         "summary": "Get Audit Logs",
         "description": "Get audit logs.",
         "operationId": "get_audit_logs_audit_logs_get",
@@ -10779,10 +10148,7 @@
     },
     "/unified-trading-api/config/system": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "config"
-        ],
+        "tags": ["unified-trading-api", "config"],
         "summary": "Get System Config",
         "description": "Get system configuration.",
         "operationId": "get_system_config_config_system_get",
@@ -10807,10 +10173,7 @@
         ]
       },
       "put": {
-        "tags": [
-          "unified-trading-api",
-          "config"
-        ],
+        "tags": ["unified-trading-api", "config"],
         "summary": "Update System Config",
         "description": "Update system configuration.",
         "operationId": "update_system_config_config_system_put",
@@ -10837,10 +10200,7 @@
     },
     "/unified-trading-api/config/venues": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "config"
-        ],
+        "tags": ["unified-trading-api", "config"],
         "summary": "Get Venue Config",
         "description": "Get venue configuration.",
         "operationId": "get_venue_config_config_venues_get",
@@ -10867,10 +10227,7 @@
     },
     "/unified-trading-api/config/feature-flags": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "config"
-        ],
+        "tags": ["unified-trading-api", "config"],
         "summary": "Get Feature Flags",
         "description": "Get feature flags.",
         "operationId": "get_feature_flags_config_feature_flags_get",
@@ -10897,10 +10254,7 @@
     },
     "/unified-trading-api/alerts/list": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "alerts"
-        ],
+        "tags": ["unified-trading-api", "alerts"],
         "summary": "Get Alerts",
         "description": "Get alerts list. mode=live for current, mode=batch for T+1 reconciled.",
         "operationId": "get_alerts_alerts_list_get",
@@ -11018,10 +10372,7 @@
     },
     "/unified-trading-api/alerts/summary": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "alerts"
-        ],
+        "tags": ["unified-trading-api", "alerts"],
         "summary": "Get Alert Summary",
         "description": "Get alert summary counts by severity.",
         "operationId": "get_alert_summary_alerts_summary_get",
@@ -11048,10 +10399,7 @@
     },
     "/unified-trading-api/alerts/{alert_id}/acknowledge": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "alerts"
-        ],
+        "tags": ["unified-trading-api", "alerts"],
         "summary": "Acknowledge Alert",
         "description": "Acknowledge an alert \u2014 sets acknowledged:true with timestamp.",
         "operationId": "acknowledge_alert_alerts__alert_id__acknowledge_post",
@@ -11099,10 +10447,7 @@
     },
     "/unified-trading-api/alerts/{alert_id}/escalate": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "alerts"
-        ],
+        "tags": ["unified-trading-api", "alerts"],
         "summary": "Escalate Alert",
         "description": "Escalate an alert \u2014 bumps severity up one level.",
         "operationId": "escalate_alert_alerts__alert_id__escalate_post",
@@ -11150,10 +10495,7 @@
     },
     "/unified-trading-api/alerts/active": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "alerts"
-        ],
+        "tags": ["unified-trading-api", "alerts"],
         "summary": "Get Active Alerts",
         "description": "Get active alerts with live/batch mode support.",
         "operationId": "get_active_alerts_alerts_active_get",
@@ -11251,10 +10593,7 @@
     },
     "/unified-trading-api/alerts/{alert_id}/resolve": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "alerts"
-        ],
+        "tags": ["unified-trading-api", "alerts"],
         "summary": "Resolve Alert",
         "description": "Resolve an alert.",
         "operationId": "resolve_alert_alerts__alert_id__resolve_post",
@@ -11302,10 +10641,7 @@
     },
     "/unified-trading-api/risk/exposure": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Risk Exposure",
         "description": "Get risk exposure. mode=live for real-time, mode=batch for T+1.",
         "operationId": "get_risk_exposure_risk_exposure_get",
@@ -11375,10 +10711,7 @@
     },
     "/unified-trading-api/risk/limits": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Risk Limits",
         "description": "Get risk limits.",
         "operationId": "get_risk_limits_risk_limits_get",
@@ -11460,10 +10793,7 @@
     },
     "/unified-trading-api/risk/var": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Var",
         "description": "Get Value-at-Risk calculations.",
         "operationId": "get_var_risk_var_get",
@@ -11522,10 +10852,7 @@
     },
     "/unified-trading-api/risk/greeks": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Greeks",
         "description": "Get portfolio greeks.",
         "operationId": "get_greeks_risk_greeks_get",
@@ -11596,10 +10923,7 @@
     },
     "/unified-trading-api/risk/stress": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Stress Tests",
         "description": "Get stress test results.",
         "operationId": "get_stress_tests_risk_stress_get",
@@ -11626,10 +10950,7 @@
     },
     "/unified-trading-api/risk/circuit-breaker": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Toggle Circuit Breaker",
         "description": "Trip or reset a circuit breaker for a strategy.",
         "operationId": "toggle_circuit_breaker_risk_circuit_breaker_post",
@@ -11656,10 +10977,7 @@
     },
     "/unified-trading-api/risk/kill-switch": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Kill Switch",
         "description": "Emergency kill switch \u2014 stop all activity for a scope.",
         "operationId": "kill_switch_risk_kill_switch_post",
@@ -11686,10 +11004,7 @@
     },
     "/unified-trading-api/risk/var-summary": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Var Summary",
         "description": "Get pre-computed VaR per strategy.",
         "operationId": "get_var_summary_risk_var_summary_get",
@@ -11716,10 +11031,7 @@
     },
     "/unified-trading-api/risk/stress-test": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Stress Test",
         "description": "Get stress test results for a scenario.",
         "operationId": "get_stress_test_risk_stress_test_get",
@@ -11767,10 +11079,7 @@
     },
     "/unified-trading-api/risk/correlation-matrix": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Correlation Matrix",
         "description": "Get correlation matrix.",
         "operationId": "get_correlation_matrix_risk_correlation_matrix_get",
@@ -11797,10 +11106,7 @@
     },
     "/unified-trading-api/risk/regime": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "risk"
-        ],
+        "tags": ["unified-trading-api", "risk"],
         "summary": "Get Regime",
         "description": "Get current market regime.",
         "operationId": "get_regime_risk_regime_get",
@@ -11827,10 +11133,7 @@
     },
     "/unified-trading-api/instruments/list": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "instruments"
-        ],
+        "tags": ["unified-trading-api", "instruments"],
         "summary": "Get Instruments",
         "description": "Get instruments list.",
         "operationId": "get_instruments_instruments_list_get",
@@ -11910,10 +11213,7 @@
     },
     "/unified-trading-api/instruments/catalogue": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "instruments"
-        ],
+        "tags": ["unified-trading-api", "instruments"],
         "summary": "Get Catalogue",
         "description": "Get instrument catalogue with metadata.",
         "operationId": "get_catalogue_instruments_catalogue_get",
@@ -11940,10 +11240,7 @@
     },
     "/unified-trading-api/instruments/registry": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "instruments"
-        ],
+        "tags": ["unified-trading-api", "instruments"],
         "summary": "Get Registry",
         "description": "Get instrument registry \u2014 canonical mapping across venues.",
         "operationId": "get_registry_instruments_registry_get",
@@ -11970,10 +11267,7 @@
     },
     "/unified-trading-api/instruments/mock/create": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "instruments"
-        ],
+        "tags": ["unified-trading-api", "instruments"],
         "summary": "Create Mock Instrument",
         "description": "Create a test instrument at runtime (mock mode only).\n\nAdds the instrument to the InstrumentGenerator's ad-hoc pool.\nIt will appear in subsequent generate_all() calls.",
         "operationId": "create_mock_instrument_instruments_mock_create_post",
@@ -12020,10 +11314,7 @@
     },
     "/unified-trading-api/instruments/mock/{key}": {
       "delete": {
-        "tags": [
-          "unified-trading-api",
-          "instruments"
-        ],
+        "tags": ["unified-trading-api", "instruments"],
         "summary": "Delete Mock Instrument",
         "description": "Remove/delist a test instrument (mock mode only).\n\nSupports glob patterns: DELETE /instruments/mock/DERIBIT:OPTION:BTC-*",
         "operationId": "delete_mock_instrument_instruments_mock__key__delete",
@@ -12071,10 +11362,7 @@
     },
     "/unified-trading-api/instruments/mock/expire/{key}": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "instruments"
-        ],
+        "tags": ["unified-trading-api", "instruments"],
         "summary": "Expire Mock Instrument",
         "description": "Expire a test instrument (set available_to=now, mock mode only).\n\nSupports glob patterns: POST /instruments/mock/expire/DERIBIT:OPTION:BTC-*",
         "operationId": "expire_mock_instrument_instruments_mock_expire__key__post",
@@ -12122,10 +11410,7 @@
     },
     "/unified-trading-api/documents/upload-url": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "documents"
-        ],
+        "tags": ["unified-trading-api", "documents"],
         "summary": "Get Upload Url",
         "description": "Get a signed URL for uploading a document.",
         "operationId": "get_upload_url_documents_upload_url_get",
@@ -12183,10 +11468,7 @@
     },
     "/unified-trading-api/documents/download-url": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "documents"
-        ],
+        "tags": ["unified-trading-api", "documents"],
         "summary": "Get Download Url",
         "description": "Get a signed URL for downloading a document.",
         "operationId": "get_download_url_documents_download_url_get",
@@ -12234,10 +11516,7 @@
     },
     "/unified-trading-api/documents/list": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "documents"
-        ],
+        "tags": ["unified-trading-api", "documents"],
         "summary": "List Documents",
         "description": "List uploaded documents.",
         "operationId": "list_documents_documents_list_get",
@@ -12308,10 +11587,7 @@
     },
     "/unified-trading-api/documents/{document_id}": {
       "delete": {
-        "tags": [
-          "unified-trading-api",
-          "documents"
-        ],
+        "tags": ["unified-trading-api", "documents"],
         "summary": "Delete Document",
         "description": "Delete a document.",
         "operationId": "delete_document_documents__document_id__delete",
@@ -12359,10 +11635,7 @@
     },
     "/unified-trading-api/deployment/services": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "deployment"
-        ],
+        "tags": ["unified-trading-api", "deployment"],
         "summary": "Get Services",
         "description": "Get registered services and their status.",
         "operationId": "get_services_deployment_services_get",
@@ -12389,10 +11662,7 @@
     },
     "/unified-trading-api/deployment/deployments": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "deployment"
-        ],
+        "tags": ["unified-trading-api", "deployment"],
         "summary": "Get Deployments",
         "description": "Get deployment history.",
         "operationId": "get_deployments_deployment_deployments_get",
@@ -12463,10 +11733,7 @@
     },
     "/unified-trading-api/deployment/builds": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "deployment"
-        ],
+        "tags": ["unified-trading-api", "deployment"],
         "summary": "Get Builds",
         "description": "Get build history.",
         "operationId": "get_builds_deployment_builds_get",
@@ -12537,10 +11804,7 @@
     },
     "/unified-trading-api/service-status/health": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "service-status"
-        ],
+        "tags": ["unified-trading-api", "service-status"],
         "summary": "Get Service Health",
         "description": "Get health status for all services.",
         "operationId": "get_service_health_service_status_health_get",
@@ -12588,10 +11852,7 @@
     },
     "/unified-trading-api/service-status/feature-freshness": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "service-status"
-        ],
+        "tags": ["unified-trading-api", "service-status"],
         "summary": "Get Feature Freshness",
         "description": "Get feature freshness status \u2014 last compute time per feature pipeline.",
         "operationId": "get_feature_freshness_service_status_feature_freshness_get",
@@ -12618,10 +11879,7 @@
     },
     "/unified-trading-api/service-status/activity": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "service-status"
-        ],
+        "tags": ["unified-trading-api", "service-status"],
         "summary": "Get Activity",
         "description": "Get recent system activity feed.",
         "operationId": "get_activity_service_status_activity_get",
@@ -12683,10 +11941,7 @@
     },
     "/unified-trading-api/users/organizations": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "users"
-        ],
+        "tags": ["unified-trading-api", "users"],
         "summary": "Get Organizations",
         "description": "Get organizations.",
         "operationId": "get_organizations_users_organizations_get",
@@ -12713,10 +11968,7 @@
     },
     "/unified-trading-api/users/members": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "users"
-        ],
+        "tags": ["unified-trading-api", "users"],
         "summary": "Get Members",
         "description": "Get organization members.",
         "operationId": "get_members_users_members_get",
@@ -12787,10 +12039,7 @@
     },
     "/unified-trading-api/users/subscriptions": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "users"
-        ],
+        "tags": ["unified-trading-api", "users"],
         "summary": "Get Subscriptions",
         "description": "Get subscription plans and status.",
         "operationId": "get_subscriptions_users_subscriptions_get",
@@ -12817,10 +12066,7 @@
     },
     "/unified-trading-api/compliance/pre-trade-check": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "compliance"
-        ],
+        "tags": ["unified-trading-api", "compliance"],
         "summary": "Pre Trade Check",
         "description": "Run pre-trade compliance checks against risk limits.\n\nSimulates risk-and-exposure-service PreTradeCheckEngine:\n6 checks (position limit, exposure limit, capital limit, leverage limit,\nVaR limit, stale price guard).",
         "operationId": "pre_trade_check_compliance_pre_trade_check_post",
@@ -12847,10 +12093,7 @@
     },
     "/unified-trading-api/derivatives/options-chain": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "derivatives"
-        ],
+        "tags": ["unified-trading-api", "derivatives"],
         "summary": "Get Options Chain",
         "description": "Get options chain for an underlying. Serves seeded data matching\nfeatures-volatility-service output shapes.",
         "operationId": "get_options_chain_derivatives_options_chain_get",
@@ -12909,10 +12152,7 @@
     },
     "/unified-trading-api/derivatives/vol-surface": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "derivatives"
-        ],
+        "tags": ["unified-trading-api", "derivatives"],
         "summary": "Get Vol Surface",
         "description": "Get volatility surface. Serves seeded data matching\nfeatures-volatility-service vol surface computation.",
         "operationId": "get_vol_surface_derivatives_vol_surface_get",
@@ -12961,10 +12201,7 @@
     },
     "/unified-trading-api/derivatives/portfolio-greeks": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "derivatives"
-        ],
+        "tags": ["unified-trading-api", "derivatives"],
         "summary": "Get Portfolio Greeks",
         "description": "Get aggregated portfolio Greeks across options positions.",
         "operationId": "get_portfolio_greeks_derivatives_portfolio_greeks_get",
@@ -12991,10 +12228,7 @@
     },
     "/unified-trading-api/chat/message": {
       "post": {
-        "tags": [
-          "unified-trading-api",
-          "chat"
-        ],
+        "tags": ["unified-trading-api", "chat"],
         "summary": "Chat Message",
         "description": "Send a message to the tiered help chatbot.\n\nReturns an SSE stream of content chunks. Each event is:\n  data: {\"type\": \"content\", \"text\": \"...\"} \u2014 partial text\n  data: {\"type\": \"done\"}                   \u2014 stream complete\n\nThe knowledge scope is determined by the caller's auth tier:\n  - No auth \u2192 PUBLIC (general info only)\n  - External org JWT \u2192 CLIENT (+ UI help, portfolio context)\n  - Internal org JWT \u2192 INTERNAL (+ backend ops, compliance)",
         "operationId": "chat_message_chat_message_post",
@@ -13032,10 +12266,7 @@
     },
     "/unified-trading-api/chat/tier": {
       "get": {
-        "tags": [
-          "unified-trading-api",
-          "chat"
-        ],
+        "tags": ["unified-trading-api", "chat"],
         "summary": "Chat Tier",
         "description": "Return the caller's resolved chat tier.\n\nUseful for the UI to show tier-appropriate help text before\nthe user sends a message.",
         "operationId": "chat_tier_chat_tier_get",
@@ -13075,9 +12306,7 @@
             }
           }
         },
-        "tags": [
-          "client-reporting-api"
-        ]
+        "tags": ["client-reporting-api"]
       }
     },
     "/client-reporting-api/readiness": {
@@ -13101,17 +12330,12 @@
             }
           }
         },
-        "tags": [
-          "client-reporting-api"
-        ]
+        "tags": ["client-reporting-api"]
       }
     },
     "/client-reporting-api/auth/login": {
       "post": {
-        "tags": [
-          "client-reporting-api",
-          "auth"
-        ],
+        "tags": ["client-reporting-api", "auth"],
         "summary": "Login",
         "description": "Authenticate with email + password, receive JWT.",
         "operationId": "login_auth_login_post__2",
@@ -13151,10 +12375,7 @@
     },
     "/client-reporting-api/auth/me": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "auth"
-        ],
+        "tags": ["client-reporting-api", "auth"],
         "summary": "Get Current User",
         "description": "Get current user info from token. Returns 401 if not logged in.",
         "operationId": "get_current_user_auth_me_get",
@@ -13202,10 +12423,7 @@
     },
     "/client-reporting-api/auth/users": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "auth"
-        ],
+        "tags": ["client-reporting-api", "auth"],
         "summary": "List Demo Users",
         "description": "List available demo users (for login UI convenience). No passwords exposed.",
         "operationId": "list_demo_users_auth_users_get",
@@ -13232,10 +12450,7 @@
     },
     "/client-reporting-api/api/v1/stream/reports": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "Streaming"
-        ],
+        "tags": ["client-reporting-api", "Streaming"],
         "summary": "Stream Reports",
         "description": "Stream client report events via Server-Sent Events.\n\nClients receive a heartbeat every 30 seconds when no events are pending.",
         "operationId": "stream_reports_api_v1_stream_reports_get",
@@ -13253,10 +12468,7 @@
     },
     "/client-reporting-api/api/reports": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "reports"
-        ],
+        "tags": ["client-reporting-api", "reports"],
         "summary": "List Reports",
         "description": "List available reports.\n\nIn mock mode returns seed + mutated reports (performance, risk, compliance types).\nIn live mode reads from GCS report metadata.",
         "operationId": "list_reports_api_reports_get",
@@ -13325,10 +12537,7 @@
     },
     "/client-reporting-api/api/reports/generate": {
       "post": {
-        "tags": [
-          "client-reporting-api",
-          "reports"
-        ],
+        "tags": ["client-reporting-api", "reports"],
         "summary": "Generate Report",
         "description": "Generate a PnL attribution report for a client/period.\n\nReads Parquet files from GCS at pnl/{period_month}/{client_id}/ and\nreturns a structured report payload.",
         "operationId": "generate_report_api_reports_generate_post",
@@ -13404,10 +12613,7 @@
     },
     "/client-reporting-api/pnl": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "pnl"
-        ],
+        "tags": ["client-reporting-api", "pnl"],
         "summary": "Get Pnl",
         "description": "Return PnL attribution data for a client/period from GCS.",
         "operationId": "get_pnl_pnl_get",
@@ -13495,10 +12701,7 @@
     },
     "/client-reporting-api/performance": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "pnl"
-        ],
+        "tags": ["client-reporting-api", "pnl"],
         "summary": "Get Performance",
         "description": "Return portfolio performance metrics (returns, sharpe, drawdown).\n\nIn mock mode returns realistic sample performance data.\nIn live mode computes from GCS PnL data.",
         "operationId": "get_performance_performance_get",
@@ -13586,10 +12789,7 @@
     },
     "/client-reporting-api/alerts": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "alerts"
-        ],
+        "tags": ["client-reporting-api", "alerts"],
         "summary": "Proxy Alerts",
         "description": "Proxy alerts from alerting-service.",
         "operationId": "proxy_alerts_alerts_get",
@@ -13658,10 +12858,7 @@
     },
     "/client-reporting-api/sports/pnl": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Pnl",
         "description": "Sports P&L breakdown by venue, strategy, and period.",
         "operationId": "get_sports_pnl_sports_pnl_get",
@@ -13749,10 +12946,7 @@
     },
     "/client-reporting-api/sports/clv": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Clv",
         "description": "CLV (Closing Line Value) analysis \u2014 edge per venue/strategy.",
         "operationId": "get_sports_clv_sports_clv_get",
@@ -13840,10 +13034,7 @@
     },
     "/client-reporting-api/sports/venue-performance": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Venue Performance",
         "description": "Per-venue performance metrics (ROI, volume, limiting status).",
         "operationId": "get_venue_performance_sports_venue_performance_get",
@@ -13920,10 +13111,7 @@
     },
     "/client-reporting-api/sports/positions": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Positions",
         "description": "Open sports positions \u2014 pending bets, exposure.",
         "operationId": "get_sports_positions_sports_positions_get",
@@ -14000,10 +13188,7 @@
     },
     "/client-reporting-api/sports/risk": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "sports"
-        ],
+        "tags": ["client-reporting-api", "sports"],
         "summary": "Get Sports Risk",
         "description": "Current sports risk exposure \u2014 liability, correlation, limits.",
         "operationId": "get_sports_risk_sports_risk_get",
@@ -14080,10 +13265,7 @@
     },
     "/client-reporting-api/api/v1/documents/upload-url": {
       "post": {
-        "tags": [
-          "client-reporting-api",
-          "documents"
-        ],
+        "tags": ["client-reporting-api", "documents"],
         "summary": "Create Upload Url",
         "description": "Return a pre-signed upload URL and allocate a document_id.\n\nIn mock mode: returns a synthetic URL and stores document metadata in-memory.\nIn live mode: generates a cloud storage pre-signed upload URL via UCI.",
         "operationId": "create_upload_url_api_v1_documents_upload_url_post",
@@ -14159,10 +13341,7 @@
     },
     "/client-reporting-api/api/v1/documents/{document_id}/download-url": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "documents"
-        ],
+        "tags": ["client-reporting-api", "documents"],
         "summary": "Get Download Url",
         "description": "Return a pre-signed download URL for a document.\n\nIn mock mode: returns a synthetic URL.\nIn live mode: generates a cloud storage pre-signed download URL via UCI.",
         "operationId": "get_download_url_api_v1_documents__document_id__download_url_get",
@@ -14237,10 +13416,7 @@
     },
     "/client-reporting-api/api/v1/documents": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "documents"
-        ],
+        "tags": ["client-reporting-api", "documents"],
         "summary": "List Documents",
         "description": "List documents for an organisation, optionally filtered by category.\n\nIn mock mode: returns seed + mutated documents from the in-memory store.\nIn live mode: queries document metadata from cloud storage/database.",
         "operationId": "list_documents_api_v1_documents_get",
@@ -14338,10 +13514,7 @@
     },
     "/client-reporting-api/api/v1/documents/{document_id}": {
       "delete": {
-        "tags": [
-          "client-reporting-api",
-          "documents"
-        ],
+        "tags": ["client-reporting-api", "documents"],
         "summary": "Delete Document",
         "description": "Soft-delete a document (admin only).\n\nIn mock mode: marks the document as deleted in the in-memory store.\nIn live mode: sets status=deleted in the document metadata store.",
         "operationId": "delete_document_api_v1_documents__document_id__delete",
@@ -14418,10 +13591,7 @@
     },
     "/client-reporting-api/api/v1/invoices/generate": {
       "post": {
-        "tags": [
-          "client-reporting-api",
-          "invoices"
-        ],
+        "tags": ["client-reporting-api", "invoices"],
         "summary": "Generate Invoice",
         "description": "Create an invoice from template for a given org/period.\n\nIn mock mode: generates synthetic invoice data with realistic fee calculations.\nIn live mode: computes fees from AUM/PnL data and creates an invoice record.",
         "operationId": "generate_invoice_api_v1_invoices_generate_post",
@@ -14497,10 +13667,7 @@
     },
     "/client-reporting-api/api/v1/invoices": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "invoices"
-        ],
+        "tags": ["client-reporting-api", "invoices"],
         "summary": "List Invoices",
         "description": "List invoices for an organisation.\n\nIn mock mode: returns seed + generated invoices from the in-memory store.\nIn live mode: queries invoice records from the database.",
         "operationId": "list_invoices_api_v1_invoices_get",
@@ -14580,10 +13747,7 @@
     },
     "/client-reporting-api/api/v1/invoices/{invoice_id}": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "invoices"
-        ],
+        "tags": ["client-reporting-api", "invoices"],
         "summary": "Get Invoice",
         "description": "Get invoice details by ID.\n\nIn mock mode: returns the invoice from the in-memory store.\nIn live mode: queries the invoice record from the database.",
         "operationId": "get_invoice_api_v1_invoices__invoice_id__get",
@@ -14658,10 +13822,7 @@
     },
     "/client-reporting-api/api/v1/invoices/{invoice_id}/download": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "invoices"
-        ],
+        "tags": ["client-reporting-api", "invoices"],
         "summary": "Download Invoice",
         "description": "Get a pre-signed download URL for the invoice PDF.\n\nIn mock mode: returns a synthetic download URL.\nIn live mode: generates a pre-signed URL for the invoice PDF in cloud storage.",
         "operationId": "download_invoice_api_v1_invoices__invoice_id__download_get",
@@ -14736,10 +13897,7 @@
     },
     "/client-reporting-api/api/v1/compliance/trade-reporting": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "compliance"
-        ],
+        "tags": ["client-reporting-api", "compliance"],
         "summary": "Get Trade Reporting",
         "description": "MiFID II transaction report data.\n\nIn mock mode: returns synthetic transaction reporting data.\nIn live mode: queries the ARM submission records.",
         "operationId": "get_trade_reporting_api_v1_compliance_trade_reporting_get",
@@ -14827,10 +13985,7 @@
     },
     "/client-reporting-api/api/v1/compliance/best-execution": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "compliance"
-        ],
+        "tags": ["client-reporting-api", "compliance"],
         "summary": "Get Best Execution",
         "description": "Best execution analysis \u2014 venue performance, slippage, fill rates.\n\nIn mock mode: returns synthetic best execution analysis data.\nIn live mode: computes from execution records.",
         "operationId": "get_best_execution_api_v1_compliance_best_execution_get",
@@ -14918,10 +14073,7 @@
     },
     "/client-reporting-api/api/v1/compliance/positions": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "compliance"
-        ],
+        "tags": ["client-reporting-api", "compliance"],
         "summary": "Get Large Positions",
         "description": "Large position reporting \u2014 positions above regulatory thresholds.\n\nIn mock mode: returns synthetic large position data.\nIn live mode: queries current positions and checks against thresholds.",
         "operationId": "get_large_positions_api_v1_compliance_positions_get",
@@ -14998,10 +14150,7 @@
     },
     "/client-reporting-api/api/v1/compliance/dashboard": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "compliance"
-        ],
+        "tags": ["client-reporting-api", "compliance"],
         "summary": "Get Compliance Dashboard",
         "description": "Compliance summary dashboard \u2014 overall status, alerts, violations.\n\nIn mock mode: returns synthetic compliance dashboard data.\nIn live mode: aggregates compliance data from all subsystems.",
         "operationId": "get_compliance_dashboard_api_v1_compliance_dashboard_get",
@@ -15090,10 +14239,7 @@
     },
     "/client-reporting-api/api/v1/documents/{document_id}/send-for-signature": {
       "post": {
-        "tags": [
-          "client-reporting-api",
-          "docusign"
-        ],
+        "tags": ["client-reporting-api", "docusign"],
         "summary": "Send For Signature",
         "description": "Create a DocuSign envelope and send a document for signature.\n\nIn mock mode: creates a synthetic envelope record in the in-memory store.\nIn live mode: creates a DocuSign envelope via the DocuSign API.",
         "operationId": "send_for_signature_api_v1_documents__document_id__send_for_signature_post",
@@ -15178,10 +14324,7 @@
     },
     "/client-reporting-api/api/v1/documents/{document_id}/signature-status": {
       "get": {
-        "tags": [
-          "client-reporting-api",
-          "docusign"
-        ],
+        "tags": ["client-reporting-api", "docusign"],
         "summary": "Get Signature Status",
         "description": "Check the DocuSign signature status for a document.\n\nIn mock mode: returns the envelope status from the in-memory store.\nIn live mode: queries the DocuSign API for envelope status.",
         "operationId": "get_signature_status_api_v1_documents__document_id__signature_status_get",
@@ -15256,10 +14399,7 @@
     },
     "/client-reporting-api/api/v1/webhooks/docusign": {
       "post": {
-        "tags": [
-          "client-reporting-api",
-          "docusign"
-        ],
+        "tags": ["client-reporting-api", "docusign"],
         "summary": "Docusign Webhook",
         "description": "DocuSign webhook receiver \u2014 processes envelope status changes.\n\nDocuSign sends webhook events when envelope status changes (sent, delivered,\nsigned, completed, declined, voided). This endpoint updates the local\nenvelope record accordingly.\n\nIn mock mode: accepts the payload and updates the in-memory store.\nIn live mode: validates the HMAC signature and processes the event.",
         "operationId": "docusign_webhook_api_v1_webhooks_docusign_post",
@@ -15340,9 +14480,7 @@
             }
           }
         },
-        "tags": [
-          "client-reporting-api"
-        ]
+        "tags": ["client-reporting-api"]
       }
     },
     "/market-data-api/health": {
@@ -15364,9 +14502,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/readiness": {
@@ -15390,9 +14526,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/orderbook/{symbol}/snapshot": {
@@ -15466,9 +14600,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/candles": {
@@ -15606,9 +14738,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/venues": {
@@ -15679,9 +14809,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/venues/{venue}/validate": {
@@ -15765,9 +14893,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/stream/orderbook": {
@@ -15847,9 +14973,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/data-contract": {
@@ -15873,9 +14997,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/market-data-api/metrics": {
@@ -15893,9 +15015,7 @@
             }
           }
         },
-        "tags": [
-          "market-data-api"
-        ]
+        "tags": ["market-data-api"]
       }
     },
     "/alerting-service/health": {
@@ -15916,9 +15036,7 @@
             }
           }
         },
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/readiness": {
@@ -15936,17 +15054,12 @@
             }
           }
         },
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/system-status": {
       "get": {
-        "tags": [
-          "alerting-service",
-          "system-status"
-        ],
+        "tags": ["alerting-service", "system-status"],
         "summary": "System Status",
         "description": "Return aggregated health for all services (30s TTL cache).",
         "operationId": "system_status_system_status_get",
@@ -16024,9 +15137,7 @@
             }
           }
         },
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/rules/recent": {
@@ -16089,9 +15200,7 @@
             }
           }
         },
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       },
       "post": {
         "summary": "Create Alert",
@@ -16167,17 +15276,12 @@
             }
           }
         },
-        "tags": [
-          "alerting-service"
-        ]
+        "tags": ["alerting-service"]
       }
     },
     "/alerting-service/alerts/delivery-status/{alert_id}": {
       "get": {
-        "tags": [
-          "alerting-service",
-          "delivery"
-        ],
+        "tags": ["alerting-service", "delivery"],
         "summary": "Get Delivery Status",
         "description": "Return delivery records for a given alert_id.\n\nScans GCS history partitions (last 7 days) for matching records.\n\nReturns:\n    JSON object with ``alert_id`` and a list of ``records``.",
         "operationId": "get_delivery_status_alerts_delivery_status__alert_id__get",
@@ -16252,10 +15356,7 @@
     },
     "/alerting-service/alerts/delivery-status": {
       "post": {
-        "tags": [
-          "alerting-service",
-          "delivery"
-        ],
+        "tags": ["alerting-service", "delivery"],
         "summary": "Create Delivery Record",
         "description": "Record a new delivery record. Persists in mock state when CLOUD_MOCK_MODE=true.",
         "operationId": "create_delivery_record_alerts_delivery_status_post",
@@ -16333,10 +15434,7 @@
     },
     "/execution-service/manual/instruction": {
       "post": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Submit Manual Instruction",
         "description": "Submit manual instruction from operator UI.\n\nValidates request, logs event, routes to orchestrator (same path as automated strategies).\n\nArgs:\n    request: Manual instruction request\n    http_request: FastAPI request object\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException: If validation fails or execution errors",
         "operationId": "submit_manual_instruction_manual_instruction_post",
@@ -16376,10 +15474,7 @@
     },
     "/execution-service/manual/cancel": {
       "post": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Cancel Manual Instruction",
         "description": "Cancel manual instruction.\n\nArgs:\n    request: Cancel instruction request\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException: If orchestrator not initialized",
         "operationId": "cancel_manual_instruction_manual_cancel_post",
@@ -16423,10 +15518,7 @@
     },
     "/execution-service/manual/amend": {
       "post": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Amend Manual Instruction",
         "description": "Amend manual instruction.\n\nArgs:\n    request: Amend instruction request\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException: If orchestrator not initialized",
         "operationId": "amend_manual_instruction_manual_amend_post",
@@ -16470,10 +15562,7 @@
     },
     "/execution-service/manual/instructions/{instruction_id}": {
       "get": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Get Instruction Status",
         "description": "Get status of manual instruction.\n\nArgs:\n    instruction_id: Instruction ID\n\nReturns:\n    Instruction status and fills",
         "operationId": "get_instruction_status_manual_instructions__instruction_id__get",
@@ -16516,10 +15605,7 @@
     },
     "/execution-service/manual/venues": {
       "get": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Get Supported Venues",
         "description": "Return dynamically resolved venue list from UAC capability registry.",
         "operationId": "get_supported_venues_manual_venues_get",
@@ -16546,10 +15632,7 @@
     },
     "/execution-service/manual/algos": {
       "get": {
-        "tags": [
-          "execution-service",
-          "manual-trading"
-        ],
+        "tags": ["execution-service", "manual-trading"],
         "summary": "Get Supported Algos",
         "description": "Return supported execution algorithms.\n\nReturns a default algo list. Per-venue refinement can be added later.",
         "operationId": "get_supported_algos_manual_algos_get",
@@ -16648,9 +15731,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/kill-switch/deactivate": {
@@ -16711,9 +15792,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/kill-switch/status": {
@@ -16730,9 +15809,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/health": {
@@ -16763,9 +15840,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/ready": {
@@ -16783,9 +15858,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/readiness": {
@@ -16803,9 +15876,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/drain": {
@@ -16883,9 +15954,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/resume": {
@@ -16963,9 +16032,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/drain/status": {
@@ -16999,9 +16066,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/execution-service/admin/positions/snapshot": {
@@ -17023,9 +16088,7 @@
             }
           }
         },
-        "tags": [
-          "execution-service"
-        ]
+        "tags": ["execution-service"]
       }
     },
     "/risk-and-exposure-service/": {
@@ -17049,9 +16112,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/health": {
@@ -17082,9 +16143,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/readiness": {
@@ -17108,9 +16167,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/pre-trade-check": {
@@ -17184,9 +16241,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/exposure/summary": {
@@ -17229,9 +16284,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/exposure/by-venue": {
@@ -17274,9 +16327,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/exposure/by-instrument": {
@@ -17319,9 +16370,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/risk-limits/{client_id}": {
@@ -17362,9 +16411,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/risk-limits": {
@@ -17442,9 +16489,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       },
       "get": {
         "summary": "List Risk Limits Clients",
@@ -17469,9 +16514,7 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/risk-and-exposure-service/risk/var": {
@@ -17573,17 +16616,12 @@
             }
           }
         },
-        "tags": [
-          "risk-and-exposure-service"
-        ]
+        "tags": ["risk-and-exposure-service"]
       }
     },
     "/position-balance-monitor-service/stream/positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Streaming"
-        ],
+        "tags": ["position-balance-monitor-service", "Streaming"],
         "summary": "Stream Positions",
         "description": "Stream position updates via Server-Sent Events.",
         "operationId": "stream_positions_stream_positions_get",
@@ -17601,10 +16639,7 @@
     },
     "/position-balance-monitor-service/aggregated-positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "List Aggregated Positions",
         "description": "Return all AggregatedPosition objects from the aggregator.\n\nSupports filtering by asset_class, venue, instrument_type with pagination.",
         "operationId": "list_aggregated_positions_aggregated_positions_get",
@@ -17721,10 +16756,7 @@
     },
     "/position-balance-monitor-service/aggregated-positions/{instrument_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Aggregated Position",
         "description": "Return AggregatedPosition for a single instrument.",
         "operationId": "get_aggregated_position_aggregated_positions__instrument_id__get",
@@ -17765,10 +16797,7 @@
     },
     "/position-balance-monitor-service/portfolio-view/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Portfolio View",
         "description": "Build and return PortfolioView for a client.\n\nCurrently returns positions with empty balances/greeks/risk-groups.\nFull enrichment requires integration with balance and greeks aggregators.",
         "operationId": "get_portfolio_view_portfolio_view__client_id__get",
@@ -17809,10 +16838,7 @@
     },
     "/position-balance-monitor-service/sports-arb-positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "List Sports Arb Positions",
         "description": "Return all SportsArbPosition from SportsArbEngine.\n\nDetects cross-venue arbitrage opportunities using configured commission rates.\nReturns empty list if SportsArbEngine is not initialized.",
         "operationId": "list_sports_arb_positions_sports_arb_positions_get",
@@ -17836,10 +16862,7 @@
     },
     "/position-balance-monitor-service/defi-health/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Defi Health",
         "description": "Return DeFiAggregatedHealth for a client.\n\nRequires DeFiHealthAggregator to be wired with lending positions.",
         "operationId": "get_defi_health_defi_health__client_id__get",
@@ -17880,10 +16903,7 @@
     },
     "/position-balance-monitor-service/defi-lp/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Defi Lp",
         "description": "Return DeFiLPAggregatedMetrics for a client.\n\nRequires DeFiLPAggregator to be wired with LP positions from DeFi adapters.",
         "operationId": "get_defi_lp_defi_lp__client_id__get",
@@ -17924,10 +16944,7 @@
     },
     "/position-balance-monitor-service/defi-staking/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Defi Staking",
         "description": "Return DeFiStakingAggregatedMetrics for a client.\n\nRequires DeFiStakingAggregator to be wired with staking positions from DeFi adapters.",
         "operationId": "get_defi_staking_defi_staking__client_id__get",
@@ -17968,10 +16985,7 @@
     },
     "/position-balance-monitor-service/risk-groups/{client_id}": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Get Risk Groups",
         "description": "Return RiskGroupSummary list for a client.\n\nGroups positions by underlying and computes diversified exposure.\nRequires PortfolioGreeksSnapshot for full greeks breakdown; returns\nposition-only risk groups when greeks are unavailable.",
         "operationId": "get_risk_groups_risk_groups__client_id__get",
@@ -18016,10 +17030,7 @@
     },
     "/position-balance-monitor-service/stream/aggregated-positions": {
       "get": {
-        "tags": [
-          "position-balance-monitor-service",
-          "Aggregated"
-        ],
+        "tags": ["position-balance-monitor-service", "Aggregated"],
         "summary": "Stream Aggregated Positions",
         "description": "Stream aggregated position updates via Server-Sent Events.",
         "operationId": "stream_aggregated_positions_stream_aggregated_positions_get",
@@ -18052,9 +17063,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/": {
@@ -18078,9 +17087,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/readiness": {
@@ -18098,9 +17105,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/health": {
@@ -18118,9 +17123,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/positions": {
@@ -18236,9 +17239,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/positions/{client_id}/{strategy_id}/{venue}/{instrument}": {
@@ -18336,9 +17337,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/reconciliation/status": {
@@ -18400,9 +17399,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/position-balance-monitor-service/reconciliation/trigger": {
@@ -18466,9 +17463,7 @@
             }
           }
         },
-        "tags": [
-          "position-balance-monitor-service"
-        ]
+        "tags": ["position-balance-monitor-service"]
       }
     },
     "/deployment-service/api/v1/shards/calculate": {
@@ -18528,9 +17523,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments": {
@@ -18590,9 +17583,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/data-status": {
@@ -18738,9 +17729,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/vm-jobs/cancel": {
@@ -18800,9 +17789,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/vm-jobs/status-batch": {
@@ -18862,9 +17849,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/cloud-run/status-batch": {
@@ -18924,9 +17909,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/quota/acquire": {
@@ -18986,9 +17969,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/quota/release": {
@@ -19039,9 +18020,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/events": {
@@ -19116,9 +18095,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/vm-events": {
@@ -19177,9 +18154,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/rollback": {
@@ -19248,9 +18223,7 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/api/v1/deployments/{deployment_id}/live-health": {
@@ -19327,17 +18300,12 @@
             }
           }
         },
-        "tags": [
-          "deployment-service"
-        ]
+        "tags": ["deployment-service"]
       }
     },
     "/deployment-service/deployment/clusters": {
       "get": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "List Clusters",
         "description": "List available deployment clusters.",
         "operationId": "list_clusters_deployment_clusters_get",
@@ -19389,10 +18357,7 @@
     },
     "/deployment-service/deployment/clusters/{cluster_name}/status": {
       "get": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Get Cluster Status",
         "description": "Get status of all services in a cluster.",
         "operationId": "get_cluster_status_deployment_clusters__cluster_name__status_get",
@@ -19449,10 +18414,7 @@
     },
     "/deployment-service/deployment/clusters/{cluster_name}/bootstrap": {
       "post": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Bootstrap Cluster",
         "description": "Start all services in a cluster.",
         "operationId": "bootstrap_cluster_deployment_clusters__cluster_name__bootstrap_post",
@@ -19519,10 +18481,7 @@
     },
     "/deployment-service/deployment/clusters/{cluster_name}/teardown": {
       "post": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Teardown Cluster",
         "description": "Stop all services in a cluster.",
         "operationId": "teardown_cluster_deployment_clusters__cluster_name__teardown_post",
@@ -19583,10 +18542,7 @@
     },
     "/deployment-service/deployment/batch/run": {
       "post": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Run Batch",
         "description": "Run a thermal batch pipeline.",
         "operationId": "run_batch_deployment_batch_run_post",
@@ -19644,10 +18600,7 @@
     },
     "/deployment-service/deployment/batch/history": {
       "get": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Batch History",
         "description": "Get batch run history.",
         "operationId": "batch_history_deployment_batch_history_get",
@@ -19718,10 +18671,7 @@
     },
     "/deployment-service/deployment/live/{service_name}/start": {
       "post": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Start Service",
         "description": "Start a single service.",
         "operationId": "start_service_deployment_live__service_name__start_post",
@@ -19788,10 +18738,7 @@
     },
     "/deployment-service/deployment/live/{service_name}/stop": {
       "post": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Stop Service",
         "description": "Stop a single service.",
         "operationId": "stop_service_deployment_live__service_name__stop_post",
@@ -19852,10 +18799,7 @@
     },
     "/deployment-service/deployment/live/status": {
       "get": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Fleet Status",
         "description": "Get status of all running services.",
         "operationId": "fleet_status_deployment_live_status_get",
@@ -19923,10 +18867,7 @@
     },
     "/deployment-service/deployment/schedule": {
       "post": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Create Schedule",
         "description": "Create a T+1 batch schedule.",
         "operationId": "create_schedule_deployment_schedule_post",
@@ -19982,10 +18923,7 @@
         }
       },
       "get": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "List Schedules",
         "description": "List active schedules.",
         "operationId": "list_schedules_deployment_schedule_get",
@@ -20037,10 +18975,7 @@
     },
     "/deployment-service/deployment/schedule/{cluster_name}": {
       "delete": {
-        "tags": [
-          "deployment-service",
-          "orchestration"
-        ],
+        "tags": ["deployment-service", "orchestration"],
         "summary": "Disable Schedule",
         "description": "Disable a schedule.",
         "operationId": "disable_schedule_deployment_schedule__cluster_name__delete",
@@ -20101,10 +19036,7 @@
     },
     "/market-tick-data-service/health": {
       "get": {
-        "tags": [
-          "market-tick-data-service",
-          "health"
-        ],
+        "tags": ["market-tick-data-service", "health"],
         "summary": "Health",
         "operationId": "health_health_get__9",
         "responses": {
@@ -20121,10 +19053,7 @@
     },
     "/market-tick-data-service/readiness": {
       "get": {
-        "tags": [
-          "market-tick-data-service",
-          "health"
-        ],
+        "tags": ["market-tick-data-service", "health"],
         "summary": "Readiness",
         "operationId": "readiness_readiness_get__8",
         "responses": {
@@ -20141,10 +19070,7 @@
     },
     "/pnl-attribution-service/health": {
       "get": {
-        "tags": [
-          "pnl-attribution-service",
-          "health"
-        ],
+        "tags": ["pnl-attribution-service", "health"],
         "summary": "Health",
         "operationId": "health_health_get__10",
         "responses": {
@@ -20161,10 +19087,7 @@
     },
     "/pnl-attribution-service/readiness": {
       "get": {
-        "tags": [
-          "pnl-attribution-service",
-          "health"
-        ],
+        "tags": ["pnl-attribution-service", "health"],
         "summary": "Readiness",
         "operationId": "readiness_readiness_get__9",
         "responses": {
@@ -20190,9 +19113,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "role"
-        ],
+        "required": ["role"],
         "title": "AssignRoleRequest",
         "description": "Request body for assigning a role to a user."
       },
@@ -20225,13 +19146,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "tag",
-          "display",
-          "version",
-          "branch",
-          "is_v1"
-        ],
+        "required": ["tag", "display", "version", "branch", "is_v1"],
         "title": "BuildEntry",
         "description": "A single available build in Artifact Registry."
       },
@@ -20258,12 +19173,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "trigger_name",
-          "builds",
-          "total"
-        ],
+        "required": ["service", "trigger_name", "builds", "total"],
         "title": "BuildHistoryResponseDict",
         "description": "Response from get_build_history endpoint."
       },
@@ -20370,9 +19280,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "deployment_ids"
-        ],
+        "required": ["deployment_ids"],
         "title": "BulkDeleteRequest",
         "description": "Request to delete multiple deployments."
       },
@@ -20399,12 +19307,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "timestamp_a",
-          "timestamp_b",
-          "diff"
-        ],
+        "required": ["domain", "timestamp_a", "timestamp_b", "diff"],
         "title": "ConfigDiffResponse",
         "description": "Response for config diff operation."
       },
@@ -20432,11 +19335,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "content",
-          "active_path"
-        ],
+        "required": ["domain", "content", "active_path"],
         "title": "ConfigReadResponse",
         "description": "Response for reading active config."
       },
@@ -20459,11 +19358,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "path",
-          "timestamp",
-          "schema_version"
-        ],
+        "required": ["path", "timestamp", "schema_version"],
         "title": "ConfigVersionEntry",
         "description": "Single entry from the config version history."
       },
@@ -20487,12 +19382,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "domain",
-          "path",
-          "timestamp",
-          "message"
-        ],
+        "required": ["domain", "path", "timestamp", "message"],
         "title": "ConfigVersionResponse",
         "description": "Response for write/rollback operations."
       },
@@ -20518,9 +19408,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "content"
-        ],
+        "required": ["content"],
         "title": "ConfigWriteRequest",
         "description": "Request body for writing a new domain config version."
       },
@@ -20546,10 +19434,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "display_name"
-        ],
+        "required": ["email", "display_name"],
         "title": "CreateUserRequest",
         "description": "Request body for creating a new user."
       },
@@ -20579,12 +19464,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "has_issues",
-          "issue_count",
-          "issues",
-          "libraries"
-        ],
+        "required": ["has_issues", "issue_count", "issues", "libraries"],
         "title": "DependencyCheckResponseDict",
         "description": "Response from check_dependencies endpoint."
       },
@@ -20653,12 +19533,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "deployment_id",
-          "status",
-          "total_shards",
-          "cli_command"
-        ],
+        "required": ["deployment_id", "status", "total_shards", "cli_command"],
         "title": "DeploymentResult",
         "description": "Result of creating a deployment."
       },
@@ -20698,9 +19573,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "event_name"
-        ],
+        "required": ["event_name"],
         "title": "EventRelayPayload"
       },
       "HTTPValidationError": {
@@ -20813,11 +19686,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "job_name",
-          "run_id",
-          "gcs_manifest_path"
-        ],
+        "required": ["job_name", "run_id", "gcs_manifest_path"],
         "title": "PipelineUATRequest",
         "description": "Request body for the pipeline UAT endpoint."
       },
@@ -20895,10 +19764,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "region"
-        ],
+        "required": ["service", "region"],
         "title": "RollbackRequest",
         "description": "Request body for a live deployment rollback."
       },
@@ -20917,9 +19783,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service"
-        ],
+        "required": ["service"],
         "title": "TriggerBuildRequest",
         "description": "Request to trigger a Cloud Build."
       },
@@ -20965,12 +19829,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "success",
-          "message",
-          "service",
-          "branch"
-        ],
+        "required": ["success", "message", "service", "branch"],
         "title": "TriggerBuildResponse",
         "description": "Response from triggering a Cloud Build."
       },
@@ -21034,9 +19893,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "trigger_id"
-        ],
+        "required": ["trigger_id"],
         "title": "TriggerDict",
         "description": "Cloud Build trigger information."
       },
@@ -21063,12 +19920,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "triggers",
-          "total",
-          "project",
-          "region"
-        ],
+        "required": ["triggers", "total", "project", "region"],
         "title": "TriggersResponseDict",
         "description": "Response from list_triggers endpoint."
       },
@@ -21175,11 +20027,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       },
       "VenueCredentialUpdate": {
@@ -21212,9 +20060,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "secret_manager_path"
-        ],
+        "required": ["secret_manager_path"],
         "title": "VenueCredentialUpdate"
       },
       "VenueHealthResponse": {
@@ -21262,10 +20108,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "venue_key",
-          "reachable"
-        ],
+        "required": ["venue_key", "reachable"],
         "title": "VenueHealthResponse"
       },
       "deployment_api__routes__builds__DeployRequest": {
@@ -21277,20 +20120,13 @@
           },
           "environment": {
             "type": "string",
-            "enum": [
-              "dev",
-              "staging",
-              "prod"
-            ],
+            "enum": ["dev", "staging", "prod"],
             "title": "Environment",
             "description": "Target environment: dev, staging, or prod"
           }
         },
         "type": "object",
-        "required": [
-          "image_tag",
-          "environment"
-        ],
+        "required": ["image_tag", "environment"],
         "title": "DeployRequest",
         "description": "Request body for deploying a specific build tag to an environment."
       },
@@ -21548,9 +20384,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service"
-        ],
+        "required": ["service"],
         "title": "DeployRequest",
         "description": "Request body for creating a deployment."
       },
@@ -21622,22 +20456,13 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "requester_email",
-          "requester_name"
-        ],
+        "required": ["id", "requester_email", "requester_name"],
         "title": "AccessRequest",
         "description": "A user's request for service access \u2014 queued for admin approval."
       },
       "AccessRequestStatus": {
         "type": "string",
-        "enum": [
-          "pending",
-          "approved",
-          "denied",
-          "provisioned"
-        ],
+        "enum": ["pending", "approved", "denied", "provisioned"],
         "title": "AccessRequestStatus"
       },
       "AccessTemplate": {
@@ -21696,10 +20521,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "title": "AccessTemplate"
       },
       "ApiKey": {
@@ -21746,14 +20568,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "user_id",
-          "org_id",
-          "name",
-          "prefix",
-          "created_at"
-        ],
+        "required": ["id", "user_id", "org_id", "name", "prefix", "created_at"],
         "title": "ApiKey",
         "description": "Programmatic API key record."
       },
@@ -21794,9 +20609,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "CreateAccessTemplateRequest"
       },
       "CreateApiKeyRequest": {
@@ -21807,9 +20620,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "title": "CreateApiKeyRequest",
         "description": "Create a new API key."
       },
@@ -21837,13 +20648,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "prefix",
-          "full_key",
-          "created_at"
-        ],
+        "required": ["id", "name", "prefix", "full_key", "created_at"],
         "title": "CreateApiKeyResponse",
         "description": "Response includes the full key (shown only once)."
       },
@@ -21872,10 +20677,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
+        "required": ["id", "name"],
         "title": "CreateOrgRequest",
         "description": "Create organization request body."
       },
@@ -21902,12 +20704,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "key",
-          "description",
-          "service",
-          "features"
-        ],
+        "required": ["key", "description", "service", "features"],
         "title": "Entitlement",
         "description": "Entitlement definition exposed via API."
       },
@@ -21936,10 +20733,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "ok"
-        ],
+        "required": ["id", "ok"],
         "title": "HealthCheckHistoryEntry"
       },
       "HealthCheckItem": {
@@ -21977,11 +20771,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "provider",
-          "ok",
-          "message"
-        ],
+        "required": ["provider", "ok", "message"],
         "title": "HealthCheckItem"
       },
       "HealthCheckResult": {
@@ -22005,9 +20795,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok"
-        ],
+        "required": ["ok"],
         "title": "HealthCheckResult"
       },
       "InviteUserRequest": {
@@ -22029,12 +20817,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "org_id",
-          "role",
-          "name"
-        ],
+        "required": ["email", "org_id", "role", "name"],
         "title": "InviteUserRequest",
         "description": "Invite a user to an org."
       },
@@ -22050,10 +20833,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "title": "LoginRequest",
         "description": "Email + password login (demo mode)."
       },
@@ -22111,10 +20891,7 @@
       },
       "OffboardAction": {
         "type": "string",
-        "enum": [
-          "deactivate",
-          "delete"
-        ],
+        "enum": ["deactivate", "delete"],
         "title": "OffboardAction"
       },
       "OffboardRequest": {
@@ -22176,11 +20953,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "email",
-          "role"
-        ],
+        "required": ["name", "email", "role"],
         "title": "OnboardRequest"
       },
       "OrgMemberResponse": {
@@ -22203,12 +20976,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "user_id",
-          "email",
-          "name",
-          "role"
-        ],
+        "required": ["user_id", "email", "name", "role"],
         "title": "OrgMemberResponse",
         "description": "Member within an org."
       },
@@ -22235,12 +21003,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "name",
-          "is_internal",
-          "entitlements"
-        ],
+        "required": ["id", "name", "is_internal", "entitlements"],
         "title": "Organization",
         "description": "Organization record."
       },
@@ -22266,10 +21029,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "key",
-          "label"
-        ],
+        "required": ["key", "label"],
         "title": "Permission",
         "description": "A single grantable permission."
       },
@@ -22298,10 +21058,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "key",
-          "label"
-        ],
+        "required": ["key", "label"],
         "title": "PermissionCategory",
         "description": "A group of related permissions within a domain."
       },
@@ -22335,10 +21092,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "key",
-          "label"
-        ],
+        "required": ["key", "label"],
         "title": "PermissionDomain",
         "description": "Top-level permission domain."
       },
@@ -22468,11 +21222,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "active",
-              "offboarded",
-              "pending"
-            ],
+            "enum": ["active", "offboarded", "pending"],
             "title": "Status",
             "default": "active"
           },
@@ -22499,13 +21249,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "firebase_uid",
-          "name",
-          "email",
-          "role"
-        ],
+        "required": ["id", "firebase_uid", "name", "email", "role"],
         "title": "ProvisionedPerson"
       },
       "ProvisioningRole": {
@@ -22525,12 +21269,7 @@
       },
       "ProvisioningStatus": {
         "type": "string",
-        "enum": [
-          "provisioned",
-          "not_applicable",
-          "pending",
-          "failed"
-        ],
+        "enum": ["provisioned", "not_applicable", "pending", "failed"],
         "title": "ProvisioningStatus"
       },
       "ProvisioningStep": {
@@ -22545,12 +21284,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "pending",
-              "running",
-              "success",
-              "failed"
-            ],
+            "enum": ["pending", "running", "success", "failed"],
             "title": "Status",
             "default": "pending"
           },
@@ -22561,10 +21295,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "label"
-        ],
+        "required": ["service", "label"],
         "title": "ProvisioningStep"
       },
       "QuotaCheckResult": {
@@ -22588,9 +21319,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "ok"
-        ],
+        "required": ["ok"],
         "title": "QuotaCheckResult"
       },
       "RefreshRequest": {
@@ -22601,9 +21330,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "refresh_token"
-        ],
+        "required": ["refresh_token"],
         "title": "RefreshRequest",
         "description": "Refresh token exchange."
       },
@@ -22611,10 +21338,7 @@
         "properties": {
           "action": {
             "type": "string",
-            "enum": [
-              "approve",
-              "deny"
-            ],
+            "enum": ["approve", "deny"],
             "title": "Action"
           },
           "admin_note": {
@@ -22624,9 +21348,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "action"
-        ],
+        "required": ["action"],
         "title": "ReviewAccessRequest",
         "description": "Admin action on a pending request."
       },
@@ -22634,10 +21356,7 @@
         "properties": {
           "service": {
             "type": "string",
-            "enum": [
-              "slack",
-              "microsoft365"
-            ],
+            "enum": ["slack", "microsoft365"],
             "title": "Service"
           },
           "used": {
@@ -22654,12 +21373,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "used",
-          "limit",
-          "available"
-        ],
+        "required": ["service", "used", "limit", "available"],
         "title": "ServiceQuota"
       },
       "Session": {
@@ -22687,12 +21401,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "user_id",
-          "created_at",
-          "expires_at"
-        ],
+        "required": ["id", "user_id", "created_at", "expires_at"],
         "title": "Session",
         "description": "Active user session."
       },
@@ -22747,11 +21456,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "access_token",
-          "refresh_token",
-          "expires_in"
-        ],
+        "required": ["access_token", "refresh_token", "expires_in"],
         "title": "TokenResponse",
         "description": "JWT token pair."
       },
@@ -22836,9 +21541,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "entitlements"
-        ],
+        "required": ["entitlements"],
         "title": "UpdateEntitlementsRequest",
         "description": "Update an organization's entitlements."
       },
@@ -22881,9 +21584,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "role"
-        ],
+        "required": ["role"],
         "title": "UpdateRoleRequest",
         "description": "Change a user's role."
       },
@@ -22915,13 +21616,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "email",
-          "name",
-          "role",
-          "org_id"
-        ],
+        "required": ["id", "email", "name", "role", "org_id"],
         "title": "User",
         "description": "Core user record."
       },
@@ -22956,24 +21651,13 @@
           }
         },
         "type": "object",
-        "required": [
-          "id",
-          "email",
-          "name",
-          "role",
-          "org_id",
-          "entitlements"
-        ],
+        "required": ["id", "email", "name", "role", "org_id", "entitlements"],
         "title": "UserInfo",
         "description": "Current user info returned by /auth/me."
       },
       "UserRole": {
         "type": "string",
-        "enum": [
-          "admin",
-          "internal",
-          "client"
-        ],
+        "enum": ["admin", "internal", "client"],
         "title": "UserRole",
         "description": "User roles \u2014 admin, internal, client."
       },
@@ -23067,10 +21751,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "role",
-          "content"
-        ],
+        "required": ["role", "content"],
         "title": "ChatMessage",
         "description": "A single message in the conversation."
       },
@@ -23094,9 +21775,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "message"
-        ],
+        "required": ["message"],
         "title": "ChatRequest",
         "description": "Incoming chat request."
       },
@@ -23208,11 +21887,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "venue",
-          "instrument_type",
-          "symbol"
-        ],
+        "required": ["venue", "instrument_type", "symbol"],
         "title": "MockInstrumentCreate",
         "description": "Request body for creating a mock instrument."
       },
@@ -23237,11 +21912,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "org_id",
-          "period_month",
-          "invoice_type"
-        ],
+        "required": ["org_id", "period_month", "invoice_type"],
         "title": "GenerateInvoiceRequest"
       },
       "GenerateReportRequest": {
@@ -23256,10 +21927,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id",
-          "period_month"
-        ],
+        "required": ["client_id", "period_month"],
         "title": "GenerateReportRequest"
       },
       "client_reporting_api__LoginRequest": {
@@ -23274,10 +21942,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "email",
-          "password"
-        ],
+        "required": ["email", "password"],
         "title": "LoginRequest",
         "description": "Login request body."
       },
@@ -23302,11 +21967,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "access_token",
-          "expires_in",
-          "user"
-        ],
+        "required": ["access_token", "expires_in", "user"],
         "title": "LoginResponse",
         "description": "Login response with JWT token."
       },
@@ -23332,10 +21993,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "signer_email",
-          "signer_name"
-        ],
+        "required": ["signer_email", "signer_name"],
         "title": "SendForSignatureRequest"
       },
       "UploadUrlRequest": {
@@ -23360,10 +22018,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "org_id",
-          "filename"
-        ],
+        "required": ["org_id", "filename"],
         "title": "UploadUrlRequest"
       },
       "client_reporting_api__UserInfo": {
@@ -23450,11 +22105,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "instruction_id",
-          "new_quantity",
-          "reason"
-        ],
+        "required": ["instruction_id", "new_quantity", "reason"],
         "title": "AmendInstructionRequest",
         "description": "Request schema for amending manual instruction."
       },
@@ -23473,10 +22124,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "instruction_id",
-          "reason"
-        ],
+        "required": ["instruction_id", "reason"],
         "title": "CancelInstructionRequest",
         "description": "Request schema for cancelling manual instruction."
       },
@@ -23609,13 +22257,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id",
-          "venue",
-          "instrument_id",
-          "side",
-          "quantity"
-        ],
+        "required": ["client_id", "venue", "instrument_id", "side", "quantity"],
         "title": "ManualInstructionRequest",
         "description": "Request schema for manual instruction entry.\n\nSupports two execution modes:\n- execute: route to venue via orchestrator (normal flow, same as automated)\n- record_only: skip venue, record fill directly (OTC, missed trades, simulation)",
         "example": {
@@ -23683,11 +22325,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "instruction_id",
-          "status",
-          "message"
-        ],
+        "required": ["instruction_id", "status", "message"],
         "title": "ManualInstructionResponse",
         "description": "Response schema for manual instruction submission.",
         "example": {
@@ -23807,9 +22445,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "AlertContextData"
       },
       "AlertMessage": {
@@ -23932,12 +22568,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "passed",
-          "limit_type",
-          "current_value",
-          "limit_value"
-        ],
+        "required": ["passed", "limit_type", "current_value", "limit_value"],
         "title": "LimitCheckResult",
         "description": "Result of a single limit check."
       },
@@ -24168,11 +22799,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "approved",
-          "client_id",
-          "instrument"
-        ],
+        "required": ["approved", "client_id", "instrument"],
         "title": "PreTradeCheckResponse"
       },
       "RiskLimits-Input": {
@@ -24353,9 +22980,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "RiskLimits",
         "description": "Risk limits configuration for a client."
       },
@@ -24446,9 +23071,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "RiskLimits",
         "description": "Risk limits configuration for a client."
       },
@@ -24500,12 +23123,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "var",
-          "cvar",
-          "confidence",
-          "horizon_days"
-        ],
+        "required": ["var", "cvar", "confidence", "horizon_days"],
         "title": "VaRResponse",
         "description": "Response body for GET /risk/var."
       },
@@ -24753,12 +23371,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "currency",
-          "free",
-          "locked",
-          "total"
-        ],
+        "required": ["currency", "free", "locked", "total"],
         "title": "CanonicalBalance",
         "description": "Normalised balance for a single currency."
       },
@@ -24840,9 +23453,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "DeFiAggregatedHealth",
         "description": "Combined DeFi lending health factor across protocols and chains."
       },
@@ -24893,9 +23504,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "DeFiLPAggregatedMetrics",
         "description": "Combined DeFi LP metrics across Uniswap/Curve/Balancer."
       },
@@ -24946,9 +23555,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id"
-        ],
+        "required": ["client_id"],
         "title": "DeFiStakingAggregatedMetrics",
         "description": "Combined DeFi staking metrics across Lido/EtherFi/etc."
       },
@@ -24988,10 +23595,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "protocol",
-          "chain"
-        ],
+        "required": ["protocol", "chain"],
         "title": "LPProtocolBreakdown",
         "description": "Per-protocol DeFi LP metrics."
       },
@@ -25294,11 +23898,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "client_id",
-          "snapshot_id",
-          "timestamp"
-        ],
+        "required": ["client_id", "snapshot_id", "timestamp"],
         "title": "PortfolioView",
         "description": "Full portfolio snapshot across all venues, asset classes, and risk groups."
       },
@@ -25438,10 +24038,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "protocol",
-          "chain"
-        ],
+        "required": ["protocol", "chain"],
         "title": "ProtocolHealthBreakdown",
         "description": "Per-protocol DeFi lending health metrics."
       },
@@ -25517,11 +24114,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "risk_group_id",
-          "underlying",
-          "asset_class"
-        ],
+        "required": ["risk_group_id", "underlying", "asset_class"],
         "title": "RiskGroupSummary",
         "description": "Risk group aggregation for positions sharing the same underlying."
       },
@@ -25561,12 +24154,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "venue",
-          "side",
-          "stake",
-          "odds"
-        ],
+        "required": ["venue", "side", "stake", "odds"],
         "title": "SportsArbLeg",
         "description": "Single leg of a sports arbitrage position."
       },
@@ -25635,11 +24223,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "fixture_id",
-          "market_type",
-          "selection"
-        ],
+        "required": ["fixture_id", "market_type", "selection"],
         "title": "SportsArbPosition",
         "description": "Cross-venue sports arbitrage position for a single selection.\n\nTracks back on venue A + lay on venue B for the same fixture/selection,\ncalculating guaranteed P&L after commission netting.\nLimited to 2-outcome back/lay markets; multi-outcome arb is future scope."
       },
@@ -25686,10 +24270,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "protocol",
-          "chain"
-        ],
+        "required": ["protocol", "chain"],
         "title": "StakingProtocolBreakdown",
         "description": "Per-protocol DeFi staking metrics."
       },
@@ -25776,9 +24357,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": [
-          "underlying"
-        ],
+        "required": ["underlying"],
         "title": "UnderlyingGreeksBreakdown",
         "description": "Per-underlying Greeks aggregation \u2014 same underlying nets at correlation=1."
       },
@@ -25981,10 +24560,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cluster",
-          "as_of_date"
-        ],
+        "required": ["cluster", "as_of_date"],
         "title": "BatchRunRequest"
       },
       "Body_get_data_status_api_v1_data_status_get": {
@@ -26136,10 +24712,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "config_dir"
-        ],
+        "required": ["service", "config_dir"],
         "title": "CalculateShardsRequest"
       },
       "CancelVMJobsRequest": {
@@ -26267,12 +24840,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cluster",
-          "status",
-          "services",
-          "timestamp"
-        ],
+        "required": ["cluster", "status", "services", "timestamp"],
         "title": "ClusterStatusResponse"
       },
       "ClusterSummary": {
@@ -26295,12 +24863,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "name",
-          "description",
-          "category",
-          "service_count"
-        ],
+        "required": ["name", "description", "category", "service_count"],
         "title": "ClusterSummary"
       },
       "CreateDeploymentRequest": {
@@ -26409,10 +24972,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "quota_shape",
-          "batch_size"
-        ],
+        "required": ["quota_shape", "batch_size"],
         "title": "QuotaAcquireRequest"
       },
       "QuotaReleaseRequest": {
@@ -26428,10 +24988,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "quota_shape",
-          "batch_size"
-        ],
+        "required": ["quota_shape", "batch_size"],
         "title": "QuotaReleaseRequest"
       },
       "deployment_service__RollbackRequest": {
@@ -26457,10 +25014,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "region"
-        ],
+        "required": ["service", "region"],
         "title": "RollbackRequest"
       },
       "ScheduleCreateRequest": {
@@ -26480,10 +25034,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cluster",
-          "cron"
-        ],
+        "required": ["cluster", "cron"],
         "title": "ScheduleCreateRequest"
       },
       "ScheduleResponse": {
@@ -26510,13 +25061,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "cluster",
-          "cron",
-          "as_of",
-          "enabled",
-          "created_at"
-        ],
+        "required": ["cluster", "cron", "as_of", "enabled", "created_at"],
         "title": "ScheduleResponse"
       },
       "ServiceStartRequest": {
@@ -26558,10 +25103,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "status"
-        ],
+        "required": ["service", "status"],
         "title": "ServiceStatusEntry"
       },
       "ServiceStatusResponse": {
@@ -26602,11 +25144,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "service",
-          "status",
-          "mode"
-        ],
+        "required": ["service", "status", "mode"],
         "title": "ServiceStatusResponse"
       },
       "VMStatusBatchRequest": {
@@ -26628,11 +25166,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "project_id",
-          "zone",
-          "vm_names"
-        ],
+        "required": ["project_id", "zone", "vm_names"],
         "title": "VMStatusBatchRequest"
       }
     }

@@ -317,11 +317,13 @@ export function LifecycleNav({
         <NotificationBell />
 
         {/* Org display */}
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs pointer-events-none">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1.5 text-xs pointer-events-none"
+        >
           <Building2 className="size-3.5" />
-          <span className="hidden sm:inline max-w-24 truncate">
-            {orgName}
-          </span>
+          <span className="hidden sm:inline max-w-24 truncate">{orgName}</span>
         </Button>
 
         {/* User menu */}

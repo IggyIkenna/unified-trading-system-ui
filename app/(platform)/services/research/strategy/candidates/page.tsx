@@ -299,7 +299,7 @@ export default function CandidatesPage() {
           ),
         },
       ],
-       
+
       [BACKTEST_RUNS, promotionTargets],
     );
 

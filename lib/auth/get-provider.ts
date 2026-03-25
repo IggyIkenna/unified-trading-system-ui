@@ -1,6 +1,6 @@
-import type { AuthProvider } from "./types"
+import type { AuthProvider } from "./types";
 
-let _instance: AuthProvider | null = null
+let _instance: AuthProvider | null = null;
 
 /**
  * Return the singleton FirebaseAuthProvider.
@@ -10,17 +10,17 @@ let _instance: AuthProvider | null = null
  */
 export function getAuthProvider(): AuthProvider {
   if (typeof window === "undefined") {
-    return createProvider()
+    return createProvider();
   }
   if (!_instance) {
-    _instance = createProvider()
+    _instance = createProvider();
   }
-  return _instance
+  return _instance;
 }
 
 function createProvider(): AuthProvider {
   const { FirebaseAuthProvider } = require("./firebase-provider") as {
-    FirebaseAuthProvider: new () => AuthProvider
-  }
-  return new FirebaseAuthProvider()
+    FirebaseAuthProvider: new () => AuthProvider;
+  };
+  return new FirebaseAuthProvider();
 }

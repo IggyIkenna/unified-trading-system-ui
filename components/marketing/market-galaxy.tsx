@@ -72,7 +72,6 @@ function getNodePosition(angle: number, cx: number, cy: number, r: number) {
   };
 }
 
- 
 export function MarketGalaxy({
   className,
   showStats = true,

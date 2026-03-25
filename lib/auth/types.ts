@@ -1,13 +1,18 @@
-import type { UserRole, Entitlement, EntitlementOrWildcard, Org } from "@/lib/config/auth"
+import type {
+  UserRole,
+  Entitlement,
+  EntitlementOrWildcard,
+  Org,
+} from "@/lib/config/auth";
 
 /** Authenticated user shape shared across all auth providers. */
 export interface AuthUser {
-  id: string
-  email: string
-  displayName: string
-  role: UserRole
-  org: Org
-  entitlements: readonly EntitlementOrWildcard[]
+  id: string;
+  email: string;
+  displayName: string;
+  role: UserRole;
+  org: Org;
+  entitlements: readonly EntitlementOrWildcard[];
 }
 
 /**
@@ -21,27 +26,27 @@ export interface AuthUser {
  */
 export interface AuthProvider {
   /** Attempt login. Returns the authenticated user or null on failure. */
-  login(credential: string, secret?: string): Promise<AuthUser | null>
+  login(credential: string, secret?: string): Promise<AuthUser | null>;
 
   /** Clear session state. */
-  logout(): Promise<void>
+  logout(): Promise<void>;
 
   /** Return a bearer token (or null if unauthenticated). */
-  getToken(): Promise<string | null>
+  getToken(): Promise<string | null>;
 
   /** Return the currently authenticated user (or null). */
-  getUser(): AuthUser | null
+  getUser(): AuthUser | null;
 
   /** Whether a valid session exists. */
-  isAuthenticated(): boolean
+  isAuthenticated(): boolean;
 
   /** Check a specific entitlement against the current user. */
-  hasEntitlement(entitlement: Entitlement): boolean
+  hasEntitlement(entitlement: Entitlement): boolean;
 
   /**
    * Subscribe to auth state changes (Firebase onAuthStateChanged).
    * Returns an unsubscribe function. Providers that don't support
    * reactive auth state can return a no-op.
    */
-  onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void
+  onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void;
 }

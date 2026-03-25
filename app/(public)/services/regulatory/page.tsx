@@ -426,9 +426,7 @@ export default function RegulatoryServicePage() {
                   </Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/signup?service=regulatory">
-                    Apply Now
-                  </Link>
+                  <Link href="/signup?service=regulatory">Apply Now</Link>
                 </Button>
               </div>
             </div>

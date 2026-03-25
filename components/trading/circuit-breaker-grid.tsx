@@ -219,8 +219,8 @@ export function CircuitBreakerGrid({ className }: CircuitBreakerGridProps) {
                         "font-mono",
                         cb.errorRate > 10 && "text-[var(--status-error)]",
                         cb.errorRate > 5 &&
-                        cb.errorRate <= 10 &&
-                        "text-[var(--status-warning)]",
+                          cb.errorRate <= 10 &&
+                          "text-[var(--status-warning)]",
                       )}
                     >
                       {cb.errorRate}% ({cb.errorWindow}-event window)

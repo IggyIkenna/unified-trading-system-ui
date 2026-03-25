@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Odum Research — Disaster Recovery & Business Continuity</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css"
+    />
     <style>
       /* Odum Research — Premium Board Presentation Theme */
       /* Reveal.js custom theme: deep navy + gold */
@@ -350,7 +353,11 @@
 
       /* ── Highlight Box ── */
       .highlight-box {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(0, 212, 255, 0.05));
+        background: linear-gradient(
+          135deg,
+          rgba(212, 175, 55, 0.08),
+          rgba(0, 212, 255, 0.05)
+        );
         border-left: 4px solid var(--gold);
         border-radius: 0 8px 8px 0;
         padding: 16px 24px;
@@ -490,8 +497,17 @@
 
       /* ── Slide-level backgrounds ── */
       .bg-gradient-radial {
-        background: radial-gradient(ellipse at 30% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 60%),
-          radial-gradient(ellipse at 80% 80%, rgba(0, 212, 255, 0.04) 0%, transparent 50%);
+        background:
+          radial-gradient(
+            ellipse at 30% 20%,
+            rgba(212, 175, 55, 0.06) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse at 80% 80%,
+            rgba(0, 212, 255, 0.04) 0%,
+            transparent 50%
+          );
       }
 
       /* ── Escalation Flow ── */
@@ -543,20 +559,26 @@
         border: 1px solid rgba(0, 230, 118, 0.3);
         border-radius: 10px 0 0 10px;
       }
-      .step-auto .step-label { color: var(--green); }
+      .step-auto .step-label {
+        color: var(--green);
+      }
 
       .step-alert {
         background: rgba(255, 171, 64, 0.06);
         border: 1px solid rgba(255, 171, 64, 0.3);
       }
-      .step-alert .step-label { color: var(--amber); }
+      .step-alert .step-label {
+        color: var(--amber);
+      }
 
       .step-human {
         background: rgba(212, 175, 55, 0.06);
         border: 1px solid rgba(212, 175, 55, 0.4);
         border-radius: 0 10px 10px 0;
       }
-      .step-human .step-label { color: var(--gold); }
+      .step-human .step-label {
+        color: var(--gold);
+      }
 
       /* ── Access Matrix Icon ── */
       .access-icon {
@@ -587,34 +609,47 @@
     </style>
   </head>
   <body>
-    <img
-      src="/images/odum-logo.png"
-      alt="Odum Research"
-      class="slide-logo"
-    />
+    <img src="/images/odum-logo.png" alt="Odum Research" class="slide-logo" />
     <div class="reveal">
       <div class="slides">
         <!-- ═══════════════════════════════════════════ -->
         <!-- COVER                                       -->
         <!-- ═══════════════════════════════════════════ -->
         <section class="cover-slide bg-gradient-radial">
-          <div class="cover-title">Disaster Recovery &amp; Business Continuity</div>
+          <div class="cover-title">
+            Disaster Recovery &amp; Business Continuity
+          </div>
           <div class="cover-subtitle">
-            What happens if the CEO is unavailable, a system fails, or a critical incident occurs?
-            This playbook answers every question an investor should ask about operational resilience.
+            What happens if the CEO is unavailable, a system fails, or a
+            critical incident occurs? This playbook answers every question an
+            investor should ask about operational resilience.
           </div>
           <div class="divider"></div>
-          <div class="cover-tagline">Automated recovery &middot; Multi-person access &middot; Real-time alerting &middot; FCA-compliant</div>
-          <div class="cover-meta">
-            <div class="cover-meta-item"><span>24/7</span>Automated Monitoring</div>
-            <div class="cover-meta-item"><span>3-Layer</span>Circuit Breaker</div>
-            <div class="cover-meta-item"><span>Dual</span>Key-Person Access</div>
-            <div class="cover-meta-item"><span>Real-Time</span>Client Alerts</div>
+          <div class="cover-tagline">
+            Automated recovery &middot; Multi-person access &middot; Real-time
+            alerting &middot; FCA-compliant
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Confidential</div>
+          <div class="cover-meta">
+            <div class="cover-meta-item">
+              <span>24/7</span>Automated Monitoring
+            </div>
+            <div class="cover-meta-item">
+              <span>3-Layer</span>Circuit Breaker
+            </div>
+            <div class="cover-meta-item">
+              <span>Dual</span>Key-Person Access
+            </div>
+            <div class="cover-meta-item">
+              <span>Real-Time</span>Client Alerts
+            </div>
+          </div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Confidential
+          </div>
           <aside class="notes">
-            This presentation addresses investor concerns about single-person dependency, system failures,
-            and operational continuity. Every system described here is live and operational today.
+            This presentation addresses investor concerns about single-person
+            dependency, system failures, and operational continuity. Every
+            system described here is live and operational today.
           </aside>
         </section>
 
@@ -624,30 +659,44 @@
         <section class="bg-gradient-radial">
           <h2>The Resilience Thesis</h2>
           <div class="callout" style="margin-bottom: 24px">
-            Traditional hedge funds rely on key individuals. Our platform is designed so that
-            <em>no single person is a single point of failure</em> &mdash; systems self-heal,
-            agents auto-debug, and multiple team members hold access to every critical function.
+            Traditional hedge funds rely on key individuals. Our platform is
+            designed so that
+            <em>no single person is a single point of failure</em> &mdash;
+            systems self-heal, agents auto-debug, and multiple team members hold
+            access to every critical function.
           </div>
           <div class="cols-3">
             <div class="card card-gold">
               <span class="card-number">0</span>
               <span class="card-label">Single points of failure</span>
-              <p style="font-size: 0.6em; margin-top: 8px">Every critical system, account, and process has at least two authorised individuals.</p>
+              <p style="font-size: 0.6em; margin-top: 8px">
+                Every critical system, account, and process has at least two
+                authorised individuals.
+              </p>
             </div>
             <div class="card card-gold">
               <span class="card-number">&lt;5 min</span>
               <span class="card-label">Automated response time</span>
-              <p style="font-size: 0.6em; margin-top: 8px">Circuit breakers detect and contain issues before any human is notified.</p>
+              <p style="font-size: 0.6em; margin-top: 8px">
+                Circuit breakers detect and contain issues before any human is
+                notified.
+              </p>
             </div>
             <div class="card card-gold">
               <span class="card-number">100%</span>
               <span class="card-label">Audit trail coverage</span>
-              <p style="font-size: 0.6em; margin-top: 8px">Every action &mdash; automated or manual &mdash; is logged, timestamped, and attributable.</p>
+              <p style="font-size: 0.6em; margin-top: 8px">
+                Every action &mdash; automated or manual &mdash; is logged,
+                timestamped, and attributable.
+              </p>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
           <aside class="notes">
-            Lead with the thesis: this isn't theoretical. Every element described in this deck is live today.
+            Lead with the thesis: this isn't theoretical. Every element
+            described in this deck is live today.
           </aside>
         </section>
 
@@ -657,21 +706,32 @@
         <section>
           <h2>Circuit Breaker &mdash; Automated Recovery</h2>
           <p style="margin-bottom: 16px">
-            The trading system implements a <strong>three-state circuit breaker</strong> that detects failures
-            and progressively restricts operations to protect capital. No human intervention required.
+            The trading system implements a
+            <strong>three-state circuit breaker</strong> that detects failures
+            and progressively restricts operations to protect capital. No human
+            intervention required.
           </p>
           <div class="escalation-flow">
             <div class="escalation-step step-auto">
               <div class="step-label">Closed (Normal)</div>
-              <div class="step-desc">All systems operational. Trades execute normally. Continuous health monitoring active.</div>
+              <div class="step-desc">
+                All systems operational. Trades execute normally. Continuous
+                health monitoring active.
+              </div>
             </div>
             <div class="escalation-step step-alert">
               <div class="step-label">Half-Open (Degraded)</div>
-              <div class="step-desc">Anomaly detected. System sends probe requests. New orders throttled. Alerts fire to team.</div>
+              <div class="step-desc">
+                Anomaly detected. System sends probe requests. New orders
+                throttled. Alerts fire to team.
+              </div>
             </div>
             <div class="escalation-step step-human">
               <div class="step-label">Open (Protected)</div>
-              <div class="step-desc">Confirmed failure. All new orders halted. Existing positions held. Manual reset required.</div>
+              <div class="step-desc">
+                Confirmed failure. All new orders halted. Existing positions
+                held. Manual reset required.
+              </div>
             </div>
           </div>
           <div class="cols-2" style="margin-top: 16px">
@@ -698,10 +758,13 @@
               </ul>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
           <aside class="notes">
-            The circuit breaker is implemented in execution-service/engine/ and uses a proper state machine.
-            The alerting-service handles PubSub propagation across the system.
+            The circuit breaker is implemented in execution-service/engine/ and
+            uses a proper state machine. The alerting-service handles PubSub
+            propagation across the system.
           </aside>
         </section>
 
@@ -711,7 +774,8 @@
         <section>
           <h2>Autonomous AI Debug &amp; Recovery Agents</h2>
           <p style="margin-bottom: 16px">
-            When something breaks, AI agents detect, diagnose, and propose fixes autonomously.
+            When something breaks, AI agents detect, diagnose, and propose fixes
+            autonomously.
             <strong>Humans approve &mdash; agents execute.</strong>
           </p>
           <div class="cols-2">
@@ -719,17 +783,18 @@
               <div class="card card-gold" style="margin-bottom: 16px">
                 <h3>PR Review Agent</h3>
                 <p>
-                  Monitors all pull requests across ~60 repos. Detects bugs, regressions, type errors.
-                  If auto-fixable, opens a fix PR for human approval. The developer reviews the
+                  Monitors all pull requests across ~60 repos. Detects bugs,
+                  regressions, type errors. If auto-fixable, opens a fix PR for
+                  human approval. The developer reviews the
                   <em>solution</em>, not the bug.
                 </p>
               </div>
               <div class="card card-gold">
                 <h3>Audit Agent</h3>
                 <p>
-                  Periodic re-audit against a 14-section quality checklist. Grades the entire system.
-                  Findings auto-create GitHub issues with full context. Provides a board-level
-                  system health score.
+                  Periodic re-audit against a 14-section quality checklist.
+                  Grades the entire system. Findings auto-create GitHub issues
+                  with full context. Provides a board-level system health score.
                 </p>
               </div>
             </div>
@@ -737,27 +802,32 @@
               <div class="card card-blue" style="margin-bottom: 16px">
                 <h3>Codex Sync Agent</h3>
                 <p>
-                  Triggered on every code change. Auto-updates architecture documentation
-                  to reflect current state. Documentation is always current &mdash; never stale.
+                  Triggered on every code change. Auto-updates architecture
+                  documentation to reflect current state. Documentation is
+                  always current &mdash; never stale.
                 </p>
               </div>
               <div class="card card-blue">
                 <h3>P&amp;L Monitor Agent</h3>
                 <p>
-                  Real-time P&amp;L streaming across all strategies. Anomaly detection for
-                  unexpected drawdowns. Auto-escalates to humans. No analyst manually watching.
+                  Real-time P&amp;L streaming across all strategies. Anomaly
+                  detection for unexpected drawdowns. Auto-escalates to humans.
+                  No analyst manually watching.
                 </p>
               </div>
             </div>
           </div>
           <div class="highlight-box" style="margin-top: 16px">
             <p>
-              Design principle: agents <em>suggest</em> and <em>flag</em> &mdash; they never auto-execute
-              trading decisions or deploy code without human approval. This is the right balance for
+              Design principle: agents <em>suggest</em> and
+              <em>flag</em> &mdash; they never auto-execute trading decisions or
+              deploy code without human approval. This is the right balance for
               <strong>FCA compliance and investor trust.</strong>
             </p>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -766,53 +836,121 @@
         <section>
           <h2>Version Control &amp; Human Approval Gates</h2>
           <p style="margin-bottom: 16px">
-            Breaking changes to the trading system require <strong>explicit human approval</strong>
-            before they can reach production. No automated process can bypass this gate.
+            Breaking changes to the trading system require
+            <strong>explicit human approval</strong>
+            before they can reach production. No automated process can bypass
+            this gate.
           </p>
           <div class="cols-2-1">
             <div>
               <div class="card card-gold" style="margin-bottom: 16px">
                 <h3>Major Version Bump Process</h3>
                 <ul>
-                  <li>All repos start at 0.x.x &mdash; pre-1.0.0 safety net active</li>
-                  <li>Breaking changes (<em>feat!</em>) on 0.x.x = MINOR bump only, never auto-crosses to 1.0.0</li>
-                  <li>1.0.0 graduation is a <strong>deliberate human decision</strong></li>
-                  <li>Post-1.0.0: any breaking change opens a GitHub approval issue</li>
+                  <li>
+                    All repos start at 0.x.x &mdash; pre-1.0.0 safety net active
+                  </li>
+                  <li>
+                    Breaking changes (<em>feat!</em>) on 0.x.x = MINOR bump
+                    only, never auto-crosses to 1.0.0
+                  </li>
+                  <li>
+                    1.0.0 graduation is a
+                    <strong>deliberate human decision</strong>
+                  </li>
+                  <li>
+                    Post-1.0.0: any breaking change opens a GitHub approval
+                    issue
+                  </li>
                   <li>Telegram notifies the team with the approval link</li>
-                  <li>Requires explicit <em>/approve</em> comment to execute</li>
+                  <li>
+                    Requires explicit <em>/approve</em> comment to execute
+                  </li>
                 </ul>
               </div>
               <div class="card card-blue">
                 <h3>Two-Pass Quality Gates</h3>
                 <ul>
-                  <li><strong>Pass 1:</strong> Full suite &mdash; lint, tests, typecheck, security scan, codex compliance</li>
-                  <li><strong>Pass 2:</strong> Lightweight pre-merge &mdash; lint + format + typecheck + codex</li>
+                  <li>
+                    <strong>Pass 1:</strong> Full suite &mdash; lint, tests,
+                    typecheck, security scan, codex compliance
+                  </li>
+                  <li>
+                    <strong>Pass 2:</strong> Lightweight pre-merge &mdash; lint
+                    + format + typecheck + codex
+                  </li>
                   <li>Every repo has its own quality gate script</li>
-                  <li>System Integration Tests validate cross-repo compatibility</li>
+                  <li>
+                    System Integration Tests validate cross-repo compatibility
+                  </li>
                 </ul>
               </div>
             </div>
             <div>
               <div class="card" style="text-align: center; padding: 20px">
-                <div style="font-size: 0.55em; color: var(--white-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px">Deployment Pipeline</div>
-                <div style="display: flex; flex-direction: column; gap: 8px; align-items: center">
-                  <div class="funnel-step active" style="width: 100%">Code Change</div>
-                  <div class="funnel-arrow" style="transform: rotate(90deg)">&rarr;</div>
-                  <div class="funnel-step" style="width: 100%">Quality Gates</div>
-                  <div class="funnel-arrow" style="transform: rotate(90deg)">&rarr;</div>
-                  <div class="funnel-step" style="width: 100%">Staging Branch</div>
-                  <div class="funnel-arrow" style="transform: rotate(90deg)">&rarr;</div>
-                  <div class="funnel-step" style="width: 100%; border-color: var(--amber); color: var(--amber)">SIT Validation</div>
-                  <div class="funnel-arrow" style="transform: rotate(90deg)">&rarr;</div>
-                  <div class="funnel-step active" style="width: 100%">Main (Production)</div>
+                <div
+                  style="
+                    font-size: 0.55em;
+                    color: var(--white-dim);
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                    margin-bottom: 12px;
+                  "
+                >
+                  Deployment Pipeline
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    gap: 8px;
+                    align-items: center;
+                  "
+                >
+                  <div class="funnel-step active" style="width: 100%">
+                    Code Change
+                  </div>
+                  <div class="funnel-arrow" style="transform: rotate(90deg)">
+                    &rarr;
+                  </div>
+                  <div class="funnel-step" style="width: 100%">
+                    Quality Gates
+                  </div>
+                  <div class="funnel-arrow" style="transform: rotate(90deg)">
+                    &rarr;
+                  </div>
+                  <div class="funnel-step" style="width: 100%">
+                    Staging Branch
+                  </div>
+                  <div class="funnel-arrow" style="transform: rotate(90deg)">
+                    &rarr;
+                  </div>
+                  <div
+                    class="funnel-step"
+                    style="
+                      width: 100%;
+                      border-color: var(--amber);
+                      color: var(--amber);
+                    "
+                  >
+                    SIT Validation
+                  </div>
+                  <div class="funnel-arrow" style="transform: rotate(90deg)">
+                    &rarr;
+                  </div>
+                  <div class="funnel-step active" style="width: 100%">
+                    Main (Production)
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
           <aside class="notes">
-            The semver-agent enforces version rules automatically. Human approval is required for
-            any breaking change post-1.0.0. This prevents accidental production breakage.
+            The semver-agent enforces version rules automatically. Human
+            approval is required for any breaking change post-1.0.0. This
+            prevents accidental production breakage.
           </aside>
         </section>
 
@@ -822,8 +960,11 @@
         <section>
           <h2>Real-Time Alert Framework</h2>
           <p style="margin-bottom: 16px">
-            A unified alerting pipeline delivers notifications across <strong>Slack, Telegram, and the client-facing trading portal</strong>.
-            Every stakeholder &mdash; team and client &mdash; gets the right alerts at the right time.
+            A unified alerting pipeline delivers notifications across
+            <strong
+              >Slack, Telegram, and the client-facing trading portal</strong
+            >. Every stakeholder &mdash; team and client &mdash; gets the right
+            alerts at the right time.
           </p>
           <div class="cols-3">
             <div class="card card-gold">
@@ -862,11 +1003,14 @@
           </div>
           <div class="highlight-box" style="margin-top: 16px">
             <p>
-              Clients see the <strong>same trading portal</strong> as the internal team &mdash; role-based access
-              controls determine visibility. Full transparency, nothing hidden.
+              Clients see the <strong>same trading portal</strong> as the
+              internal team &mdash; role-based access controls determine
+              visibility. Full transparency, nothing hidden.
             </p>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -875,7 +1019,8 @@
         <section>
           <h2>Client Alert Preferences</h2>
           <p style="margin-bottom: 16px">
-            Clients have full control over what they see. Subscribe to what matters, unsubscribe from the rest.
+            Clients have full control over what they see. Subscribe to what
+            matters, unsubscribe from the rest.
           </p>
           <div class="cols-2">
             <div>
@@ -930,23 +1075,34 @@
               <div class="card card-gold">
                 <h3>How It Works</h3>
                 <ul>
-                  <li>Clients manage preferences via their <em>portal settings page</em></li>
+                  <li>
+                    Clients manage preferences via their
+                    <em>portal settings page</em>
+                  </li>
                   <li>Toggle individual alert categories on/off</li>
                   <li>Choose delivery channel: portal, email, or both</li>
-                  <li>Set frequency: real-time, daily digest, or weekly summary</li>
-                  <li>Critical safety alerts (circuit breaker, capital risk) are always delivered &mdash; cannot be fully muted</li>
+                  <li>
+                    Set frequency: real-time, daily digest, or weekly summary
+                  </li>
+                  <li>
+                    Critical safety alerts (circuit breaker, capital risk) are
+                    always delivered &mdash; cannot be fully muted
+                  </li>
                 </ul>
               </div>
               <div class="card card-blue" style="margin-top: 16px">
                 <h3>Transparency Principle</h3>
                 <p>
-                  If something unusual is happening with a client's capital, they will know.
-                  Safety alerts are <strong>always on</strong>. Convenience alerts are fully configurable.
+                  If something unusual is happening with a client's capital,
+                  they will know. Safety alerts are <strong>always on</strong>.
+                  Convenience alerts are fully configurable.
                 </p>
               </div>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -955,7 +1111,8 @@
         <section>
           <h2>Key-Person Risk &mdash; Access Matrix</h2>
           <p style="margin-bottom: 12px">
-            The most common investor concern: <em>"What if something happens to the founder?"</em>
+            The most common investor concern:
+            <em>"What if something happens to the founder?"</em>
             Every critical system has at least two authorised individuals.
           </p>
           <table>
@@ -970,14 +1127,18 @@
             </thead>
             <tbody>
               <tr>
-                <td><strong>Trading System &mdash; Internal Permissions</strong></td>
+                <td>
+                  <strong>Trading System &mdash; Internal Permissions</strong>
+                </td>
                 <td><span class="access-icon access-primary">P</span></td>
                 <td><span class="access-icon access-primary">P</span></td>
                 <td><span class="access-icon access-none">&mdash;</span></td>
                 <td>Joint primary (Ikenna + Femi)</td>
               </tr>
               <tr>
-                <td><strong>Trading System &mdash; External Permissions</strong></td>
+                <td>
+                  <strong>Trading System &mdash; External Permissions</strong>
+                </td>
                 <td><span class="access-icon access-primary">P</span></td>
                 <td><span class="access-icon access-primary">P</span></td>
                 <td><span class="access-icon access-none">&mdash;</span></td>
@@ -1029,15 +1190,28 @@
           </table>
           <div class="highlight-box" style="margin-top: 12px">
             <p>
-              <span class="access-icon access-primary" style="font-size: 0.6em; width: 22px; height: 22px">P</span> = Primary access &nbsp;&nbsp;
-              <span class="access-icon access-secondary" style="font-size: 0.6em; width: 22px; height: 22px">S</span> = Secondary access &nbsp;&nbsp;
-              No single person holds exclusive access to any critical system.
+              <span
+                class="access-icon access-primary"
+                style="font-size: 0.6em; width: 22px; height: 22px"
+                >P</span
+              >
+              = Primary access &nbsp;&nbsp;
+              <span
+                class="access-icon access-secondary"
+                style="font-size: 0.6em; width: 22px; height: 22px"
+                >S</span
+              >
+              = Secondary access &nbsp;&nbsp; No single person holds exclusive
+              access to any critical system.
             </p>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
           <aside class="notes">
-            This is the slide that directly answers "what if the CEO gets hit by a bus?" Every system
-            has at least one backup person with full operational capability.
+            This is the slide that directly answers "what if the CEO gets hit by
+            a bus?" Every system has at least one backup person with full
+            operational capability.
           </aside>
         </section>
 
@@ -1053,10 +1227,19 @@
             <div class="card card-red">
               <h3>CEO Unavailable</h3>
               <ul>
-                <li>Trading system continues autonomously &mdash; no manual intervention needed for normal operations</li>
+                <li>
+                  Trading system continues autonomously &mdash; no manual
+                  intervention needed for normal operations
+                </li>
                 <li>Circuit breakers protect capital automatically</li>
-                <li>Femi (Head of Platform Infra Security &amp; Cloud Ops) has <em>joint primary access</em> to all internal and external permissions</li>
-                <li>Bank accounts accessible via Femi's secondary + admin access</li>
+                <li>
+                  Femi (Head of Platform Infra Security &amp; Cloud Ops) has
+                  <em>joint primary access</em> to all internal and external
+                  permissions
+                </li>
+                <li>
+                  Bank accounts accessible via Femi's secondary + admin access
+                </li>
                 <li>FCA reporting continues via Femi's login access</li>
                 <li>Harsh can manage client wallet operations</li>
               </ul>
@@ -1078,17 +1261,22 @@
                 <li>Per-venue circuit breakers isolate the failure</li>
                 <li>Other venues continue operating normally</li>
                 <li>Shard-level failure isolation &mdash; no cascade</li>
-                <li>DeFi error classification maps every revert to a known code</li>
+                <li>
+                  DeFi error classification maps every revert to a known code
+                </li>
                 <li>Automatic retry logic for transient errors</li>
                 <li>Manual escalation only for permanent failures</li>
               </ul>
             </div>
           </div>
           <div class="callout" style="margin-top: 20px; font-size: 0.72em">
-            The system is designed to <em>degrade gracefully</em>, not fail catastrophically.
-            Individual component failures are isolated and contained. Capital is always protected first.
+            The system is designed to <em>degrade gracefully</em>, not fail
+            catastrophically. Individual component failures are isolated and
+            contained. Capital is always protected first.
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1097,54 +1285,297 @@
         <section>
           <h2>Incident Escalation Protocol</h2>
           <p style="margin-bottom: 16px">
-            From detection to resolution &mdash; every incident follows the same structured path.
+            From detection to resolution &mdash; every incident follows the same
+            structured path.
           </p>
-          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              margin-bottom: 12px;
+            "
+          >
             <!-- Anomaly → Severity -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <div style="background: var(--navy-card); border: 1px solid var(--gold); border-radius: 6px; padding: 6px 16px; font-size: 0.75em; font-weight: 600; color: var(--gold);">Anomaly Detected</div>
-              <span style="color: var(--cyan); font-size: 0.8em;">→</span>
-              <div style="background: var(--navy-card); border: 2px solid var(--cyan); border-radius: 6px; padding: 6px 16px; font-size: 0.75em; font-weight: 600; color: var(--cyan); transform: rotate(45deg); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"><span style="transform: rotate(-45deg);">Severity?</span></div>
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+              "
+            >
+              <div
+                style="
+                  background: var(--navy-card);
+                  border: 1px solid var(--gold);
+                  border-radius: 6px;
+                  padding: 6px 16px;
+                  font-size: 0.75em;
+                  font-weight: 600;
+                  color: var(--gold);
+                "
+              >
+                Anomaly Detected
+              </div>
+              <span style="color: var(--cyan); font-size: 0.8em">→</span>
+              <div
+                style="
+                  background: var(--navy-card);
+                  border: 2px solid var(--cyan);
+                  border-radius: 6px;
+                  padding: 6px 16px;
+                  font-size: 0.75em;
+                  font-weight: 600;
+                  color: var(--cyan);
+                  transform: rotate(45deg);
+                  width: 60px;
+                  height: 60px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <span style="transform: rotate(-45deg)">Severity?</span>
+              </div>
             </div>
             <!-- Three paths -->
-            <div style="display: flex; gap: 12px;">
+            <div style="display: flex; gap: 12px">
               <!-- Low -->
-              <div style="flex: 1; background: rgba(0, 200, 100, 0.08); border: 1px solid rgba(0, 200, 100, 0.3); border-radius: 8px; padding: 10px;">
-                <div style="font-size: 0.65em; font-weight: 700; color: #00c864; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Low</div>
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">AI Auto-Fix</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">PR Review</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Deploy</span>
+              <div
+                style="
+                  flex: 1;
+                  background: rgba(0, 200, 100, 0.08);
+                  border: 1px solid rgba(0, 200, 100, 0.3);
+                  border-radius: 8px;
+                  padding: 10px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.65em;
+                    font-weight: 700;
+                    color: #00c864;
+                    margin-bottom: 6px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                  "
+                >
+                  Low
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex-wrap: wrap;
+                  "
+                >
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >AI Auto-Fix</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >PR Review</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Deploy</span
+                  >
                 </div>
               </div>
               <!-- Medium -->
-              <div style="flex: 1.3; background: rgba(212, 175, 55, 0.08); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px; padding: 10px;">
-                <div style="font-size: 0.65em; font-weight: 700; color: var(--amber); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Medium</div>
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Circuit Breaker</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Alert Team</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Investigate</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Fix &amp; Reset</span>
+              <div
+                style="
+                  flex: 1.3;
+                  background: rgba(212, 175, 55, 0.08);
+                  border: 1px solid rgba(212, 175, 55, 0.3);
+                  border-radius: 8px;
+                  padding: 10px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.65em;
+                    font-weight: 700;
+                    color: var(--amber);
+                    margin-bottom: 6px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                  "
+                >
+                  Medium
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex-wrap: wrap;
+                  "
+                >
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Circuit Breaker</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Alert Team</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Investigate</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Fix &amp; Reset</span
+                  >
                 </div>
               </div>
               <!-- Critical -->
-              <div style="flex: 1.8; background: rgba(255, 50, 50, 0.08); border: 1px solid rgba(255, 50, 50, 0.3); border-radius: 8px; padding: 10px;">
-                <div style="font-size: 0.65em; font-weight: 700; color: var(--red); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Critical</div>
-                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Halt Orders</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Team Alert</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Client Notice</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">War Room</span>
-                  <span style="color: var(--cyan); font-size: 0.7em;">→</span>
-                  <span style="background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 4px; padding: 4px 10px; font-size: 0.65em; color: var(--text);">Post-Incident</span>
+              <div
+                style="
+                  flex: 1.8;
+                  background: rgba(255, 50, 50, 0.08);
+                  border: 1px solid rgba(255, 50, 50, 0.3);
+                  border-radius: 8px;
+                  padding: 10px;
+                "
+              >
+                <div
+                  style="
+                    font-size: 0.65em;
+                    font-weight: 700;
+                    color: var(--red);
+                    margin-bottom: 6px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                  "
+                >
+                  Critical
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    flex-wrap: wrap;
+                  "
+                >
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Halt Orders</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Team Alert</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Client Notice</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >War Room</span
+                  >
+                  <span style="color: var(--cyan); font-size: 0.7em">→</span>
+                  <span
+                    style="
+                      background: var(--navy-card);
+                      border: 1px solid var(--navy-border);
+                      border-radius: 4px;
+                      padding: 4px 10px;
+                      font-size: 0.65em;
+                      color: var(--text);
+                    "
+                    >Post-Incident</span
+                  >
                 </div>
               </div>
             </div>
@@ -1152,18 +1583,31 @@
           <div class="cols-3" style="margin-top: 16px">
             <div class="card card-green">
               <h3>Low Severity</h3>
-              <p>Type errors, lint failures, minor regressions. AI agent proposes fix. Human reviews and merges. No trading impact.</p>
+              <p>
+                Type errors, lint failures, minor regressions. AI agent proposes
+                fix. Human reviews and merges. No trading impact.
+              </p>
             </div>
             <div class="card" style="border-color: var(--amber)">
               <h3 style="color: var(--amber)">Medium Severity</h3>
-              <p>Execution quality issues, venue degradation, P&amp;L anomalies. Trading throttled. Team investigates. Clients see status update on portal.</p>
+              <p>
+                Execution quality issues, venue degradation, P&amp;L anomalies.
+                Trading throttled. Team investigates. Clients see status update
+                on portal.
+              </p>
             </div>
             <div class="card card-red">
               <h3 style="color: var(--red)">Critical Severity</h3>
-              <p>Capital at risk, multi-venue failure, system-wide outage. All trading halted. All stakeholders notified. Post-incident review mandatory.</p>
+              <p>
+                Capital at risk, multi-venue failure, system-wide outage. All
+                trading halted. All stakeholders notified. Post-incident review
+                mandatory.
+              </p>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1172,38 +1616,71 @@
         <section>
           <h2>Client Wallet &amp; Fund Operations</h2>
           <p style="margin-bottom: 16px">
-            For clients who send funds via crypto wallets for trading strategies, operational continuity is critical.
+            For clients who send funds via crypto wallets for trading
+            strategies, operational continuity is critical.
           </p>
           <div class="cols-2">
             <div class="card card-gold">
               <h3>Wallet Operations Access</h3>
               <ul>
-                <li><strong>Ikenna (CEO)</strong> &mdash; primary access to all client wallet operations</li>
-                <li><strong>Femi (Head of Platform Infra Security &amp; Cloud Ops)</strong> &mdash; secondary access to wallet codebase and fund routing</li>
-                <li><strong>Harsh (Quant Research Lead)</strong> &mdash; secondary access specifically for client wallet operations</li>
-                <li>All wallet transactions are logged with full audit trail</li>
+                <li>
+                  <strong>Ikenna (CEO)</strong> &mdash; primary access to all
+                  client wallet operations
+                </li>
+                <li>
+                  <strong
+                    >Femi (Head of Platform Infra Security &amp; Cloud
+                    Ops)</strong
+                  >
+                  &mdash; secondary access to wallet codebase and fund routing
+                </li>
+                <li>
+                  <strong>Harsh (Quant Research Lead)</strong> &mdash; secondary
+                  access specifically for client wallet operations
+                </li>
+                <li>
+                  All wallet transactions are logged with full audit trail
+                </li>
                 <li>Multi-signature where supported by the blockchain</li>
               </ul>
             </div>
             <div class="card card-blue">
               <h3>Fund Flow Security</h3>
               <ul>
-                <li>Client funds received via wallet are routed to trading strategies programmatically</li>
+                <li>
+                  Client funds received via wallet are routed to trading
+                  strategies programmatically
+                </li>
                 <li>No single person can unilaterally move client funds</li>
                 <li>All routing rules are codified and version-controlled</li>
-                <li>Smart contract interactions validated on-chain (<em>eth_getCode</em> check)</li>
-                <li>DeFi error classification catches every revert with a structured error code</li>
-                <li>Flash loan receiver contracts deployed and validated before use</li>
+                <li>
+                  Smart contract interactions validated on-chain (<em
+                    >eth_getCode</em
+                  >
+                  check)
+                </li>
+                <li>
+                  DeFi error classification catches every revert with a
+                  structured error code
+                </li>
+                <li>
+                  Flash loan receiver contracts deployed and validated before
+                  use
+                </li>
               </ul>
             </div>
           </div>
           <div class="highlight-box" style="margin-top: 16px">
             <p>
-              Client wallet operations have <strong>three people with access</strong> &mdash; the most redundancy
-              of any system. This reflects the critical nature of direct fund custody.
+              Client wallet operations have
+              <strong>three people with access</strong> &mdash; the most
+              redundancy of any system. This reflects the critical nature of
+              direct fund custody.
             </p>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1230,8 +1707,8 @@
                   </tr>
                 </table>
                 <p style="margin-top: 12px; font-size: 0.65em">
-                  Femi has full operational capability to manage all banking relationships
-                  independently if the CEO is unavailable.
+                  Femi has full operational capability to manage all banking
+                  relationships independently if the CEO is unavailable.
                 </p>
               </div>
             </div>
@@ -1240,23 +1717,31 @@
                 <h3>FCA Regulatory Compliance</h3>
                 <ul>
                   <li>FCA reporting logins shared between CEO and Femi</li>
-                  <li>MiFID/FCA reporting is automated in the trading system</li>
+                  <li>
+                    MiFID/FCA reporting is automated in the trading system
+                  </li>
                   <li>Audit trails generated automatically for every trade</li>
                   <li>Best execution reports produced programmatically</li>
-                  <li>Compliance alerts fire if reporting thresholds approach</li>
+                  <li>
+                    Compliance alerts fire if reporting thresholds approach
+                  </li>
                 </ul>
               </div>
               <div class="card card-green">
                 <h3>Automated Compliance</h3>
                 <p>
-                  FCA reporting doesn't depend on any individual. The system generates
-                  MiFID transaction reports, best execution analysis, and audit logs
-                  <em>automatically</em>. Manual filing is the backup, not the primary method.
+                  FCA reporting doesn't depend on any individual. The system
+                  generates MiFID transaction reports, best execution analysis,
+                  and audit logs
+                  <em>automatically</em>. Manual filing is the backup, not the
+                  primary method.
                 </p>
               </div>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1269,9 +1754,15 @@
               <div class="card card-gold" style="margin-bottom: 16px">
                 <h3>Cloud Architecture</h3>
                 <ul>
-                  <li><strong>Multi-cloud:</strong> GCP (primary) + AWS (backup)</li>
-                  <li>IAM + VPC + TLS at ingress &mdash; no service mesh overhead</li>
-                  <li>Application Default Credentials &mdash; no hardcoded secrets</li>
+                  <li>
+                    <strong>Multi-cloud:</strong> GCP (primary) + AWS (backup)
+                  </li>
+                  <li>
+                    IAM + VPC + TLS at ingress &mdash; no service mesh overhead
+                  </li>
+                  <li>
+                    Application Default Credentials &mdash; no hardcoded secrets
+                  </li>
                   <li>Secret Manager for all sensitive configuration</li>
                   <li>Credential-free testing with emulators and mocks</li>
                 </ul>
@@ -1279,9 +1770,15 @@
               <div class="card card-blue">
                 <h3>Data Protection</h3>
                 <ul>
-                  <li>All market data, positions, and P&amp;L persisted to cloud storage</li>
+                  <li>
+                    All market data, positions, and P&amp;L persisted to cloud
+                    storage
+                  </li>
                   <li>BigQuery for analytical queries and reporting</li>
-                  <li>Event-driven architecture &mdash; Pub/Sub for reliable messaging</li>
+                  <li>
+                    Event-driven architecture &mdash; Pub/Sub for reliable
+                    messaging
+                  </li>
                   <li>State survives process restarts and redeployments</li>
                   <li>No data loss during circuit breaker activations</li>
                 </ul>
@@ -1291,25 +1788,40 @@
               <div class="card card-green">
                 <h3>Deployment Safety</h3>
                 <ul>
-                  <li><strong>Three-tier branch model:</strong> feature &rarr; staging &rarr; main</li>
-                  <li>System Integration Tests validate before main promotion</li>
-                  <li>Staging branch acts as convergence zone for breaking changes</li>
-                  <li>Rollback is always possible &mdash; every deployment is versioned</li>
+                  <li>
+                    <strong>Three-tier branch model:</strong> feature &rarr;
+                    staging &rarr; main
+                  </li>
+                  <li>
+                    System Integration Tests validate before main promotion
+                  </li>
+                  <li>
+                    Staging branch acts as convergence zone for breaking changes
+                  </li>
+                  <li>
+                    Rollback is always possible &mdash; every deployment is
+                    versioned
+                  </li>
                   <li>Canary deployments for high-risk changes</li>
                   <li>60+ repos with independent version control</li>
                 </ul>
               </div>
               <div class="card" style="margin-top: 16px; text-align: center">
                 <span class="card-number">60+</span>
-                <span class="card-label">Independent repos with quality gates</span>
+                <span class="card-label"
+                  >Independent repos with quality gates</span
+                >
                 <p style="font-size: 0.6em; margin-top: 8px">
-                  Each repo has its own CI/CD pipeline, quality gates, and version history.
-                  A failure in one repo cannot cascade to others.
+                  Each repo has its own CI/CD pipeline, quality gates, and
+                  version history. A failure in one repo cannot cascade to
+                  others.
                 </p>
               </div>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1319,33 +1831,46 @@
           <h2>Security Posture &mdash; Audit-Ready</h2>
           <p style="margin-bottom: 16px">
             The platform is built for institutional-grade security from day one.
-            We are <em>ready for a formal security audit</em> &mdash; every layer is hardened.
+            We are <em>ready for a formal security audit</em> &mdash; every
+            layer is hardened.
           </p>
           <div class="cols-3">
             <div class="card card-gold">
               <span class="card-number">0</span>
               <span class="card-label">Hardcoded credentials in codebase</span>
-              <p style="font-size: 0.6em; margin-top: 8px">All secrets live in GCP Secret Manager. No API keys, passwords, or tokens in code, config files, or environment variables.</p>
+              <p style="font-size: 0.6em; margin-top: 8px">
+                All secrets live in GCP Secret Manager. No API keys, passwords,
+                or tokens in code, config files, or environment variables.
+              </p>
             </div>
             <div class="card card-gold">
               <span class="card-number">90 days</span>
               <span class="card-label">Key rotation cycle</span>
-              <p style="font-size: 0.6em; margin-top: 8px">All API keys, service account credentials, and access tokens are rotated on a 90-day schedule. Rotation is logged and auditable.</p>
+              <p style="font-size: 0.6em; margin-top: 8px">
+                All API keys, service account credentials, and access tokens are
+                rotated on a 90-day schedule. Rotation is logged and auditable.
+              </p>
             </div>
             <div class="card card-gold">
               <span class="card-number">2</span>
               <span class="card-label">Cloud providers (GCP + AWS)</span>
-              <p style="font-size: 0.6em; margin-top: 8px">Multi-cloud architecture with IAM, VPC isolation, and TLS encryption at every layer. No single-cloud dependency.</p>
+              <p style="font-size: 0.6em; margin-top: 8px">
+                Multi-cloud architecture with IAM, VPC isolation, and TLS
+                encryption at every layer. No single-cloud dependency.
+              </p>
             </div>
           </div>
           <div class="callout" style="margin-top: 20px; font-size: 0.72em">
-            Security is not a feature we added &mdash; it's the <em>architecture itself</em>. Every design decision
-            defaults to the most restrictive option. Convenience never overrides safety.
+            Security is not a feature we added &mdash; it's the
+            <em>architecture itself</em>. Every design decision defaults to the
+            most restrictive option. Convenience never overrides safety.
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
           <aside class="notes">
-            Lead with the headline: we are audit-ready today. This is not aspirational.
-            Every control described here is live and enforceable.
+            Lead with the headline: we are audit-ready today. This is not
+            aspirational. Every control described here is live and enforceable.
           </aside>
         </section>
 
@@ -1355,40 +1880,79 @@
         <section>
           <h2>Secrets &amp; Credential Management</h2>
           <p style="margin-bottom: 16px">
-            No one sees client credentials. Not even the trading systems at runtime.
+            No one sees client credentials. Not even the trading systems at
+            runtime.
           </p>
           <div class="cols-2">
             <div class="card card-gold">
               <h3>GCP Secret Manager</h3>
               <ul>
-                <li>All client API keys, wallet keys, and sensitive config stored in <em>Secret Manager</em></li>
+                <li>
+                  All client API keys, wallet keys, and sensitive config stored
+                  in <em>Secret Manager</em>
+                </li>
                 <li>Encrypted at rest (AES-256) and in transit (TLS 1.3)</li>
-                <li>Access controlled by IAM &mdash; only the specific service that needs a secret can read it</li>
-                <li>No human can view secret values via the console without audit trail</li>
-                <li>Secrets are injected at runtime via service account bindings &mdash; never written to disk</li>
-                <li>Version history maintained &mdash; rollback to any previous secret version</li>
+                <li>
+                  Access controlled by IAM &mdash; only the specific service
+                  that needs a secret can read it
+                </li>
+                <li>
+                  No human can view secret values via the console without audit
+                  trail
+                </li>
+                <li>
+                  Secrets are injected at runtime via service account bindings
+                  &mdash; never written to disk
+                </li>
+                <li>
+                  Version history maintained &mdash; rollback to any previous
+                  secret version
+                </li>
               </ul>
             </div>
             <div class="card card-blue">
               <h3>How Services Access Secrets</h3>
               <ul>
-                <li>Services use <em>Application Default Credentials</em> (ADC) &mdash; no hardcoded auth</li>
-                <li>Each service has a dedicated service account with minimum required permissions</li>
-                <li>Interfaces are <strong>API-keyless by design</strong> &mdash; credentials injected by the calling service, never stored in the library</li>
-                <li>Secrets are fetched at startup, held in memory only, never logged</li>
-                <li><em>.env files contain no placeholder credentials</em> &mdash; ADC is the default</li>
-                <li>Local development uses mock mode &mdash; no real credentials needed</li>
+                <li>
+                  Services use <em>Application Default Credentials</em> (ADC)
+                  &mdash; no hardcoded auth
+                </li>
+                <li>
+                  Each service has a dedicated service account with minimum
+                  required permissions
+                </li>
+                <li>
+                  Interfaces are <strong>API-keyless by design</strong> &mdash;
+                  credentials injected by the calling service, never stored in
+                  the library
+                </li>
+                <li>
+                  Secrets are fetched at startup, held in memory only, never
+                  logged
+                </li>
+                <li>
+                  <em>.env files contain no placeholder credentials</em> &mdash;
+                  ADC is the default
+                </li>
+                <li>
+                  Local development uses mock mode &mdash; no real credentials
+                  needed
+                </li>
               </ul>
             </div>
           </div>
           <div class="highlight-box" style="margin-top: 16px">
             <p>
-              Even if an attacker gained access to a running service's memory, they would only see credentials
-              for <strong>that one service's scope</strong>. No service holds cross-system credentials.
-              Lateral movement is architecturally impossible.
+              Even if an attacker gained access to a running service's memory,
+              they would only see credentials for
+              <strong>that one service's scope</strong>. No service holds
+              cross-system credentials. Lateral movement is architecturally
+              impossible.
             </p>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1403,18 +1967,35 @@
                 <ul>
                   <li>All API keys rotated every <em>90 days</em></li>
                   <li>Service account keys rotated on the same cycle</li>
-                  <li>Exchange API credentials (Binance, OKX, etc.) rotated per policy</li>
-                  <li>DeFi wallet keys: rotation via new wallet generation + fund migration</li>
-                  <li>Every rotation is logged with timestamp, actor, and old/new key hash</li>
-                  <li>Alerts fire if a key approaches expiry without rotation</li>
+                  <li>
+                    Exchange API credentials (Binance, OKX, etc.) rotated per
+                    policy
+                  </li>
+                  <li>
+                    DeFi wallet keys: rotation via new wallet generation + fund
+                    migration
+                  </li>
+                  <li>
+                    Every rotation is logged with timestamp, actor, and old/new
+                    key hash
+                  </li>
+                  <li>
+                    Alerts fire if a key approaches expiry without rotation
+                  </li>
                 </ul>
               </div>
               <div class="card card-green">
                 <h3>Principle of Least Privilege</h3>
                 <ul>
-                  <li>Every service account has <strong>only</strong> the permissions it needs</li>
+                  <li>
+                    Every service account has <strong>only</strong> the
+                    permissions it needs
+                  </li>
                   <li>No service has admin-level cloud access</li>
-                  <li>Read-only services cannot write; write services cannot delete</li>
+                  <li>
+                    Read-only services cannot write; write services cannot
+                    delete
+                  </li>
                   <li>IAM policies reviewed quarterly</li>
                 </ul>
               </div>
@@ -1423,26 +2004,40 @@
               <div class="card card-red">
                 <h3>Employee Offboarding</h3>
                 <ul>
-                  <li>Cloud IAM access revoked <em>immediately</em> on departure</li>
+                  <li>
+                    Cloud IAM access revoked <em>immediately</em> on departure
+                  </li>
                   <li>GitHub organisation access removed</li>
-                  <li>All service account keys associated with the individual rotated</li>
+                  <li>
+                    All service account keys associated with the individual
+                    rotated
+                  </li>
                   <li>VPN and SSH access terminated</li>
                   <li>OAuth sessions invalidated across all platforms</li>
-                  <li>Offboarding checklist enforced &mdash; no step can be skipped</li>
-                  <li>Post-offboarding audit: verify zero residual access within 24 hours</li>
+                  <li>
+                    Offboarding checklist enforced &mdash; no step can be
+                    skipped
+                  </li>
+                  <li>
+                    Post-offboarding audit: verify zero residual access within
+                    24 hours
+                  </li>
                 </ul>
               </div>
               <div class="card card-blue" style="margin-top: 16px">
                 <h3>Access Reviews</h3>
                 <p>
-                  Quarterly access reviews across GCP, AWS, GitHub, and all exchange accounts.
-                  Any permission not actively used is revoked. <em>Default deny</em> &mdash; access
-                  is granted only when justified and time-limited where possible.
+                  Quarterly access reviews across GCP, AWS, GitHub, and all
+                  exchange accounts. Any permission not actively used is
+                  revoked. <em>Default deny</em> &mdash; access is granted only
+                  when justified and time-limited where possible.
                 </p>
               </div>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1454,35 +2049,78 @@
             <div class="card card-gold">
               <h3>Google Cloud Platform (Primary)</h3>
               <ul>
-                <li><strong>IAM:</strong> Role-based access control with custom roles per service</li>
-                <li><strong>VPC:</strong> Private network isolation &mdash; services not exposed to public internet</li>
-                <li><strong>Secret Manager:</strong> All credentials encrypted and access-logged</li>
-                <li><strong>Cloud Armor:</strong> DDoS protection and WAF rules</li>
-                <li><strong>Audit Logs:</strong> Every API call, resource access, and admin action logged</li>
-                <li><strong>Cloud Run / GKE:</strong> Container-level isolation, no shared compute</li>
-                <li><strong>TLS 1.3:</strong> Encryption in transit for all internal and external communication</li>
+                <li>
+                  <strong>IAM:</strong> Role-based access control with custom
+                  roles per service
+                </li>
+                <li>
+                  <strong>VPC:</strong> Private network isolation &mdash;
+                  services not exposed to public internet
+                </li>
+                <li>
+                  <strong>Secret Manager:</strong> All credentials encrypted and
+                  access-logged
+                </li>
+                <li>
+                  <strong>Cloud Armor:</strong> DDoS protection and WAF rules
+                </li>
+                <li>
+                  <strong>Audit Logs:</strong> Every API call, resource access,
+                  and admin action logged
+                </li>
+                <li>
+                  <strong>Cloud Run / GKE:</strong> Container-level isolation,
+                  no shared compute
+                </li>
+                <li>
+                  <strong>TLS 1.3:</strong> Encryption in transit for all
+                  internal and external communication
+                </li>
               </ul>
             </div>
             <div class="card card-blue">
               <h3>Amazon Web Services (Secondary)</h3>
               <ul>
-                <li><strong>IAM:</strong> Separate identity boundary, no cross-cloud credential sharing</li>
-                <li><strong>VPC:</strong> Isolated network with security groups per service</li>
-                <li><strong>KMS:</strong> Encryption keys managed independently from GCP</li>
-                <li><strong>CloudTrail:</strong> Full audit trail of all AWS activity</li>
-                <li><strong>S3:</strong> Bucket policies enforce encryption and access restrictions</li>
-                <li><strong>Multi-cloud benefit:</strong> If GCP is compromised, AWS systems are unaffected &mdash; separate credentials, separate network, separate identity</li>
+                <li>
+                  <strong>IAM:</strong> Separate identity boundary, no
+                  cross-cloud credential sharing
+                </li>
+                <li>
+                  <strong>VPC:</strong> Isolated network with security groups
+                  per service
+                </li>
+                <li>
+                  <strong>KMS:</strong> Encryption keys managed independently
+                  from GCP
+                </li>
+                <li>
+                  <strong>CloudTrail:</strong> Full audit trail of all AWS
+                  activity
+                </li>
+                <li>
+                  <strong>S3:</strong> Bucket policies enforce encryption and
+                  access restrictions
+                </li>
+                <li>
+                  <strong>Multi-cloud benefit:</strong> If GCP is compromised,
+                  AWS systems are unaffected &mdash; separate credentials,
+                  separate network, separate identity
+                </li>
               </ul>
             </div>
           </div>
           <div class="highlight-box" style="margin-top: 16px">
             <p>
-              <strong>No service mesh (deliberate).</strong> We use IAM + VPC + TLS at ingress instead of Istio/Envoy.
-              Service mesh adds 2&ndash;5ms per hop &mdash; unacceptable for low-latency trading.
-              Security is enforced at the infrastructure layer, not the application layer.
+              <strong>No service mesh (deliberate).</strong> We use IAM + VPC +
+              TLS at ingress instead of Istio/Envoy. Service mesh adds
+              2&ndash;5ms per hop &mdash; unacceptable for low-latency trading.
+              Security is enforced at the infrastructure layer, not the
+              application layer.
             </p>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1491,17 +2129,27 @@
         <section>
           <h2>Website &amp; Client Authentication</h2>
           <p style="margin-bottom: 16px">
-            The client-facing platform uses <strong>Firebase Authentication with OAuth</strong> &mdash;
-            the same identity infrastructure used by Google's own products.
+            The client-facing platform uses
+            <strong>Firebase Authentication with OAuth</strong> &mdash; the same
+            identity infrastructure used by Google's own products.
           </p>
           <div class="cols-2">
             <div class="card card-gold">
               <h3>Authentication Stack</h3>
               <ul>
-                <li><strong>Firebase Auth</strong> with OAuth 2.0 / OpenID Connect</li>
-                <li>Support for Google, Microsoft, and email/password sign-in</li>
-                <li>Multi-factor authentication (MFA) available for all accounts</li>
-                <li>JWT tokens with short expiry &mdash; auto-refresh, no long-lived sessions</li>
+                <li>
+                  <strong>Firebase Auth</strong> with OAuth 2.0 / OpenID Connect
+                </li>
+                <li>
+                  Support for Google, Microsoft, and email/password sign-in
+                </li>
+                <li>
+                  Multi-factor authentication (MFA) available for all accounts
+                </li>
+                <li>
+                  JWT tokens with short expiry &mdash; auto-refresh, no
+                  long-lived sessions
+                </li>
                 <li>CSRF protection on all form submissions</li>
                 <li>Rate limiting on authentication endpoints</li>
               </ul>
@@ -1509,33 +2157,64 @@
             <div class="card card-blue">
               <h3>Role-Based Access Control</h3>
               <ul>
-                <li><strong>Admin:</strong> Full platform access, user management, all presentations</li>
-                <li><strong>Board / Shareholder:</strong> Investor relations, financial data, strategy overview</li>
-                <li><strong>Client:</strong> Own portfolio, alerts, assigned presentations only</li>
-                <li><strong>Operations:</strong> System health, deployment status, quality metrics</li>
-                <li>Each role sees only the data and features relevant to their function</li>
-                <li>API endpoints enforce role checks server-side &mdash; not just UI-hidden</li>
+                <li>
+                  <strong>Admin:</strong> Full platform access, user management,
+                  all presentations
+                </li>
+                <li>
+                  <strong>Board / Shareholder:</strong> Investor relations,
+                  financial data, strategy overview
+                </li>
+                <li>
+                  <strong>Client:</strong> Own portfolio, alerts, assigned
+                  presentations only
+                </li>
+                <li>
+                  <strong>Operations:</strong> System health, deployment status,
+                  quality metrics
+                </li>
+                <li>
+                  Each role sees only the data and features relevant to their
+                  function
+                </li>
+                <li>
+                  API endpoints enforce role checks server-side &mdash; not just
+                  UI-hidden
+                </li>
               </ul>
             </div>
           </div>
           <div class="cols-3" style="margin-top: 16px">
             <div class="card card-green">
               <h3>Session Security</h3>
-              <p>Sessions auto-expire. Re-authentication required for sensitive operations. Concurrent session limits enforced.</p>
+              <p>
+                Sessions auto-expire. Re-authentication required for sensitive
+                operations. Concurrent session limits enforced.
+              </p>
             </div>
             <div class="card card-green">
               <h3>Data Scoping</h3>
-              <p>API responses are scoped by organisation and role. A client can never access another client's data, even with a valid token.</p>
+              <p>
+                API responses are scoped by organisation and role. A client can
+                never access another client's data, even with a valid token.
+              </p>
             </div>
             <div class="card card-green">
               <h3>Audit Trail</h3>
-              <p>Every login, page view, and data access is logged. Suspicious activity (failed logins, unusual access patterns) triggers alerts.</p>
+              <p>
+                Every login, page view, and data access is logged. Suspicious
+                activity (failed logins, unusual access patterns) triggers
+                alerts.
+              </p>
             </div>
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
           <aside class="notes">
-            Firebase Auth is battle-tested at Google scale. We get MFA, OAuth, and session management
-            without building our own auth system — which would be a security liability.
+            Firebase Auth is battle-tested at Google scale. We get MFA, OAuth,
+            and session management without building our own auth system — which
+            would be a security liability.
           </aside>
         </section>
 
@@ -1545,7 +2224,8 @@
         <section>
           <h2>Security Audit Readiness</h2>
           <p style="margin-bottom: 16px">
-            A summary of controls that a security auditor would verify &mdash; all are in place today.
+            A summary of controls that a security auditor would verify &mdash;
+            all are in place today.
           </p>
           <table>
             <thead>
@@ -1579,7 +2259,9 @@
               <tr>
                 <td>Network isolation</td>
                 <td><span class="tag tag-green">PASS</span></td>
-                <td>VPC per environment, no public endpoints for internal services</td>
+                <td>
+                  VPC per environment, no public endpoints for internal services
+                </td>
               </tr>
               <tr>
                 <td>Encryption in transit</td>
@@ -1589,7 +2271,10 @@
               <tr>
                 <td>Encryption at rest</td>
                 <td><span class="tag tag-green">PASS</span></td>
-                <td>GCP default encryption + customer-managed keys for sensitive data</td>
+                <td>
+                  GCP default encryption + customer-managed keys for sensitive
+                  data
+                </td>
               </tr>
               <tr>
                 <td>Audit logging</td>
@@ -1599,7 +2284,9 @@
               <tr>
                 <td>Offboarding</td>
                 <td><span class="tag tag-green">PASS</span></td>
-                <td>Immediate revocation, 24-hour post-audit, checklist enforced</td>
+                <td>
+                  Immediate revocation, 24-hour post-audit, checklist enforced
+                </td>
               </tr>
               <tr>
                 <td>Dependency scanning</td>
@@ -1609,15 +2296,19 @@
               <tr>
                 <td>No hardcoded secrets</td>
                 <td><span class="tag tag-green">PASS</span></td>
-                <td>ADC default, .env files contain no credentials, CI enforces</td>
+                <td>
+                  ADC default, .env files contain no credentials, CI enforces
+                </td>
               </tr>
             </tbody>
           </table>
           <div class="callout" style="margin-top: 16px; font-size: 0.72em">
-            We welcome a formal penetration test and security audit.
-            Every control listed above is <em>verifiable and evidence-backed</em>.
+            We welcome a formal penetration test and security audit. Every
+            control listed above is <em>verifiable and evidence-backed</em>.
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════ -->
@@ -1653,24 +2344,33 @@
             <div class="card card-green">
               <h3>Security &amp; Audit Readiness</h3>
               <ul>
-                <li>All credentials in Secret Manager &mdash; encrypted, access-logged</li>
+                <li>
+                  All credentials in Secret Manager &mdash; encrypted,
+                  access-logged
+                </li>
                 <li>90-day key rotation with alerting</li>
                 <li>Firebase OAuth + RBAC on website and portal</li>
                 <li>Immediate access revocation on offboarding</li>
-                <li>Multi-cloud (GCP + AWS) &mdash; no single-cloud dependency</li>
+                <li>
+                  Multi-cloud (GCP + AWS) &mdash; no single-cloud dependency
+                </li>
                 <li>11/11 security controls verified and audit-ready</li>
               </ul>
             </div>
           </div>
           <div class="callout" style="font-size: 0.78em">
-            The system was <em>designed from day one</em> to operate without constant human oversight.
-            Agents monitor, circuit breakers protect, and multiple team members hold the keys.
-            Your capital is protected by <em>architecture</em>, not by any single individual.
+            The system was <em>designed from day one</em> to operate without
+            constant human oversight. Agents monitor, circuit breakers protect,
+            and multiple team members hold the keys. Your capital is protected
+            by <em>architecture</em>, not by any single individual.
           </div>
-          <div class="slide-footer">Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery</div>
+          <div class="slide-footer">
+            Odum Research Ltd &middot; FCA 975797 &middot; Disaster Recovery
+          </div>
           <aside class="notes">
-            Close with confidence. This isn't aspirational — every system described is live and tested.
-            The question isn't "what if something goes wrong?" — it's "the system already knows what to do."
+            Close with confidence. This isn't aspirational — every system
+            described is live and tested. The question isn't "what if something
+            goes wrong?" — it's "the system already knows what to do."
           </aside>
         </section>
       </div>

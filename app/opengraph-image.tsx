@@ -32,7 +32,6 @@ export default async function OGImage() {
         }}
       >
         {logoSrc && (
-           
           <img
             src={logoSrc}
             alt=""

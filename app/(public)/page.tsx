@@ -205,23 +205,38 @@ export default function ServicesLandingPage() {
               to institutional clients at any entry point.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link href="/services/data" className="flex items-center gap-1.5 hover:text-sky-400 transition-colors">
+              <Link
+                href="/services/data"
+                className="flex items-center gap-1.5 hover:text-sky-400 transition-colors"
+              >
                 <Database className="size-3.5 text-sky-400" /> Data
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/backtesting" className="flex items-center gap-1.5 hover:text-violet-400 transition-colors">
+              <Link
+                href="/services/backtesting"
+                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
+              >
                 <LineChart className="size-3.5 text-violet-400" /> Strategy
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/platform" className="flex items-center gap-1.5 hover:text-amber-400 transition-colors">
+              <Link
+                href="/services/platform"
+                className="flex items-center gap-1.5 hover:text-amber-400 transition-colors"
+              >
                 <Layers className="size-3.5 text-amber-400" /> Analytics
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/execution" className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors">
+              <Link
+                href="/services/execution"
+                className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors"
+              >
                 <Zap className="size-3.5 text-emerald-400" /> Execution
               </Link>
               <span className="text-border">|</span>
-              <Link href="/services/regulatory" className="flex items-center gap-1.5 hover:text-rose-400 transition-colors">
+              <Link
+                href="/services/regulatory"
+                className="flex items-center gap-1.5 hover:text-rose-400 transition-colors"
+              >
                 <Shield className="size-3.5 text-rose-400" /> Regulatory
               </Link>
             </div>
@@ -304,8 +319,8 @@ export default function ServicesLandingPage() {
               If it worked in testing, it works in production — and every
               morning you can compare yesterday&apos;s live trades against what
               the backtest would have done. All your data comes through one
-              clean feed, no matter the source. Stocks, crypto, DeFi,
-              sports — we handle the messy parts so you just see numbers.
+              clean feed, no matter the source. Stocks, crypto, DeFi, sports —
+              we handle the messy parts so you just see numbers.
             </p>
           </div>
           <div className="flex justify-center" suppressHydrationWarning>

@@ -291,7 +291,10 @@ function ComparePanel({
           <tbody>
             {METRICS.map((metric) => {
               const values = items.map(
-                (b) => (b.metrics as unknown as Record<string, number>)?.[metric.key] ?? 0,
+                (b) =>
+                  (b.metrics as unknown as Record<string, number>)?.[
+                    metric.key
+                  ] ?? 0,
               );
               const best =
                 metric.good === "high"
