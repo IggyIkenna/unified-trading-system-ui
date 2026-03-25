@@ -762,7 +762,7 @@ export function getDataFlowsByMode(mode: "live" | "batch"): DataFlow[] {
 // ---------------------------------------------------------------------------
 
 export interface Service {
-  id: string;
+  id?: string;
   name: string;
   type:
     | "api-service"
