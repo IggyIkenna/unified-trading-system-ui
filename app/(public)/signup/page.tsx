@@ -342,6 +342,33 @@ ${fields.map((f) => `<div class="field"><div class="field-label">${f.label}</div
 </body></html>`;
 }
 
+// Cache logo base64 so we only fetch once
+let _logoBase64: string | null = null;
+async function getLogoBase64(): Promise<string | null> {
+  if (_logoBase64) return _logoBase64;
+  try {
+    const res = await fetch("/images/odum-logo.png");
+    const blob = await res.blob();
+    // Resize to small canvas to keep PDF small
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
+    await new Promise<void>((resolve) => {
+      img.onload = () => resolve();
+      img.src = url;
+    });
+    const canvas = document.createElement("canvas");
+    canvas.width = 80;
+    canvas.height = 80 * (img.height / img.width);
+    const ctx = canvas.getContext("2d")!;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(url);
+    _logoBase64 = canvas.toDataURL("image/png", 0.8);
+    return _logoBase64;
+  } catch {
+    return null;
+  }
+}
+
 async function generateDeclarationPdfBlob(
   title: string,
   applicantName: string,
@@ -355,7 +382,7 @@ async function generateDeclarationPdfBlob(
   const pageW = pdf.internal.pageSize.getWidth();
   const margin = 20;
   const contentW = pageW - margin * 2;
-  let y = 25;
+  let y = 20;
 
   const date = new Date().toLocaleDateString("en-GB", {
     day: "numeric",
@@ -363,10 +390,29 @@ async function generateDeclarationPdfBlob(
     year: "numeric",
   });
 
-  // Logo text header
-  pdf.setFontSize(10);
-  pdf.setTextColor(100);
-  pdf.text("Odum Research Ltd", margin, y);
+  // Letterhead — logo + company details
+  const logo = await getLogoBase64();
+  if (logo) {
+    pdf.addImage(logo, "PNG", margin, y - 5, 12, 12);
+  }
+  pdf.setFontSize(14);
+  pdf.setTextColor(30);
+  pdf.text("Odum Research Ltd", margin + (logo ? 15 : 0), y + 2);
+  pdf.setFontSize(8);
+  pdf.setTextColor(120);
+  pdf.text("FCA Authorised · Ref 975797", margin + (logo ? 15 : 0), y + 7);
+  pdf.text("9 Appold Street, London EC2A 2AP", margin + (logo ? 15 : 0), y + 11);
+
+  // Right-aligned date
+  pdf.setFontSize(9);
+  pdf.text(date, pageW - margin, y + 2, { align: "right" });
+
+  y += 18;
+
+  // Divider line
+  pdf.setDrawColor(180);
+  pdf.setLineWidth(0.3);
+  pdf.line(margin, y, pageW - margin, y);
   y += 8;
 
   // Title
@@ -465,6 +511,21 @@ async function generateDeclarationPdfBlob(
     margin,
     y,
   );
+
+  // Footer on all pages
+  const pageCount = pdf.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    pdf.setPage(i);
+    const pageH = pdf.internal.pageSize.getHeight();
+    pdf.setDrawColor(200);
+    pdf.setLineWidth(0.2);
+    pdf.line(margin, pageH - 15, pageW - margin, pageH - 15);
+    pdf.setFontSize(7);
+    pdf.setTextColor(150);
+    pdf.text("Odum Research Ltd · FCA 975797 · www.odum-research.com", margin, pageH - 11);
+    pdf.text(`Page ${i} of ${pageCount}`, pageW - margin, pageH - 11, { align: "right" });
+    pdf.text("Confidential", pageW / 2, pageH - 11, { align: "center" });
+  }
 
   return pdf.output("blob");
 }
