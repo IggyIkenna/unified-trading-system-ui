@@ -1,7 +1,18 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
+import { ApiError } from "@/components/ui/api-error";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useMLAlerts,
+  useMLPipelineStatus,
+  useModelFamilies,
+  useTrainingQueue,
+  useUnifiedTrainingRuns,
+} from "@/hooks/api/use-ml-models";
+import type { ModelFamily, UnifiedTrainingRun } from "@/lib/ml-types";
 import {
   Activity,
   AlertTriangle,
@@ -16,27 +27,9 @@ import {
   Package,
   Play,
   XCircle,
-  Zap,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  useExperiments,
-  useModelFamilies,
-  useTrainingRuns,
-  useFeatureProvenance,
-  useMLMonitoring,
-} from "@/hooks/api/use-ml-models";
-import type { Experiment, ModelFamily, TrainingRun } from "@/lib/ml-types";
-import {
-  UNIFIED_TRAINING_RUNS,
-  GPU_QUEUE_STATUS,
-  ML_PIPELINE_STATUS,
-  ML_ALERTS,
-  MODEL_FAMILIES,
-} from "@/lib/ml-mock-data";
+import Link from "next/link";
+import * as React from "react";
 
 function statusIcon(status: string) {
   switch (status) {
@@ -76,14 +69,79 @@ function archetypeColor(archetype: string) {
 }
 
 export default function MLOverviewPage() {
-  const stats = ML_PIPELINE_STATUS;
-  const runs = UNIFIED_TRAINING_RUNS;
-  const queue = GPU_QUEUE_STATUS;
-  const alerts = ML_ALERTS.filter((a) => !a.resolvedAt);
-  const families = MODEL_FAMILIES;
+  const {
+    data: pipelineData,
+    isLoading: pipelineLoading,
+    isError: pipelineIsError,
+    error: pipelineError,
+  } = useMLPipelineStatus();
+  const {
+    data: runsData,
+    isLoading: runsLoading,
+    isError: runsIsError,
+    error: runsError,
+  } = useUnifiedTrainingRuns();
+  const { data: queueData, isLoading: queueLoading } = useTrainingQueue();
+  const { data: alertsData } = useMLAlerts();
+  const { data: familiesData, isLoading: famLoading } = useModelFamilies();
 
-  const gpuTotalUsed = queue.gpus.reduce((s, g) => s + g.in_use, 0);
-  const gpuTotalAll = queue.gpus.reduce((s, g) => s + g.total, 0);
+  const runs = (
+    Array.isArray(runsData) ? runsData : []
+  ) as UnifiedTrainingRun[];
+  const queue = queueData as {
+    gpus: {
+      gpu_type: string;
+      total: number;
+      in_use: number;
+      available: number;
+    }[];
+    jobs_waiting: number;
+    estimated_wait_minutes: number;
+  } | null;
+  const rawAlerts = Array.isArray(alertsData) ? alertsData : [];
+  const alerts = rawAlerts.filter(
+    (a: { resolvedAt?: string | null }) => !a.resolvedAt,
+  );
+  const families = ((familiesData as { data?: ModelFamily[] })?.data ??
+    []) as ModelFamily[];
+
+  const stats = {
+    total_model_families: 0,
+    active_training_runs: 0,
+    queued_jobs: 0,
+    completed_today: 0,
+    failed_today: 0,
+    models_in_production: 0,
+    models_in_shadow: 0,
+    active_alerts: 0,
+    ...(typeof pipelineData === "object" && pipelineData !== null
+      ? (pipelineData as Record<string, number>)
+      : {}),
+  };
+
+  const gpuTotalUsed = queue?.gpus?.reduce((s, g) => s + g.in_use, 0) ?? 0;
+  const gpuTotalAll = Math.max(
+    1,
+    queue?.gpus?.reduce((s, g) => s + g.total, 0) ?? 1,
+  );
+
+  const pageLoading =
+    pipelineLoading || runsLoading || queueLoading || famLoading;
+  const pageError = pipelineIsError || runsIsError;
+
+  if (pageError) {
+    const err =
+      pipelineError instanceof Error
+        ? pipelineError
+        : runsError instanceof Error
+          ? runsError
+          : new Error("Request failed");
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <ApiError error={err} title="Could not load ML overview" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -107,68 +165,79 @@ export default function MLOverviewPage() {
         </div>
 
         {/* KPI Strip */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {[
-            {
-              label: "Model Families",
-              value: stats.total_model_families,
-              icon: Layers,
-              color: "text-purple-400",
-              bg: "bg-purple-500/10",
-            },
-            {
-              label: "Training Active",
-              value: stats.active_training_runs,
-              icon: Cpu,
-              color: "text-blue-400",
-              bg: "bg-blue-500/10",
-            },
-            {
-              label: "Queued",
-              value: stats.queued_jobs,
-              icon: Clock,
-              color: "text-amber-400",
-              bg: "bg-amber-500/10",
-            },
-            {
-              label: "Completed",
-              value: stats.completed_today,
-              icon: CheckCircle2,
-              color: "text-emerald-400",
-              bg: "bg-emerald-500/10",
-            },
-            {
-              label: "In Production",
-              value: stats.models_in_production,
-              icon: Activity,
-              color: "text-cyan-400",
-              bg: "bg-cyan-500/10",
-            },
-            {
-              label: "Active Alerts",
-              value: stats.active_alerts,
-              icon: AlertTriangle,
-              color: alerts.length > 0 ? "text-red-400" : "text-zinc-400",
-              bg: alerts.length > 0 ? "bg-red-500/10" : "bg-zinc-500/10",
-            },
-          ].map((kpi) => (
-            <Card key={kpi.label} className="border-border/50">
-              <CardContent className="pt-0 pb-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                      {kpi.label}
-                    </p>
-                    <p className="text-2xl font-bold mt-0.5">{kpi.value}</p>
+        {pageLoading ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                className="h-[88px] rounded-lg border border-border/50"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              {
+                label: "Model Families",
+                value: stats.total_model_families,
+                icon: Layers,
+                color: "text-purple-400",
+                bg: "bg-purple-500/10",
+              },
+              {
+                label: "Training Active",
+                value: stats.active_training_runs,
+                icon: Cpu,
+                color: "text-blue-400",
+                bg: "bg-blue-500/10",
+              },
+              {
+                label: "Queued",
+                value: stats.queued_jobs,
+                icon: Clock,
+                color: "text-amber-400",
+                bg: "bg-amber-500/10",
+              },
+              {
+                label: "Completed",
+                value: stats.completed_today,
+                icon: CheckCircle2,
+                color: "text-emerald-400",
+                bg: "bg-emerald-500/10",
+              },
+              {
+                label: "In Production",
+                value: stats.models_in_production,
+                icon: Activity,
+                color: "text-cyan-400",
+                bg: "bg-cyan-500/10",
+              },
+              {
+                label: "Active Alerts",
+                value: stats.active_alerts,
+                icon: AlertTriangle,
+                color: alerts.length > 0 ? "text-red-400" : "text-zinc-400",
+                bg: alerts.length > 0 ? "bg-red-500/10" : "bg-zinc-500/10",
+              },
+            ].map((kpi) => (
+              <Card key={kpi.label} className="border-border/50">
+                <CardContent className="pt-0 pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                        {kpi.label}
+                      </p>
+                      <p className="text-2xl font-bold mt-0.5">{kpi.value}</p>
+                    </div>
+                    <div className={`rounded-lg ${kpi.bg} p-2`}>
+                      <kpi.icon className={`size-4 ${kpi.color}`} />
+                    </div>
                   </div>
-                  <div className={`rounded-lg ${kpi.bg} p-2`}>
-                    <kpi.icon className={`size-4 ${kpi.color}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Navigation Cards — the 3 sub-pages */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -280,81 +349,92 @@ export default function MLOverviewPage() {
               </Link>
             </div>
             <div className="space-y-2">
-              {runs.slice(0, 5).map((run) => (
-                <Card key={run.id} className="border-border/50">
-                  <CardContent className="pt-0 pb-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3 min-w-0">
-                        {statusIcon(run.status)}
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm truncate">
-                              {run.name}
-                            </span>
-                            <Badge
-                              variant="outline"
-                              className={`${statusBadge(run.status)} text-[10px] shrink-0`}
-                            >
-                              {run.status}
-                            </Badge>
-                          </div>
-                          <p className="text-[11px] text-muted-foreground">
-                            {run.model_family_name} · {run.created_by}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        {run.status === "running" && (
-                          <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground font-mono">
-                              Epoch {run.current_epoch}/{run.total_epochs}
-                            </p>
-                            <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-blue-500 rounded-full transition-all"
-                                style={{ width: `${run.progress}%` }}
-                              />
+              {pageLoading ? (
+                <>
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Skeleton
+                      key={i}
+                      className="h-[72px] w-full rounded-lg border border-border/50"
+                    />
+                  ))}
+                </>
+              ) : (
+                runs.slice(0, 5).map((run) => (
+                  <Card key={run.id} className="border-border/50">
+                    <CardContent className="pt-0 pb-3">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          {statusIcon(run.status)}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-sm truncate">
+                                {run.name}
+                              </span>
+                              <Badge
+                                variant="outline"
+                                className={`${statusBadge(run.status)} text-[10px] shrink-0`}
+                              >
+                                {run.status}
+                              </Badge>
                             </div>
+                            <p className="text-[11px] text-muted-foreground">
+                              {run.model_family_name} · {run.created_by}
+                            </p>
                           </div>
-                        )}
-                        {run.status === "completed" &&
-                          run.financial_metrics && (
-                            <div className="flex items-center gap-3 text-xs">
-                              <span>
-                                Sharpe:{" "}
-                                <span className="font-mono font-medium text-emerald-400">
-                                  {run.financial_metrics.sharpe_ratio.toFixed(
-                                    2,
-                                  )}
-                                </span>
-                              </span>
-                              <span>
-                                DirAcc:{" "}
-                                <span className="font-mono font-medium">
-                                  {(
-                                    run.financial_metrics.directional_accuracy *
-                                    100
-                                  ).toFixed(1)}
-                                  %
-                                </span>
-                              </span>
+                        </div>
+                        <div className="text-right shrink-0">
+                          {run.status === "running" && (
+                            <div className="space-y-1">
+                              <p className="text-xs text-muted-foreground font-mono">
+                                Epoch {run.current_epoch}/{run.total_epochs}
+                              </p>
+                              <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-blue-500 rounded-full transition-all"
+                                  style={{ width: `${run.progress}%` }}
+                                />
+                              </div>
                             </div>
                           )}
-                        {run.status === "failed" && (
-                          <span className="text-[11px] text-red-400 font-mono">
-                            OOM
-                          </span>
-                        )}
-                        {run.status === "queued" && (
-                          <span className="text-[11px] text-amber-400">
-                            Queue #{queue.jobs_waiting}
-                          </span>
-                        )}
+                          {run.status === "completed" &&
+                            run.financial_metrics && (
+                              <div className="flex items-center gap-3 text-xs">
+                                <span>
+                                  Sharpe:{" "}
+                                  <span className="font-mono font-medium text-emerald-400">
+                                    {run.financial_metrics.sharpe_ratio.toFixed(
+                                      2,
+                                    )}
+                                  </span>
+                                </span>
+                                <span>
+                                  DirAcc:{" "}
+                                  <span className="font-mono font-medium">
+                                    {(
+                                      run.financial_metrics
+                                        .directional_accuracy * 100
+                                    ).toFixed(1)}
+                                    %
+                                  </span>
+                                </span>
+                              </div>
+                            )}
+                          {run.status === "failed" && (
+                            <span className="text-[11px] text-red-400 font-mono">
+                              OOM
+                            </span>
+                          )}
+                          {run.status === "queued" && (
+                            <span className="text-[11px] text-amber-400">
+                              Queue #{queue?.jobs_waiting ?? "—"}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
           </div>
 
@@ -384,7 +464,7 @@ export default function MLOverviewPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  {queue.gpus.map((g) => (
+                  {(queue?.gpus ?? []).map((g) => (
                     <div
                       key={g.gpu_type}
                       className="flex items-center justify-between text-[11px]"
@@ -403,10 +483,10 @@ export default function MLOverviewPage() {
                     </div>
                   ))}
                 </div>
-                {queue.jobs_waiting > 0 && (
+                {(queue?.jobs_waiting ?? 0) > 0 && (
                   <div className="rounded-md bg-amber-500/10 p-2 text-[11px] text-amber-400">
-                    {queue.jobs_waiting} jobs waiting · ~
-                    {queue.estimated_wait_minutes}min est.
+                    {queue?.jobs_waiting} jobs waiting · ~
+                    {queue?.estimated_wait_minutes}min est.
                   </div>
                 )}
               </CardContent>

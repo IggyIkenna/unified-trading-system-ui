@@ -35,6 +35,11 @@ import {
   VALIDATION_PACKAGES,
   DEPLOYMENT_CANDIDATES,
   LIVE_DEPLOYMENTS,
+  UNIFIED_TRAINING_RUNS,
+  GPU_QUEUE_STATUS,
+  ML_PIPELINE_STATUS,
+  RUN_COMPARISONS,
+  ML_ALERTS,
 } from "@/lib/ml-mock-data";
 import {
   STRATEGY_TEMPLATES,
@@ -58,7 +63,11 @@ import {
   addApiKey,
   removeApiKey,
 } from "@/lib/api/mock-provisioning-state";
-import type { MockUser, MockOrganization, MockVenueApiKey } from "@/lib/api/mock-provisioning-state";
+import type {
+  MockUser,
+  MockOrganization,
+  MockVenueApiKey,
+} from "@/lib/api/mock-provisioning-state";
 import {
   getOrders as getLedgerOrders,
   placeMockOrder,
@@ -94,6 +103,32 @@ function json(data: unknown, delay = 50): Promise<Response> {
 
 function getToday(): string {
   return new Date().toISOString().split("T")[0];
+}
+
+function parseMockJsonBody(opts?: RequestInit): Record<string, unknown> {
+  if (!opts?.body || typeof opts.body !== "string") return {};
+  try {
+    return JSON.parse(opts.body) as Record<string, unknown>;
+  } catch {
+    return {};
+  }
+}
+
+function jsonStatus(
+  status: number,
+  data: unknown,
+  delay = 50,
+): Promise<Response> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(
+        new Response(JSON.stringify(data), {
+          status,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    }, delay);
+  });
 }
 
 const defaultFilter = {
@@ -1412,6 +1447,131 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/analytics/strategies/health") {
     // Let the hook use its built-in SEED_STRATEGIES fallback
     return json({ data: [] });
+  }
+
+  // --- ML (unified v2 API — changelog ML_MOCK_DATA_CHANGELOG.md) ---
+  {
+    const mlUrl = new URL(path, "http://mock.local");
+    const mlPath = mlUrl.pathname;
+
+    if (
+      mlPath === "/api/ml/pipeline/status" &&
+      (!opts?.method || opts.method === "GET")
+    ) {
+      return json(ML_PIPELINE_STATUS);
+    }
+    if (
+      mlPath === "/api/ml/training/queue" &&
+      (!opts?.method || opts.method === "GET")
+    ) {
+      return json(GPU_QUEUE_STATUS);
+    }
+    if (
+      mlPath === "/api/ml/alerts" &&
+      (!opts?.method || opts.method === "GET")
+    ) {
+      return json(ML_ALERTS);
+    }
+    if (
+      mlPath === "/api/ml/registry/models" &&
+      (!opts?.method || opts.method === "GET")
+    ) {
+      return json(MODEL_VERSIONS);
+    }
+
+    const cancelMatch = mlPath.match(
+      /^\/api\/ml\/training\/runs\/([^/]+)\/cancel$/,
+    );
+    if (cancelMatch && opts?.method === "POST") {
+      const runId = cancelMatch[1];
+      const run = UNIFIED_TRAINING_RUNS.find((r) => r.id === runId);
+      if (!run) {
+        return jsonStatus(404, { error: "run_not_found" });
+      }
+      return json({ status: "cancelled" as const, run_id: runId });
+    }
+
+    if (mlPath === "/api/ml/training/runs" && opts?.method === "POST") {
+      const body = parseMockJsonBody(opts);
+      const template = UNIFIED_TRAINING_RUNS.find((r) => r.status === "queued");
+      if (!template) {
+        return jsonStatus(500, { error: "no_template" });
+      }
+      const clone = JSON.parse(
+        JSON.stringify(template),
+      ) as (typeof UNIFIED_TRAINING_RUNS)[number];
+      const famId =
+        (typeof body.model_family_id === "string" && body.model_family_id) ||
+        clone.model_family_id;
+      const fam = MODEL_FAMILIES.find((f) => f.id === famId);
+      clone.id = `run-${Date.now()}`;
+      clone.name =
+        (typeof body.name === "string" && body.name.trim()) ||
+        `New run — ${clone.id}`;
+      clone.description =
+        (typeof body.description === "string" && body.description) ||
+        clone.description;
+      clone.model_family_id = famId;
+      clone.model_family_name = fam?.name ?? clone.model_family_name;
+      clone.created_at = new Date().toISOString();
+      clone.created_by =
+        (typeof body.created_by === "string" && body.created_by) || "demo.user";
+      if (body.config && typeof body.config === "object") {
+        clone.config = {
+          ...clone.config,
+          ...(body.config as object),
+        };
+      }
+      return json(clone);
+    }
+
+    if (
+      mlPath === "/api/ml/training/runs" &&
+      (!opts?.method || opts.method === "GET")
+    ) {
+      let list = [...UNIFIED_TRAINING_RUNS];
+      const st = mlUrl.searchParams.get("status");
+      const family = mlUrl.searchParams.get("family");
+      if (st && st !== "all") {
+        list = list.filter((r) => r.status === st);
+      }
+      if (family) {
+        list = list.filter((r) => r.model_family_id === family);
+      }
+      return json(list);
+    }
+
+    const runDetailMatch = mlPath.match(/^\/api\/ml\/training\/runs\/([^/]+)$/);
+    if (runDetailMatch && (!opts?.method || opts.method === "GET")) {
+      const runId = runDetailMatch[1];
+      const run = UNIFIED_TRAINING_RUNS.find((r) => r.id === runId);
+      if (!run) {
+        return jsonStatus(404, { error: "run_not_found" });
+      }
+      return json(run);
+    }
+
+    const analysisRunMatch = mlPath.match(
+      /^\/api\/ml\/analysis\/runs\/([^/]+)$/,
+    );
+    if (analysisRunMatch && (!opts?.method || opts.method === "GET")) {
+      const runId = analysisRunMatch[1];
+      const run = UNIFIED_TRAINING_RUNS.find((r) => r.id === runId);
+      if (!run?.analysis) {
+        return jsonStatus(404, { error: "analysis_not_available" });
+      }
+      return json(run.analysis);
+    }
+
+    if (mlPath === "/api/ml/analysis/compare" && opts?.method === "POST") {
+      const body = parseMockJsonBody(opts);
+      const a = String(body.run_a_id ?? "");
+      const b = String(body.run_b_id ?? "");
+      const matched = RUN_COMPARISONS.filter(
+        (c) => c.run_a_id === a && c.run_b_id === b,
+      );
+      return json(matched.length > 0 ? matched : RUN_COMPARISONS);
+    }
   }
 
   // --- ML ---
@@ -3530,10 +3690,14 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       const entitlements = [
         ...new Set([...updated.requested_entitlements, "reporting"]),
       ];
-      const orgSlug = updated.org_id || updated.requester_email.split("@")[1]?.split(".")[0] || "unknown";
+      const orgSlug =
+        updated.org_id ||
+        updated.requester_email.split("@")[1]?.split(".")[0] ||
+        "unknown";
       let orgId = "";
       const existingOrg = state.organizations.find(
-        (o) => o.slug === orgSlug || o.contact_email === updated.requester_email,
+        (o) =>
+          o.slug === orgSlug || o.contact_email === updated.requester_email,
       );
       if (existingOrg) {
         orgId = existingOrg.id;
@@ -3588,11 +3752,20 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   // --- Organizations ---
-  if (route === "/api/auth/provisioning/organizations" && (!opts?.method || opts.method === "GET")) {
+  if (
+    route === "/api/auth/provisioning/organizations" &&
+    (!opts?.method || opts.method === "GET")
+  ) {
     const state = getProvisioningState();
-    return json({ organizations: state.organizations, total: state.organizations.length });
+    return json({
+      organizations: state.organizations,
+      total: state.organizations.length,
+    });
   }
-  if (route === "/api/auth/provisioning/organizations" && opts?.method === "POST") {
+  if (
+    route === "/api/auth/provisioning/organizations" &&
+    opts?.method === "POST"
+  ) {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const org: MockOrganization = {
       id: `org-${Date.now()}`,
@@ -3610,18 +3783,28 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     addOrganization(org);
     return json({ organization: org });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+$/) && !route.includes("api-keys")) {
+  if (
+    route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+$/) &&
+    !route.includes("api-keys")
+  ) {
     const orgId = route.split("/").pop()!;
     if (opts?.method === "PUT") {
       const body = opts.body ? JSON.parse(opts.body as string) : {};
       const updated = updateOrganization(orgId, body);
-      return updated ? json({ organization: updated }) : json({ error: "not found" });
+      return updated
+        ? json({ organization: updated })
+        : json({ error: "not found" });
     }
     const state = getProvisioningState();
     const org = state.organizations.find((o) => o.id === orgId);
     return org ? json({ organization: org }) : json({ error: "not found" });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys$/) && opts?.method === "POST") {
+  if (
+    route.match(
+      /^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys$/,
+    ) &&
+    opts?.method === "POST"
+  ) {
     const orgId = route.split("/").at(-2)!;
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const key: MockVenueApiKey = {
@@ -3635,7 +3818,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const org = addApiKey(orgId, key);
     return org ? json({ organization: org }) : json({ error: "org not found" });
   }
-  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys\/[^/]+$/) && opts?.method === "DELETE") {
+  if (
+    route.match(
+      /^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys\/[^/]+$/,
+    ) &&
+    opts?.method === "DELETE"
+  ) {
     const parts = route.split("/");
     const keyId = parts.pop()!;
     parts.pop(); // skip "api-keys"
@@ -3650,13 +3838,19 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("portal_user");
-        if (raw) currentUserEmail = (JSON.parse(raw) as { email?: string }).email ?? null;
-      } catch { /* ignore */ }
+        if (raw)
+          currentUserEmail =
+            (JSON.parse(raw) as { email?: string }).email ?? null;
+      } catch {
+        /* ignore */
+      }
     }
     const user = currentUserEmail
       ? state.users.find((u) => u.email === currentUserEmail)
       : null;
-    const org = user?.org_id ? state.organizations.find((o) => o.id === user.org_id) : null;
+    const org = user?.org_id
+      ? state.organizations.find((o) => o.id === user.org_id)
+      : null;
     return org ? json({ organization: org }) : json({ organization: null });
   }
 
@@ -4194,10 +4388,14 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       const entitlements = [
         ...new Set([...updated.requested_entitlements, "reporting"]),
       ];
-      const orgSlug = updated.org_id || updated.requester_email.split("@")[1]?.split(".")[0] || "unknown";
+      const orgSlug =
+        updated.org_id ||
+        updated.requester_email.split("@")[1]?.split(".")[0] ||
+        "unknown";
       let orgId = "";
       const existingOrg = state.organizations.find(
-        (o) => o.slug === orgSlug || o.contact_email === updated.requester_email,
+        (o) =>
+          o.slug === orgSlug || o.contact_email === updated.requester_email,
       );
       if (existingOrg) {
         orgId = existingOrg.id;

@@ -12,6 +12,7 @@ import {
   Activity,
   AlertTriangle,
   ArrowLeft,
+  Ban,
   BarChart3,
   CheckCircle2,
   Clock,
@@ -26,6 +27,7 @@ import {
   Terminal,
   XCircle,
 } from "lucide-react";
+import { toast } from "sonner";
 import {
   Area,
   AreaChart,
@@ -38,7 +40,31 @@ import {
   YAxis,
 } from "recharts";
 
-import { UNIFIED_TRAINING_RUNS, GPU_QUEUE_STATUS } from "@/lib/ml-mock-data";
+import { ApiError } from "@/components/ui/api-error";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useCancelUnifiedTrainingRun,
+  useCreateUnifiedTrainingRun,
+  useModelFamilies,
+  useTrainingQueue,
+  useUnifiedTrainingRuns,
+} from "@/hooks/api/use-ml-models";
 import type { UnifiedTrainingRun } from "@/lib/ml-types";
 
 // ---------------------------------------------------------------------------
@@ -92,14 +118,60 @@ function generateResourceData(): {
 // ---------------------------------------------------------------------------
 
 export default function TrainingPage() {
-  const runs = UNIFIED_TRAINING_RUNS;
-  const queue = GPU_QUEUE_STATUS;
+  const {
+    data: runsData,
+    isLoading: runsLoading,
+    isError: runsIsError,
+    error: runsError,
+    refetch: refetchRuns,
+  } = useUnifiedTrainingRuns();
+  const { data: queueData, isLoading: queueLoading } = useTrainingQueue();
+  const { data: familiesData } = useModelFamilies();
+  const createRun = useCreateUnifiedTrainingRun();
+  const cancelRun = useCancelUnifiedTrainingRun();
+
+  function prefillNewRunFromFailed(run: UnifiedTrainingRun) {
+    setNewName(`Retry: ${run.name}`);
+    setNewFamilyId(run.model_family_id);
+    setNewGpu(run.config.gpu_type);
+    setNewPriority(run.config.priority);
+    setNewOpen(true);
+  }
+
+  const runs = (
+    Array.isArray(runsData) ? runsData : []
+  ) as UnifiedTrainingRun[];
+  const queue = queueData as {
+    gpus: {
+      gpu_type: string;
+      total: number;
+      in_use: number;
+      available: number;
+    }[];
+  } | null;
+
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [filterStatus, setFilterStatus] = React.useState<string>("all");
+  const [newOpen, setNewOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState("");
+  const [newFamilyId, setNewFamilyId] = React.useState("");
+  const [newGpu, setNewGpu] = React.useState("A100-80GB");
+  const [newPriority, setNewPriority] = React.useState<
+    "low" | "normal" | "high"
+  >("normal");
+
+  const families = ((familiesData as { data?: { id: string; name: string }[] })
+    ?.data ?? []) as { id: string; name: string }[];
 
   React.useEffect(() => {
     if (runs.length > 0 && selectedId === null) setSelectedId(runs[0].id);
   }, [runs, selectedId]);
+
+  React.useEffect(() => {
+    if (families.length > 0 && !newFamilyId) {
+      setNewFamilyId(families[0].id);
+    }
+  }, [families, newFamilyId]);
 
   const filteredRuns =
     filterStatus === "all"
@@ -111,10 +183,30 @@ export default function TrainingPage() {
   const queuedCount = runs.filter((r) => r.status === "queued").length;
   const completedCount = runs.filter((r) => r.status === "completed").length;
   const failedCount = runs.filter((r) => r.status === "failed").length;
-  const gpuUsed = queue.gpus.reduce((s, g) => s + g.in_use, 0);
-  const gpuTotal = queue.gpus.reduce((s, g) => s + g.total, 0);
+  const gpuUsed = (queue?.gpus ?? []).reduce((s, g) => s + g.in_use, 0);
+  const gpuTotal = Math.max(
+    1,
+    (queue?.gpus ?? []).reduce((s, g) => s + g.total, 0),
+  );
 
   const resourceData = React.useMemo(() => generateResourceData(), []);
+
+  const pageLoading = runsLoading || queueLoading;
+
+  if (runsIsError) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <ApiError
+          error={
+            runsError instanceof Error
+              ? runsError
+              : new Error("Failed to load training runs")
+          }
+          title="Could not load training"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -135,71 +227,195 @@ export default function TrainingPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={() => void refetchRuns()}
+              disabled={pageLoading}
+            >
               <RefreshCw className="size-3.5 mr-1.5" />
               Refresh
             </Button>
-            <Button size="sm">
+            <Button size="sm" type="button" onClick={() => setNewOpen(true)}>
               <Play className="size-3.5 mr-1.5" />
               New Run
             </Button>
           </div>
         </div>
 
-        {/* KPI Strip */}
-        <div className="grid grid-cols-5 gap-3">
-          {[
-            {
-              label: "Running",
-              value: runningCount,
-              icon: Activity,
-              color: "text-blue-400",
-              bg: "bg-blue-500/10",
-            },
-            {
-              label: "Queued",
-              value: queuedCount,
-              icon: Clock,
-              color: "text-amber-400",
-              bg: "bg-amber-500/10",
-            },
-            {
-              label: "Completed",
-              value: completedCount,
-              icon: CheckCircle2,
-              color: "text-emerald-400",
-              bg: "bg-emerald-500/10",
-            },
-            {
-              label: "Failed",
-              value: failedCount,
-              icon: XCircle,
-              color: "text-red-400",
-              bg: "bg-red-500/10",
-            },
-            {
-              label: "GPUs",
-              value: `${gpuUsed}/${gpuTotal}`,
-              icon: Cpu,
-              color: "text-cyan-400",
-              bg: "bg-cyan-500/10",
-            },
-          ].map((k) => (
-            <Card key={k.label} className="border-border/50 p-3">
-              <div className="flex items-center gap-2.5">
-                <div className={`rounded-md ${k.bg} p-1.5`}>
-                  <k.icon className={`size-4 ${k.color}`} />
+        <Dialog open={newOpen} onOpenChange={setNewOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>New training run</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 py-1">
+              <div className="space-y-1.5">
+                <Label htmlFor="run-name">Run name</Label>
+                <Input
+                  id="run-name"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="e.g. BTC direction — ablation B"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Model family</Label>
+                <Select value={newFamilyId} onValueChange={setNewFamilyId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select family" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {families.map((f) => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label>GPU type</Label>
+                  <Select value={newGpu} onValueChange={setNewGpu}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="A100-80GB">A100-80GB</SelectItem>
+                      <SelectItem value="V100-32GB">V100-32GB</SelectItem>
+                      <SelectItem value="A10G-24GB">A10G-24GB</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div>
-                  <p className="text-lg font-bold font-mono leading-none">
-                    {k.value}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">{k.label}</p>
+                <div className="space-y-1.5">
+                  <Label>Priority</Label>
+                  <Select
+                    value={newPriority}
+                    onValueChange={(v) =>
+                      setNewPriority(v as "low" | "normal" | "high")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-            </Card>
-          ))}
-        </div>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setNewOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                disabled={createRun.isPending || !newFamilyId}
+                onClick={() => {
+                  const name =
+                    newName.trim() ||
+                    `Queued run ${new Date().toISOString().slice(0, 16)}`;
+                  createRun.mutate(
+                    {
+                      name,
+                      model_family_id: newFamilyId,
+                      config: {
+                        gpu_type: newGpu,
+                        priority: newPriority,
+                      },
+                    },
+                    {
+                      onSuccess: (data) => {
+                        const row = data as { id?: string };
+                        if (row?.id) setSelectedId(row.id);
+                        setNewOpen(false);
+                        setNewName("");
+                      },
+                    },
+                  );
+                }}
+              >
+                {createRun.isPending ? "Queueing…" : "Queue run"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* KPI Strip */}
+        {pageLoading ? (
+          <div className="grid grid-cols-5 gap-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton
+                key={i}
+                className="h-[72px] rounded-lg border border-border/50"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-5 gap-3">
+            {[
+              {
+                label: "Running",
+                value: runningCount,
+                icon: Activity,
+                color: "text-blue-400",
+                bg: "bg-blue-500/10",
+              },
+              {
+                label: "Queued",
+                value: queuedCount,
+                icon: Clock,
+                color: "text-amber-400",
+                bg: "bg-amber-500/10",
+              },
+              {
+                label: "Completed",
+                value: completedCount,
+                icon: CheckCircle2,
+                color: "text-emerald-400",
+                bg: "bg-emerald-500/10",
+              },
+              {
+                label: "Failed",
+                value: failedCount,
+                icon: XCircle,
+                color: "text-red-400",
+                bg: "bg-red-500/10",
+              },
+              {
+                label: "GPUs",
+                value: `${gpuUsed}/${gpuTotal}`,
+                icon: Cpu,
+                color: "text-cyan-400",
+                bg: "bg-cyan-500/10",
+              },
+            ].map((k) => (
+              <Card key={k.label} className="border-border/50 p-3">
+                <div className="flex items-center gap-2.5">
+                  <div className={`rounded-md ${k.bg} p-1.5`}>
+                    <k.icon className={`size-4 ${k.color}`} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold font-mono leading-none">
+                      {k.value}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {k.label}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* Main Layout: list + detail */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -301,7 +517,26 @@ export default function TrainingPage() {
           {/* Right: Detail Panel */}
           <div className="lg:col-span-2">
             {selected ? (
-              <RunDetail run={selected} resourceData={resourceData} />
+              <RunDetail
+                run={selected}
+                resourceData={resourceData}
+                onRetryPrefill={() => prefillNewRunFromFailed(selected)}
+                onCancelRun={() => {
+                  cancelRun.mutate(selected.id, {
+                    onSuccess: () => {
+                      toast.success("Run cancelled");
+                    },
+                    onError: (err) => {
+                      toast.error(
+                        err instanceof Error
+                          ? err.message
+                          : "Could not cancel run",
+                      );
+                    },
+                  });
+                }}
+                cancelPending={cancelRun.isPending}
+              />
             ) : (
               <Card className="border-border/50 h-[600px] flex items-center justify-center text-muted-foreground">
                 Select a run to view details
@@ -321,9 +556,15 @@ export default function TrainingPage() {
 function RunDetail({
   run,
   resourceData,
+  onRetryPrefill,
+  onCancelRun,
+  cancelPending,
 }: {
   run: UnifiedTrainingRun;
   resourceData: { time: number; gpu: number; memory: number }[];
+  onRetryPrefill: () => void;
+  onCancelRun: () => void;
+  cancelPending: boolean;
 }) {
   const lossData =
     run.analysis?.epoch_history?.map((e) => ({
@@ -347,7 +588,20 @@ function RunDetail({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {run.status === "completed" && run.analysis && (
+            {(run.status === "queued" || run.status === "running") && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                disabled={cancelPending}
+                onClick={() => onCancelRun()}
+              >
+                <Ban className="size-3.5" />
+                {cancelPending ? "Cancelling…" : "Cancel run"}
+              </Button>
+            )}
+            {run.status === "completed" && (
               <Link href={`/services/research/ml/analysis?run=${run.id}`}>
                 <Button variant="outline" size="sm" className="gap-1.5 text-xs">
                   <BarChart3 className="size-3.5" />
@@ -356,7 +610,13 @@ function RunDetail({
               </Link>
             )}
             {run.status === "failed" && (
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                onClick={() => onRetryPrefill()}
+              >
                 <RotateCcw className="size-3.5" />
                 Retry
               </Button>
@@ -744,16 +1004,32 @@ function RunDetail({
             {run.artifacts.length > 0 && (
               <div>
                 <h4 className="text-xs font-medium mb-2">Artifacts</h4>
+                <p className="text-[10px] text-muted-foreground mb-2">
+                  Click to copy storage URI to clipboard
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {run.artifacts.map((a) => (
-                    <Badge
+                    <Button
                       key={a.id}
+                      type="button"
                       variant="outline"
-                      className="gap-1 text-[11px] font-mono"
+                      size="sm"
+                      className="h-auto gap-1 py-1.5 text-[11px] font-mono"
+                      title={a.path}
+                      onClick={() => {
+                        void navigator.clipboard
+                          .writeText(a.path)
+                          .then(() => {
+                            toast.success("Artifact path copied");
+                          })
+                          .catch(() => {
+                            toast.error("Could not copy path");
+                          });
+                      }}
                     >
-                      <Download className="size-3" />
+                      <Download className="size-3 shrink-0" />
                       {a.type} · {(a.size / 1_000_000).toFixed(0)}MB
-                    </Badge>
+                    </Button>
                   ))}
                 </div>
               </div>

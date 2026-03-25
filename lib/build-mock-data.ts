@@ -84,7 +84,8 @@ export interface FeatureCatalogueEntry {
     | "Calendar"
     | "Multi-Timeframe"
     | "Cross-Instrument"
-    | "Commodity";
+    | "Commodity"
+    | "Microstructure";
   feature_group:
     | "Technical"
     | "Fundamental"
@@ -153,6 +154,65 @@ export interface FeatureEtlHeatmapCell {
   status: "complete" | "partial" | "missing";
 }
 
+export interface ExecutionTrade {
+  id: string;
+  timestamp: string;
+  signal: "LONG" | "SHORT" | "EXIT";
+  instrument: string;
+  signal_price: number;
+  fill_price: number;
+  slippage_bps: number;
+  fill_time_ms: number;
+  venue: string;
+  algo: string;
+  quantity: number;
+  side: "buy" | "sell";
+  commission: number;
+  market_impact_bps: number;
+  partial_fill_pct: number;
+  pnl: number | null;
+  cumulative_pnl: number;
+  model_confidence: number | null;
+}
+
+export interface SlippageBucket {
+  label: string;
+  count: number;
+  pct: number;
+}
+
+export interface ISBreakdown {
+  total_bps: number;
+  total_usd: number;
+  delay_cost_bps: number;
+  delay_cost_usd: number;
+  market_impact_bps: number;
+  market_impact_usd: number;
+  fees_bps: number;
+  fees_usd: number;
+}
+
+export interface DirectionStats {
+  net_profit: number;
+  net_profit_pct: number;
+  sharpe_ratio: number;
+  sortino_ratio: number;
+  max_drawdown_pct: number;
+  profit_factor: number;
+  win_rate: number;
+  total_trades: number;
+  avg_winning_trade: number;
+  avg_losing_trade: number;
+  largest_winner: number;
+  largest_loser: number;
+  avg_trade_duration_hours: number;
+  max_consec_wins: number;
+  max_consec_losses: number;
+  gross_profit: number;
+  gross_loss: number;
+  expectancy: number;
+}
+
 export interface ExecutionBacktestResults {
   net_profit: number;
   net_profit_pct: number;
@@ -180,6 +240,21 @@ export interface ExecutionBacktestResults {
       avg_fill_time_s: number;
     }
   >;
+  // Extended fields
+  buy_hold_return_pct: number;
+  calmar_ratio: number;
+  max_dd_duration_days: number;
+  slippage_distribution: SlippageBucket[];
+  slippage_mean_bps: number;
+  slippage_median_bps: number;
+  slippage_p95_bps: number;
+  is_breakdown: ISBreakdown;
+  by_direction: {
+    all: DirectionStats;
+    long: DirectionStats;
+    short: DirectionStats;
+  };
+  trades: ExecutionTrade[];
 }
 
 export interface ExecutionBacktest {
@@ -962,15 +1037,147 @@ export const FEATURE_ETL_HEATMAP: FeatureEtlHeatmapCell[] = (() => {
 
 // ─── Execution Backtests ──────────────────────────────────────────────────────
 
-export const EXECUTION_EQUITY_CURVE: EquityPoint[] = (() => {
+// Helper: generate realistic trades for a backtest
+function generateTrades(
+  count: number,
+  instrument: string,
+  algo: string,
+  startDate: string,
+  basePrice: number,
+  avgSlippageBps: number,
+  venues: string[],
+): ExecutionTrade[] {
+  const trades: ExecutionTrade[] = [];
+  let cumPnl = 0;
+  const startMs = new Date(startDate).getTime();
+  const intervalMs = (90 * 24 * 3600 * 1000) / count;
+
+  for (let i = 0; i < count; i++) {
+    const ts = new Date(startMs + i * intervalMs);
+    const isEntry = i % 2 === 0;
+    const signal: ExecutionTrade["signal"] = isEntry
+      ? Math.random() > 0.45
+        ? "LONG"
+        : "SHORT"
+      : "EXIT";
+    const priceVariation = basePrice * (1 + (Math.random() - 0.5) * 0.1);
+    const slip = (Math.random() * avgSlippageBps * 2 * priceVariation) / 10000;
+    const fillPrice = priceVariation + (signal === "EXIT" ? -slip : slip);
+    const slipBps =
+      Math.abs((fillPrice - priceVariation) / priceVariation) * 10000;
+    const pnl = isEntry ? null : (Math.random() - 0.42) * 200;
+    if (pnl !== null) cumPnl += pnl;
+    const venue = venues[Math.floor(Math.random() * venues.length)];
+    trades.push({
+      id: `trade-${i + 1}`,
+      timestamp: ts.toISOString(),
+      signal,
+      instrument,
+      signal_price: Math.round(priceVariation * 100) / 100,
+      fill_price: Math.round(fillPrice * 100) / 100,
+      slippage_bps: Math.round(slipBps * 10) / 10,
+      fill_time_ms: Math.round(200 + Math.random() * 2000),
+      venue,
+      algo,
+      quantity: Math.round(0.1 + Math.random() * 0.9),
+      side:
+        signal === "LONG"
+          ? "buy"
+          : signal === "SHORT"
+            ? "sell"
+            : Math.random() > 0.5
+              ? "buy"
+              : "sell",
+      commission: Math.round(2 + Math.random() * 15),
+      market_impact_bps: Math.round(Math.random() * avgSlippageBps * 10) / 10,
+      partial_fill_pct:
+        Math.random() > 0.85 ? Math.round(Math.random() * 40) : 0,
+      pnl,
+      cumulative_pnl: Math.round(cumPnl * 100) / 100,
+      model_confidence: isEntry
+        ? Math.round((0.55 + Math.random() * 0.3) * 100) / 100
+        : null,
+    });
+  }
+  return trades;
+}
+
+function makeDirectionStats(
+  netProfit: number,
+  sharpe: number,
+  maxDD: number,
+  winRate: number,
+  trades: number,
+): DirectionStats {
+  const grossProfit = netProfit * 1.6;
+  const grossLoss = grossProfit - netProfit;
+  return {
+    net_profit: Math.round(netProfit),
+    net_profit_pct: Math.round((netProfit / 100000) * 1000) / 10,
+    sharpe_ratio: Math.round(sharpe * 100) / 100,
+    sortino_ratio: Math.round(sharpe * 1.45 * 100) / 100,
+    max_drawdown_pct: Math.round(maxDD * 10) / 10,
+    profit_factor: Math.round((grossProfit / Math.abs(grossLoss)) * 100) / 100,
+    win_rate: Math.round(winRate * 10) / 10,
+    total_trades: trades,
+    avg_winning_trade: Math.round(grossProfit / (trades * (winRate / 100))),
+    avg_losing_trade: -Math.round(
+      Math.abs(grossLoss) / (trades * (1 - winRate / 100)),
+    ),
+    largest_winner: Math.round(grossProfit * 0.08),
+    largest_loser: -Math.round(Math.abs(grossLoss) * 0.11),
+    avg_trade_duration_hours: Math.round((2 + Math.random() * 6) * 10) / 10,
+    max_consec_wins: Math.floor(4 + Math.random() * 6),
+    max_consec_losses: Math.floor(2 + Math.random() * 4),
+    gross_profit: Math.round(grossProfit),
+    gross_loss: -Math.round(Math.abs(grossLoss)),
+    expectancy: Math.round((netProfit / trades) * 100) / 100,
+  };
+}
+
+function makeSlippageDist(mean: number, totalTrades: number): SlippageBucket[] {
+  const buckets = [
+    { label: "0–1 bps", lo: 0, hi: 1 },
+    { label: "1–3 bps", lo: 1, hi: 3 },
+    { label: "3–5 bps", lo: 3, hi: 5 },
+    { label: "5–10 bps", lo: 5, hi: 10 },
+    { label: ">10 bps", lo: 10, hi: Infinity },
+  ];
+  // Simple lognormal-ish distribution centred around mean
+  const weights =
+    mean < 2
+      ? [0.42, 0.32, 0.14, 0.09, 0.03]
+      : mean < 3.5
+        ? [0.28, 0.35, 0.2, 0.12, 0.05]
+        : [0.15, 0.28, 0.28, 0.2, 0.09];
+  return buckets.map((b, i) => {
+    const count = Math.round(totalTrades * weights[i]);
+    return {
+      label: b.label,
+      count,
+      pct: Math.round((count / totalTrades) * 1000) / 10,
+    };
+  });
+}
+
+function buildEquityCurve(
+  seed: number,
+  bias: number,
+  days = 90,
+): EquityPoint[] {
   const points: EquityPoint[] = [];
   let equity = 100000;
   let maxEquity = equity;
-  const days = 90;
+  // Use a deterministic-ish approach based on seed
+  let s = seed;
+  const lcg = () => {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  };
   for (let i = 0; i < days; i++) {
     const d = new Date("2025-10-01");
     d.setDate(d.getDate() + i);
-    const dailyReturn = (Math.random() - 0.45) * 0.015;
+    const dailyReturn = (lcg() - (0.5 - bias)) * 0.015;
     equity *= 1 + dailyReturn;
     maxEquity = Math.max(maxEquity, equity);
     const drawdown = ((equity - maxEquity) / maxEquity) * 100;
@@ -981,7 +1188,19 @@ export const EXECUTION_EQUITY_CURVE: EquityPoint[] = (() => {
     });
   }
   return points;
-})();
+}
+
+export const EXECUTION_EQUITY_CURVE: EquityPoint[] = buildEquityCurve(
+  42,
+  0.055,
+);
+
+// Per-algo equity curves for compare panel (same signals, different execution)
+export const EXECUTION_COMPARE_CURVES: Record<string, EquityPoint[]> = {
+  "eb-001": buildEquityCurve(101, 0.058), // VWAP — best overall
+  "eb-002": buildEquityCurve(202, 0.048), // TWAP — slightly lower
+  "eb-003": buildEquityCurve(303, 0.072), // Aggressive Limit — best (BTC)
+};
 
 export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
   {
@@ -994,6 +1213,7 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
       window_minutes: 120,
       max_participation_rate: 0.15,
       min_fill_size: 0.1,
+      price_limit_bps: 10,
     },
     order_type: "Limit-then-Market",
     venues: ["BINANCE", "OKX"],
@@ -1038,6 +1258,32 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
           avg_fill_time_s: 9.8,
         },
       },
+      buy_hold_return_pct: 28.4,
+      calmar_ratio: 3.37,
+      max_dd_duration_days: 4.2,
+      slippage_distribution: makeSlippageDist(1.8, 847),
+      slippage_mean_bps: 1.8,
+      slippage_median_bps: 1.4,
+      slippage_p95_bps: 5.2,
+      is_breakdown: {
+        total_bps: 2.3,
+        total_usd: 3890,
+        delay_cost_bps: 0.6,
+        delay_cost_usd: 1015,
+        market_impact_bps: 1.1,
+        market_impact_usd: 1860,
+        fees_bps: 0.6,
+        fees_usd: 1015,
+      },
+      by_direction: {
+        all: makeDirectionStats(41820, 1.94, 12.4, 62.3, 847),
+        long: makeDirectionStats(26140, 2.1, 9.8, 65.1, 498),
+        short: makeDirectionStats(15680, 1.72, 10.2, 58.4, 349),
+      },
+      trades: generateTrades(60, "ETH-PERP", "VWAP", "2025-10-01", 2800, 1.8, [
+        "BINANCE",
+        "OKX",
+      ]),
     },
   },
   {
@@ -1046,7 +1292,7 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
     strategy_backtest_id: "bt-eth-basis-001",
     strategy_name: "ETH Basis Trade v3.2.1",
     algo: "TWAP",
-    algo_params: { interval_minutes: 30, slice_count: 12 },
+    algo_params: { interval_minutes: 30, slice_count: 12, urgency: "medium" },
     order_type: "Limit",
     venues: ["BINANCE"],
     routing: "venue-specific",
@@ -1084,6 +1330,31 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
           avg_fill_time_s: 14.2,
         },
       },
+      buy_hold_return_pct: 28.4,
+      calmar_ratio: 2.17,
+      max_dd_duration_days: 6.1,
+      slippage_distribution: makeSlippageDist(2.9, 847),
+      slippage_mean_bps: 2.9,
+      slippage_median_bps: 2.2,
+      slippage_p95_bps: 7.8,
+      is_breakdown: {
+        total_bps: 3.8,
+        total_usd: 5650,
+        delay_cost_bps: 1.2,
+        delay_cost_usd: 1785,
+        market_impact_bps: 1.7,
+        market_impact_usd: 2530,
+        fees_bps: 0.9,
+        fees_usd: 1340,
+      },
+      by_direction: {
+        all: makeDirectionStats(32150, 1.61, 14.8, 59.1, 847),
+        long: makeDirectionStats(19800, 1.74, 11.2, 61.8, 501),
+        short: makeDirectionStats(12350, 1.41, 12.4, 55.4, 346),
+      },
+      trades: generateTrades(60, "ETH-PERP", "TWAP", "2025-10-01", 2800, 2.9, [
+        "BINANCE",
+      ]),
     },
   },
   {
@@ -1093,8 +1364,8 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
     strategy_name: "BTC Direction v3.2.1",
     algo: "Aggressive Limit",
     algo_params: {
-      spread_mult: 0.5,
-      timeout_seconds: 30,
+      limit_offset_bps: 2,
+      cancel_after_seconds: 30,
       fallback_to_market: true,
     },
     order_type: "Limit-then-Market",
@@ -1146,6 +1417,37 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
           avg_fill_time_s: 4.9,
         },
       },
+      buy_hold_return_pct: 52.1,
+      calmar_ratio: 10.76,
+      max_dd_duration_days: 2.1,
+      slippage_distribution: makeSlippageDist(0.9, 312),
+      slippage_mean_bps: 0.9,
+      slippage_median_bps: 0.7,
+      slippage_p95_bps: 3.1,
+      is_breakdown: {
+        total_bps: 1.1,
+        total_usd: 1890,
+        delay_cost_bps: 0.3,
+        delay_cost_usd: 516,
+        market_impact_bps: 0.5,
+        market_impact_usd: 860,
+        fees_bps: 0.3,
+        fees_usd: 516,
+      },
+      by_direction: {
+        all: makeDirectionStats(89340, 2.41, 8.3, 68.4, 312),
+        long: makeDirectionStats(54820, 2.61, 6.9, 71.2, 184),
+        short: makeDirectionStats(34520, 2.08, 7.4, 64.5, 128),
+      },
+      trades: generateTrades(
+        50,
+        "BTC-USDT",
+        "Aggressive Limit",
+        "2025-10-01",
+        65000,
+        0.9,
+        ["BINANCE", "OKX", "BYBIT"],
+      ),
     },
   },
   {
@@ -1154,7 +1456,7 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
     strategy_backtest_id: "bt-eth-basis-002",
     strategy_name: "ETH Basis Trade v3.2.1",
     algo: "TWAP",
-    algo_params: { interval_minutes: 30, slice_count: 12 },
+    algo_params: { interval_minutes: 30, slice_count: 12, urgency: "low" },
     order_type: "Limit",
     venues: ["BINANCE", "OKX"],
     routing: "SOR",

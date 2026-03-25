@@ -46,6 +46,9 @@ Tracks changes to `lib/ml-mock-data.ts` so the backend team can align API respon
 | `/api/ml/analysis/compare`         | POST   | `RunComparison[]`          | Body: `{ run_a_id, run_b_id }` |
 | `/api/ml/registry/models`          | GET    | `ModelVersion[]`           | Registered models (completed)  |
 | `/api/ml/pipeline/status`          | GET    | `ML_PIPELINE_STATUS` shape | Overview KPIs                  |
+| `/api/ml/alerts`                   | GET    | `MLAlert[]`                | Active alerts (overview strip) |
+
+**Client mock:** When `NEXT_PUBLIC_MOCK_API=true`, `lib/api/mock-handler.ts` implements the v2 routes above (plus POST create/compare/cancel) so React Query hooks resolve without a live API.
 
 ### Existing exports unchanged
 

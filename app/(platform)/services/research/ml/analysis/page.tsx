@@ -1,12 +1,8 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -26,6 +22,9 @@ import {
   TrendingUp,
   XCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
 import {
   Bar,
   BarChart,
@@ -39,11 +38,16 @@ import {
   YAxis,
 } from "recharts";
 
-import { UNIFIED_TRAINING_RUNS, RUN_COMPARISONS } from "@/lib/ml-mock-data";
+import { ApiError } from "@/components/ui/api-error";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useMLRunComparison,
+  useUnifiedTrainingRuns,
+} from "@/hooks/api/use-ml-models";
 import type {
-  UnifiedTrainingRun,
   RunAnalysis,
   RunComparison,
+  UnifiedTrainingRun,
 } from "@/lib/ml-types";
 
 // ---------------------------------------------------------------------------
@@ -63,10 +67,6 @@ function metricColor(
   if (value <= thresholds.warn) return "text-amber-400";
   return "text-red-400";
 }
-
-const completedRuns = UNIFIED_TRAINING_RUNS.filter(
-  (r) => r.status === "completed" && r.analysis,
-);
 
 // ---------------------------------------------------------------------------
 // Page
@@ -88,17 +88,65 @@ function AnalysisContent() {
   const searchParams = useSearchParams();
   const preselectedRun = searchParams.get("run");
 
-  const [selectedRunId, setSelectedRunId] = React.useState<string>(
-    preselectedRun ?? completedRuns[0]?.id ?? "",
+  const {
+    data: runsData,
+    isLoading: runsLoading,
+    isError: runsIsError,
+    error: runsError,
+  } = useUnifiedTrainingRuns();
+
+  const runs = (
+    Array.isArray(runsData) ? runsData : []
+  ) as UnifiedTrainingRun[];
+  const completedRuns = React.useMemo(
+    () => runs.filter((r) => r.status === "completed" && r.analysis),
+    [runs],
   );
+
+  const [selectedRunId, setSelectedRunId] = React.useState<string>("");
   const [compareMode, setCompareMode] = React.useState(false);
   const [compareRunId, setCompareRunId] = React.useState<string>("");
+
+  React.useEffect(() => {
+    if (completedRuns.length === 0) return;
+    const pick =
+      preselectedRun && completedRuns.some((r) => r.id === preselectedRun)
+        ? preselectedRun
+        : completedRuns[0].id;
+    setSelectedRunId((cur) =>
+      cur && completedRuns.some((r) => r.id === cur) ? cur : pick,
+    );
+  }, [completedRuns, preselectedRun]);
 
   const selectedRun = completedRuns.find((r) => r.id === selectedRunId);
   const analysis = selectedRun?.analysis;
   const compareRun = compareMode
     ? completedRuns.find((r) => r.id === compareRunId)
     : null;
+
+  if (runsLoading) {
+    return (
+      <div className="min-h-screen bg-background p-6 space-y-4">
+        <Skeleton className="h-10 w-72 rounded-md" />
+        <Skeleton className="h-[420px] w-full rounded-lg border border-border/50" />
+      </div>
+    );
+  }
+
+  if (runsIsError) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <ApiError
+          error={
+            runsError instanceof Error
+              ? runsError
+              : new Error("Failed to load runs")
+          }
+          title="Could not load analysis"
+        />
+      </div>
+    );
+  }
 
   if (completedRuns.length === 0) {
     return (
@@ -709,13 +757,15 @@ function ComparisonView({
   runA: UnifiedTrainingRun;
   runB: UnifiedTrainingRun;
 }) {
+  const { data: compData, isLoading: compLoading } = useMLRunComparison(
+    runA.id,
+    runB.id,
+  );
+  const comparisons = (
+    Array.isArray(compData) ? compData : []
+  ) as RunComparison[];
   const fmA = runA.analysis?.financial_metrics;
   const fmB = runB.analysis?.financial_metrics;
-  const comparisons = RUN_COMPARISONS.filter(
-    (c) =>
-      (c.run_a_id === runA.id && c.run_b_id === runB.id) ||
-      (c.run_a_id === runB.id && c.run_b_id === runA.id),
-  );
 
   return (
     <div className="space-y-5">
@@ -836,10 +886,14 @@ function ComparisonView({
                       : delta.toFixed(2)}
                   </span>
                   <span className="text-xs font-mono text-muted-foreground">
-                    {comp ? comp.p_value.toFixed(3) : "—"}
+                    {compLoading ? "…" : comp ? comp.p_value.toFixed(3) : "—"}
                   </span>
                   <span>
-                    {comp ? (
+                    {compLoading ? (
+                      <span className="text-[10px] text-muted-foreground">
+                        …
+                      </span>
+                    ) : comp ? (
                       comp.is_significant ? (
                         <Badge
                           variant="outline"
