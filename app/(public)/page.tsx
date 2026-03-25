@@ -14,6 +14,8 @@ import {
   ArrowRight,
   Globe,
   Lock,
+  Brain,
+  BarChart3,
 } from "lucide-react";
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { PLATFORM_STATS } from "@/lib/config/platform-stats";
@@ -205,39 +207,28 @@ export default function ServicesLandingPage() {
               to institutional clients at any entry point.
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link
-                href="/services/data"
-                className="flex items-center gap-1.5 hover:text-sky-400 transition-colors"
-              >
+              <Link href="/services/data" className="flex items-center gap-1.5 hover:text-sky-400 transition-colors">
                 <Database className="size-3.5 text-sky-400" /> Data
               </Link>
               <span className="text-border">|</span>
-              <Link
-                href="/services/backtesting"
-                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
-              >
-                <LineChart className="size-3.5 text-violet-400" /> Strategy
+              <Link href="/services/backtesting" className="flex items-center gap-1.5 hover:text-violet-400 transition-colors">
+                <Brain className="size-3.5 text-violet-400" /> Research
               </Link>
               <span className="text-border">|</span>
-              <Link
-                href="/services/platform"
-                className="flex items-center gap-1.5 hover:text-amber-400 transition-colors"
-              >
-                <Layers className="size-3.5 text-amber-400" /> Analytics
+              <Link href="/services/platform" className="flex items-center gap-1.5 hover:text-amber-400 transition-colors">
+                <Layers className="size-3.5 text-amber-400" /> Trading
               </Link>
               <span className="text-border">|</span>
-              <Link
-                href="/services/execution"
-                className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors"
-              >
+              <Link href="/services/execution" className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors">
                 <Zap className="size-3.5 text-emerald-400" /> Execution
               </Link>
               <span className="text-border">|</span>
-              <Link
-                href="/services/regulatory"
-                className="flex items-center gap-1.5 hover:text-rose-400 transition-colors"
-              >
-                <Shield className="size-3.5 text-rose-400" /> Regulatory
+              <Link href="/services/investment" className="flex items-center gap-1.5 hover:text-rose-400 transition-colors">
+                <BarChart3 className="size-3.5 text-rose-400" /> Reporting
+              </Link>
+              <span className="text-border">|</span>
+              <Link href="/services/regulatory" className="flex items-center gap-1.5 hover:text-slate-400 transition-colors">
+                <Shield className="size-3.5 text-slate-400" /> Regulatory
               </Link>
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
