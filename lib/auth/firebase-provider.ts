@@ -5,12 +5,31 @@ import {
 } from "firebase/auth";
 import type { User as FirebaseUser } from "firebase/auth";
 import { getFirebaseAuth } from "./firebase-config";
-import type { AuthProvider, AuthUser } from "./types";
-import type { Entitlement } from "@/lib/config/auth";
+import type { AuthProvider, AuthUser, UserStatus } from "./types";
+import type { Entitlement, UserRole } from "@/lib/config/auth";
 import { ALL_ENTITLEMENTS } from "@/lib/config/auth";
+import {
+  fetchAuthorization,
+  type AuthorizeResult,
+} from "./authorize-client";
 
-function firebaseUserToAuthUser(fbUser: FirebaseUser): AuthUser {
-  return {
+function mapBackendRole(role: AuthorizeResult["role"]): UserRole {
+  if (role === "admin" || role === "owner") return "admin";
+  if (role === "editor") return "internal";
+  return "client";
+}
+
+function mapCapabilitiesToEntitlements(
+  capabilities: string[],
+): readonly (Entitlement | typeof ALL_ENTITLEMENTS)[] {
+  if (capabilities.includes("*")) return [ALL_ENTITLEMENTS];
+  return capabilities as Entitlement[];
+}
+
+async function enrichUserFromBackend(
+  fbUser: FirebaseUser,
+): Promise<AuthUser> {
+  const base: AuthUser = {
     id: fbUser.uid,
     email: fbUser.email ?? "",
     displayName: fbUser.displayName ?? fbUser.email ?? "User",
@@ -18,20 +37,40 @@ function firebaseUserToAuthUser(fbUser: FirebaseUser): AuthUser {
     org: { id: "default", name: "Default" },
     entitlements: [],
   };
+
+  try {
+    const authz = await fetchAuthorization(fbUser.uid);
+    return {
+      ...base,
+      role: mapBackendRole(authz.role),
+      entitlements: mapCapabilitiesToEntitlements(authz.capabilities),
+      authorized: authz.authorized,
+      status: (authz.user_status as UserStatus) || "unknown",
+      capabilities: authz.capabilities,
+    };
+  } catch {
+    return { ...base, authorized: false, status: "unknown" };
+  }
 }
 
 /**
  * Firebase Auth provider — authenticates against Firebase Auth
- * using email/password. The user's role and entitlements are NOT
- * stored in Firebase; they come from the user-management-ui
- * /authorize endpoint (Phase 2). This provider handles identity only.
+ * using email/password. After identity verification, calls the
+ * user-management-ui /authorize endpoint to get the user's real
+ * role, capabilities, and account status.
  */
 export class FirebaseAuthProvider implements AuthProvider {
   private user: AuthUser | null = null;
   private cachedToken: string | null = null;
+  private lastLoginError: string | null = null;
+
+  getLastLoginError(): string | null {
+    return this.lastLoginError;
+  }
 
   async login(email: string, password?: string): Promise<AuthUser | null> {
     if (!password) return null;
+    this.lastLoginError = null;
     const auth = getFirebaseAuth();
     if (!auth) return null;
     try {
@@ -40,10 +79,15 @@ export class FirebaseAuthProvider implements AuthProvider {
         email,
         password,
       );
-      this.user = firebaseUserToAuthUser(credential.user);
       this.cachedToken = await credential.user.getIdToken();
+      this.user = await enrichUserFromBackend(credential.user);
       return this.user;
-    } catch {
+    } catch (err: unknown) {
+      const code = (err as { code?: string })?.code;
+      if (code === "auth/user-disabled") {
+        this.lastLoginError = "user-disabled";
+        return null;
+      }
       return null;
     }
   }
@@ -83,11 +127,13 @@ export class FirebaseAuthProvider implements AuthProvider {
     if (!auth) return () => {};
     return firebaseOnAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
-        this.user = firebaseUserToAuthUser(fbUser);
         fbUser.getIdToken().then((t: string) => {
           this.cachedToken = t;
         });
-        callback(this.user);
+        enrichUserFromBackend(fbUser).then((enriched) => {
+          this.user = enriched;
+          callback(this.user);
+        });
       } else {
         this.user = null;
         this.cachedToken = null;

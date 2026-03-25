@@ -508,6 +508,13 @@ export const routeMappings: RouteMapping[] = [
     requiresAuth: true,
   },
   {
+    path: "/approvals",
+    label: "Approvals",
+    primaryStage: "manage",
+    lanes: ["compliance"],
+    requiresAuth: true,
+  },
+  {
     path: "/admin",
     label: "Admin",
     primaryStage: "manage",
