@@ -199,6 +199,7 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "Book Trade", href: "/services/trading/book" },
   { label: "Accounts", href: "/services/trading/accounts" },
   { label: "P&L Breakdown", href: "/services/trading/pnl" },
+  { label: "Markets", href: "/services/trading/markets" },
 ];
 
 // ── Observe (Risk / Ops) ─────────────────────────────────────────────────────
