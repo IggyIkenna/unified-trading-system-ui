@@ -136,19 +136,8 @@ export const BUILD_TABS: ServiceTab[] = [
   { label: "Quant Workspace", href: "/services/research/quant" },
 ];
 
-// ML sub-tabs — shown inside ML section pages
-export const ML_SUB_TABS: ServiceTab[] = [
-  { label: "Overview", href: "/services/research/ml/overview" },
-  { label: "Experiments", href: "/services/research/ml/experiments" },
-  { label: "Training", href: "/services/research/ml/training" },
-  { label: "Registry", href: "/services/research/ml/registry" },
-  { label: "Features", href: "/services/research/ml/features" },
-  { label: "Validation", href: "/services/research/ml/validation" },
-  { label: "Deploy", href: "/services/research/ml/deploy" },
-  { label: "Monitoring", href: "/services/research/ml/monitoring" },
-  { label: "Governance", href: "/services/research/ml/governance" },
-  { label: "Config", href: "/services/research/ml/config" },
-];
+// ML sub-tabs removed — ML section uses card-based navigation from the overview page.
+// 4 pages: /ml (overview), /ml/training, /ml/analysis, /ml/registry
 
 // Strategy sub-tabs — shown inside Strategy section pages
 export const STRATEGY_SUB_TABS: ServiceTab[] = [

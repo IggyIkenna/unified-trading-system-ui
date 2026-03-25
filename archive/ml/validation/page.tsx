@@ -41,7 +41,7 @@ import {
   LineChart,
   RefreshCw,
   Target,
-  Zap
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -58,7 +58,7 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 
 // Default validation results used when API returns no data
@@ -697,7 +697,7 @@ export default function ValidationPage() {
                     {Object.entries(champion.metrics).map(([key, value]) => {
                       const challValue =
                         challenger.metrics[
-                        key as keyof typeof challenger.metrics
+                          key as keyof typeof challenger.metrics
                         ];
                       const diff = challValue - (value as number);
                       const pctDiff = (diff / Math.abs(value as number)) * 100;

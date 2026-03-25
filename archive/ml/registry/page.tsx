@@ -28,7 +28,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ArrowLeft,
   ArrowUpDown,
   CheckCircle2,
   ChevronDown,
@@ -40,7 +39,6 @@ import {
   Shield,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import * as React from "react";
 
 import { ApiError } from "@/components/ui/api-error";
@@ -251,21 +249,14 @@ export default function RegistryPage() {
       <div className="mx-auto max-w-7xl space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/services/research/ml">
-              <Button variant="ghost" size="icon" className="size-8">
-                <ArrowLeft className="size-4" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">
-                Model Registry
-              </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {versions.length} registered versions &middot;{" "}
-                {versions.filter((v) => v.status === "live").length} live
-              </p>
-            </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Model Registry
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {versions.length} registered versions &middot;{" "}
+              {versions.filter((v) => v.status === "live").length} live
+            </p>
           </div>
           <Select
             value={familyFilter}

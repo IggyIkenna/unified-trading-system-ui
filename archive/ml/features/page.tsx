@@ -40,7 +40,7 @@ import {
   GitBranch,
   Layers,
   Search,
-  Zap
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -317,7 +317,6 @@ export default function FeatureProvenancePage() {
     ? featureCatalog.find((f: any) => f.id === selectedFeature)
     : null;
 
-
   const featureCatalogColumns: ColumnDef<any, unknown>[] = useMemo(
     () => [
       {
@@ -397,7 +396,6 @@ export default function FeatureProvenancePage() {
     ],
     [],
   );
-
 
   const usageMatrixColumns: ColumnDef<any, unknown>[] = [
     {
@@ -716,9 +714,9 @@ export default function FeatureProvenancePage() {
                                 {i <
                                   selectedFeatureData.lineage.transformations
                                     .length -
-                                  1 && (
-                                    <ArrowRight className="size-3 mx-1 text-muted-foreground" />
-                                  )}
+                                    1 && (
+                                  <ArrowRight className="size-3 mx-1 text-muted-foreground" />
+                                )}
                               </span>
                             ),
                           )}

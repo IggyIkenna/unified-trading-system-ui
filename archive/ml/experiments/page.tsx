@@ -335,7 +335,7 @@ export default function ExperimentsPage() {
         ),
       },
     ],
-     
+
     [compareSet, modelFamilies],
   );
 

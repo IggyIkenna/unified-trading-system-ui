@@ -1,42 +1,31 @@
 "use client";
 
-import { ApiError } from "@/components/ui/api-error";
+import * as React from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { EmptyState } from "@/components/ui/empty-state";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useExperiments, useTrainingRuns } from "@/hooks/api/use-ml-models";
-import { useTickingNowMs } from "@/hooks/use-ticking-now";
-import type { Experiment, TrainingRun } from "@/lib/ml-types";
 import {
   Activity,
   AlertTriangle,
+  ArrowLeft,
+  BarChart3,
   CheckCircle2,
   Clock,
   Cpu,
   Download,
   HardDrive,
   Layers,
-  MoreHorizontal,
-  Pause,
+  Play,
   RefreshCw,
   RotateCcw,
+  Settings2,
   Terminal,
-  Trash2,
-  XCircle
+  XCircle,
 } from "lucide-react";
-import * as React from "react";
 import {
   Area,
   AreaChart,
@@ -49,78 +38,46 @@ import {
   YAxis,
 } from "recharts";
 
-// Context badge
-function ContextBadge({ context }: { context: "BATCH" | "LIVE" }) {
-  return (
-    <Badge
-      variant="outline"
-      className={
-        context === "LIVE"
-          ? "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30"
-          : "bg-[var(--surface-ml)]/10 text-[var(--surface-ml)] border-[var(--surface-ml)]/30"
-      }
-    >
-      {context}
-    </Badge>
-  );
-}
+import { UNIFIED_TRAINING_RUNS, GPU_QUEUE_STATUS } from "@/lib/ml-mock-data";
+import type { UnifiedTrainingRun } from "@/lib/ml-types";
 
-// Stage badge
-function StageBadge({ stage }: { stage: string }) {
-  const labels: Record<string, string> = {
-    data_loading: "Data Loading",
-    preprocessing: "Preprocessing",
-    training: "Training",
-    validation: "Validation",
-    checkpointing: "Checkpointing",
-    finalizing: "Finalizing",
-  };
-  return (
-    <Badge variant="outline" className="font-mono text-xs">
-      {labels[stage] || stage}
-    </Badge>
-  );
-}
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-// Status badge
+const STATUS_COLORS: Record<string, string> = {
+  running: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+  completed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+  failed: "bg-red-500/15 text-red-400 border-red-500/30",
+  queued: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  cancelled: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
+  draft: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
+};
+
+const STATUS_ICONS: Record<string, React.ReactNode> = {
+  running: <RefreshCw className="size-3 animate-spin" />,
+  completed: <CheckCircle2 className="size-3" />,
+  failed: <XCircle className="size-3" />,
+  queued: <Clock className="size-3" />,
+  cancelled: <XCircle className="size-3" />,
+};
+
 function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    training:
-      "bg-[var(--status-running)]/10 text-[var(--status-running)] border-[var(--status-running)]/30",
-    validating:
-      "bg-[var(--surface-ml)]/10 text-[var(--surface-ml)] border-[var(--surface-ml)]/30",
-    completed:
-      "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/30",
-    failed:
-      "bg-[var(--status-critical)]/10 text-[var(--status-critical)] border-[var(--status-critical)]/30",
-    queued: "bg-muted text-muted-foreground",
-    initializing:
-      "bg-[var(--status-warning)]/10 text-[var(--status-warning)] border-[var(--status-warning)]/30",
-  };
-
-  const icons: Record<string, React.ReactNode> = {
-    training: <RefreshCw className="size-3 animate-spin" />,
-    validating: <Activity className="size-3" />,
-    completed: <CheckCircle2 className="size-3" />,
-    failed: <XCircle className="size-3" />,
-    queued: <Clock className="size-3" />,
-    initializing: <Cpu className="size-3" />,
-  };
-
   return (
-    <Badge variant="outline" className={`gap-1 ${colors[status] || ""}`}>
-      {icons[status]}
+    <Badge variant="outline" className={`gap-1 ${STATUS_COLORS[status] ?? ""}`}>
+      {STATUS_ICONS[status]}
       {status}
     </Badge>
   );
 }
 
-// Generate mock resource usage data
-function generateResourceData(
-  points: number = 60,
-): { time: number; gpu: number; memory: number }[] {
+function generateResourceData(): {
+  time: number;
+  gpu: number;
+  memory: number;
+}[] {
   const data = [];
-  for (let i = 0; i < points; i++) {
+  for (let i = 0; i < 60; i++) {
     data.push({
       time: i,
       gpu: 80 + Math.random() * 15,
@@ -130,728 +87,740 @@ function generateResourceData(
   return data;
 }
 
-// Generate mock loss data
-function generateLossData(
-  epochs: number = 100,
-): { epoch: number; loss: number }[] {
-  const data = [];
-  for (let i = 0; i <= epochs; i++) {
-    const progress = i / epochs;
-    const loss =
-      0.8 * Math.exp(-3 * progress) + 0.3 + (Math.random() - 0.5) * 0.02;
-    data.push({ epoch: i, loss });
-  }
-  return data;
-}
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
 
-// Mock queued jobs
-const QUEUED_JOBS = [
-  {
-    id: "run-457-1",
-    experimentId: "exp-457",
-    name: "SOL Direction v2",
-    position: 1,
-    estimatedStart: "15m",
-  },
-  {
-    id: "run-458-1",
-    experimentId: "exp-458",
-    name: "Multi-Asset Vol",
-    position: 2,
-    estimatedStart: "2h 30m",
-  },
-];
+export default function TrainingPage() {
+  const runs = UNIFIED_TRAINING_RUNS;
+  const queue = GPU_QUEUE_STATUS;
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = React.useState<string>("all");
 
-// Mock completed jobs (last 24h)
-const COMPLETED_JOBS = [
-  {
-    id: "run-455-1",
-    experimentId: "exp-455",
-    name: "ETH Vol Surface",
-    status: "completed",
-    duration: "8h 30m",
-    completedAt: "4h ago",
-    metrics: { loss: 0.412, accuracy: 0.685 },
-  },
-  {
-    id: "run-454-1",
-    experimentId: "exp-454",
-    name: "Multi-Momentum",
-    status: "completed",
-    duration: "8h",
-    completedAt: "1d ago",
-    metrics: { loss: 0.285, accuracy: 0.742 },
-  },
-];
-
-// Mock failed jobs
-const FAILED_JOBS = [
-  {
-    id: "run-452-1",
-    experimentId: "exp-452",
-    name: "Funding Rate LSTM",
-    status: "failed",
-    failedAt: "1d ago",
-    error: "CUDA out of memory",
-    stage: "training",
-    epoch: 23,
-  },
-];
-
-export default function TrainingRunsPage() {
-  const {
-    data: trainingRunsData,
-    isLoading: runsLoading,
-    isError: runsIsError,
-    error: runsError,
-    refetch: runsRefetch,
-  } = useTrainingRuns();
-  const { data: experimentsData, isLoading: experimentsLoading } =
-    useExperiments();
-
-  const trainingRuns: TrainingRun[] =
-    (trainingRunsData as any)?.data ?? (trainingRunsData as any)?.runs ?? [];
-  const experiments: Experiment[] =
-    (experimentsData as any)?.data ??
-    (experimentsData as any)?.experiments ??
-    [];
-
-  const [selectedRun, setSelectedRun] = React.useState<string | null>(null);
-
-  // Auto-select first run when data loads
   React.useEffect(() => {
-    if (trainingRuns.length > 0 && selectedRun === null) {
-      setSelectedRun(trainingRuns[0].id);
-    }
-  }, [trainingRuns, selectedRun]);
+    if (runs.length > 0 && selectedId === null) setSelectedId(runs[0].id);
+  }, [runs, selectedId]);
 
-  const activeRun = trainingRuns.find((r) => r.id === selectedRun);
-  const experiment = activeRun
-    ? experiments.find((e) => e.id === activeRun.experimentId)
-    : null;
+  const filteredRuns =
+    filterStatus === "all"
+      ? runs
+      : runs.filter((r) => r.status === filterStatus);
+  const selected = runs.find((r) => r.id === selectedId) ?? null;
 
-  const wallClockMs = useTickingNowMs(1000);
+  const runningCount = runs.filter((r) => r.status === "running").length;
+  const queuedCount = runs.filter((r) => r.status === "queued").length;
+  const completedCount = runs.filter((r) => r.status === "completed").length;
+  const failedCount = runs.filter((r) => r.status === "failed").length;
+  const gpuUsed = queue.gpus.reduce((s, g) => s + g.in_use, 0);
+  const gpuTotal = queue.gpus.reduce((s, g) => s + g.total, 0);
 
   const resourceData = React.useMemo(() => generateResourceData(), []);
-  const lossEpoch = activeRun?.currentEpoch ?? 50;
-  const lossData = generateLossData(lossEpoch);
-
-  const runningJobs = trainingRuns.filter(
-    (r) => r.status === "training" || r.status === "validating",
-  );
-
-  const isLoading = runsLoading || experimentsLoading;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-4 p-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
-
-  if (runsIsError) {
-    return (
-      <div className="p-6">
-        <ApiError error={runsError} onRetry={() => runsRefetch()} />
-      </div>
-    );
-  }
-
-  if (trainingRuns.length === 0) {
-    return (
-      <div className="p-6">
-        <EmptyState
-          title="No training runs"
-          description="No training jobs have been submitted yet. Start an experiment to begin training."
-          icon={Cpu}
-        />
-      </div>
-    );
-  }
 
   return (
-    <div className="p-6">
-      <div className="max-w-[1800px] mx-auto space-y-6">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto max-w-[1800px] space-y-5 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Training Runs
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              GPU cluster management, job queue, and training progress
-            </p>
-          </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <RefreshCw className="size-4" />
+            <Link href="/services/research/ml">
+              <Button variant="ghost" size="icon" className="size-8">
+                <ArrowLeft className="size-4" />
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight">Training</h1>
+              <p className="text-xs text-muted-foreground">
+                Configure, launch, and monitor training runs
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <RefreshCw className="size-3.5 mr-1.5" />
               Refresh
+            </Button>
+            <Button size="sm">
+              <Play className="size-3.5 mr-1.5" />
+              New Run
             </Button>
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--status-running)]/10">
-                <Activity
-                  className="size-5"
-                  style={{ color: "var(--status-running)" }}
-                />
+        {/* KPI Strip */}
+        <div className="grid grid-cols-5 gap-3">
+          {[
+            {
+              label: "Running",
+              value: runningCount,
+              icon: Activity,
+              color: "text-blue-400",
+              bg: "bg-blue-500/10",
+            },
+            {
+              label: "Queued",
+              value: queuedCount,
+              icon: Clock,
+              color: "text-amber-400",
+              bg: "bg-amber-500/10",
+            },
+            {
+              label: "Completed",
+              value: completedCount,
+              icon: CheckCircle2,
+              color: "text-emerald-400",
+              bg: "bg-emerald-500/10",
+            },
+            {
+              label: "Failed",
+              value: failedCount,
+              icon: XCircle,
+              color: "text-red-400",
+              bg: "bg-red-500/10",
+            },
+            {
+              label: "GPUs",
+              value: `${gpuUsed}/${gpuTotal}`,
+              icon: Cpu,
+              color: "text-cyan-400",
+              bg: "bg-cyan-500/10",
+            },
+          ].map((k) => (
+            <Card key={k.label} className="border-border/50 p-3">
+              <div className="flex items-center gap-2.5">
+                <div className={`rounded-md ${k.bg} p-1.5`}>
+                  <k.icon className={`size-4 ${k.color}`} />
+                </div>
+                <div>
+                  <p className="text-lg font-bold font-mono leading-none">
+                    {k.value}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">{k.label}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-semibold">{runningJobs.length}</p>
-                <p className="text-xs text-muted-foreground">Running Jobs</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-muted">
-                <Clock className="size-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">{QUEUED_JOBS.length}</p>
-                <p className="text-xs text-muted-foreground">Queued</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--status-live)]/10">
-                <CheckCircle2
-                  className="size-5"
-                  style={{ color: "var(--status-live)" }}
-                />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">
-                  {COMPLETED_JOBS.length}
-                </p>
-                <p className="text-xs text-muted-foreground">Completed (24h)</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--status-critical)]/10">
-                <XCircle
-                  className="size-5"
-                  style={{ color: "var(--status-critical)" }}
-                />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">{FAILED_JOBS.length}</p>
-                <p className="text-xs text-muted-foreground">Failed (24h)</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--surface-ml)]/10">
-                <Cpu
-                  className="size-5"
-                  style={{ color: "var(--surface-ml)" }}
-                />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold">8/12</p>
-                <p className="text-xs text-muted-foreground">GPUs Active</p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          ))}
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-3 gap-6">
-          {/* Job List */}
-          <Card className="col-span-1">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Active & Queued Jobs</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 p-0">
-              <Tabs defaultValue="running" className="w-full">
-                <TabsList className="w-full justify-start px-4">
-                  <TabsTrigger value="running">
-                    Running ({runningJobs.length})
-                  </TabsTrigger>
-                  <TabsTrigger value="queued">
-                    Queued ({QUEUED_JOBS.length})
-                  </TabsTrigger>
-                  <TabsTrigger value="completed">Completed</TabsTrigger>
-                  <TabsTrigger value="failed">Failed</TabsTrigger>
-                </TabsList>
+        {/* Main Layout: list + detail */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* Left: Run List */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5">
+              {["all", "running", "queued", "completed", "failed"].map((s) => (
+                <Button
+                  key={s}
+                  variant={filterStatus === s ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 text-xs px-2.5"
+                  onClick={() => setFilterStatus(s)}
+                >
+                  {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+                  {s === "running" && runningCount > 0 && (
+                    <span className="ml-1 text-[10px] opacity-70">
+                      ({runningCount})
+                    </span>
+                  )}
+                  {s === "queued" && queuedCount > 0 && (
+                    <span className="ml-1 text-[10px] opacity-70">
+                      ({queuedCount})
+                    </span>
+                  )}
+                </Button>
+              ))}
+            </div>
 
-                <TabsContent value="running" className="px-4 pb-4">
-                  <div className="space-y-2">
-                    {runningJobs.map((run) => {
-                      const exp = experiments.find(
-                        (e) => e.id === run.experimentId,
-                      );
-                      return (
-                        <div
-                          key={run.id}
-                          className={`p-3 rounded-lg border cursor-pointer transition-colors ${selectedRun === run.id
-                              ? "border-primary bg-primary/5"
-                              : "border-border hover:bg-muted/30"
-                            }`}
-                          onClick={() => setSelectedRun(run.id)}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-sm">
-                              {exp?.name || run.id}
-                            </span>
-                            <StatusBadge status={run.status} />
-                          </div>
-                          <Progress
-                            value={run.stageProgress}
-                            className="h-1.5 mb-2"
-                          />
-                          <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>
-                              Epoch {run.currentEpoch}/{run.totalEpochs}
-                            </span>
-                            <span>ETA: {run.estimatedTimeRemaining}</span>
-                          </div>
+            <ScrollArea className="h-[calc(100vh-260px)]">
+              <div className="space-y-2 pr-2">
+                {filteredRuns.map((run) => (
+                  <div
+                    key={run.id}
+                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                      selectedId === run.id
+                        ? "border-primary bg-primary/5"
+                        : "border-border/50 hover:bg-muted/30"
+                    }`}
+                    onClick={() => setSelectedId(run.id)}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="font-medium text-sm truncate pr-2">
+                        {run.name}
+                      </span>
+                      <StatusBadge status={run.status} />
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mb-2">
+                      {run.model_family_name} · {run.created_by}
+                    </p>
+
+                    {run.status === "running" && (
+                      <>
+                        <Progress value={run.progress} className="h-1.5 mb-1" />
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                          <span className="font-mono">
+                            Epoch {run.current_epoch}/{run.total_epochs}
+                          </span>
+                          <span>ETA: {run.estimated_time_remaining}</span>
                         </div>
-                      );
-                    })}
-                    {runningJobs.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground text-sm">
-                        No active training jobs
+                      </>
+                    )}
+                    {run.status === "completed" && run.financial_metrics && (
+                      <div className="flex items-center gap-3 text-[11px]">
+                        <span>
+                          Sharpe:{" "}
+                          <span className="font-mono font-medium text-emerald-400">
+                            {run.financial_metrics.sharpe_ratio.toFixed(2)}
+                          </span>
+                        </span>
+                        <span>
+                          DirAcc:{" "}
+                          <span className="font-mono font-medium">
+                            {(
+                              run.financial_metrics.directional_accuracy * 100
+                            ).toFixed(1)}
+                            %
+                          </span>
+                        </span>
                       </div>
                     )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="queued" className="px-4 pb-4">
-                  <div className="space-y-2">
-                    {QUEUED_JOBS.map((job) => (
-                      <div
-                        key={job.id}
-                        className="p-3 rounded-lg border border-border"
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-sm">
-                            {job.name}
-                          </span>
-                          <Badge variant="outline" className="text-xs">
-                            #{job.position}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span className="font-mono">{job.experimentId}</span>
-                          <span>Est. start: {job.estimatedStart}</span>
-                        </div>
+                    {run.status === "failed" && run.logs.length > 0 && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-red-400">
+                        <AlertTriangle className="size-3" />
+                        <span className="truncate">{run.logs[0].message}</span>
                       </div>
-                    ))}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="completed" className="px-4 pb-4">
-                  <div className="space-y-2">
-                    {COMPLETED_JOBS.map((job) => (
-                      <div
-                        key={job.id}
-                        className="p-3 rounded-lg border border-border"
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-sm">
-                            {job.name}
-                          </span>
-                          <StatusBadge status={job.status} />
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>Duration: {job.duration}</span>
-                          <span>{job.completedAt}</span>
-                        </div>
-                        <div className="flex items-center gap-4 mt-2 text-xs">
-                          <span>
-                            Loss:{" "}
-                            <span className="font-mono">
-                              {job.metrics.loss.toFixed(3)}
-                            </span>
-                          </span>
-                          <span>
-                            Acc:{" "}
-                            <span className="font-mono">
-                              {(job.metrics.accuracy * 100).toFixed(1)}%
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="failed" className="px-4 pb-4">
-                  <div className="space-y-2">
-                    {FAILED_JOBS.map((job) => (
-                      <div
-                        key={job.id}
-                        className="p-3 rounded-lg border border-[var(--status-critical)]/30 bg-[var(--status-critical)]/5"
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-sm">
-                            {job.name}
-                          </span>
-                          <StatusBadge status={job.status} />
-                        </div>
-                        <div className="flex items-center gap-2 mt-2">
-                          <AlertTriangle className="size-3 text-[var(--status-critical)]" />
-                          <span className="text-xs text-[var(--status-critical)]">
-                            {job.error}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
-                          <span>Failed at epoch {job.epoch}</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 text-xs gap-1"
-                          >
-                            <RotateCcw className="size-3" />
-                            Retry
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-
-          {/* Job Details */}
-          <Card className="col-span-2">
-            {activeRun && experiment ? (
-              <>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <CardTitle className="text-base">
-                          {experiment.name}
-                        </CardTitle>
-                        <StatusBadge status={activeRun.status} />
-                        <StageBadge stage={activeRun.stage} />
-                        <ContextBadge context="BATCH" />
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1 font-mono">
-                        {activeRun.id}
+                    )}
+                    {run.status === "queued" && (
+                      <p className="text-[11px] text-amber-400">
+                        {run.estimated_time_remaining}
                       </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="gap-1">
-                        <Pause className="size-4" />
-                        Pause
-                      </Button>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm">
-                            <MoreHorizontal className="size-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
-                            <Download className="size-4 mr-2" />
-                            Download Artifacts
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Terminal className="size-4 mr-2" />
-                            View Full Logs
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="size-4 mr-2" />
-                            Cancel Job
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                    )}
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Progress Overview */}
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="text-center p-3 rounded-lg bg-muted/30">
-                      <div className="text-2xl font-semibold font-mono">
-                        {activeRun.currentEpoch}/{activeRun.totalEpochs}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Epochs
-                      </div>
-                    </div>
-                    <div className="text-center p-3 rounded-lg bg-muted/30">
-                      <div className="text-2xl font-semibold font-mono">
-                        {activeRun.trainLoss.toFixed(3)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Train Loss
-                      </div>
-                    </div>
-                    <div className="text-center p-3 rounded-lg bg-muted/30">
-                      <div className="text-2xl font-semibold font-mono">
-                        {activeRun.valLoss.toFixed(3)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Val Loss
-                      </div>
-                    </div>
-                    <div className="text-center p-3 rounded-lg bg-muted/30">
-                      <div className="text-2xl font-semibold font-mono">
-                        {activeRun.estimatedTimeRemaining}
-                      </div>
-                      <div className="text-xs text-muted-foreground">ETA</div>
-                    </div>
-                  </div>
-
-                  {/* Stage Progress */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">
-                        Stage Progress
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {activeRun.stageProgress}%
-                      </span>
-                    </div>
-                    <Progress value={activeRun.stageProgress} className="h-2" />
-                  </div>
-
-                  {/* Charts Row */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Loss Curve */}
-                    <div className="p-4 rounded-lg border border-border">
-                      <h4 className="text-sm font-medium mb-3">
-                        Training Loss
-                      </h4>
-                      <div className="h-[180px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={lossData}>
-                            <CartesianGrid
-                              strokeDasharray="3 3"
-                              stroke="var(--border)"
-                              opacity={0.5}
-                            />
-                            <XAxis
-                              dataKey="epoch"
-                              tick={{
-                                fill: "var(--muted-foreground)",
-                                fontSize: 10,
-                              }}
-                            />
-                            <YAxis
-                              tick={{
-                                fill: "var(--muted-foreground)",
-                                fontSize: 10,
-                              }}
-                              domain={["auto", "auto"]}
-                            />
-                            <Tooltip
-                              contentStyle={{
-                                backgroundColor: "var(--background)",
-                                border: "1px solid var(--border)",
-                                borderRadius: "8px",
-                                fontSize: "11px",
-                              }}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="loss"
-                              stroke="var(--surface-ml)"
-                              strokeWidth={2}
-                              dot={false}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-
-                    {/* Resource Usage */}
-                    <div className="p-4 rounded-lg border border-border">
-                      <h4 className="text-sm font-medium mb-3">
-                        Resource Usage
-                      </h4>
-                      <div className="h-[180px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={resourceData}>
-                            <CartesianGrid
-                              strokeDasharray="3 3"
-                              stroke="var(--border)"
-                              opacity={0.5}
-                            />
-                            <XAxis
-                              dataKey="time"
-                              tick={{
-                                fill: "var(--muted-foreground)",
-                                fontSize: 10,
-                              }}
-                            />
-                            <YAxis
-                              tick={{
-                                fill: "var(--muted-foreground)",
-                                fontSize: 10,
-                              }}
-                              domain={[0, 100]}
-                            />
-                            <Tooltip
-                              contentStyle={{
-                                backgroundColor: "var(--background)",
-                                border: "1px solid var(--border)",
-                                borderRadius: "8px",
-                                fontSize: "11px",
-                              }}
-                            />
-                            <Area
-                              type="monotone"
-                              dataKey="gpu"
-                              stroke="var(--status-live)"
-                              fill="var(--status-live)"
-                              fillOpacity={0.2}
-                              strokeWidth={2}
-                              name="GPU %"
-                            />
-                            <Area
-                              type="monotone"
-                              dataKey="memory"
-                              stroke="var(--status-warning)"
-                              fill="var(--status-warning)"
-                              fillOpacity={0.2}
-                              strokeWidth={2}
-                              name="Memory %"
-                            />
-                          </AreaChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Resource Stats */}
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border">
-                      <Cpu className="size-5 text-[var(--status-live)]" />
-                      <div>
-                        <div className="text-sm font-mono">
-                          {activeRun.gpuUtilization}%
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          GPU Utilization
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border">
-                      <HardDrive className="size-5 text-[var(--status-warning)]" />
-                      <div>
-                        <div className="text-sm font-mono">
-                          {activeRun.memoryUsage}%
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Memory Usage
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border">
-                      <Layers className="size-5 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-mono">
-                          {activeRun.checkpoints.length}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Checkpoints
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border">
-                      <Clock className="size-5 text-muted-foreground" />
-                      <div>
-                        <div className="text-sm font-mono">
-                          {Math.floor(
-                            (wallClockMs -
-                              new Date(activeRun.startedAt).getTime()) /
-                            3600000,
-                          )}
-                          h{" "}
-                          {Math.floor(
-                            ((wallClockMs -
-                              new Date(activeRun.startedAt).getTime()) %
-                              3600000) /
-                            60000,
-                          )}
-                          m
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          Duration
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Logs */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-sm font-medium flex items-center gap-2">
-                        <Terminal className="size-4" />
-                        Recent Logs
-                      </h4>
-                      <Button variant="ghost" size="sm" className="text-xs">
-                        View All
-                      </Button>
-                    </div>
-                    <ScrollArea className="h-[150px] rounded-lg border border-border bg-muted/20 p-3">
-                      <div className="space-y-1 font-mono text-xs">
-                        {activeRun.logs.map((log, i) => (
-                          <div key={i} className="flex items-start gap-2">
-                            <span className="text-muted-foreground shrink-0">
-                              {new Date(log.timestamp).toLocaleTimeString()}
-                            </span>
-                            <span
-                              className={
-                                log.level === "error"
-                                  ? "text-[var(--status-critical)]"
-                                  : log.level === "warning"
-                                    ? "text-[var(--status-warning)]"
-                                    : "text-foreground"
-                              }
-                            >
-                              [{log.level.toUpperCase()}] {log.message}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </div>
-
-                  {/* Artifacts */}
-                  <div>
-                    <h4 className="text-sm font-medium mb-2">Artifacts</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {activeRun.artifacts.map((artifact) => (
-                        <Badge
-                          key={artifact.id}
-                          variant="outline"
-                          className="gap-1"
-                        >
-                          <Download className="size-3" />
-                          {artifact.type}:{" "}
-                          {(artifact.size / 1000000).toFixed(0)}MB
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </>
-            ) : (
-              <div className="flex items-center justify-center h-[600px] text-muted-foreground">
-                Select a job to view details
+                ))}
               </div>
+            </ScrollArea>
+          </div>
+
+          {/* Right: Detail Panel */}
+          <div className="lg:col-span-2">
+            {selected ? (
+              <RunDetail run={selected} resourceData={resourceData} />
+            ) : (
+              <Card className="border-border/50 h-[600px] flex items-center justify-center text-muted-foreground">
+                Select a run to view details
+              </Card>
             )}
-          </Card>
+          </div>
         </div>
       </div>
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Run Detail Component
+// ---------------------------------------------------------------------------
+
+function RunDetail({
+  run,
+  resourceData,
+}: {
+  run: UnifiedTrainingRun;
+  resourceData: { time: number; gpu: number; memory: number }[];
+}) {
+  const lossData =
+    run.analysis?.epoch_history?.map((e) => ({
+      epoch: e.epoch,
+      train: e.train_loss,
+      val: e.val_loss,
+    })) ?? generateSimpleLoss(run.current_epoch, run.train_loss, run.val_loss);
+
+  return (
+    <Card className="border-border/50">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-base">{run.name}</CardTitle>
+              <StatusBadge status={run.status} />
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              {run.config.architecture} · {run.config.gpu_type} ·{" "}
+              {run.duration ?? "—"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {run.status === "completed" && run.analysis && (
+              <Link href={`/services/research/ml/analysis?run=${run.id}`}>
+                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                  <BarChart3 className="size-3.5" />
+                  Analyze
+                </Button>
+              </Link>
+            )}
+            {run.status === "failed" && (
+              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
+                <RotateCcw className="size-3.5" />
+                Retry
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        {/* Progress metrics for running/completed */}
+        {(run.status === "running" || run.status === "completed") && (
+          <div className="grid grid-cols-5 gap-3 mb-5">
+            {[
+              {
+                label: "Epoch",
+                value: `${run.current_epoch}/${run.total_epochs}`,
+              },
+              { label: "Train Loss", value: run.train_loss.toFixed(4) },
+              { label: "Val Loss", value: run.val_loss.toFixed(4) },
+              {
+                label: "Best Val",
+                value: `${run.best_val_loss.toFixed(4)} @${run.best_epoch}`,
+              },
+              {
+                label: run.status === "running" ? "ETA" : "Duration",
+                value:
+                  run.status === "running"
+                    ? (run.estimated_time_remaining ?? "—")
+                    : (run.duration ?? "—"),
+              },
+            ].map((m) => (
+              <div
+                key={m.label}
+                className="text-center p-2 rounded-md bg-muted/30"
+              >
+                <p className="text-sm font-bold font-mono">{m.value}</p>
+                <p className="text-[10px] text-muted-foreground">{m.label}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {run.status === "running" && (
+          <Progress value={run.progress} className="h-1.5 mb-5" />
+        )}
+
+        {/* 4-Tab Detail View */}
+        <Tabs defaultValue="config" className="w-full">
+          <TabsList className="w-full justify-start">
+            <TabsTrigger value="config">
+              <Settings2 className="size-3.5 mr-1.5" />
+              Config
+            </TabsTrigger>
+            <TabsTrigger value="features">
+              <Layers className="size-3.5 mr-1.5" />
+              Features
+            </TabsTrigger>
+            <TabsTrigger value="data">
+              <HardDrive className="size-3.5 mr-1.5" />
+              Data
+            </TabsTrigger>
+            <TabsTrigger value="logs">
+              <Terminal className="size-3.5 mr-1.5" />
+              Logs
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Config Tab */}
+          <TabsContent value="config" className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <ConfigSection
+                title="Model"
+                items={[
+                  ["Architecture", run.config.architecture],
+                  ["Target Variable", run.config.target_variable],
+                  ["Target Type", run.config.target_type.replace(/_/g, " ")],
+                  ["Model Family", run.config.model_family_id],
+                  ["Version", run.config.version],
+                ]}
+              />
+              <ConfigSection
+                title="Training"
+                items={[
+                  ["GPU Type", run.config.gpu_type],
+                  ["Priority", run.config.priority],
+                  ["Instruments", run.config.instruments.join(", ")],
+                  ["Timeframe", run.config.timeframe],
+                  ["Created By", run.config.created_by],
+                ]}
+              />
+            </div>
+
+            <div className="rounded-lg border border-border/50 p-3 space-y-2">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Hyperparameters
+              </h4>
+              <div className="grid grid-cols-3 gap-x-6 gap-y-1.5">
+                {Object.entries(run.config.hyperparameters).map(([k, v]) => (
+                  <div
+                    key={k}
+                    className="flex items-center justify-between text-xs"
+                  >
+                    <span className="text-muted-foreground font-mono">{k}</span>
+                    <span className="font-mono font-medium">{String(v)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {run.config.walk_forward && (
+              <div className="rounded-lg border border-border/50 p-3 space-y-2">
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Walk-Forward Validation
+                </h4>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                  {[
+                    ["Retrain Every", run.config.walk_forward.retrain_every],
+                    [
+                      "Window",
+                      run.config.walk_forward.expanding_window
+                        ? "Expanding"
+                        : "Fixed",
+                    ],
+                    ["Embargo", `${run.config.walk_forward.embargo_days} days`],
+                  ].map(([k, v]) => (
+                    <div
+                      key={k}
+                      className="flex items-center justify-between text-xs"
+                    >
+                      <span className="text-muted-foreground">{k}</span>
+                      <span className="font-mono font-medium">{v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {run.config.version_note && (
+              <div className="rounded-md bg-muted/30 p-3 text-xs text-muted-foreground italic">
+                {run.config.version_note}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Features Tab */}
+          <TabsContent value="features" className="mt-4">
+            <div className="space-y-2">
+              <div className="grid grid-cols-[1fr_80px_1fr_80px_140px] gap-2 px-3 py-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                <span>Feature</span>
+                <span>Version</span>
+                <span>Parameters</span>
+                <span>Freshness</span>
+                <span>Last Computed</span>
+              </div>
+              {run.config.feature_inputs.map((f) => (
+                <div
+                  key={f.feature_id}
+                  className="grid grid-cols-[1fr_80px_1fr_80px_140px] gap-2 px-3 py-2.5 rounded-md border border-border/50 items-center"
+                >
+                  <span className="font-mono text-xs font-medium">
+                    {f.feature_name}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] font-mono w-fit"
+                  >
+                    {f.version}
+                  </Badge>
+                  <span className="text-[11px] text-muted-foreground truncate">
+                    {f.parameters_summary}
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] w-fit ${
+                      f.freshness_status === "fresh"
+                        ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                        : f.freshness_status === "stale"
+                          ? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                          : "bg-red-500/15 text-red-400 border-red-500/30"
+                    }`}
+                  >
+                    {f.freshness_status}
+                  </Badge>
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    {new Date(f.last_computed).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-3">
+              {run.config.feature_inputs.length} features pinned to exact
+              versions for reproducibility
+            </p>
+          </TabsContent>
+
+          {/* Data Tab */}
+          <TabsContent value="data" className="mt-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="rounded-lg border border-border/50 p-3 space-y-2">
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Training Window
+                </h4>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-mono">
+                    {run.config.training_window.start}
+                  </span>
+                  <span className="text-muted-foreground">→</span>
+                  <span className="font-mono">
+                    {run.config.training_window.end}
+                  </span>
+                </div>
+              </div>
+              <div className="rounded-lg border border-border/50 p-3 space-y-2">
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Validation Window
+                </h4>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-mono">
+                    {run.config.validation_window.start}
+                  </span>
+                  <span className="text-muted-foreground">→</span>
+                  <span className="font-mono">
+                    {run.config.validation_window.end}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <ConfigSection
+              title="Instruments"
+              items={run.config.instruments.map((inst) => [inst, "Included"])}
+            />
+
+            {/* Loss curve + resource charts */}
+            {(run.status === "running" || run.status === "completed") && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg border border-border/50 p-3">
+                  <h4 className="text-xs font-medium mb-2">Loss Curves</h4>
+                  <div className="h-[180px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={lossData}>
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="hsl(var(--border))"
+                          opacity={0.5}
+                        />
+                        <XAxis
+                          dataKey="epoch"
+                          tick={{
+                            fill: "hsl(var(--muted-foreground))",
+                            fontSize: 10,
+                          }}
+                        />
+                        <YAxis
+                          tick={{
+                            fill: "hsl(var(--muted-foreground))",
+                            fontSize: 10,
+                          }}
+                          domain={["auto", "auto"]}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            backgroundColor: "hsl(var(--background))",
+                            border: "1px solid hsl(var(--border))",
+                            borderRadius: "8px",
+                            fontSize: "11px",
+                          }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="train"
+                          stroke="#3b82f6"
+                          strokeWidth={1.5}
+                          dot={false}
+                          name="Train"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="val"
+                          stroke="#f59e0b"
+                          strokeWidth={1.5}
+                          dot={false}
+                          name="Val"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+                {run.status === "running" && (
+                  <div className="rounded-lg border border-border/50 p-3">
+                    <h4 className="text-xs font-medium mb-2">Resource Usage</h4>
+                    <div className="h-[180px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={resourceData}>
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="hsl(var(--border))"
+                            opacity={0.5}
+                          />
+                          <XAxis
+                            dataKey="time"
+                            tick={{
+                              fill: "hsl(var(--muted-foreground))",
+                              fontSize: 10,
+                            }}
+                          />
+                          <YAxis
+                            tick={{
+                              fill: "hsl(var(--muted-foreground))",
+                              fontSize: 10,
+                            }}
+                            domain={[0, 100]}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--background))",
+                              border: "1px solid hsl(var(--border))",
+                              borderRadius: "8px",
+                              fontSize: "11px",
+                            }}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="gpu"
+                            stroke="#10b981"
+                            fill="#10b981"
+                            fillOpacity={0.15}
+                            strokeWidth={1.5}
+                            name="GPU %"
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey="memory"
+                            stroke="#f59e0b"
+                            fill="#f59e0b"
+                            fillOpacity={0.15}
+                            strokeWidth={1.5}
+                            name="Memory %"
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Logs Tab */}
+          <TabsContent value="logs" className="mt-4 space-y-3">
+            <ScrollArea className="h-[300px] rounded-lg border border-border/50 bg-zinc-950 p-3">
+              <div className="space-y-1 font-mono text-xs">
+                {run.logs.map((log, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-zinc-500 shrink-0 w-[70px]">
+                      {new Date(log.timestamp).toLocaleTimeString()}
+                    </span>
+                    <span
+                      className={`shrink-0 w-[50px] ${
+                        log.level === "error"
+                          ? "text-red-400"
+                          : log.level === "warning"
+                            ? "text-amber-400"
+                            : "text-zinc-500"
+                      }`}
+                    >
+                      [{log.level.toUpperCase()}]
+                    </span>
+                    <span
+                      className={
+                        log.level === "error"
+                          ? "text-red-300"
+                          : log.level === "warning"
+                            ? "text-amber-300"
+                            : "text-zinc-300"
+                      }
+                    >
+                      {log.message}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            {run.artifacts.length > 0 && (
+              <div>
+                <h4 className="text-xs font-medium mb-2">Artifacts</h4>
+                <div className="flex flex-wrap gap-2">
+                  {run.artifacts.map((a) => (
+                    <Badge
+                      key={a.id}
+                      variant="outline"
+                      className="gap-1 text-[11px] font-mono"
+                    >
+                      <Download className="size-3" />
+                      {a.type} · {(a.size / 1_000_000).toFixed(0)}MB
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
+
+function ConfigSection({
+  title,
+  items,
+}: {
+  title: string;
+  items: [string, string][];
+}) {
+  return (
+    <div className="rounded-lg border border-border/50 p-3 space-y-2">
+      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+        {title}
+      </h4>
+      <div className="space-y-1.5">
+        {items.map(([k, v]) => (
+          <div key={k} className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">{k}</span>
+            <span className="font-mono font-medium text-right max-w-[60%] truncate">
+              {v}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function generateSimpleLoss(
+  epochs: number,
+  finalTrain: number,
+  finalVal: number,
+) {
+  const data = [];
+  for (let i = 1; i <= Math.max(epochs, 1); i++) {
+    const p = i / Math.max(epochs, 1);
+    const decay = Math.exp(-3 * p);
+    data.push({
+      epoch: i,
+      train: Number(
+        (
+          0.8 * decay +
+          finalTrain * (1 - decay) +
+          Math.sin(i * 7) * 0.005
+        ).toFixed(4),
+      ),
+      val: Number(
+        (
+          0.85 * decay +
+          finalVal * (1 - decay) +
+          Math.sin(i * 5) * 0.008
+        ).toFixed(4),
+      ),
+    });
+  }
+  return data;
 }

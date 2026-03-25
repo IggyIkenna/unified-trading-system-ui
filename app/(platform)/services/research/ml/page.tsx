@@ -1,238 +1,89 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   Activity,
   AlertTriangle,
+  ArrowRight,
+  BarChart3,
   Brain,
   CheckCircle2,
   Clock,
   Cpu,
   FlaskConical,
   Layers,
+  Package,
   Play,
-  RefreshCw,
+  XCircle,
   Zap,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useExperiments,
   useModelFamilies,
   useTrainingRuns,
   useFeatureProvenance,
-  useCreateTrainingJob,
   useMLMonitoring,
 } from "@/hooks/api/use-ml-models";
 import type { Experiment, ModelFamily, TrainingRun } from "@/lib/ml-types";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  UNIFIED_TRAINING_RUNS,
+  GPU_QUEUE_STATUS,
+  ML_PIPELINE_STATUS,
+  ML_ALERTS,
+  MODEL_FAMILIES,
+} from "@/lib/ml-mock-data";
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function archetypeColor(archetype: string) {
-  switch (archetype) {
-    case "DIRECTIONAL":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
-    case "MARKET_MAKING":
-      return "bg-purple-500/15 text-purple-400 border-purple-500/30";
-    case "ARBITRAGE":
-      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30";
-    case "YIELD":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
-    case "SPORTS_ML":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
-    case "PREDICTION_MARKET_ML":
-      return "bg-pink-500/15 text-pink-400 border-pink-500/30";
-    default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
-  }
-}
-
-function statusColor(status: string) {
+function statusIcon(status: string) {
   switch (status) {
     case "running":
-    case "training":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
+      return <Activity className="size-3.5 text-blue-400 animate-pulse" />;
     case "completed":
-      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+      return <CheckCircle2 className="size-3.5 text-emerald-400" />;
     case "failed":
-      return "bg-red-500/15 text-red-400 border-red-500/30";
+      return <XCircle className="size-3.5 text-red-400" />;
     case "queued":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
+      return <Clock className="size-3.5 text-amber-400" />;
     default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
+      return <Clock className="size-3.5 text-zinc-400" />;
   }
 }
 
-function freshnessColor(status: string) {
-  switch (status) {
-    case "healthy":
-      return "text-emerald-400";
-    case "degraded":
-      return "text-amber-400";
-    case "stale":
-      return "text-red-400";
-    case "unavailable":
-      return "text-red-500";
-    default:
-      return "text-muted-foreground";
-  }
+function statusBadge(status: string) {
+  const colors: Record<string, string> = {
+    running: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    completed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    failed: "bg-red-500/15 text-red-400 border-red-500/30",
+    queued: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+  };
+  return colors[status] ?? "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
 }
 
-function alertSeverityColor(severity: string) {
-  switch (severity) {
-    case "critical":
-      return "bg-red-500/15 text-red-400 border-red-500/30";
-    case "warning":
-      return "bg-amber-500/15 text-amber-400 border-amber-500/30";
-    case "info":
-      return "bg-blue-500/15 text-blue-400 border-blue-500/30";
-    default:
-      return "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
-  }
+function archetypeColor(archetype: string) {
+  const colors: Record<string, string> = {
+    DIRECTIONAL: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    MARKET_MAKING: "bg-purple-500/15 text-purple-400 border-purple-500/30",
+    ARBITRAGE: "bg-cyan-500/15 text-cyan-400 border-cyan-500/30",
+    YIELD: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    SPORTS_ML: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+    PREDICTION_MARKET_ML: "bg-pink-500/15 text-pink-400 border-pink-500/30",
+  };
+  return colors[archetype] ?? "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
 }
-
-// ---------------------------------------------------------------------------
-// Train Model Form
-// ---------------------------------------------------------------------------
-
-interface TrainFormState {
-  familyId: string;
-  name: string;
-  epochs: string;
-  batchSize: string;
-  learningRate: string;
-  optimizer: string;
-  gpuType: string;
-}
-
-const INITIAL_FORM: TrainFormState = {
-  familyId: "",
-  name: "",
-  epochs: "100",
-  batchSize: "256",
-  learningRate: "0.001",
-  optimizer: "AdamW",
-  gpuType: "A100",
-};
-
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
 
 export default function MLOverviewPage() {
-  const { data: experimentsData, isLoading: experimentsLoading } =
-    useExperiments();
-  const { data: familiesData, isLoading: familiesLoading } = useModelFamilies();
-  const { data: trainingRunsData, isLoading: runsLoading } = useTrainingRuns();
-  const { data: featureProvenanceData, isLoading: featuresLoading } =
-    useFeatureProvenance();
-  const { data: monitoringData, isLoading: monitoringLoading } =
-    useMLMonitoring();
-  const createJob = useCreateTrainingJob();
+  const stats = ML_PIPELINE_STATUS;
+  const runs = UNIFIED_TRAINING_RUNS;
+  const queue = GPU_QUEUE_STATUS;
+  const alerts = ML_ALERTS.filter((a) => !a.resolvedAt);
+  const families = MODEL_FAMILIES;
 
-  const experiments: Experiment[] =
-    (experimentsData as any)?.data ??
-    (experimentsData as any)?.experiments ??
-    [];
-  const modelFamilies: ModelFamily[] =
-    (familiesData as any)?.data ?? (familiesData as any)?.families ?? [];
-  const trainingRuns: TrainingRun[] =
-    (trainingRunsData as any)?.data ?? (trainingRunsData as any)?.runs ?? [];
-  const featureProvenance: {
-    featureName: string;
-    status: string;
-    freshness: string;
-  }[] =
-    (featureProvenanceData as any)?.data ??
-    (featureProvenanceData as any)?.features ??
-    [];
-  const mlAlerts: {
-    id: string;
-    severity: string;
-    message: string;
-    triggeredAt: string;
-    resolvedAt: string | null;
-  }[] = (monitoringData as any)?.alerts ?? (monitoringData as any)?.data ?? [];
-
-  const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [form, setForm] = React.useState<TrainFormState>(INITIAL_FORM);
-
-  // KPIs
-  const totalFamilies = modelFamilies.length;
-  const runningExperiments = experiments.filter(
-    (e) => e.status === "running",
-  ).length;
-  const completedExperiments = experiments.filter(
-    (e) => e.status === "completed",
-  ).length;
-  const unresolvedAlerts = mlAlerts.filter((a) => !a.resolvedAt).length;
-
-  function handleSubmitTraining() {
-    if (!form.familyId || !form.name) return;
-
-    createJob.mutate({
-      name: form.name,
-      description: "New training experiment",
-      modelFamilyId: form.familyId,
-      datasetSnapshotId: "ds-auto-latest",
-      featureSetVersionId: "fs-auto-latest",
-      hyperparameters: {
-        learning_rate: parseFloat(form.learningRate),
-        batch_size: parseInt(form.batchSize),
-      },
-      trainingConfig: {
-        epochs: parseInt(form.epochs),
-        batchSize: parseInt(form.batchSize),
-        learningRate: parseFloat(form.learningRate),
-        optimizer: form.optimizer,
-        lossFunction: "CrossEntropyWithLabelSmoothing",
-        earlyStopping: true,
-        earlyStoppingPatience: 15,
-        gpuType: form.gpuType,
-        numGpus: form.gpuType === "A100" ? 4 : 2,
-      },
-    });
-    setForm(INITIAL_FORM);
-    setDialogOpen(false);
-  }
-
-  const isLoading =
-    experimentsLoading ||
-    familiesLoading ||
-    runsLoading ||
-    featuresLoading ||
-    monitoringLoading;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-4 p-6">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
+  const gpuTotalUsed = queue.gpus.reduce((s, g) => s + g.in_use, 0);
+  const gpuTotalAll = queue.gpus.reduce((s, g) => s + g.total, 0);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -240,316 +91,346 @@ export default function MLOverviewPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">ML Platform</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              ML Training Pipeline
+            </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Model training, validation, and deployment operations
+              Train, analyze, and register models for systematic trading
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)}>
-            <Play className="size-4" />
-            Train New Model
-          </Button>
+          <Link href="/services/research/ml/training">
+            <Button>
+              <Play className="size-4" />
+              New Training Run
+            </Button>
+          </Link>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Card className="border-border/50">
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Model Families
-                  </p>
-                  <p className="text-3xl font-bold mt-1">{totalFamilies}</p>
-                </div>
-                <div className="rounded-lg bg-purple-500/10 p-2.5">
-                  <Layers className="size-5 text-purple-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/50">
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Training Active
-                  </p>
-                  <p className="text-3xl font-bold mt-1">
-                    {runningExperiments}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-blue-500/10 p-2.5">
-                  <Cpu className="size-5 text-blue-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/50">
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Completed
-                  </p>
-                  <p className="text-3xl font-bold mt-1">
-                    {completedExperiments}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-emerald-500/10 p-2.5">
-                  <CheckCircle2 className="size-5 text-emerald-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border/50">
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Active Alerts
-                  </p>
-                  <p className="text-3xl font-bold mt-1">{unresolvedAlerts}</p>
-                </div>
-                <div className="rounded-lg bg-red-500/10 p-2.5">
-                  <AlertTriangle className="size-5 text-red-400" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Model Families Grid */}
-        <div>
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <Brain className="size-5" />
-            Model Families
-          </h2>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {modelFamilies.map((family) => {
-              const familyExps = experiments.filter(
-                (e) => e.modelFamilyId === family.id,
-              );
-              const runningCount = familyExps.filter(
-                (e) => e.status === "running",
-              ).length;
-
-              return (
-                <Card key={family.id} className="border-border/50">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold">
-                        {family.name}
-                      </CardTitle>
-                      <Badge
-                        variant="outline"
-                        className={archetypeColor(family.archetype)}
-                      >
-                        {family.archetype.replace(/_/g, " ")}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {family.description}
+        {/* KPI Strip */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            {
+              label: "Model Families",
+              value: stats.total_model_families,
+              icon: Layers,
+              color: "text-purple-400",
+              bg: "bg-purple-500/10",
+            },
+            {
+              label: "Training Active",
+              value: stats.active_training_runs,
+              icon: Cpu,
+              color: "text-blue-400",
+              bg: "bg-blue-500/10",
+            },
+            {
+              label: "Queued",
+              value: stats.queued_jobs,
+              icon: Clock,
+              color: "text-amber-400",
+              bg: "bg-amber-500/10",
+            },
+            {
+              label: "Completed",
+              value: stats.completed_today,
+              icon: CheckCircle2,
+              color: "text-emerald-400",
+              bg: "bg-emerald-500/10",
+            },
+            {
+              label: "In Production",
+              value: stats.models_in_production,
+              icon: Activity,
+              color: "text-cyan-400",
+              bg: "bg-cyan-500/10",
+            },
+            {
+              label: "Active Alerts",
+              value: stats.active_alerts,
+              icon: AlertTriangle,
+              color: alerts.length > 0 ? "text-red-400" : "text-zinc-400",
+              bg: alerts.length > 0 ? "bg-red-500/10" : "bg-zinc-500/10",
+            },
+          ].map((kpi) => (
+            <Card key={kpi.label} className="border-border/50">
+              <CardContent className="pt-0 pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                      {kpi.label}
                     </p>
+                    <p className="text-2xl font-bold mt-0.5">{kpi.value}</p>
+                  </div>
+                  <div className={`rounded-lg ${kpi.bg} p-2`}>
+                    <kpi.icon className={`size-4 ${kpi.color}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-center">
-                      <div className="rounded-md bg-muted/30 p-2">
-                        <p className="text-lg font-bold">
-                          {family.totalVersions}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Versions
-                        </p>
-                      </div>
-                      <div className="rounded-md bg-muted/30 p-2">
-                        <p className="text-lg font-bold">
-                          {family.linkedStrategies.length}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Strategies
-                        </p>
-                      </div>
-                      <div className="rounded-md bg-muted/30 p-2">
-                        <p className="text-lg font-bold">{runningCount}</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Training
-                        </p>
-                      </div>
-                    </div>
+        {/* Navigation Cards — the 3 sub-pages */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Link href="/services/research/ml/training" className="group">
+            <Card className="border-border/50 h-full transition-colors hover:border-blue-500/50 hover:bg-blue-500/5">
+              <CardContent className="pt-4 pb-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="rounded-lg bg-blue-500/10 p-2.5">
+                    <FlaskConical className="size-5 text-blue-400" />
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-blue-400 transition-colors" />
+                </div>
+                <h3 className="font-semibold">Training</h3>
+                <p className="text-xs text-muted-foreground">
+                  Configure, launch, and monitor training runs. Full config:
+                  architecture, features, data windows, hyperparameters.
+                </p>
+                <div className="flex gap-2 pt-1">
+                  <Badge
+                    variant="outline"
+                    className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
+                  >
+                    {stats.active_training_runs} active
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="bg-amber-500/15 text-amber-400 border-amber-500/30 text-[10px]"
+                  >
+                    {stats.queued_jobs} queued
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
-                    <div className="space-y-1.5">
-                      {family.currentChampion && (
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">
-                            Champion
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 font-mono text-[10px]"
-                          >
-                            {family.currentChampion.replace("mv-", "")}
-                          </Badge>
-                        </div>
-                      )}
-                      {family.currentChallenger && (
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">
-                            Challenger
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className="bg-blue-500/15 text-blue-400 border-blue-500/30 font-mono text-[10px]"
-                          >
-                            {family.currentChallenger.replace("mv-", "")}
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
+          <Link href="/services/research/ml/analysis" className="group">
+            <Card className="border-border/50 h-full transition-colors hover:border-purple-500/50 hover:bg-purple-500/5">
+              <CardContent className="pt-4 pb-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="rounded-lg bg-purple-500/10 p-2.5">
+                    <BarChart3 className="size-5 text-purple-400" />
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-purple-400 transition-colors" />
+                </div>
+                <h3 className="font-semibold">Analysis</h3>
+                <p className="text-xs text-muted-foreground">
+                  Deep-dive into completed runs. Feature importance, regime
+                  performance, walk-forward folds, significance tests.
+                </p>
+                <div className="flex gap-2 pt-1">
+                  <Badge
+                    variant="outline"
+                    className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
+                  >
+                    {stats.completed_today} ready to analyze
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/services/research/ml/registry" className="group">
+            <Card className="border-border/50 h-full transition-colors hover:border-emerald-500/50 hover:bg-emerald-500/5">
+              <CardContent className="pt-4 pb-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="rounded-lg bg-emerald-500/10 p-2.5">
+                    <Package className="size-5 text-emerald-400" />
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground group-hover:text-emerald-400 transition-colors" />
+                </div>
+                <h3 className="font-semibold">Model Registry</h3>
+                <p className="text-xs text-muted-foreground">
+                  Browse registered models. Version history, lineage, validation
+                  status, deployment state.
+                </p>
+                <div className="flex gap-2 pt-1">
+                  <Badge
+                    variant="outline"
+                    className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
+                  >
+                    {stats.models_in_production} live
+                  </Badge>
+                  {stats.models_in_shadow > 0 && (
+                    <Badge
+                      variant="outline"
+                      className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
+                    >
+                      {stats.models_in_shadow} shadow
+                    </Badge>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Training Status */}
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <FlaskConical className="size-5" />
-              Training Status
-            </h2>
-            {experiments.slice(0, 6).map((exp) => {
-              const run = trainingRuns.find((r) => r.experimentId === exp.id);
-              return (
-                <Card key={exp.id} className="border-border/50">
-                  <CardContent className="pt-0">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">
-                            {exp.name}
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className={statusColor(exp.status)}
-                          >
-                            {exp.status}
-                          </Badge>
+          {/* Recent Runs */}
+          <div className="lg:col-span-2 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold flex items-center gap-2">
+                <Activity className="size-4" />
+                Recent Training Runs
+              </h2>
+              <Link href="/services/research/ml/training">
+                <Button variant="ghost" size="sm" className="text-xs">
+                  View all
+                </Button>
+              </Link>
+            </div>
+            <div className="space-y-2">
+              {runs.slice(0, 5).map((run) => (
+                <Card key={run.id} className="border-border/50">
+                  <CardContent className="pt-0 pb-3">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {statusIcon(run.status)}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm truncate">
+                              {run.name}
+                            </span>
+                            <Badge
+                              variant="outline"
+                              className={`${statusBadge(run.status)} text-[10px] shrink-0`}
+                            >
+                              {run.status}
+                            </Badge>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">
+                            {run.model_family_name} · {run.created_by}
+                          </p>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          by {exp.createdBy} &middot;{" "}
-                          {exp.startedAt
-                            ? new Date(exp.startedAt).toLocaleDateString()
-                            : "not started"}
-                        </p>
                       </div>
-                      <div className="text-right">
-                        {exp.status === "running" && run && (
+                      <div className="text-right shrink-0">
+                        {run.status === "running" && (
                           <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground">
-                              Epoch {run.currentEpoch}/{run.totalEpochs}
+                            <p className="text-xs text-muted-foreground font-mono">
+                              Epoch {run.current_epoch}/{run.total_epochs}
                             </p>
-                            <div className="w-32 h-1.5 bg-muted rounded-full overflow-hidden">
+                            <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
                               <div
                                 className="h-full bg-blue-500 rounded-full transition-all"
-                                style={{ width: `${exp.progress}%` }}
+                                style={{ width: `${run.progress}%` }}
                               />
                             </div>
-                            <p className="text-[10px] text-muted-foreground">
-                              ETA: {run.estimatedTimeRemaining}
-                            </p>
                           </div>
                         )}
-                        {exp.metrics && (
-                          <div className="flex items-center gap-3 text-xs">
-                            <span>
-                              Acc:{" "}
-                              <span className="font-mono font-medium">
-                                {(exp.metrics.accuracy * 100).toFixed(1)}%
+                        {run.status === "completed" &&
+                          run.financial_metrics && (
+                            <div className="flex items-center gap-3 text-xs">
+                              <span>
+                                Sharpe:{" "}
+                                <span className="font-mono font-medium text-emerald-400">
+                                  {run.financial_metrics.sharpe_ratio.toFixed(
+                                    2,
+                                  )}
+                                </span>
                               </span>
-                            </span>
-                            <span>
-                              Sharpe:{" "}
-                              <span className="font-mono font-medium">
-                                {exp.metrics.sharpe.toFixed(2)}
+                              <span>
+                                DirAcc:{" "}
+                                <span className="font-mono font-medium">
+                                  {(
+                                    run.financial_metrics.directional_accuracy *
+                                    100
+                                  ).toFixed(1)}
+                                  %
+                                </span>
                               </span>
-                            </span>
-                          </div>
+                            </div>
+                          )}
+                        {run.status === "failed" && (
+                          <span className="text-[11px] text-red-400 font-mono">
+                            OOM
+                          </span>
+                        )}
+                        {run.status === "queued" && (
+                          <span className="text-[11px] text-amber-400">
+                            Queue #{queue.jobs_waiting}
+                          </span>
                         )}
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-              );
-            })}
+              ))}
+            </div>
           </div>
 
-          {/* Right sidebar: Feature Freshness + Alerts */}
-          <div className="space-y-6">
-            {/* Feature Freshness */}
+          {/* Right sidebar */}
+          <div className="space-y-4">
+            {/* GPU Resources */}
             <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Zap className="size-4" />
-                  Feature Freshness
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Cpu className="size-4" />
+                  GPU Resources
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                {featureProvenance.map((fp) => (
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">
+                    Total Utilization
+                  </span>
+                  <span className="font-mono font-medium">
+                    {gpuTotalUsed}/{gpuTotalAll} GPUs
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    key={fp.featureName}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`size-2 rounded-full ${
-                          fp.status === "healthy"
-                            ? "bg-emerald-400"
-                            : fp.status === "degraded"
-                              ? "bg-amber-400"
-                              : "bg-red-400"
-                        }`}
-                      />
-                      <span className="font-mono text-xs">
-                        {fp.featureName}
+                    className="h-full bg-blue-500 rounded-full transition-all"
+                    style={{ width: `${(gpuTotalUsed / gpuTotalAll) * 100}%` }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  {queue.gpus.map((g) => (
+                    <div
+                      key={g.gpu_type}
+                      className="flex items-center justify-between text-[11px]"
+                    >
+                      <span className="font-mono text-muted-foreground">
+                        {g.gpu_type}
+                      </span>
+                      <span>
+                        <span className="text-foreground font-medium">
+                          {g.available}
+                        </span>
+                        <span className="text-muted-foreground">
+                          /{g.total} free
+                        </span>
                       </span>
                     </div>
-                    <span
-                      className={`text-xs font-mono ${freshnessColor(fp.status)}`}
-                    >
-                      {fp.freshness}
-                    </span>
+                  ))}
+                </div>
+                {queue.jobs_waiting > 0 && (
+                  <div className="rounded-md bg-amber-500/10 p-2 text-[11px] text-amber-400">
+                    {queue.jobs_waiting} jobs waiting · ~
+                    {queue.estimated_wait_minutes}min est.
                   </div>
-                ))}
+                )}
               </CardContent>
             </Card>
 
             {/* Alerts */}
-            <Card className="border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <AlertTriangle className="size-4" />
-                  ML Alerts
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {mlAlerts
-                  .filter((a) => !a.resolvedAt)
-                  .map((alert) => (
+            {alerts.length > 0 && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <AlertTriangle className="size-4 text-red-400" />
+                    Active Alerts ({alerts.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {alerts.map((alert) => (
                     <div
                       key={alert.id}
-                      className="rounded-lg border border-border/50 p-3 space-y-1.5"
+                      className="rounded-md border border-border/50 p-2.5 space-y-1"
                     >
                       <div className="flex items-center justify-between">
                         <Badge
                           variant="outline"
-                          className={alertSeverityColor(alert.severity)}
+                          className={`text-[10px] ${alert.severity === "warning" ? "bg-amber-500/15 text-amber-400 border-amber-500/30" : "bg-red-500/15 text-red-400 border-red-500/30"}`}
                         >
                           {alert.severity}
                         </Badge>
@@ -557,144 +438,44 @@ export default function MLOverviewPage() {
                           {new Date(alert.triggeredAt).toLocaleTimeString()}
                         </span>
                       </div>
-                      <p className="text-xs">{alert.message}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {alert.message}
+                      </p>
                     </div>
                   ))}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Model Families Mini */}
+            <Card className="border-border/50">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Brain className="size-4" />
+                  Model Families ({families.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {families.map((f) => (
+                  <div
+                    key={f.id}
+                    className="flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="truncate font-medium">{f.name}</span>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={`${archetypeColor(f.archetype)} text-[9px] shrink-0`}
+                    >
+                      {f.archetype.replace(/_/g, " ")}
+                    </Badge>
+                  </div>
+                ))}
               </CardContent>
             </Card>
           </div>
         </div>
-
-        {/* Train New Model Dialog */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Train New Model</DialogTitle>
-              <DialogDescription>
-                Configure and launch a new training experiment.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-2">
-              <div className="space-y-2">
-                <Label>Model Family</Label>
-                <Select
-                  value={form.familyId}
-                  onValueChange={(v) => setForm((f) => ({ ...f, familyId: v }))}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select model family..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {modelFamilies.map((fam) => (
-                      <SelectItem key={fam.id} value={fam.id}>
-                        {fam.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Experiment Name</Label>
-                <Input
-                  placeholder="e.g., BTC Direction v3.4 - Wider context"
-                  value={form.name}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, name: e.target.value }))
-                  }
-                />
-              </div>
-
-              <div className="rounded-lg border border-border/50 p-3 space-y-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Training Configuration
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Epochs</Label>
-                    <Input
-                      type="number"
-                      value={form.epochs}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, epochs: e.target.value }))
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Batch Size</Label>
-                    <Input
-                      type="number"
-                      value={form.batchSize}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, batchSize: e.target.value }))
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Learning Rate</Label>
-                    <Input
-                      type="number"
-                      step="0.0001"
-                      value={form.learningRate}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, learningRate: e.target.value }))
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Optimizer</Label>
-                    <Select
-                      value={form.optimizer}
-                      onValueChange={(v) =>
-                        setForm((f) => ({ ...f, optimizer: v }))
-                      }
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="AdamW">AdamW</SelectItem>
-                        <SelectItem value="Adam">Adam</SelectItem>
-                        <SelectItem value="SGD">SGD</SelectItem>
-                        <SelectItem value="RMSProp">RMSProp</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">GPU Type</Label>
-                  <Select
-                    value={form.gpuType}
-                    onValueChange={(v) =>
-                      setForm((f) => ({ ...f, gpuType: v }))
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A100">A100 (4x)</SelectItem>
-                      <SelectItem value="V100">V100 (2x)</SelectItem>
-                      <SelectItem value="T4">T4 (1x)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmitTraining}
-                disabled={!form.familyId || !form.name}
-              >
-                <Play className="size-4" />
-                Start Training
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );
