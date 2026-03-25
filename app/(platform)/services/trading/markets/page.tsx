@@ -1150,10 +1150,10 @@ export default function MarketsPage() {
                               <td className="p-2 text-right font-mono">{order.size.toFixed(4)} ETH</td>
                               <td className="p-2 text-right font-mono">${order.price.toLocaleString()}</td>
                               <td className="p-2 text-right font-mono text-muted-foreground">
-                                {(Math.random() * 0.5).toFixed(2)}%
+                                {(0.25).toFixed(2)}%
                               </td>
                               <td className="p-2 text-right font-mono text-muted-foreground">
-                                {Math.floor(20 + Math.random() * 50)} gwei
+                                {35} gwei
                               </td>
                             </tr>
                           ))}
