@@ -5,9 +5,16 @@
  * + onboarding request. Admin must approve before the user can sign in.
  */
 
-const USER_MGMT_API = (
-  process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017"
-).replace(/\/+$/, "");
+// In mock mode, use relative URLs so the mock handler intercepts them.
+// In production, call the UMU backend directly.
+const isMockMode =
+  typeof process !== "undefined" &&
+  (process.env.NEXT_PUBLIC_MOCK_API === "true" ||
+    process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo");
+
+const USER_MGMT_API = isMockMode
+  ? ""
+  : (process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017").replace(/\/+$/, "");
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   let binary = "";

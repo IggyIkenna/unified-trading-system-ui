@@ -86,7 +86,7 @@ export function SiteHeader() {
                 Sign In
               </Link>
               <Button size="sm" asChild>
-                <Link href="/contact">Get Access</Link>
+                <Link href="/signup">Get Started</Link>
               </Button>
             </>
           )}
