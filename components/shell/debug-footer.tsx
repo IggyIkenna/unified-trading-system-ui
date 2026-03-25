@@ -21,7 +21,7 @@ import * as React from "react";
  * Visibility controlled by NEXT_PUBLIC_MOCK_API env var or API health check mock_mode flag.
  */
 export function DebugFooter() {
-  const { user } = useAuth();
+  const { user, loginByEmail } = useAuth();
   const router = useRouter();
   const [mockMode, setMockMode] = React.useState(false);
   const [pendingPersona, setPendingPersona] = React.useState<string | null>(
@@ -58,11 +58,26 @@ export function DebugFooter() {
     resetDemo();
   };
 
-  const handleSwitchPersona = (personaId: string) => {
+  const handleSwitchPersona = async (personaId: string) => {
+    // Log out current user
     localStorage.removeItem("portal_user");
     localStorage.removeItem("portal_token");
     localStorage.removeItem("odum_user");
-    setPendingPersona(personaId);
+    // Find persona email and log in with demo password
+    const persona = personas.find((p) => p.id === personaId);
+    if (!persona) return;
+    const emails: Record<string, string> = {
+      admin: "admin@odum.internal",
+      "internal-trader": "trader@odum.internal",
+      "client-full": "pm@alphacapital.com",
+      "client-premium": "cio@vertex.com",
+      "client-data-only": "analyst@betafund.com",
+    };
+    const email = emails[personaId];
+    if (email) {
+      await loginByEmail(email, "demo");
+      router.refresh();
+    }
   };
 
   const personas = [
