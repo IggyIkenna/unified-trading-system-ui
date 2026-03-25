@@ -574,7 +574,7 @@ export interface DataFlow {
   mode: "live" | "batch";
   service: string | null;
   dataSource: "gcs" | "pubsub" | "gcp-api";
-  api: string | null;
+  api?: string | null;
   ui: string | string[];
   note?: string;
 }
