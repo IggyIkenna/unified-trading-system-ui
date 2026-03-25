@@ -678,17 +678,38 @@ function OnboardingWizard({
     }
   }
 
+  const [step1Errors, setStep1Errors] = React.useState<Record<string, string>>({});
+
+  const nameValid = name.trim().includes(" ");
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const phoneValid = !phone || /^\+\d[\d\s-]{6,}$/.test(phone.trim());
+  const passwordValid = password.length >= 6;
+  const passwordMatch = password === confirmPassword;
+  const companyValid = applicantType === "individual" || Boolean(company.trim());
+
   const step1Complete =
-    Boolean(name) &&
-    Boolean(email) &&
-    Boolean(company) &&
-    Boolean(password) &&
-    password.length >= 6 &&
-    password === confirmPassword;
+    nameValid &&
+    emailValid &&
+    companyValid &&
+    phoneValid &&
+    passwordValid &&
+    passwordMatch;
 
   function onStep1Next(e: React.FormEvent) {
     e.preventDefault();
-    if (!step1Complete) return;
+    const errors: Record<string, string> = {};
+    if (!name.trim()) errors.name = "Required";
+    else if (!nameValid) errors.name = "Enter first and last name";
+    if (!email.trim()) errors.email = "Required";
+    else if (!emailValid) errors.email = "Enter a valid email address";
+    if (applicantType === "company" && !company.trim()) errors.company = "Required for company applications";
+    if (phone && !phoneValid) errors.phone = "Start with + and country code (e.g. +44 7700 900000)";
+    if (!password) errors.password = "Required";
+    else if (!passwordValid) errors.password = "At least 6 characters";
+    if (!confirmPassword) errors.confirmPassword = "Required";
+    else if (!passwordMatch) errors.confirmPassword = "Passwords don't match";
+    setStep1Errors(errors);
+    if (Object.keys(errors).length > 0) return;
     setStep(2);
   }
 
@@ -810,18 +831,22 @@ function OnboardingWizard({
                   <Label className="text-xs">Full Name *</Label>
                   <Input
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => { setName(e.target.value); setStep1Errors((p) => ({ ...p, name: "" })); }}
                     placeholder="Jane Smith"
+                    className={step1Errors.name ? "border-red-500" : ""}
                   />
+                  {step1Errors.name && <p className="text-xs text-red-400">{step1Errors.name}</p>}
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Email *</Label>
                   <Input
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); setStep1Errors((p) => ({ ...p, email: "" })); }}
                     placeholder="jane@company.com"
+                    className={step1Errors.email ? "border-red-500" : ""}
                   />
+                  {step1Errors.email && <p className="text-xs text-red-400">{step1Errors.email}</p>}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -833,18 +858,23 @@ function OnboardingWizard({
                   </Label>
                   <Input
                     value={company}
-                    onChange={(e) => setCompany(e.target.value)}
+                    onChange={(e) => { setCompany(e.target.value); setStep1Errors((p) => ({ ...p, company: "" })); }}
                     placeholder="Acme Capital"
+                    className={step1Errors.company ? "border-red-500" : ""}
                   />
+                  {step1Errors.company && <p className="text-xs text-red-400">{step1Errors.company}</p>}
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Phone (optional)</Label>
                   <Input
                     type="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => { setPhone(e.target.value); setStep1Errors((p) => ({ ...p, phone: "" })); }}
                     placeholder="+44 7XXX XXX XXX"
+                    className={step1Errors.phone ? "border-red-500" : ""}
                   />
+                  <p className="text-[10px] text-muted-foreground">Start with + and country code, e.g. +44 for UK, +1 for US</p>
+                  {step1Errors.phone && <p className="text-xs text-red-400">{step1Errors.phone}</p>}
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -868,22 +898,26 @@ function OnboardingWizard({
                   <Input
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => { setPassword(e.target.value); setStep1Errors((p) => ({ ...p, password: "" })); }}
                     placeholder="Min 6 characters"
+                    className={step1Errors.password ? "border-red-500" : ""}
                   />
+                  {step1Errors.password && <p className="text-xs text-red-400">{step1Errors.password}</p>}
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">Confirm Password *</Label>
                   <Input
                     type="password"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => { setConfirmPassword(e.target.value); setStep1Errors((p) => ({ ...p, confirmPassword: "" })); }}
                     placeholder="Repeat password"
+                    className={step1Errors.confirmPassword ? "border-red-500" : ""}
                   />
+                  {step1Errors.confirmPassword && <p className="text-xs text-red-400">{step1Errors.confirmPassword}</p>}
                 </div>
               </div>
               <div className="flex justify-end pt-2">
-                <OnboardingNextBtn type="submit" disabled={!step1Complete} />
+                <OnboardingNextBtn type="submit" />
               </div>
               </form>
             </CardContent>
