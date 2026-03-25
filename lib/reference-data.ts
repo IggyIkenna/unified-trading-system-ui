@@ -626,6 +626,7 @@ export const DATA_FLOWS: DataFlow[] = [
     mode: "batch",
     service: "market-data-processing-service",
     dataSource: "gcs",
+    api: null,
     ui: ["trading-analytics-ui", "batch-audit-ui"],
   },
   {
