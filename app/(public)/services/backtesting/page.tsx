@@ -87,6 +87,59 @@ export default function BacktestingServicePage() {
             </Card>
           </div>
 
+          {/* Inside the Platform */}
+          <Card className="mb-8 border-violet-500/10 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Inside the Platform</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Feature Catalogue</div>
+                  <p className="text-xs text-muted-foreground">
+                    Browse hundreds of pre-built features in a 4-column drill-down — filter by
+                    service, category, group, then inspect individual features with full metadata.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">ML Training Pipeline</div>
+                  <p className="text-xs text-muted-foreground">
+                    Train gradient boost, neural networks, regression models. Track training runs,
+                    view loss curves, compare champion vs challenger models, promote winners to live.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Strategy Builder</div>
+                  <p className="text-xs text-muted-foreground">
+                    Assemble strategies from your signals, configure parameters, define execution
+                    rules. Run backtests across any asset class with realistic slippage and costs.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Backtest Comparison</div>
+                  <p className="text-xs text-muted-foreground">
+                    Side-by-side parameter sweeps with Sharpe, return, drawdown, and win rate.
+                    GPU-accelerated — run 1000+ combinations in parallel, then pick the best.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Model Registry</div>
+                  <p className="text-xs text-muted-foreground">
+                    Every trained model versioned and catalogued. See performance metrics,
+                    training config, and deployment history. One click to deploy or rollback.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Promote to Live</div>
+                  <p className="text-xs text-muted-foreground">
+                    When a strategy passes your criteria, promote it straight to live trading.
+                    Same code, same data pipeline — what worked in backtest works in production.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* What's Included */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-2">

@@ -130,7 +130,77 @@ export default function PlatformServicePage() {
         </div>
       </section>
 
-      {/* Block 1: Catalogue */}
+      {/* Inside the Platform */}
+      <section className="border-b border-border bg-card/30">
+        <div className="container px-4 py-12 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="text-xl font-semibold mb-6">Inside the Platform</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Trading Terminal</div>
+                  <p className="text-xs text-muted-foreground">
+                    Full trading terminal with candlestick charts, technical indicators
+                    (Bollinger Bands, EMA, SMA), live order book, depth chart, and
+                    manual execution panel. Trade any instrument from one screen.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">10-Factor P&amp;L Waterfall</div>
+                  <p className="text-xs text-muted-foreground">
+                    P&amp;L broken down by funding, carry, basis, delta, gamma, vega, theta,
+                    slippage, fees, and rebates. Drill into any strategy for factor attribution.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Position Grid</div>
+                  <p className="text-xs text-muted-foreground">
+                    All positions across every venue — spot, perps, futures, options, DeFi,
+                    predictions. Unrealised P&amp;L, exposure, margin utilisation, collapsible by venue.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Risk Dashboard</div>
+                  <p className="text-xs text-muted-foreground">
+                    VaR, Greeks, position limits, circuit breaker status. Kill switch for
+                    emergency stops. Margin utilisation by venue with real-time alerts.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Strategy Management</div>
+                  <p className="text-xs text-muted-foreground">
+                    See all strategies live — by archetype (basis, arb, momentum, yield),
+                    asset class, and status. AUM, P&amp;L sparklines, execution mode toggle.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Live vs Batch Reconciliation</div>
+                  <p className="text-xs text-muted-foreground">
+                    Every morning, compare yesterday&apos;s live trades against backtest.
+                    Break detection for position, P&amp;L, and fee mismatches with investigation workflow.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              Plus: DeFi operations (swaps, lending, staking), sports and prediction market panels,
+              options chain, order bundles, and full audit trail.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Block 1: Detailed feature list */}
       <section className="container px-4 py-16 md:px-6">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-2xl font-bold mb-2">

@@ -49,6 +49,60 @@ export default function InvestmentServicePage() {
             </p>
           </div>
 
+          {/* Inside the Platform */}
+          <Card className="mb-8 border-rose-500/10 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Your Investor Portal</CardTitle>
+              <CardDescription>What you see when you log in</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Portfolio Overview</div>
+                  <p className="text-xs text-muted-foreground">
+                    NAV, MTD return, max drawdown, Sharpe ratio — all at a glance.
+                    Allocation breakdown by strategy (momentum, carry, yield, arb).
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Trade &amp; Order History</div>
+                  <p className="text-xs text-muted-foreground">
+                    Every trade, every order — filterable by instrument type, venue,
+                    strategy. Full audit trail with slippage analysis and MiFID II fields.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Settlement Tracking</div>
+                  <p className="text-xs text-muted-foreground">
+                    Real-time settlement status — confirming, settled, pending, failed.
+                    Account balances, recent transfers, fee breakdowns.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Report Generation</div>
+                  <p className="text-xs text-muted-foreground">
+                    Generate on-demand or schedule recurring reports — performance,
+                    regulatory, executive summaries. Export to CSV/XLSX.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">P&amp;L Attribution</div>
+                  <p className="text-xs text-muted-foreground">
+                    10-factor P&amp;L waterfall — see exactly where your returns come from.
+                    Drill into any strategy for factor-level breakdown.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Reconciliation</div>
+                  <p className="text-xs text-muted-foreground">
+                    Live vs batch reconciliation with break detection. Investigate,
+                    accept, reject, or book corrections — full workflow.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Key Features */}
           <div className="grid gap-4 md:grid-cols-3 mb-8">
             <Card>

@@ -42,6 +42,49 @@ export default function RegulatoryServicePage() {
             </p>
           </div>
 
+          {/* What Your Clients See */}
+          <Card className="mb-8 border-slate-500/10 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-lg">The Client Portal</CardTitle>
+              <CardDescription>
+                Once approved, your clients get their own login with full
+                reporting — the same institutional tools we use internally.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Portfolio Dashboard</div>
+                  <p className="text-xs text-muted-foreground">
+                    NAV, P&amp;L attribution, position breakdown by strategy and asset class.
+                    The same 10-factor waterfall used by our own trading desk.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Trade History</div>
+                  <p className="text-xs text-muted-foreground">
+                    Every trade your clients execute — filterable, exportable, with full
+                    audit trail. Slippage analysis and best execution records included.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Compliance Reports</div>
+                  <p className="text-xs text-muted-foreground">
+                    MiFID II transaction reporting, best execution monitoring, KYC/AML
+                    workflow management. Generated automatically or on demand.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Settlement &amp; Fees</div>
+                  <p className="text-xs text-muted-foreground">
+                    Real-time settlement status, fee breakdowns, monthly invoicing.
+                    Your clients see their costs transparently.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Key Benefits */}
           <div className="grid gap-4 md:grid-cols-3 mb-8">
             <Card>

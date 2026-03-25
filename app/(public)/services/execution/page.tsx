@@ -49,6 +49,59 @@ export default function ExecutionServicePage() {
             </p>
           </div>
 
+          {/* Inside the Platform */}
+          <Card className="mb-8 border-emerald-500/10 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Inside the Platform</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Algo Performance Dashboard</div>
+                  <p className="text-xs text-muted-foreground">
+                    See every algo running in real time — orders executed, average alpha,
+                    slippage, fill rates. Compare TWAP vs VWAP vs SOR side by side.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">DeFi Operations Panel</div>
+                  <p className="text-xs text-muted-foreground">
+                    Not just trades — execute swaps, lending, borrowing, staking, and flash
+                    loan bundles across Aave, Uniswap, Morpho, and more. Same interface.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Venue Connectivity</div>
+                  <p className="text-xs text-muted-foreground">
+                    Live status across all 33 connected venues — CeFi, DeFi, TradFi. See
+                    latency, connection health, and order routing in real time.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Transaction Cost Analysis</div>
+                  <p className="text-xs text-muted-foreground">
+                    Full TCA reporting — slippage vs arrival price, execution quality
+                    benchmarks, and MiFID II compliant best execution records.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Order Management</div>
+                  <p className="text-xs text-muted-foreground">
+                    Filter by instrument type (spot, perps, futures, options, DeFi, predictions).
+                    Amend or cancel orders inline. Full audit trail with export.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Multi-Leg Bundles</div>
+                  <p className="text-xs text-muted-foreground">
+                    Build and execute multi-leg orders — basis trades, calendar spreads,
+                    or custom DeFi bundles. One click, multiple venues.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Algo Types */}
           <div className="grid gap-4 md:grid-cols-3 mb-8">
             <Card>

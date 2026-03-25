@@ -109,6 +109,56 @@ export default function DataServicePublicPage() {
         </div>
       </section>
 
+      {/* What You Get Inside */}
+      <section className="border-b border-border bg-card/30">
+        <div className="container px-4 py-12 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="text-xl font-semibold mb-6">Inside the Platform</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="border-sky-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Data Pipeline Monitor</div>
+                  <p className="text-xs text-muted-foreground">
+                    Watch your data flow through four stages — Instruments, Raw, Processing, Features.
+                    See progress bars, shard counts, and failed jobs per category in real time.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-sky-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Instrument Catalogue</div>
+                  <p className="text-xs text-muted-foreground">
+                    Browse every instrument by asset class and venue. See sparklines for growth trends,
+                    active counts, and folder breakdowns (spot, perps, futures, options, DeFi).
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-sky-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Coverage Matrix</div>
+                  <p className="text-xs text-muted-foreground">
+                    Cross-stage coverage view — see which instruments have complete data from raw
+                    ingestion through processing to features. Spot gaps instantly. Export to CSV.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-sky-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Freshness Heatmap</div>
+                  <p className="text-xs text-muted-foreground">
+                    Real-time heatmap showing data freshness across all venues. Know within seconds
+                    if any feed is stale — colour-coded by recency, with alerts for gaps.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              Book a demo to see the full platform, or browse the data catalogue below.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Main tabs */}
       <section className="container px-4 py-12 md:px-6">
         <Tabs defaultValue="catalogue">
@@ -251,14 +301,6 @@ export default function DataServicePublicPage() {
                       )}
                     >
                       <CardHeader className="pb-3">
-                        {plan.tier === "institutional" && (
-                          <Badge
-                            variant="outline"
-                            className="w-fit mb-2 border-sky-500/30 text-sky-400 text-[10px]"
-                          >
-                            Most Popular
-                          </Badge>
-                        )}
                         <CardTitle className="text-base">{plan.name}</CardTitle>
                         <CardDescription>
                           {plan.tier === "enterprise" ? (
