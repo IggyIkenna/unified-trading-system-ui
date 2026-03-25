@@ -1,9 +1,0 @@
-# act configuration — persisted defaults for all runs in this repo.
-# See: https://nektosact.com/usage/runners
-#
-# --pull=false: runner images must be pre-pulled manually (avoids slow/rate-limited pulls).
-#   Pre-pull once: docker pull catthehacker/ubuntu:act-22.04
-#
-# Architecture note: Apple Silicon users need --container-architecture linux/amd64
-#   This is added dynamically in scripts/quickmerge.sh (not here — .actrc is static).
---pull=false

@@ -1,4 +1,0 @@
-project_id            = "your-gcp-project-id"
-region                = "us-central1"
-environment           = "prod"
-service_account_email = "ibkr-gateway@your-project.iam.gserviceaccount.com"
