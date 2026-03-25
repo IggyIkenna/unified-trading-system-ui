@@ -488,10 +488,14 @@ async function generateDeclarationPdfBlob(
   const col2 = margin + colW + 6;
   const col3 = margin + (colW + 6) * 2;
 
-  // Signature value (italic style)
-  pdf.setFontSize(13);
+  // Signature in italic, larger — looks like an actual signature
+  pdf.setFont("helvetica", "italic");
+  pdf.setFontSize(16);
   pdf.setTextColor(0);
   pdf.text(signature, col1, y);
+
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(11);
   pdf.text(applicantName, col2, y);
   pdf.text(date, col3, y);
   y += 4;
