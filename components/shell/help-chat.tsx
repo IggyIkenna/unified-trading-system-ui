@@ -37,9 +37,18 @@ export function HelpChat() {
   }, [messages]);
 
   function reset() {
-    setStep("welcome");
+    setStep("service");
     setSelectedService(null);
-    setMessages([]);
+    setMessages([
+      {
+        from: "bot",
+        text: "Hi! What service are you interested in?",
+        options: SERVICES.map((s) => ({
+          label: s.label,
+          action: () => pickService(s.id, s.label),
+        })),
+      },
+    ]);
   }
 
   function startChat() {
