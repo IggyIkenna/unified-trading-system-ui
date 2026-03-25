@@ -102,13 +102,13 @@ export default function PlatformServicePage() {
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>
-                <Link href="/contact?service=platform&action=demo">
+                <Link href="/demo?service=platform">
                   Book a Live Demo
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Contact Sales</Link>
+                <Link href="/contact">Get in Touch</Link>
               </Button>
             </div>
             <div className="mt-12 grid grid-cols-4 gap-4">
@@ -242,7 +242,7 @@ export default function PlatformServicePage() {
                 Preview the trading dashboard, P&L waterfall, and position grid.
               </p>
               <Button className="mt-4" asChild>
-                <Link href="/contact?service=platform&action=demo">
+                <Link href="/demo?service=platform">
                   Book a Live Demo <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
@@ -510,13 +510,13 @@ export default function PlatformServicePage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild>
-                <Link href="/contact?service=platform&action=demo">
+                <Link href="/demo?service=platform">
                   Book a Live Demo
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Contact Sales</Link>
+                <Link href="/contact">Get in Touch</Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
                 <Link href="/signup">Create Account</Link>

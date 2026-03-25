@@ -1843,11 +1843,10 @@ function GenericSignup() {
           <div className="flex flex-col items-center gap-4">
             {selectedServices.size === 1 &&
             ONBOARDING_SERVICES.has([...selectedServices][0]) ? (
-              <Button
-                size="lg"
-                onClick={() => setStep("contact")}
-              >
-                Start Application <ArrowRight className="ml-2 size-4" />
+              <Button size="lg" asChild>
+                <Link href={`/signup?service=${[...selectedServices][0]}`}>
+                  Start Application <ArrowRight className="ml-2 size-4" />
+                </Link>
               </Button>
             ) : selectedServices.size === 1 ? (
               <div className="text-center space-y-3">
@@ -1857,7 +1856,7 @@ function GenericSignup() {
                 </p>
                 <div className="flex gap-3 justify-center">
                   <Button size="lg" asChild>
-                    <Link href={`/contact?service=${[...selectedServices][0]}&action=demo`}>
+                    <Link href={`/demo?service=${[...selectedServices][0]}`}>
                       Book a Demo <ArrowRight className="ml-2 size-4" />
                     </Link>
                   </Button>
@@ -1908,7 +1907,7 @@ function GenericSignup() {
               </CardDescription>
               <Button size="sm" className="mt-4 w-full" asChild>
                 <Link
-                  href={`/contact?action=demo&service=${[...selectedServices].join(",")}`}
+                  href={`/demo?service=${[...selectedServices].join(",")}`}
                 >
                   Book Demo <ArrowRight className="ml-1 size-3" />
                 </Link>
@@ -1918,7 +1917,7 @@ function GenericSignup() {
           <Card className="border-border hover:border-border/80 transition-colors cursor-pointer">
             <CardContent className="pt-5 text-center">
               <Mail className="size-8 text-muted-foreground mx-auto mb-3" />
-              <CardTitle className="text-base mb-1">Contact Sales</CardTitle>
+              <CardTitle className="text-base mb-1">Get in Touch</CardTitle>
               <CardDescription className="text-xs">
                 Get pricing details, discuss your requirements.
               </CardDescription>

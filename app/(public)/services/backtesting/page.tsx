@@ -159,7 +159,7 @@ export default function BacktestingServicePage() {
               <CardHeader>
                 <CardTitle>Starter</CardTitle>
                 <div className="text-lg font-bold text-primary">
-                  Contact Sales
+                  Get in Touch
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -208,7 +208,7 @@ export default function BacktestingServicePage() {
               <CardHeader>
                 <CardTitle>Professional</CardTitle>
                 <div className="text-lg font-bold text-primary">
-                  Contact Sales
+                  Get in Touch
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -265,7 +265,7 @@ export default function BacktestingServicePage() {
               <CardHeader>
                 <CardTitle>Enterprise</CardTitle>
                 <div className="text-lg font-bold text-primary">
-                  Contact Sales
+                  Get in Touch
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -339,7 +339,7 @@ export default function BacktestingServicePage() {
                 platform.
               </p>
               <Button className="mt-4" asChild>
-                <Link href="/contact?service=backtesting&action=demo">
+                <Link href="/demo?service=backtesting">
                   Book a Live Demo <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
@@ -567,13 +567,13 @@ export default function BacktestingServicePage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild>
-                <Link href="/contact?service=backtesting&action=demo">
+                <Link href="/demo?service=backtesting">
                   Book a Live Demo
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Contact Sales</Link>
+                <Link href="/contact">Get in Touch</Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
                 <Link href="/signup">Create Account</Link>

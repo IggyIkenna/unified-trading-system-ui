@@ -558,13 +558,13 @@ export default function DataServicePublicPage() {
                 </p>
                 <div className="flex justify-center gap-3">
                   <Button size="lg" asChild>
-                    <Link href="/contact?service=data&action=demo">
+                    <Link href="/demo?service=data">
                       Book a Live Demo
                       <ArrowRight className="ml-2 size-4" />
                     </Link>
                   </Button>
                   <Button size="lg" variant="outline" asChild>
-                    <Link href="/contact">Contact Sales</Link>
+                    <Link href="/contact">Get in Touch</Link>
                   </Button>
                 </div>
               </div>

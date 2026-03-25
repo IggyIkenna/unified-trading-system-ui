@@ -404,7 +404,7 @@ export default function InvestmentServicePage() {
                 attribution, and settlement tracking.
               </p>
               <Button className="mt-4" asChild>
-                <Link href="/contact?service=investment&action=demo">
+                <Link href="/demo?service=investment">
                   Book a Live Demo <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
@@ -651,13 +651,13 @@ export default function InvestmentServicePage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild>
-                <Link href="/contact?service=investment&action=demo">
+                <Link href="/demo?service=investment">
                   Book a Live Demo
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Contact Sales</Link>
+                <Link href="/contact">Get in Touch</Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
                 <Link href="/signup?service=investment">Create Account</Link>

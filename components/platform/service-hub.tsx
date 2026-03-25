@@ -206,7 +206,7 @@ function UpgradeModal({
           </div>
           <div className="flex gap-2">
             <Button className="flex-1" onClick={onClose}>
-              Contact Sales
+              Get in Touch
               <ArrowRight className="ml-2 size-4" />
             </Button>
             <Button variant="outline" onClick={onClose}>

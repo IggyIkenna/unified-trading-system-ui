@@ -46,7 +46,7 @@ export function UpgradeCard({
         variant="outline"
         className="border-amber-500/30 text-amber-500 hover:bg-amber-500/10"
       >
-        Contact Sales
+        Get in Touch
       </Button>
     </div>
   );
