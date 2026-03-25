@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { StrategyPlatformNav } from "@/components/strategy-platform/strategy-nav";
 import {
   Grid3X3,
@@ -121,6 +122,13 @@ function generateHeatmapData(
   }));
 }
 
+function escapeCsvCell(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  const s = String(value);
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
 // Dimension options
 const DIMENSIONS = {
   rows: [
@@ -191,6 +199,7 @@ const DIMENSIONS = {
 };
 
 export default function StrategyHeatmapPage() {
+  const { toast } = useToast();
   const [rowDimension, setRowDimension] = React.useState("strategy");
   const [colDimension, setColDimension] = React.useState("metric");
   const [selectedCell, setSelectedCell] = React.useState<{
@@ -234,6 +243,53 @@ export default function StrategyHeatmapPage() {
       heatmapData.length,
   }));
 
+  const handleExportHeatmapCsv = () => {
+    const colLabels = colConfig.items.map((c) => escapeCsvCell(c));
+    const header = ["row", ...colLabels].join(",");
+    const body = heatmapData.map((row) =>
+      [
+        escapeCsvCell(row.label),
+        ...row.values.map((v) => escapeCsvCell(v.value)),
+      ].join(","),
+    );
+    const csv = [header, ...body].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `strategy-heatmap-${rowDimension}-vs-${colDimension}.csv`;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({
+      title: "Heatmap exported",
+      description: `CSV includes ${heatmapData.length} rows × ${colConfig.items.length} columns.`,
+    });
+  };
+
+  const handleToggleFullscreen = async () => {
+    try {
+      const el = document.documentElement;
+      if (!document.fullscreenElement) {
+        await el.requestFullscreen();
+        toast({
+          title: "Fullscreen",
+          description: "Press Esc to exit fullscreen.",
+        });
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch {
+      toast({
+        title: "Fullscreen unavailable",
+        description: "Your browser blocked or does not support fullscreen.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b">
@@ -255,11 +311,21 @@ export default function StrategyHeatmapPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={handleExportHeatmapCsv}
+            >
               <Download className="size-4 mr-2" />
               Export
             </Button>
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={handleToggleFullscreen}
+            >
               <Maximize2 className="size-4 mr-2" />
               Fullscreen
             </Button>

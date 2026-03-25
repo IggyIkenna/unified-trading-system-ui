@@ -16,6 +16,8 @@ export interface ServiceTab {
   href: string;
   /** Match pathname prefix for active state (defaults to href) */
   matchPrefix?: string;
+  /** If true, only `href` matches (no prefix) — use for section index routes like `/ml` vs `/ml/training` */
+  exact?: boolean;
   /** Entitlement required to access this tab (undefined = always accessible) */
   requiredEntitlement?: string;
 }
@@ -47,8 +49,9 @@ export function ServiceTabs({
         >
           {tabs.map((tab) => {
             const matchPath = tab.matchPrefix || tab.href;
-            const isActive =
-              pathname === tab.href || pathname.startsWith(matchPath + "/");
+            const isActive = tab.exact
+              ? pathname === tab.href || pathname === `${tab.href}/`
+              : pathname === tab.href || pathname.startsWith(matchPath + "/");
             const isLocked =
               tab.requiredEntitlement &&
               !hasWildcard &&
@@ -136,8 +139,30 @@ export const BUILD_TABS: ServiceTab[] = [
   { label: "Quant Workspace", href: "/services/research/quant" },
 ];
 
-// ML sub-tabs removed — ML section uses card-based navigation from the overview page.
-// 4 pages: /ml (overview), /ml/training, /ml/analysis, /ml/registry
+/** ML Models — second row under Build, same visual style as Strategy sub-tabs */
+export const ML_SUB_TABS: ServiceTab[] = [
+  {
+    label: "Pipeline",
+    href: "/services/research/ml",
+    matchPrefix: "/services/research/ml",
+    exact: true,
+  },
+  {
+    label: "Training",
+    href: "/services/research/ml/training",
+    matchPrefix: "/services/research/ml/training",
+  },
+  {
+    label: "Analysis",
+    href: "/services/research/ml/analysis",
+    matchPrefix: "/services/research/ml/analysis",
+  },
+  {
+    label: "Model Registry",
+    href: "/services/research/ml/registry",
+    matchPrefix: "/services/research/ml/registry",
+  },
+];
 
 // Strategy sub-tabs — shown inside Strategy section pages
 export const STRATEGY_SUB_TABS: ServiceTab[] = [

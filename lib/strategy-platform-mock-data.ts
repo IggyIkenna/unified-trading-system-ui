@@ -15,7 +15,12 @@ import {
   StrategyArchetype,
   AssetClass,
   TestingStage,
+  StrategySignal,
+  SignalQualityMetrics,
+  SignalOverlapMetrics,
 } from "./strategy-platform-types";
+import { generateBacktestAnalytics } from "./backtest-analytics-mock";
+import type { BacktestAnalytics } from "./backtest-analytics-types";
 
 // =============================================================================
 // Strategy Templates
@@ -391,6 +396,8 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     venue: "BINANCE",
     dateWindow: { start: "2024-01-01", end: "2024-06-30" },
     shard: "SHARD_1",
+    strategyKind: "ml",
+    isCandidate: true,
     testingStage: "HISTORICAL",
     dataSource: "HISTORICAL_TICK",
     dataSnapshotId: "snap-2024-h1",
@@ -417,6 +424,7 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     venue: "OKX",
     dateWindow: { start: "2024-01-01", end: "2024-06-30" },
     shard: "SHARD_1",
+    strategyKind: "ml",
     testingStage: "HISTORICAL",
     dataSource: "HISTORICAL_TICK",
     dataSnapshotId: "snap-2024-h1",
@@ -443,6 +451,7 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     venue: "BINANCE",
     dateWindow: { start: "2024-01-01", end: "2024-06-30" },
     shard: "SHARD_1",
+    strategyKind: "rule",
     testingStage: "HISTORICAL",
     dataSource: "HISTORICAL_TICK",
     dataSnapshotId: "snap-2024-h1",
@@ -470,6 +479,8 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     venue: "BINANCE",
     dateWindow: { start: "2024-04-01", end: "2024-09-30" },
     shard: "SHARD_1",
+    strategyKind: "ml",
+    isCandidate: true,
     testingStage: "HISTORICAL",
     dataSource: "HISTORICAL_TICK",
     dataSnapshotId: "snap-2024-q2q3",
@@ -490,24 +501,25 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     templateId: "tpl-btc-mm",
     templateName: "BTC Market Making",
     archetype: "MARKET_MAKING",
-    status: "running",
-    progress: 67,
+    status: "completed",
+    progress: 100,
     instrument: "BTC-PERP",
     venue: "OKX",
     dateWindow: { start: "2024-04-01", end: "2024-09-30" },
     shard: "SHARD_2",
+    strategyKind: "ml",
     testingStage: "HISTORICAL",
     dataSource: "HISTORICAL_TICK",
     dataSnapshotId: "snap-2024-q2q3",
     asOfDate: "2024-10-01",
-    metrics: null,
+    metrics: generateMetrics(2002, "MARKET_MAKING"),
     startedAt: "2024-10-18T09:00:00Z",
-    completedAt: null,
-    durationMs: null,
+    completedAt: "2024-10-18T10:55:00Z",
+    durationMs: 6900000,
     codeCommitHash: "def456ghi",
     configHash: "cfg-hash-003",
-    liveAnalogId: null,
-    driftScore: null,
+    liveAnalogId: "live-btc-mm-002",
+    driftScore: 0.07,
   },
   // Stat Arb backtests
   {
@@ -523,6 +535,7 @@ export const BACKTEST_RUNS: BacktestRun[] = [
     venue: "MULTI",
     dateWindow: { start: "2024-06-01", end: "2024-09-30" },
     shard: "SHARD_1",
+    strategyKind: "rule",
     testingStage: "LIVE_MOCK",
     dataSource: "HISTORICAL_TICK",
     dataSnapshotId: "snap-2024-q3",
@@ -658,3 +671,267 @@ export const TESTING_STAGE_OPTIONS = [
   { value: "LIVE_TESTNET", label: "Paper", count: 1 },
   { value: "STAGING", label: "Shadow", count: 1 },
 ];
+
+// =============================================================================
+// Signal Generation (for strategy backtest detail views)
+// =============================================================================
+
+function seededRng(seed: number): () => number {
+  let s = seed;
+  return () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+}
+
+export function generateSignals(
+  backtestId: string,
+  seed: number,
+  count: number = 130,
+  instrument: string = "BTC-PERP",
+): StrategySignal[] {
+  const rng = seededRng(seed);
+  const signals: StrategySignal[] = [];
+  const startDate = new Date("2026-01-01T00:00:00Z");
+  const regimes = ["trending", "ranging", "volatile", "crisis"] as const;
+
+  for (let i = 0; i < count; i++) {
+    const hoursOffset = Math.floor(rng() * 90 * 24);
+    const timestamp = new Date(startDate.getTime() + hoursOffset * 3600000);
+    const isLong = rng() > 0.42;
+    const isClose = i > 0 && rng() > 0.7;
+    const confidence = 0.5 + rng() * 0.45;
+    const isWin = rng() < (confidence > 0.7 ? 0.72 : 0.55);
+    const pnlMagnitude = rng() * 400 + 50;
+    const pnl = isWin ? pnlMagnitude : -pnlMagnitude * 0.65;
+
+    signals.push({
+      id: `${backtestId}-sig-${String(i + 1).padStart(3, "0")}`,
+      timestamp: timestamp.toISOString(),
+      direction: isClose ? "CLOSE" : isLong ? "LONG" : "SHORT",
+      instrument,
+      size_usd: 10000,
+      confidence: Math.round(confidence * 100) / 100,
+      model_prediction:
+        Math.round((confidence + (rng() - 0.5) * 0.1) * 100) / 100,
+      outcome: isClose ? null : isWin ? "win" : "loss",
+      pnl_usd: isClose ? null : Math.round(pnl * 100) / 100,
+      pnl_pct: isClose ? null : Math.round((pnl / 10000) * 10000) / 100,
+      hold_duration_hours: isClose
+        ? null
+        : Math.round((1 + rng() * 24) * 10) / 10,
+      bars_held: isClose ? null : Math.round(2 + rng() * 16),
+      mfe_pct: isClose ? null : Math.round((rng() * 5 + 0.5) * 100) / 100,
+      mae_pct: isClose ? null : Math.round((-rng() * 3 - 0.2) * 100) / 100,
+      regime_at_signal: regimes[Math.floor(rng() * regimes.length)],
+    });
+  }
+
+  return signals.sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+  );
+}
+
+export function generateSignalQuality(
+  seed: number,
+  totalSignals: number = 130,
+): SignalQualityMetrics {
+  const rng = seededRng(seed);
+
+  return {
+    total_signals: totalSignals,
+    signals_per_day: Math.round((totalSignals / 90) * 10) / 10,
+    hit_rate: Math.round((55 + rng() * 15) * 10) / 10,
+    avg_confidence: Math.round((0.65 + rng() * 0.12) * 100) / 100,
+    confidence_distribution: [
+      { bucket: "0.50-0.60", count: Math.round(totalSignals * 0.21), pct: 21 },
+      { bucket: "0.60-0.70", count: Math.round(totalSignals * 0.29), pct: 29 },
+      { bucket: "0.70-0.80", count: Math.round(totalSignals * 0.32), pct: 32 },
+      { bucket: "0.80-0.90", count: Math.round(totalSignals * 0.14), pct: 14 },
+      { bucket: "0.90-1.00", count: Math.round(totalSignals * 0.04), pct: 4 },
+    ],
+    high_confidence_hit_rate: Math.round((70 + rng() * 12) * 10) / 10,
+    avg_hold_duration_hours: Math.round((4 + rng() * 8) * 10) / 10,
+    max_consecutive_losses: Math.round(3 + rng() * 5),
+    regime_sharpe: {
+      trending: Math.round((2.5 + rng() * 1.5) * 100) / 100,
+      ranging: Math.round((0.5 + rng() * 1.0) * 100) / 100,
+      volatile: Math.round((-0.5 + rng() * 1.5) * 100) / 100,
+      crisis: Math.round((-1.0 + rng() * 1.0) * 100) / 100,
+    },
+  };
+}
+
+/** Synthetic mid price for signal overlay chart (random walk, hourly bars). */
+export interface SyntheticPricePoint {
+  time: number;
+  value: number;
+}
+
+export function generateSyntheticPriceSeries(
+  seed: number,
+  pointCount: number = 720,
+  startPrice: number = 65200,
+): SyntheticPricePoint[] {
+  const rng = seededRng(seed);
+  let price = startPrice;
+  const nowSec = Math.floor(Date.now() / 1000);
+  const start = nowSec - pointCount * 3600;
+  const out: SyntheticPricePoint[] = [];
+  for (let i = 0; i < pointCount; i++) {
+    price *= 1 + (rng() - 0.5) * 0.006;
+    out.push({
+      time: start + i * 3600,
+      value: Math.round(price * 100) / 100,
+    });
+  }
+  return out;
+}
+
+/** Pairwise signal agreement for compare view (same direction within tolerance). */
+export function computeSignalOverlap(
+  backtestAId: string,
+  backtestBId: string,
+  signalsA: StrategySignal[],
+  signalsB: StrategySignal[],
+  toleranceHours: number = 48,
+): SignalOverlapMetrics {
+  const tolMs = toleranceHours * 3600000;
+
+  const directional = (s: StrategySignal) =>
+    s.direction === "LONG" || s.direction === "SHORT";
+
+  const listA = signalsA.filter(directional);
+  const listB = signalsB.filter(directional);
+  const usedB = new Set<number>();
+  let overlapCount = 0;
+
+  for (const a of listA) {
+    const ta = new Date(a.timestamp).getTime();
+    for (let bi = 0; bi < listB.length; bi++) {
+      if (usedB.has(bi)) continue;
+      const b = listB[bi];
+      const tb = new Date(b.timestamp).getTime();
+      if (
+        Math.abs(ta - tb) <= tolMs &&
+        a.direction === b.direction &&
+        a.instrument === b.instrument
+      ) {
+        overlapCount++;
+        usedB.add(bi);
+        break;
+      }
+    }
+  }
+
+  const denom = Math.max(
+    1,
+    Math.min(listA.filter((s) => s.direction !== "CLOSE").length, listB.length),
+  );
+  const overlapPct = Math.round((overlapCount / denom) * 10000) / 100;
+
+  return {
+    backtest_a_id: backtestAId,
+    backtest_b_id: backtestBId,
+    overlap_pct: overlapPct,
+    confluence_zones:
+      overlapCount > 0
+        ? [
+            {
+              start: new Date(Date.now() - 86400000 * 45).toISOString(),
+              end: new Date(Date.now() - 86400000 * 35).toISOString(),
+              direction: "LONG",
+            },
+          ]
+        : [],
+    divergence_zones:
+      overlapPct < 40
+        ? [
+            {
+              start: new Date(Date.now() - 86400000 * 20).toISOString(),
+              end: new Date(Date.now() - 86400000 * 14).toISOString(),
+              a_direction: "LONG",
+              b_direction: "SHORT",
+            },
+          ]
+        : [],
+  };
+}
+
+/**
+ * For 2+ strategies: share of the first strategy's directional signals for which
+ * every other strategy has a same-direction, same-instrument match within tolerance.
+ */
+export function computeFullConfluenceAllStrategies(
+  items: { id: string; signals: StrategySignal[] }[],
+  toleranceHours: number = 48,
+): { all_agree_pct: number; matched: number; anchor: number } {
+  if (items.length < 2) {
+    return { all_agree_pct: 0, matched: 0, anchor: 0 };
+  }
+
+  const tolMs = toleranceHours * 3600000;
+  const directional = (s: StrategySignal) =>
+    s.direction === "LONG" || s.direction === "SHORT";
+
+  const anchorList = items[0].signals.filter(directional);
+  let matched = 0;
+
+  for (const a of anchorList) {
+    const ta = new Date(a.timestamp).getTime();
+    let allMatch = true;
+    for (let si = 1; si < items.length; si++) {
+      const others = items[si].signals.filter(directional);
+      const found = others.some((b) => {
+        const tb = new Date(b.timestamp).getTime();
+        return (
+          Math.abs(ta - tb) <= tolMs &&
+          a.direction === b.direction &&
+          a.instrument === b.instrument
+        );
+      });
+      if (!found) {
+        allMatch = false;
+        break;
+      }
+    }
+    if (allMatch) matched++;
+  }
+
+  const anchor = anchorList.length;
+  const pct = anchor === 0 ? 0 : Math.round((matched / anchor) * 10000) / 100;
+  return { all_agree_pct: pct, matched, anchor };
+}
+
+// =============================================================================
+// Precomputed Analytics per Backtest
+// =============================================================================
+
+export const BACKTEST_ANALYTICS: Record<string, BacktestAnalytics> = {};
+export const BACKTEST_SIGNALS: Record<string, StrategySignal[]> = {};
+export const BACKTEST_SIGNAL_QUALITY: Record<string, SignalQualityMetrics> = {};
+
+for (const bt of BACKTEST_RUNS) {
+  if (bt.status !== "completed" || !bt.metrics) continue;
+
+  const netProfit = bt.metrics.netPnl;
+  const totalSignals = Math.round(50 + Math.abs(netProfit / 2000));
+  const seedBase = parseInt(bt.id.replace(/\D/g, "").slice(0, 6) || "1000", 10);
+
+  BACKTEST_ANALYTICS[bt.id] = generateBacktestAnalytics(seedBase, {
+    days: 90,
+    totalTrades: totalSignals,
+    netProfit,
+  });
+
+  BACKTEST_SIGNALS[bt.id] = generateSignals(
+    bt.id,
+    seedBase + 100,
+    totalSignals,
+    bt.instrument,
+  );
+  BACKTEST_SIGNAL_QUALITY[bt.id] = generateSignalQuality(
+    seedBase + 200,
+    totalSignals,
+  );
+}
