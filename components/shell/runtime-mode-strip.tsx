@@ -13,6 +13,15 @@ export function RuntimeModeStrip() {
   const debugRuntime = process.env.NEXT_PUBLIC_DEBUG_RUNTIME === "true";
 
   React.useEffect(() => {
+    // In mock mode, the UI runs standalone — no backend needed
+    if (
+      process.env.NEXT_PUBLIC_MOCK_API === "true" ||
+      process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo"
+    ) {
+      setApiStatus("reachable");
+      return;
+    }
+
     const poll = async () => {
       try {
         const res = await fetch("/api/health", {
