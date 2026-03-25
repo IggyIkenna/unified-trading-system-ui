@@ -220,11 +220,7 @@ const nextConfig = {
         destination: "/services/trading/pnl",
         permanent: true,
       },
-      {
-        source: "/services/trading/markets",
-        destination: "/services/trading/pnl",
-        permanent: true,
-      },
+      // /services/trading/markets is now a real page (ported from old /markets)
       {
         source: "/markets/pnl",
         destination: "/services/trading/pnl",
