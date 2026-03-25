@@ -129,6 +129,7 @@ function UserSection({
               <th className="py-2 px-4 font-medium">Role</th>
               <th className="py-2 px-4 font-medium">Access</th>
               <th className="py-2 px-4 font-medium">Since</th>
+              <th className="py-2 px-4 font-medium">Stage</th>
               <th className="py-2 px-4 font-medium">Status</th>
               <th className="py-2 px-4 font-medium w-8"></th>
             </tr>
@@ -177,6 +178,15 @@ function UserSection({
                           { day: "numeric", month: "short", year: "numeric" },
                         )
                       : "—"}
+                  </td>
+                  <td className="py-2.5 px-4">
+                    {(user as unknown as Record<string, unknown>).onboarding_stage ? (
+                      <Badge variant="outline" className="text-xs capitalize">
+                        {String((user as unknown as Record<string, unknown>).onboarding_stage).replace(/_/g, " ")}
+                      </Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </td>
                   <td className="py-2.5 px-4">
                     <div className="flex items-center gap-1.5">
