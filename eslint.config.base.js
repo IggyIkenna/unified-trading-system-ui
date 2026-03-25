@@ -17,11 +17,7 @@
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react-hooks/recommended",
-  ],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:react-hooks/recommended"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
@@ -32,24 +28,11 @@ module.exports = {
   rules: {
     // Promoted from warn → error (parity with Python zero-warning policy)
     "@typescript-eslint/no-explicit-any": "error",
-    "@typescript-eslint/no-unused-vars": [
-      "error",
-      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-    ],
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
     "no-console": "error",
 
     // Keep as warn — informational, never blocks a build
-    "react-refresh/only-export-components": [
-      "warn",
-      { allowConstantExport: true },
-    ],
+    "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
   },
-  ignorePatterns: [
-    "dist",
-    "coverage",
-    "*.config.js",
-    "*.config.ts",
-    "*.config.cjs",
-    "*.cjs",
-  ],
+  ignorePatterns: ["dist", "coverage", "*.config.js", "*.config.ts", "*.config.cjs", "*.cjs"],
 };
