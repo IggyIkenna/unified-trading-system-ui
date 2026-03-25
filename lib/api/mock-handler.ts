@@ -40,6 +40,7 @@ import {
   ML_PIPELINE_STATUS,
   RUN_COMPARISONS,
   ML_ALERTS,
+  buildSyntheticRunComparisons,
 } from "@/lib/ml-mock-data";
 import {
   STRATEGY_TEMPLATES,
@@ -1566,11 +1567,29 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     if (mlPath === "/api/ml/analysis/compare" && opts?.method === "POST") {
       const body = parseMockJsonBody(opts);
       const a = String(body.run_a_id ?? "");
-      const b = String(body.run_b_id ?? "");
-      const matched = RUN_COMPARISONS.filter(
-        (c) => c.run_a_id === a && c.run_b_id === b,
-      );
-      return json(matched.length > 0 ? matched : RUN_COMPARISONS);
+      const rawIds = body.run_b_ids;
+      const single = body.run_b_id;
+      let compareIds: string[] = [];
+      if (Array.isArray(rawIds)) {
+        compareIds = rawIds
+          .map((x) => String(x))
+          .filter((id) => id.length > 0 && id !== a)
+          .slice(0, 3);
+      } else if (single) {
+        compareIds = [String(single)].filter((id) => id !== a);
+      }
+      const merged: typeof RUN_COMPARISONS = [];
+      for (const b of compareIds) {
+        const matched = RUN_COMPARISONS.filter(
+          (c) => c.run_a_id === a && c.run_b_id === b,
+        );
+        if (matched.length > 0) {
+          merged.push(...matched);
+        } else {
+          merged.push(...buildSyntheticRunComparisons(a, b));
+        }
+      }
+      return json(merged);
     }
   }
 

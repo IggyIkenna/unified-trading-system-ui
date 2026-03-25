@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,20 +12,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Activity,
   AlertTriangle,
-  ArrowLeft,
   Ban,
   BarChart3,
   CheckCircle2,
   Clock,
   Cpu,
   Download,
+  GitCompareArrows,
   HardDrive,
   Layers,
   Play,
   RefreshCw,
   RotateCcw,
   Settings2,
+  Shield,
   Terminal,
+  TrendingUp,
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -67,6 +70,15 @@ import {
 } from "@/hooks/api/use-ml-models";
 import type { UnifiedTrainingRun } from "@/lib/ml-types";
 
+import {
+  ML_COMPARE_MAX_OTHER_RUNS,
+  RunAnalysisImportanceTab,
+  RunAnalysisMetricsTab,
+  RunAnalysisQualityTab,
+  RunAnalysisRegimesTab,
+  RunComparisonView,
+} from "../components/run-analysis-sections";
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -95,6 +107,20 @@ function StatusBadge({ status }: { status: string }) {
       {status}
     </Badge>
   );
+}
+
+/** Whether `tab` can be shown for this run (analysis tabs require completed + analysis; Compare needs another run). */
+function canShowRunDetailTab(
+  run: UnifiedTrainingRun,
+  tab: string,
+  otherCompletedCount: number,
+): boolean {
+  if (["config", "features", "data", "logs"].includes(tab)) return true;
+  if (run.status !== "completed" || !run.analysis) return false;
+  if (tab === "compare") return otherCompletedCount > 0;
+  if (["metrics", "importance", "regimes", "quality"].includes(tab))
+    return true;
+  return false;
 }
 
 function generateResourceData(): {
@@ -138,9 +164,10 @@ export default function TrainingPage() {
     setNewOpen(true);
   }
 
-  const runs = (
-    Array.isArray(runsData) ? runsData : []
-  ) as UnifiedTrainingRun[];
+  const runs = React.useMemo(
+    () => (Array.isArray(runsData) ? runsData : []) as UnifiedTrainingRun[],
+    [runsData],
+  );
   const queue = queueData as {
     gpus: {
       gpu_type: string;
@@ -151,6 +178,7 @@ export default function TrainingPage() {
   } | null;
 
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [detailTab, setDetailTab] = React.useState<string>("config");
   const [filterStatus, setFilterStatus] = React.useState<string>("all");
   const [newOpen, setNewOpen] = React.useState(false);
   const [newName, setNewName] = React.useState("");
@@ -160,8 +188,11 @@ export default function TrainingPage() {
     "low" | "normal" | "high"
   >("normal");
 
-  const families = ((familiesData as { data?: { id: string; name: string }[] })
-    ?.data ?? []) as { id: string; name: string }[];
+  const families = React.useMemo(() => {
+    const raw =
+      (familiesData as { data?: { id: string; name: string }[] })?.data ?? [];
+    return raw as { id: string; name: string }[];
+  }, [familiesData]);
 
   React.useEffect(() => {
     if (runs.length > 0 && selectedId === null) setSelectedId(runs[0].id);
@@ -178,6 +209,23 @@ export default function TrainingPage() {
       ? runs
       : runs.filter((r) => r.status === filterStatus);
   const selected = runs.find((r) => r.id === selectedId) ?? null;
+
+  const completedRuns = React.useMemo(
+    () => runs.filter((r) => r.status === "completed" && r.analysis),
+    [runs],
+  );
+
+  React.useEffect(() => {
+    if (!selected) return;
+    const otherCompletedCount = completedRuns.filter(
+      (r) => r.id !== selected.id,
+    ).length;
+    setDetailTab((prev) =>
+      canShowRunDetailTab(selected, prev, otherCompletedCount)
+        ? prev
+        : "config",
+    );
+  }, [selectedId, selected, completedRuns]);
 
   const runningCount = runs.filter((r) => r.status === "running").length;
   const queuedCount = runs.filter((r) => r.status === "queued").length;
@@ -211,39 +259,6 @@ export default function TrainingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-[1800px] space-y-5 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/services/research/ml">
-              <Button variant="ghost" size="icon" className="size-8">
-                <ArrowLeft className="size-4" />
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">Training</h1>
-              <p className="text-xs text-muted-foreground">
-                Configure, launch, and monitor training runs
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => void refetchRuns()}
-              disabled={pageLoading}
-            >
-              <RefreshCw className="size-3.5 mr-1.5" />
-              Refresh
-            </Button>
-            <Button size="sm" type="button" onClick={() => setNewOpen(true)}>
-              <Play className="size-3.5 mr-1.5" />
-              New Run
-            </Button>
-          </div>
-        </div>
-
         <Dialog open={newOpen} onOpenChange={setNewOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
@@ -349,73 +364,91 @@ export default function TrainingPage() {
           </DialogContent>
         </Dialog>
 
-        {/* KPI Strip */}
-        {pageLoading ? (
-          <div className="grid grid-cols-5 gap-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                className="h-[72px] rounded-lg border border-border/50"
-              />
-            ))}
+        {/* KPI strip + actions (replaces page title row) */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="order-1 flex shrink-0 items-center justify-end gap-2 sm:order-2 sm:pt-0.5">
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={() => void refetchRuns()}
+              disabled={pageLoading}
+            >
+              <RefreshCw className="size-3.5 mr-1.5" />
+              Refresh
+            </Button>
+            <Button size="sm" type="button" onClick={() => setNewOpen(true)}>
+              <Play className="size-3.5 mr-1.5" />
+              New Run
+            </Button>
           </div>
-        ) : (
-          <div className="grid grid-cols-5 gap-3">
-            {[
-              {
-                label: "Running",
-                value: runningCount,
-                icon: Activity,
-                color: "text-blue-400",
-                bg: "bg-blue-500/10",
-              },
-              {
-                label: "Queued",
-                value: queuedCount,
-                icon: Clock,
-                color: "text-amber-400",
-                bg: "bg-amber-500/10",
-              },
-              {
-                label: "Completed",
-                value: completedCount,
-                icon: CheckCircle2,
-                color: "text-emerald-400",
-                bg: "bg-emerald-500/10",
-              },
-              {
-                label: "Failed",
-                value: failedCount,
-                icon: XCircle,
-                color: "text-red-400",
-                bg: "bg-red-500/10",
-              },
-              {
-                label: "GPUs",
-                value: `${gpuUsed}/${gpuTotal}`,
-                icon: Cpu,
-                color: "text-cyan-400",
-                bg: "bg-cyan-500/10",
-              },
-            ].map((k) => (
-              <Card key={k.label} className="border-border/50 p-3">
-                <div className="flex items-center gap-2.5">
-                  <div className={`rounded-md ${k.bg} p-1.5`}>
-                    <k.icon className={`size-4 ${k.color}`} />
+          {pageLoading ? (
+            <div className="order-2 grid min-w-0 flex-1 grid-cols-2 gap-3 sm:order-1 sm:grid-cols-3 md:grid-cols-5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  className="h-[72px] rounded-lg border border-border/50"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="order-2 grid min-w-0 flex-1 grid-cols-2 gap-3 sm:order-1 sm:grid-cols-3 md:grid-cols-5">
+              {[
+                {
+                  label: "Running",
+                  value: runningCount,
+                  icon: Activity,
+                  color: "text-blue-400",
+                  bg: "bg-blue-500/10",
+                },
+                {
+                  label: "Queued",
+                  value: queuedCount,
+                  icon: Clock,
+                  color: "text-amber-400",
+                  bg: "bg-amber-500/10",
+                },
+                {
+                  label: "Completed",
+                  value: completedCount,
+                  icon: CheckCircle2,
+                  color: "text-emerald-400",
+                  bg: "bg-emerald-500/10",
+                },
+                {
+                  label: "Failed",
+                  value: failedCount,
+                  icon: XCircle,
+                  color: "text-red-400",
+                  bg: "bg-red-500/10",
+                },
+                {
+                  label: "GPUs",
+                  value: `${gpuUsed}/${gpuTotal}`,
+                  icon: Cpu,
+                  color: "text-cyan-400",
+                  bg: "bg-cyan-500/10",
+                },
+              ].map((k) => (
+                <Card key={k.label} className="border-border/50 p-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`rounded-md ${k.bg} p-1.5`}>
+                      <k.icon className={`size-4 ${k.color}`} />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold font-mono leading-none">
+                        {k.value}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {k.label}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-lg font-bold font-mono leading-none">
-                      {k.value}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {k.label}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Main Layout: list + detail */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -519,6 +552,9 @@ export default function TrainingPage() {
             {selected ? (
               <RunDetail
                 run={selected}
+                detailTab={detailTab}
+                onDetailTabChange={setDetailTab}
+                completedRuns={completedRuns}
                 resourceData={resourceData}
                 onRetryPrefill={() => prefillNewRunFromFailed(selected)}
                 onCancelRun={() => {
@@ -555,12 +591,18 @@ export default function TrainingPage() {
 
 function RunDetail({
   run,
+  detailTab,
+  onDetailTabChange,
+  completedRuns,
   resourceData,
   onRetryPrefill,
   onCancelRun,
   cancelPending,
 }: {
   run: UnifiedTrainingRun;
+  detailTab: string;
+  onDetailTabChange: (tab: string) => void;
+  completedRuns: UnifiedTrainingRun[];
   resourceData: { time: number; gpu: number; memory: number }[];
   onRetryPrefill: () => void;
   onCancelRun: () => void;
@@ -572,6 +614,37 @@ function RunDetail({
       train: e.train_loss,
       val: e.val_loss,
     })) ?? generateSimpleLoss(run.current_epoch, run.train_loss, run.val_loss);
+
+  const analysis = run.analysis;
+  const otherCompleted = React.useMemo(
+    () => completedRuns.filter((r) => r.id !== run.id),
+    [completedRuns, run.id],
+  );
+  const [compareRunIds, setCompareRunIds] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (otherCompleted.length === 0) {
+      setCompareRunIds([]);
+      return;
+    }
+    setCompareRunIds((prev) => {
+      const valid = prev.filter((id) =>
+        otherCompleted.some((o) => o.id === id),
+      );
+      if (valid.length > 0) {
+        return valid.slice(0, ML_COMPARE_MAX_OTHER_RUNS);
+      }
+      return [otherCompleted[0].id];
+    });
+  }, [run.id, otherCompleted]);
+
+  const compareRuns = React.useMemo(
+    () =>
+      compareRunIds
+        .map((id) => otherCompleted.find((r) => r.id === id))
+        .filter((r): r is UnifiedTrainingRun => !!r),
+    [compareRunIds, otherCompleted],
+  );
 
   return (
     <Card className="border-border/50">
@@ -585,6 +658,17 @@ function RunDetail({
             <p className="text-[11px] text-muted-foreground mt-0.5">
               {run.config.architecture} · {run.config.gpu_type} ·{" "}
               {run.duration ?? "—"}
+              {run.status === "completed" && (
+                <>
+                  {" · "}
+                  <Link
+                    href={`/services/research/ml/analysis?run=${run.id}`}
+                    className="text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                  >
+                    Open full analysis page
+                  </Link>
+                </>
+              )}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -600,14 +684,6 @@ function RunDetail({
                 <Ban className="size-3.5" />
                 {cancelPending ? "Cancelling…" : "Cancel run"}
               </Button>
-            )}
-            {run.status === "completed" && (
-              <Link href={`/services/research/ml/analysis?run=${run.id}`}>
-                <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                  <BarChart3 className="size-3.5" />
-                  Analyze
-                </Button>
-              </Link>
             )}
             {run.status === "failed" && (
               <Button
@@ -663,24 +739,72 @@ function RunDetail({
           <Progress value={run.progress} className="h-1.5 mb-5" />
         )}
 
-        {/* 4-Tab Detail View */}
-        <Tabs defaultValue="config" className="w-full">
-          <TabsList className="w-full justify-start">
-            <TabsTrigger value="config">
-              <Settings2 className="size-3.5 mr-1.5" />
+        {/* Detail tabs: config / training data + post-run analysis (value lifted — persists across run selection) */}
+        <Tabs
+          value={detailTab}
+          onValueChange={onDetailTabChange}
+          className="w-full"
+        >
+          <TabsList className="w-full h-auto min-h-9 flex flex-wrap justify-start gap-1 p-1">
+            <TabsTrigger value="config" className="text-xs gap-1">
+              <Settings2 className="size-3.5 shrink-0" />
               Config
             </TabsTrigger>
-            <TabsTrigger value="features">
-              <Layers className="size-3.5 mr-1.5" />
+            <TabsTrigger value="features" className="text-xs gap-1">
+              <Layers className="size-3.5 shrink-0" />
               Features
             </TabsTrigger>
-            <TabsTrigger value="data">
-              <HardDrive className="size-3.5 mr-1.5" />
+            <TabsTrigger value="data" className="text-xs gap-1">
+              <HardDrive className="size-3.5 shrink-0" />
               Data
             </TabsTrigger>
-            <TabsTrigger value="logs">
-              <Terminal className="size-3.5 mr-1.5" />
+            <TabsTrigger value="logs" className="text-xs gap-1">
+              <Terminal className="size-3.5 shrink-0" />
               Logs
+            </TabsTrigger>
+            <TabsTrigger
+              value="metrics"
+              className="text-xs gap-1"
+              disabled={run.status !== "completed" || !analysis}
+            >
+              <TrendingUp className="size-3.5 shrink-0" />
+              Metrics
+            </TabsTrigger>
+            <TabsTrigger
+              value="importance"
+              className="text-xs gap-1"
+              disabled={run.status !== "completed" || !analysis}
+            >
+              <BarChart3 className="size-3.5 shrink-0" />
+              Importance
+            </TabsTrigger>
+            <TabsTrigger
+              value="regimes"
+              className="text-xs gap-1"
+              disabled={run.status !== "completed" || !analysis}
+            >
+              <Activity className="size-3.5 shrink-0" />
+              Regimes
+            </TabsTrigger>
+            <TabsTrigger
+              value="quality"
+              className="text-xs gap-1"
+              disabled={run.status !== "completed" || !analysis}
+            >
+              <Shield className="size-3.5 shrink-0" />
+              Quality
+            </TabsTrigger>
+            <TabsTrigger
+              value="compare"
+              className="text-xs gap-1"
+              disabled={
+                run.status !== "completed" ||
+                !analysis ||
+                otherCompleted.length === 0
+              }
+            >
+              <GitCompareArrows className="size-3.5 shrink-0" />
+              Compare
             </TabsTrigger>
           </TabsList>
 
@@ -860,35 +984,38 @@ function RunDetail({
                       <LineChart data={lossData}>
                         <CartesianGrid
                           strokeDasharray="3 3"
-                          stroke="hsl(var(--border))"
+                          stroke="var(--border)"
                           opacity={0.5}
                         />
                         <XAxis
                           dataKey="epoch"
                           tick={{
-                            fill: "hsl(var(--muted-foreground))",
+                            fill: "var(--foreground)",
                             fontSize: 10,
                           }}
                         />
                         <YAxis
                           tick={{
-                            fill: "hsl(var(--muted-foreground))",
+                            fill: "var(--foreground)",
                             fontSize: 10,
                           }}
                           domain={["auto", "auto"]}
                         />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "hsl(var(--background))",
-                            border: "1px solid hsl(var(--border))",
+                            backgroundColor: "var(--background)",
+                            border: "1px solid var(--border)",
                             borderRadius: "8px",
                             fontSize: "11px",
+                            color: "var(--foreground)",
                           }}
+                          labelStyle={{ color: "var(--foreground)" }}
+                          itemStyle={{ color: "var(--muted-foreground)" }}
                         />
                         <Line
                           type="monotone"
                           dataKey="train"
-                          stroke="#3b82f6"
+                          stroke="var(--chart-3)"
                           strokeWidth={1.5}
                           dot={false}
                           name="Train"
@@ -896,7 +1023,7 @@ function RunDetail({
                         <Line
                           type="monotone"
                           dataKey="val"
-                          stroke="#f59e0b"
+                          stroke="var(--chart-5)"
                           strokeWidth={1.5}
                           dot={false}
                           name="Val"
@@ -913,36 +1040,39 @@ function RunDetail({
                         <AreaChart data={resourceData}>
                           <CartesianGrid
                             strokeDasharray="3 3"
-                            stroke="hsl(var(--border))"
+                            stroke="var(--border)"
                             opacity={0.5}
                           />
                           <XAxis
                             dataKey="time"
                             tick={{
-                              fill: "hsl(var(--muted-foreground))",
+                              fill: "var(--foreground)",
                               fontSize: 10,
                             }}
                           />
                           <YAxis
                             tick={{
-                              fill: "hsl(var(--muted-foreground))",
+                              fill: "var(--foreground)",
                               fontSize: 10,
                             }}
                             domain={[0, 100]}
                           />
                           <Tooltip
                             contentStyle={{
-                              backgroundColor: "hsl(var(--background))",
-                              border: "1px solid hsl(var(--border))",
+                              backgroundColor: "var(--background)",
+                              border: "1px solid var(--border)",
                               borderRadius: "8px",
                               fontSize: "11px",
+                              color: "var(--foreground)",
                             }}
+                            labelStyle={{ color: "var(--foreground)" }}
+                            itemStyle={{ color: "var(--muted-foreground)" }}
                           />
                           <Area
                             type="monotone"
                             dataKey="gpu"
-                            stroke="#10b981"
-                            fill="#10b981"
+                            stroke="var(--chart-2)"
+                            fill="var(--chart-2)"
                             fillOpacity={0.15}
                             strokeWidth={1.5}
                             name="GPU %"
@@ -950,8 +1080,8 @@ function RunDetail({
                           <Area
                             type="monotone"
                             dataKey="memory"
-                            stroke="#f59e0b"
-                            fill="#f59e0b"
+                            stroke="var(--chart-5)"
+                            fill="var(--chart-5)"
                             fillOpacity={0.15}
                             strokeWidth={1.5}
                             name="Memory %"
@@ -1035,6 +1165,86 @@ function RunDetail({
               </div>
             )}
           </TabsContent>
+
+          {run.status === "completed" && analysis && (
+            <>
+              <TabsContent value="metrics" className="mt-4">
+                <RunAnalysisMetricsTab analysis={analysis} />
+              </TabsContent>
+              <TabsContent value="importance" className="mt-4">
+                <RunAnalysisImportanceTab analysis={analysis} />
+              </TabsContent>
+              <TabsContent value="regimes" className="mt-4">
+                <RunAnalysisRegimesTab analysis={analysis} />
+              </TabsContent>
+              <TabsContent value="quality" className="mt-4">
+                <RunAnalysisQualityTab analysis={analysis} />
+              </TabsContent>
+              <TabsContent value="compare" className="mt-4 space-y-3">
+                {otherCompleted.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    No other completed runs with analysis to compare.
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-[10px] text-muted-foreground">
+                      This run is the baseline. Select up to{" "}
+                      {ML_COMPARE_MAX_OTHER_RUNS} other runs to compare.
+                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-2">
+                      {otherCompleted.map((r) => {
+                        const checked = compareRunIds.includes(r.id);
+                        const atCap =
+                          !checked &&
+                          compareRunIds.length >= ML_COMPARE_MAX_OTHER_RUNS;
+                        return (
+                          <label
+                            key={r.id}
+                            className={`flex items-center gap-2 text-xs cursor-pointer select-none ${atCap ? "opacity-50 cursor-not-allowed" : ""}`}
+                          >
+                            <Checkbox
+                              checked={checked}
+                              disabled={atCap}
+                              onCheckedChange={(v) => {
+                                const on = v === true;
+                                setCompareRunIds((prev) => {
+                                  if (on) {
+                                    if (prev.includes(r.id)) return prev;
+                                    if (
+                                      prev.length >= ML_COMPARE_MAX_OTHER_RUNS
+                                    )
+                                      return prev;
+                                    return [...prev, r.id];
+                                  }
+                                  return prev.filter((id) => id !== r.id);
+                                });
+                              }}
+                            />
+                            <span
+                              className="truncate max-w-[min(100%,260px)]"
+                              title={r.name}
+                            >
+                              {r.name}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    {compareRuns.length > 0 ? (
+                      <RunComparisonView
+                        baselineRun={run}
+                        compareRuns={compareRuns}
+                      />
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        Select at least one run to compare.
+                      </p>
+                    )}
+                  </>
+                )}
+              </TabsContent>
+            </>
+          )}
         </Tabs>
       </CardContent>
     </Card>

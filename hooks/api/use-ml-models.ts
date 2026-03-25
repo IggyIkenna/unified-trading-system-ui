@@ -267,32 +267,37 @@ export function useRunAnalysisBundle(runId: string | null) {
   });
 }
 
-/** POST /api/ml/analysis/compare */
+/** POST /api/ml/analysis/compare — baseline vs up to 3 other runs */
 export function useMLRunComparison(
-  runAId: string | null,
-  runBId: string | null,
+  baselineId: string | null,
+  compareIds: string[],
 ) {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
+  const uniqueCompare = Array.from(
+    new Set(compareIds.filter((id) => id && id !== baselineId)),
+  )
+    .sort()
+    .slice(0, 3);
+  const compareKey = uniqueCompare.join(",");
+
   return useQuery({
-    queryKey: ["ml-compare", runAId, runBId, user?.id, scope.mode],
+    queryKey: ["ml-compare", baselineId, compareKey, user?.id, scope.mode],
     queryFn: () =>
       apiFetch(withMode("/api/ml/analysis/compare", scope.mode), token, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          run_a_id: runAId,
-          run_b_id: runBId,
+          run_a_id: baselineId,
+          run_b_ids: uniqueCompare,
         }),
       }) as Promise<RunComparison[]>,
     enabled:
       !!user &&
-      !!runAId &&
-      !!runBId &&
-      runAId.length > 0 &&
-      runBId.length > 0 &&
-      runAId !== runBId,
+      !!baselineId &&
+      baselineId.length > 0 &&
+      uniqueCompare.length > 0,
   });
 }
 

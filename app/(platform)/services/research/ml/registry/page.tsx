@@ -125,7 +125,12 @@ export default function RegistryPage() {
   const { data: familiesData, isLoading: famLoading } = useModelFamilies();
   const { data: deploymentsData, isLoading: depLoading } = useMLDeployments();
 
-  const MODEL_VERSIONS: ModelVersion[] = (versionsData as any)?.data ?? [];
+  const modelVersionsFromApi = React.useMemo(
+    () =>
+      ((versionsData as { data?: ModelVersion[] })?.data ??
+        []) as ModelVersion[],
+    [versionsData],
+  );
   const MODEL_FAMILIES: Array<any> = (familiesData as any)?.data ?? [];
   const CHAMPION_CHALLENGER_PAIRS: Array<any> =
     (deploymentsData as any)?.championChallengerPairs ?? [];
@@ -136,8 +141,8 @@ export default function RegistryPage() {
 
   // Sync API data into local state for mutation (deploy actions)
   React.useEffect(() => {
-    if (MODEL_VERSIONS.length > 0) setVersions(MODEL_VERSIONS);
-  }, [MODEL_VERSIONS.length]);
+    if (modelVersionsFromApi.length > 0) setVersions(modelVersionsFromApi);
+  }, [modelVersionsFromApi]);
   const [familyFilter, setFamilyFilter] = React.useState("");
   const [sortField, setSortField] = React.useState<SortField>("sharpe");
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
@@ -235,7 +240,7 @@ export default function RegistryPage() {
       </div>
     );
 
-  if (MODEL_VERSIONS.length === 0)
+  if (modelVersionsFromApi.length === 0)
     return (
       <div className="p-6">
         <EmptyState

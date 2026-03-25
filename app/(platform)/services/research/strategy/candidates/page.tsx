@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import {
   ArrowRight,
   CheckCircle2,
@@ -87,6 +89,7 @@ type PromotionTarget = "paper" | "live";
 // ---------------------------------------------------------------------------
 
 export default function CandidatesPage() {
+  const router = useRouter();
   const {
     data: candidatesData,
     isLoading: candidatesLoading,
@@ -99,10 +102,21 @@ export default function CandidatesPage() {
   const promoteStrategy = usePromoteStrategy();
   const rejectStrategy = useRejectStrategy();
 
-  const candidatesFromApi: StrategyCandidate[] =
-    (candidatesData as any)?.data ?? (candidatesData as any)?.candidates ?? [];
-  const BACKTEST_RUNS: BacktestRun[] =
-    (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
+  const candidatesFromApi = React.useMemo((): StrategyCandidate[] => {
+    const raw = candidatesData as {
+      data?: StrategyCandidate[];
+      candidates?: StrategyCandidate[];
+    };
+    return raw?.data ?? raw?.candidates ?? [];
+  }, [candidatesData]);
+
+  const BACKTEST_RUNS = React.useMemo((): BacktestRun[] => {
+    const raw = backtestsData as {
+      data?: BacktestRun[];
+      backtests?: BacktestRun[];
+    };
+    return raw?.data ?? raw?.backtests ?? [];
+  }, [backtestsData]);
 
   const isLoading = candidatesLoading || backtestsLoading;
   const [candidates, setCandidates] = React.useState<StrategyCandidate[]>([]);
@@ -299,7 +313,7 @@ export default function CandidatesPage() {
           ),
         },
       ],
-       
+
       [BACKTEST_RUNS, promotionTargets],
     );
 
@@ -341,10 +355,30 @@ export default function CandidatesPage() {
             onClearAll={basket.clearAll}
             onUpdateNote={basket.updateNote}
             onSendToReview={() => {
-              /* TODO: wire to review API */
+              if (basket.candidates.length === 0) {
+                toast.message(
+                  "Add at least one candidate to the basket first.",
+                );
+                return;
+              }
+              toast.success("Opening strategy handoff.");
+              router.push(
+                "/services/research/strategy/handoff?source=candidates&action=review",
+              );
             }}
             onPreparePackage={() => {
-              /* TODO: wire to package API */
+              if (basket.candidates.length === 0) {
+                toast.message(
+                  "Add at least one candidate to the basket first.",
+                );
+                return;
+              }
+              toast.success(
+                "Opening handoff to prepare your promotion package.",
+              );
+              router.push(
+                "/services/research/strategy/handoff?source=candidates&action=package",
+              );
             }}
           />
         </div>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -57,7 +58,7 @@ class ErrorBoundary extends React.Component<
               Retry
             </Button>
             <Button variant="ghost" asChild>
-              <a href="/">Return to Dashboard</a>
+              <Link href="/">Return to Dashboard</Link>
             </Button>
           </div>
         </div>

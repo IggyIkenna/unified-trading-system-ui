@@ -1799,6 +1799,195 @@ const MOMENTUM_ANALYSIS: RunAnalysis = {
   },
 };
 
+// Third completed run — Polymarket BTC (extra row for filters / analysis testing)
+const POLY_FINANCIAL_METRICS: FinancialValidationMetrics = {
+  sharpe_ratio: 1.95,
+  directional_accuracy: 0.668,
+  calibration_score: 0.87,
+  max_drawdown_pct: 9.2,
+  profit_factor: 1.72,
+  hit_rate: 0.642,
+  sortino_ratio: 2.85,
+  information_ratio: 1.22,
+  stability_score: 0.84,
+};
+
+const POLY_BTC_ANALYSIS: RunAnalysis = {
+  run_id: "run-poly-btc-completed",
+  financial_metrics: POLY_FINANCIAL_METRICS,
+  feature_importance: [
+    {
+      feature_id: "feat-btc-price",
+      feature_name: "btc_price",
+      version: "4.2.1",
+      importance_score: 0.27,
+      importance_rank: 1,
+      insight: "Anchor for Polymarket resolution vs spot",
+    },
+    {
+      feature_id: "feat-onchain-flow",
+      feature_name: "exchange_netflow",
+      version: "1.0.0",
+      importance_score: 0.22,
+      importance_rank: 2,
+      insight: "On-chain flow helps binary outcome timing",
+    },
+    {
+      feature_id: "feat-ob-imbalance",
+      feature_name: "orderbook_imbalance",
+      version: "4.2.1",
+      importance_score: 0.19,
+      importance_rank: 3,
+      insight: null,
+    },
+    {
+      feature_id: "feat-funding-rate",
+      feature_name: "funding_rate",
+      version: "4.2.1",
+      importance_score: 0.16,
+      importance_rank: 4,
+      insight: null,
+    },
+    {
+      feature_id: "feat-vol-regime",
+      feature_name: "realized_vol_20d",
+      version: "2.0.3",
+      importance_score: 0.1,
+      importance_rank: 5,
+      insight: "Secondary — event windows already short",
+    },
+    {
+      feature_id: "feat-liquidity",
+      feature_name: "polymarket_liquidity",
+      version: "1.0.0",
+      importance_score: 0.06,
+      importance_rank: 6,
+      insight: "Thin book noise — consider dropping",
+    },
+  ],
+  regime_performance: [
+    {
+      regime: "trending",
+      sample_count: 420,
+      sharpe_ratio: 2.35,
+      directional_accuracy: 0.71,
+      max_drawdown_pct: 6.2,
+      profit_factor: 1.95,
+      warning: null,
+    },
+    {
+      regime: "ranging",
+      sample_count: 380,
+      sharpe_ratio: 0.55,
+      directional_accuracy: 0.53,
+      max_drawdown_pct: 11.4,
+      profit_factor: 1.12,
+      warning: "Weak edge when BTC range-bound",
+    },
+    {
+      regime: "volatile",
+      sample_count: 290,
+      sharpe_ratio: 1.72,
+      directional_accuracy: 0.64,
+      max_drawdown_pct: 13.1,
+      profit_factor: 1.58,
+      warning: null,
+    },
+    {
+      regime: "crisis",
+      sample_count: 95,
+      sharpe_ratio: -0.35,
+      directional_accuracy: 0.44,
+      max_drawdown_pct: 24.0,
+      profit_factor: 0.78,
+      warning: "Poor tail performance — reduce size in stress",
+    },
+    {
+      regime: "low_vol",
+      sample_count: 510,
+      sharpe_ratio: 1.88,
+      directional_accuracy: 0.67,
+      max_drawdown_pct: 5.8,
+      profit_factor: 1.82,
+      warning: null,
+    },
+    {
+      regime: "high_vol",
+      sample_count: 260,
+      sharpe_ratio: 1.45,
+      directional_accuracy: 0.61,
+      max_drawdown_pct: 15.2,
+      profit_factor: 1.42,
+      warning: null,
+    },
+  ],
+  walk_forward_folds: [
+    {
+      fold_number: 1,
+      train_start: "2024-06-01",
+      train_end: "2024-12-31",
+      test_start: "2025-01-15",
+      test_end: "2025-03-31",
+      sharpe_ratio: 2.12,
+      directional_accuracy: 0.66,
+      val_loss: 0.318,
+      sample_count: 2100,
+    },
+    {
+      fold_number: 2,
+      train_start: "2024-06-01",
+      train_end: "2025-03-31",
+      test_start: "2025-04-15",
+      test_end: "2025-06-30",
+      sharpe_ratio: 1.98,
+      directional_accuracy: 0.64,
+      val_loss: 0.332,
+      sample_count: 2050,
+    },
+    {
+      fold_number: 3,
+      train_start: "2024-06-01",
+      train_end: "2025-06-30",
+      test_start: "2025-07-15",
+      test_end: "2025-12-31",
+      sharpe_ratio: 1.85,
+      directional_accuracy: 0.63,
+      val_loss: 0.345,
+      sample_count: 1980,
+    },
+  ],
+  data_integrity_checks: [
+    {
+      check_name: "no_lookahead_bias",
+      status: "pass",
+      message: "Market resolution times strictly after feature cutoff",
+    },
+    {
+      check_name: "embargo_respected",
+      status: "pass",
+      message: "3-day embargo between train/test in walk-forward",
+    },
+    {
+      check_name: "no_feature_leakage",
+      status: "pass",
+      message: "No resolution-linked leakage in feature set",
+    },
+    {
+      check_name: "coverage_check",
+      status: "warn",
+      message: "Polymarket history shorter than CeFi — 96% coverage",
+    },
+  ],
+  epoch_history: generateEpochHistory(60, 52, 0.305, 0.328),
+  prediction_distribution: {
+    buckets: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    actual_positive_rate: [
+      0.06, 0.14, 0.22, 0.34, 0.46, 0.54, 0.63, 0.72, 0.82, 0.9,
+    ],
+    predicted_count: [60, 150, 310, 520, 890, 1020, 880, 540, 280, 90],
+  },
+};
+
 // =============================================================================
 // Run Comparisons (significance tests between two runs)
 // =============================================================================
@@ -2369,6 +2558,119 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
     ],
   },
   {
+    id: "run-poly-btc-completed",
+    name: "Polymarket BTC — v1.0 Production Retrain",
+    description:
+      "Completed retrain of Polymarket BTC binary model with on-chain netflow features",
+    model_family_id: "mf-polymarket-btc",
+    model_family_name: "Polymarket BTC Predictor",
+    status: "completed",
+    progress: 100,
+    current_epoch: 60,
+    total_epochs: 60,
+    train_loss: 0.298,
+    val_loss: 0.315,
+    best_val_loss: 0.305,
+    best_epoch: 52,
+    config: {
+      model_id: "poly-btc-v1.0",
+      model_name: "Polymarket BTC v1.0",
+      version: "1.0.0",
+      model_family_id: "mf-polymarket-btc",
+      architecture: "Ensemble (LightGBM + MLP)",
+      target_variable: "btc_above_threshold_binary",
+      target_type: "binary_classification",
+      feature_inputs: [
+        ...BTC_FEATURE_PINS.slice(0, 3),
+        {
+          feature_id: "feat-onchain-flow",
+          feature_name: "exchange_netflow",
+          version: "1.0.0",
+          parameters_summary: "BTC exchange net flow, 24h",
+          freshness_status: "fresh",
+          last_computed: "2026-03-19T08:00:00Z",
+        },
+      ],
+      instruments: ["BTCUSDT", "POLYMARKET-BTC-100K"],
+      timeframe: "1d",
+      training_window: { start: "2024-06-01", end: "2025-12-31" },
+      validation_window: { start: "2026-01-15", end: "2026-03-15" },
+      walk_forward: {
+        enabled: true,
+        retrain_every: "1M",
+        expanding_window: true,
+        embargo_days: 3,
+      },
+      hyperparameters: {
+        lgb_num_leaves: 31,
+        lgb_learning_rate: 0.05,
+        nn_hidden: 128,
+        ensemble_weight_nn: 0.6,
+      },
+      gpu_type: "V100-32GB",
+      priority: "normal",
+      created_by: "a.kumar",
+      created_at: "2026-03-16T10:00:00Z",
+      version_note: "Production retrain after adding exchange netflow",
+    },
+    metrics: {
+      accuracy: 0.668,
+      loss: 0.315,
+      sharpe: 1.95,
+      directionalAccuracy: 0.642,
+      calibration: 0.87,
+      precision: 0.66,
+      recall: 0.65,
+      turnover: 0.28,
+      maxDrawdown: 0.092,
+      latencyCost: 0.0008,
+      stabilityScore: 0.84,
+    },
+    financial_metrics: POLY_FINANCIAL_METRICS,
+    analysis: POLY_BTC_ANALYSIS,
+    gpu_utilization: 0,
+    memory_usage: 0,
+    estimated_time_remaining: null,
+    duration: "3h 20m",
+    started_at: "2026-03-19T05:00:00Z",
+    completed_at: "2026-03-19T08:20:00Z",
+    created_by: "a.kumar",
+    created_at: "2026-03-16T10:00:00Z",
+    logs: [
+      {
+        timestamp: "2026-03-19T08:20:00Z",
+        level: "info",
+        message: "Training completed. Best val_loss: 0.305 @ epoch 52",
+      },
+      {
+        timestamp: "2026-03-19T08:18:00Z",
+        level: "info",
+        message: "Exported model bundle to gs://ml-artifacts/poly-btc-v1.0/",
+      },
+      {
+        timestamp: "2026-03-19T05:00:00Z",
+        level: "info",
+        message: "Job started on 1x V100-32GB",
+      },
+    ],
+    artifacts: [
+      {
+        id: "art-poly-1",
+        type: "model",
+        path: "gs://ml-artifacts/poly-btc-v1.0/model-final.pt",
+        size: 185000000,
+        createdAt: "2026-03-19T08:20:00Z",
+      },
+      {
+        id: "art-poly-2",
+        type: "metrics",
+        path: "gs://ml-artifacts/poly-btc-v1.0/metrics.json",
+        size: 62000,
+        createdAt: "2026-03-19T08:19:00Z",
+      },
+    ],
+  },
+  {
     id: "run-funding-failed",
     name: "Funding Rate — Transformer A/B",
     description:
@@ -2546,3 +2848,60 @@ export const ML_PIPELINE_STATUS = {
   gpu_utilization_avg: 78,
   total_registered_models: MODEL_VERSIONS.length,
 };
+
+/** Metric keys aligned with RunComparisonView financial table + mock significance rows */
+const SYNTHETIC_COMPARISON_KEYS: {
+  key: keyof FinancialValidationMetrics;
+}[] = [
+  { key: "sharpe_ratio" },
+  { key: "directional_accuracy" },
+  { key: "profit_factor" },
+  { key: "max_drawdown_pct" },
+  { key: "calibration_score" },
+  { key: "stability_score" },
+  { key: "sortino_ratio" },
+  { key: "information_ratio" },
+];
+
+/**
+ * When RUN_COMPARISONS has no row for (A,B), derive pairwise stats from embedded
+ * financial_metrics on analysis (mock / dev only).
+ */
+export function buildSyntheticRunComparisons(
+  runAId: string,
+  runBId: string,
+): RunComparison[] {
+  const runA = UNIFIED_TRAINING_RUNS.find((r) => r.id === runAId);
+  const runB = UNIFIED_TRAINING_RUNS.find((r) => r.id === runBId);
+  const fmA = runA?.analysis?.financial_metrics;
+  const fmB = runB?.analysis?.financial_metrics;
+  if (!fmA || !fmB) return [];
+
+  const out: RunComparison[] = [];
+  for (const { key } of SYNTHETIC_COMPARISON_KEYS) {
+    const value_a = fmA[key];
+    const value_b = fmB[key];
+    const improvement =
+      value_a !== 0
+        ? ((value_b - value_a) / Math.abs(value_a)) * 100
+        : value_b === value_a
+          ? 0
+          : 100;
+    const seed =
+      (runAId + runBId + key)
+        .split("")
+        .reduce((acc, c) => acc + c.charCodeAt(0), 0) % 1000;
+    const p_value = 0.015 + (seed % 170) / 1000;
+    out.push({
+      run_a_id: runAId,
+      run_b_id: runBId,
+      metric: key,
+      value_a,
+      value_b,
+      improvement: Number(improvement.toFixed(2)),
+      p_value: Number(p_value.toFixed(3)),
+      is_significant: p_value < 0.05,
+    });
+  }
+  return out;
+}
