@@ -377,19 +377,6 @@ export default function InvestmentServicePage() {
             </div>
           </div>
 
-          {/* CTA */}
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-4">
-              View your portfolio performance, NAV, and monthly reports in the
-              Executive dashboard.
-            </p>
-            <Button size="lg" asChild>
-              <Link href="/signup?service=investment">
-                Get Started
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </main>
 
@@ -403,11 +390,6 @@ export default function InvestmentServicePage() {
                 Preview the investor portal with portfolio overview, P&amp;L
                 attribution, and settlement tracking.
               </p>
-              <Button className="mt-4" asChild>
-                <Link href="/demo?service=investment">
-                  Book a Live Demo <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
             </div>
 
             {/* Portfolio Overview Preview */}
@@ -646,8 +628,7 @@ export default function InvestmentServicePage() {
               Ready to get started?
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Book a live demo to see the platform, or create your account to
-              start exploring.
+              Book a demo to see the platform in action, or get in touch with our team.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild>
@@ -657,10 +638,10 @@ export default function InvestmentServicePage() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Get in Touch</Link>
+                <Link href="/contact?service=investment">Contact Us</Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
-                <Link href="/signup?service=investment">Create Account</Link>
+                <Link href="/signup?service=investment">Apply Now</Link>
               </Button>
             </div>
           </div>

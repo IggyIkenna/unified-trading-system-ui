@@ -100,17 +100,6 @@ export default function PlatformServicePage() {
               for custom integrations. The same code runs your backtests and
               your live strategies.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button size="lg" asChild>
-                <Link href="/demo?service=platform">
-                  Book a Live Demo
-                  <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Get in Touch</Link>
-              </Button>
-            </div>
             <div className="mt-12 grid grid-cols-4 gap-4">
               {HERO_METRICS.map((m) => (
                 <div
@@ -241,11 +230,6 @@ export default function PlatformServicePage() {
               <p className="mt-2 text-muted-foreground">
                 Preview the trading dashboard, P&L waterfall, and position grid.
               </p>
-              <Button className="mt-4" asChild>
-                <Link href="/demo?service=platform">
-                  Book a Live Demo <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
             </div>
 
             {/* P&L Waterfall Preview */}
@@ -505,8 +489,7 @@ export default function PlatformServicePage() {
               Ready to get started?
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Book a live demo to see the platform, or create your account to
-              start exploring.
+              Book a demo to see the platform in action, or get in touch with our team.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild>
@@ -516,10 +499,7 @@ export default function PlatformServicePage() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Get in Touch</Link>
-              </Button>
-              <Button size="lg" variant="ghost" asChild>
-                <Link href="/signup">Create Account</Link>
+                <Link href="/contact?service=platform">Contact Us</Link>
               </Button>
             </div>
           </div>

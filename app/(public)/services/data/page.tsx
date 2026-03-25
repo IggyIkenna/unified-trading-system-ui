@@ -78,17 +78,6 @@ export default function DataServicePublicPage() {
               Query in-platform, pull via API, or export straight to your cloud.
               No per-query charges — subscribe and use as much as you want.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button size="lg" asChild>
-                <Link href="/signup">
-                  Get Started
-                  <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Book a Demo</Link>
-              </Button>
-            </div>
             {/* Metric strip */}
             <div className="mt-12 grid grid-cols-4 gap-4">
               {HERO_METRICS.map((m) => (
@@ -153,7 +142,7 @@ export default function DataServicePublicPage() {
               </Card>
             </div>
             <p className="text-xs text-muted-foreground mt-4 text-center">
-              Book a demo to see the full platform, or browse the data catalogue below.
+              Browse the data catalogue below.
             </p>
           </div>
         </div>
@@ -549,12 +538,10 @@ export default function DataServicePublicPage() {
               {/* CTAs */}
               <div className="rounded-xl border border-sky-500/20 bg-sky-500/5 p-8 text-center">
                 <h3 className="text-lg font-semibold mb-2">
-                  Ready to explore the data?
+                  Ready to get started?
                 </h3>
                 <p className="text-sm text-muted-foreground mb-6 max-w-lg mx-auto">
-                  Book a live demo to see real data freshness, query
-                  instruments, and explore pricing for your specific venue and
-                  instrument requirements.
+                  Book a demo to see the platform in action, or get in touch with our team.
                 </p>
                 <div className="flex justify-center gap-3">
                   <Button size="lg" asChild>
@@ -564,7 +551,7 @@ export default function DataServicePublicPage() {
                     </Link>
                   </Button>
                   <Button size="lg" variant="outline" asChild>
-                    <Link href="/contact">Get in Touch</Link>
+                    <Link href="/contact?service=data">Contact Us</Link>
                   </Button>
                 </div>
               </div>

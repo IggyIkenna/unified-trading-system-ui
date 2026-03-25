@@ -312,19 +312,6 @@ export default function BacktestingServicePage() {
             </Card>
           </div>
 
-          {/* CTA */}
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-4">
-              Ready to start backtesting? Access our Quant/ML platform with your
-              subscription.
-            </p>
-            <Button size="lg" asChild>
-              <Link href="/quant?service=backtesting">
-                Launch Backtesting Platform
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </main>
 
@@ -338,11 +325,6 @@ export default function BacktestingServicePage() {
                 Preview what your backtesting workflow looks like inside the
                 platform.
               </p>
-              <Button className="mt-4" asChild>
-                <Link href="/demo?service=backtesting">
-                  Book a Live Demo <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
             </div>
 
             {/* Strategy Config Preview */}
@@ -562,8 +544,7 @@ export default function BacktestingServicePage() {
               Ready to get started?
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Book a live demo to see the platform, or create your account to
-              start exploring.
+              Book a demo to see the platform in action, or get in touch with our team.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button size="lg" asChild>
@@ -573,10 +554,7 @@ export default function BacktestingServicePage() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="/contact">Get in Touch</Link>
-              </Button>
-              <Button size="lg" variant="ghost" asChild>
-                <Link href="/signup">Create Account</Link>
+                <Link href="/contact?service=backtesting">Contact Us</Link>
               </Button>
             </div>
           </div>
