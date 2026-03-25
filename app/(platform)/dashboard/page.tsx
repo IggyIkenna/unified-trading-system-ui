@@ -113,7 +113,7 @@ export default function DashboardPage() {
 
         {/* All services in a single compact grid */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {allServices.map((svc) => {
+          {allServices.filter((svc) => STAGE_ORDER.includes(svc.lifecycleStage)).map((svc) => {
             const Icon = ICON_MAP[svc.icon] ?? Database;
             const stageInfo = lifecycleStages[svc.lifecycleStage];
             const isLocked = !visibleKeys.has(svc.key);
