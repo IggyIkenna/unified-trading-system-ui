@@ -19,11 +19,36 @@ function mapBackendRole(role: AuthorizeResult["role"]): UserRole {
   return "client";
 }
 
+const CAPABILITY_TO_ENTITLEMENT: Record<string, Entitlement[]> = {
+  "data.view": ["data-basic"],
+  "data.subscribe": ["data-pro"],
+  "trading.view": ["execution-basic"],
+  "trading.execute": ["execution-full"],
+  "risk.view": ["execution-basic"],
+  "risk.manage": ["execution-full"],
+  "research.view": ["strategy-full", "ml-full"],
+  "research.run": ["strategy-full", "ml-full"],
+  "execution.view": ["execution-basic"],
+  "reports.view": ["reporting"],
+  "reports.export": ["reporting"],
+  "manage.view": ["reporting"],
+  "manage.edit": ["reporting"],
+  "ops.view": ["reporting"],
+  "ops.control": ["reporting"],
+};
+
 function mapCapabilitiesToEntitlements(
   capabilities: string[],
 ): readonly (Entitlement | typeof ALL_ENTITLEMENTS)[] {
   if (capabilities.includes("*")) return [ALL_ENTITLEMENTS];
-  return capabilities as Entitlement[];
+  const entitlements = new Set<Entitlement>();
+  for (const cap of capabilities) {
+    const mapped = CAPABILITY_TO_ENTITLEMENT[cap];
+    if (mapped) {
+      for (const e of mapped) entitlements.add(e);
+    }
+  }
+  return Array.from(entitlements);
 }
 
 async function enrichUserFromBackend(
