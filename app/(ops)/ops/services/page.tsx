@@ -385,10 +385,11 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
         </TableHeader>
         <TableBody>
           {services.map((service) => {
+            const serviceId = service.id ?? service.name;
             const health = getServiceHealth(service);
-            const hasShard = !!serviceShards[service.id];
-            const isExpanded = expandedService === service.id;
-            const shardConfig = serviceShards[service.id];
+            const hasShard = Boolean(serviceShards[serviceId]);
+            const isExpanded = expandedService === serviceId;
+            const shardConfig = serviceShards[serviceId];
 
             return (
               <React.Fragment key={service.id}>
@@ -396,7 +397,7 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                   className={cn(hasShard && "cursor-pointer hover:bg-muted/50")}
                   onClick={() =>
                     hasShard &&
-                    setExpandedService(isExpanded ? null : service.id)
+                    setExpandedService(isExpanded ? null : serviceId)
                   }
                 >
                   <TableCell className="w-8 p-2">
@@ -550,7 +551,7 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {shardConfig.shards.map((shard) => (
+                            {shardConfig.shards.map((shard: ShardInfo) => (
                               <TableRow key={shard.key}>
                                 <TableCell>
                                   {shard.status === "running" && (

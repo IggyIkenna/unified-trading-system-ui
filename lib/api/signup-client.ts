@@ -5,8 +5,20 @@
  * + onboarding request. Admin must approve before the user can sign in.
  */
 
-const USER_MGMT_API =
-  process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017";
+const USER_MGMT_API = (
+  process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017"
+).replace(/\/+$/, "");
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  let binary = "";
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary);
+}
 
 export interface SignupPayload {
   name: string;
@@ -42,6 +54,12 @@ export async function submitSignup(
     const body = await res
       .json()
       .catch(() => ({ error: `HTTP ${res.status}` }));
+    if (res.status === 404) {
+      throw new Error(
+        body.error ||
+          "Signup API not found (404). Deploy a user-management API that exposes POST /api/v1/signup, or set NEXT_PUBLIC_USER_MGMT_API_URL to that service’s base URL.",
+      );
+    }
     throw new Error(body.error || `Signup failed: HTTP ${res.status}`);
   }
 
@@ -53,13 +71,14 @@ export interface DocumentUploadPayload {
   onboarding_request_id: string;
   doc_type: string;
   file_name: string;
-  storage_path: string;
   content_type?: string;
+  file: Blob;
 }
 
-export async function registerDocument(payload: DocumentUploadPayload) {
+export async function uploadUserDocument(payload: DocumentUploadPayload) {
+  const base64 = arrayBufferToBase64(await payload.file.arrayBuffer());
   const res = await fetch(
-    `${USER_MGMT_API}/api/v1/users/${payload.firebase_uid}/documents`,
+    `${USER_MGMT_API}/api/v1/users/${payload.firebase_uid}/documents/upload`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -67,8 +86,8 @@ export async function registerDocument(payload: DocumentUploadPayload) {
         onboarding_request_id: payload.onboarding_request_id,
         doc_type: payload.doc_type,
         file_name: payload.file_name,
-        storage_path: payload.storage_path,
-        content_type: payload.content_type,
+        content_type: payload.content_type || "application/octet-stream",
+        file_base64: base64,
       }),
     },
   );
@@ -77,7 +96,7 @@ export async function registerDocument(payload: DocumentUploadPayload) {
     const body = await res
       .json()
       .catch(() => ({ error: `HTTP ${res.status}` }));
-    throw new Error(body.error || `Document registration failed`);
+    throw new Error(body.error || `Document upload failed`);
   }
 
   return res.json();

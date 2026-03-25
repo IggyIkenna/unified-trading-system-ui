@@ -1,9 +1,9 @@
+import { OptionalVercelAnalytics } from "@/components/optional-vercel-analytics";
 import { PreviewBanner } from "@/components/preview-banner";
 import { StagingGate } from "@/components/staging-gate";
 import { Toaster } from "@/components/ui/sonner";
 import { ExecutionModeProvider } from "@/lib/execution-mode-context";
 import { Providers } from "@/lib/providers";
-import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -79,7 +79,7 @@ export default function RootLayout({
           </Providers>
         </StagingGate>
         <Toaster />
-        <Analytics />
+        <OptionalVercelAnalytics />
       </body>
     </html>
   );
