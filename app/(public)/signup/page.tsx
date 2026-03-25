@@ -110,10 +110,10 @@ const REG_ADDONS = [
   { id: "reporting", label: "P&L & Client Reporting" },
 ];
 const REG_FUND_OPTS = [
-  { id: "fund_crypto_spot", label: "Crypto Spot Fund (UK FCA)" },
+  { id: "fund_crypto_spot", label: "Crypto Spot Fund (FCA + EU ESMA)" },
   {
     id: "fund_derivatives",
-    label: "Derivatives & Traditional Markets Fund (EU-regulated)",
+    label: "Derivatives & Traditional Markets Fund (EU ESMA)",
   },
 ];
 const INV_OPTS = [

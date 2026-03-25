@@ -201,7 +201,7 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-1 text-[10px] px-1.5 py-0"
                     >
-                      EU Partner
+                      EU ESMA
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -218,13 +218,13 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      UK — FCA
+                      FCA
                     </Badge>{" "}
                     <Badge
                       variant="outline"
                       className="ml-1 text-[10px] px-1.5 py-0"
                     >
-                      EU Regulated
+                      EU ESMA
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -241,13 +241,13 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      EU Regulated
+                      EU ESMA
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
                     Crypto derivatives, options, futures, and traditional
                     markets (equities, FX, fixed income, commodities). Managed
-                    by us under combined UK + EU regulatory coverage.
+                    by us under combined FCA + EU ESMA regulatory coverage.
                   </div>
                 </div>
               </div>
@@ -365,7 +365,7 @@ export default function RegulatoryServicePage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  EU-regulated fund vehicles for all asset classes
+                  EU ESMA-regulated fund vehicles for all asset classes
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
