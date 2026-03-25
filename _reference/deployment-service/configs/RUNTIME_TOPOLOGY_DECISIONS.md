@@ -16,13 +16,12 @@ the principle wins — update the code, not the principle (unless explicitly ove
 
 Every repo falls into exactly one category. The name MUST reflect the category:
 
-| Category           | Naming Pattern                                    | Deploys?             | Owns Domain Data?                                     | Examples                                             |
-| ------------------ | ------------------------------------------------- | -------------------- | ----------------------------------------------------- | ---------------------------------------------------- |
-| **library**        | `*-interface`, `*-library`, `unified-*-interface` | No                   | No — provides protocols, schemas, utilities           | `unified-market-interface`, `execution-algo-library` |
-| **service**        | `*-service`                                       | Yes (Cloud Run / VM) | Yes — produces and persists domain data to GCS        | `instruments-service`, `ml-training-service`         |
-| **api-service**    | `*-api`, `*-reporting-service`                    | Yes (Cloud Run)      | No — thin HTTP/SSE gateway over a service or GCS data | `execution-results-api`, `market-data-api`           |
-| **ui**             | `*-ui`                                            | Yes (static hosting) | No — never reads GCS or PubSub directly               | `trading-analytics-ui`, `deployment-ui`              |
-| **infrastructure** | named by function                                 | Depends              | No                                                    | `ibkr-gateway-infra`, `deployment-engine`            |
+| Category           | Naming Pattern                                    | Deploys?             | Owns Domain Data?                              | Examples                                             |
+| ------------------ | ------------------------------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------------------------- |
+| **library**        | `*-interface`, `*-library`, `unified-*-interface` | No                   | No — provides protocols, schemas, utilities    | `unified-market-interface`, `execution-algo-library` |
+| **service**        | `*-service`                                       | Yes (Cloud Run / VM) | Yes — produces and persists domain data to GCS | `instruments-service`, `ml-training-service`         |
+| **ui**             | `*-ui`                                            | Yes (static hosting) | No — never reads GCS or PubSub directly        | `trading-analytics-ui`, `deployment-ui`              |
+| **infrastructure** | named by function                                 | Depends              | No                                             | `ibkr-gateway-infra`, `deployment-engine`            |
 
 **Rule:** If something doesn't fit a pattern, the architecture is wrong — restructure it, don't
 rename to hide the mismatch.
@@ -44,9 +43,7 @@ The chain is always: **UI → API (HTTP/SSE) → Service (engine) → Storage/Me
 | trading-analytics-ui, execution-analytics-ui, settlement-ui | execution-results-api :8002 | execution-service    |
 
 > **Consolidation note:** `trading-analytics-ui` is functionally overlapped by the batch research UIs: `execution-analytics-ui` (provides live fill viewing via `execution-results-api` SSE) and `client-reporting-ui` (P&L). Candidate for consolidation into `execution-analytics-ui` in a future phase. See `consolidated_remaining_work.plan.md` todo `arch-trading-analytics-ui-consolidate`.
-> | execution-analytics-ui, ml-training-ui | market-data-api :8003 | market-tick-data-service, market-data-processing-service |
 > | strategy-ui | strategy-api :8004 ⟪planned⟫ | strategy-service |
-> | ml-training-ui | deployment-api :8001 (deploy hook) + market-data-api :8003 (feature/candle plots) | ml-training-service |
 > | deployment-ui, live-health-monitor-ui, batch-audit-ui, logs-dashboard-ui, onboarding-ui | deployment-api :8001 | deployment-engine |
 > | client-reporting-ui | client-reporting-api :8005 | pnl-attribution-service, risk-and-exposure-service, position-balance-monitor-service |
 
@@ -56,11 +53,9 @@ The chain is always: **UI → API (HTTP/SSE) → Service (engine) → Storage/Me
 
 Each tier of batch research work has its own dedicated UI. These are separate repos from their backing services.
 
-| Tier                   | Purpose                                                                                           | API Gateway                                       | Service engine      | UI repo                                                                   |
-| ---------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------- | ------------------- | ------------------------------------------------------------------------- |
-| **ML training**        | Train models; tune hyperparameters; deploy batch→live; view feature correlations and candle plots | deployment-api (deploy) + market-data-api (plots) | ml-training-service | **ml-training-ui** (renamed from ml-training-ui)                          |
-| **Strategy backtest**  | Signal backtest; parameter tuning; strategy deployment                                            | strategy-api ⟪planned⟫                            | strategy-service    | **strategy-ui**                                                           |
-| **Execution backtest** | TCA; fill analysis; alpha calculation; execution quality                                          | execution-results-api + market-data-api           | execution-service   | **execution-analytics-ui** (rename target of execution-analytics-ui repo) |
+| Tier                  | Purpose                                                | API Gateway            | Service engine   | UI repo         |
+| --------------------- | ------------------------------------------------------ | ---------------------- | ---------------- | --------------- |
+| **Strategy backtest** | Signal backtest; parameter tuning; strategy deployment | strategy-api ⟪planned⟫ | strategy-service | **strategy-ui** |
 
 **Repo naming status:**
 
@@ -161,8 +156,6 @@ or operator would see/experience differently.
   Publishes processed data to PubSub. Persists to GCS.
 - **Data produced:** `processed_candles_ohlcv` (GCS), live candle stream (PubSub)
 - **Data consumed:** raw ticks from MTDH, instruments from instruments-service
-
-**market-data-api**
 
 - **Batch:** Serves historical order book snapshots and candles via HTTP REST from GCS.
 - **Live:** Streams live order book via SSE (from MTDH PubSub), streams live candles via SSE (from MDPS PubSub).
@@ -776,7 +769,6 @@ On connectivity loss:
 | **pnl-attribution-service**           | Cloud Run Service | always-on                                | Continuous subscriber to execution + risk PubSub events; runs P&L attribution on every update |
 | **features-multi-timeframe-service**  | Cloud Run Service | always-on (live) / scale-to-zero (batch) | Mode-dependent: live subscribes to FDS completion events                                      |
 | **execution-results-api**             | Cloud Run Service | auto-scale                               | Scales with HTTP/SSE connection count; min-instances configurable                             |
-| **market-data-api**                   | Cloud Run Service | auto-scale                               | Scales with HTTP/SSE connection count                                                         |
 | **deployment-api**                    | Cloud Run Service | auto-scale                               | Request-driven; SSE for health monitoring stream                                              |
 | **client-reporting-api**              | Cloud Run Job     | scale-to-zero                            | Batch report generation; occasional live SSE (target state)                                   |
 | **All UIs**                           | Cloud Run Service | auto-scale                               | Serve React static build; scale with concurrent users                                         |

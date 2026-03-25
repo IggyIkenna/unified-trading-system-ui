@@ -2,8 +2,8 @@
   "folders": [
     {
       "path": "../..",
-      "name": "unified-trading-system-repos"
-    }
+      "name": "unified-trading-system-repos",
+    },
   ],
   "settings": {
     "python.defaultInterpreterPath": "python3.13",
@@ -27,8 +27,8 @@
       "${workspaceFolder:unified-trading-system-repos}/unified-domain-client",
       "${workspaceFolder:unified-trading-system-repos}/unified-events-interface",
       "${workspaceFolder:unified-trading-system-repos}/unified-market-interface",
-      "${workspaceFolder:unified-trading-system-repos}/unified-trade-execution-interface"
+      "${workspaceFolder:unified-trading-system-repos}/unified-trade-execution-interface",
     ],
-    "python.analysis.autoSearchPaths": true
-  }
+    "python.analysis.autoSearchPaths": true,
+  },
 }

@@ -33,10 +33,16 @@ export default function BacktestingServicePage() {
             <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-violet-400/10">
               <LineChart className="size-8 text-violet-400" />
             </div>
-            <h1 className="text-3xl font-bold">Backtesting as a Service</h1>
+            <h1 className="text-3xl font-bold">Research &amp; Backtesting</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              The world&apos;s only backtesting platform covering Sports, DeFi,
-              Options, Crypto Perps, and TradFi Futures
+              One place to build everything. Train ML models (gradient boost,
+              neural networks, regression — your choice), build signals from our
+              feature library, assemble strategies, and watch them run against
+              real historical data across every asset class.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              When you&apos;re happy with a strategy, promote it straight to
+              live trading. Same code, same data, same results.
             </p>
           </div>
 
@@ -80,6 +86,59 @@ export default function BacktestingServicePage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Inside the Platform */}
+          <Card className="mb-8 border-violet-500/10 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Inside the Platform</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Feature Catalogue</div>
+                  <p className="text-xs text-muted-foreground">
+                    Browse hundreds of pre-built features in a 4-column drill-down — filter by
+                    service, category, group, then inspect individual features with full metadata.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">ML Training Pipeline</div>
+                  <p className="text-xs text-muted-foreground">
+                    Train gradient boost, neural networks, regression models. Track training runs,
+                    view loss curves, compare champion vs challenger models, promote winners to live.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Strategy Builder</div>
+                  <p className="text-xs text-muted-foreground">
+                    Assemble strategies from your signals, configure parameters, define execution
+                    rules. Run backtests across any asset class with realistic slippage and costs.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Backtest Comparison</div>
+                  <p className="text-xs text-muted-foreground">
+                    Side-by-side parameter sweeps with Sharpe, return, drawdown, and win rate.
+                    GPU-accelerated — run 1000+ combinations in parallel, then pick the best.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Model Registry</div>
+                  <p className="text-xs text-muted-foreground">
+                    Every trained model versioned and catalogued. See performance metrics,
+                    training config, and deployment history. One click to deploy or rollback.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Promote to Live</div>
+                  <p className="text-xs text-muted-foreground">
+                    When a strategy passes your criteria, promote it straight to live trading.
+                    Same code, same data pipeline — what worked in backtest works in production.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* What's Included */}
           <div className="mb-8">
@@ -147,7 +206,6 @@ export default function BacktestingServicePage() {
             </Card>
             <Card className="border-primary">
               <CardHeader>
-                <Badge className="w-fit mb-2">Popular</Badge>
                 <CardTitle>Professional</CardTitle>
                 <div className="text-lg font-bold text-primary">
                   Contact Sales

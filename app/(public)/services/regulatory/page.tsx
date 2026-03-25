@@ -36,10 +36,54 @@ export default function RegulatoryServicePage() {
             </Badge>
             <h1 className="text-3xl font-bold">Regulatory Umbrella</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              FCA Appointed Representative services for institutional algo
-              trading firms. Operate legally in weeks.
+              FCA Appointed Representative services for Professional clients.
+              Operational in weeks, not the 12-24 months of direct
+              authorisation.
             </p>
           </div>
+
+          {/* What Your Clients See */}
+          <Card className="mb-8 border-slate-500/10 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-lg">The Client Portal</CardTitle>
+              <CardDescription>
+                Once approved, your clients get their own login with full
+                reporting — the same institutional tools we use internally.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Portfolio Dashboard</div>
+                  <p className="text-xs text-muted-foreground">
+                    NAV, P&amp;L attribution, position breakdown by strategy and asset class.
+                    The same 10-factor waterfall used by our own trading desk.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Trade History</div>
+                  <p className="text-xs text-muted-foreground">
+                    Every trade your clients execute — filterable, exportable, with full
+                    audit trail. Slippage analysis and best execution records included.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Compliance Reports</div>
+                  <p className="text-xs text-muted-foreground">
+                    MiFID II transaction reporting, best execution monitoring, KYC/AML
+                    workflow management. Generated automatically or on demand.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">Settlement &amp; Fees</div>
+                  <p className="text-xs text-muted-foreground">
+                    Real-time settlement status, fee breakdowns, monthly invoicing.
+                    Your clients see their costs transparently.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Key Benefits */}
           <div className="grid gap-4 md:grid-cols-3 mb-8">
@@ -83,30 +127,14 @@ export default function RegulatoryServicePage() {
           {/* FCA Activities */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Regulated Activities Available</CardTitle>
+              <CardTitle>FCA-Authorised Activities</CardTitle>
               <CardDescription>
-                Activities you can conduct under our UK and EU regulatory
-                coverage
+                Regulated activities under our FCA authorisation (Ref 975797).
+                All activities are limited to Professional and Eligible
+                Counterparty clients.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
-                <div>
-                  <div className="font-medium">
-                    Dealing in Investments as Principal{" "}
-                    <Badge
-                      variant="outline"
-                      className="ml-2 text-[10px] px-1.5 py-0"
-                    >
-                      UK — FCA
-                    </Badge>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Trade your own capital across regulated markets
-                  </div>
-                </div>
-              </div>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
@@ -116,11 +144,11 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      UK — FCA
+                      FCA
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Execute trades on behalf of clients
+                    Execute trades on behalf of clients across regulated markets
                   </div>
                 </div>
               </div>
@@ -128,16 +156,33 @@ export default function RegulatoryServicePage() {
                 <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
                 <div>
                   <div className="font-medium">
-                    Arranging Deals in Investments{" "}
+                    Arranging (Bringing About) Deals in Investments{" "}
                     <Badge
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      UK — FCA
+                      FCA
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Introduce clients and arrange transactions
+                    Introduce clients and arrange transactions in investments
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
+                <div>
+                  <div className="font-medium">
+                    Making Arrangements with a View to Transactions{" "}
+                    <Badge
+                      variant="outline"
+                      className="ml-2 text-[10px] px-1.5 py-0"
+                    >
+                      FCA
+                    </Badge>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Facilitate investment transactions for clients
                   </div>
                 </div>
               </div>
@@ -150,17 +195,17 @@ export default function RegulatoryServicePage() {
                       variant="outline"
                       className="ml-2 text-[10px] px-1.5 py-0"
                     >
-                      UK — FCA
+                      FCA
                     </Badge>{" "}
                     <Badge
                       variant="outline"
                       className="ml-1 text-[10px] px-1.5 py-0"
                     >
-                      EU Regulated
+                      EU Partner
                     </Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Discretionary portfolio management
+                    Discretionary portfolio management for professional clients
                   </div>
                 </div>
               </div>
@@ -415,9 +460,11 @@ export default function RegulatoryServicePage() {
             <div className="text-center">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Start your application online. Upload your documents at your own
-                pace — proof of address, identity, source of funds. We review
-                everything and get you trading under our regulatory umbrella.
+                Apply online, upload documents at your own pace, and get
+                operational in weeks. Once approved, your clients get their own
+                portal — portfolio performance, trade history, compliance
+                reports, and settlement tracking — the same institutional
+                reporting tools we use internally.
               </p>
               <div className="mt-4 flex flex-wrap justify-center gap-3">
                 <Button asChild>
@@ -426,9 +473,7 @@ export default function RegulatoryServicePage() {
                   </Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/signup?service=regulatory">
-                    Apply Now
-                  </Link>
+                  <Link href="/signup?service=regulatory">Apply Now</Link>
                 </Button>
               </div>
             </div>

@@ -21,7 +21,6 @@ export const SERVICE_ENDPOINTS = {
   strategy: `${API_BASE}/trading-analytics-api`,
 
   // --- Data pipeline ---
-  data: `${API_BASE}/market-data-api`,
   marketTick: `${API_BASE}/market-tick-data-service`,
 
   // --- ML ---

@@ -36,7 +36,6 @@
         "execution-results-api/execution_results_api/auth.py:23",
         "alerting-service/alerting_service/auth.py:23",
         "client-reporting-api/client_reporting_api/auth.py:37",
-        "market-data-api/market_data_api/auth.py:23",
         "deployment-api/deployment_api/auth.py:23"
       ],
       "fix_steps": [

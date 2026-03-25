@@ -1,13 +1,19 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { ShieldX } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import Link from "next/link";
+import { ShieldX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 interface AccessDeniedProps {
-  title?: string
-  description?: string
+  title?: string;
+  description?: string;
 }
 
 export function AccessDenied({
@@ -34,5 +40,5 @@ export function AccessDenied({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

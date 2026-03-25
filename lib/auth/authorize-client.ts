@@ -7,29 +7,29 @@
  */
 
 const USER_MGMT_API =
-  process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017"
+  process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017";
 
-export const APP_ID = "unified-trading-system-ui"
+export const APP_ID = "unified-trading-system-ui";
 
 export interface AuthorizeResult {
-  authorized: boolean
-  role: "viewer" | "editor" | "admin" | "owner" | null
-  capabilities: string[]
-  source: "direct" | "group" | "none"
-  environments: string[]
-  error?: string
+  authorized: boolean;
+  role: "viewer" | "editor" | "admin" | "owner" | null;
+  capabilities: string[];
+  source: "direct" | "group" | "none";
+  environments: string[];
+  error?: string;
 }
 
 export async function fetchAuthorization(
   uid: string,
   env?: string,
 ): Promise<AuthorizeResult> {
-  const params = new URLSearchParams({ app_id: APP_ID, uid })
-  if (env) params.set("env", env)
+  const params = new URLSearchParams({ app_id: APP_ID, uid });
+  if (env) params.set("env", env);
 
   const res = await fetch(
     `${USER_MGMT_API}/api/v1/authorize?${params.toString()}`,
-  )
+  );
 
   if (!res.ok) {
     return {
@@ -39,8 +39,8 @@ export async function fetchAuthorization(
       source: "none",
       environments: [],
       error: `HTTP ${res.status}`,
-    }
+    };
   }
 
-  return res.json()
+  return res.json();
 }

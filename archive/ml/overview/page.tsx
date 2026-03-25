@@ -27,7 +27,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
-import { MLNav } from "@/components/ml/ml-nav";
+import { MLNav } from "@/archive/components/ml/ml-nav";
 import {
   useModelFamilies,
   useExperiments,

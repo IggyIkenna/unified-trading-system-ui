@@ -35,7 +35,6 @@ todos:
   - "P2-03: [AGENT] Reduce 752 noqa suppressions — fix underlying lint issues or use ruff config (§8)"
   - "P2-04: [AGENT] Fix 3 files over 900L: deployment_processor.py (1351L), generate_topology_svg.py (973L), cloud_builds.py (921L) (§2)"
   - "P2-05: [AGENT] Migrate execution-results-api config.py from bare BaseSettings to UnifiedCloudConfig (§30)"
-  - "P2-06: [AGENT] Migrate elysium-defi-system config.py from raw os.environ to UnifiedCloudConfig (§30)"
   - "P2-07: [AGENT] Calibrate MIN_COVERAGE for 13 repos at default 70; fix 6 QG/pyproject mismatches (§11)"
   - "P2-08: [AGENT] Add pool: forks to unified-trading-ui-auth/vitest.config.ts (§16)"
   - "P2-09: [AGENT] Add health endpoints to ml-inference-service and ml-training-service (§6)"
@@ -178,7 +177,6 @@ P1 complete ──▶ P2-01 through P2-12 ALL PARALLEL ──▶ QG gate
 - [ ] **P2-03** Audit noqa suppressions workspace-wide — custom qg-\*/gs-uri codes already inline-documented; create BYPASS_AUDIT.md for repos with standard ruff codes (F401/E402/C901/N802/PLW0603)
 - [ ] **P2-04** Split 3 oversized files
 - [x] **P2-05** execution-results-api → UnifiedCloudConfig
-- [x] **P2-06** elysium-defi-system → UnifiedCloudConfig
 - [ ] **P2-07** Calibrate 13 MIN_COVERAGE + fix 6 mismatches
 - [x] **P2-08** vitest pool:"forks" for unified-trading-ui-auth
 - [x] **P2-09** Health endpoints for ml-inference-service, ml-training-service

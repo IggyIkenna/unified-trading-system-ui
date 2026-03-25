@@ -2,9 +2,7 @@
 
 import { GenerateReportModal } from "@/components/reports/generate-report-modal";
 import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
-import {
-  useContextState
-} from "@/components/trading/context-bar";
+import { useContextState } from "@/components/trading/context-bar";
 import { EntityLink } from "@/components/trading/entity-link";
 import { PnLChange, PnLValue } from "@/components/trading/pnl-value";
 import { ApiError } from "@/components/ui/api-error";
@@ -24,10 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReports, useSettlements } from "@/hooks/api/use-reports";
-import {
-  CLIENTS,
-  type FilterContext
-} from "@/lib/trading-data";
+import { CLIENTS, type FilterContext } from "@/lib/trading-data";
 import {
   AlertCircle,
   ArrowRight,
@@ -46,7 +41,7 @@ import {
   TrendingUp,
   Users,
   Vault,
-  Wallet
+  Wallet,
 } from "lucide-react";
 import * as React from "react";
 
@@ -151,7 +146,7 @@ export default function ReportsPage() {
   const avgMtdReturn =
     portfolioSummary.length > 0
       ? portfolioSummary.reduce((sum, p) => sum + p.mtdReturn, 0) /
-      portfolioSummary.length
+        portfolioSummary.length
       : 0;
   const pendingSettlement = settlements
     .filter((s) => s.status !== "settled")
@@ -444,12 +439,13 @@ export default function ReportsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`size-10 rounded-lg flex items-center justify-center ${report.status === "ready"
+                        className={`size-10 rounded-lg flex items-center justify-center ${
+                          report.status === "ready"
                             ? "bg-[var(--status-live)]/10"
                             : report.status === "sent"
                               ? "bg-primary/10"
                               : "bg-muted"
-                          }`}
+                        }`}
                       >
                         <FileText
                           className="size-5"
@@ -598,10 +594,11 @@ export default function ReportsPage() {
                   >
                     <div className="flex items-center gap-4">
                       <Receipt
-                        className={`size-5 ${invoice.status === "paid"
+                        className={`size-5 ${
+                          invoice.status === "paid"
                             ? "text-[var(--status-live)]"
                             : "text-[var(--status-warning)]"
-                          }`}
+                        }`}
                       />
                       <div>
                         <p className="font-medium font-mono">{invoice.id}</p>
@@ -756,7 +753,7 @@ export default function ReportsPage() {
                       <Badge
                         variant={
                           transfer.status === "settled" ||
-                            transfer.status === "confirmed"
+                          transfer.status === "confirmed"
                             ? "default"
                             : transfer.status === "confirming"
                               ? "secondary"
@@ -766,7 +763,7 @@ export default function ReportsPage() {
                         }
                         className={
                           transfer.status === "settled" ||
-                            transfer.status === "confirmed"
+                          transfer.status === "confirmed"
                             ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
                             : transfer.status === "confirming"
                               ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"

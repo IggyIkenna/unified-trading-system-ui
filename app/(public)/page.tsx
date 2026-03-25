@@ -7,13 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Database,
-  LineChart,
   Layers,
-  Zap,
   Shield,
   ArrowRight,
   Globe,
   Lock,
+  Brain,
 } from "lucide-react";
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { PLATFORM_STATS } from "@/lib/config/platform-stats";
@@ -27,157 +26,87 @@ import {
 } from "@/components/ui/card";
 import { Briefcase, CheckCircle2 } from "lucide-react";
 
-// Service offerings based on Odum Research's product suite
+// Five services — execution is folded into Trading Terminal + Research
 const services = [
   {
     id: "data",
-    name: "Data Provision",
+    name: "Data",
     description:
-      "Institutional data API covering TradFi, Crypto, DeFi, and Sports - normalised to a single schema.",
+      "Unified market data across venues and asset classes. Access it in-platform, in your cloud, or as managed delivery.",
     icon: Database,
     color: "text-sky-400",
     bgColor: "bg-sky-400/10",
     borderColor: "border-sky-400/30",
-    lifecycle: ["Acquire"],
-    metrics: [
-      { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
-      { label: "Asset Classes", value: String(PLATFORM_STATS.assetClassCount) },
-      { label: "Setup", value: "Minutes" },
+    bullets: [
+      "One schema across markets",
+      "Use in-platform or your cloud",
+      "Track coverage and downloads live",
     ],
-    features: [
-      "Raw Tick Data",
-      "Processed OHLCV",
-      "Liquidation Data",
-      "ML Signal Feed",
-      "Sports Probability API",
-    ],
-    pricing: "From £250/mo",
     href: "/services/data",
   },
   {
-    id: "backtesting",
-    name: "Backtesting as a Service",
+    id: "research",
+    name: "Research & Build",
     description:
-      "Cross-asset backtesting spanning Sports, DeFi, Options, Crypto Perps, and TradFi Futures in one environment.",
-    icon: LineChart,
+      "Build and test models, signals, and execution logic in one pipeline. Promote proven research straight into live trading.",
+    icon: Brain,
     color: "text-violet-400",
     bgColor: "bg-violet-400/10",
     borderColor: "border-violet-400/30",
-    lifecycle: ["Acquire", "Build"],
-    metrics: [
-      { label: "Asset Classes", value: "5" },
-      { label: "Strategy Types", value: "17+" },
-      { label: "Setup", value: "Minutes" },
+    bullets: [
+      "Build models, signals, and algos",
+      "Run large-scale parallel experiments",
+      "Promote research straight to live",
     ],
-    features: [
-      "No-Code Web UI + Full API",
-      "Autonomous Agent Interface",
-      "Cross-Asset Simulation",
-      "Full Trade Records",
-      "GPU-Accelerated Sweeps",
-    ],
-    pricing: "Contact us",
     href: "/services/backtesting",
   },
   {
-    id: "live-trading-platform",
-    name: "Live Trading Platform",
+    id: "trading",
+    name: "Trading Terminal",
     description:
-      "Live analytics, P&L attribution, risk monitoring, and T+1 backtest-vs-live diff tracking. Same code runs backtest and live.",
+      "Run, monitor, and control trading in one live environment. See the whole portfolio or drill into the details that matter.",
     icon: Layers,
     color: "text-amber-400",
     bgColor: "bg-amber-400/10",
     borderColor: "border-amber-400/30",
-    lifecycle: ["Build", "Promote", "Run", "Execute", "Observe"],
-    metrics: [
-      { label: "Strategies", value: "17+" },
-      { label: "Deployment", value: "Turnkey" },
-      { label: "Setup", value: "Hours" },
+    bullets: [
+      "Trade and monitor in one place",
+      "Drill from global view to detail",
+      "Alerts, analytics, and live control",
     ],
-    features: [
-      "Full Platform Access",
-      "Strategy Source Code",
-      "Deployment Support",
-      "Ongoing Updates",
-      "T+1 Diff Monitoring",
-    ],
-    pricing: "Contact us",
     href: "/services/platform",
-  },
-  {
-    id: "execution",
-    name: "Execution as a Service",
-    description:
-      "Institutional execution algorithms - TWAP, VWAP, SOR, Almgren-Chriss - charged on alpha generated.",
-    icon: Zap,
-    color: "text-emerald-400",
-    bgColor: "bg-emerald-400/10",
-    borderColor: "border-emerald-400/30",
-    lifecycle: ["Promote", "Run", "Execute", "Observe"],
-    metrics: [
-      { label: "Algo Types", value: "8+" },
-      { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
-      { label: "Setup", value: "Minutes" },
-    ],
-    features: [
-      "TWAP/VWAP Algos",
-      "Smart Order Routing",
-      "DeFi MEV Protection",
-      "Best Execution Reports",
-      "Smart Execution Alpha",
-    ],
-    pricing: "Contact us",
-    href: "/services/execution",
-  },
-  {
-    id: "investment",
-    name: "Investment Management",
-    description:
-      "FCA-authorised investment management for Professional clients. Co-invest at same terms as house.",
-    icon: Briefcase,
-    color: "text-rose-400",
-    bgColor: "bg-rose-400/10",
-    borderColor: "border-rose-400/30",
-    lifecycle: ["Manage", "Report"],
-    metrics: [
-      { label: "Regulation", value: "FCA" },
-      { label: "Structures", value: "SMA / Fund" },
-      { label: "Setup", value: "Hours" },
-    ],
-    features: [
-      "Separately Managed Accounts",
-      "Fund Access",
-      "Cross-Asset Mandates",
-      "Full Transparency",
-      "Monthly Reporting",
-    ],
-    pricing: "Contact us",
-    href: "/services/investment",
   },
   {
     id: "regulatory",
     name: "Regulatory Umbrella",
     description:
-      "FCA Appointed Representative services for institutional algo trading firms. Operate legally in weeks.",
+      "Operate under a regulated framework without building everything yourself. Move faster with the controls and support already in place.",
     icon: Shield,
     color: "text-slate-400",
     bgColor: "bg-slate-400/10",
     borderColor: "border-slate-400/30",
-    lifecycle: ["Manage", "Report"],
-    metrics: [
-      { label: "FCA Ref", value: "975797" },
-      { label: "Activities", value: "6" },
-      { label: "Setup", value: "Fast-Track" },
+    bullets: [
+      "Launch under a regulated framework",
+      "Reduce setup and compliance burden",
+      "Move faster with operational support",
     ],
-    features: [
-      "FCA AR Coverage",
-      "Compliance Supervision",
-      "MiFID II Reporting",
-      "MLRO Services",
-      "Best Execution Monitoring",
-    ],
-    pricing: "Contact us",
     href: "/services/regulatory",
+  },
+  {
+    id: "investment",
+    name: "Investment Management",
+    description:
+      "Access Odum-managed strategies through a regulated structure. Get reporting, oversight, and a clear allocation process.",
+    icon: Briefcase,
+    color: "text-rose-400",
+    bgColor: "bg-rose-400/10",
+    borderColor: "border-rose-400/30",
+    bullets: [
+      "Access managed strategies directly",
+      "Regulated structure and reporting",
+      "Clear allocation and oversight process",
+    ],
+    href: "/services/investment",
   },
 ];
 
@@ -204,26 +133,31 @@ export default function ServicesLandingPage() {
               The same infrastructure we use to run our own capital - available
               to institutional clients at any entry point.
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link href="/services/data" className="flex items-center gap-1.5 hover:text-sky-400 transition-colors">
-                <Database className="size-3.5 text-sky-400" /> Data
-              </Link>
-              <span className="text-border">|</span>
-              <Link href="/services/backtesting" className="flex items-center gap-1.5 hover:text-violet-400 transition-colors">
-                <LineChart className="size-3.5 text-violet-400" /> Strategy
-              </Link>
-              <span className="text-border">|</span>
-              <Link href="/services/platform" className="flex items-center gap-1.5 hover:text-amber-400 transition-colors">
-                <Layers className="size-3.5 text-amber-400" /> Analytics
-              </Link>
-              <span className="text-border">|</span>
-              <Link href="/services/execution" className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors">
-                <Zap className="size-3.5 text-emerald-400" /> Execution
-              </Link>
-              <span className="text-border">|</span>
-              <Link href="/services/regulatory" className="flex items-center gap-1.5 hover:text-rose-400 transition-colors">
-                <Shield className="size-3.5 text-rose-400" /> Regulatory
-              </Link>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm">
+              {[
+                { href: "/services/data", icon: Database, label: "Data", color: "sky", hint: "Unified market data across venues and asset classes." },
+                { href: "/services/backtesting", icon: Brain, label: "Research", color: "violet", hint: "Build models, signals, and algos. Promote to live." },
+                { href: "/services/platform", icon: Layers, label: "Trading", color: "amber", hint: "Run, monitor, and control all your trading in one place." },
+                { href: "/services/regulatory", icon: Shield, label: "Regulatory", color: "slate", hint: "Launch under a regulated framework. Operational in weeks." },
+                { href: "/services/investment", icon: Briefcase, label: "Investment", color: "rose", hint: "Access managed strategies with regulated reporting." },
+              ].map((svc, i) => (
+                <React.Fragment key={svc.label}>
+                  {i > 0 && <span className="text-border hidden sm:inline">|</span>}
+                  <Link href={svc.href} className="group relative">
+                    <span className={`flex items-center gap-1.5 text-muted-foreground group-hover:text-${svc.color}-400 transition-colors cursor-pointer`}>
+                      <svc.icon className={`size-3.5 text-${svc.color}-400`} />
+                      {svc.label}
+                      <ArrowRight className="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </span>
+                    <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 rounded-lg border border-border bg-card px-3 py-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg z-50">
+                      {svc.hint}
+                      <span className={`block mt-1 text-${svc.color}-400 font-medium`}>
+                        Click for details →
+                      </span>
+                    </span>
+                  </Link>
+                </React.Fragment>
+              ))}
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" asChild>
@@ -262,7 +196,7 @@ export default function ServicesLandingPage() {
                 <div className="text-xs text-muted-foreground">Market Data</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-primary">6</div>
+                <div className="text-2xl font-bold text-primary">5</div>
                 <div className="text-xs text-muted-foreground">
                   Service Lines
                 </div>
@@ -304,8 +238,8 @@ export default function ServicesLandingPage() {
               If it worked in testing, it works in production — and every
               morning you can compare yesterday&apos;s live trades against what
               the backtest would have done. All your data comes through one
-              clean feed, no matter the source. Stocks, crypto, DeFi,
-              sports — we handle the messy parts so you just see numbers.
+              clean feed, no matter the source. Stocks, crypto, DeFi, sports —
+              we handle the messy parts so you just see numbers.
             </p>
           </div>
           <div className="flex justify-center" suppressHydrationWarning>
@@ -422,27 +356,16 @@ export default function ServicesLandingPage() {
         </div>
       </section>
 
-      {/* Commercial Offerings */}
-      <section className="container px-4 py-16 md:px-6 md:py-24 border-t border-border">
+      {/* Services */}
+      <section
+        id="services"
+        className="container px-4 py-16 md:px-6 md:py-24 border-t border-border"
+      >
         <div className="mx-auto max-w-2xl text-center">
-          <Badge variant="secondary" className="mb-3">
-            Services
-          </Badge>
-          <h2 className="text-3xl font-bold tracking-tight">
-            Commercial Offerings
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight">Services</h2>
           <p className="mt-4 text-muted-foreground">
-            From data feeds to FCA-authorised investment management. Each maps
-            to specific lifecycle stages.
-          </p>
-          <p className="mt-3 text-sm text-primary/80">
-            Every service has a no-code web interface — and is also fully
-            accessible via our{" "}
-            <Link href="/docs" className="underline hover:text-primary">
-              backend APIs
-            </Link>{" "}
-            for seamless integration with your development tools, around the
-            clock.
+            From market data to FCA-authorised investment management. Every
+            service comes with a no-code interface and full API access.
           </p>
         </div>
 
@@ -452,100 +375,57 @@ export default function ServicesLandingPage() {
             const isHovered = hoveredService === service.id;
 
             return (
-              <Card
-                key={service.id}
-                className={cn(
-                  "relative overflow-hidden transition-all duration-200",
-                  isHovered && service.borderColor,
-                  isHovered && "shadow-lg",
-                )}
-                onMouseEnter={() => setHoveredService(service.id)}
-                onMouseLeave={() => setHoveredService(null)}
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
+              <Link key={service.id} href={service.href}>
+                <Card
+                  className={cn(
+                    "relative overflow-hidden transition-all duration-200 h-full",
+                    isHovered && service.borderColor,
+                    isHovered && "shadow-lg",
+                  )}
+                  onMouseEnter={() => setHoveredService(service.id)}
+                  onMouseLeave={() => setHoveredService(null)}
+                >
+                  <CardHeader>
                     <div
                       className={cn(
-                        "flex size-12 items-center justify-center rounded-lg",
+                        "flex size-10 items-center justify-center rounded-lg",
                         service.bgColor,
                       )}
                     >
-                      <Icon className={cn("size-6", service.color)} />
+                      <Icon className={cn("size-5", service.color)} />
                     </div>
-                    {service.pricing.startsWith("From") ? (
-                      <Badge variant="outline" className="text-xs">
-                        {service.pricing}
-                      </Badge>
-                    ) : (
-                      <Link href="/contact">
-                        <Badge
-                          variant="outline"
-                          className="text-xs hover:bg-accent cursor-pointer"
-                        >
-                          {service.pricing} →
-                        </Badge>
-                      </Link>
-                    )}
-                  </div>
-                  <CardTitle className="mt-4">{service.name}</CardTitle>
-                  <CardDescription className="line-clamp-2">
-                    {service.description}
-                  </CardDescription>
-                  {/* Lifecycle stage indicators */}
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {service.lifecycle.map((stage: string) => (
-                      <span
-                        key={stage}
-                        className="text-[9px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground"
-                      >
-                        {stage}
-                      </span>
-                    ))}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {/* Metrics */}
-                  <div className="flex gap-4 border-y border-border py-3">
-                    {service.metrics.map((metric) => (
-                      <div key={metric.label} className="flex-1">
-                        <div className={cn("text-lg font-bold", service.color)}>
-                          {metric.value}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {metric.label}
-                        </div>
+                    <CardTitle className="mt-3 text-base">
+                      {service.name}
+                    </CardTitle>
+                    <CardDescription className="text-sm">
+                      {service.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0 space-y-1.5">
+                    {service.bullets.map((b: string) => (
+                      <div key={b} className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className={cn("size-3 shrink-0", service.color)} />
+                        {b}
                       </div>
                     ))}
-                  </div>
-
-                  {/* Features */}
-                  <ul className="mt-4 space-y-2">
-                    {service.features.map((feature) => (
-                      <li
-                        key={feature}
-                        className="flex items-center gap-2 text-sm text-muted-foreground"
-                      >
-                        <CheckCircle2 className={cn("size-4", service.color)} />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <Button
-                    className="mt-6 w-full"
-                    variant={isHovered ? "default" : "outline"}
-                    asChild
-                  >
-                    <Link href={service.href}>
-                      Explore {service.name}
-                      <ArrowRight className="ml-2 size-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
+                    <span className={cn("text-xs font-medium inline-flex items-center gap-1 pt-2", service.color)}>
+                      Learn more <ArrowRight className="size-3" />
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
             );
           })}
+        </div>
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Not sure where to start?{" "}
+            <Link href="/contact" className="text-primary hover:underline">
+              Talk to us
+            </Link>{" "}
+            — we&apos;ll help you find the right fit.
+          </p>
         </div>
       </section>
 

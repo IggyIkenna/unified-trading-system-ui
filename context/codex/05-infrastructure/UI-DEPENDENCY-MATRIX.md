@@ -30,7 +30,6 @@
 | --------------------------- | ---------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------- |
 | Deployment Orchestrator API | `deployment-api` (standalone repo, imports `deployment-service`) | `api-service` | `/deployments`, `/cloud-builds/trigger`, `/services`, `/service-status`, `/data-status`, `/config`, `/checklist`, `/capabilities`, `/log-analysis`, `/infra/health` (Layer 2) | `GoogleOAuthMiddleware` on all write routes | `https://deployment-api-<hash>-uc.a.run.app`        |
 | Execution Results API       | `execution-results-api`                                          | `api-service` | `/executions`, `/backtests`, `/analytics`, `/reports`                                                                                                                         | None (internal)                             | `https://execution-results-api-<hash>-uc.a.run.app` |
-| Market Data API             | `market-data-api`                                                | `api-service` | SSE `/stream/orderbook`, `/stream/candles`                                                                                                                                    | None (internal)                             | `https://market-data-api-<hash>-uc.a.run.app`       |
 | Client Reporting Service    | `client-reporting-api`                                           | `api-service` | `/reports`, `/clients`, `/portfolio`                                                                                                                                          | Per-client JWT                              | `https://client-reporting-<hash>-uc.a.run.app`      |
 
 ---
@@ -87,7 +86,6 @@ Each UI uses a `.env.local` file to point to local API instances. Copy from `.en
 | 8001 | `deployment-api` (UTDV3 FastAPI, `uvicorn api.main:app --port 8001`) |
 | 8002 | `execution-results-api` (`uvicorn main:app --port 8002`)             |
 | 8003 | `client-reporting-api` (`uvicorn main:app --port 8003`)              |
-| 8004 | `market-data-api` (`uvicorn main:app --port 8004`)                   |
 
 ### `.env.local` template (UIs calling deployment-api)
 

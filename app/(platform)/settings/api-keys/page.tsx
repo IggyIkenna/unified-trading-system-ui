@@ -90,16 +90,19 @@ export default function ApiKeysSettingsPage() {
   async function handleAddKey() {
     if (!newVenue || !newApiKey || !org) return;
     try {
-      const res = await fetch(`/api/auth/provisioning/organizations/${org.id}/api-keys`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          venue: newVenue,
-          label: newLabel || `${newVenue} Key`,
-          api_key: newApiKey,
-          api_secret: newApiSecret,
-        }),
-      });
+      const res = await fetch(
+        `/api/auth/provisioning/organizations/${org.id}/api-keys`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            venue: newVenue,
+            label: newLabel || `${newVenue} Key`,
+            api_key: newApiKey,
+            api_secret: newApiSecret,
+          }),
+        },
+      );
       if (res.ok) {
         const data = await res.json();
         setOrg(data.organization);
@@ -108,26 +111,40 @@ export default function ApiKeysSettingsPage() {
         setNewLabel("");
         setNewApiKey("");
         setNewApiSecret("");
-        toast({ title: "API key added", description: `${newVenue} key has been securely stored.` });
+        toast({
+          title: "API key added",
+          description: `${newVenue} key has been securely stored.`,
+        });
       }
     } catch {
-      toast({ title: "Error", description: "Failed to add API key.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to add API key.",
+        variant: "destructive",
+      });
     }
   }
 
   async function handleRevokeKey(keyId: string) {
     if (!org) return;
     try {
-      const res = await fetch(`/api/auth/provisioning/organizations/${org.id}/api-keys/${keyId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `/api/auth/provisioning/organizations/${org.id}/api-keys/${keyId}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (res.ok) {
         const data = await res.json();
         setOrg(data.organization);
         toast({ title: "API key revoked" });
       }
     } catch {
-      toast({ title: "Error", description: "Failed to revoke key.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to revoke key.",
+        variant: "destructive",
+      });
     }
   }
 
@@ -150,12 +167,13 @@ export default function ApiKeysSettingsPage() {
             <AlertTriangle className="size-10 text-amber-400 mx-auto" />
             <h2 className="text-lg font-medium">No organisation linked</h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Your account hasn&apos;t been linked to an organisation yet. Once your
-              application is approved and an admin sets up your organisation, you&apos;ll
-              be able to add venue API keys here.
+              Your account hasn&apos;t been linked to an organisation yet. Once
+              your application is approved and an admin sets up your
+              organisation, you&apos;ll be able to add venue API keys here.
             </p>
             <p className="text-xs text-muted-foreground">
-              Contact <span className="text-foreground">support@odum.io</span> if you believe this is an error.
+              Contact <span className="text-foreground">support@odum.io</span>{" "}
+              if you believe this is an error.
             </p>
           </CardContent>
         </Card>
@@ -189,9 +207,10 @@ export default function ApiKeysSettingsPage() {
             <div className="text-sm">
               <p className="font-medium text-amber-400">Security Notice</p>
               <p className="text-muted-foreground">
-                API keys are encrypted at rest and never displayed in full after submission.
-                We only require <strong>read-only</strong> and <strong>trade</strong> permissions &mdash;
-                never withdrawal permissions. You can revoke access at any time.
+                API keys are encrypted at rest and never displayed in full after
+                submission. We only require <strong>read-only</strong> and{" "}
+                <strong>trade</strong> permissions &mdash; never withdrawal
+                permissions. You can revoke access at any time.
               </p>
             </div>
           </div>
@@ -203,7 +222,8 @@ export default function ApiKeysSettingsPage() {
           <CardHeader>
             <CardTitle className="text-base">Add Venue API Key</CardTitle>
             <CardDescription>
-              Connect a new exchange or venue. Keys are stored securely in Secret Manager.
+              Connect a new exchange or venue. Keys are stored securely in
+              Secret Manager.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -216,7 +236,9 @@ export default function ApiKeysSettingsPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {SUPPORTED_VENUES.map((v) => (
-                      <SelectItem key={v} value={v}>{v}</SelectItem>
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -254,12 +276,19 @@ export default function ApiKeysSettingsPage() {
                   onClick={() => setShowSecret(!showSecret)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showSecret ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  {showSecret ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
                 </button>
               </div>
             </div>
             <div className="flex gap-2 pt-2">
-              <Button onClick={handleAddKey} disabled={!newVenue || !newApiKey || !newApiSecret}>
+              <Button
+                onClick={handleAddKey}
+                disabled={!newVenue || !newApiKey || !newApiSecret}
+              >
                 <CheckCircle2 className="size-4 mr-1" /> Save Key
               </Button>
               <Button variant="ghost" onClick={() => setAdding(false)}>
@@ -286,14 +315,24 @@ export default function ApiKeysSettingsPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{key.venue}</span>
-                        <Badge variant="outline" className="text-[10px]">{key.label}</Badge>
+                        <Badge variant="outline" className="text-[10px]">
+                          {key.label}
+                        </Badge>
                         <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
                           Active
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
-                        Key: <code className="bg-muted px-1 rounded">{key.api_key_masked}</code>
-                        {" "}&mdash; Added {new Date(key.added_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                        Key:{" "}
+                        <code className="bg-muted px-1 rounded">
+                          {key.api_key_masked}
+                        </code>{" "}
+                        &mdash; Added{" "}
+                        {new Date(key.added_at).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
                       </div>
                     </div>
                   </div>
@@ -316,8 +355,8 @@ export default function ApiKeysSettingsPage() {
             <Key className="size-10 text-muted-foreground mx-auto" />
             <h2 className="text-lg font-medium">No API keys yet</h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Add your first venue API key to start receiving reports and analytics.
-              We support {SUPPORTED_VENUES.length} venues.
+              Add your first venue API key to start receiving reports and
+              analytics. We support {SUPPORTED_VENUES.length} venues.
             </p>
             <Button onClick={() => setAdding(true)}>
               <Plus className="size-4 mr-1" /> Add Your First Key
@@ -338,9 +377,13 @@ export default function ApiKeysSettingsPage() {
                   <Key className="size-4 text-muted-foreground" />
                   <div>
                     <span className="text-sm">{key.venue}</span>
-                    <span className="text-xs text-muted-foreground ml-2">{key.label}</span>
+                    <span className="text-xs text-muted-foreground ml-2">
+                      {key.label}
+                    </span>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] ml-auto">{key.status}</Badge>
+                  <Badge variant="secondary" className="text-[10px] ml-auto">
+                    {key.status}
+                  </Badge>
                 </div>
               </CardContent>
             </Card>

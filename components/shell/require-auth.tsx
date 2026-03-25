@@ -1,57 +1,44 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Lock, ArrowRight, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
-import { useAuth } from "@/hooks/use-auth"
-import { PERSONAS } from "@/lib/auth/personas"
-
-const isFirebaseMode = process.env.NEXT_PUBLIC_AUTH_PROVIDER === "firebase"
+import * as React from "react";
+import Link from "next/link";
+import { Lock, ArrowRight, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
 
 interface RequireAuthProps {
-  children: React.ReactNode
-  loginHref?: string
+  children: React.ReactNode;
+  loginHref?: string;
 }
 
-export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps) {
-  const { user, loading, loginByEmail, switchPersona } = useAuth()
+export function RequireAuth({ children }: RequireAuthProps) {
+  const { user, loading, loginByEmail } = useAuth();
 
-  const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
-  const [error, setError] = React.useState("")
-  const [submitting, setSubmitting] = React.useState(false)
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
-    )
+    );
   }
 
-  if (user) return <>{children}</>
+  if (user) return <>{children}</>;
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSubmitting(true)
-    setError("")
-    const ok = await loginByEmail(email, password)
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    const ok = await loginByEmail(email, password);
     if (!ok) {
-      setError(
-        isFirebaseMode
-          ? "Invalid credentials. Check your email and password."
-          : "Invalid credentials. Try one of the demo accounts below.",
-      )
+      setError("Invalid credentials. Check your email and password.");
     }
-    setSubmitting(false)
+    setSubmitting(false);
   }
 
   return (
@@ -59,7 +46,11 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
       <header className="border-b border-border">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
+            <img
+              src="/images/odum-logo.png"
+              alt="Odum Research"
+              className="size-9"
+            />
             <span className="text-lg font-semibold">Odum Research</span>
           </Link>
           <Button variant="outline" size="sm" asChild>
@@ -128,40 +119,14 @@ export function RequireAuth({ children, loginHref = "/login" }: RequireAuthProps
             </CardContent>
           </Card>
 
-          {!isFirebaseMode && (
-            <Card className="border-dashed">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Demo Accounts</CardTitle>
-                <CardDescription className="text-xs">
-                  Click to sign in instantly
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {PERSONAS.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => void switchPersona(p.id)}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors text-left"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">
-                        {p.displayName}
-                      </div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        {p.email} &middot; {p.org.name}
-                      </div>
-                      <div className="text-[10px] text-muted-foreground/60 truncate mt-0.5">
-                        {p.description}
-                      </div>
-                    </div>
-                    <ArrowRight className="size-3.5 text-muted-foreground flex-shrink-0" />
-                  </button>
-                ))}
-              </CardContent>
-            </Card>
-          )}
+          <p className="text-center text-xs text-muted-foreground">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="text-primary hover:underline">
+              Sign up
+            </Link>
+          </p>
         </div>
       </main>
     </div>
-  )
+  );
 }

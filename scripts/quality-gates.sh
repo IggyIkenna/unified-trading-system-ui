@@ -1,59 +1,26 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Quality Gates Stub — TypeScript/React UI
+# SSOT: unified-trading-codex/06-coding-standards/quality-gates-ui-template.sh
+#
+# Rolled out via: python3 unified-trading-pm/scripts/propagation/rollout-quality-gates-unified.py
+# Do NOT edit per-repo — edit base-ui.sh in PM and re-run rollout to propagate.
+# Gate logic lives in: unified-trading-pm/scripts/quality-gates-base/base-ui.sh
+#
+# Usage:
+#   bash scripts/quality-gates.sh           # Full: typecheck + lint + tests + build
+#   bash scripts/quality-gates.sh --test    # Typecheck + tests only (skip lint + build)
+#   bash scripts/quality-gates.sh --lint    # Typecheck + lint only (skip tests + build)
+#   bash scripts/quality-gates.sh --quick   # Typecheck + lint only (skip tests + build)
+#   bash scripts/quality-gates.sh --no-fix  # Same as full (no-op flag; kept for compatibility)
+#
+EXPECTED_BASE_VERSION="1.0"
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-$(cd "$(git rev-parse --show-toplevel)/.." && pwd)}"
+BASE_UI="${WORKSPACE_ROOT}/unified-trading-pm/scripts/quality-gates-base/base-ui.sh"
 
-# Next.js 16+ removed the `next lint` subcommand; `npx next lint` is parsed as
-# `next` with project directory "lint" and fails with "Invalid project directory".
-# Use package.json "lint" (eslint .) instead.
-
-CI_MODE=false
-RUN_SMOKE=true
-SKIP_TYPECHECK=false
-
-for arg in "$@"; do
-  case "$arg" in
-    --ci)
-      CI_MODE=true
-      ;;
-    --no-smoke)
-      RUN_SMOKE=false
-      ;;
-    --skip-typecheck)
-      SKIP_TYPECHECK=true
-      ;;
-  esac
-done
-
-echo "=== Quality Gates (unified-trading-system-ui) ==="
-
-echo "--- Lint ---"
-npm run lint
-
-if [[ "$SKIP_TYPECHECK" == "true" ]]; then
-  echo "--- Typecheck --- skipped (--skip-typecheck)"
-else
-  echo "--- Typecheck ---"
-  npx tsc --noEmit
+if [[ ! -f "$BASE_UI" ]]; then
+  echo "❌ Cannot find base-ui.sh at: $BASE_UI" >&2
+  echo "   Ensure unified-trading-pm is cloned at the workspace root." >&2
+  exit 1
 fi
 
-echo "--- Unit tests with coverage ---"
-npx jest --coverage --maxWorkers=2
-
-echo "--- Smoke build ---"
-NEXT_PUBLIC_MOCK_API=true npx next build
-
-if [[ "$RUN_SMOKE" == "true" ]]; then
-  if [[ "${SKIP_SMOKE_TESTS:-false}" == "true" ]]; then
-    echo "--- Playwright smoke tests skipped (SKIP_SMOKE_TESTS=true) ---"
-    echo "=== Quality gates passed ==="
-    exit 0
-  fi
-  echo "--- Playwright smoke tests ---"
-  if [[ "$CI_MODE" == "true" ]]; then
-    npx playwright install --with-deps chromium
-    npx playwright test
-  else
-    npx playwright test --no-deps 2>/dev/null || npx playwright test
-  fi
-fi
-
-echo "=== Quality gates passed ==="
+source "$BASE_UI" "$@"

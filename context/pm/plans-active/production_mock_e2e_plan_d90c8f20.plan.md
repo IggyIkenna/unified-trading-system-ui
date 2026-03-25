@@ -343,7 +343,6 @@ resource behavior validated.
 
 ### 3.2 Domain Data Mocking
 
-- Mock service responses (e.g. market-data-api, execution-results-api) for API repos that depend on them.
 - Use VCR-style fixtures or in-memory mocks so APIs can run E2E without live services.
 
 ### 3.3 Smoke Tests

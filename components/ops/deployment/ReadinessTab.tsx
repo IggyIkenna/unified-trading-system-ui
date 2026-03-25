@@ -369,7 +369,7 @@ function ChecklistItemRow({ item }: ChecklistItemRowProps) {
       className={cn(
         "rounded-lg border border-transparent transition-colors",
         hasDetails &&
-        "cursor-pointer hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-tertiary)]",
+          "cursor-pointer hover:border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-tertiary)]",
         item.blocking && item.status !== "done" && "status-error",
       )}
       onClick={() => hasDetails && setExpanded(!expanded)}

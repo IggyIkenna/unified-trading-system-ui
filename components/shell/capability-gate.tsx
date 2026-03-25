@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useAppAccess } from "@/hooks/use-app-access"
+import * as React from "react";
+import { useAppAccess } from "@/hooks/use-app-access";
 
 interface CapabilityGateProps {
-  capability?: string
-  anyOf?: string[]
-  fallback?: React.ReactNode
-  children: React.ReactNode
+  capability?: string;
+  anyOf?: string[];
+  fallback?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 /**
@@ -28,21 +28,21 @@ export function CapabilityGate({
   fallback = null,
   children,
 }: CapabilityGateProps) {
-  const { hasCapability, hasAnyCapability, loading } = useAppAccess()
+  const { hasCapability, hasAnyCapability, loading } = useAppAccess();
 
-  if (loading) return null
+  if (loading) return null;
 
   if (capability && hasCapability(capability)) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   if (anyOf && hasAnyCapability(...anyOf)) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
   if (!capability && !anyOf) {
-    return <>{children}</>
+    return <>{children}</>;
   }
 
-  return <>{fallback}</>
+  return <>{fallback}</>;
 }

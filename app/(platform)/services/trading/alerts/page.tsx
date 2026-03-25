@@ -328,8 +328,7 @@ export default function AlertsPage() {
           >
             {getSeverityIcon(alert.severity)}
             <span className="hidden sm:inline">
-              {alert.severity.charAt(0).toUpperCase() +
-                alert.severity.slice(1)}
+              {alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1)}
             </span>
           </Badge>
         );
@@ -452,21 +451,20 @@ export default function AlertsPage() {
                 </BatchGuardButton>
               </>
             )}
-            {(alert.status === "active" ||
-              alert.status === "acknowledged") && (
-                <BatchGuardButton isBatch={isBatchMode}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="gap-1 text-xs"
-                    disabled={isBatchMode || resolveMutation.isPending}
-                    onClick={() => handleResolve(alert)}
-                  >
-                    <CheckCircle2 className="size-3" />
-                    <span className="hidden lg:inline">Resolve</span>
-                  </Button>
-                </BatchGuardButton>
-              )}
+            {(alert.status === "active" || alert.status === "acknowledged") && (
+              <BatchGuardButton isBatch={isBatchMode}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1 text-xs"
+                  disabled={isBatchMode || resolveMutation.isPending}
+                  onClick={() => handleResolve(alert)}
+                >
+                  <CheckCircle2 className="size-3" />
+                  <span className="hidden lg:inline">Resolve</span>
+                </Button>
+              </BatchGuardButton>
+            )}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="gap-1">
@@ -517,9 +515,7 @@ export default function AlertsPage() {
                       <div className="text-xs text-muted-foreground mb-1">
                         Entity
                       </div>
-                      <div className="text-sm font-medium">
-                        {alert.entity}
-                      </div>
+                      <div className="text-sm font-medium">{alert.entity}</div>
                       <div className="text-xs text-muted-foreground capitalize">
                         {alert.entityType}
                       </div>
@@ -528,17 +524,13 @@ export default function AlertsPage() {
                       <div className="text-xs text-muted-foreground mb-1">
                         Source
                       </div>
-                      <div className="text-sm font-medium">
-                        {alert.source}
-                      </div>
+                      <div className="text-sm font-medium">{alert.source}</div>
                     </div>
                     <div>
                       <div className="text-xs text-muted-foreground mb-1">
                         Time
                       </div>
-                      <div className="text-sm font-mono">
-                        {alert.timestamp}
-                      </div>
+                      <div className="text-sm font-mono">{alert.timestamp}</div>
                     </div>
                     {alert.value && alert.threshold && (
                       <div>
@@ -557,65 +549,63 @@ export default function AlertsPage() {
                         <div className="text-xs text-muted-foreground mb-1">
                           Recommended Action
                         </div>
-                        <div className="text-sm">
-                          {alert.recommendedAction}
-                        </div>
+                        <div className="text-sm">{alert.recommendedAction}</div>
                       </CardContent>
                     </Card>
                   )}
                   {/* Detail sheet action buttons */}
                   {(alert.status === "active" ||
                     alert.status === "acknowledged") && (
-                      <div className="flex gap-2 pt-2">
-                        {alert.status === "active" && (
-                          <>
-                            <BatchGuardButton isBatch={isBatchMode}>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-1.5"
-                                disabled={
-                                  isBatchMode || acknowledgeMutation.isPending
-                                }
-                                aria-label="Acknowledge alert"
-                                onClick={() => handleAcknowledge(alert)}
-                              >
-                                <Check className="size-4" />
-                                Acknowledge
-                              </Button>
-                            </BatchGuardButton>
-                            <BatchGuardButton isBatch={isBatchMode}>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-1.5"
-                                disabled={
-                                  isBatchMode ||
-                                  escalateMutation.isPending ||
-                                  alert.severity === "critical"
-                                }
-                                onClick={() => handleEscalate(alert)}
-                              >
-                                <ArrowUpCircle className="size-4" />
-                                Escalate
-                              </Button>
-                            </BatchGuardButton>
-                          </>
-                        )}
-                        <BatchGuardButton isBatch={isBatchMode}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-1.5"
-                            disabled={isBatchMode || resolveMutation.isPending}
-                            onClick={() => handleResolve(alert)}
-                          >
-                            <CheckCircle2 className="size-4" />
-                            Resolve
-                          </Button>
-                        </BatchGuardButton>
-                      </div>
-                    )}
+                    <div className="flex gap-2 pt-2">
+                      {alert.status === "active" && (
+                        <>
+                          <BatchGuardButton isBatch={isBatchMode}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1.5"
+                              disabled={
+                                isBatchMode || acknowledgeMutation.isPending
+                              }
+                              aria-label="Acknowledge alert"
+                              onClick={() => handleAcknowledge(alert)}
+                            >
+                              <Check className="size-4" />
+                              Acknowledge
+                            </Button>
+                          </BatchGuardButton>
+                          <BatchGuardButton isBatch={isBatchMode}>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1.5"
+                              disabled={
+                                isBatchMode ||
+                                escalateMutation.isPending ||
+                                alert.severity === "critical"
+                              }
+                              onClick={() => handleEscalate(alert)}
+                            >
+                              <ArrowUpCircle className="size-4" />
+                              Escalate
+                            </Button>
+                          </BatchGuardButton>
+                        </>
+                      )}
+                      <BatchGuardButton isBatch={isBatchMode}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5"
+                          disabled={isBatchMode || resolveMutation.isPending}
+                          onClick={() => handleResolve(alert)}
+                        >
+                          <CheckCircle2 className="size-4" />
+                          Resolve
+                        </Button>
+                      </BatchGuardButton>
+                    </div>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>

@@ -3,7 +3,7 @@
   "title": "Unified Trading System \u2014 Workspace Manifest v2",
   "description": "SSOT for all repos: types, dependencies, doc standards, merge order. Drives CI/CD, completeness checkers, service doc rollout, and quickmerge cascade.",
   "lastUpdated": "2026-03-24T07:11:19Z",
-  "notes": "Updated 2026-03-24: Archive-only sweep — legacy split UIs, standalone APIs (incl. config/trading-analytics/ml-* -api), npm UI-kit/workspace repos, experimental services, and scratch/root data trees exist only under workspace-root archive/ (see archive/README.md). Manifest repositories = active surface only. | Prior: Archived odum-research-website, logs-dashboard-ui, live-health-monitor-ui, batch-audit-api; removed from manifest. | Prior: Active surface: unified-trading-system-ui + deployment-ui + unified-trading-api + auth-api + deployment-api + domain APIs (see ui-api-mapping). | Prior: 2026-03-13 ci_status sweep \u2014 promoted 4 BASELINE_RECORDED\u2192VALIDATED; 15 FAILING. 2026-03-10 unified-admin-ui (npm monorepo) packa...",
+  "notes": "Updated 2026-03-24: Archive-only sweep \u2014 legacy split UIs, standalone APIs (incl. config/trading-analytics/ml-* -api), npm UI-kit/workspace repos, experimental services, and scratch/root data trees exist only under workspace-root archive/ (see archive/README.md). Manifest repositories = active surface only. | Prior: Archived odum-research-website, logs-dashboard-ui, live-health-monitor-ui, batch-audit-api; removed from manifest. | Prior: Active surface: unified-trading-system-ui + deployment-ui + unified-trading-api + auth-api + deployment-api + domain APIs (see ui-api-mapping). | Prior: 2026-03-13 ci_status sweep \u2014 promoted 4 BASELINE_RECORDED\u2192VALIDATED; 15 FAILING. 2026-03-10 unified-admin-ui (npm monorepo) packa...",
   "previousPath": ".cursor/plans/code_optimizations_and_ci_cd_alignment/DEPENDENCY-MATRIX-CANONICAL.json",
   "doc_standards": {
     "service-canonical": {
@@ -71,7 +71,6 @@
     "deployment-api": "0.1.1",
     "deployment-service": "0.1.1",
     "deployment-ui": "0.1.0",
-    "elysium-defi-system": "0.1.0",
     "execution-algo-library": "0.1.6",
     "execution-service": "0.1.1",
     "features-cross-instrument-service": "0.1.1",
@@ -415,35 +414,6 @@
       "tier": 3,
       "role": "ui",
       "tags": ["cefi", "deployment", "standard"]
-    },
-    "elysium-defi-system": {
-      "type": "service",
-      "arch_tier": "service",
-      "doc_standard": "service-canonical",
-      "codex_sections": ["01-domain", "04-architecture", "05-infrastructure"],
-      "version": "0.1.0",
-      "version_source": "pyproject.toml",
-      "dependencies": [
-        {
-          "name": "unified-defi-execution-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": 68,
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "integration",
-      "skipped_gates": [],
-      "status": "active",
-      "github_url": "https://github.com/IggyIkenna/elysium-defi-system",
-      "completion_path": "defi",
-      "semver_rules_ref": "service",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "service",
-      "tags": ["defi", "standard"]
     },
     "execution-algo-library": {
       "type": "library",
@@ -1200,69 +1170,6 @@
       "tier": 3,
       "role": "service",
       "tags": ["cross-domain", "data-ingestion", "standard"]
-    },
-    "market-data-api": {
-      "type": "api-service",
-      "arch_tier": "api",
-      "doc_standard": "service-canonical",
-      "codex_sections": ["02-data", "04-architecture"],
-      "version": "0.1.0",
-      "version_source": "pyproject.toml",
-      "status": "active",
-      "cluster": "api-services",
-      "serves_ui": [],
-      "proxies_service": "market-data-processing-service",
-      "notes": "FastAPI + OAuth middleware. Exposes processed market data to UIs. SSE endpoint for live price streaming.",
-      "github_url": "https://github.com/IggyIkenna/market-data-api",
-      "completion_path": "cefi",
-      "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": 77,
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "service_declaration": {
-        "mode": "live",
-        "capabilities_needed": ["data_source", "event_bus", "cache"],
-        "protocol_default_set": "gcp_live"
-      },
-      "semver_rules_ref": "api",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "api",
-      "tags": ["cefi", "data-ingestion", "standard"]
     },
     "market-data-processing-service": {
       "type": "service",
@@ -2921,7 +2828,6 @@
         "description": "Operational services + API gateways",
         "repos": [
           "client-reporting-api",
-          "market-data-api",
           "position-balance-monitor-service",
           "risk-and-exposure-service"
         ]
@@ -2943,11 +2849,7 @@
       {
         "level": 12,
         "description": "IaC + post-deploy validation (deploy last; references all service images)",
-        "repos": [
-          "elysium-defi-system",
-          "ibkr-gateway-infra",
-          "system-integration-tests"
-        ]
+        "repos": ["ibkr-gateway-infra", "system-integration-tests"]
       }
     ]
   },
@@ -3212,8 +3114,7 @@
         "unified-trading-api",
         "deployment-api",
         "auth-api",
-        "client-reporting-api",
-        "market-data-api"
+        "client-reporting-api"
       ],
       "required_uis": ["unified-trading-system-ui", "deployment-ui"],
       "not_required": [
@@ -3221,7 +3122,7 @@
         "unified-sports-execution-interface",
         "features-onchain-service (optional DeFi)",
         "unified-defi-execution-interface (optional DeFi)",
-        "Legacy split UIs, standalone APIs, npm UI-kit/workspace repos, experimental services, and scratch data trees — archived under workspace-root archive/ only (see archive/README.md). Not part of the active 1 UI + consolidated API surface."
+        "Legacy split UIs, standalone APIs, npm UI-kit/workspace repos, experimental services, and scratch data trees \u2014 archived under workspace-root archive/ only (see archive/README.md). Not part of the active 1 UI + consolidated API surface."
       ]
     },
     "defi": {

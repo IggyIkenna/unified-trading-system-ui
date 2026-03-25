@@ -96,6 +96,7 @@ export interface ExecutionConfig {
 export interface BacktestRun {
   id: string;
   configId: string;
+  configName?: string;
   configVersion: string;
   templateId: string;
   templateName: string;

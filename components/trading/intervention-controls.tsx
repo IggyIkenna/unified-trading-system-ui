@@ -26,7 +26,7 @@ import {
   Play,
   RefreshCw,
   Shield,
-  TrendingDown
+  TrendingDown,
 } from "lucide-react";
 import * as React from "react";
 
@@ -141,7 +141,7 @@ export function InterventionControls({
               className={cn(
                 "gap-1.5",
                 isPaused &&
-                "bg-[var(--status-warning)] hover:bg-[var(--status-warning)]/90",
+                  "bg-[var(--status-warning)] hover:bg-[var(--status-warning)]/90",
               )}
               onClick={isPaused ? handleResumeAll : handlePauseAll}
               disabled={isProcessing}

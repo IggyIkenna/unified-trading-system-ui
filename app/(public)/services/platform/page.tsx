@@ -86,13 +86,19 @@ export default function PlatformServicePage() {
               Live Trading Platform
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              Live analytics.{" "}
-              <span className="text-amber-400">Real-time control.</span>
+              One screen.{" "}
+              <span className="text-amber-400">Every venue. Every trade.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              P&L attribution by factor, position monitoring across all venues,
-              risk analytics, and same-code backtest-vs-live diff tracking --
-              everything you need to operate a live systematic trading book.
+              See all your trades across every product in one normalised view.
+              Live P&amp;L, position monitoring, risk analytics — and every
+              morning, compare yesterday&apos;s live trades against what the
+              backtest would have done.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
+              Full web dashboards for monitoring and control, with API access
+              for custom integrations. The same code runs your backtests and
+              your live strategies.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>
@@ -124,7 +130,77 @@ export default function PlatformServicePage() {
         </div>
       </section>
 
-      {/* Block 1: Catalogue */}
+      {/* Inside the Platform */}
+      <section className="border-b border-border bg-card/30">
+        <div className="container px-4 py-12 md:px-6">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="text-xl font-semibold mb-6">Inside the Platform</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Trading Terminal</div>
+                  <p className="text-xs text-muted-foreground">
+                    Full trading terminal with candlestick charts, technical indicators
+                    (Bollinger Bands, EMA, SMA), live order book, depth chart, and
+                    manual execution panel. Trade any instrument from one screen.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">10-Factor P&amp;L Waterfall</div>
+                  <p className="text-xs text-muted-foreground">
+                    P&amp;L broken down by funding, carry, basis, delta, gamma, vega, theta,
+                    slippage, fees, and rebates. Drill into any strategy for factor attribution.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Position Grid</div>
+                  <p className="text-xs text-muted-foreground">
+                    All positions across every venue — spot, perps, futures, options, DeFi,
+                    predictions. Unrealised P&amp;L, exposure, margin utilisation, collapsible by venue.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Risk Dashboard</div>
+                  <p className="text-xs text-muted-foreground">
+                    VaR, Greeks, position limits, circuit breaker status. Kill switch for
+                    emergency stops. Margin utilisation by venue with real-time alerts.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Strategy Management</div>
+                  <p className="text-xs text-muted-foreground">
+                    See all strategies live — by archetype (basis, arb, momentum, yield),
+                    asset class, and status. AUM, P&amp;L sparklines, execution mode toggle.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-amber-500/10">
+                <CardContent className="pt-5">
+                  <div className="text-sm font-medium mb-1">Live vs Batch Reconciliation</div>
+                  <p className="text-xs text-muted-foreground">
+                    Every morning, compare yesterday&apos;s live trades against backtest.
+                    Break detection for position, P&amp;L, and fee mismatches with investigation workflow.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              Plus: DeFi operations (swaps, lending, staking), sports and prediction market panels,
+              options chain, order bundles, and full audit trail.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Block 1: Detailed feature list */}
       <section className="container px-4 py-16 md:px-6">
         <div className="mx-auto max-w-4xl">
           <h2 className="text-2xl font-bold mb-2">
@@ -352,17 +428,17 @@ export default function PlatformServicePage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Self-Service</CardTitle>
                   <CardDescription className="text-xs">
-                    You deploy, we provide the infrastructure
+                    Full dashboards and API — no code required
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Deploy and configure your own strategies
+                    Monitor P&amp;L, positions, and risk from the web dashboard
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Full access to monitoring dashboards
+                    Deploy and configure strategies without writing code
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
@@ -370,7 +446,7 @@ export default function PlatformServicePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    API access for custom integrations
+                    Full API access for programmatic integrations
                   </div>
                 </CardContent>
               </Card>
@@ -402,19 +478,17 @@ export default function PlatformServicePage() {
               </Card>
               <Card className="border-muted">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">
-                    BYO Infrastructure
-                  </CardTitle>
+                  <CardTitle className="text-sm">Why Integrated</CardTitle>
                   <CardDescription className="text-xs">
-                    Not available
+                    Built-in controls and connectivity
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <p>
-                    The live trading platform requires our integrated
-                    infrastructure for real-time risk controls, venue
-                    connectivity, and regulatory compliance. BYO is not
-                    supported.
+                    Real-time risk controls, venue connectivity, and regulatory
+                    compliance require integrated infrastructure. This ensures
+                    every trade is auditable, every position is monitored, and
+                    circuit breakers work instantly.
                   </p>
                 </CardContent>
               </Card>

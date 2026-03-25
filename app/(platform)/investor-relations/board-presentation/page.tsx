@@ -216,10 +216,10 @@ const slides = [
         desc: "Research infrastructure and simulation",
       },
       {
-        name: "Execution as a Service",
-        stages: ["Promote", "Run", "Observe"],
-        model: "Performance-based",
-        desc: "Bring strategies, use our execution layer",
+        name: "Trading Terminal",
+        stages: ["Run", "Observe"],
+        model: "Platform subscription",
+        desc: "Live trading, monitoring, execution, and control",
       },
       {
         name: "Regulatory Umbrella",
@@ -361,10 +361,10 @@ const slides = [
         note: "we use the backtest",
       },
       {
-        name: "Execution as a Service",
-        model: "30% of alpha · 20% at $10M+ volume",
+        name: "Trading Terminal",
+        model: "Platform subscription + advanced execution bolt-on",
         status: "live",
-        note: "we use the execution",
+        note: "execution included in terminal, advanced algos as add-on",
       },
       {
         name: "Regulatory Umbrella (AR)",

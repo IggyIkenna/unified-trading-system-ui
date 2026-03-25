@@ -33,7 +33,7 @@ import {
   Timer,
   TrendingDown,
   Users,
-  Zap
+  Zap,
 } from "lucide-react";
 import * as React from "react";
 
@@ -202,10 +202,10 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
             {ACTIVE_KILL_SWITCHES.map((ks) => {
               const minutesRemaining = ks.autoResumeEnabled
                 ? Math.max(
-                  0,
-                  ks.autoResumeMinutes -
-                  Math.floor((nowMs - ks.armedAt.getTime()) / 60000),
-                )
+                    0,
+                    ks.autoResumeMinutes -
+                      Math.floor((nowMs - ks.armedAt.getTime()) / 60000),
+                  )
                 : null;
 
               return (
@@ -234,8 +234,9 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                   <div className="grid grid-cols-3 gap-2 text-xs">
                     <div className="flex items-center gap-1 text-muted-foreground">
                       <Clock className="size-3" />
-                      Armed{" "}
-                      {Math.floor((nowMs - ks.armedAt.getTime()) / 60000)}{" "}
+                      Armed {Math.floor(
+                        (nowMs - ks.armedAt.getTime()) / 60000,
+                      )}{" "}
                       min ago
                     </div>
                     <div className="flex items-center gap-1 text-muted-foreground">
@@ -381,9 +382,9 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                           className={cn(
                             "size-4",
                             pb.severity === "critical" &&
-                            "text-[var(--status-error)]",
+                              "text-[var(--status-error)]",
                             pb.severity === "high" &&
-                            "text-[var(--status-warning)]",
+                              "text-[var(--status-warning)]",
                             pb.severity === "medium" && "text-blue-500",
                             pb.severity === "low" && "text-muted-foreground",
                           )}

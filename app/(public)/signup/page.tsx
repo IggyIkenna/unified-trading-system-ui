@@ -13,15 +13,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type {
-  DocumentArtifact,
-  OnboardingApplication,
-} from "@/lib/api/mock-onboarding-state";
-import { addApplication, addDocument } from "@/lib/api/mock-onboarding-state";
-import type { MockAccessRequest } from "@/lib/api/mock-provisioning-state";
-import { addRequest } from "@/lib/api/mock-provisioning-state";
-import { newOnboardingSubmitIds } from "@/lib/demo-ids";
-import { mock01 } from "@/lib/deterministic-mock";
+import { submitSignup, registerDocument } from "@/lib/api/signup-client";
+import { getFirebaseStorage } from "@/lib/auth/firebase-config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import {
   ArrowLeft,
   ArrowRight,
@@ -42,9 +36,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getFirebaseDb, getFirebaseStorage } from "@/lib/auth/firebase-config";
 import React, { Suspense } from "react";
 
 const SERVICES = [
@@ -65,12 +56,12 @@ const SERVICES = [
     desc: "ML model training, strategy backtesting, signal configuration",
   },
   {
-    id: "execution",
-    name: "Execution as a Service",
-    icon: Zap,
-    color: "text-emerald-400",
+    id: "platform",
+    name: "Trading Terminal",
+    icon: Layers,
+    color: "text-amber-400",
     price: "Contact us",
-    desc: "Multi-venue execution, position management, risk monitoring",
+    desc: "Live trading, monitoring, execution, and control in one environment",
   },
   {
     id: "investment",
@@ -78,15 +69,7 @@ const SERVICES = [
     icon: Briefcase,
     color: "text-rose-400",
     price: "Contact us",
-    desc: "FCA-authorised investment management, SMA/Fund structures",
-  },
-  {
-    id: "platform",
-    name: "Full Platform",
-    icon: Layers,
-    color: "text-amber-400",
-    price: "Contact us",
-    desc: "End-to-end: data, research, execution, reporting, compliance",
+    desc: "FCA-authorised managed strategies with full reporting and oversight",
   },
   {
     id: "regulatory",
@@ -111,9 +94,12 @@ const REG_ENGAGEMENT = [
   },
 ];
 const REG_ACTIVITIES = [
-  { id: "dealing_principal", label: "Dealing in Investments as Principal" },
   { id: "dealing_agent", label: "Dealing in Investments as Agent" },
-  { id: "arranging", label: "Arranging Deals in Investments" },
+  { id: "arranging", label: "Arranging (Bringing About) Deals in Investments" },
+  {
+    id: "making_arrangements",
+    label: "Making Arrangements with a View to Transactions",
+  },
   {
     id: "managing",
     label:
@@ -423,12 +409,13 @@ function StepIndicator({
               type="button"
               disabled={!done || current === 5}
               onClick={() => done && onNavigate(num)}
-              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${done
+              className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                done
                   ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 cursor-pointer"
                   : active
                     ? "bg-primary/10 text-primary ring-1 ring-primary/30"
                     : "text-muted-foreground"
-                }`}
+              }`}
             >
               {done ? (
                 <Check className="size-3" />
@@ -505,13 +492,19 @@ function OnboardingWizard({
   const [signatures, setSignatures] = React.useState<Record<string, string>>(
     {},
   );
-  const [applicantType, setApplicantType] = React.useState<ApplicantType>("individual");
+  const [applicantType, setApplicantType] =
+    React.useState<ApplicantType>("individual");
   const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null);
   const [appId, setAppId] = React.useState("");
-  const [draftId] = React.useState(
-    () => `draft-${Math.floor(mock01(0, 0x4e3b) * 1e12).toString(36)}`,
-  );
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [submitError, setSubmitError] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
+  const [firebaseUid, setFirebaseUid] = React.useState("");
+  const [onboardingRequestId, setOnboardingRequestId] = React.useState("");
+  const draftId = React.useRef(`draft-${Date.now().toString(36)}`).current;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resumeDraft, setResumeDraft] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -544,6 +537,8 @@ function OnboardingWizard({
           declarations,
           signatures,
           step,
+          firebaseUid,
+          onboardingRequestId,
         }),
       );
     }
@@ -561,22 +556,73 @@ function OnboardingWizard({
     docs,
     declarations,
     signatures,
+    firebaseUid,
+    onboardingRequestId,
   ]);
 
   const orgSlug = company.toLowerCase().replace(/\s+/g, "-") || "unknown";
 
-  async function uploadFileToStorage(file: File | Blob, docType: string, fileName: string) {
+  async function uploadFileToStorage(
+    file: File | Blob,
+    docType: string,
+    fileName: string,
+  ): Promise<{
+    ok: boolean;
+    storage_path: string;
+    download_url: string;
+    file_name: string;
+  } | null> {
     const storage = getFirebaseStorage();
+    const storagePath = `onboarding-docs/${orgSlug}/${draftId}/${docType}-${fileName}`;
+    const contentType =
+      file instanceof File
+        ? file.type || "application/octet-stream"
+        : "application/pdf";
+
     if (!storage) {
       console.warn("Firebase Storage not configured — skipping upload");
-      return { ok: true, storage_path: `local/${docType}/${fileName}`, download_url: "", file_name: fileName };
+      const stub = {
+        ok: true,
+        storage_path: `local/${docType}/${fileName}`,
+        download_url: "",
+        file_name: fileName,
+      };
+      if (firebaseUid && onboardingRequestId) {
+        try {
+          await registerDocument({
+            firebase_uid: firebaseUid,
+            onboarding_request_id: onboardingRequestId,
+            doc_type: docType,
+            file_name: fileName,
+            storage_path: stub.storage_path,
+            content_type: contentType,
+          });
+        } catch {
+          /* best-effort metadata when storage is offline */
+        }
+      }
+      return stub;
     }
-    const storagePath = `onboarding-docs/${orgSlug}/${draftId}/${docType}-${fileName}`;
-    const storageRef = ref(storage, storagePath);
     try {
+      const storageRef = ref(storage, storagePath);
       await uploadBytes(storageRef, file);
       const downloadUrl = await getDownloadURL(storageRef);
-      return { ok: true, storage_path: storagePath, download_url: downloadUrl, file_name: fileName };
+      if (firebaseUid && onboardingRequestId) {
+        await registerDocument({
+          firebase_uid: firebaseUid,
+          onboarding_request_id: onboardingRequestId,
+          doc_type: docType,
+          file_name: fileName,
+          storage_path: storagePath,
+          content_type: contentType,
+        });
+      }
+      return {
+        ok: true,
+        storage_path: storagePath,
+        download_url: downloadUrl,
+        file_name: fileName,
+      };
     } catch {
       return null;
     }
@@ -615,140 +661,56 @@ function OnboardingWizard({
   const reqDocs = docSlots.filter(isReq);
 
   async function handleSubmit() {
-    const ids = newOnboardingSubmitIds();
-    const id = ids.applicationId;
-    const now = ids.nowIso;
-    const engType = selOpts.has("ar")
-      ? ("ar" as const)
-      : selOpts.has("advisor")
-        ? ("advisor" as const)
-        : null;
-    const regActs = [
-      "dealing_principal",
-      "dealing_agent",
-      "arranging",
-      "managing",
-    ].filter((a) => selOpts.has(a));
-    const hasFundCrypto = selOpts.has("fund_crypto_spot");
-    const hasFundDeriv = selOpts.has("fund_derivatives");
-    const fundReq =
-      hasFundCrypto && hasFundDeriv
-        ? ("both" as const)
-        : hasFundDeriv
-          ? ("derivatives_tradfi" as const)
-          : hasFundCrypto
-            ? ("crypto_spot" as const)
-            : null;
-    const podStatus = hasFundDeriv
-      ? ("pending" as const)
-      : ("not_required" as const);
+    if (password.length < 6) {
+      setSubmitError("Password must be at least 6 characters.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setSubmitError("Passwords do not match.");
+      return;
+    }
 
-    // Write to Firebase Firestore
-    const db = getFirebaseDb();
+    setSubmitting(true);
+    setSubmitError("");
+
     try {
-      if (!db) {
-        console.warn("Firebase Firestore not configured — skipping write");
-      } else {
-      await addDoc(collection(db, "onboarding_applications"), {
-        application_id: id,
-        applicant_type: applicantType,
-        full_name: name,
-        email,
-        organisation: company,
-        phone: phone || null,
-        expected_aum: expectedAum || null,
-        service_type: serviceType,
-        engagement_type: engType,
-        regulated_activities: regActs,
-        fund_structure_requested: fundReq,
-        pod_registration_status: podStatus,
-        desired_product_slugs: [...selOpts],
-        documents: Object.entries(docs).map(([key, fileName]) => ({
-          doc_type: key,
-          file_name: fileName,
-          storage_path: `onboarding-docs/${orgSlug}/${draftId}/${key}-${fileName}`,
-        })),
-        status: "submitted",
-        submitted_at: serverTimestamp(),
-        created_at: serverTimestamp(),
-      });
-      }
-    } catch (err) {
-      console.error("Failed to write to Firestore:", err);
-    }
-
-    // Also keep local mock state for UI continuity
-    const app: OnboardingApplication = {
-      id,
-      applicant_user_id: ids.applicantUserId,
-      applicant_name: name,
-      applicant_email: email,
-      org_name: company,
-      desired_product_slugs: [...selOpts],
-      subscription_tier: "standard",
-      engagement_type: engType,
-      regulated_activities: regActs,
-      fund_structure_requested: fundReq,
-      pod_registration_status: podStatus,
-      status: "submitted",
-      submitted_at: now,
-      reviewer_id: null,
-      review_note: "",
-      correlation_id: `corr-${id}`,
-      created_at: now,
-      updated_at: now,
-    };
-    addApplication(app);
-    for (const [key, fileName] of Object.entries(docs)) {
-      if (!fileName) continue;
-      const doc: DocumentArtifact = {
-        id: ids.docId(key),
-        application_id: id,
-        doc_type: key as DocumentArtifact["doc_type"],
-        file_name: fileName,
-        uploaded_at: now,
-        review_status: "pending",
-        review_note: "",
-      };
-      addDocument(doc);
-    }
-    const req: MockAccessRequest = {
-      id: ids.accessRequestId,
-      requester_email: email,
-      requester_name: name,
-      org_id: company.toLowerCase().replace(/\s+/g, "-"),
-      requested_entitlements: ["reporting"],
-      reason: `Auto-request from ${svcName} onboarding ${id}`,
-      status: "pending",
-      admin_note: "",
-      reviewed_by: "",
-      created_at: now,
-      updated_at: now,
-    };
-    addRequest(req);
-    setAppId(id);
-    setStep(5);
-    localStorage.setItem(
-      "onboarding-draft",
-      JSON.stringify({
-        appId: id,
-        draftId,
-        orgSlug,
-        service: serviceType,
-        applicantType,
+      const result = await submitSignup({
         name,
         email,
+        password,
         company,
         phone,
-        expectedAum,
-        selOpts: [...selOpts],
-        docs,
-        declarations,
-        signatures,
-        step: 5,
-        submittedAt: now,
-      }),
-    );
+        service_type: serviceType,
+        selected_options: [...selOpts],
+        expected_aum: expectedAum,
+      });
+
+      const uid = result.user.firebase_uid;
+      const reqId = result.onboarding_request_id;
+      setFirebaseUid(uid);
+      setOnboardingRequestId(reqId);
+      setAppId(reqId);
+
+      for (const [key, fileName] of Object.entries(docs)) {
+        if (!fileName) continue;
+        await registerDocument({
+          firebase_uid: uid,
+          onboarding_request_id: reqId,
+          doc_type: key,
+          file_name: String(fileName),
+          storage_path: `onboarding-docs/${orgSlug}/${draftId}/${key}-${fileName}`,
+        });
+      }
+
+      setStep(5);
+      localStorage.removeItem("onboarding-draft");
+    } catch (err: unknown) {
+      setSubmitError(
+        err instanceof Error ? err.message : "Signup failed. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -793,7 +755,9 @@ function OnboardingWizard({
                     <Button
                       size="sm"
                       onClick={() => {
-                        setApplicantType(resumeDraft.applicantType || "individual");
+                        setApplicantType(
+                          resumeDraft.applicantType || "individual",
+                        );
                         setName(resumeDraft.name || "");
                         setEmail(resumeDraft.email || "");
                         setCompany(resumeDraft.company || "");
@@ -833,8 +797,16 @@ function OnboardingWizard({
                 <div className="grid grid-cols-2 gap-3">
                   {(
                     [
-                      { id: "individual" as const, label: "Individual", desc: "Personal application" },
-                      { id: "company" as const, label: "Company / Organisation", desc: "Corporate application" },
+                      {
+                        id: "individual" as const,
+                        label: "Individual",
+                        desc: "Personal application",
+                      },
+                      {
+                        id: "company" as const,
+                        label: "Company / Organisation",
+                        desc: "Corporate application",
+                      },
                     ] as const
                   ).map((opt) => (
                     <button
@@ -844,7 +816,9 @@ function OnboardingWizard({
                       className={`text-left rounded-lg border p-3 transition-colors ${applicantType === opt.id ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "hover:bg-accent/30"}`}
                     >
                       <span className="text-sm font-medium">{opt.label}</span>
-                      <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {opt.desc}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -870,7 +844,11 @@ function OnboardingWizard({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs">{applicantType === "company" ? "Company / Organisation *" : "Company (optional)"}</Label>
+                  <Label className="text-xs">
+                    {applicantType === "company"
+                      ? "Company / Organisation *"
+                      : "Company (optional)"}
+                  </Label>
                   <Input
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
@@ -902,9 +880,36 @@ function OnboardingWizard({
                   inputMode="numeric"
                 />
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Password *</Label>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min 6 characters"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Confirm Password *</Label>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Repeat password"
+                  />
+                </div>
+              </div>
               <div className="flex justify-end pt-2">
                 <OnboardingNextBtn
-                  disabled={!name || !email || !company}
+                  disabled={
+                    !name ||
+                    !email ||
+                    !company ||
+                    !password ||
+                    password.length < 6 ||
+                    password !== confirmPassword
+                  }
                   onClick={() => setStep(2)}
                 />
               </div>
@@ -1207,7 +1212,7 @@ function OnboardingWizard({
                               />
                               {signatures[slot.key] &&
                                 signatures[slot.key].toLowerCase() !==
-                                name.toLowerCase() && (
+                                  name.toLowerCase() && (
                                   <p className="text-xs text-amber-400">
                                     Signature should match your full name:{" "}
                                     {name}
@@ -1411,10 +1416,16 @@ function OnboardingWizard({
                   </div>
                 ))}
               </div>
+              {submitError && (
+                <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
+                  {submitError}
+                </p>
+              )}
               <div className="flex justify-between pt-2">
                 <OnboardingBackBtn onStep={setStep} to={3} />
-                <Button onClick={handleSubmit}>
-                  Submit Application <ArrowRight className="ml-2 size-4" />
+                <Button onClick={handleSubmit} disabled={submitting}>
+                  {submitting ? "Submitting..." : "Submit Application"}{" "}
+                  <ArrowRight className="ml-2 size-4" />
                 </Button>
               </div>
             </CardContent>

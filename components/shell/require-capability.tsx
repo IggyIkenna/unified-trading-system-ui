@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Loader2 } from "lucide-react"
-import { useAppAccess } from "@/hooks/use-app-access"
-import { AccessDenied } from "./access-denied"
+import * as React from "react";
+import { Loader2 } from "lucide-react";
+import { useAppAccess } from "@/hooks/use-app-access";
+import { AccessDenied } from "./access-denied";
 
 interface RequireCapabilityProps {
-  capability?: string
-  anyOf?: string[]
-  children: React.ReactNode
+  capability?: string;
+  anyOf?: string[];
+  children: React.ReactNode;
 }
 
 /**
@@ -25,14 +25,15 @@ export function RequireCapability({
   anyOf,
   children,
 }: RequireCapabilityProps) {
-  const { authorized, hasCapability, hasAnyCapability, loading } = useAppAccess()
+  const { authorized, hasCapability, hasAnyCapability, loading } =
+    useAppAccess();
 
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <Loader2 className="size-8 animate-spin text-muted-foreground" />
       </div>
-    )
+    );
   }
 
   if (!authorized) {
@@ -41,16 +42,16 @@ export function RequireCapability({
         title="No Application Access"
         description="You have not been granted access to this application. Contact your administrator."
       />
-    )
+    );
   }
 
   if (capability && !hasCapability(capability)) {
-    return <AccessDenied />
+    return <AccessDenied />;
   }
 
   if (anyOf && !hasAnyCapability(...anyOf)) {
-    return <AccessDenied />
+    return <AccessDenied />;
   }
 
-  return <>{children}</>
+  return <>{children}</>;
 }

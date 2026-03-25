@@ -141,7 +141,9 @@ function ContactPageContent() {
         message = `I'm interested in ${allLabels[0]}. I'd like to learn more about pricing and how it works.`;
       } else {
         const lines = allLabels.map((l) => `I'm interested in ${l}.`);
-        message = lines.join("\n") + "\n\nI'd like to learn more about pricing and how these services work together.";
+        message =
+          lines.join("\n") +
+          "\n\nI'd like to learn more about pricing and how these services work together.";
       }
     }
 
@@ -419,8 +421,19 @@ export default function ContactPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <div className="text-muted-foreground">Loading...</div>
+        <div className="min-h-screen bg-background">
+          <div className="container px-4 py-16 md:px-6">
+            <div className="mx-auto max-w-4xl">
+              <div className="text-center mb-12">
+                <h1 className="text-4xl font-bold tracking-tight">
+                  Contact Us
+                </h1>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  Get in touch with our team.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       }
     >

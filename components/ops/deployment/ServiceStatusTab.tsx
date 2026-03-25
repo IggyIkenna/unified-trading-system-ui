@@ -361,25 +361,25 @@ export function ServiceStatusTab({ serviceName }: ServiceStatusTabProps) {
                           </div>
                           {status.details.deployment.used_force !==
                             undefined && (
-                              <div>
-                                <span className="text-[var(--color-text-muted)]">
-                                  Force:
-                                </span>{" "}
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs"
-                                  style={{
-                                    color: status.details.deployment.used_force
-                                      ? "var(--color-accent-green)"
-                                      : "var(--color-accent-red)",
-                                  }}
-                                >
-                                  {status.details.deployment.used_force
-                                    ? "YES"
-                                    : "NO"}
-                                </Badge>
-                              </div>
-                            )}
+                            <div>
+                              <span className="text-[var(--color-text-muted)]">
+                                Force:
+                              </span>{" "}
+                              <Badge
+                                variant="outline"
+                                className="text-xs"
+                                style={{
+                                  color: status.details.deployment.used_force
+                                    ? "var(--color-accent-green)"
+                                    : "var(--color-accent-red)",
+                                }}
+                              >
+                                {status.details.deployment.used_force
+                                  ? "YES"
+                                  : "NO"}
+                              </Badge>
+                            </div>
+                          )}
                           {status.api?.gcs_fuse?.active !== undefined && (
                             <div>
                               <span className="text-[var(--color-text-muted)]">
@@ -419,11 +419,11 @@ export function ServiceStatusTab({ serviceName }: ServiceStatusTabProps) {
                               {status.details.deployment.total_shards} completed
                               {(status.details.deployment.failed_shards ?? 0) >
                                 0 && (
-                                  <span className="text-[var(--color-accent-red)] ml-2">
-                                    ({status.details.deployment.failed_shards}{" "}
-                                    failed)
-                                  </span>
-                                )}
+                                <span className="text-[var(--color-accent-red)] ml-2">
+                                  ({status.details.deployment.failed_shards}{" "}
+                                  failed)
+                                </span>
+                              )}
                             </span>
                           </div>
                         )}

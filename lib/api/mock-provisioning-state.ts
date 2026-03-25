@@ -397,7 +397,10 @@ export function updateOrganization(
   return state.organizations[idx];
 }
 
-export function addApiKey(orgId: string, key: MockVenueApiKey): MockOrganization | null {
+export function addApiKey(
+  orgId: string,
+  key: MockVenueApiKey,
+): MockOrganization | null {
   const state = getState();
   const org = state.organizations.find((o) => o.id === orgId);
   if (!org) return null;
@@ -407,7 +410,10 @@ export function addApiKey(orgId: string, key: MockVenueApiKey): MockOrganization
   return org;
 }
 
-export function removeApiKey(orgId: string, keyId: string): MockOrganization | null {
+export function removeApiKey(
+  orgId: string,
+  keyId: string,
+): MockOrganization | null {
   const state = getState();
   const org = state.organizations.find((o) => o.id === orgId);
   if (!org) return null;

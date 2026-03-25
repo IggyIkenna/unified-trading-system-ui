@@ -300,22 +300,25 @@ export function CloudConfigBrowser({
       {/* Discovery Result */}
       {discoveredCount !== null && (
         <div
-          className={`flex items-center gap-2 p-2 rounded ${discoveredCount >= 10000 ? "status-warning" : "status-success"
-            }`}
+          className={`flex items-center gap-2 p-2 rounded ${
+            discoveredCount >= 10000 ? "status-warning" : "status-success"
+          }`}
         >
           <CheckCircle2
-            className={`h-4 w-4 ${discoveredCount >= 10000
+            className={`h-4 w-4 ${
+              discoveredCount >= 10000
                 ? "text-[var(--color-accent-amber)]"
                 : "text-[var(--color-accent-green)]"
-              }`}
+            }`}
           />
           <span className="text-sm text-[var(--color-text-secondary)]">
             Found{" "}
             <span
-              className={`font-bold ${discoveredCount >= 10000
+              className={`font-bold ${
+                discoveredCount >= 10000
                   ? "text-[var(--color-accent-amber)]"
                   : "text-[var(--color-accent-green)]"
-                }`}
+              }`}
             >
               {discoveredCount >= 10000
                 ? `${discoveredCount}+`

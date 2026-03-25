@@ -45,7 +45,13 @@ export default function AdminOrgDetailPage() {
   const orgId = params.id as string;
   const [org, setOrg] = React.useState<OrgDetail | null>(null);
   const [members, setMembers] = React.useState<
-    Array<{ id: string; name: string; email: string; role: string; status: string }>
+    Array<{
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      status: string;
+    }>
   >([]);
   const [loading, setLoading] = React.useState(true);
 
@@ -134,7 +140,11 @@ export default function AdminOrgDetailPage() {
         <div className="flex items-center gap-2">
           <Badge
             variant={org.status === "active" ? "default" : "secondary"}
-            className={org.status === "active" ? "bg-emerald-500/10 text-emerald-400" : ""}
+            className={
+              org.status === "active"
+                ? "bg-emerald-500/10 text-emerald-400"
+                : ""
+            }
           >
             {org.status}
           </Badge>
@@ -164,8 +174,12 @@ export default function AdminOrgDetailPage() {
         <Card>
           <CardContent className="py-4 text-center">
             <Mail className="size-6 text-primary mx-auto mb-2" />
-            <div className="text-xs text-muted-foreground mt-2">Primary Contact</div>
-            <div className="text-sm font-medium truncate">{org.contact_name}</div>
+            <div className="text-xs text-muted-foreground mt-2">
+              Primary Contact
+            </div>
+            <div className="text-sm font-medium truncate">
+              {org.contact_name}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -181,15 +195,23 @@ export default function AdminOrgDetailPage() {
           ) : (
             <div className="space-y-2">
               {members.map((m) => (
-                <div key={m.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30">
+                <div
+                  key={m.id}
+                  className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/30"
+                >
                   <div>
-                    <Link href={`/admin/users/${m.id}`} className="font-medium text-sm hover:underline">
+                    <Link
+                      href={`/admin/users/${m.id}`}
+                      className="font-medium text-sm hover:underline"
+                    >
                       {m.name}
                     </Link>
                     <p className="text-xs text-muted-foreground">{m.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">{m.role}</Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {m.role}
+                    </Badge>
                     <Badge
                       variant={m.status === "active" ? "default" : "secondary"}
                       className="text-xs"
@@ -209,7 +231,8 @@ export default function AdminOrgDetailPage() {
           <CardTitle className="text-base">Venue API Keys</CardTitle>
           <CardDescription>
             API keys submitted by the client for venue connectivity.
-            {activeKeys.length === 0 && " None submitted yet — reports will be empty until keys are provided."}
+            {activeKeys.length === 0 &&
+              " None submitted yet — reports will be empty until keys are provided."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -217,24 +240,34 @@ export default function AdminOrgDetailPage() {
             <div className="text-center py-6">
               <Key className="size-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">
-                No API keys yet. The client needs to add keys at Settings &gt; API Keys.
+                No API keys yet. The client needs to add keys at Settings &gt;
+                API Keys.
               </p>
             </div>
           ) : (
             <div className="space-y-2">
               {org.api_keys.map((key) => (
-                <div key={key.id} className="flex items-center justify-between p-2 rounded-lg border">
+                <div
+                  key={key.id}
+                  className="flex items-center justify-between p-2 rounded-lg border"
+                >
                   <div className="flex items-center gap-3">
                     <Key className="size-4 text-muted-foreground" />
                     <div>
                       <span className="text-sm font-medium">{key.venue}</span>
-                      <span className="text-xs text-muted-foreground ml-2">{key.label}</span>
+                      <span className="text-xs text-muted-foreground ml-2">
+                        {key.label}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{key.api_key_masked}</code>
+                    <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                      {key.api_key_masked}
+                    </code>
                     <Badge
-                      variant={key.status === "active" ? "default" : "secondary"}
+                      variant={
+                        key.status === "active" ? "default" : "secondary"
+                      }
                       className={`text-[10px] ${key.status === "active" ? "bg-emerald-500/10 text-emerald-400" : ""}`}
                     >
                       {key.status}
@@ -256,14 +289,15 @@ export default function AdminOrgDetailPage() {
             {activeKeys.length > 0 ? (
               <>
                 <CheckCircle2 className="size-4 text-emerald-400 inline mr-1" />
-                This organisation has {activeKeys.length} active API key{activeKeys.length > 1 ? "s" : ""}.
-                Reports are populated from {activeKeys.map((k) => k.venue).join(", ")} data.
+                This organisation has {activeKeys.length} active API key
+                {activeKeys.length > 1 ? "s" : ""}. Reports are populated from{" "}
+                {activeKeys.map((k) => k.venue).join(", ")} data.
               </>
             ) : (
               <>
-                Reports are empty until the client submits venue API keys. Once keys are
-                provided, P&amp;L, execution quality, and risk reports will be automatically
-                generated from their trading activity.
+                Reports are empty until the client submits venue API keys. Once
+                keys are provided, P&amp;L, execution quality, and risk reports
+                will be automatically generated from their trading activity.
               </>
             )}
           </p>

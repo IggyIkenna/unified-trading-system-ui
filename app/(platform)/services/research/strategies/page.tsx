@@ -1350,6 +1350,13 @@ export default function StrategiesPage() {
       ? (BACKTEST_SIGNAL_QUALITY[selectedBt] ?? null)
       : null;
 
+  // Summary counts
+  const complete = backtests.filter((b) => b.status === "completed").length;
+  const candidates = backtests.filter((b) => (b as any).isCandidate).length;
+  const bestSharpe = backtests
+    .filter((b) => b.status === "completed" && b.metrics)
+    .reduce((max, b) => Math.max(max, b.metrics?.sharpe ?? 0), 0);
+
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar: search, filters, actions */}

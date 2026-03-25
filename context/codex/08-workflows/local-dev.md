@@ -112,7 +112,6 @@ bash unified-trading-pm/scripts/dev/dev-start.sh --list
 | 8013 | batch-audit-api       | batch-audit         |
 | 8014 | client-reporting-api  | client-reporting    |
 | 8015 | ml-inference-api      | ml-inference        |
-| 8016 | market-data-api       | market-data         |
 
 **Machine-readable SSOT:** `unified-trading-pm/scripts/dev/ui-api-mapping.json`
 

@@ -7,7 +7,7 @@ import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
 import {
   DepthChart,
   generateMockOrderBook,
-  OrderBook
+  OrderBook,
 } from "@/components/trading/order-book";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ import {
   Target,
   TrendingDown,
   TrendingUp,
-  Zap
+  Zap,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import * as React from "react";
@@ -75,7 +75,7 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 
 const OptionsChain = dynamic(
@@ -639,8 +639,7 @@ export default function TradingPage() {
         const now = new Date();
         const side = mock01(s, 61) > 0.5 ? "buy" : "sell";
         const priceVariation = currentPrice * 0.0002;
-        const price =
-          currentPrice + (mock01(s, 62) - 0.5) * priceVariation * 2;
+        const price = currentPrice + (mock01(s, 62) - 0.5) * priceVariation * 2;
         const size = mockRange(0.01, 0.51, s, 63);
         const newTrade = {
           id: `live-${s}`,
@@ -1407,7 +1406,7 @@ export default function TradingPage() {
                               className={cn(
                                 "h-4 px-1 text-[9px]",
                                 trade.status === "filled" &&
-                                "text-emerald-400 border-emerald-400/30",
+                                  "text-emerald-400 border-emerald-400/30",
                               )}
                             >
                               {trade.status}
@@ -1443,7 +1442,7 @@ export default function TradingPage() {
                       className={cn(
                         "w-full",
                         orderSide === "buy" &&
-                        "bg-emerald-600 hover:bg-emerald-700",
+                          "bg-emerald-600 hover:bg-emerald-700",
                       )}
                       onClick={() => setOrderSide("buy")}
                     >

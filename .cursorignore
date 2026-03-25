@@ -1,0 +1,8 @@
+# Node/UI repo .cursorignore template
+# Reference: instruments-service, unified-trading-library
+
+**/node_modules/**
+**/.next/**
+**/dist/**
+**/build/**
+**/.turbo/**
