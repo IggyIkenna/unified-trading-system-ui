@@ -206,48 +206,32 @@ export default function ServicesLandingPage() {
               The same infrastructure we use to run our own capital - available
               to institutional clients at any entry point.
             </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link
-                href="/services/data"
-                className="flex items-center gap-1.5 hover:text-sky-400 transition-colors"
-              >
-                <Database className="size-3.5 text-sky-400" /> Data
-              </Link>
-              <span className="text-border">|</span>
-              <Link
-                href="/services/backtesting"
-                className="flex items-center gap-1.5 hover:text-violet-400 transition-colors"
-              >
-                <Brain className="size-3.5 text-violet-400" /> Research
-              </Link>
-              <span className="text-border">|</span>
-              <Link
-                href="/services/platform"
-                className="flex items-center gap-1.5 hover:text-amber-400 transition-colors"
-              >
-                <Layers className="size-3.5 text-amber-400" /> Trading
-              </Link>
-              <span className="text-border">|</span>
-              <Link
-                href="/services/execution"
-                className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors"
-              >
-                <Zap className="size-3.5 text-emerald-400" /> Execution
-              </Link>
-              <span className="text-border">|</span>
-              <Link
-                href="/services/investment"
-                className="flex items-center gap-1.5 hover:text-rose-400 transition-colors"
-              >
-                <BarChart3 className="size-3.5 text-rose-400" /> Reporting
-              </Link>
-              <span className="text-border">|</span>
-              <Link
-                href="/services/regulatory"
-                className="flex items-center gap-1.5 hover:text-slate-400 transition-colors"
-              >
-                <Shield className="size-3.5 text-slate-400" /> Regulatory
-              </Link>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm">
+              {[
+                { href: "/services/data", icon: Database, label: "Data", color: "sky", hint: "128 venues, one schema. Raw or processed." },
+                { href: "/services/backtesting", icon: Brain, label: "Research", color: "violet", hint: "ML models, feature library, strategy builder." },
+                { href: "/services/platform", icon: Layers, label: "Trading", color: "amber", hint: "Live terminal, P&L, positions, risk controls." },
+                { href: "/services/execution", icon: Zap, label: "Execution", color: "emerald", hint: "Algos, DeFi ops, 33 venues, alpha-based pricing." },
+                { href: "/services/investment", icon: BarChart3, label: "Reporting", color: "rose", hint: "Portfolio breakdown, settlements, compliance." },
+                { href: "/services/regulatory", icon: Shield, label: "Regulatory", color: "slate", hint: "FCA umbrella. Operational in weeks." },
+              ].map((svc, i) => (
+                <React.Fragment key={svc.label}>
+                  {i > 0 && <span className="text-border hidden sm:inline">|</span>}
+                  <Link href={svc.href} className="group relative">
+                    <span className={`flex items-center gap-1.5 text-muted-foreground group-hover:text-${svc.color}-400 transition-colors cursor-pointer`}>
+                      <svc.icon className={`size-3.5 text-${svc.color}-400`} />
+                      {svc.label}
+                      <ArrowRight className="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </span>
+                    <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 rounded-lg border border-border bg-card px-3 py-2 text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg z-50">
+                      {svc.hint}
+                      <span className={`block mt-1 text-${svc.color}-400 font-medium`}>
+                        Click for details →
+                      </span>
+                    </span>
+                  </Link>
+                </React.Fragment>
+              ))}
             </div>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Button size="lg" asChild>
