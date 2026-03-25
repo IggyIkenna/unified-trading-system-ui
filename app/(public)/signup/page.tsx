@@ -1767,12 +1767,9 @@ function GenericSignup() {
   const [company, setCompany] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [submitted, setSubmitted] = React.useState(false);
-  const toggleSvc = (id: string) =>
-    setSelectedServices((p) => {
-      const n = new Set(p);
-      n.has(id) ? n.delete(id) : n.add(id);
-      return n;
-    });
+  // Single service selection for signup
+  const selectSvc = (id: string) =>
+    setSelectedServices(new Set([id]));
 
   if (submitted) {
     return (
@@ -1810,11 +1807,10 @@ function GenericSignup() {
               <Sparkles className="mr-1.5 size-3" /> Get Started
             </Badge>
             <h1 className="text-3xl font-bold mb-2">
-              Which services are you interested in?
+              Which service would you like to sign up for?
             </h1>
             <p className="text-muted-foreground">
-              Select one or more. We&apos;ll tailor the conversation to your
-              needs.
+              Select one service. Once you&apos;re onboarded, you can easily add more.
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-4 mb-8">
@@ -1824,7 +1820,7 @@ function GenericSignup() {
               return (
                 <button
                   key={svc.id}
-                  onClick={() => toggleSvc(svc.id)}
+                  onClick={() => selectSvc(svc.id)}
                   className={`text-left rounded-xl border p-5 transition-all ${sel ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:border-border/80 hover:bg-accent/30"}`}
                 >
                   <div className="flex items-start justify-between mb-2">
@@ -1845,13 +1841,34 @@ function GenericSignup() {
             })}
           </div>
           <div className="flex flex-col items-center gap-4">
-            <Button
-              size="lg"
-              disabled={selectedServices.size === 0}
-              onClick={() => setStep("contact")}
-            >
-              Continue <ArrowRight className="ml-2 size-4" />
-            </Button>
+            {selectedServices.size === 1 &&
+            ONBOARDING_SERVICES.has([...selectedServices][0]) ? (
+              <Button
+                size="lg"
+                onClick={() => setStep("contact")}
+              >
+                Start Application <ArrowRight className="ml-2 size-4" />
+              </Button>
+            ) : selectedServices.size === 1 ? (
+              <div className="text-center space-y-3">
+                <p className="text-sm text-muted-foreground max-w-md">
+                  This service doesn&apos;t currently support self-service signup.
+                  Get in touch and we&apos;ll help get you set up.
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Button size="lg" asChild>
+                    <Link href={`/contact?service=${[...selectedServices][0]}&action=demo`}>
+                      Book a Demo <ArrowRight className="ml-2 size-4" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild>
+                    <Link href={`/contact?service=${[...selectedServices][0]}`}>
+                      Contact Us
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            ) : null}
             <p className="text-xs text-muted-foreground">
               Already have an account?{" "}
               <Link href="/login" className="text-primary hover:underline">
