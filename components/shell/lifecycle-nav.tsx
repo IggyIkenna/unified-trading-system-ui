@@ -98,7 +98,7 @@ export function LifecycleNav({
   const allNavItems = buildLifecycleNav(true);
 
   // Admin-only routes — hidden from internal traders
-  const adminOnlyRoutes = ["/admin", "/ops", "/devops", "/config"];
+  const adminOnlyRoutes = ["/admin", "/ops", "/devops", "/config", "/approvals"];
   // Internal-only routes — visible to internal traders AND admins, hidden from clients
   const internalRoutes = ["/services/manage"];
 
