@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import type { Entitlement } from "@/lib/config/auth"
-import { PERSONAS } from "@/lib/auth/personas"
 import { useAuthStore } from "@/lib/stores/auth-store"
 import { getAuthProvider } from "@/lib/auth/get-provider"
 import type { AuthUser } from "@/lib/auth/types"
@@ -13,14 +12,11 @@ export interface AuthState {
   user: AuthUser | null
   token: string | null
   loading: boolean
-  login: (personaId: string) => Promise<boolean>
   loginByEmail: (email: string, password: string) => Promise<boolean>
-  switchPersona: (personaId: string) => Promise<void>
   logout: () => Promise<void>
   hasEntitlement: (entitlement: Entitlement) => boolean
   isAdmin: () => boolean
   isInternal: () => boolean
-  personas: typeof PERSONAS
 }
 
 const AuthContext = React.createContext<AuthState | null>(null)
@@ -50,8 +46,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       syncZustand(restored.id)
       provider.getToken().then(setToken)
       setLoading(false)
-    } else if (!provider.onAuthStateChanged.length) {
-      setLoading(false)
     }
 
     const timeout = setTimeout(() => setLoading(false), 3000)
@@ -60,19 +54,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(timeout)
     }
   }, [provider, syncZustand])
-
-  const login = React.useCallback(
-    async (personaId: string): Promise<boolean> => {
-      const result = await provider.login(personaId)
-      if (!result) return false
-      setUser(result)
-      const newToken = await provider.getToken()
-      setToken(newToken)
-      syncZustand(result.id)
-      return true
-    },
-    [provider, syncZustand],
-  )
 
   const loginByEmail = React.useCallback(
     async (email: string, password: string): Promise<boolean> => {
@@ -85,13 +66,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return true
     },
     [provider, syncZustand],
-  )
-
-  const switchPersona = React.useCallback(
-    async (personaId: string) => {
-      await login(personaId)
-    },
-    [login],
   )
 
   const logout = React.useCallback(async () => {
@@ -122,16 +96,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       token,
       loading,
-      login,
       loginByEmail,
-      switchPersona,
       logout,
       hasEntitlement,
       isAdmin,
       isInternal,
-      personas: PERSONAS,
     }),
-    [user, token, loading, login, loginByEmail, switchPersona, logout, hasEntitlement, isAdmin, isInternal],
+    [user, token, loading, loginByEmail, logout, hasEntitlement, isAdmin, isInternal],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

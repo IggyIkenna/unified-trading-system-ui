@@ -21,8 +21,6 @@ export interface AppAccessState {
 
 const AppAccessContext = React.createContext<AppAccessState | null>(null)
 
-const isDemoMode = process.env.NEXT_PUBLIC_AUTH_PROVIDER !== "firebase"
-
 export function AppAccessProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
   const [authzResult, setAuthzResult] = React.useState<AuthorizeResult | null>(null)
@@ -34,18 +32,6 @@ export function AppAccessProvider({ children }: { children: React.ReactNode }) {
       setAuthzResult(null)
       setLoading(false)
       setError(null)
-      return
-    }
-
-    if (isDemoMode) {
-      setAuthzResult({
-        authorized: true,
-        role: user.role === "admin" ? "owner" : user.role === "internal" ? "admin" : "viewer",
-        capabilities: ["*"],
-        source: "direct",
-        environments: [],
-      })
-      setLoading(false)
       return
     }
 
