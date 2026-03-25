@@ -197,9 +197,6 @@ export default function DemoPage() {
                           <SelectItem value="regulatory">
                             Regulatory Umbrella
                           </SelectItem>
-                          <SelectItem value="platform">
-                            Live Trading Platform
-                          </SelectItem>
                           <SelectItem value="multiple">
                             Multiple Services
                           </SelectItem>
