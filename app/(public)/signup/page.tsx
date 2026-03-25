@@ -350,39 +350,122 @@ async function generateDeclarationPdfBlob(
   answers: Record<string, string>,
   signature: string,
 ): Promise<Blob> {
-  const html = generateDeclarationHtml(
-    title,
-    applicantName,
-    company,
-    fields,
-    answers,
-    signature,
-  );
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.left = "-9999px";
-  iframe.style.width = "794px";
-  iframe.style.height = "1123px";
-  document.body.appendChild(iframe);
-  const doc = iframe.contentDocument!;
-  doc.open();
-  doc.write(html);
-  doc.close();
-  await new Promise((r) => setTimeout(r, 200));
-  const { default: html2canvas } = await import("html2canvas");
   const { jsPDF } = await import("jspdf");
-  const canvas = await html2canvas(doc.body, {
-    scale: 2,
-    useCORS: true,
-    width: 794,
-    windowWidth: 794,
-  });
-  document.body.removeChild(iframe);
-  const imgData = canvas.toDataURL("image/png");
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const pdfW = pdf.internal.pageSize.getWidth();
-  const pdfH = (canvas.height * pdfW) / canvas.width;
-  pdf.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
+  const pageW = pdf.internal.pageSize.getWidth();
+  const margin = 20;
+  const contentW = pageW - margin * 2;
+  let y = 25;
+
+  const date = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  // Logo text header
+  pdf.setFontSize(10);
+  pdf.setTextColor(100);
+  pdf.text("Odum Research Ltd", margin, y);
+  y += 8;
+
+  // Title
+  pdf.setFontSize(16);
+  pdf.setTextColor(0);
+  pdf.text(title.toUpperCase(), margin, y);
+  y += 2;
+  pdf.setDrawColor(0);
+  pdf.setLineWidth(0.5);
+  pdf.line(margin, y, pageW - margin, y);
+  y += 8;
+
+  // Date
+  pdf.setFontSize(10);
+  pdf.setTextColor(100);
+  pdf.text(`Date: ${date}`, margin, y);
+  y += 8;
+
+  // Declarant
+  pdf.setFontSize(11);
+  pdf.setTextColor(0);
+  pdf.text(
+    `I, ${applicantName}, of ${company}, hereby declare the following:`,
+    margin,
+    y,
+    { maxWidth: contentW },
+  );
+  y += 12;
+
+  // Fields
+  for (const field of fields) {
+    if (y > 260) {
+      pdf.addPage();
+      y = 25;
+    }
+    pdf.setFontSize(9);
+    pdf.setTextColor(100);
+    pdf.text(field.label, margin, y);
+    y += 5;
+    pdf.setFontSize(11);
+    pdf.setTextColor(0);
+    const answer = answers[field.id] || "Not provided";
+    const lines = pdf.splitTextToSize(answer, contentW);
+    pdf.text(lines, margin, y);
+    y += lines.length * 5 + 4;
+    pdf.setDrawColor(200);
+    pdf.setLineWidth(0.2);
+    pdf.line(margin, y, pageW - margin, y);
+    y += 6;
+  }
+
+  // Confirmation
+  if (y > 240) {
+    pdf.addPage();
+    y = 25;
+  }
+  y += 4;
+  pdf.setFillColor(245, 245, 245);
+  pdf.rect(margin, y - 4, contentW, 14, "F");
+  pdf.setFontSize(10);
+  pdf.setTextColor(0);
+  pdf.text(
+    "I confirm that the information provided above is true and accurate to the best of my knowledge and belief.",
+    margin + 4,
+    y + 4,
+    { maxWidth: contentW - 8 },
+  );
+  y += 20;
+
+  // Signature block
+  pdf.setFontSize(14);
+  pdf.setTextColor(0);
+  pdf.text(signature, margin, y);
+  y += 2;
+  pdf.setDrawColor(0);
+  pdf.setLineWidth(0.3);
+  pdf.line(margin, y, margin + 50, y);
+  y += 4;
+  pdf.setFontSize(8);
+  pdf.setTextColor(100);
+  pdf.text("Signature", margin, y);
+
+  pdf.text(applicantName, margin + 60, y - 4);
+  pdf.line(margin + 60, y - 2, margin + 110, y - 2);
+  pdf.text("Print Name", margin + 60, y);
+
+  pdf.text(date, margin + 120, y - 4);
+  pdf.line(margin + 120, y - 2, margin + 170, y - 2);
+  pdf.text("Date", margin + 120, y);
+
+  y += 12;
+  pdf.setFontSize(7);
+  pdf.setTextColor(150);
+  pdf.text(
+    "Document generated electronically via Odum Research Ltd onboarding portal. Electronic signature accepted.",
+    margin,
+    y,
+  );
+
   return pdf.output("blob");
 }
 
