@@ -51,7 +51,27 @@ const nextConfig = {
   },
 
   async redirects() {
+    // Execution folded into Trading Terminal
+    const executionRedirects = [
+      {
+        source: "/services/execution",
+        destination: "/services/platform",
+        permanent: true,
+      },
+      {
+        source: "/services/execution/:path*",
+        destination: "/services/platform",
+        permanent: true,
+      },
+      // Old engagement models page
+      {
+        source: "/services/engagement",
+        destination: "/#services",
+        permanent: true,
+      },
+    ];
     return [
+      ...executionRedirects,
       // Admin — redirects to user management (the only admin function)
       { source: "/admin", destination: "/admin/users", permanent: false },
       // Dashboard (formerly Service Hub)
