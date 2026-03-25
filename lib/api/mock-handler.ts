@@ -63,6 +63,7 @@ import {
   updateOrganization,
   addApiKey,
   removeApiKey,
+  persist,
 } from "@/lib/api/mock-provisioning-state";
 import type {
   MockUser,
@@ -3770,6 +3771,95 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       },
     });
   }
+  // --- Mock Signup (standalone, no UMU needed) ---
+  if (route === "/api/v1/signup" && opts?.method === "POST") {
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const uid = `uid-${Date.now()}`;
+    const userId = `user-${Date.now()}`;
+    const orgSlug = (body.company || body.email.split("@")[1]?.split(".")[0] || "unknown").toLowerCase().replace(/\s+/g, "-");
+    const newUser: MockUser = {
+      id: userId,
+      firebase_uid: uid,
+      name: body.name,
+      email: body.email,
+      password: body.password,
+      role: "client",
+      org_id: "",
+      product_slugs: [],
+      status: "pending",
+      onboarding_stage: "registered",
+      onboarding_data: {
+        service_type: body.service_type,
+        selected_options: body.selected_options || [],
+        expected_aum: body.expected_aum,
+        company: body.company,
+        phone: body.phone,
+        applicant_type: body.applicant_type,
+        docs_uploaded: [],
+        current_step: 1,
+      },
+      provisioned_at: new Date().toISOString(),
+      last_modified: new Date().toISOString(),
+      services: { portal: "pending" },
+    };
+    addUser(newUser);
+    // Also add to demo personas so they can log in
+    if (typeof window !== "undefined") {
+      const existing = localStorage.getItem("mock-signup-users");
+      const signupUsers = existing ? JSON.parse(existing) : [];
+      signupUsers.push({ id: userId, email: body.email, password: body.password, uid });
+      localStorage.setItem("mock-signup-users", JSON.stringify(signupUsers));
+    }
+    return json({
+      user: { firebase_uid: uid, name: body.name, email: body.email, status: "pending_approval" },
+      onboarding_request_id: `onb-${Date.now()}`,
+    });
+  }
+  // --- Get user application state (for resume) ---
+  if (route.match(/^\/api\/v1\/users\/[^/]+\/application$/) && (!opts?.method || opts.method === "GET")) {
+    const uid = route.split("/")[4];
+    const state = getProvisioningState();
+    const user = state.users.find((u) => u.firebase_uid === uid || u.id === uid);
+    if (user?.onboarding_data) {
+      return json({ application: user.onboarding_data, stage: user.onboarding_stage, user_id: user.id });
+    }
+    return json({ application: null });
+  }
+  // --- Update user application state ---
+  if (route.match(/^\/api\/v1\/users\/[^/]+\/application$/) && opts?.method === "PUT") {
+    const uid = route.split("/")[4];
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const state = getProvisioningState();
+    const user = state.users.find((u) => u.firebase_uid === uid || u.id === uid);
+    if (user) {
+      user.onboarding_data = { ...user.onboarding_data, ...body };
+      if (body.current_step) user.onboarding_data!.current_step = body.current_step;
+      user.last_modified = new Date().toISOString();
+      if (body.docs_uploaded?.length > 0 && user.onboarding_stage === "registered") {
+        user.onboarding_stage = "docs_submitted";
+      }
+      persist();
+      return json({ ok: true, application: user.onboarding_data, stage: user.onboarding_stage });
+    }
+    return json({ error: "user not found" });
+  }
+  // --- Upload document (mock) ---
+  if (route.match(/^\/api\/v1\/users\/[^/]+\/documents\/upload$/) && opts?.method === "POST") {
+    const uid = route.split("/")[4];
+    const body = opts.body ? JSON.parse(opts.body as string) : {};
+    const state = getProvisioningState();
+    const user = state.users.find((u) => u.firebase_uid === uid || u.id === uid);
+    if (user?.onboarding_data) {
+      const docs = user.onboarding_data.docs_uploaded || [];
+      if (!docs.includes(body.doc_type)) docs.push(body.doc_type);
+      user.onboarding_data.docs_uploaded = docs;
+      if (user.onboarding_stage === "registered") user.onboarding_stage = "docs_submitted";
+      user.last_modified = new Date().toISOString();
+      persist();
+    }
+    return json({ ok: true, doc_type: body.doc_type });
+  }
+
   // --- Organizations ---
   if (
     route === "/api/auth/provisioning/organizations" &&

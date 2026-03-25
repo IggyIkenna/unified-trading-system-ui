@@ -34,16 +34,34 @@ export interface MockProvisioningState {
   organizations: MockOrganization[];
 }
 
+export type OnboardingStage =
+  | "registered"       // 1. Account created, no docs yet
+  | "docs_submitted"   // 2. Documents uploaded for review
+  | "approved"         // 3. Admin approved, platform access granted
+  | "api_keys_added";  // 4. Venue API keys provided, reports unlocked
+
 export interface MockUser {
   id: string;
   firebase_uid: string;
   name: string;
   email: string;
+  password?: string;
   role: string;
   org_id?: string;
   github_handle?: string;
   product_slugs: string[];
   status: "active" | "offboarded" | "pending";
+  onboarding_stage?: OnboardingStage;
+  onboarding_data?: {
+    service_type?: string;
+    selected_options?: string[];
+    expected_aum?: string;
+    company?: string;
+    phone?: string;
+    applicant_type?: string;
+    docs_uploaded?: string[];
+    current_step?: number;
+  };
   provisioned_at: string;
   last_modified: string;
   services: Record<string, string>;
@@ -324,7 +342,7 @@ export function getState(): MockProvisioningState {
   return _state;
 }
 
-function persist(): void {
+export function persist(): void {
   if (_state) saveState(_state);
 }
 

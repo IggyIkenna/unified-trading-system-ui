@@ -63,7 +63,31 @@ export class DemoAuthProvider implements AuthProvider {
       }
     }
 
-    if (!persona) return null
+    if (!persona) {
+      // Check mock signup users (created during signup flow)
+      try {
+        const raw = localStorage.getItem("mock-signup-users")
+        if (raw) {
+          const signupUsers = JSON.parse(raw) as Array<{ id: string; email: string; password: string; uid: string }>
+          const match = signupUsers.find((u) => u.email === credential && u.password === secret)
+          if (match) {
+            this.user = {
+              id: match.id,
+              email: match.email,
+              displayName: match.email.split("@")[0],
+              role: "client",
+              org: { id: "pending", name: "Pending Approval" },
+              entitlements: [],
+            }
+            this.token = `demo-token-${match.uid}`
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.user))
+            localStorage.setItem(TOKEN_KEY, this.token)
+            return this.user
+          }
+        }
+      } catch { /* ignore */ }
+      return null
+    }
 
     this.user = personaToAuthUser(persona)
     this.token = `demo-token-${persona.id}`
