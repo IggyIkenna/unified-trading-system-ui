@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,7 +15,6 @@ import {
   BarChart3,
   CheckCircle2,
   Clock,
-  Cpu,
   Download,
   GitCompareArrows,
   HardDrive,
@@ -60,17 +58,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   useCancelUnifiedTrainingRun,
   useCreateUnifiedTrainingRun,
   useModelFamilies,
-  useTrainingQueue,
   useUnifiedTrainingRuns,
 } from "@/hooks/api/use-ml-models";
 import type { UnifiedTrainingRun } from "@/lib/ml-types";
+import { cn } from "@/lib/utils";
 
 import {
+  MLCompareSlotPicker,
   ML_COMPARE_MAX_OTHER_RUNS,
   RunAnalysisImportanceTab,
   RunAnalysisMetricsTab,
@@ -98,6 +96,43 @@ const STATUS_ICONS: Record<string, React.ReactNode> = {
   failed: <XCircle className="size-3" />,
   queued: <Clock className="size-3" />,
   cancelled: <XCircle className="size-3" />,
+};
+
+/** Run-list filter chips: distinct hues + always-readable text (inactive + hover). */
+const RUN_FILTER_CHIP: Record<
+  "all" | "running" | "queued" | "completed" | "failed",
+  { active: string; inactive: string }
+> = {
+  all: {
+    active:
+      "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
+    inactive:
+      "border-zinc-500/60 bg-zinc-900/90 text-zinc-100 hover:border-zinc-400 hover:bg-zinc-800 hover:text-white",
+  },
+  running: {
+    active:
+      "border-blue-500 bg-blue-600 text-white shadow-sm hover:bg-blue-600/90",
+    inactive:
+      "border-blue-500/45 bg-blue-950/60 text-blue-100 hover:border-blue-400/70 hover:bg-blue-900/70 hover:text-white",
+  },
+  queued: {
+    active:
+      "border-amber-500 bg-amber-500 text-zinc-950 shadow-sm hover:bg-amber-500/90",
+    inactive:
+      "border-amber-500/45 bg-amber-950/50 text-amber-100 hover:border-amber-400/60 hover:bg-amber-950/80 hover:text-amber-50",
+  },
+  completed: {
+    active:
+      "border-emerald-500 bg-emerald-600 text-white shadow-sm hover:bg-emerald-600/90",
+    inactive:
+      "border-emerald-500/45 bg-emerald-950/55 text-emerald-100 hover:border-emerald-400/60 hover:bg-emerald-900/60 hover:text-white",
+  },
+  failed: {
+    active:
+      "border-red-500 bg-red-600 text-white shadow-sm hover:bg-red-600/90",
+    inactive:
+      "border-red-500/45 bg-red-950/55 text-red-100 hover:border-red-400/60 hover:bg-red-900/60 hover:text-white",
+  },
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -151,7 +186,6 @@ export default function TrainingPage() {
     error: runsError,
     refetch: refetchRuns,
   } = useUnifiedTrainingRuns();
-  const { data: queueData, isLoading: queueLoading } = useTrainingQueue();
   const { data: familiesData } = useModelFamilies();
   const createRun = useCreateUnifiedTrainingRun();
   const cancelRun = useCancelUnifiedTrainingRun();
@@ -168,15 +202,6 @@ export default function TrainingPage() {
     () => (Array.isArray(runsData) ? runsData : []) as UnifiedTrainingRun[],
     [runsData],
   );
-  const queue = queueData as {
-    gpus: {
-      gpu_type: string;
-      total: number;
-      in_use: number;
-      available: number;
-    }[];
-  } | null;
-
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [detailTab, setDetailTab] = React.useState<string>("config");
   const [filterStatus, setFilterStatus] = React.useState<string>("all");
@@ -231,15 +256,8 @@ export default function TrainingPage() {
   const queuedCount = runs.filter((r) => r.status === "queued").length;
   const completedCount = runs.filter((r) => r.status === "completed").length;
   const failedCount = runs.filter((r) => r.status === "failed").length;
-  const gpuUsed = (queue?.gpus ?? []).reduce((s, g) => s + g.in_use, 0);
-  const gpuTotal = Math.max(
-    1,
-    (queue?.gpus ?? []).reduce((s, g) => s + g.total, 0),
-  );
 
   const resourceData = React.useMemo(() => generateResourceData(), []);
-
-  const pageLoading = runsLoading || queueLoading;
 
   if (runsIsError) {
     return (
@@ -364,121 +382,89 @@ export default function TrainingPage() {
           </DialogContent>
         </Dialog>
 
-        {/* KPI strip + actions (replaces page title row) */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-          <div className="order-1 flex shrink-0 items-center justify-end gap-2 sm:order-2 sm:pt-0.5">
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => void refetchRuns()}
-              disabled={pageLoading}
-            >
-              <RefreshCw className="size-3.5 mr-1.5" />
-              Refresh
-            </Button>
-            <Button size="sm" type="button" onClick={() => setNewOpen(true)}>
-              <Play className="size-3.5 mr-1.5" />
-              New Run
-            </Button>
-          </div>
-          {pageLoading ? (
-            <div className="order-2 grid min-w-0 flex-1 grid-cols-2 gap-3 sm:order-1 sm:grid-cols-3 md:grid-cols-5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton
-                  key={i}
-                  className="h-[72px] rounded-lg border border-border/50"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="order-2 grid min-w-0 flex-1 grid-cols-2 gap-3 sm:order-1 sm:grid-cols-3 md:grid-cols-5">
-              {[
-                {
-                  label: "Running",
-                  value: runningCount,
-                  icon: Activity,
-                  color: "text-blue-400",
-                  bg: "bg-blue-500/10",
-                },
-                {
-                  label: "Queued",
-                  value: queuedCount,
-                  icon: Clock,
-                  color: "text-amber-400",
-                  bg: "bg-amber-500/10",
-                },
-                {
-                  label: "Completed",
-                  value: completedCount,
-                  icon: CheckCircle2,
-                  color: "text-emerald-400",
-                  bg: "bg-emerald-500/10",
-                },
-                {
-                  label: "Failed",
-                  value: failedCount,
-                  icon: XCircle,
-                  color: "text-red-400",
-                  bg: "bg-red-500/10",
-                },
-                {
-                  label: "GPUs",
-                  value: `${gpuUsed}/${gpuTotal}`,
-                  icon: Cpu,
-                  color: "text-cyan-400",
-                  bg: "bg-cyan-500/10",
-                },
-              ].map((k) => (
-                <Card key={k.label} className="border-border/50 p-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`rounded-md ${k.bg} p-1.5`}>
-                      <k.icon className={`size-4 ${k.color}`} />
-                    </div>
-                    <div>
-                      <p className="text-lg font-bold font-mono leading-none">
-                        {k.value}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {k.label}
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* Main Layout: list + detail */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Left: Run List */}
           <div className="space-y-3">
-            <div className="flex items-center gap-1.5">
-              {["all", "running", "queued", "completed", "failed"].map((s) => (
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
+              <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 min-[520px]:grid-cols-3 xl:grid-cols-5">
+                {[
+                  {
+                    key: "all" as const,
+                    label: "All",
+                    count: undefined as number | undefined,
+                  },
+                  {
+                    key: "running" as const,
+                    label: "Running",
+                    count: runningCount,
+                  },
+                  {
+                    key: "queued" as const,
+                    label: "Queued",
+                    count: queuedCount,
+                  },
+                  {
+                    key: "completed" as const,
+                    label: "Completed",
+                    count: completedCount,
+                  },
+                  {
+                    key: "failed" as const,
+                    label: "Failed",
+                    count: failedCount,
+                  },
+                ].map(({ key, label, count }) => {
+                  const chip = RUN_FILTER_CHIP[key];
+                  const selected = filterStatus === key;
+                  return (
+                    <Button
+                      key={key}
+                      type="button"
+                      variant="ghost"
+                      className={cn(
+                        "h-11 justify-center border px-3 text-sm font-medium shadow-none sm:px-4",
+                        selected ? chip.active : chip.inactive,
+                      )}
+                      onClick={() => setFilterStatus(key)}
+                    >
+                      <span className="truncate">{label}</span>
+                      {count !== undefined && count > 0 && (
+                        <span className="ml-1.5 tabular-nums text-xs opacity-90">
+                          ({count})
+                        </span>
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 lg:pt-0.5">
                 <Button
-                  key={s}
-                  variant={filterStatus === s ? "default" : "ghost"}
-                  size="sm"
-                  className="h-7 text-xs px-2.5"
-                  onClick={() => setFilterStatus(s)}
+                  variant="outline"
+                  type="button"
+                  size="icon"
+                  className="size-11 shrink-0"
+                  aria-label="Refresh training runs"
+                  title="Refresh"
+                  onClick={() => void refetchRuns()}
+                  disabled={runsLoading}
                 >
-                  {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
-                  {s === "running" && runningCount > 0 && (
-                    <span className="ml-1 text-[10px] opacity-70">
-                      ({runningCount})
-                    </span>
-                  )}
-                  {s === "queued" && queuedCount > 0 && (
-                    <span className="ml-1 text-[10px] opacity-70">
-                      ({queuedCount})
-                    </span>
-                  )}
+                  <RefreshCw className="size-4" />
                 </Button>
-              ))}
+                <Button
+                  type="button"
+                  size="icon"
+                  className="size-11 shrink-0"
+                  aria-label="New training run"
+                  title="New run"
+                  onClick={() => setNewOpen(true)}
+                >
+                  <Play className="size-4" />
+                </Button>
+              </div>
             </div>
 
-            <ScrollArea className="h-[calc(100vh-260px)]">
+            <ScrollArea className="h-[calc(100vh-220px)]">
               <div className="space-y-2 pr-2">
                 {filteredRuns.map((run) => (
                   <div
@@ -620,31 +606,33 @@ function RunDetail({
     () => completedRuns.filter((r) => r.id !== run.id),
     [completedRuns, run.id],
   );
-  const [compareRunIds, setCompareRunIds] = React.useState<string[]>([]);
+  const [compareSlots, setCompareSlots] = React.useState<(string | null)[]>([]);
 
   React.useEffect(() => {
     if (otherCompleted.length === 0) {
-      setCompareRunIds([]);
+      setCompareSlots([]);
       return;
     }
-    setCompareRunIds((prev) => {
-      const valid = prev.filter((id) =>
-        otherCompleted.some((o) => o.id === id),
-      );
-      if (valid.length > 0) {
-        return valid.slice(0, ML_COMPARE_MAX_OTHER_RUNS);
-      }
-      return [otherCompleted[0].id];
-    });
+    setCompareSlots((prev) =>
+      prev
+        .map((id) =>
+          id && otherCompleted.some((o) => o.id === id) ? id : null,
+        )
+        .slice(0, ML_COMPARE_MAX_OTHER_RUNS),
+    );
   }, [run.id, otherCompleted]);
 
-  const compareRuns = React.useMemo(
-    () =>
-      compareRunIds
-        .map((id) => otherCompleted.find((r) => r.id === id))
-        .filter((r): r is UnifiedTrainingRun => !!r),
-    [compareRunIds, otherCompleted],
-  );
+  const compareRuns = React.useMemo(() => {
+    const seen = new Set<string>();
+    const out: UnifiedTrainingRun[] = [];
+    for (const id of compareSlots) {
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      const r = otherCompleted.find((o) => o.id === id);
+      if (r) out.push(r);
+    }
+    return out;
+  }, [compareSlots, otherCompleted]);
 
   return (
     <Card className="border-border/50">
@@ -1187,49 +1175,14 @@ function RunDetail({
                   </p>
                 ) : (
                   <>
-                    <p className="text-[10px] text-muted-foreground">
-                      This run is the baseline. Select up to{" "}
-                      {ML_COMPARE_MAX_OTHER_RUNS} other runs to compare.
-                    </p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-2">
-                      {otherCompleted.map((r) => {
-                        const checked = compareRunIds.includes(r.id);
-                        const atCap =
-                          !checked &&
-                          compareRunIds.length >= ML_COMPARE_MAX_OTHER_RUNS;
-                        return (
-                          <label
-                            key={r.id}
-                            className={`flex items-center gap-2 text-xs cursor-pointer select-none ${atCap ? "opacity-50 cursor-not-allowed" : ""}`}
-                          >
-                            <Checkbox
-                              checked={checked}
-                              disabled={atCap}
-                              onCheckedChange={(v) => {
-                                const on = v === true;
-                                setCompareRunIds((prev) => {
-                                  if (on) {
-                                    if (prev.includes(r.id)) return prev;
-                                    if (
-                                      prev.length >= ML_COMPARE_MAX_OTHER_RUNS
-                                    )
-                                      return prev;
-                                    return [...prev, r.id];
-                                  }
-                                  return prev.filter((id) => id !== r.id);
-                                });
-                              }}
-                            />
-                            <span
-                              className="truncate max-w-[min(100%,260px)]"
-                              title={r.name}
-                            >
-                              {r.name}
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </div>
+                    <MLCompareSlotPicker
+                      baselineRunId={run.id}
+                      baselineName={run.name}
+                      candidates={otherCompleted}
+                      slots={compareSlots}
+                      onSlotsChange={setCompareSlots}
+                      maxSlots={ML_COMPARE_MAX_OTHER_RUNS}
+                    />
                     {compareRuns.length > 0 ? (
                       <RunComparisonView
                         baselineRun={run}
@@ -1237,7 +1190,9 @@ function RunDetail({
                       />
                     ) : (
                       <p className="text-xs text-muted-foreground">
-                        Select at least one run to compare.
+                        Add at least one comparison slot with{" "}
+                        <span className="font-medium">+</span> and choose a run
+                        to compare.
                       </p>
                     )}
                   </>
