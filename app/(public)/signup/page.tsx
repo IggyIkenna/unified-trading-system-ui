@@ -482,26 +482,34 @@ async function generateDeclarationPdfBlob(
   );
   y += 20;
 
-  // Signature block
-  pdf.setFontSize(14);
+  // Signature block — three columns: Signature, Print Name, Date
+  const colW = contentW / 3 - 4;
+  const col1 = margin;
+  const col2 = margin + colW + 6;
+  const col3 = margin + (colW + 6) * 2;
+
+  // Signature value (italic style)
+  pdf.setFontSize(13);
   pdf.setTextColor(0);
-  pdf.text(signature, margin, y);
-  y += 2;
+  pdf.text(signature, col1, y);
+  pdf.text(applicantName, col2, y);
+  pdf.text(date, col3, y);
+  y += 4;
+
+  // Lines under each
   pdf.setDrawColor(0);
   pdf.setLineWidth(0.3);
-  pdf.line(margin, y, margin + 50, y);
-  y += 4;
+  pdf.line(col1, y, col1 + colW, y);
+  pdf.line(col2, y, col2 + colW, y);
+  pdf.line(col3, y, col3 + colW, y);
+  y += 5;
+
+  // Labels below lines
   pdf.setFontSize(8);
-  pdf.setTextColor(100);
-  pdf.text("Signature", margin, y);
-
-  pdf.text(applicantName, margin + 60, y - 4);
-  pdf.line(margin + 60, y - 2, margin + 110, y - 2);
-  pdf.text("Print Name", margin + 60, y);
-
-  pdf.text(date, margin + 120, y - 4);
-  pdf.line(margin + 120, y - 2, margin + 170, y - 2);
-  pdf.text("Date", margin + 120, y);
+  pdf.setTextColor(120);
+  pdf.text("Signature", col1, y);
+  pdf.text("Print Name", col2, y);
+  pdf.text("Date", col3, y);
 
   y += 12;
   pdf.setFontSize(7);
