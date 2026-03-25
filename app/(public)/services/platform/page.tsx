@@ -90,9 +90,12 @@ export default function PlatformServicePage() {
               <span className="text-amber-400">Real-time control.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              P&L attribution by factor, position monitoring across all venues,
-              risk analytics, and same-code backtest-vs-live diff tracking --
+              P&amp;L attribution by factor, position monitoring across all venues,
+              risk analytics, and same-code backtest-vs-live diff tracking —
               everything you need to operate a live systematic trading book.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
+              Full web dashboards for monitoring and control, with API access for custom integrations.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button size="lg" asChild>
@@ -352,17 +355,17 @@ export default function PlatformServicePage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Self-Service</CardTitle>
                   <CardDescription className="text-xs">
-                    You deploy, we provide the infrastructure
+                    Full dashboards and API — no code required
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Deploy and configure your own strategies
+                    Monitor P&amp;L, positions, and risk from the web dashboard
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Full access to monitoring dashboards
+                    Deploy and configure strategies without writing code
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
@@ -370,7 +373,7 @@ export default function PlatformServicePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    API access for custom integrations
+                    Full API access for programmatic integrations
                   </div>
                 </CardContent>
               </Card>
@@ -402,19 +405,19 @@ export default function PlatformServicePage() {
               </Card>
               <Card className="border-muted">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-muted-foreground">
-                    BYO Infrastructure
+                  <CardTitle className="text-sm">
+                    Why Integrated
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Not available
+                    Built-in controls and connectivity
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <p>
-                    The live trading platform requires our integrated
-                    infrastructure for real-time risk controls, venue
-                    connectivity, and regulatory compliance. BYO is not
-                    supported.
+                    Real-time risk controls, venue connectivity, and regulatory
+                    compliance require integrated infrastructure. This ensures
+                    every trade is auditable, every position is monitored, and
+                    circuit breakers work instantly.
                   </p>
                 </CardContent>
               </Card>

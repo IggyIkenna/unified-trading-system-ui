@@ -38,8 +38,11 @@ export default function ExecutionServicePage() {
             </Badge>
             <h1 className="text-3xl font-bold">Execution as a Service</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Institutional execution algorithms - TWAP, VWAP, SOR,
-              Almgren-Chriss - charged on alpha generated.
+              Institutional execution algorithms — TWAP, VWAP, SOR,
+              Almgren-Chriss — charged on alpha generated.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Configure and launch from the web dashboard, or integrate via our API.
             </p>
           </div>
 
@@ -435,17 +438,17 @@ export default function ExecutionServicePage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Self-Service</CardTitle>
                   <CardDescription className="text-xs">
-                    Choose algos, configure params
+                    Web interface or API — your choice
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Select from standard algo library (TWAP, VWAP, SOR, IS)
+                    Configure and launch algos from the web dashboard — no code required
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Configure participation rates and time slices
+                    Or use the full API for programmatic order submission
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
@@ -453,7 +456,7 @@ export default function ExecutionServicePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    API access for programmatic order submission
+                    Select from TWAP, VWAP, SOR, IS, and more
                   </div>
                 </CardContent>
               </Card>
