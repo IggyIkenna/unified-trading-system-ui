@@ -291,7 +291,7 @@ function ComparePanel({
           <tbody>
             {METRICS.map((metric) => {
               const values = items.map(
-                (b) => (b.metrics as Record<string, number>)?.[metric.key] ?? 0,
+                (b) => (b.metrics as unknown as Record<string, number>)?.[metric.key] ?? 0,
               );
               const best =
                 metric.good === "high"
@@ -380,10 +380,10 @@ export default function StrategiesPage() {
   };
 
   // Summary
-  const complete = backtests.filter((b) => b.status === "complete").length;
+  const complete = backtests.filter((b) => b.status === "completed").length;
   const candidates = backtests.filter((b) => (b as any).isCandidate).length;
   const bestSharpe = backtests
-    .filter((b) => b.status === "complete" && b.metrics)
+    .filter((b) => b.status === "completed" && b.metrics)
     .reduce((max, b) => Math.max(max, b.metrics?.sharpe ?? 0), 0);
 
   return (
@@ -492,7 +492,7 @@ export default function StrategiesPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="complete">Complete</SelectItem>
+            <SelectItem value="completed">Complete</SelectItem>
             <SelectItem value="running">Running</SelectItem>
             <SelectItem value="queued">Queued</SelectItem>
             <SelectItem value="failed">Failed</SelectItem>
@@ -644,7 +644,7 @@ export default function StrategiesPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          {bt.status === "complete" && (
+                          {bt.status === "completed" && (
                             <Button
                               size="sm"
                               variant="outline"
