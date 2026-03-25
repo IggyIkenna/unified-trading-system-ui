@@ -13,9 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { submitSignup, registerDocument } from "@/lib/api/signup-client";
-import { getFirebaseStorage } from "@/lib/auth/firebase-config";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { submitSignup, uploadUserDocument } from "@/lib/api/signup-client";
 import {
   ArrowLeft,
   ArrowRight,
@@ -137,6 +135,12 @@ interface DocSlot {
   required: boolean | "investment_only";
   declaration?: DeclarationField[];
   applicantType?: ApplicantType;
+}
+
+interface PendingUpload {
+  file: Blob;
+  file_name: string;
+  content_type: string;
 }
 const SOF_FIELDS: DeclarationField[] = [
   {
@@ -450,13 +454,19 @@ function OnboardingNextBtn({
   disabled,
   onClick,
   label = "Continue",
+  type = "button",
 }: {
   disabled?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
   label?: string;
+  type?: "button" | "submit";
 }) {
   return (
-    <Button disabled={disabled} onClick={onClick}>
+    <Button
+      type={type}
+      disabled={disabled}
+      onClick={type === "submit" ? undefined : onClick}
+    >
       {label} <ArrowRight className="ml-2 size-4" />
     </Button>
   );
@@ -486,6 +496,9 @@ function OnboardingWizard({
   const [expectedAum, setExpectedAum] = React.useState("");
   const [selOpts, setSelOpts] = React.useState<Set<string>>(new Set());
   const [docs, setDocs] = React.useState<Record<string, string>>({});
+  const [pendingUploads, setPendingUploads] = React.useState<
+    Record<string, PendingUpload>
+  >({});
   const [declarations, setDeclarations] = React.useState<
     Record<string, Record<string, string>>
   >({});
@@ -504,7 +517,6 @@ function OnboardingWizard({
   const [onboardingRequestId, setOnboardingRequestId] = React.useState("");
   const draftId = React.useRef(`draft-${Date.now().toString(36)}`).current;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [resumeDraft, setResumeDraft] = React.useState<any>(null);
 
   React.useEffect(() => {
@@ -561,80 +573,13 @@ function OnboardingWizard({
   ]);
 
   const orgSlug = company.toLowerCase().replace(/\s+/g, "-") || "unknown";
-
-  async function uploadFileToStorage(
-    file: File | Blob,
-    docType: string,
-    fileName: string,
-  ): Promise<{
-    ok: boolean;
-    storage_path: string;
-    download_url: string;
-    file_name: string;
-  } | null> {
-    const storage = getFirebaseStorage();
-    const storagePath = `onboarding-docs/${orgSlug}/${draftId}/${docType}-${fileName}`;
-    const contentType =
-      file instanceof File
-        ? file.type || "application/octet-stream"
-        : "application/pdf";
-
-    if (!storage) {
-      console.warn("Firebase Storage not configured — skipping upload");
-      const stub = {
-        ok: true,
-        storage_path: `local/${docType}/${fileName}`,
-        download_url: "",
-        file_name: fileName,
-      };
-      if (firebaseUid && onboardingRequestId) {
-        try {
-          await registerDocument({
-            firebase_uid: firebaseUid,
-            onboarding_request_id: onboardingRequestId,
-            doc_type: docType,
-            file_name: fileName,
-            storage_path: stub.storage_path,
-            content_type: contentType,
-          });
-        } catch {
-          /* best-effort metadata when storage is offline */
-        }
-      }
-      return stub;
-    }
-    try {
-      const storageRef = ref(storage, storagePath);
-      await uploadBytes(storageRef, file);
-      const downloadUrl = await getDownloadURL(storageRef);
-      if (firebaseUid && onboardingRequestId) {
-        await registerDocument({
-          firebase_uid: firebaseUid,
-          onboarding_request_id: onboardingRequestId,
-          doc_type: docType,
-          file_name: fileName,
-          storage_path: storagePath,
-          content_type: contentType,
-        });
-      }
-      return {
-        ok: true,
-        storage_path: storagePath,
-        download_url: downloadUrl,
-        file_name: fileName,
-      };
-    } catch {
-      return null;
-    }
-  }
-
-  async function uploadDeclarationPdf(
+  async function prepareDeclarationPdf(
     docType: string,
     title: string,
     fields: DeclarationField[],
     answers: Record<string, string>,
     sig: string,
-  ) {
+  ): Promise<PendingUpload> {
     const pdfBlob = await generateDeclarationPdfBlob(
       title,
       name,
@@ -644,7 +589,11 @@ function OnboardingWizard({
       sig,
     );
     const fileName = `${docType}-${orgSlug}.pdf`;
-    return uploadFileToStorage(pdfBlob, docType, fileName);
+    return {
+      file: pdfBlob,
+      file_name: fileName,
+      content_type: "application/pdf",
+    };
   }
 
   const toggle = (id: string) =>
@@ -669,6 +618,22 @@ function OnboardingWizard({
       setSubmitError("Passwords do not match.");
       return;
     }
+    const missingRequiredDocs = reqDocs
+      .filter((slot) => !docs[slot.key])
+      .map((slot) => slot.label);
+    if (missingRequiredDocs.length > 0) {
+      setSubmitError(
+        `Please upload required documents: ${missingRequiredDocs.join(", ")}.`,
+      );
+      return;
+    }
+    const staleDraftDocs = Object.keys(docs).filter((key) => !pendingUploads[key]);
+    if (staleDraftDocs.length > 0) {
+      setSubmitError(
+        "This draft was resumed without file binaries. Please re-upload documents before submitting.",
+      );
+      return;
+    }
 
     setSubmitting(true);
     setSubmitError("");
@@ -691,14 +656,14 @@ function OnboardingWizard({
       setOnboardingRequestId(reqId);
       setAppId(reqId);
 
-      for (const [key, fileName] of Object.entries(docs)) {
-        if (!fileName) continue;
-        await registerDocument({
+      for (const [key, upload] of Object.entries(pendingUploads)) {
+        await uploadUserDocument({
           firebase_uid: uid,
           onboarding_request_id: reqId,
           doc_type: key,
-          file_name: String(fileName),
-          storage_path: `onboarding-docs/${orgSlug}/${draftId}/${key}-${fileName}`,
+          file_name: upload.file_name,
+          content_type: upload.content_type,
+          file: upload.file,
         });
       }
 
@@ -711,6 +676,20 @@ function OnboardingWizard({
     } finally {
       setSubmitting(false);
     }
+  }
+
+  const step1Complete =
+    Boolean(name) &&
+    Boolean(email) &&
+    Boolean(company) &&
+    Boolean(password) &&
+    password.length >= 6 &&
+    password === confirmPassword;
+
+  function onStep1Next(e: React.FormEvent) {
+    e.preventDefault();
+    if (!step1Complete) return;
+    setStep(2);
   }
 
   return (
@@ -736,7 +715,8 @@ function OnboardingWizard({
             <CardHeader>
               <CardTitle className="text-lg">Your Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
+              <form onSubmit={onStep1Next} className="space-y-4">
               {resumeDraft && !name && (
                 <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 mb-4 flex items-center justify-between">
                   <div>
@@ -753,6 +733,7 @@ function OnboardingWizard({
                   </div>
                   <div className="flex gap-2">
                     <Button
+                      type="button"
                       size="sm"
                       onClick={() => {
                         setApplicantType(
@@ -778,6 +759,7 @@ function OnboardingWizard({
                       Resume
                     </Button>
                     <Button
+                      type="button"
                       size="sm"
                       variant="ghost"
                       onClick={() => {
@@ -901,18 +883,9 @@ function OnboardingWizard({
                 </div>
               </div>
               <div className="flex justify-end pt-2">
-                <OnboardingNextBtn
-                  disabled={
-                    !name ||
-                    !email ||
-                    !company ||
-                    !password ||
-                    password.length < 6 ||
-                    password !== confirmPassword
-                  }
-                  onClick={() => setStep(2)}
-                />
+                <OnboardingNextBtn type="submit" disabled={!step1Complete} />
               </div>
+              </form>
             </CardContent>
           </Card>
         )}
@@ -1228,13 +1201,17 @@ function OnboardingWizard({
                                   !signatures[slot.key]?.trim()
                                 }
                                 onClick={async () => {
-                                  await uploadDeclarationPdf(
+                                  const prepared = await prepareDeclarationPdf(
                                     slot.key,
                                     slot.label,
                                     slot.declaration!,
                                     declAnswers,
                                     signatures[slot.key] || "",
                                   );
+                                  setPendingUploads((p) => ({
+                                    ...p,
+                                    [slot.key]: prepared,
+                                  }));
                                   setDocs((p) => ({
                                     ...p,
                                     [slot.key]: `${slot.label} — e-signed by ${signatures[slot.key]}`,
@@ -1318,7 +1295,15 @@ function OnboardingWizard({
                               onChange={async (e) => {
                                 const f = e.target.files?.[0];
                                 if (!f) return;
-                                await uploadFileToStorage(f, slot.key, f.name);
+                                setPendingUploads((p) => ({
+                                  ...p,
+                                  [slot.key]: {
+                                    file: f,
+                                    file_name: f.name,
+                                    content_type:
+                                      f.type || "application/octet-stream",
+                                  },
+                                }));
                                 setDocs((p) => ({ ...p, [slot.key]: f.name }));
                               }}
                             />

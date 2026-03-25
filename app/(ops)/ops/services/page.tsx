@@ -551,7 +551,7 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {shardConfig.shards.map((shard) => (
+                            {shardConfig.shards.map((shard: ShardInfo) => (
                               <TableRow key={shard.key}>
                                 <TableCell>
                                   {shard.status === "running" && (

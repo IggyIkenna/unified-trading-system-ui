@@ -9,8 +9,6 @@
  * If API is not reachable, tests are skipped.
  */
 
-import { describe, it, expect, beforeAll } from "vitest";
-
 const BASE =
   (typeof process !== "undefined" &&
     process.env.INTEGRATION_TEST_UNIFIED_TRADING_URL) ||
