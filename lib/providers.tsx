@@ -13,6 +13,19 @@ import { AppAccessProvider } from "@/hooks/use-app-access";
 export function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
 
+  // Install mock fetch handler in mock mode — intercepts /api/* calls
+  // with client-side mock data so no backend is needed
+  React.useEffect(() => {
+    if (
+      process.env.NEXT_PUBLIC_MOCK_API === "true" ||
+      process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo"
+    ) {
+      import("@/lib/api/mock-handler").then(({ installMockHandler }) => {
+        installMockHandler();
+      });
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
