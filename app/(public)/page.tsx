@@ -7,15 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Database,
-  LineChart,
   Layers,
-  Zap,
   Shield,
   ArrowRight,
   Globe,
   Lock,
   Brain,
-  BarChart3,
 } from "lucide-react";
 import { ArbitrageGalaxy } from "@/components/marketing/arbitrage-galaxy";
 import { PLATFORM_STATS } from "@/lib/config/platform-stats";
@@ -29,157 +26,87 @@ import {
 } from "@/components/ui/card";
 import { Briefcase, CheckCircle2 } from "lucide-react";
 
-// Service offerings based on Odum Research's product suite
+// Five services — execution is folded into Trading Terminal + Research
 const services = [
   {
     id: "data",
-    name: "Data Provision",
+    name: "Data",
     description:
-      "Institutional data API covering TradFi, Crypto, DeFi, and Sports - normalised to a single schema.",
+      "Unified market data across venues and asset classes. Access it in-platform, in your cloud, or as managed delivery.",
     icon: Database,
     color: "text-sky-400",
     bgColor: "bg-sky-400/10",
     borderColor: "border-sky-400/30",
-    lifecycle: ["Acquire"],
-    metrics: [
-      { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
-      { label: "Asset Classes", value: String(PLATFORM_STATS.assetClassCount) },
-      { label: "Setup", value: "Minutes" },
+    bullets: [
+      "One schema across markets",
+      "Use in-platform or your cloud",
+      "Track coverage and downloads live",
     ],
-    features: [
-      "Raw Tick Data",
-      "Processed OHLCV",
-      "Liquidation Data",
-      "ML Signal Feed",
-      "Sports Probability API",
-    ],
-    pricing: "From £250/mo",
     href: "/services/data",
   },
   {
-    id: "backtesting",
-    name: "Backtesting as a Service",
+    id: "research",
+    name: "Research & Build",
     description:
-      "Cross-asset backtesting spanning Sports, DeFi, Options, Crypto Perps, and TradFi Futures in one environment.",
-    icon: LineChart,
+      "Build and test models, signals, and execution logic in one pipeline. Promote proven research straight into live trading.",
+    icon: Brain,
     color: "text-violet-400",
     bgColor: "bg-violet-400/10",
     borderColor: "border-violet-400/30",
-    lifecycle: ["Acquire", "Build"],
-    metrics: [
-      { label: "Asset Classes", value: "5" },
-      { label: "Strategy Types", value: "17+" },
-      { label: "Setup", value: "Minutes" },
+    bullets: [
+      "Build models, signals, and algos",
+      "Run large-scale parallel experiments",
+      "Promote research straight to live",
     ],
-    features: [
-      "No-Code Web UI + Full API",
-      "Autonomous Agent Interface",
-      "Cross-Asset Simulation",
-      "Full Trade Records",
-      "GPU-Accelerated Sweeps",
-    ],
-    pricing: "Contact us",
     href: "/services/backtesting",
   },
   {
-    id: "live-trading-platform",
-    name: "Live Trading Platform",
+    id: "trading",
+    name: "Trading Terminal",
     description:
-      "Live analytics, P&L attribution, risk monitoring, and T+1 backtest-vs-live diff tracking. Same code runs backtest and live.",
+      "Run, monitor, and control trading in one live environment. See the whole portfolio or drill into the details that matter.",
     icon: Layers,
     color: "text-amber-400",
     bgColor: "bg-amber-400/10",
     borderColor: "border-amber-400/30",
-    lifecycle: ["Build", "Promote", "Run", "Execute", "Observe"],
-    metrics: [
-      { label: "Strategies", value: "17+" },
-      { label: "Deployment", value: "Turnkey" },
-      { label: "Setup", value: "Hours" },
+    bullets: [
+      "Trade and monitor in one place",
+      "Drill from global view to detail",
+      "Alerts, analytics, and live control",
     ],
-    features: [
-      "Full Platform Access",
-      "Strategy Source Code",
-      "Deployment Support",
-      "Ongoing Updates",
-      "T+1 Diff Monitoring",
-    ],
-    pricing: "Contact us",
     href: "/services/platform",
-  },
-  {
-    id: "execution",
-    name: "Execution as a Service",
-    description:
-      "Institutional execution algorithms - TWAP, VWAP, SOR, Almgren-Chriss - charged on alpha generated.",
-    icon: Zap,
-    color: "text-emerald-400",
-    bgColor: "bg-emerald-400/10",
-    borderColor: "border-emerald-400/30",
-    lifecycle: ["Promote", "Run", "Execute", "Observe"],
-    metrics: [
-      { label: "Algo Types", value: "8+" },
-      { label: "Venues", value: String(PLATFORM_STATS.totalVenues) },
-      { label: "Setup", value: "Minutes" },
-    ],
-    features: [
-      "TWAP/VWAP Algos",
-      "Smart Order Routing",
-      "DeFi MEV Protection",
-      "Best Execution Reports",
-      "Smart Execution Alpha",
-    ],
-    pricing: "Contact us",
-    href: "/services/execution",
-  },
-  {
-    id: "investment",
-    name: "Investment Management",
-    description:
-      "FCA-authorised investment management for Professional clients. Co-invest at same terms as house.",
-    icon: Briefcase,
-    color: "text-rose-400",
-    bgColor: "bg-rose-400/10",
-    borderColor: "border-rose-400/30",
-    lifecycle: ["Manage", "Report"],
-    metrics: [
-      { label: "Regulation", value: "FCA" },
-      { label: "Structures", value: "SMA / Fund" },
-      { label: "Setup", value: "Hours" },
-    ],
-    features: [
-      "Separately Managed Accounts",
-      "Fund Access",
-      "Cross-Asset Mandates",
-      "Full Transparency",
-      "Monthly Reporting",
-    ],
-    pricing: "Contact us",
-    href: "/services/investment",
   },
   {
     id: "regulatory",
     name: "Regulatory Umbrella",
     description:
-      "FCA Appointed Representative services for institutional algo trading firms. Operate legally in weeks.",
+      "Operate under a regulated framework without building everything yourself. Move faster with the controls and support already in place.",
     icon: Shield,
     color: "text-slate-400",
     bgColor: "bg-slate-400/10",
     borderColor: "border-slate-400/30",
-    lifecycle: ["Manage", "Report"],
-    metrics: [
-      { label: "FCA Ref", value: "975797" },
-      { label: "Activities", value: "6" },
-      { label: "Setup", value: "Fast-Track" },
+    bullets: [
+      "Launch under a regulated framework",
+      "Reduce setup and compliance burden",
+      "Move faster with operational support",
     ],
-    features: [
-      "FCA AR Coverage",
-      "Compliance Supervision",
-      "MiFID II Reporting",
-      "MLRO Services",
-      "Best Execution Monitoring",
-    ],
-    pricing: "Contact us",
     href: "/services/regulatory",
+  },
+  {
+    id: "investment",
+    name: "Investment Management",
+    description:
+      "Access Odum-managed strategies through a regulated structure. Get reporting, oversight, and a clear allocation process.",
+    icon: Briefcase,
+    color: "text-rose-400",
+    bgColor: "bg-rose-400/10",
+    borderColor: "border-rose-400/30",
+    bullets: [
+      "Access managed strategies directly",
+      "Regulated structure and reporting",
+      "Clear allocation and oversight process",
+    ],
+    href: "/services/investment",
   },
 ];
 
@@ -208,12 +135,11 @@ export default function ServicesLandingPage() {
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm">
               {[
-                { href: "/services/data", icon: Database, label: "Data", color: "sky", hint: "128 venues, one schema. Raw or processed." },
-                { href: "/services/backtesting", icon: Brain, label: "Research", color: "violet", hint: "ML models, feature library, strategy builder." },
-                { href: "/services/platform", icon: Layers, label: "Trading", color: "amber", hint: "Live terminal, P&L, positions, risk controls." },
-                { href: "/services/execution", icon: Zap, label: "Execution", color: "emerald", hint: "Algos, DeFi ops, 33 venues, alpha-based pricing." },
-                { href: "/services/investment", icon: BarChart3, label: "Reporting", color: "rose", hint: "Portfolio breakdown, settlements, compliance." },
-                { href: "/services/regulatory", icon: Shield, label: "Regulatory", color: "slate", hint: "FCA umbrella. Operational in weeks." },
+                { href: "/services/data", icon: Database, label: "Data", color: "sky", hint: "Unified market data across venues and asset classes." },
+                { href: "/services/backtesting", icon: Brain, label: "Research", color: "violet", hint: "Build models, signals, and algos. Promote to live." },
+                { href: "/services/platform", icon: Layers, label: "Trading", color: "amber", hint: "Run, monitor, and control all your trading in one place." },
+                { href: "/services/regulatory", icon: Shield, label: "Regulatory", color: "slate", hint: "Launch under a regulated framework. Operational in weeks." },
+                { href: "/services/investment", icon: Briefcase, label: "Investment", color: "rose", hint: "Access managed strategies with regulated reporting." },
               ].map((svc, i) => (
                 <React.Fragment key={svc.label}>
                   {i > 0 && <span className="text-border hidden sm:inline">|</span>}
@@ -270,7 +196,7 @@ export default function ServicesLandingPage() {
                 <div className="text-xs text-muted-foreground">Market Data</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-primary">6</div>
+                <div className="text-2xl font-bold text-primary">5</div>
                 <div className="text-xs text-muted-foreground">
                   Service Lines
                 </div>
@@ -471,18 +397,19 @@ export default function ServicesLandingPage() {
                     <CardTitle className="mt-3 text-base">
                       {service.name}
                     </CardTitle>
-                    <CardDescription className="line-clamp-2 text-sm">
+                    <CardDescription className="text-sm">
                       {service.description}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="pt-0">
-                    <span
-                      className={cn(
-                        "text-sm font-medium inline-flex items-center gap-1",
-                        service.color,
-                      )}
-                    >
-                      Learn more <ArrowRight className="size-3.5" />
+                  <CardContent className="pt-0 space-y-1.5">
+                    {service.bullets.map((b: string) => (
+                      <div key={b} className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <CheckCircle2 className={cn("size-3 shrink-0", service.color)} />
+                        {b}
+                      </div>
+                    ))}
+                    <span className={cn("text-xs font-medium inline-flex items-center gap-1 pt-2", service.color)}>
+                      Learn more <ArrowRight className="size-3" />
                     </span>
                   </CardContent>
                 </Card>
