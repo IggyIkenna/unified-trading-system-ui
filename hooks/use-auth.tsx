@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import type { Entitlement } from "@/lib/config/auth";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { getAuthProvider } from "@/lib/auth/get-provider";
 import type { AuthUser } from "@/lib/auth/types";
+import { FirebaseAuthProvider } from "@/lib/auth/firebase-provider";
 
 export type { AuthUser } from "@/lib/auth/types";
 
@@ -12,6 +14,7 @@ export interface AuthState {
   user: AuthUser | null;
   token: string | null;
   loading: boolean;
+  loginError: string | null;
   loginByEmail: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   hasEntitlement: (entitlement: Entitlement) => boolean;
@@ -26,7 +29,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<AuthUser | null>(null);
   const [token, setToken] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [loginError, setLoginError] = React.useState<string | null>(null);
   const syncZustand = useAuthStore((s) => s.setPersonaId);
+  const router = useRouter();
 
   React.useEffect(() => {
     const unsubscribe = provider.onAuthStateChanged((authUser) => {
@@ -57,21 +62,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginByEmail = React.useCallback(
     async (email: string, password: string): Promise<boolean> => {
+      setLoginError(null);
       const result = await provider.login(email, password);
-      if (!result) return false;
+
+      if (!result) {
+        if (
+          provider instanceof FirebaseAuthProvider &&
+          provider.getLastLoginError() === "user-disabled"
+        ) {
+          setLoginError(
+            "Your account is currently under review. You will receive an email once it has been approved.",
+          );
+        }
+        return false;
+      }
+
+      if (
+        result.status === "pending_approval" ||
+        (result.authorized === false && result.status !== "active")
+      ) {
+        setUser(result);
+        router.push("/pending");
+        return true;
+      }
+
       setUser(result);
       const newToken = await provider.getToken();
       setToken(newToken);
       syncZustand(result.id);
       return true;
     },
-    [provider, syncZustand],
+    [provider, syncZustand, router],
   );
 
   const logout = React.useCallback(async () => {
     await provider.logout();
     setUser(null);
     setToken(null);
+    setLoginError(null);
     syncZustand(null);
   }, [provider, syncZustand]);
 
@@ -96,6 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       token,
       loading,
+      loginError,
       loginByEmail,
       logout,
       hasEntitlement,
@@ -106,6 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       token,
       loading,
+      loginError,
       loginByEmail,
       logout,
       hasEntitlement,

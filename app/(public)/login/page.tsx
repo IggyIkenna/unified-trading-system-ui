@@ -18,7 +18,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading, loginByEmail } = useAuth();
+  const { user, loading, loginByEmail, loginError } = useAuth();
   const [redirectTo, setRedirectTo] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -45,7 +45,7 @@ export default function LoginPage() {
     const success = await loginByEmail(email, password);
     if (success) {
       router.push(redirectTo || "/dashboard");
-    } else {
+    } else if (!loginError) {
       setError("Invalid credentials. Check your email and password.");
     }
     setIsLoading(false);
@@ -96,9 +96,9 @@ export default function LoginPage() {
                     />
                   </div>
                 </div>
-                {error && (
+                {(error || loginError) && (
                   <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
-                    {error}
+                    {loginError || error}
                   </p>
                 )}
                 <Button type="submit" className="w-full" disabled={isLoading}>

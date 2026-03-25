@@ -17,6 +17,7 @@ export interface AuthorizeResult {
   capabilities: string[];
   source: "direct" | "group" | "none";
   environments: string[];
+  user_status?: string;
   error?: string;
 }
 

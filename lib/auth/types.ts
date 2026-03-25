@@ -5,6 +5,14 @@ import type {
   Org,
 } from "@/lib/config/auth";
 
+/** Account status from the backend user_profiles collection. */
+export type UserStatus =
+  | "active"
+  | "pending_approval"
+  | "rejected"
+  | "disabled"
+  | "unknown";
+
 /** Authenticated user shape shared across all auth providers. */
 export interface AuthUser {
   id: string;
@@ -13,6 +21,9 @@ export interface AuthUser {
   role: UserRole;
   org: Org;
   entitlements: readonly EntitlementOrWildcard[];
+  authorized?: boolean;
+  status?: UserStatus;
+  capabilities?: string[];
 }
 
 /**
