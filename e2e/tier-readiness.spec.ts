@@ -79,7 +79,7 @@ test.describe("Full stack smoke — all 9 services", () => {
   const SERVICE_ROUTES = [
     { name: "Data", path: "/services/data/overview" },
     { name: "Research", path: "/services/research/overview" },
-    { name: "Promote", path: "/services/promote/overview" },
+    { name: "Promote", path: "/services/promote" },
     { name: "Trading", path: "/services/trading/overview" },
     { name: "Execution", path: "/services/execution/overview" },
     { name: "Observe", path: "/services/observe/overview" },

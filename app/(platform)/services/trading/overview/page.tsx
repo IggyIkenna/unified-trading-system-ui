@@ -1,43 +1,26 @@
 "use client";
 
-import * as React from "react";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { BatchLiveRail } from "@/components/platform/batch-live-rail";
-import { KPICard } from "@/components/trading/kpi-card";
-import { AlertsFeed } from "@/components/trading/alerts-feed";
-import {
-  PnLAttributionPanel,
-  type PnLComponent,
-} from "@/components/trading/pnl-attribution-panel";
+import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel";
 import {
   HealthStatusGrid,
   type ServiceHealth,
 } from "@/components/trading/health-status-grid";
+import { InterventionControls } from "@/components/trading/intervention-controls";
+import { KPICard } from "@/components/trading/kpi-card";
 import { LiveBatchComparison } from "@/components/trading/live-batch-comparison";
+import { type VenueMargin } from "@/components/trading/margin-utilization";
+import {
+  PnLAttributionPanel,
+  type PnLComponent,
+} from "@/components/trading/pnl-attribution-panel";
+import { ScopeSummary } from "@/components/trading/scope-summary";
 import {
   ValueFormatToggle,
   useValueFormat,
 } from "@/components/trading/value-format-toggle";
-import { InterventionControls } from "@/components/trading/intervention-controls";
-import { ScopeSummary } from "@/components/trading/scope-summary";
-import {
-  MarginUtilization,
-  type VenueMargin,
-} from "@/components/trading/margin-utilization";
-import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import {
-  ChevronDown,
-  ChevronUp,
-  Radio,
-  Database,
-  AlertTriangle,
-  Loader2,
-  ArrowRight,
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -46,30 +29,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { cn } from "@/lib/utils";
+import {
+  AlertTriangle,
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Database,
+  Loader2,
+  Radio,
+} from "lucide-react";
 import Link from "next/link";
+import * as React from "react";
 
 // API hooks — data from server, not client-side generation
 import { useAlerts } from "@/hooks/api/use-alerts";
-import { usePositions } from "@/hooks/api/use-positions";
 import { useOrders } from "@/hooks/api/use-orders";
+import { usePositions } from "@/hooks/api/use-positions";
 import { useServiceHealth } from "@/hooks/api/use-service-status";
-import { useWebSocket } from "@/hooks/use-websocket";
 import {
-  useTradingOrgs,
   useTradingClients,
+  useTradingLiveBatchDelta,
+  useTradingOrgs,
+  useTradingPerformance,
   useTradingPnl,
   useTradingTimeseries,
-  useTradingPerformance,
-  useTradingLiveBatchDelta,
 } from "@/hooks/api/use-trading";
+import { useWebSocket } from "@/hooks/use-websocket";
 
 // Types only — no data or functions imported from trading-data
 import type {
-  TradingOrganization,
-  TradingClient,
   PnLBreakdown,
   TimeSeriesPoint,
+  TradingClient,
+  TradingOrganization,
 } from "@/lib/trading-data";
 
 // ---------------------------------------------------------------------------

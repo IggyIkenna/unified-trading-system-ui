@@ -98,12 +98,21 @@ export function LifecycleNav({
   const allNavItems = buildLifecycleNav(true);
 
   // Admin-only routes — hidden from internal traders
-  const adminOnlyRoutes = ["/admin", "/ops", "/devops", "/config", "/approvals"];
+  const adminOnlyRoutes = [
+    "/admin",
+    "/ops",
+    "/devops",
+    "/config",
+    "/approvals",
+  ];
   // Internal-only routes — visible to internal traders AND admins, hidden from clients
   const internalRoutes = ["/services/manage"];
 
   // Check if an item is accessible (unlocked) for the current user
   const isItemAccessible = (path: string): boolean => {
+    // Promote hub spans strategy + ml lanes — requires either full entitlement
+    if (path === "/services/promote" || path.startsWith("/services/promote/"))
+      return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
     if (adminOnlyRoutes.some((r) => path === r || path.startsWith(r + "/")))
       return isAdmin();
     if (internalRoutes.some((r) => path === r || path.startsWith(r + "/")))
@@ -192,30 +201,70 @@ export function LifecycleNav({
             const stageInfo = lifecycleStages[nav.stage];
             const allLocked =
               nav.items.length > 0 && nav.items.every((item) => item.locked);
+            const primaryItem =
+              nav.items.find((item) => !item.locked) ?? nav.items[0];
+            // Promote stage: primary link goes to the hub (only reached when !allLocked)
+            const primaryHref =
+              nav.stage === "promote"
+                ? "/services/promote"
+                : (primaryItem?.path ?? "/dashboard");
 
             return (
               <React.Fragment key={nav.stage}>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className={cn(
-                        "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
-                        allLocked
-                          ? "text-muted-foreground/40 cursor-not-allowed"
-                          : isActive
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                      )}
-                    >
-                      <Icon className="size-3.5" />
-                      <span className="hidden lg:inline">{nav.label}</span>
-                      {allLocked ? (
+                  <div
+                    className={cn(
+                      "flex items-center rounded-md border border-transparent transition-all duration-150",
+                      !allLocked &&
+                        isActive &&
+                        "border-primary/20 bg-primary/10 text-primary",
+                      !allLocked &&
+                        !isActive &&
+                        "hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground",
+                      allLocked && "text-muted-foreground/40",
+                    )}
+                  >
+                    {allLocked ? (
+                      <span
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium cursor-not-allowed"
+                        aria-disabled
+                      >
+                        <Icon className="size-3.5" />
+                        <span className="hidden lg:inline">{nav.label}</span>
                         <Lock className="size-3 opacity-40 hidden sm:block" />
-                      ) : (
-                        <ChevronDown className="size-3 opacity-50 hidden sm:block" />
-                      )}
-                    </button>
-                  </DropdownMenuTrigger>
+                      </span>
+                    ) : (
+                      <Link
+                        href={primaryHref}
+                        className={cn(
+                          "flex items-center gap-1.5 pl-2.5 pr-1 py-1.5 rounded-l-md text-xs font-medium",
+                          isActive ? "text-primary" : "",
+                        )}
+                      >
+                        <Icon className="size-3.5" />
+                        <span className="hidden lg:inline">{nav.label}</span>
+                      </Link>
+                    )}
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex items-center pr-2 py-1.5 rounded-r-md text-xs shrink-0",
+                          allLocked
+                            ? "cursor-not-allowed opacity-40"
+                            : "hover:bg-muted/80",
+                        )}
+                        aria-label={`${nav.label} destinations`}
+                        disabled={allLocked}
+                      >
+                        {allLocked ? (
+                          <Lock className="size-3 opacity-40 hidden sm:block" />
+                        ) : (
+                          <ChevronDown className="size-3 opacity-50 hidden sm:block" />
+                        )}
+                      </button>
+                    </DropdownMenuTrigger>
+                  </div>
                   <DropdownMenuContent align="start" className="w-56">
                     <DropdownMenuLabel className="flex items-center gap-2">
                       <Icon className={cn("size-4", stageInfo.color)} />

@@ -50,7 +50,7 @@ import {
   Rocket,
   Brain,
 } from "lucide-react";
-import { PromoteFlowModal } from "@/components/trading/promote-flow-modal";
+import { PromoteFlowModal } from "@/components/promote/promote-flow-modal";
 import { StrategyAuditTrail } from "@/components/trading/strategy-audit-trail";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

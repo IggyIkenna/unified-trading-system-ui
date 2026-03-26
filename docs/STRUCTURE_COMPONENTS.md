@@ -93,7 +93,7 @@ Components for live trading operations, strategy monitoring, and risk oversight.
 - `strategy-performance-table.tsx` — Tabular strategy performance
 - `strategy-filter-bar.tsx` — Filter controls for strategy list
 - `strategy-audit-trail.tsx` — Audit log for strategy changes
-- `promote-flow-modal.tsx` — Modal for promoting a candidate to live
+- `promote/promote-flow-modal.tsx` — Quick promote dialog (strategy grid / detail); full lifecycle lives under `/services/promote/*` (canonical entry `/services/promote/pipeline`; `/services/promote` redirects)
 - `dimensional-grid.tsx` — Multi-dimensional data grid (added in recent commits)
 
 ### Risk and operations

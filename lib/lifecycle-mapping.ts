@@ -53,8 +53,7 @@ export const lifecycleStages: Record<
 > = {
   acquire: {
     label: "Data",
-    description:
-      "Data acquisition, ETL pipelines & venue coverage",
+    description: "Data acquisition, ETL pipelines & venue coverage",
     icon: "Database",
     color: "text-sky-400",
   },
@@ -316,6 +315,14 @@ export const routeMappings: RouteMapping[] = [
   },
 
   // PROMOTE stage
+  {
+    path: "/services/promote/pipeline",
+    label: "Strategy Promotion",
+    primaryStage: "promote",
+    lanes: ["strategy", "ml"],
+    description: "Review, assess, and approve strategies for live deployment",
+    requiresAuth: true,
+  },
   {
     path: "/config",
     label: "Config",
@@ -699,10 +706,17 @@ export function buildLifecycleNav(
     ],
     promote: [
       {
+        path: "/services/promote/pipeline",
+        label: "Strategy Promotion",
+        lanes: ["strategy", "ml"],
+        description:
+          "Review, assess, and approve strategies for live deployment",
+      },
+      {
         path: "/services/research/strategy/candidates",
-        label: "Strategy Candidates",
+        label: "Candidates (Legacy)",
         lanes: ["strategy"],
-        description: "Review and promote winning strategies",
+        description: "Legacy candidate review pipeline",
       },
     ],
     run: [

@@ -5,7 +5,7 @@ import {
   type DimensionDef,
   type MetricDef,
 } from "@/components/trading/dimensional-grid";
-import { PromoteFlowModal } from "@/components/trading/promote-flow-modal";
+import { PromoteFlowModal } from "@/components/promote/promote-flow-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";

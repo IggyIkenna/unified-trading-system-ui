@@ -1,6 +1,7 @@
 import { useFilterStore } from "@/lib/stores/filter-store";
 import { useAuthStore } from "@/lib/stores/auth-store";
 import { useUIPrefsStore } from "@/lib/stores/ui-prefs-store";
+import { usePromoteLifecycleStore } from "@/lib/stores/promote-lifecycle-store";
 import { act } from "@testing-library/react";
 
 // Zustand stores work outside React in tests since they're just JS objects
@@ -107,5 +108,25 @@ describe("ui-prefs-store", () => {
     const state = useUIPrefsStore.getState();
     expect(state.sidebarCollapsed).toBe(false);
     expect(state.showDebugPanel).toBe(false);
+  });
+});
+
+describe("promote-lifecycle-store", () => {
+  beforeEach(() => {
+    act(() => usePromoteLifecycleStore.getState().reset());
+  });
+
+  it("starts with no selection and mock candidates", () => {
+    const s = usePromoteLifecycleStore.getState();
+    expect(s.selectedId).toBeNull();
+    expect(s.candidates.length).toBeGreaterThan(0);
+  });
+
+  it("reset clears selection", () => {
+    act(() => {
+      usePromoteLifecycleStore.getState().setSelectedId("any-id");
+      usePromoteLifecycleStore.getState().reset();
+    });
+    expect(usePromoteLifecycleStore.getState().selectedId).toBeNull();
   });
 });

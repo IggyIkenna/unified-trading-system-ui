@@ -1,6 +1,7 @@
 import { useFilterStore } from "./stores/filter-store";
 import { useAuthStore } from "./stores/auth-store";
 import { useUIPrefsStore } from "./stores/ui-prefs-store";
+import { usePromoteLifecycleStore } from "./stores/promote-lifecycle-store";
 import { getQueryClient } from "./query-client";
 
 /**
@@ -10,6 +11,7 @@ export function resetDemo() {
   useFilterStore.getState().reset();
   useAuthStore.getState().reset();
   useUIPrefsStore.getState().reset();
+  usePromoteLifecycleStore.getState().reset();
 
   const qc = getQueryClient();
   qc.clear();

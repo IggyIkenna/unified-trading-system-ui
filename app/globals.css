@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Exclude docs directory — contains subdirs with spaces that cause Turbopack CSS panic */
+@source not "../docs";
+
 @custom-variant dark (&:is(.dark *));
 
 /* Citadel-Grade Institutional Trading Platform Design System

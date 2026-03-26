@@ -232,33 +232,77 @@
     },
     "promote": {
       "lifecycle_stage": "promote",
-      "entry_route": "/services/research/strategy/candidates",
+      "entry_route": "/services/promote/pipeline",
+      "redirect": "/services/promote → /services/promote/pipeline",
+      "layout": "app/(platform)/services/promote/layout.tsx",
+      "lifecycle_layout": "app/(platform)/services/promote/(lifecycle)/layout.tsx",
       "tab_set": "PROMOTE_TABS",
+      "sub_tab_set": "PROMOTE_LIFECYCLE_NAV",
       "live_asof_toggle": false,
+      "components_dir": "components/promote/",
+      "store": "lib/stores/promote-lifecycle-store.ts",
+      "config": "lib/config/services/promote.config.ts",
       "tabs": [
         {
-          "label": "Review Queue",
-          "route": "/services/research/strategy/candidates",
+          "label": "Index redirect",
+          "route": "/services/promote",
+          "file": "app/(platform)/services/promote/page.tsx",
           "state": "REAL",
-          "lines": 566
+          "note": "redirect() to pipeline"
         },
         {
-          "label": "Execution Analysis",
-          "route": "/services/execution/tca",
-          "state": "REAL",
-          "lines": 405
+          "label": "Pipeline",
+          "route": "/services/promote/pipeline",
+          "file": "app/(platform)/services/promote/(lifecycle)/pipeline/page.tsx",
+          "state": "REAL"
         },
         {
-          "label": "Risk Review",
-          "route": "/services/trading/risk",
-          "state": "REAL",
-          "lines": 1967
+          "label": "Data validation",
+          "route": "/services/promote/data-validation",
+          "file": "app/(platform)/services/promote/(lifecycle)/data-validation/page.tsx",
+          "state": "REAL"
         },
         {
-          "label": "Approval Status",
-          "route": "/services/research/strategy/handoff",
-          "state": "REAL",
-          "lines": 465
+          "label": "Model assessment",
+          "route": "/services/promote/model-assessment",
+          "file": "app/(platform)/services/promote/(lifecycle)/model-assessment/page.tsx",
+          "state": "REAL"
+        },
+        {
+          "label": "Risk & stress",
+          "route": "/services/promote/risk-stress",
+          "file": "app/(platform)/services/promote/(lifecycle)/risk-stress/page.tsx",
+          "state": "REAL"
+        },
+        {
+          "label": "Execution readiness",
+          "route": "/services/promote/execution-readiness",
+          "file": "app/(platform)/services/promote/(lifecycle)/execution-readiness/page.tsx",
+          "state": "REAL"
+        },
+        {
+          "label": "Champion / challenger",
+          "route": "/services/promote/champion",
+          "file": "app/(platform)/services/promote/(lifecycle)/champion/page.tsx",
+          "state": "REAL"
+        },
+        {
+          "label": "Paper trading",
+          "route": "/services/promote/paper-trading",
+          "file": "app/(platform)/services/promote/(lifecycle)/paper-trading/page.tsx",
+          "state": "REAL"
+        },
+        {
+          "label": "Capital allocation",
+          "route": "/services/promote/capital-allocation",
+          "file": "app/(platform)/services/promote/(lifecycle)/capital-allocation/page.tsx",
+          "state": "REAL"
+        },
+        {
+          "label": "Governance",
+          "route": "/services/promote/governance",
+          "file": "app/(platform)/services/promote/(lifecycle)/governance/page.tsx",
+          "state": "REAL"
         }
       ]
     },

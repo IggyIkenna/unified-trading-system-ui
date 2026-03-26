@@ -6,6 +6,7 @@
  * Each service defines its own tab set. Tabs support entitlement-based FOMO locking.
  */
 
+import { PROMOTE_PIPELINE_HREF } from "@/lib/config/services/promote.config";
 import { cn } from "@/lib/utils";
 import { Lock } from "lucide-react";
 import Link from "next/link";
@@ -20,6 +21,9 @@ export interface ServiceTab {
   exact?: boolean;
   /** Entitlement required to access this tab (undefined = always accessible) */
   requiredEntitlement?: string;
+  /** When true, tab is visible but not navigable (e.g. promote lifecycle gating) */
+  navDisabled?: boolean;
+  navDisabledTitle?: string;
 }
 
 interface ServiceTabsProps {
@@ -66,6 +70,19 @@ export function ServiceTabs({
                 >
                   {tab.label}
                   <Lock className="size-3" />
+                </span>
+              );
+            }
+
+            if (tab.navDisabled) {
+              return (
+                <span
+                  key={tab.href}
+                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground/40 cursor-not-allowed whitespace-nowrap"
+                  title={tab.navDisabledTitle ?? "Not available"}
+                >
+                  {tab.label}
+                  <Lock className="size-3 shrink-0" />
                 </span>
               );
             }
@@ -177,6 +194,11 @@ export const STRATEGY_SUB_TABS: ServiceTab[] = [
 
 // ── Promote (Trader + Risk Review) ───────────────────────────────────────────
 export const PROMOTE_TABS: ServiceTab[] = [
+  {
+    label: "Strategy Promotion",
+    href: PROMOTE_PIPELINE_HREF,
+    matchPrefix: "/services/promote",
+  },
   { label: "Review Queue", href: "/services/research/strategy/candidates" },
   { label: "Execution Analysis", href: "/services/execution/tca" },
   { label: "Risk Review", href: "/services/trading/risk" },
