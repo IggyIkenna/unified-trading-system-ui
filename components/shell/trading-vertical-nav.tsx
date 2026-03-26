@@ -107,25 +107,36 @@ export function TradingVerticalNav({
           const itemContent = (
             <span
               className={cn(
-                "flex items-center gap-2.5 px-2 py-2 rounded-md text-sm font-medium transition-colors w-full",
+                "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
                 isActive
-                  ? "bg-primary/10 text-primary"
+                  ? "bg-primary/15 text-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent",
                 (isLocked || tab.navDisabled) &&
-                  "opacity-40 cursor-not-allowed pointer-events-none",
+                  "opacity-35 cursor-not-allowed pointer-events-none",
                 collapsed && "justify-center px-0",
               )}
             >
-              {Icon && (
+              {Icon ? (
                 <Icon
-                  className={cn("shrink-0", collapsed ? "size-5" : "size-4")}
+                  className={cn(
+                    "shrink-0",
+                    collapsed ? "size-5" : "size-[18px]",
+                    isActive ? "text-primary" : "text-foreground/60",
+                  )}
+                />
+              ) : (
+                <span
+                  className={cn(
+                    "shrink-0 rounded-sm bg-foreground/40",
+                    collapsed ? "size-5" : "size-[18px]",
+                  )}
                 />
               )}
               {!collapsed && (
                 <span className="truncate leading-none">{tab.label}</span>
               )}
               {!collapsed && (isLocked || tab.navDisabled) && (
-                <Lock className="size-3 shrink-0 ml-auto" />
+                <Lock className="size-3 shrink-0 ml-auto opacity-60" />
               )}
             </span>
           );
