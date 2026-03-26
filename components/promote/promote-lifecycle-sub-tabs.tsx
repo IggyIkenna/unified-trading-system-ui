@@ -50,7 +50,8 @@ export function PromoteLifecycleSubTabs() {
     <ServiceTabs
       tabs={tabs}
       entitlements={user?.entitlements}
-      className="bg-muted/20 border-b-0"
+      tabsAlign="end"
+      className="border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     />
   );
 }

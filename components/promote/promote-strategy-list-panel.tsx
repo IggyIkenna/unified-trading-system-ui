@@ -1,86 +1,27 @@
 "use client";
 
 import * as React from "react";
-import { Filter } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 import { usePromoteListFilters } from "@/components/promote/promote-list-filters-context";
 import {
   getOverallProgress,
   promoteSlaBadge,
 } from "@/components/promote/helpers";
 import { STAGE_META } from "@/components/promote/stage-meta";
-import type { PromotionStage } from "@/components/promote/types";
 import { STAGE_ORDER } from "@/components/promote/types";
 import { usePromoteLifecycleStore } from "@/lib/stores/promote-lifecycle-store";
+import { cn } from "@/lib/utils";
 
-/** ML Training–style chip hues (active / inactive), aligned to promotion stages. */
-const STAGE_FILTER_CHIP: Record<
-  "all" | PromotionStage,
-  { active: string; inactive: string }
-> = {
-  all: {
-    active:
-      "border-primary bg-primary text-primary-foreground hover:bg-primary/90",
-    inactive:
-      "border-zinc-500/60 bg-zinc-900/90 text-zinc-100 hover:border-zinc-400 hover:bg-zinc-800 hover:text-white dark:border-zinc-600 dark:bg-zinc-950/90",
-  },
-  data_validation: {
-    active:
-      "border-slate-500 bg-slate-600 text-white shadow-sm hover:bg-slate-600/90",
-    inactive:
-      "border-slate-500/45 bg-slate-950/60 text-slate-100 hover:border-slate-400/70 hover:bg-slate-900/70 hover:text-white",
-  },
-  model_assessment: {
-    active:
-      "border-blue-500 bg-blue-600 text-white shadow-sm hover:bg-blue-600/90",
-    inactive:
-      "border-blue-500/45 bg-blue-950/60 text-blue-100 hover:border-blue-400/70 hover:bg-blue-900/70 hover:text-white",
-  },
-  risk_stress: {
-    active:
-      "border-amber-500 bg-amber-500 text-zinc-950 shadow-sm hover:bg-amber-500/90",
-    inactive:
-      "border-amber-500/45 bg-amber-950/50 text-amber-100 hover:border-amber-400/60 hover:bg-amber-950/80 hover:text-amber-50",
-  },
-  execution_readiness: {
-    active:
-      "border-cyan-500 bg-cyan-600 text-white shadow-sm hover:bg-cyan-600/90",
-    inactive:
-      "border-cyan-500/45 bg-cyan-950/55 text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/60 hover:text-white",
-  },
-  paper_trading: {
-    active:
-      "border-violet-500 bg-violet-600 text-white shadow-sm hover:bg-violet-600/90",
-    inactive:
-      "border-violet-500/45 bg-violet-950/55 text-violet-100 hover:border-violet-400/60 hover:bg-violet-900/60 hover:text-white",
-  },
-  governance: {
-    active:
-      "border-emerald-500 bg-emerald-600 text-white shadow-sm hover:bg-emerald-600/90",
-    inactive:
-      "border-emerald-500/45 bg-emerald-950/55 text-emerald-100 hover:border-emerald-400/60 hover:bg-emerald-900/60 hover:text-white",
-  },
-};
+const SELECT_ROW =
+  "mt-0.5 h-8 w-full rounded-md border border-border bg-background px-2 text-xs font-mono";
 
-const STAGE_CHIP_SHORT: Record<PromotionStage, string> = {
-  data_validation: "Data",
-  model_assessment: "Model",
-  risk_stress: "Risk",
-  execution_readiness: "Exec",
-  paper_trading: "Paper",
-  governance: "Gov",
-};
+const PAGE_SIZE_OPTIONS = [10, 15, 25, 50] as const;
 
 export function PromoteStrategyListPanel({
   className,
@@ -101,151 +42,215 @@ export function PromoteStrategyListPanel({
     submittedTo,
     setSubmittedTo,
     filtered,
+    paginatedList,
     cohortWithoutStageFilter,
     assetClasses,
     archetypes,
+    listPage,
+    setListPage,
+    listTotalPages,
+    pageSize,
+    setPageSize,
   } = usePromoteListFilters();
 
   const selectedId = usePromoteLifecycleStore((s) => s.selectedId);
   const setSelectedId = usePromoteLifecycleStore((s) => s.setSelectedId);
 
-  const chipItems = React.useMemo(() => {
-    const rows: {
-      key: "all" | PromotionStage;
-      label: string;
-      count: number;
-    }[] = [
-      { key: "all", label: "All", count: cohortWithoutStageFilter.length },
-      ...STAGE_ORDER.map((stage) => ({
-        key: stage,
-        label: STAGE_CHIP_SHORT[stage],
-        count: cohortWithoutStageFilter.filter((c) => c.currentStage === stage)
-          .length,
-      })),
+  const stageOptions = React.useMemo(() => {
+    const rows: { value: string; label: string }[] = [
+      {
+        value: "all",
+        label: `All (${cohortWithoutStageFilter.length})`,
+      },
+      ...STAGE_ORDER.map((stage) => {
+        const count = cohortWithoutStageFilter.filter(
+          (c) => c.currentStage === stage,
+        ).length;
+        return {
+          value: stage,
+          label: `${STAGE_META[stage].label} (${count})`,
+        };
+      }),
     ];
     return rows;
   }, [cohortWithoutStageFilter]);
 
+  const rangeStart = filtered.length === 0 ? 0 : (listPage - 1) * pageSize + 1;
+  const rangeEnd = Math.min(listPage * pageSize, filtered.length);
+
   return (
-    <div className={cn("flex min-h-0 flex-col", className)}>
-      <div className="flex shrink-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
-        <div className="grid min-w-0 flex-1 grid-cols-2 gap-2 min-[480px]:grid-cols-3 xl:grid-cols-4">
-          {chipItems.map(({ key, label, count }) => {
-            const chip = STAGE_FILTER_CHIP[key];
-            const selected = stageFilter === key;
-            return (
-              <Button
-                key={key}
-                type="button"
-                variant="ghost"
-                className={cn(
-                  "h-11 justify-center border px-2 text-sm font-medium shadow-none sm:px-3",
-                  selected ? chip.active : chip.inactive,
-                )}
-                onClick={() => setStageFilter(key)}
-              >
-                <span className="truncate">{label}</span>
-                {count > 0 && (
-                  <span className="ml-1 tabular-nums text-xs opacity-90">
-                    ({count})
-                  </span>
-                )}
-              </Button>
-            );
-          })}
+    <div className={cn("flex h-full min-h-0 flex-col gap-2", className)}>
+      <div
+        className={cn(
+          "z-10 shrink-0 space-y-2 rounded-lg border border-border/50 bg-background/95 p-2 shadow-sm",
+          "backdrop-blur supports-[backdrop-filter]:bg-background/85",
+          "lg:sticky lg:top-2",
+        )}
+      >
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div className="min-w-0">
+            <Label
+              htmlFor="promote-stage-filter"
+              className="text-[10px] uppercase tracking-wide text-muted-foreground"
+            >
+              Stage
+            </Label>
+            <select
+              id="promote-stage-filter"
+              className={SELECT_ROW}
+              value={stageFilter}
+              onChange={(e) => setStageFilter(e.target.value)}
+              aria-label="Filter by stage"
+            >
+              {stageOptions.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="min-w-0">
+            <Label
+              htmlFor="promote-asset-filter"
+              className="text-[10px] uppercase tracking-wide text-muted-foreground"
+            >
+              Asset class
+            </Label>
+            <select
+              id="promote-asset-filter"
+              className={SELECT_ROW}
+              value={asset}
+              onChange={(e) => setAsset(e.target.value)}
+              aria-label="Asset class"
+            >
+              {assetClasses.map((a) => (
+                <option key={a} value={a}>
+                  {a === "all" ? "All" : a}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="min-w-0">
+            <Label
+              htmlFor="promote-archetype-filter"
+              className="text-[10px] uppercase tracking-wide text-muted-foreground"
+            >
+              Archetype
+            </Label>
+            <select
+              id="promote-archetype-filter"
+              className={SELECT_ROW}
+              value={archetype}
+              onChange={(e) => setArchetype(e.target.value)}
+              aria-label="Archetype"
+            >
+              {archetypes.map((a) => (
+                <option key={a} value={a}>
+                  {a === "all" ? "All" : a}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 lg:pt-0.5">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                type="button"
-                size="icon"
-                className="size-11 shrink-0"
-                aria-label="More filters"
-                title="More filters"
-              >
-                <Filter className="size-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72" align="end">
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs text-muted-foreground">
-                    Asset class
-                  </Label>
-                  <select
-                    className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs font-mono"
-                    value={asset}
-                    onChange={(e) => setAsset(e.target.value)}
-                    aria-label="Asset class"
-                  >
-                    {assetClasses.map((a) => (
-                      <option key={a} value={a}>
-                        {a === "all" ? "All asset classes" : a}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">
-                    Archetype
-                  </Label>
-                  <select
-                    className="mt-1 h-9 w-full rounded-md border border-border bg-background px-2 text-xs font-mono"
-                    value={archetype}
-                    onChange={(e) => setArchetype(e.target.value)}
-                    aria-label="Archetype"
-                  >
-                    {archetypes.map((a) => (
-                      <option key={a} value={a}>
-                        {a === "all" ? "All archetypes" : a}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">
-                    Submitter
-                  </Label>
-                  <Input
-                    className="mt-1 h-8 text-xs font-mono"
-                    placeholder="Name…"
-                    value={submitterQ}
-                    onChange={(e) => setSubmitterQ(e.target.value)}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-xs text-muted-foreground">
-                      From
-                    </Label>
-                    <Input
-                      type="date"
-                      className="mt-1 h-8 text-xs font-mono"
-                      value={submittedFrom}
-                      onChange={(e) => setSubmittedFrom(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-muted-foreground">To</Label>
-                    <Input
-                      type="date"
-                      className="mt-1 h-8 text-xs font-mono"
-                      value={submittedTo}
-                      onChange={(e) => setSubmittedTo(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+
+        <div className="flex flex-wrap items-end gap-x-2 gap-y-2">
+          <div className="min-w-[6.5rem] max-w-full flex-[1_1_8rem]">
+            <Label
+              htmlFor="promote-submitter-filter"
+              className="text-[10px] uppercase tracking-wide text-muted-foreground"
+            >
+              Submitter
+            </Label>
+            <Input
+              id="promote-submitter-filter"
+              className="mt-0.5 h-8 text-xs font-mono"
+              placeholder="Name…"
+              value={submitterQ}
+              onChange={(e) => setSubmitterQ(e.target.value)}
+            />
+          </div>
+          <div className="w-[8.5rem] shrink-0">
+            <Label
+              htmlFor="promote-from-date"
+              className="text-[10px] uppercase tracking-wide text-muted-foreground"
+            >
+              From
+            </Label>
+            <Input
+              id="promote-from-date"
+              type="date"
+              className="mt-0.5 h-8 text-[11px] font-mono"
+              value={submittedFrom}
+              onChange={(e) => setSubmittedFrom(e.target.value)}
+            />
+          </div>
+          <div className="w-[8.5rem] shrink-0">
+            <Label
+              htmlFor="promote-to-date"
+              className="text-[10px] uppercase tracking-wide text-muted-foreground"
+            >
+              To
+            </Label>
+            <Input
+              id="promote-to-date"
+              type="date"
+              className="mt-0.5 h-8 text-[11px] font-mono"
+              value={submittedTo}
+              onChange={(e) => setSubmittedTo(e.target.value)}
+            />
+          </div>
+          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1">
+            <span className="mr-1 hidden text-[10px] tabular-nums text-muted-foreground sm:inline">
+              {filtered.length === 0
+                ? "0"
+                : `${rangeStart}–${rangeEnd} / ${filtered.length}`}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-7 w-7"
+              disabled={listPage <= 1}
+              onClick={() => setListPage((p) => Math.max(1, p - 1))}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="size-3.5" />
+            </Button>
+            <span className="min-w-[2.75rem] text-center font-mono text-[10px] tabular-nums text-muted-foreground">
+              {listPage}/{listTotalPages}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="h-7 w-7"
+              disabled={listPage >= listTotalPages}
+              onClick={() =>
+                setListPage((p) => Math.min(listTotalPages, p + 1))
+              }
+              aria-label="Next page"
+            >
+              <ChevronRight className="size-3.5" />
+            </Button>
+            <select
+              className="h-7 rounded-md border border-border bg-background px-1 font-mono text-[10px]"
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              aria-label="Strategies per page"
+            >
+              {PAGE_SIZE_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}/pg
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
-      <ScrollArea className="h-[min(60vh,calc(100vh-280px))] lg:h-[calc(100vh-220px)]">
+      <ScrollArea className="min-h-0 flex-1">
         <div className="space-y-2 pr-2 pt-1">
-          {filtered.map((c) => {
+          {paginatedList.map((c) => {
             const progress = getOverallProgress(c);
             const sla = promoteSlaBadge(c);
             const stageMeta = STAGE_META[c.currentStage];

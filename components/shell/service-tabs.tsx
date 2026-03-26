@@ -10,23 +10,22 @@ import { cn } from "@/lib/utils";
 import {
   Lock,
   LayoutDashboard,
-  MonitorDot,
+  Terminal,
   BookOpen,
-  ClipboardList,
+  ListOrdered,
   Bell,
-  BookMarked,
+  BookCheck,
   Wallet,
-  BarChart3,
+  PieChart,
   ShieldAlert,
-  LineChart,
+  CandlestickChart,
   Layers,
-  Zap,
-  TrendingUp,
   Trophy,
-  Lightbulb,
-  GitFork,
+  Sparkles,
+  GitMerge,
   Settings2,
-  Cpu,
+  Flame,
+  AreaChart,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -57,6 +56,8 @@ interface ServiceTabsProps {
   /** User's current entitlements — used for FOMO locking */
   entitlements?: readonly string[];
   className?: string;
+  /** When `"end"`, tab links align to the right (e.g. promote detail toolbar). */
+  tabsAlign?: "start" | "end";
 }
 
 export function ServiceTabs({
@@ -64,15 +65,26 @@ export function ServiceTabs({
   rightSlot,
   entitlements,
   className,
+  tabsAlign = "start",
 }: ServiceTabsProps) {
   const pathname = usePathname() || "";
   const hasWildcard = entitlements?.includes("*") ?? true;
+  const alignEnd = tabsAlign === "end";
 
   return (
     <div className={cn("border-b border-border bg-card/30", className)}>
-      <div className="flex items-center justify-between px-6">
+      <div
+        className={cn(
+          "flex items-center gap-2 px-4 sm:px-6",
+          alignEnd && !rightSlot && "justify-end",
+          (!alignEnd || rightSlot) && "justify-between",
+        )}
+      >
         <nav
-          className="flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]"
+          className={cn(
+            "flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]",
+            alignEnd && "justify-end",
+          )}
           aria-label="Service sections"
         >
           {tabs.map((tab) => {
@@ -227,15 +239,19 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: LayoutDashboard,
   },
   { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
-  { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
+  { label: "Terminal", href: "/services/trading/terminal", icon: Terminal },
   { label: "Positions", href: "/services/trading/positions", icon: BookOpen },
-  { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
+  { label: "Orders", href: "/services/trading/orders", icon: ListOrdered },
   { label: "Alerts", href: "/services/trading/alerts", icon: Bell },
   { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
-  { label: "P&L Breakdown", href: "/services/trading/pnl", icon: BarChart3 },
+  { label: "P&L Breakdown", href: "/services/trading/pnl", icon: PieChart },
   { label: "Risk", href: "/services/trading/risk", icon: ShieldAlert },
-  { label: "Markets", href: "/services/trading/markets", icon: LineChart },
-  { label: "Book Trade", href: "/services/trading/book", icon: BookMarked },
+  {
+    label: "Markets",
+    href: "/services/trading/markets",
+    icon: CandlestickChart,
+  },
+  { label: "Book Trade", href: "/services/trading/book", icon: BookCheck },
   {
     label: "Instructions",
     href: "/services/trading/instructions",
@@ -245,20 +261,20 @@ export const TRADING_TABS: ServiceTab[] = [
   {
     label: "Combos",
     href: "/services/trading/bundles",
-    icon: GitFork,
+    icon: GitMerge,
     group: "Asset-Specific",
   },
-  { label: "DeFi Ops", href: "/services/trading/defi", icon: Cpu },
+  { label: "DeFi Ops", href: "/services/trading/defi", icon: Flame },
   {
     label: "Options & Futures",
     href: "/services/trading/options",
-    icon: TrendingUp,
+    icon: AreaChart,
   },
   { label: "Sports", href: "/services/trading/sports", icon: Trophy },
   {
     label: "Predictions",
     href: "/services/trading/predictions",
-    icon: Lightbulb,
+    icon: Sparkles,
   },
 ];
 

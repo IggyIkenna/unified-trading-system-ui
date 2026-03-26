@@ -2,6 +2,11 @@
 
 import * as React from "react";
 import { usePromoteLifecycleStore } from "@/lib/stores/promote-lifecycle-store";
+import {
+  DEFAULT_PAGE_SIZE,
+  readPromoteListFiltersFromStorage,
+  writePromoteListFiltersToStorage,
+} from "./promote-list-filters-storage";
 import type { CandidateStrategy } from "./types";
 
 export interface PromoteListFiltersValue {
@@ -18,7 +23,14 @@ export interface PromoteListFiltersValue {
   submittedTo: string;
   setSubmittedTo: (v: string) => void;
   filtered: CandidateStrategy[];
-  /** Same filters as `filtered` but stage filter ignored — for chip counts. */
+  /** Paginated slice for the left strategy list only. */
+  paginatedList: CandidateStrategy[];
+  listPage: number;
+  setListPage: React.Dispatch<React.SetStateAction<number>>;
+  listTotalPages: number;
+  pageSize: number;
+  setPageSize: (n: number) => void;
+  /** Same filters as `filtered` but stage filter ignored — for stage counts. */
   cohortWithoutStageFilter: CandidateStrategy[];
   candidates: CandidateStrategy[];
   assetClasses: string[];
@@ -28,18 +40,76 @@ export interface PromoteListFiltersValue {
 const PromoteListFiltersContext =
   React.createContext<PromoteListFiltersValue | null>(null);
 
+const PAGE_SIZE_OPTIONS = [10, 15, 25, 50] as const;
+
+function normalizePageSize(n: number): number {
+  return PAGE_SIZE_OPTIONS.includes(n as (typeof PAGE_SIZE_OPTIONS)[number])
+    ? n
+    : DEFAULT_PAGE_SIZE;
+}
+
 export function PromoteListFiltersProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const candidates = usePromoteLifecycleStore((s) => s.candidates);
-  const [asset, setAsset] = React.useState<string>("all");
-  const [archetype, setArchetype] = React.useState<string>("all");
-  const [stageFilter, setStageFilter] = React.useState<string>("all");
-  const [submitterQ, setSubmitterQ] = React.useState("");
-  const [submittedFrom, setSubmittedFrom] = React.useState("");
-  const [submittedTo, setSubmittedTo] = React.useState("");
+  const stored = readPromoteListFiltersFromStorage();
+
+  const [asset, setAsset] = React.useState<string>(() => stored.asset ?? "all");
+  const [archetype, setArchetype] = React.useState<string>(
+    () => stored.archetype ?? "all",
+  );
+  const [stageFilter, setStageFilter] = React.useState<string>(
+    () => stored.stageFilter ?? "all",
+  );
+  const [submitterQ, setSubmitterQ] = React.useState(
+    () => stored.submitterQ ?? "",
+  );
+  const [submittedFrom, setSubmittedFrom] = React.useState(
+    () => stored.submittedFrom ?? "",
+  );
+  const [submittedTo, setSubmittedTo] = React.useState(
+    () => stored.submittedTo ?? "",
+  );
+  const [listPage, setListPage] = React.useState(() =>
+    Math.max(1, Number(stored.listPage) || 1),
+  );
+  const [pageSize, setPageSizeState] = React.useState(() =>
+    normalizePageSize(Number(stored.pageSize) || DEFAULT_PAGE_SIZE),
+  );
+
+  const setPageSize = React.useCallback((n: number) => {
+    setPageSizeState(normalizePageSize(n));
+  }, []);
+
+  const pageSizeRef = React.useRef(pageSize);
+  React.useEffect(() => {
+    if (pageSizeRef.current !== pageSize) {
+      pageSizeRef.current = pageSize;
+      setListPage(1);
+    }
+  }, [pageSize]);
+
+  const filterSignature = React.useMemo(
+    () =>
+      [
+        asset,
+        archetype,
+        stageFilter,
+        submitterQ,
+        submittedFrom,
+        submittedTo,
+      ].join("\0"),
+    [asset, archetype, stageFilter, submitterQ, submittedFrom, submittedTo],
+  );
+  const prevFilterSig = React.useRef(filterSignature);
+  React.useEffect(() => {
+    if (prevFilterSig.current !== filterSignature) {
+      prevFilterSig.current = filterSignature;
+      setListPage(1);
+    }
+  }, [filterSignature]);
 
   const assetClasses = React.useMemo(
     () => ["all", ...new Set(candidates.map((c) => c.assetClass))],
@@ -78,6 +148,46 @@ export function PromoteListFiltersProvider({
     );
   }, [cohortWithoutStageFilter, stageFilter]);
 
+  const listTotalPages = Math.max(
+    1,
+    Math.ceil(filtered.length / pageSize) || 1,
+  );
+
+  React.useEffect(() => {
+    if (listPage > listTotalPages) {
+      setListPage(listTotalPages);
+    }
+  }, [listPage, listTotalPages]);
+
+  const paginatedList = React.useMemo(() => {
+    const safePage = Math.min(listPage, listTotalPages);
+    const start = (safePage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, listPage, listTotalPages, pageSize]);
+
+  React.useEffect(() => {
+    writePromoteListFiltersToStorage({
+      stageFilter,
+      asset,
+      archetype,
+      submitterQ,
+      submittedFrom,
+      submittedTo,
+      listPage: Math.min(listPage, listTotalPages),
+      pageSize,
+    });
+  }, [
+    stageFilter,
+    asset,
+    archetype,
+    submitterQ,
+    submittedFrom,
+    submittedTo,
+    listPage,
+    listTotalPages,
+    pageSize,
+  ]);
+
   const value = React.useMemo(
     () => ({
       asset,
@@ -93,6 +203,12 @@ export function PromoteListFiltersProvider({
       submittedTo,
       setSubmittedTo,
       filtered,
+      paginatedList,
+      listPage,
+      setListPage,
+      listTotalPages,
+      pageSize,
+      setPageSize,
       cohortWithoutStageFilter,
       candidates,
       assetClasses,
@@ -106,6 +222,11 @@ export function PromoteListFiltersProvider({
       submittedFrom,
       submittedTo,
       filtered,
+      paginatedList,
+      listPage,
+      listTotalPages,
+      pageSize,
+      setPageSize,
       cohortWithoutStageFilter,
       candidates,
       assetClasses,
