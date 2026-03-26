@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 import { ColRow } from "@/components/shared/finder/col-row";
 import type {
   FinderColumnDef,
@@ -27,19 +28,23 @@ export function FinderColumn({
   search,
 }: FinderColumnProps) {
   const [page, setPage] = React.useState(0);
+  const [internalSearch, setInternalSearch] = React.useState("");
 
-  // Filter by search if provided
+  // Filter by external or internal search
   const filtered = React.useMemo(() => {
-    if (!search) return items;
-    const q = search.toLowerCase();
+    const q = (columnDef.showSearch ? internalSearch : (search ?? ""))
+      .toLowerCase()
+      .trim();
+    if (!q) return items;
     return items.filter((item) => item.label.toLowerCase().includes(q));
-  }, [items, search]);
+  }, [items, search, internalSearch, columnDef.showSearch]);
 
-  // Reset page when items change
+  // Reset page and internal search when items change
   const itemsKey = items.map((i) => i.id).join(",");
   React.useEffect(() => {
     setPage(0);
-  }, [itemsKey]);
+    if (columnDef.showSearch) setInternalSearch("");
+  }, [itemsKey, columnDef.showSearch]);
 
   const shouldPaginate = columnDef.paginate && filtered.length > PAGE_SIZE;
   const totalPages = shouldPaginate
@@ -55,11 +60,29 @@ export function FinderColumn({
       <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30 shrink-0">
         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
           {columnDef.label} · {filtered.length.toLocaleString()}
-          {search && filtered.length !== items.length && (
+          {(search || internalSearch) && filtered.length !== items.length && (
             <span> / {items.length.toLocaleString()}</span>
           )}
         </p>
       </div>
+
+      {/* Optional internal search */}
+      {columnDef.showSearch && (
+        <div className="px-2 py-1.5 border-b border-border/30 shrink-0">
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground" />
+            <Input
+              placeholder={columnDef.searchPlaceholder ?? "Filter…"}
+              value={internalSearch}
+              onChange={(e) => {
+                setInternalSearch(e.target.value);
+                setPage(0);
+              }}
+              className="pl-6 h-6 text-xs border-border/40"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto min-h-0">

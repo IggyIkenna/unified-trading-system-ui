@@ -2,158 +2,196 @@
 
 /**
  * /services/data/raw — Raw data ingestion status.
- * Shows download progress per venue, completion heatmaps, active jobs,
- * and controls to trigger new downloads.
+ * FinderBrowser layout: Category → Venue → Instrument Type → Data Type
+ * Shows completion %, date range, and freshness per data type.
  */
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, RefreshCw } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { RefreshCw, Download, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { FinderBrowser } from "@/components/shared/finder";
+import type { FinderSelections } from "@/components/shared/finder";
 import {
-  MOCK_PIPELINE_STAGES,
-  MOCK_ACTIVE_JOBS,
-  MOCK_JOB_HISTORY,
-} from "@/lib/data-service-mock-data";
-import { type DataCategory } from "@/lib/data-service-types";
-import { PipelineStatusView } from "@/components/data/pipeline-status-view";
+  RAW_DATA_COLUMNS,
+  getRawDataContextStats,
+} from "@/components/data/raw-data-finder-config";
+import { MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
 
-export default function RawDataPage() {
-  const [deployTarget, setDeployTarget] = React.useState<{
-    venue: string;
-    category: DataCategory;
-  } | null>(null);
+// ─── Detail panel ─────────────────────────────────────────────────────────────
 
-  const rawStage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "raw");
-  const rawJobs = MOCK_ACTIVE_JOBS.filter(
-    (j) => j.type === "download" || j.type === "backfill",
-  );
-  const rawHistory = MOCK_JOB_HISTORY.filter(
-    (h) => h.jobType === "download" || h.jobType === "backfill",
-  );
+function RawDataDetail({ selections }: { selections: FinderSelections }) {
+  const dtItem = selections["datatype"];
+  const folderData = selections["folder"]?.data as
+    | { folder: string; venue: string; cat: string }
+    | undefined;
+  const venueData = selections["venue"]?.data as
+    | { venue: string; cat: string }
+    | undefined;
 
-  const config = {
-    stage: "raw" as const,
-    label: "Raw Data Download",
-    actionLabel: "Download",
-    onDeploy: (venue: string, category: DataCategory) => {
-      setDeployTarget({ venue, category });
-    },
-  };
+  if (dtItem) {
+    const { dt, venue, folder, completionPct } = dtItem.data as {
+      dt: string;
+      venue: string;
+      folder: string;
+      completionPct: number;
+    };
+    const color =
+      completionPct >= 90
+        ? "text-emerald-400"
+        : completionPct >= 70
+          ? "text-yellow-400"
+          : "text-red-400";
+    const barColor =
+      completionPct >= 90
+        ? "bg-emerald-400"
+        : completionPct >= 70
+          ? "bg-yellow-400"
+          : "bg-red-400";
 
-  if (!rawStage) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-8">
-        <p className="text-sm text-muted-foreground">
-          Raw pipeline stage is not configured in mock data.
+      <div className="p-4 space-y-4">
+        <div className="space-y-1.5">
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">
+            Data Type
+          </p>
+          <p className="text-sm font-semibold font-mono capitalize">
+            {dt.replace(/_/g, " ")}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {venue.replace(/_/g, " ")} / {folder.replace(/_/g, " ")}
+          </p>
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Completion</span>
+            <span className={cn("font-mono font-bold", color)}>
+              {completionPct}%
+            </span>
+          </div>
+          <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
+            <div
+              className={cn("h-full rounded-full transition-all", barColor)}
+              style={{ width: `${completionPct}%` }}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <p className="text-muted-foreground">Status</p>
+            <div className="flex items-center gap-1 mt-0.5">
+              {completionPct >= 90 ? (
+                <>
+                  <CheckCircle2 className="size-3 text-emerald-400" />
+                  <span className="text-emerald-400">Healthy</span>
+                </>
+              ) : (
+                <>
+                  <AlertTriangle className="size-3 text-amber-400" />
+                  <span className="text-amber-400">Partial</span>
+                </>
+              )}
+            </div>
+          </div>
+          <div>
+            <p className="text-muted-foreground">Data type</p>
+            <p className="font-mono">{dt}</p>
+          </div>
+        </div>
+        <Button size="sm" className="w-full gap-2">
+          <Download className="size-3" /> Configure Download
+        </Button>
+      </div>
+    );
+  }
+
+  if (folderData) {
+    return (
+      <div className="p-4 space-y-3">
+        <p className="text-sm font-semibold capitalize">
+          {folderData.folder.replace(/_/g, " ")}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Select a data type to see completion details
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container px-4 py-8 md:px-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Raw Data</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Download status for raw market data — ticks, trades, events, odds
-            </p>
-          </div>
+    <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+      <Download className="size-8 mb-2 opacity-20" />
+      <p className="text-sm font-medium text-muted-foreground">
+        No data type selected
+      </p>
+      <p className="text-xs text-muted-foreground/60 mt-1">
+        Drill down to see completion % and configure downloads
+      </p>
+    </div>
+  );
+}
+
+// ─── Page ──────────────────────────────────────────────────────────────────────
+
+export default function RawDataPage() {
+  const rawStage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "raw");
+
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 pt-4 pb-3 border-b border-border/50">
+        <div>
+          <h1 className="text-lg font-bold tracking-tight">Raw Data</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {rawStage
+              ? `${rawStage.completionPct.toFixed(1)}% overall · ${rawStage.completedShards.toLocaleString()} shards complete`
+              : "Download status for raw market data"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {rawStage && rawStage.failedShards > 0 && (
+            <Badge
+              variant="outline"
+              className="text-xs gap-1.5 border-red-400/30 text-red-400"
+            >
+              <AlertTriangle className="size-3" />
+              {rawStage.failedShards} failed
+            </Badge>
+          )}
+          {rawStage && rawStage.inProgressShards > 0 && (
+            <Badge
+              variant="outline"
+              className="text-xs gap-1.5 border-blue-400/30 text-blue-400"
+            >
+              {rawStage.inProgressShards} active
+            </Badge>
+          )}
           <Button variant="outline" size="sm">
             <RefreshCw className="size-4 mr-2" />
             Refresh
           </Button>
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-sky-400">
-                {rawStage.completionPct.toFixed(1)}%
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Overall Completion
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-emerald-400">
-                {rawStage.completedShards.toLocaleString()}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Shards Complete
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-yellow-400">
-                {rawStage.inProgressShards}
-              </div>
-              <div className="text-xs text-muted-foreground">In Progress</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div
-                className={cn(
-                  "text-2xl font-bold font-mono",
-                  rawStage.failedShards > 0
-                    ? "text-red-400"
-                    : "text-muted-foreground",
-                )}
-              >
-                {rawStage.failedShards}
-              </div>
-              <div className="text-xs text-muted-foreground">Failed</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <PipelineStatusView
-          config={config}
-          stage={rawStage}
-          jobs={rawJobs}
-          jobHistory={rawHistory}
-        />
-
-        {deployTarget && (
-          <Card className="mt-6 border-primary/30 bg-primary/5">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Download className="size-5 text-primary" />
-                  <div>
-                    <div className="text-sm font-medium">
-                      Download job ready:{" "}
-                      {deployTarget.venue.replace(/_/g, " ")} (
-                      {deployTarget.category})
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      Opens full deploy dialog — select date range, workers,
-                      force flag
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setDeployTarget(null)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button size="sm">Configure & Deploy</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
+
+      {/* FinderBrowser */}
+      <FinderBrowser
+        columns={RAW_DATA_COLUMNS}
+        detailPanel={(selections) => <RawDataDetail selections={selections} />}
+        contextStats={getRawDataContextStats}
+        detailPanelTitle="Data Type Detail"
+        emptyState={
+          <div className="text-center">
+            <Download className="size-8 mb-2 opacity-20 mx-auto" />
+            <p className="text-sm font-medium">Select a category</p>
+            <p className="text-xs opacity-60 mt-1">
+              Browse raw data availability by venue and data type
+            </p>
+          </div>
+        }
+      />
     </div>
   );
 }

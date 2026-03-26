@@ -23,6 +23,8 @@ export interface FinderColumnDef<T = unknown> {
   getCount?: (item: FinderItem<T>) => number | null;
   visibleWhen?: (selections: FinderSelections) => boolean;
   paginate?: boolean; // If true, paginate items (default PAGE_SIZE=100)
+  showSearch?: boolean; // If true, renders an internal search input within the column
+  searchPlaceholder?: string; // Placeholder for the column's internal search
 }
 
 /** Context strip stats — each page computes from current selections */

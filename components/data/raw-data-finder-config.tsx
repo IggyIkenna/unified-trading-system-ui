@@ -1,0 +1,422 @@
+"use client";
+
+/**
+ * FinderBrowser column configuration for /services/data/raw
+ *
+ * Hierarchy: Category → Venue → Instrument Type (folder) → Data Type
+ * Source: sharding_config dimensions: [category, venue, instrument_type, data_type, date]
+ */
+
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import type {
+  FinderColumnDef,
+  FinderContextStats,
+  FinderItem,
+  FinderSelections,
+} from "@/components/shared/finder/types";
+import {
+  DATA_CATEGORY_LABELS,
+  VENUES_BY_CATEGORY,
+  FOLDERS_BY_CATEGORY,
+  type DataCategory,
+  type DataFolder,
+  type DataType,
+} from "@/lib/data-service-types";
+import {
+  MOCK_INSTRUMENTS,
+  MOCK_INSTRUMENT_COUNTS,
+  MOCK_PIPELINE_STAGES,
+} from "@/lib/data-service-mock-data";
+
+// Data types available per folder (derived from instrument data types)
+function getDataTypesForFolderVenue(
+  venue: string,
+  folder: DataFolder,
+  cat: DataCategory,
+): DataType[] {
+  const instruments = MOCK_INSTRUMENTS.filter(
+    (i) => i.venue === venue && i.folder === folder,
+  );
+  if (instruments.length === 0) {
+    // Fallback based on folder type
+    const defaults: Record<string, DataType[]> = {
+      spot: ["ohlcv", "trades", "book_snapshot_5"],
+      perpetuals: [
+        "ohlcv",
+        "trades",
+        "book_snapshot_5",
+        "funding_rates",
+        "open_interest",
+      ],
+      options: ["ohlcv", "trades", "greeks", "iv_surface"],
+      futures: ["ohlcv", "trades", "book_snapshot_5"],
+      equity: ["ohlcv", "trades"],
+      rates: ["ohlcv"],
+      pool_state: ["pool_state", "swap_events", "price_feeds"],
+      lending: ["lending_rates", "price_feeds"],
+      staking: ["staking_yields", "price_feeds"],
+      swaps: ["swap_events"],
+      odds: ["odds", "settlement_prices"],
+      predictions: ["odds", "settlement_prices"],
+      fixtures: ["odds", "game_events"],
+      game_events: ["game_events"],
+    };
+    return defaults[folder] ?? ["ohlcv"];
+  }
+  const all = new Set<DataType>();
+  for (const inst of instruments) {
+    for (const dt of inst.dataTypes) all.add(dt);
+  }
+  return [...all];
+}
+
+// Mock completion percentages by data type (seeded deterministically)
+function getDataTypeCompletion(
+  venue: string,
+  folder: string,
+  dataType: string,
+): number {
+  const seed = (venue.length + folder.length + dataType.length) % 100;
+  const vals: Record<string, number> = {
+    ohlcv: 95,
+    trades: 88,
+    book_snapshot_5: 72,
+    book_snapshot_25: 45,
+    funding_rates: 91,
+    open_interest: 84,
+    greeks: 67,
+    iv_surface: 58,
+    pool_state: 79,
+    swap_events: 82,
+    price_feeds: 93,
+    lending_rates: 88,
+    staking_yields: 95,
+    odds: 76,
+    game_events: 83,
+    settlement_prices: 91,
+    liquidations: 69,
+    tick: 45,
+  };
+  const base = vals[dataType] ?? 70;
+  return Math.max(0, Math.min(100, base + (seed % 15) - 7));
+}
+
+const CATEGORY_BADGE: Record<DataCategory, string> = {
+  cefi: "border-blue-400/30 text-blue-400",
+  tradfi: "border-amber-400/30 text-amber-400",
+  defi: "border-violet-400/30 text-violet-400",
+  onchain_perps: "border-cyan-400/30 text-cyan-400",
+  prediction_market: "border-pink-400/30 text-pink-400",
+  sports: "border-emerald-400/30 text-emerald-400",
+};
+
+export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
+  {
+    id: "category",
+    label: "Category",
+    width: "w-[155px]",
+    getItems: (): FinderItem[] => {
+      const rawStage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "raw");
+      return (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map(
+        (cat) => {
+          const stageData = rawStage?.byCategory?.find(
+            (b) => b.category === cat,
+          );
+          return {
+            id: cat,
+            label: DATA_CATEGORY_LABELS[cat],
+            count: stageData?.completedShards ?? 0,
+            data: { cat, completionPct: stageData?.completionPct ?? 0 },
+          };
+        },
+      );
+    },
+    renderLabel: (item) => {
+      const { cat, completionPct } = item.data as {
+        cat: DataCategory;
+        completionPct: number;
+      };
+      return (
+        <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <Badge
+              variant="outline"
+              className={cn(
+                "text-[9px] px-1 py-0 shrink-0",
+                CATEGORY_BADGE[cat],
+              )}
+            >
+              {cat.toUpperCase().slice(0, 4)}
+            </Badge>
+            <span className="flex-1 font-medium truncate text-xs">
+              {DATA_CATEGORY_LABELS[cat]}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 ml-0.5">
+            <div className="flex-1 h-0.5 rounded-full bg-muted/60 overflow-hidden">
+              <div
+                className={cn(
+                  "h-full rounded-full",
+                  completionPct >= 90
+                    ? "bg-emerald-400"
+                    : completionPct >= 70
+                      ? "bg-yellow-400"
+                      : "bg-red-400",
+                )}
+                style={{ width: `${completionPct}%` }}
+              />
+            </div>
+            <span className="text-[9px] text-muted-foreground w-7 text-right">
+              {completionPct.toFixed(0)}%
+            </span>
+          </div>
+        </div>
+      );
+    },
+    renderIcon: () => null,
+    getCount: () => null,
+  },
+  {
+    id: "venue",
+    label: "Venue",
+    width: "w-[165px]",
+    visibleWhen: (sel) => sel["category"] !== null,
+    getItems: (sel): FinderItem[] => {
+      const { cat } = (sel["category"]?.data ?? {}) as {
+        cat: DataCategory;
+        completionPct: number;
+      };
+      if (!cat) return [];
+      const venues = VENUES_BY_CATEGORY[cat] ?? [];
+      return venues.map((venue) => {
+        const counts = MOCK_INSTRUMENT_COUNTS[venue];
+        return {
+          id: venue,
+          label: venue.replace(/_/g, " "),
+          count: counts?.total ?? 0,
+          data: { venue, cat },
+        };
+      });
+    },
+  },
+  {
+    id: "folder",
+    label: "Instrument Type",
+    width: "w-[170px]",
+    visibleWhen: (sel) => sel["venue"] !== null,
+    getItems: (sel): FinderItem[] => {
+      const { venue, cat } = (sel["venue"]?.data ?? {}) as {
+        venue: string;
+        cat: DataCategory;
+      };
+      if (!venue || !cat) return [];
+      const folders = FOLDERS_BY_CATEGORY[cat] ?? [];
+      return folders.map((folder) => {
+        const instruments = MOCK_INSTRUMENTS.filter(
+          (i) => i.venue === venue && i.folder === folder,
+        );
+        return {
+          id: folder,
+          label: folder.replace(/_/g, " "),
+          count: instruments.length,
+          data: { folder, venue, cat },
+        };
+      });
+    },
+    renderLabel: (item) => {
+      const { folder } = item.data as { folder: DataFolder };
+      return (
+        <span className="flex-1 font-medium truncate text-xs capitalize">
+          {folder.replace(/_/g, " ")}
+        </span>
+      );
+    },
+    renderIcon: () => null,
+  },
+  {
+    id: "datatype",
+    label: "Data Types",
+    width: "flex-1",
+    visibleWhen: (sel) => sel["folder"] !== null,
+    getItems: (sel): FinderItem[] => {
+      const { venue, folder, cat } = (sel["folder"]?.data ?? {}) as {
+        folder: DataFolder;
+        venue: string;
+        cat: DataCategory;
+      };
+      if (!venue || !folder) return [];
+      const dataTypes = getDataTypesForFolderVenue(venue, folder, cat);
+      return dataTypes.map((dt) => {
+        const pct = getDataTypeCompletion(venue, folder, dt);
+        return {
+          id: dt,
+          label: dt.replace(/_/g, " "),
+          data: { dt, venue, folder, completionPct: pct },
+        };
+      });
+    },
+    renderLabel: (item) => {
+      const { dt, completionPct } = item.data as {
+        dt: string;
+        completionPct: number;
+      };
+      const color =
+        completionPct >= 90
+          ? "text-emerald-400"
+          : completionPct >= 70
+            ? "text-yellow-400"
+            : "text-red-400";
+      return (
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="flex-1 font-medium truncate text-xs capitalize">
+            {dt.replace(/_/g, " ")}
+          </span>
+          <span className={cn("text-xs font-mono shrink-0", color)}>
+            {completionPct}%
+          </span>
+        </div>
+      );
+    },
+    renderIcon: () => null,
+    getCount: () => null,
+  },
+];
+
+export function getRawDataContextStats(
+  selections: FinderSelections,
+): FinderContextStats {
+  const catData = selections["category"]?.data as
+    | { cat: DataCategory; completionPct: number }
+    | undefined;
+  const venueData = selections["venue"]?.data as
+    | { venue: string; cat: DataCategory }
+    | undefined;
+  const folderData = selections["folder"]?.data as
+    | { folder: DataFolder; venue: string; cat: DataCategory }
+    | undefined;
+  const dtData = selections["datatype"]?.data as
+    | { dt: string; venue: string; folder: string; completionPct: number }
+    | undefined;
+
+  if (dtData) {
+    const pct = dtData.completionPct;
+    const color =
+      pct >= 90 ? "bg-emerald-400" : pct >= 70 ? "bg-yellow-400" : "bg-red-400";
+    return {
+      name: `${dtData.venue.replace(/_/g, " ")} · ${dtData.dt.replace(/_/g, " ")}`,
+      metrics: [{ label: "completion", value: pct, format: "percent" }],
+      progressBar: { value: pct, color },
+    };
+  }
+
+  if (folderData) {
+    const dataTypes = getDataTypesForFolderVenue(
+      folderData.venue,
+      folderData.folder,
+      folderData.cat,
+    );
+    const avgPct = Math.round(
+      dataTypes.reduce(
+        (s, dt) =>
+          s + getDataTypeCompletion(folderData.venue, folderData.folder, dt),
+        0,
+      ) / dataTypes.length,
+    );
+    const color =
+      avgPct >= 90
+        ? "bg-emerald-400"
+        : avgPct >= 70
+          ? "bg-yellow-400"
+          : "bg-red-400";
+    return {
+      name: `${folderData.venue.replace(/_/g, " ")} / ${folderData.folder.replace(/_/g, " ")}`,
+      metrics: [
+        { label: "data types", value: dataTypes.length },
+        { label: "avg completion", value: avgPct, format: "percent" },
+      ],
+      progressBar: { value: avgPct, color },
+    };
+  }
+
+  if (venueData) {
+    const folders = FOLDERS_BY_CATEGORY[venueData.cat] ?? [];
+    const avgPct = Math.round(
+      folders.reduce((s, f) => {
+        const dts = getDataTypesForFolderVenue(
+          venueData.venue,
+          f,
+          venueData.cat,
+        );
+        return (
+          s +
+          dts.reduce(
+            (ss, dt) => ss + getDataTypeCompletion(venueData.venue, f, dt),
+            0,
+          ) /
+            dts.length
+        );
+      }, 0) / folders.length,
+    );
+    const color =
+      avgPct >= 90
+        ? "bg-emerald-400"
+        : avgPct >= 70
+          ? "bg-yellow-400"
+          : "bg-red-400";
+    return {
+      name: venueData.venue.replace(/_/g, " "),
+      metrics: [
+        { label: "folders", value: folders.length },
+        { label: "avg completion", value: avgPct, format: "percent" },
+      ],
+      progressBar: { value: avgPct, color },
+    };
+  }
+
+  if (catData) {
+    return {
+      name: DATA_CATEGORY_LABELS[catData.cat],
+      metrics: [
+        {
+          label: "completion",
+          value: catData.completionPct,
+          format: "percent",
+        },
+        {
+          label: "venues",
+          value: (VENUES_BY_CATEGORY[catData.cat] ?? []).length,
+        },
+      ],
+      progressBar: {
+        value: catData.completionPct,
+        color:
+          catData.completionPct >= 90
+            ? "bg-emerald-400"
+            : catData.completionPct >= 70
+              ? "bg-yellow-400"
+              : "bg-red-400",
+      },
+    };
+  }
+
+  const rawStage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "raw");
+  return {
+    name: "Raw Data",
+    metrics: [
+      {
+        label: "overall completion",
+        value: rawStage?.completionPct?.toFixed(1) ?? "—",
+      },
+      {
+        label: "shards complete",
+        value: rawStage?.completedShards?.toLocaleString() ?? "—",
+      },
+      { label: "failed", value: rawStage?.failedShards ?? 0 },
+    ],
+    progressBar: {
+      value: rawStage?.completionPct ?? 0,
+      color: "bg-sky-400",
+    },
+  };
+}
