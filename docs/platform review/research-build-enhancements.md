@@ -143,8 +143,15 @@ Three correlation views needed on the Strategy research tab:
 
 ---
 
+## Resolved Decisions (2026-03-26)
+
+- **Correlation analysis** → Strategy sub-tab (not a standalone Research tab)
+- **Implementation priority** → Decompose oversized pages first, then Grid Search (Item 1) as highest priority new feature
+- **Features Finder layout** → Extract as a generic `<FinderBrowser>` component, reuse across features catalogue + all Data Pipeline pages (instruments, raw, processing). See `generic-finder-browser-decisions.md`
+- **Data page column hierarchies** → Driven by `deployment-service/configs/sharding_config.yaml` (SSOT). Each page defines its own columns based on its service's sharding dimensions
+- **Detail panel** → Collapsible (open by default), generic renderer per page
+
 ## Open Questions
 
 - What specific features go in basic vs advanced tier? (needs product decision)
 - How many backtests is the compute estimator expected to handle? (scaling concern)
-- Should correlation analysis be a sub-tab of Strategy or its own tab in Research?

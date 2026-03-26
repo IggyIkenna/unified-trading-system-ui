@@ -204,3 +204,4 @@ I mean to be honest you might even just have that be the top right, like:
 | Asset-Class Navigation                       | `trading-asset-class-navigation.md`                    | 2 (graduation), 8 (dots), 9 (too many tabs), 14 (restructure, FOMO, filters)                           |
 | Cross-Cutting (Quick View, News, Live/As-Of) | `cross-cutting-quickview-news-liveasof.md`             | 5, 6, 11, 12 (quick view, news categories, live vs as-of, static vs mock)                              |
 | Promote Lifecycle (pre-existing)             | `../promote lifecycle tab/PROMOTE_LIFECYCLE_DESIGN.md` | 2 (promote portion — already in progress)                                                              |
+| Generic Finder Browser Decisions             | `generic-finder-browser-decisions.md`                  | Follow-up discussion (2026-03-26): Finder extraction, column hierarchies, detail panel design          |
