@@ -84,7 +84,7 @@ export function ComplianceChecklist({
                   <StatusIcon status={st} className="size-3.5" />
                   <span>{row.label}</span>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono">
+                <span className="text-xs text-muted-foreground font-mono">
                   {dateStr}
                 </span>
               </div>
@@ -140,7 +140,7 @@ export function ComplianceChecklist({
                 <th className="text-left p-2 font-medium">Evidence</th>
               </tr>
             </thead>
-            <tbody className="font-mono text-[10px]">
+            <tbody className="font-mono text-xs">
               <tr className="border-b border-border/40">
                 <td className="p-2">Books &amp; records (17a-4)</td>
                 <td className="p-2">

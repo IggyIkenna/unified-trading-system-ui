@@ -32,7 +32,7 @@ export function PortfolioImpactPanel({
       <CardContent className="space-y-3 text-xs">
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Marginal VaR{" "}
               {marginalFromSizing !== undefined ? "(from sizing)" : "(est.)"}
             </p>
@@ -41,7 +41,7 @@ export function PortfolioImpactPanel({
             </p>
           </div>
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Correlation to book
             </p>
             <p className="text-lg font-mono font-bold mt-1">
@@ -50,7 +50,7 @@ export function PortfolioImpactPanel({
           </div>
         </div>
         <div className="rounded-lg border border-border/50 p-3">
-          <p className="text-[10px] text-muted-foreground mb-2">
+          <p className="text-xs text-muted-foreground mb-2">
             Before / after (illustrative)
           </p>
           <div className="flex justify-between font-mono">
@@ -65,7 +65,7 @@ export function PortfolioImpactPanel({
         <p className="text-muted-foreground leading-relaxed">
           {divBenefit} based on correlation and sizing inputs.
         </p>
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           Illustrative portfolio metrics — not a production risk engine;
           pre-book ρ from portfolio SSOT mock.
         </p>

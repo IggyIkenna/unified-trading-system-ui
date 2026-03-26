@@ -102,7 +102,7 @@ export function PromoteWorkflowActions({
   return (
     <div className="space-y-3 pt-4 border-t border-border/60 mt-4">
       {!tabMatchesPipeline && (
-        <p className="text-[10px] text-muted-foreground leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           Approve, reject, retest, and override apply only on the{" "}
           <span className="font-medium text-foreground">
             {STAGE_META[currentStage].label}
@@ -277,7 +277,7 @@ export function PromoteWorkflowActions({
                 ))}
               </select>
             </div>
-            <p className="text-[10px] text-muted-foreground leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               The target stage reopens as pending; all later stages reset to not
               started. Earlier passed stages are left unchanged for audit
               context.

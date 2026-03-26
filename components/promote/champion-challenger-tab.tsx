@@ -118,7 +118,7 @@ export function ChampionChallengerTab({
           <Badge
             variant="outline"
             className={cn(
-              "text-[10px] font-mono",
+              "text-xs font-mono",
               statusBg(
                 verdict.includes("Challenger")
                   ? "passed"
@@ -185,7 +185,7 @@ export function ChampionChallengerTab({
                 />
               </TableBody>
             </Table>
-            <p className="text-[10px] text-muted-foreground mt-3 font-mono">
+            <p className="text-xs text-muted-foreground mt-3 font-mono">
               Champion live since {strategy.champion.deployedSince} · deployed{" "}
               {fmtNum(strategy.champion.capitalDeployed / 1_000_000, 1)}M USD
             </p>
@@ -288,7 +288,7 @@ export function ChampionChallengerTab({
         </div>
         <Badge
           variant="outline"
-          className="text-[10px] border-slate-500/40 text-slate-400"
+          className="text-xs border-slate-500/40 text-slate-400"
         >
           No champion
         </Badge>

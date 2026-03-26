@@ -182,7 +182,7 @@ export function ModelAssessmentTab({
         ].map((item) => (
           <Card key={item.label}>
             <CardContent className="pt-4 pb-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
                 {item.label}
               </p>
               <p className={cn("text-lg font-bold font-mono mt-1", item.color)}>
@@ -212,7 +212,7 @@ export function ModelAssessmentTab({
         ].map((item) => (
           <Card key={item.label}>
             <CardContent className="pt-4 pb-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
                 {item.label}
               </p>
               <p className={cn("text-xl font-bold font-mono mt-1", item.color)}>
@@ -243,10 +243,7 @@ export function ModelAssessmentTab({
                     <div>
                       <span className="text-sm font-medium">{gate.label}</span>
                       {gate.mandatory && (
-                        <Badge
-                          variant="outline"
-                          className="text-[9px] px-1 ml-2"
-                        >
+                        <Badge variant="outline" className="text-xs px-1 ml-2">
                           Required
                         </Badge>
                       )}

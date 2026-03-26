@@ -28,7 +28,7 @@ export function FeatureStabilityPanel({
         <CardTitle className="text-sm flex items-center gap-2">
           <Fingerprint className="size-4 text-cyan-400" />
           Feature Stability
-          <Badge variant="outline" className="text-[10px] ml-auto font-mono">
+          <Badge variant="outline" className="text-xs ml-auto font-mono">
             dead features: {dead}
           </Badge>
         </CardTitle>
@@ -63,7 +63,7 @@ export function FeatureStabilityPanel({
                   <Badge
                     variant="outline"
                     className={cn(
-                      "text-[9px] capitalize",
+                      "text-xs capitalize",
                       statusBg(
                         f.status === "stable"
                           ? "passed"

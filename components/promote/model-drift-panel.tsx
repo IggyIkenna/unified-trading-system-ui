@@ -22,7 +22,7 @@ export function ModelDriftPanel({ strategy }: { strategy: CandidateStrategy }) {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               IC (train)
             </p>
             <p className="text-lg font-mono font-bold mt-1">
@@ -30,7 +30,7 @@ export function ModelDriftPanel({ strategy }: { strategy: CandidateStrategy }) {
             </p>
           </div>
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               IC (current)
             </p>
             <p className="text-lg font-mono font-bold mt-1 text-cyan-400">
@@ -38,7 +38,7 @@ export function ModelDriftPanel({ strategy }: { strategy: CandidateStrategy }) {
             </p>
           </div>
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Signal half-life
             </p>
             <p className="text-lg font-mono font-bold mt-1">
@@ -46,13 +46,13 @@ export function ModelDriftPanel({ strategy }: { strategy: CandidateStrategy }) {
             </p>
           </div>
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Hit-rate trend
             </p>
             <Badge
               variant="outline"
               className={cn(
-                "mt-2 text-[10px] capitalize",
+                "mt-2 text-xs capitalize",
                 d.hitRateTrend === "improving" &&
                   "border-emerald-500/40 text-emerald-400",
                 d.hitRateTrend === "stable" &&
@@ -66,7 +66,7 @@ export function ModelDriftPanel({ strategy }: { strategy: CandidateStrategy }) {
           </div>
         </div>
         <div>
-          <div className="flex justify-between text-[10px] uppercase text-muted-foreground mb-1">
+          <div className="flex justify-between text-xs uppercase text-muted-foreground mb-1">
             <span>IC retention vs training</span>
             <span className="font-mono">{fmtNum(icRatio * 100, 0)}%</span>
           </div>

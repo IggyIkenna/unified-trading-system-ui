@@ -67,7 +67,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
         ].map((item) => (
           <Card key={item.label}>
             <CardContent className="pt-4 pb-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
                 {item.label}
               </p>
               <p className={cn("text-xl font-bold font-mono mt-1", item.color)}>
@@ -81,7 +81,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
       <div className="grid grid-cols-3 gap-3">
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Correlation to Portfolio
             </p>
             <p
@@ -96,7 +96,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
             >
               {fmtNum(risk.correlationToPortfolio)}
             </p>
-            <p className="text-[10px] text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               {risk.correlationToPortfolio <= 0.2
                 ? "Low — excellent diversifier"
                 : "Moderate correlation"}
@@ -105,7 +105,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Concentration Risk
             </p>
             <p
@@ -118,14 +118,14 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
             >
               {fmtPct(risk.concentrationRisk)}
             </p>
-            <p className="text-[10px] text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Max single-name exposure
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Liquidity Score
             </p>
             <p
@@ -138,7 +138,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
             >
               {risk.liquidityScore}
             </p>
-            <p className="text-[10px] text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Ability to exit within SLA
             </p>
           </CardContent>
@@ -172,7 +172,7 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
                   </span>
                   <Badge
                     variant="outline"
-                    className={cn("text-[10px]", statusBg(scenario.status))}
+                    className={cn("text-xs", statusBg(scenario.status))}
                   >
                     {scenario.status}
                   </Badge>

@@ -6,7 +6,6 @@
  * Each service defines its own tab set. Tabs support entitlement-based FOMO locking.
  */
 
-import { PROMOTE_PIPELINE_HREF } from "@/lib/config/services/promote.config";
 import { cn } from "@/lib/utils";
 import { Lock } from "lucide-react";
 import Link from "next/link";
@@ -190,19 +189,6 @@ export const STRATEGY_SUB_TABS: ServiceTab[] = [
   { label: "Heatmap", href: "/services/research/strategy/heatmap" },
   { label: "Candidates", href: "/services/research/strategy/candidates" },
   { label: "Handoff", href: "/services/research/strategy/handoff" },
-];
-
-// ── Promote (Trader + Risk Review) ───────────────────────────────────────────
-export const PROMOTE_TABS: ServiceTab[] = [
-  {
-    label: "Strategy Promotion",
-    href: PROMOTE_PIPELINE_HREF,
-    matchPrefix: "/services/promote",
-  },
-  { label: "Review Queue", href: "/services/research/strategy/candidates" },
-  { label: "Execution Analysis", href: "/services/execution/tca" },
-  { label: "Risk Review", href: "/services/trading/risk" },
-  { label: "Approval Status", href: "/services/research/strategy/handoff" },
 ];
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────

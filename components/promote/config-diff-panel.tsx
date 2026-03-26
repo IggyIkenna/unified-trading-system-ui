@@ -102,12 +102,12 @@ export function ConfigDiffPanel({ strategy }: { strategy: CandidateStrategy }) {
                       {ok ? (
                         <Badge
                           variant="outline"
-                          className="text-[9px] border-emerald-500/40 text-emerald-400"
+                          className="text-xs border-emerald-500/40 text-emerald-400"
                         >
                           OK
                         </Badge>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           Review
                         </span>
                       )}

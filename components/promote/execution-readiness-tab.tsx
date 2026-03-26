@@ -43,7 +43,7 @@ export function ExecutionReadinessTab({
       <div className="grid grid-cols-4 gap-3">
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Avg Slippage
             </p>
             <p
@@ -60,7 +60,7 @@ export function ExecutionReadinessTab({
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Capacity
             </p>
             <p className="text-2xl font-bold font-mono mt-1">
@@ -70,7 +70,7 @@ export function ExecutionReadinessTab({
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Market Impact
             </p>
             <p
@@ -87,7 +87,7 @@ export function ExecutionReadinessTab({
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Venues Active
             </p>
             <p className="text-2xl font-bold font-mono mt-1">
@@ -124,14 +124,14 @@ export function ExecutionReadinessTab({
                     {venue.connected ? (
                       <Badge
                         variant="outline"
-                        className="text-[10px] bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                        className="text-xs bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
                       >
                         Connected
                       </Badge>
                     ) : (
                       <Badge
                         variant="outline"
-                        className="text-[10px] bg-rose-500/15 text-rose-400 border-rose-500/30"
+                        className="text-xs bg-rose-500/15 text-rose-400 border-rose-500/30"
                       >
                         Disconnected
                       </Badge>

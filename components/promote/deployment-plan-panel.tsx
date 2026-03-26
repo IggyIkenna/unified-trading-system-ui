@@ -35,19 +35,19 @@ export function DeploymentPlanPanel({
       </CardHeader>
       <CardContent className="text-xs space-y-4 text-muted-foreground">
         <div>
-          <p className="text-[10px] uppercase tracking-wide text-foreground/80 mb-1">
+          <p className="text-xs uppercase tracking-wide text-foreground/80 mb-1">
             Target environment
           </p>
           <p className="font-mono">{p.targetEnv}</p>
           {!strategy.deploymentPlan ? (
-            <p className="text-[10px] mt-1">
+            <p className="text-xs mt-1">
               Generic template — strategy has no custom deploymentPlan in mock
               data.
             </p>
           ) : null}
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wide text-foreground/80 mb-1">
+          <p className="text-xs uppercase tracking-wide text-foreground/80 mb-1">
             Rollback / kill switch
           </p>
           <ul className="list-disc pl-4 space-y-1">
@@ -57,7 +57,7 @@ export function DeploymentPlanPanel({
           </ul>
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wide text-foreground/80 mb-2">
+          <p className="text-xs uppercase tracking-wide text-foreground/80 mb-2">
             Monitoring
           </p>
           <div className="space-y-2">
@@ -66,7 +66,7 @@ export function DeploymentPlanPanel({
                 key={m.period}
                 className="rounded-lg border border-border/50 p-2"
               >
-                <p className="text-[10px] font-mono text-cyan-400/90 mb-1">
+                <p className="text-xs font-mono text-cyan-400/90 mb-1">
                   {m.period}
                 </p>
                 <ul className="list-disc pl-4 space-y-0.5">
@@ -79,7 +79,7 @@ export function DeploymentPlanPanel({
           </div>
         </div>
         <div>
-          <p className="text-[10px] uppercase tracking-wide text-foreground/80 mb-1">
+          <p className="text-xs uppercase tracking-wide text-foreground/80 mb-1">
             Escalation
           </p>
           <p className="font-mono">{p.escalationContacts.join(" · ")}</p>

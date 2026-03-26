@@ -42,13 +42,13 @@ export function RegimeAnalysisPanel({
             <div key={r.regime} className="text-center space-y-1">
               <div
                 className={cn(
-                  "rounded-md py-2 px-1 text-[10px] font-mono font-semibold",
+                  "rounded-md py-2 px-1 text-xs font-mono font-semibold",
                   heatColor(r.sharpe),
                 )}
               >
                 {fmtNum(r.sharpe)}
               </div>
-              <p className="text-[9px] text-muted-foreground leading-tight line-clamp-2">
+              <p className="text-xs text-muted-foreground leading-tight line-clamp-2">
                 {r.regime}
               </p>
             </div>
@@ -90,7 +90,7 @@ export function RegimeAnalysisPanel({
         </Table>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>Worst regime:</span>
-          <Badge variant="outline" className="font-mono text-[10px]">
+          <Badge variant="outline" className="font-mono text-xs">
             {worst.regime}
           </Badge>
           <span className="font-mono text-rose-400">

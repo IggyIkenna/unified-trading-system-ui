@@ -37,13 +37,13 @@ export function WalkForwardPanel({
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-3">
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Consistency (σ Sharpe)
             </p>
             <p className="text-lg font-mono font-bold mt-1">{fmtNum(std)}</p>
           </div>
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Degradation (last − first)
             </p>
             <p
@@ -53,7 +53,7 @@ export function WalkForwardPanel({
             </p>
           </div>
           <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Pooled t-stat
             </p>
             <p className="text-lg font-mono font-bold mt-1">
@@ -61,7 +61,7 @@ export function WalkForwardPanel({
             </p>
           </div>
         </div>
-        <p className="text-[10px] text-muted-foreground font-mono">
+        <p className="text-xs text-muted-foreground font-mono">
           Window-level p-values are approximate (two-sided vs. zero mean
           return); treat as triage, not hypothesis tests across overlapping
           windows.

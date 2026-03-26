@@ -147,7 +147,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                     </div>
                     <div className="text-left">
                       <div className="text-xs font-medium">{meta.label}</div>
-                      <div className="text-[10px] text-muted-foreground">
+                      <div className="text-xs text-muted-foreground">
                         {s.status.replace("_", " ")}
                       </div>
                     </div>
@@ -261,13 +261,13 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                       <span className="text-sm font-medium">
                         {review.reviewer}
                       </span>
-                      <Badge variant="outline" className="text-[9px]">
+                      <Badge variant="outline" className="text-xs">
                         {review.role}
                       </Badge>
                       <Badge
                         variant="outline"
                         className={cn(
-                          "text-[9px]",
+                          "text-xs",
                           statusBg(
                             review.decision === "approved"
                               ? "passed"
@@ -282,19 +282,19 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                       {review.isOverride ? (
                         <Badge
                           variant="outline"
-                          className="text-[9px] border-amber-500/50 text-amber-400"
+                          className="text-xs border-amber-500/50 text-amber-400"
                         >
                           Override
                         </Badge>
                       ) : null}
-                      <span className="text-[10px] text-muted-foreground ml-auto">
+                      <span className="text-xs text-muted-foreground ml-auto">
                         {new Date(review.timestamp).toLocaleString()}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       {review.comment}
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Stage: {STAGE_META[review.stage].label}
                     </p>
                   </div>

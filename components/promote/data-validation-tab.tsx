@@ -149,7 +149,7 @@ export function DataValidationTab({
       <div className="grid grid-cols-4 gap-3">
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Coverage
             </p>
             <p
@@ -164,7 +164,7 @@ export function DataValidationTab({
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Freshness
             </p>
             <p className="text-2xl font-bold font-mono mt-1">
@@ -174,7 +174,7 @@ export function DataValidationTab({
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Instruments
             </p>
             <p className="text-2xl font-bold font-mono mt-1">
@@ -184,12 +184,12 @@ export function DataValidationTab({
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">
               Venues
             </p>
             <div className="flex flex-wrap gap-1 mt-1.5">
               {dq.venues.map((v) => (
-                <Badge key={v} variant="outline" className="text-[9px]">
+                <Badge key={v} variant="outline" className="text-xs">
                   {v}
                 </Badge>
               ))}
@@ -220,7 +220,7 @@ export function DataValidationTab({
                   <div>
                     <span className="text-sm font-medium">{gate.label}</span>
                     {gate.mandatory && (
-                      <Badge variant="outline" className="text-[9px] px-1 ml-2">
+                      <Badge variant="outline" className="text-xs px-1 ml-2">
                         Required
                       </Badge>
                     )}
@@ -248,26 +248,26 @@ export function DataValidationTab({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-xs">
-          <div className="flex flex-wrap items-center gap-2 font-mono text-[10px] md:text-xs">
-            <Badge variant="outline" className="text-[9px]">
+          <div className="flex flex-wrap items-center gap-2 font-mono text-xs md:text-xs">
+            <Badge variant="outline" className="text-xs">
               {dq.primaryVendor ?? "Primary vendor"}
             </Badge>
             <ArrowRight className="size-3 text-muted-foreground" />
-            <Badge variant="outline" className="text-[9px]">
+            <Badge variant="outline" className="text-xs">
               ETL {dq.etlPipelineVersion ?? "v2.14"}
             </Badge>
             <ArrowRight className="size-3 text-muted-foreground" />
-            <Badge variant="outline" className="text-[9px]">
+            <Badge variant="outline" className="text-xs">
               Iceberg / Delta
             </Badge>
             <ArrowRight className="size-3 text-muted-foreground" />
-            <Badge variant="outline" className="text-[9px]">
+            <Badge variant="outline" className="text-xs">
               Feature store
             </Badge>
             <ArrowRight className="size-3 text-muted-foreground" />
             <Badge
               variant="outline"
-              className="text-[9px] border-cyan-500/40 text-cyan-400"
+              className="text-xs border-cyan-500/40 text-cyan-400"
             >
               Model input
             </Badge>

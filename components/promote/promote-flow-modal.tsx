@@ -380,7 +380,7 @@ export function PromoteFlowModal({
                   </div>
                   <div className="text-left">
                     <div className="text-xs font-medium">{gate.label}</div>
-                    <div className="text-[10px] text-muted-foreground">
+                    <div className="text-xs text-muted-foreground">
                       {TESTING_STAGE_CONFIG[gate.stage]?.label || gate.stage}
                     </div>
                   </div>
@@ -461,17 +461,14 @@ export function PromoteFlowModal({
                           <Clock className="size-3" />
                         )}
                         {req.status === "skipped" && (
-                          <span className="text-[10px]">-</span>
+                          <span className="text-xs">-</span>
                         )}
                       </div>
                       <div>
                         <div className="text-sm font-medium flex items-center gap-2">
                           {req.label}
                           {req.mandatory && (
-                            <Badge
-                              variant="outline"
-                              className="text-[9px] px-1"
-                            >
+                            <Badge variant="outline" className="text-xs px-1">
                               Required
                             </Badge>
                           )}

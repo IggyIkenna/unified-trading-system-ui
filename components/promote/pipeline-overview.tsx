@@ -139,51 +139,51 @@ export function PipelineOverview({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {pipelineCounts.map((p, idx) => {
-          const Icon = p.icon;
-          return (
-            <Card key={p.stage} className="relative overflow-hidden">
-              <CardContent className="pt-4 pb-3 px-3 sm:px-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Icon className="size-4 text-muted-foreground shrink-0" />
-                  <span className="text-[11px] sm:text-xs font-medium leading-tight">
+      <div className="flex flex-col 2xl:flex-row gap-3 rounded-lg border border-border bg-card/30 p-3">
+        {/* Stage Counts */}
+        <div className="grid grid-cols-3 md:grid-cols-6 2xl:grid-cols-6 gap-0 flex-1">
+          {pipelineCounts.map((p) => {
+            const Icon = p.icon;
+            return (
+              <div
+                key={p.stage}
+                className="border-l-2 border-primary/20 pl-3 pr-2 py-2 first:border-l-0 first:pl-0"
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Icon className="size-3.5 text-muted-foreground shrink-0" />
+                  <span className="text-sm font-medium leading-tight truncate">
                     {p.label}
                   </span>
                 </div>
                 <div className="text-2xl font-bold font-mono">{p.count}</div>
-                <p className="text-[10px] text-muted-foreground mt-1 line-clamp-2">
-                  {p.description}
-                </p>
-                <div className="mt-2 flex items-center justify-between text-[9px] font-mono text-muted-foreground">
+                <div className="flex items-center justify-between text-xs font-mono text-muted-foreground mt-1">
                   <span>Conv</span>
                   <span className="text-cyan-400/90">
                     {pipelineDerived.conversion[p.stage]}%
                   </span>
                 </div>
-                {idx < pipelineCounts.length - 1 && (
-                  <ChevronRight className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 size-4 text-muted-foreground/30 z-10" />
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+              </div>
+            );
+          })}
+        </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              In Pipeline (view)
+        {/* Vertical divider at 2K */}
+        <div className="hidden 2xl:block w-px bg-border self-stretch" />
+        {/* Horizontal divider below 2K */}
+        <div className="block 2xl:hidden h-px bg-border" />
+
+        {/* Pipeline Metrics */}
+        <div className="grid grid-cols-3 md:grid-cols-5 2xl:grid-cols-5 gap-0 flex-shrink-0">
+          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2 first:border-l-0 first:pl-0">
+            <p className="text-sm uppercase tracking-wider text-muted-foreground">
+              In Pipeline
             </p>
             <p className="text-2xl font-bold font-mono mt-1">
               {filtered.length}
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          </div>
+          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
+            <p className="text-sm uppercase tracking-wider text-muted-foreground">
               Avg Sharpe
             </p>
             <p className="text-2xl font-bold font-mono mt-1">
@@ -192,44 +192,32 @@ export function PipelineOverview({
                   (filtered.length || 1),
               )}
             </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Avg stage dwell (cohort)
+          </div>
+          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
+            <p className="text-sm uppercase tracking-wider text-muted-foreground">
+              Avg Dwell
             </p>
             <p className="text-2xl font-bold font-mono mt-1 text-cyan-400">
               {fmtNum(pipelineDerived.avgDwell, 1)}d
             </p>
-            <p className="text-[9px] text-muted-foreground mt-1">
-              From daysInCurrentStage in mock data
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Velocity (model / risk stage)
+          </div>
+          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
+            <p className="text-sm uppercase tracking-wider text-muted-foreground">
+              Velocity
             </p>
             <p className="text-2xl font-bold font-mono mt-1">
               {fmtNum(pipelineDerived.velocityDays, 1)}d
             </p>
-            <p className="text-[9px] text-muted-foreground mt-1">
-              Mean dwell when current stage is model or risk
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Approved (30d)
+          </div>
+          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
+            <p className="text-sm uppercase tracking-wider text-muted-foreground">
+              Approved 30d
             </p>
             <p className="text-2xl font-bold font-mono mt-1 text-emerald-400">
               {totalPassed + HISTORICAL_APPROVALS_30D}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {slaBreaches > 0 && (
@@ -252,12 +240,10 @@ export function PipelineOverview({
             <div className="flex flex-wrap items-center gap-2">
               <div className="flex items-center gap-1 text-muted-foreground">
                 <Filter className="size-3.5" />
-                <span className="text-[10px] uppercase tracking-wide">
-                  Filters
-                </span>
+                <span className="text-xs uppercase tracking-wide">Filters</span>
               </div>
               <select
-                className="h-8 rounded-md border border-border bg-background px-2 text-[10px] font-mono"
+                className="h-8 rounded-md border border-border bg-background px-2 text-xs font-mono"
                 value={asset}
                 onChange={(e) => setAsset(e.target.value)}
                 aria-label="Asset class"
@@ -269,7 +255,7 @@ export function PipelineOverview({
                 ))}
               </select>
               <select
-                className="h-8 rounded-md border border-border bg-background px-2 text-[10px] font-mono max-w-[160px]"
+                className="h-8 rounded-md border border-border bg-background px-2 text-xs font-mono max-w-[160px]"
                 value={archetype}
                 onChange={(e) => setArchetype(e.target.value)}
                 aria-label="Archetype"
@@ -281,7 +267,7 @@ export function PipelineOverview({
                 ))}
               </select>
               <select
-                className="h-8 rounded-md border border-border bg-background px-2 text-[10px] font-mono"
+                className="h-8 rounded-md border border-border bg-background px-2 text-xs font-mono"
                 value={stageFilter}
                 onChange={(e) => setStageFilter(e.target.value)}
                 aria-label="Stage"
@@ -297,20 +283,20 @@ export function PipelineOverview({
                 placeholder="Submitter…"
                 value={submitterQ}
                 onChange={(e) => setSubmitterQ(e.target.value)}
-                className="h-8 w-[140px] text-[10px] font-mono"
+                className="h-8 w-[140px] text-xs font-mono"
               />
               <Input
                 type="date"
                 value={submittedFrom}
                 onChange={(e) => setSubmittedFrom(e.target.value)}
-                className="h-8 w-[128px] text-[10px] font-mono"
+                className="h-8 w-[128px] text-xs font-mono"
                 aria-label="Submitted from"
               />
               <Input
                 type="date"
                 value={submittedTo}
                 onChange={(e) => setSubmittedTo(e.target.value)}
-                className="h-8 w-[128px] text-[10px] font-mono"
+                className="h-8 w-[128px] text-xs font-mono"
                 aria-label="Submitted to"
               />
             </div>
@@ -348,16 +334,16 @@ export function PipelineOverview({
                     <TableCell>
                       <div>
                         <span className="font-medium">{c.name}</span>
-                        <span className="text-muted-foreground ml-2 font-mono text-[10px]">
+                        <span className="text-muted-foreground ml-2 font-mono text-xs">
                           v{c.version}
                         </span>
                       </div>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         {c.archetype}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="text-[10px]">
+                      <Badge variant="outline" className="text-xs">
                         {c.assetClass}
                       </Badge>
                     </TableCell>
@@ -371,7 +357,7 @@ export function PipelineOverview({
                       <Badge
                         variant="outline"
                         className={cn(
-                          "text-[10px]",
+                          "text-xs",
                           statusBg(c.stages[c.currentStage].status),
                         )}
                       >
@@ -382,11 +368,11 @@ export function PipelineOverview({
                       <div className="space-y-0.5">
                         <Badge
                           variant="outline"
-                          className={cn("text-[9px]", sla.className)}
+                          className={cn("text-xs", sla.className)}
                         >
                           {sla.label}
                         </Badge>
-                        <p className="text-[9px] font-mono text-muted-foreground">
+                        <p className="text-xs font-mono text-muted-foreground">
                           {c.daysInCurrentStage ?? "—"}d /{" "}
                           {c.slaDaysExpected ?? "—"}d
                         </p>
@@ -395,7 +381,7 @@ export function PipelineOverview({
                     <TableCell>
                       <div className="flex items-center gap-2 min-w-[100px]">
                         <Progress value={progress} className="h-1.5 flex-1" />
-                        <span className="text-[10px] text-muted-foreground font-mono">
+                        <span className="text-xs text-muted-foreground font-mono">
                           {Math.round(progress)}%
                         </span>
                       </div>
@@ -407,7 +393,7 @@ export function PipelineOverview({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 px-2 text-[10px]"
+                        className="h-6 px-2 text-xs"
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelect(c.id);
@@ -432,7 +418,7 @@ export function PipelineOverview({
           currentStage={selectedStrategy.currentStage}
         />
       ) : (
-        <p className="text-[10px] text-muted-foreground text-center">
+        <p className="text-xs text-muted-foreground text-center">
           Select a strategy to enable stage actions
         </p>
       )}

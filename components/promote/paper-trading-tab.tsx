@@ -54,7 +54,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         <Badge
           variant="outline"
           className={cn(
-            "text-[10px] capitalize",
+            "text-xs capitalize",
             pt.status === "completed" && statusBg("passed"),
             pt.status === "running" && "border-cyan-500/40 text-cyan-400",
             pt.status === "failed" && statusBg("failed"),
@@ -71,7 +71,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Shadow P&amp;L
             </p>
             <p
@@ -86,7 +86,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Paper Sharpe
             </p>
             <p className="text-xl font-mono font-bold mt-1 text-cyan-400">
@@ -96,7 +96,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Backtest Sharpe (same window)
             </p>
             <p className="text-xl font-mono font-bold mt-1">
@@ -106,7 +106,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <p className="text-[10px] uppercase text-muted-foreground">
+            <p className="text-xs uppercase text-muted-foreground">
               Divergence ratio
             </p>
             <p
@@ -163,7 +163,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
               <span className="text-cyan-400">{pt.latencyImpactBps} bps</span>
             </div>
             {pt.queuePositionSummary ? (
-              <p className="text-[10px] text-muted-foreground pt-1 border-t border-border/40">
+              <p className="text-xs text-muted-foreground pt-1 border-t border-border/40">
                 {pt.queuePositionSummary}
               </p>
             ) : null}
@@ -207,7 +207,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
             <Badge
               variant="outline"
               className={cn(
-                "text-[10px] mt-2",
+                "text-xs mt-2",
                 divOk ? statusBg("passed") : statusBg("warning"),
               )}
             >
@@ -231,7 +231,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
           <CardContent className="grid sm:grid-cols-3 gap-3 text-xs font-mono">
             {pt.returnDivergencePct !== undefined ? (
               <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-[10px] text-muted-foreground">Return gap</p>
+                <p className="text-xs text-muted-foreground">Return gap</p>
                 <p className="text-lg mt-1">
                   {fmtNum(pt.returnDivergencePct, 1)}%
                 </p>
@@ -239,7 +239,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
             ) : null}
             {pt.maxDdDivergencePct !== undefined ? (
               <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-[10px] text-muted-foreground">Max DD gap</p>
+                <p className="text-xs text-muted-foreground">Max DD gap</p>
                 <p className="text-lg mt-1">
                   {fmtNum(pt.maxDdDivergencePct, 1)}%
                 </p>
@@ -247,9 +247,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
             ) : null}
             {pt.hitRateDivergencePct !== undefined ? (
               <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-[10px] text-muted-foreground">
-                  Hit rate gap
-                </p>
+                <p className="text-xs text-muted-foreground">Hit rate gap</p>
                 <p className="text-lg mt-1">
                   {fmtNum(pt.hitRateDivergencePct, 1)}%
                 </p>
@@ -287,7 +285,7 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
                 );
               })}
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2 font-mono">
+            <p className="text-xs text-muted-foreground mt-2 font-mono">
               {pt.dailyPnlUsd.length} sessions shown
             </p>
           </CardContent>
