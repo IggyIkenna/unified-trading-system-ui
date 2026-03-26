@@ -1,81 +1,28 @@
 "use client";
 
 import * as React from "react";
-import { PanelLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { PromoteListFiltersProvider } from "@/components/promote/promote-list-filters-context";
 import { PromoteStrategyListPanel } from "@/components/promote/promote-strategy-list-panel";
 import { PromoteLifecycleFrame } from "@/components/promote/promote-lifecycle-frame";
-import {
-  selectPromoteSelectedStrategy,
-  usePromoteLifecycleStore,
-} from "@/lib/stores/promote-lifecycle-store";
-import { cn } from "@/lib/utils";
 
+/**
+ * ML Training–style split: `lg:grid-cols-3` with list in column 1 (~1/3) and
+ * detail in `lg:col-span-2` (~2/3). Below `lg`, list stacks above detail like ML.
+ */
 export function PromoteSplitLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [mobileListOpen, setMobileListOpen] = React.useState(false);
-  const selected = usePromoteLifecycleStore(selectPromoteSelectedStrategy);
-
   return (
     <PromoteListFiltersProvider>
-      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-        <div className="flex lg:hidden items-center gap-2 border-b border-border bg-card/30 px-3 py-2 shrink-0">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 shrink-0"
-            onClick={() => setMobileListOpen(true)}
-          >
-            <PanelLeft className="size-4" />
-            Strategies
-          </Button>
-          {selected ? (
-            <span className="text-xs text-muted-foreground truncate min-w-0">
-              {selected.name}{" "}
-              <span className="font-mono">v{selected.version}</span>
-            </span>
-          ) : null}
+      <div className="grid min-h-0 flex-1 grid-cols-1 content-start gap-5 lg:grid-cols-3 lg:items-start">
+        <div className="min-h-0 min-w-0 space-y-3">
+          <PromoteStrategyListPanel />
         </div>
-
-        <Sheet open={mobileListOpen} onOpenChange={setMobileListOpen}>
-          <SheetContent
-            side="left"
-            className={cn(
-              "w-[min(100vw,380px)] p-0 flex flex-col gap-0",
-              "sm:max-w-[380px]",
-            )}
-          >
-            <SheetHeader className="px-4 py-3 border-b border-border text-left space-y-0">
-              <SheetTitle className="text-base">Strategies</SheetTitle>
-            </SheetHeader>
-            <div className="flex-1 min-h-0 overflow-hidden">
-              <PromoteStrategyListPanel
-                onStrategySelect={() => setMobileListOpen(false)}
-                className="h-full"
-              />
-            </div>
-          </SheetContent>
-        </Sheet>
-
-        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(280px,380px)_1fr] xl:grid-cols-[minmax(300px,380px)_1fr] gap-0 overflow-hidden">
-          <aside className="hidden lg:flex flex-col min-h-0 min-w-0 border-r border-border bg-card/20">
-            <PromoteStrategyListPanel className="h-full" />
-          </aside>
-          <div className="flex flex-col min-h-0 min-w-0 overflow-y-auto border-l border-border lg:border-l-0">
-            <div className="flex-1 p-4 space-y-4">
-              <PromoteLifecycleFrame>{children}</PromoteLifecycleFrame>
-            </div>
+        <div className="flex min-h-0 min-w-0 flex-col lg:col-span-2">
+          <div className="flex-1 space-y-4">
+            <PromoteLifecycleFrame>{children}</PromoteLifecycleFrame>
           </div>
         </div>
       </div>

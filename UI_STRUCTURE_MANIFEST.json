@@ -236,7 +236,7 @@
       "redirect": "/services/promote → /services/promote/pipeline",
       "layout": "app/(platform)/services/promote/layout.tsx",
       "lifecycle_layout": "app/(platform)/services/promote/(lifecycle)/layout.tsx",
-      "split_layout": "components/promote/promote-split-layout.tsx — list/detail; PromoteStrategyListPanel + detail; Sheet < lg",
+      "split_layout": "components/promote/promote-split-layout.tsx — ML training pattern: grid lg:grid-cols-3, list col 1, detail lg:col-span-2; stacked < lg",
       "sub_tab_set": "PROMOTE_LIFECYCLE_NAV",
       "live_asof_toggle": false,
       "components_dir": "components/promote/",

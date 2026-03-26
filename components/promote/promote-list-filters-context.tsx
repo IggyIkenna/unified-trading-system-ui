@@ -18,6 +18,8 @@ export interface PromoteListFiltersValue {
   submittedTo: string;
   setSubmittedTo: (v: string) => void;
   filtered: CandidateStrategy[];
+  /** Same filters as `filtered` but stage filter ignored — for chip counts. */
+  cohortWithoutStageFilter: CandidateStrategy[];
   candidates: CandidateStrategy[];
   assetClasses: string[];
   archetypes: string[];
@@ -48,7 +50,7 @@ export function PromoteListFiltersProvider({
     [candidates],
   );
 
-  const filtered = React.useMemo(() => {
+  const cohortWithoutStageFilter = React.useMemo(() => {
     const fromMs = submittedFrom ? new Date(submittedFrom).getTime() : null;
     const toMs = submittedTo
       ? new Date(submittedTo).getTime() + 86_400_000 - 1
@@ -56,7 +58,6 @@ export function PromoteListFiltersProvider({
     return candidates.filter((c) => {
       if (asset !== "all" && c.assetClass !== asset) return false;
       if (archetype !== "all" && c.archetype !== archetype) return false;
-      if (stageFilter !== "all" && c.currentStage !== stageFilter) return false;
       if (
         submitterQ.trim() &&
         !c.submittedBy.toLowerCase().includes(submitterQ.trim().toLowerCase())
@@ -68,15 +69,14 @@ export function PromoteListFiltersProvider({
       if (toMs !== null && !Number.isNaN(toMs) && sub > toMs) return false;
       return true;
     });
-  }, [
-    candidates,
-    asset,
-    archetype,
-    stageFilter,
-    submitterQ,
-    submittedFrom,
-    submittedTo,
-  ]);
+  }, [candidates, asset, archetype, submitterQ, submittedFrom, submittedTo]);
+
+  const filtered = React.useMemo(() => {
+    if (stageFilter === "all") return cohortWithoutStageFilter;
+    return cohortWithoutStageFilter.filter(
+      (c) => c.currentStage === stageFilter,
+    );
+  }, [cohortWithoutStageFilter, stageFilter]);
 
   const value = React.useMemo(
     () => ({
@@ -93,6 +93,7 @@ export function PromoteListFiltersProvider({
       submittedTo,
       setSubmittedTo,
       filtered,
+      cohortWithoutStageFilter,
       candidates,
       assetClasses,
       archetypes,
@@ -105,6 +106,7 @@ export function PromoteListFiltersProvider({
       submittedFrom,
       submittedTo,
       filtered,
+      cohortWithoutStageFilter,
       candidates,
       assetClasses,
       archetypes,

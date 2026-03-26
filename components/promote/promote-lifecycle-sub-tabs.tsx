@@ -23,7 +23,7 @@ export function PromoteLifecycleSubTabs() {
         navDisabled = false;
       } else if (!selected) {
         navDisabled = true;
-        navDisabledTitle = "Select a strategy in Pipeline first";
+        navDisabledTitle = "Select a strategy from the list first";
       } else if (
         def.key === "execution_readiness" ||
         def.key === "paper_trading" ||
