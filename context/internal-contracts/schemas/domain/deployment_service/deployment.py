@@ -16,7 +16,7 @@ from typing import cast
 
 from pydantic import BaseModel, Field
 
-from unified_internal_contracts.modes import CloudProvider, PhaseMode, RuntimeMode
+from unified_api_contracts.internal.modes import CloudProvider, PhaseMode, RuntimeMode
 
 
 class DeploymentStatus(StrEnum):

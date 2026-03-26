@@ -1,6 +1,6 @@
 """Events service domain schemas — lifecycle event envelope, types, and per-event metadata."""
 
-from unified_internal_contracts.domain.events_service.lifecycle import (
+from unified_api_contracts.internal.domain.events_service.lifecycle import (
     REQUIRED_EVENT_FIELDS,
     AuthFailureDetails,
     AuthFailureEvent,

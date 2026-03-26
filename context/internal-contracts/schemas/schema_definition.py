@@ -9,7 +9,7 @@ These are pure Python dataclasses with no pyarrow dependency. Pyarrow conversion
 methods (get_pyarrow_schema, to_pyarrow_field) live in UTL's parquet infrastructure
 since pyarrow has no type stubs and UTL is the parquet write layer.
 
-Usage: import ColumnSchema and SchemaDefinition from unified_internal_contracts.schema_definition.
+Usage: import ColumnSchema and SchemaDefinition from unified_api_contracts.internal.schema_definition.
 
 Example::
 

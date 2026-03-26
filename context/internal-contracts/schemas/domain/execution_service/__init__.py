@@ -1,6 +1,6 @@
 """Execution-service internal domain contracts."""
 
-from unified_internal_contracts.domain.execution_service.multi_leg import (
+from unified_api_contracts.internal.domain.execution_service.multi_leg import (
     LegExecutionResult,
     LegInstruction,
     LegStatus,

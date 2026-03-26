@@ -1,6 +1,6 @@
 """Data quality domain contracts — freshness SLAs, staleness thresholds."""
 
-from unified_internal_contracts.domain.data_quality.venue_freshness_slas import (
+from unified_api_contracts.internal.domain.data_quality.venue_freshness_slas import (
     VENUE_FRESHNESS_SLAS,
     VenueCategory,
     VenueFreshnessSLA,

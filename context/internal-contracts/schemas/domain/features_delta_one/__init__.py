@@ -8,7 +8,7 @@ SchemaDefinition / ColumnSchema objects are parquet write enforcement descriptor
 gets the single source of truth for the features-delta-one output contract.
 
 Pydantic row-level models (DeltaOneFeatureRecord) are in
-``unified_internal_contracts.features`` and re-exported from the top-level package.
+``unified_api_contracts.internal.features`` and re-exported from the top-level package.
 
 Feature Groups:
     technical_indicators, moving_averages, oscillators, volatility_realized,
@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from unified_internal_contracts.schema_definition import ColumnSchema, SchemaDefinition
+from unified_api_contracts.internal.schema_definition import ColumnSchema, SchemaDefinition
 
 # ==============================================================================
 # FEATURES DELTA-ONE OUTPUT SCHEMA

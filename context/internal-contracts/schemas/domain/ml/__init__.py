@@ -1,6 +1,6 @@
 """Shared ML domain schemas for ml-training-service and ml-inference-service."""
 
-from unified_internal_contracts.domain.ml.schemas import (
+from unified_api_contracts.internal.domain.ml.schemas import (
     CrossValidationResult,
     HyperparameterConfig,
     InferenceRequest,

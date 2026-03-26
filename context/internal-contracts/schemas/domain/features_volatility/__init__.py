@@ -8,7 +8,7 @@ SchemaDefinition / ColumnSchema objects are parquet write enforcement descriptor
 gets the single source of truth for the features-volatility output contract.
 
 Pydantic row-level models (OptionsIvRecord, FuturesTermStructureRecord) are in
-``unified_internal_contracts.features`` and re-exported from the top-level package.
+``unified_api_contracts.internal.features`` and re-exported from the top-level package.
 
 Feature Groups:
     options_iv: Implied volatility features from options chains.
@@ -17,7 +17,7 @@ Feature Groups:
 
 from __future__ import annotations
 
-from unified_internal_contracts.schema_definition import ColumnSchema, SchemaDefinition
+from unified_api_contracts.internal.schema_definition import ColumnSchema, SchemaDefinition
 
 # ==============================================================================
 # OPTIONS IV SCHEMA

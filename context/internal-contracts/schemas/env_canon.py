@@ -1,7 +1,7 @@
 """Canonical environment variable names — SINGLE SOURCE OF TRUTH.
 
 All repos MUST use these constants instead of raw getenv calls with literal strings.
-Import EnvVars from unified_internal_contracts for validation_alias and env reads.
+Import EnvVars from unified_api_contracts.internal for validation_alias and env reads.
 """
 
 # Module-level constants (convenience aliases)

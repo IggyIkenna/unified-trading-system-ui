@@ -18,7 +18,7 @@ Deferred (future work):
 
 from __future__ import annotations
 
-from unified_internal_contracts.schema_definition import ColumnSchema, SchemaDefinition
+from unified_api_contracts.internal.schema_definition import ColumnSchema, SchemaDefinition
 
 # ==============================================================================
 # TIME FEATURES SCHEMA

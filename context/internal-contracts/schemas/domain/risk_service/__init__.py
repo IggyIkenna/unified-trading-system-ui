@@ -1,6 +1,6 @@
 """Risk service domain schemas — metrics, alerts, exposure, pre-trade checks, account state."""
 
-from unified_internal_contracts.domain.risk_service.risk import (
+from unified_api_contracts.internal.domain.risk_service.risk import (
     AccountState,
     AlertContextData,
     AlertMessage,

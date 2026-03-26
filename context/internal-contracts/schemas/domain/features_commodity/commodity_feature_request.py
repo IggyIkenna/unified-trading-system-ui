@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from unified_internal_contracts.domain.features_commodity.commodity_signal import (
+from unified_api_contracts.internal.domain.features_commodity.commodity_signal import (
     FactorValue,
     RegimeState,
 )

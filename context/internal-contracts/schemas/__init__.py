@@ -3,8 +3,8 @@
 NO cloud SDKs (google-cloud-*, boto3, redis). Pure Pydantic schemas only.
 """
 
-from unified_internal_contracts.alerting import AlertEvent
-from unified_internal_contracts.connectivity import (
+from unified_api_contracts.internal.alerting import AlertEvent
+from unified_api_contracts.internal.connectivity import (
     WebSocketConnectEvent,
     WebSocketDisconnectEvent,
     WebSocketErrorEvent,
@@ -13,7 +13,7 @@ from unified_internal_contracts.connectivity import (
     WebSocketReconnectEvent,
     WebSocketSubscribeAckEvent,
 )
-from unified_internal_contracts.deployment import (
+from unified_api_contracts.internal.deployment import (
     VM_INFRASTRUCTURE_EVENTS,
     ComputeType,
     DeploymentState,
@@ -21,28 +21,28 @@ from unified_internal_contracts.deployment import (
     ShardEvent,
     VMEventType,
 )
-from unified_internal_contracts.domain.analytics import (
+from unified_api_contracts.internal.domain.analytics import (
     CorrelationRegime as CorrelationRegime,
 )
-from unified_internal_contracts.domain.analytics import (
+from unified_api_contracts.internal.domain.analytics import (
     CorrelationRegimeChange as CorrelationRegimeChange,
 )
-from unified_internal_contracts.domain.analytics import (
+from unified_api_contracts.internal.domain.analytics import (
     CrossAssetCorrelationMatrix as CrossAssetCorrelationMatrix,
 )
-from unified_internal_contracts.domain.analytics import (
+from unified_api_contracts.internal.domain.analytics import (
     FactorAttributionModel as FactorAttributionModel,
 )
-from unified_internal_contracts.domain.analytics import (
+from unified_api_contracts.internal.domain.analytics import (
     FactorAttributionRecord as FactorAttributionRecord,
 )
-from unified_internal_contracts.domain.analytics import (
+from unified_api_contracts.internal.domain.analytics import (
     FactorExposure as FactorExposure,
 )
-from unified_internal_contracts.domain.analytics import (
+from unified_api_contracts.internal.domain.analytics import (
     FactorType as FactorType,
 )
-from unified_internal_contracts.domain.cefi_accounts.schemas import (
+from unified_api_contracts.internal.domain.cefi_accounts.schemas import (
     DepositAddress,
     DepositRecord,
     ExchangeFeeSchedule,
@@ -51,14 +51,14 @@ from unified_internal_contracts.domain.cefi_accounts.schemas import (
     SubAccount,
     WithdrawalRecord,
 )
-from unified_internal_contracts.domain.data_quality.venue_freshness_slas import (
+from unified_api_contracts.internal.domain.data_quality.venue_freshness_slas import (
     VenueCategory,
     VenueFreshnessSLA,
 )
-from unified_internal_contracts.domain.defi import (
+from unified_api_contracts.internal.domain.defi import (
     AaveBorrowParams as AaveBorrowParams,
 )
-from unified_internal_contracts.domain.defi import (
+from unified_api_contracts.internal.domain.defi import (
     AaveDepositParams,
     AaveFlashLoanParams,
     AaveRepayParams,
@@ -103,26 +103,26 @@ from unified_internal_contracts.domain.defi import (
     UniswapV3QuoteResponse,
     UniswapV3SwapTxReceipt,
 )
-from unified_internal_contracts.domain.defi import (
+from unified_api_contracts.internal.domain.defi import (
     CurveDepositParams as CurveDepositParams,
 )
-from unified_internal_contracts.domain.defi import (
+from unified_api_contracts.internal.domain.defi import (
     Erc20TransferCalldata as Erc20TransferCalldata,
 )
-from unified_internal_contracts.domain.defi import (
+from unified_api_contracts.internal.domain.defi import (
     EthSendRawTransactionRequest as EthSendRawTransactionRequest,
 )
-from unified_internal_contracts.domain.derivatives.options import (
+from unified_api_contracts.internal.domain.derivatives.options import (
     OptionContract,
     OptionGreeks,
     OptionsChain,
     SettlementPrice,
 )
-from unified_internal_contracts.domain.events_service.lifecycle import (
+from unified_api_contracts.internal.domain.events_service.lifecycle import (
     RestartDetectedDetails,
     RestartDetectedEvent,
 )
-from unified_internal_contracts.domain.execution_service.cex_withdrawals import (
+from unified_api_contracts.internal.domain.execution_service.cex_withdrawals import (
     BinanceWithdrawRequest,
     BinanceWithdrawResponse,
     BybitWithdrawRequest,
@@ -134,12 +134,12 @@ from unified_internal_contracts.domain.execution_service.cex_withdrawals import 
     UpbitWithdrawRequest,
     UpbitWithdrawResponse,
 )
-from unified_internal_contracts.domain.execution_service.execution_preferences import (
+from unified_api_contracts.internal.domain.execution_service.execution_preferences import (
     ExecutionMode,
     ExecutionPreferencesConfig,
     UrgencyLevel,
 )
-from unified_internal_contracts.domain.execution_service.multi_leg import (
+from unified_api_contracts.internal.domain.execution_service.multi_leg import (
     LegExecutionResult,
     LegInstruction,
     LegStatus,
@@ -147,69 +147,69 @@ from unified_internal_contracts.domain.execution_service.multi_leg import (
     MultiLegExecutionResult,
     MultiLegInstruction,
 )
-from unified_internal_contracts.domain.execution_service.sports import (
+from unified_api_contracts.internal.domain.execution_service.sports import (
     SportsBetResult,
     SportsVenueScore,
     SportsVenueSelection,
 )
-from unified_internal_contracts.domain.features_commodity import (
+from unified_api_contracts.internal.domain.features_commodity import (
     CommodityFeatureRequest as CommodityFeatureRequest,
 )
-from unified_internal_contracts.domain.features_commodity import (
+from unified_api_contracts.internal.domain.features_commodity import (
     CommoditySignal as CommoditySignal,
 )
-from unified_internal_contracts.domain.features_commodity import (
+from unified_api_contracts.internal.domain.features_commodity import (
     FactorValue as FactorValue,
 )
-from unified_internal_contracts.domain.features_commodity import (
+from unified_api_contracts.internal.domain.features_commodity import (
     RegimeState as RegimeState,
 )
-from unified_internal_contracts.domain.features_delta_one import (
+from unified_api_contracts.internal.domain.features_delta_one import (
     FEATURES_SCHEMA,
     validate_feature_columns_not_null,
 )
-from unified_internal_contracts.domain.health.service_health import ServiceHealthResponse
-from unified_internal_contracts.domain.market_data_api import OrderBookSnapshot
-from unified_internal_contracts.domain.market_data_processing.adapter_models import (
+from unified_api_contracts.internal.domain.health.service_health import ServiceHealthResponse
+from unified_api_contracts.internal.domain.market_data_api import OrderBookSnapshot
+from unified_api_contracts.internal.domain.market_data_processing.adapter_models import (
     CandleOutput,
     InstrumentInfo,
     InstrumentMetadata,
 )
-from unified_internal_contracts.domain.market_data_processing.candle_schema import (
+from unified_api_contracts.internal.domain.market_data_processing.candle_schema import (
     DataType,
     MarketState,
 )
-from unified_internal_contracts.domain.market_tick_data import (
+from unified_api_contracts.internal.domain.market_tick_data import (
     SportsBookUpdate,
     SportsOddsTick,
 )
-from unified_internal_contracts.domain.matching_engine import (
+from unified_api_contracts.internal.domain.matching_engine import (
     BookType as BookType,
 )
-from unified_internal_contracts.domain.matching_engine import (
+from unified_api_contracts.internal.domain.matching_engine import (
     FeeResult as FeeResult,
 )
-from unified_internal_contracts.domain.matching_engine import (
+from unified_api_contracts.internal.domain.matching_engine import (
     MatchingFeeType as MatchingFeeType,
 )
-from unified_internal_contracts.domain.matching_engine import (
+from unified_api_contracts.internal.domain.matching_engine import (
     MatchResult as MatchResult,
 )
-from unified_internal_contracts.domain.matching_engine import (
+from unified_api_contracts.internal.domain.matching_engine import (
     OrderRecord as OrderRecord,
 )
-from unified_internal_contracts.domain.matching_engine import (
+from unified_api_contracts.internal.domain.matching_engine import (
     OrderType as OrderType,
 )
-from unified_internal_contracts.domain.matching_engine import (
+from unified_api_contracts.internal.domain.matching_engine import (
     SwapResult,
 )
-from unified_internal_contracts.domain.ml_inference_service import (
+from unified_api_contracts.internal.domain.ml_inference_service import (
     CascadeConfig,
     CascadePredictionEvent,
     PredictionSnapshot,
 )
-from unified_internal_contracts.domain.prediction_market.prediction_market_arb import (
+from unified_api_contracts.internal.domain.prediction_market.prediction_market_arb import (
     BucketMarket,
     CrossVenueArbLeg,
     CrossVenueArbSignal,
@@ -219,11 +219,11 @@ from unified_internal_contracts.domain.prediction_market.prediction_market_arb i
     ProbabilityBucket,
     SportsbookLink,
 )
-from unified_internal_contracts.domain.risk_service.risk import (
+from unified_api_contracts.internal.domain.risk_service.risk import (
     MultiAssetMarginCalculation,
     SpanMarginLeg,
 )
-from unified_internal_contracts.domain.sports.execution import (
+from unified_api_contracts.internal.domain.sports.execution import (
     BetCancelledEvent,
     BetFilledEvent,
     BetPlacedEvent,
@@ -232,7 +232,7 @@ from unified_internal_contracts.domain.sports.execution import (
     CanonicalSportsOrder,
     SportsBetEvent,
 )
-from unified_internal_contracts.domain.strategy_service.domain_events import (
+from unified_api_contracts.internal.domain.strategy_service.domain_events import (
     ExposureSnapshot,
     OrderEvent,
     PnLCalculation,
@@ -240,7 +240,7 @@ from unified_internal_contracts.domain.strategy_service.domain_events import (
     RiskAssessment,
     StrategyDecision,
 )
-from unified_internal_contracts.domain.strategy_service.monitoring import (
+from unified_api_contracts.internal.domain.strategy_service.monitoring import (
     ExposureData,
     OrderData,
     PnLData,
@@ -248,25 +248,25 @@ from unified_internal_contracts.domain.strategy_service.monitoring import (
     RiskData,
     StrategyDecisionData,
 )
-from unified_internal_contracts.domain.strategy_service.order import Order
-from unified_internal_contracts.domain.strategy_service.signal_vector import (
+from unified_api_contracts.internal.domain.strategy_service.order import Order
+from unified_api_contracts.internal.domain.strategy_service.signal_vector import (
     MetaSignalRecord,
     RegimeStateRecord,
     SignalVectorRecord,
 )
-from unified_internal_contracts.domain.strategy_service.trigger_subscription import (
+from unified_api_contracts.internal.domain.strategy_service.trigger_subscription import (
     TriggerEvent,
     TriggerEventType,
     TriggerSubscription,
 )
-from unified_internal_contracts.domain.websocket.lifecycle import (
+from unified_api_contracts.internal.domain.websocket.lifecycle import (
     HealthPingResponse,
     UnsubscribeRequest,
     WebSocketConnectionClosed,
     WebSocketConnectionOpened,
 )
-from unified_internal_contracts.env_canon import EnvVars
-from unified_internal_contracts.events import (
+from unified_api_contracts.internal.env_canon import EnvVars
+from unified_api_contracts.internal.events import (
     AgentEventDetails,
     AuthFailureDetails,
     AuthFailureEvent,
@@ -301,8 +301,8 @@ from unified_internal_contracts.events import (
     ValidationStartedDetails,
     VersionBumpDetails,
 )
-from unified_internal_contracts.execution import ManualInstruction, SettlementType
-from unified_internal_contracts.features import (
+from unified_api_contracts.internal.execution import ManualInstruction, SettlementType
+from unified_api_contracts.internal.features import (
     CrossInstrumentFeatures,
     CrossTimeframeFeatures,
     DeltaOneFeatureRecord,
@@ -315,8 +315,8 @@ from unified_internal_contracts.features import (
     PairSpreadFeatureRecord,
     VolSurfaceTermStructureRecord,
 )
-from unified_internal_contracts.market_category import MarketCategory
-from unified_internal_contracts.market_data import (
+from unified_api_contracts.internal.market_category import MarketCategory
+from unified_api_contracts.internal.market_data import (
     BookUpdateLevel,
     CanonicalBondData,
     CanonicalBookUpdate,
@@ -336,8 +336,8 @@ from unified_internal_contracts.market_data import (
     OHLCVSource,
     YieldCurveTenor,
 )
-from unified_internal_contracts.messaging import MessagingScope, MessagingTopic
-from unified_internal_contracts.ml import (
+from unified_api_contracts.internal.messaging import MessagingScope, MessagingTopic
+from unified_api_contracts.internal.ml import (
     CrossValidationResult,
     HyperparameterConfig,
     InferenceRequest,
@@ -352,7 +352,7 @@ from unified_internal_contracts.ml import (
     TrainingJobResult,
     TrainingPeriod,
 )
-from unified_internal_contracts.modes import (
+from unified_api_contracts.internal.modes import (
     CloudProvider,
     DataMode,
     LogLevel,
@@ -362,22 +362,22 @@ from unified_internal_contracts.modes import (
     TestingStage,
     TestingStageConfig,
 )
-from unified_internal_contracts.position_protocol import (
+from unified_api_contracts.internal.position_protocol import (
     CrossAssetPortfolioAggregator,
     PositionQuantityProtocol,
 )
-from unified_internal_contracts.position_types import (
+from unified_api_contracts.internal.position_types import (
     aggregate_notional,
     aggregate_positions,
 )
-from unified_internal_contracts.positions import (
+from unified_api_contracts.internal.positions import (
     CeFiPosition,
     DeFiLendingPosition,
     DeFiLPPosition,
     DeFiStakingPosition,
     LendingEntry,
 )
-from unified_internal_contracts.pubsub import (
+from unified_api_contracts.internal.pubsub import (
     AggregatedPositionMessage,
     CircuitBreakerEventMessage,
     DerivativeTickerMessage,
@@ -397,7 +397,7 @@ from unified_internal_contracts.pubsub import (
     StrategySignalMessage,
     VenuePositionBreakdownMessage,
 )
-from unified_internal_contracts.reference import (
+from unified_api_contracts.internal.reference import (
     ALL_FRESHNESS_CONTRACTS,
     FEATURE_FRESHNESS,
     MARKET_TICK_FRESHNESS,
@@ -423,8 +423,8 @@ from unified_internal_contracts.reference import (
     UniverseSnapshot,
     VenueCircuitBreakerConfig,
 )
-from unified_internal_contracts.reporting import ClientConfig, CredentialsRegistry, FeeStructure
-from unified_internal_contracts.risk import (
+from unified_api_contracts.internal.reporting import ClientConfig, CredentialsRegistry, FeeStructure
+from unified_api_contracts.internal.risk import (
     AccountState,
     AlertContextData,
     AlertMessage,
@@ -469,13 +469,13 @@ from unified_internal_contracts.risk import (
     VaRRequest,
     VaRResult,
 )
-from unified_internal_contracts.schema_definition import (
+from unified_api_contracts.internal.schema_definition import (
     ColumnSchema,
     SchemaDefinition,
     SchemaValidationError,
     SchemaValidationResult,
 )
-from unified_internal_contracts.schemas import (
+from unified_api_contracts.internal.schemas import (
     DeadLetterRecord,
     EnhancedError,
     ErrorCategory,
@@ -483,18 +483,18 @@ from unified_internal_contracts.schemas import (
     ErrorRecoveryStrategy,
     ErrorSeverity,
 )
-from unified_internal_contracts.schemas.audit import (
+from unified_api_contracts.internal.schemas.audit import (
     EXECUTION_AUDIT,
     STRATEGY_AUDIT,
     AuditRequirement,
     AuditRetention,
 )
-from unified_internal_contracts.schemas.rbac import (
+from unified_api_contracts.internal.schemas.rbac import (
     Permission,
     UserProfile,
     UserRole,
 )
-from unified_internal_contracts.sports import (
+from unified_api_contracts.internal.sports import (
     CoachRecord,
     FixtureEventsRecord,
     FixtureLineupsRecord,
@@ -510,20 +510,20 @@ from unified_internal_contracts.sports import (
     TeamRecord,
     VenueRecord,
 )
-from unified_internal_contracts.testing.scenario_config import (
+from unified_api_contracts.internal.testing.scenario_config import (
     FaultConfig,
     ScenarioConfig,
 )
-from unified_internal_contracts.testing.seed_validator import (
+from unified_api_contracts.internal.testing.seed_validator import (
     FileReport,
     ValidationReport,
 )
-from unified_internal_contracts.testing.synthetic import (
+from unified_api_contracts.internal.testing.synthetic import (
     SeedDataWriter,
     SyntheticDataGenerator,
 )
-from unified_internal_contracts.testing.tick_replay import TickReplayEngine
-from unified_internal_contracts.timeframes import TIMEFRAME_TO_SECONDS, Timeframe
+from unified_api_contracts.internal.testing.tick_replay import TickReplayEngine
+from unified_api_contracts.internal.timeframes import TIMEFRAME_TO_SECONDS, Timeframe
 
 __all__ = [
     "ALL_FRESHNESS_CONTRACTS",

@@ -4,7 +4,7 @@ Shared schemas for CeFi exchange APIs (Binance, OKX, Bybit, etc.).
 Moved from unified-api-contracts to unified-internal-contracts (internal service-to-service).
 """
 
-from unified_internal_contracts.domain.cefi_accounts.schemas import (
+from unified_api_contracts.internal.domain.cefi_accounts.schemas import (
     DepositAddress,
     DepositRecord,
     ExchangeFeeSchedule,

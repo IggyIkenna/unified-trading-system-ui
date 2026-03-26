@@ -13,7 +13,7 @@ Features computed by features-sports-service calculators:
                     (pred_home_win, pred_draw, pred_away_win, goals, over_2.5).
 
 The storage-layer TypedDicts (LeagueRecord, TeamRecord, FixtureRecord, etc.) are in
-``unified_internal_contracts.sports`` — those are flat GCS parquet shapes.
+``unified_api_contracts.internal.sports`` — those are flat GCS parquet shapes.
 
 These Pydantic models are the runtime feature contracts passed between services via
 PubSub events and ML inference APIs.

@@ -8,7 +8,7 @@ decimal odds, etc.).
 Usage
 -----
 Import CanonicalSportsOrder and CanonicalSportsFill from this module
-(unified_internal_contracts.domain.sports.execution).
+(unified_api_contracts.internal.domain.sports.execution).
 
 Architecture note
 -----------------

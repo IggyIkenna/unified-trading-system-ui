@@ -94,7 +94,7 @@ class MockScenario(StrEnum):
     """Named, deterministic mock scenario for testing and local dev.
 
     Each scenario has a canonical YAML config in
-    unified_internal_contracts/testing/scenarios/<name>.yaml
+    unified_api_contracts.internal/testing/scenarios/<name>.yaml
     specifying the RNG seed, volatility multipliers, fault injection, etc.
 
     Same seed = same output — scenarios are fully reproducible.

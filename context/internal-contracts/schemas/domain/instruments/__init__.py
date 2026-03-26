@@ -8,7 +8,7 @@ They live here so that any service or tool importing from UIC gets the single
 source of truth for the instruments output contract.
 
 Pydantic row-level models (InstrumentDefinition, InstrumentKey) are in
-``unified_internal_contracts.reference`` and re-exported from the top-level package.
+``unified_api_contracts.internal.reference`` and re-exported from the top-level package.
 
 Categories:
     CEFI: Centralized exchange instruments (Tardis data)
@@ -18,7 +18,7 @@ Categories:
 
 from __future__ import annotations
 
-from unified_internal_contracts.schema_definition import ColumnSchema, SchemaDefinition
+from unified_api_contracts.internal.schema_definition import ColumnSchema, SchemaDefinition
 
 # INSTRUMENTS OUTPUT SCHEMA — columns with dimension-aware nullability rules.
 # Key dimensions: category (CEFI, TRADFI, DEFI)
@@ -830,7 +830,7 @@ SCHEMA_METADATA: dict[str, str | list[str]] = {
     "version": "1.0",
     "last_updated": "2025-01-15",
     "source_model": (
-        "InstrumentDefinition (unified_internal_contracts.reference.instrument_definition)"
+        "InstrumentDefinition (unified_api_contracts.internal.reference.instrument_definition)"
     ),
     "storage_format": "Parquet",
     "storage_location": "GCS",

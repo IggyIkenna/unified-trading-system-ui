@@ -1,19 +1,19 @@
 """DeFi domain contracts — gas cost, protocol data, protocol SDKs, and eth transfers."""
 
-from unified_internal_contracts.domain.defi.eth_transfers import (
+from unified_api_contracts.internal.domain.defi.eth_transfers import (
     Erc20TransferFromCalldata,
     EthSendRawTransactionResponse,
     EthSendTransactionRequest,
     EthTransactionRequest,
 )
-from unified_internal_contracts.domain.defi.gas_cost import GasCostAction, GasCostEstimate
-from unified_internal_contracts.domain.defi.protocol_data import (
+from unified_api_contracts.internal.domain.defi.gas_cost import GasCostAction, GasCostEstimate
+from unified_api_contracts.internal.domain.defi.protocol_data import (
     LendingRate,
     LiquidityPool,
     OraclePrice,
     StakingRate,
 )
-from unified_internal_contracts.domain.defi.protocol_sdks import (
+from unified_api_contracts.internal.domain.defi.protocol_sdks import (
     AaveDepositParams,
     AaveFlashLoanParams,
     AaveRepayParams,
@@ -48,11 +48,11 @@ from unified_internal_contracts.domain.defi.protocol_sdks import (
     UniswapV3QuoteResponse,
     UniswapV3SwapTxReceipt,
 )
-from unified_internal_contracts.domain.features_onchain.eth_transfers import (
+from unified_api_contracts.internal.domain.features_onchain.eth_transfers import (
     Erc20TransferCalldata,
     EthSendRawTransactionRequest,
 )
-from unified_internal_contracts.domain.features_onchain.protocol_params import (
+from unified_api_contracts.internal.domain.features_onchain.protocol_params import (
     AaveBorrowParams,
     CurveDepositParams,
 )
