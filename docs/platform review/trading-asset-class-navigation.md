@@ -165,9 +165,9 @@ This is an entitlement/data-scoping concern, not a UI structure change. The nav 
 
 ## Open Questions
 
-- [ ] Is this a hard decision or still open for alternative approaches?
-- [ ] Should there be an "All" or "Cross-Asset" group that shows everything for ODUM internal users?
-- [ ] Does each asset-class group need its own URL prefix? (e.g., `/services/trading/defi/positions` vs `/services/trading/positions?group=defi`)
-- [ ] How do cross-asset strategies (e.g., "ML Regime Switcher" that trades multiple asset classes) appear? Under which group?
-- [ ] Color scheme for activity dots — align with existing platform color language?
-- [ ] Mobile: how does two-tier tab navigation work on small screens?
+- Is this a hard decision or still open for alternative approaches?
+- Should there be an "All" or "Cross-Asset" group that shows everything for ODUM internal users?
+- Does each asset-class group need its own URL prefix? (e.g., `/services/trading/defi/positions` vs `/services/trading/positions?group=defi`)
+- How do cross-asset strategies (e.g., "ML Regime Switcher" that trades multiple asset classes) appear? Under which group?
+- Color scheme for activity dots — align with existing platform color language?
+- Mobile: how does two-tier tab navigation work on small screens?
