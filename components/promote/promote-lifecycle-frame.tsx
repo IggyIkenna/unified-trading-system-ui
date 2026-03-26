@@ -15,11 +15,9 @@ export function PromoteLifecycleFrame({
     pathname === `${PROMOTE_PIPELINE_HREF}/`;
 
   return (
-    <div className="h-full bg-background flex flex-col">
-      <main className="flex-1 p-4 space-y-4 overflow-auto">
-        {!onPipeline && <PromoteStrategyContextBar />}
-        {children}
-      </main>
-    </div>
+    <>
+      {!onPipeline && <PromoteStrategyContextBar />}
+      {children}
+    </>
   );
 }

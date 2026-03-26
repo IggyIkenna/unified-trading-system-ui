@@ -3,22 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check, ChevronDown, ChevronRight, Lock } from "lucide-react";
+import { Check, ChevronRight, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import {
   PROMOTE_PIPELINE_HREF,
@@ -36,90 +23,22 @@ import { STAGE_ORDER } from "@/components/promote/types";
 export function PromoteStrategyContextBar() {
   const pathname = usePathname() || "";
   const selected = usePromoteLifecycleStore(selectPromoteSelectedStrategy);
-  const candidates = usePromoteLifecycleStore((s) => s.candidates);
-  const setSelectedId = usePromoteLifecycleStore((s) => s.setSelectedId);
-  const [switcherOpen, setSwitcherOpen] = React.useState(false);
 
   if (!selected) return null;
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-1 overflow-x-auto">
-      <div className="flex items-center gap-2 shrink-0">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-1 overflow-x-auto border-b border-border/60 pb-3 mb-1">
+      <div className="flex items-center gap-2 shrink-0 min-w-0">
         <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" asChild>
           <Link href={PROMOTE_PIPELINE_HREF}>Pipeline</Link>
         </Button>
-        <ChevronRight className="size-3 text-muted-foreground" />
-
-        <Popover open={switcherOpen} onOpenChange={setSwitcherOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 gap-1.5 text-sm font-medium max-w-[280px]"
-            >
-              <span className="truncate">{selected.name}</span>
-              <Badge
-                variant="outline"
-                className="text-xs font-mono shrink-0 ml-0.5"
-              >
-                v{selected.version}
-              </Badge>
-              <ChevronDown className="size-3 text-muted-foreground shrink-0" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[320px] p-0" align="start">
-            <Command>
-              <CommandInput placeholder="Search strategies..." />
-              <CommandList>
-                <CommandEmpty>No strategies found.</CommandEmpty>
-                <CommandGroup>
-                  {candidates.map((c) => (
-                    <CommandItem
-                      key={c.id}
-                      value={`${c.name} ${c.version} ${c.assetClass}`}
-                      onSelect={() => {
-                        setSelectedId(c.id);
-                        setSwitcherOpen(false);
-                      }}
-                      className="flex items-center justify-between gap-2"
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        {selected.id === c.id && (
-                          <Check className="size-3 text-primary shrink-0" />
-                        )}
-                        <span className="truncate text-sm">{c.name}</span>
-                        <span className="text-xs font-mono text-muted-foreground shrink-0">
-                          v{c.version}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <Badge variant="outline" className="text-xs">
-                          {c.assetClass}
-                        </Badge>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "text-xs",
-                            c.stages[c.currentStage].status === "passed" &&
-                              "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-                            c.stages[c.currentStage].status === "pending" &&
-                              "bg-amber-500/15 text-amber-400 border-amber-500/30",
-                            c.stages[c.currentStage].status === "failed" &&
-                              "bg-rose-500/15 text-rose-400 border-rose-500/30",
-                          )}
-                        >
-                          {STAGE_META[c.currentStage].label}
-                        </Badge>
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <ChevronRight className="size-3 text-muted-foreground shrink-0" />
+        <span className="text-sm font-semibold truncate">{selected.name}</span>
+        <Badge variant="outline" className="text-xs font-mono shrink-0">
+          v{selected.version}
+        </Badge>
       </div>
-      <div className="flex-1 min-w-[200px]" />
+      <div className="flex-1 min-w-[120px]" />
       <div className="flex items-center gap-1 shrink-0 pb-1 sm:pb-0">
         {STAGE_ORDER.map((stage, idx) => {
           const s = selected.stages[stage];

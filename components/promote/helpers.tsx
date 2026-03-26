@@ -101,3 +101,12 @@ export function getOverallProgress(strategy: CandidateStrategy): number {
   }
   return (completed / STAGE_ORDER.length) * 100;
 }
+
+/** SLA chip label + badge classes for pipeline list/cards. */
+export function promoteSlaBadge(c: CandidateStrategy) {
+  const d = c.daysInCurrentStage ?? 0;
+  const lim = c.slaDaysExpected ?? 7;
+  if (d > lim) return { label: "Breach", className: statusBg("failed") };
+  if (d >= lim - 1) return { label: "At risk", className: statusBg("warning") };
+  return { label: "On track", className: statusBg("passed") };
+}

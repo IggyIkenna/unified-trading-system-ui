@@ -236,7 +236,7 @@
       "redirect": "/services/promote → /services/promote/pipeline",
       "layout": "app/(platform)/services/promote/layout.tsx",
       "lifecycle_layout": "app/(platform)/services/promote/(lifecycle)/layout.tsx",
-      "tab_set": "PROMOTE_TABS",
+      "split_layout": "components/promote/promote-split-layout.tsx — list/detail; PromoteStrategyListPanel + detail; Sheet < lg",
       "sub_tab_set": "PROMOTE_LIFECYCLE_NAV",
       "live_asof_toggle": false,
       "components_dir": "components/promote/",

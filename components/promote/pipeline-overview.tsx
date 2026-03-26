@@ -1,11 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { AlertTriangle, ChevronRight, Filter, Target } from "lucide-react";
+import { AlertTriangle, ChevronRight, Target } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import {
   Table,
@@ -16,8 +15,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { usePromoteListFilters } from "@/components/promote/promote-list-filters-context";
 import { HISTORICAL_APPROVALS_30D } from "./mock-fixtures";
-import { fmtNum, fmtPct, getOverallProgress, statusBg } from "./helpers";
+import {
+  fmtNum,
+  fmtPct,
+  getOverallProgress,
+  promoteSlaBadge,
+  statusBg,
+} from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import { STAGE_META } from "./stage-meta";
 import type { CandidateStrategy, PromotionStage } from "./types";
@@ -27,38 +33,14 @@ function stagePassed(c: CandidateStrategy, s: PromotionStage) {
   return c.stages[s].status === "passed";
 }
 
-function slaBadge(c: CandidateStrategy) {
-  const d = c.daysInCurrentStage ?? 0;
-  const lim = c.slaDaysExpected ?? 7;
-  if (d > lim) return { label: "Breach", className: statusBg("failed") };
-  if (d >= lim - 1) return { label: "At risk", className: statusBg("warning") };
-  return { label: "On track", className: statusBg("passed") };
-}
-
 export function PipelineOverview({
-  candidates,
   selectedId,
   onSelect,
 }: {
-  candidates: CandidateStrategy[];
   selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
-  const [asset, setAsset] = React.useState<string>("all");
-  const [archetype, setArchetype] = React.useState<string>("all");
-  const [stageFilter, setStageFilter] = React.useState<string>("all");
-  const [submitterQ, setSubmitterQ] = React.useState("");
-  const [submittedFrom, setSubmittedFrom] = React.useState("");
-  const [submittedTo, setSubmittedTo] = React.useState("");
-
-  const assetClasses = React.useMemo(
-    () => ["all", ...new Set(candidates.map((c) => c.assetClass))],
-    [candidates],
-  );
-  const archetypes = React.useMemo(
-    () => ["all", ...new Set(candidates.map((c) => c.archetype))].sort(),
-    [candidates],
-  );
+  const { filtered, candidates } = usePromoteListFilters();
 
   const pipelineDerived = React.useMemo(() => {
     const n = candidates.length || 1;
@@ -88,36 +70,6 @@ export function PipelineOverview({
     return { conversion, avgDwell, velocityDays };
   }, [candidates]);
 
-  const filtered = React.useMemo(() => {
-    const fromMs = submittedFrom ? new Date(submittedFrom).getTime() : null;
-    const toMs = submittedTo
-      ? new Date(submittedTo).getTime() + 86_400_000 - 1
-      : null;
-    return candidates.filter((c) => {
-      if (asset !== "all" && c.assetClass !== asset) return false;
-      if (archetype !== "all" && c.archetype !== archetype) return false;
-      if (stageFilter !== "all" && c.currentStage !== stageFilter) return false;
-      if (
-        submitterQ.trim() &&
-        !c.submittedBy.toLowerCase().includes(submitterQ.trim().toLowerCase())
-      )
-        return false;
-      const sub = new Date(c.submittedAt).getTime();
-      if (fromMs !== null && !Number.isNaN(fromMs) && sub < fromMs)
-        return false;
-      if (toMs !== null && !Number.isNaN(toMs) && sub > toMs) return false;
-      return true;
-    });
-  }, [
-    candidates,
-    asset,
-    archetype,
-    stageFilter,
-    submitterQ,
-    submittedFrom,
-    submittedTo,
-  ]);
-
   const pipelineCounts = STAGE_ORDER.map((stage) => ({
     stage,
     count: filtered.filter((c) => c.currentStage === stage).length,
@@ -140,7 +92,6 @@ export function PipelineOverview({
   return (
     <div className="space-y-6">
       <div className="flex flex-col 2xl:flex-row gap-3 rounded-lg border border-border bg-card/30 p-3">
-        {/* Stage Counts */}
         <div className="grid grid-cols-3 md:grid-cols-6 2xl:grid-cols-6 gap-0 flex-1">
           {pipelineCounts.map((p) => {
             const Icon = p.icon;
@@ -167,12 +118,9 @@ export function PipelineOverview({
           })}
         </div>
 
-        {/* Vertical divider at 2K */}
         <div className="hidden 2xl:block w-px bg-border self-stretch" />
-        {/* Horizontal divider below 2K */}
         <div className="block 2xl:hidden h-px bg-border" />
 
-        {/* Pipeline Metrics */}
         <div className="grid grid-cols-3 md:grid-cols-5 2xl:grid-cols-5 gap-0 flex-shrink-0">
           <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2 first:border-l-0 first:pl-0">
             <p className="text-sm uppercase tracking-wider text-muted-foreground">
@@ -231,76 +179,14 @@ export function PipelineOverview({
       )}
 
       <Card>
-        <CardHeader className="pb-2 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Target className="size-4" />
-              Promotion Queue
-            </CardTitle>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <Filter className="size-3.5" />
-                <span className="text-xs uppercase tracking-wide">Filters</span>
-              </div>
-              <select
-                className="h-8 rounded-md border border-border bg-background px-2 text-xs font-mono"
-                value={asset}
-                onChange={(e) => setAsset(e.target.value)}
-                aria-label="Asset class"
-              >
-                {assetClasses.map((a) => (
-                  <option key={a} value={a}>
-                    {a === "all" ? "All asset classes" : a}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="h-8 rounded-md border border-border bg-background px-2 text-xs font-mono max-w-[160px]"
-                value={archetype}
-                onChange={(e) => setArchetype(e.target.value)}
-                aria-label="Archetype"
-              >
-                {archetypes.map((a) => (
-                  <option key={a} value={a}>
-                    {a === "all" ? "All archetypes" : a}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="h-8 rounded-md border border-border bg-background px-2 text-xs font-mono"
-                value={stageFilter}
-                onChange={(e) => setStageFilter(e.target.value)}
-                aria-label="Stage"
-              >
-                <option value="all">All stages</option>
-                {STAGE_ORDER.map((s) => (
-                  <option key={s} value={s}>
-                    {STAGE_META[s].label}
-                  </option>
-                ))}
-              </select>
-              <Input
-                placeholder="Submitter…"
-                value={submitterQ}
-                onChange={(e) => setSubmitterQ(e.target.value)}
-                className="h-8 w-[140px] text-xs font-mono"
-              />
-              <Input
-                type="date"
-                value={submittedFrom}
-                onChange={(e) => setSubmittedFrom(e.target.value)}
-                className="h-8 w-[128px] text-xs font-mono"
-                aria-label="Submitted from"
-              />
-              <Input
-                type="date"
-                value={submittedTo}
-                onChange={(e) => setSubmittedTo(e.target.value)}
-                className="h-8 w-[128px] text-xs font-mono"
-                aria-label="Submitted to"
-              />
-            </div>
-          </div>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <Target className="size-4" />
+            Promotion Queue
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">
+            Filter strategies from the left list; table shows the same cohort.
+          </p>
         </CardHeader>
         <CardContent>
           <Table>
@@ -321,7 +207,7 @@ export function PipelineOverview({
               {filtered.map((c) => {
                 const stageMeta = STAGE_META[c.currentStage];
                 const progress = getOverallProgress(c);
-                const sla = slaBadge(c);
+                const sla = promoteSlaBadge(c);
                 return (
                   <TableRow
                     key={c.id}
@@ -399,7 +285,7 @@ export function PipelineOverview({
                           onSelect(c.id);
                         }}
                       >
-                        Review <ChevronRight className="size-3 ml-1" />
+                        Select <ChevronRight className="size-3 ml-1" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -419,7 +305,7 @@ export function PipelineOverview({
         />
       ) : (
         <p className="text-xs text-muted-foreground text-center">
-          Select a strategy to enable stage actions
+          Select a strategy in the list or table to enable stage actions
         </p>
       )}
     </div>

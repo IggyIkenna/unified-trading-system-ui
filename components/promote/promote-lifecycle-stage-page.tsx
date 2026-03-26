@@ -5,7 +5,6 @@ import type {
   CandidateStrategy,
   PromotionStage,
 } from "@/components/promote/types";
-import { PromoteLifecycleFrame } from "@/components/promote/promote-lifecycle-frame";
 import { NoStrategySelected } from "@/components/promote/no-strategy-selected";
 import { isPromoteStageLocked } from "@/components/promote/promote-stage-access";
 import {
@@ -24,23 +23,17 @@ export function PromoteLifecycleStagePage({
   const strategy = usePromoteLifecycleStore(selectPromoteSelectedStrategy);
 
   if (!strategy) {
-    return (
-      <PromoteLifecycleFrame>
-        <NoStrategySelected />
-      </PromoteLifecycleFrame>
-    );
+    return <NoStrategySelected />;
   }
 
   if (gateStage && isPromoteStageLocked(strategy, gateStage)) {
     return (
-      <PromoteLifecycleFrame>
-        <div className="rounded-lg border border-border bg-card/40 px-4 py-6 text-sm text-muted-foreground">
-          This stage is locked until earlier promotion gates pass for the
-          selected strategy.
-        </div>
-      </PromoteLifecycleFrame>
+      <div className="rounded-lg border border-border bg-card/40 px-4 py-6 text-sm text-muted-foreground">
+        This stage is locked until earlier promotion gates pass for the selected
+        strategy.
+      </div>
     );
   }
 
-  return <PromoteLifecycleFrame>{children(strategy)}</PromoteLifecycleFrame>;
+  return <>{children(strategy)}</>;
 }
