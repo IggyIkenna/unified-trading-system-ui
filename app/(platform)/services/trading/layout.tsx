@@ -1,20 +1,12 @@
 "use client";
 
-import {
-  ServiceTabs,
-  TRADING_TABS,
-  LIVE_ASOF_VISIBLE,
-} from "@/components/shell/service-tabs";
+import { TRADING_TABS } from "@/components/shell/service-tabs";
+import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
@@ -37,7 +29,6 @@ import Link from "next/link";
 
 function TradingSidebar() {
   const { hasEntitlement, isAdmin, isInternal } = useAuth();
-  // Only show internal data to internal/admin users
   const canSeeInternalData =
     isAdmin() || isInternal() || hasEntitlement("execution-basic");
 
@@ -58,6 +49,7 @@ function TradingSidebar() {
       </div>
     );
   }
+
   const ps = positionsSummary as Record<string, unknown> | undefined;
   const als = alertsSummary as Record<string, unknown> | undefined;
   const health = healthData as Record<string, unknown> | undefined;
@@ -276,12 +268,7 @@ export default function TradingServiceLayout({
   const { scope, setMode } = useGlobalScope();
 
   return (
-    <>
-      <ServiceTabs
-        tabs={TRADING_TABS}
-        entitlements={user?.entitlements}
-        rightSlot={LIVE_ASOF_VISIBLE.run ? <LiveAsOfToggle /> : undefined}
-      />
+    <div className="flex flex-col h-full">
       <BatchLiveRail
         platform="strategy"
         currentStage="Monitor"
@@ -289,26 +276,26 @@ export default function TradingServiceLayout({
         onContextChange={(v) => setMode(v === "LIVE" ? "live" : "batch")}
         compact
       />
-      <ResizablePanelGroup
-        direction="horizontal"
-        autoSaveId="trading-service-layout"
-        className="min-h-[calc(100vh-180px)]"
-      >
-        <ResizablePanel defaultSize={82} minSize={60}>
-          <div className="h-full overflow-auto min-w-[800px]">
-            <EntitlementGate
-              entitlement="execution-basic"
-              serviceName="Trading"
-            >
-              <ErrorBoundary>{children}</ErrorBoundary>
-            </EntitlementGate>
-          </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={18} minSize={12} maxSize={30} collapsible>
+      {/* Main area: vertical nav + content + quick-view sidebar */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <TradingVerticalNav
+          tabs={TRADING_TABS}
+          entitlements={user?.entitlements}
+          bottomSlot={<LiveAsOfToggle />}
+        />
+
+        {/* Page content */}
+        <div className="flex-1 overflow-auto min-w-0">
+          <EntitlementGate entitlement="execution-basic" serviceName="Trading">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </EntitlementGate>
+        </div>
+
+        {/* Quick-view sidebar */}
+        <aside className="w-[200px] shrink-0 border-l border-border overflow-y-auto">
           <TradingSidebar />
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </>
+        </aside>
+      </div>
+    </div>
   );
 }

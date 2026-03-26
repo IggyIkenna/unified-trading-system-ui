@@ -7,13 +7,36 @@
  */
 
 import { cn } from "@/lib/utils";
-import { Lock } from "lucide-react";
+import {
+  Lock,
+  LayoutDashboard,
+  MonitorDot,
+  BookOpen,
+  ClipboardList,
+  Bell,
+  BookMarked,
+  Wallet,
+  BarChart3,
+  ShieldAlert,
+  LineChart,
+  Layers,
+  Zap,
+  TrendingUp,
+  Trophy,
+  Lightbulb,
+  GitFork,
+  Settings2,
+  Cpu,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export interface ServiceTab {
   label: string;
   href: string;
+  /** Lucide icon component — used by vertical nav layouts */
+  icon?: LucideIcon;
   /** Match pathname prefix for active state (defaults to href) */
   matchPrefix?: string;
   /** If true, only `href` matches (no prefix) — use for section index routes like `/ml` vs `/ml/training` */
@@ -23,6 +46,8 @@ export interface ServiceTab {
   /** When true, tab is visible but not navigable (e.g. promote lifecycle gating) */
   navDisabled?: boolean;
   navDisabledTitle?: string;
+  /** Visual group separator — renders a divider above this item in vertical nav */
+  group?: string;
 }
 
 interface ServiceTabsProps {
@@ -192,23 +217,49 @@ export const STRATEGY_SUB_TABS: ServiceTab[] = [
 ];
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────
+// Group 1: Common — relevant to all asset classes (monitoring + trading + analysis)
+// Group 2: Asset-specific — subscription-gated, FOMO-locked for non-subscribers
 export const TRADING_TABS: ServiceTab[] = [
-  { label: "Overview", href: "/services/trading/overview" },
-  { label: "Terminal", href: "/services/trading/terminal" },
-  { label: "DeFi Ops", href: "/services/trading/defi" },
-  { label: "Options & Futures", href: "/services/trading/options" },
-  { label: "Sports", href: "/services/trading/sports" },
-  { label: "Predictions", href: "/services/trading/predictions" },
-  { label: "Bundles", href: "/services/trading/bundles" },
-  { label: "Instructions", href: "/services/trading/instructions" },
-  { label: "Positions", href: "/services/trading/positions" },
-  { label: "Orders", href: "/services/trading/orders" },
-  { label: "Alerts", href: "/services/trading/alerts" },
-  { label: "Book Trade", href: "/services/trading/book" },
-  { label: "Accounts", href: "/services/trading/accounts" },
-  { label: "P&L Breakdown", href: "/services/trading/pnl" },
-  { label: "Risk", href: "/services/trading/risk" },
-  { label: "Markets", href: "/services/trading/markets" },
+  // ── Common ────────────────────────────────────────────────────────────────
+  {
+    label: "Overview",
+    href: "/services/trading/overview",
+    icon: LayoutDashboard,
+  },
+  { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
+  { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
+  { label: "Positions", href: "/services/trading/positions", icon: BookOpen },
+  { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
+  { label: "Alerts", href: "/services/trading/alerts", icon: Bell },
+  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
+  { label: "P&L Breakdown", href: "/services/trading/pnl", icon: BarChart3 },
+  { label: "Risk", href: "/services/trading/risk", icon: ShieldAlert },
+  { label: "Markets", href: "/services/trading/markets", icon: LineChart },
+  { label: "Book Trade", href: "/services/trading/book", icon: BookMarked },
+  {
+    label: "Instructions",
+    href: "/services/trading/instructions",
+    icon: Settings2,
+  },
+  // ── Asset-specific ────────────────────────────────────────────────────────
+  {
+    label: "Combos",
+    href: "/services/trading/bundles",
+    icon: GitFork,
+    group: "Asset-Specific",
+  },
+  { label: "DeFi Ops", href: "/services/trading/defi", icon: Cpu },
+  {
+    label: "Options & Futures",
+    href: "/services/trading/options",
+    icon: TrendingUp,
+  },
+  { label: "Sports", href: "/services/trading/sports", icon: Trophy },
+  {
+    label: "Predictions",
+    href: "/services/trading/predictions",
+    icon: Lightbulb,
+  },
 ];
 
 // ── Observe (Risk / Ops) ─────────────────────────────────────────────────────
