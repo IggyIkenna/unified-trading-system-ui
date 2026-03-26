@@ -206,31 +206,40 @@ export function DataValidationTab({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             {gates.map((gate) => (
               <div
                 key={gate.id}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border",
+                  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
                   statusBg(gate.status),
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <StatusIcon status={gate.status} className="size-4" />
-                  <div>
-                    <span className="text-sm font-medium">{gate.label}</span>
-                    {gate.mandatory && (
-                      <Badge variant="outline" className="text-xs px-1 ml-2">
-                        Required
-                      </Badge>
-                    )}
+                <div className="flex min-w-0 items-start gap-2 sm:items-center">
+                  <StatusIcon
+                    status={gate.status}
+                    className="mt-0.5 size-4 shrink-0 sm:mt-0"
+                  />
+                  <div className="min-w-0 text-left">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="text-sm font-medium leading-snug">
+                        {gate.label}
+                      </span>
+                      {gate.mandatory && (
+                        <Badge variant="outline" className="px-1 text-xs">
+                          Required
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm font-mono">
-                  <span className="text-muted-foreground text-xs">
+                <div className="flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm">
+                  <span className="text-muted-foreground">
                     Threshold: {gate.threshold}
                   </span>
-                  <span className={statusColor(gate.status)}>
+                  <span
+                    className={cn("font-semibold", statusColor(gate.status))}
+                  >
                     {gate.actual}
                   </span>
                 </div>

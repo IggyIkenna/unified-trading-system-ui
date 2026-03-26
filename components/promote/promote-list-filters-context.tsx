@@ -4,6 +4,7 @@ import * as React from "react";
 import { usePromoteLifecycleStore } from "@/lib/stores/promote-lifecycle-store";
 import {
   DEFAULT_PAGE_SIZE,
+  getDefaultSubmittedDateRange,
   readPromoteListFiltersFromStorage,
   writePromoteListFiltersToStorage,
 } from "./promote-list-filters-storage";
@@ -66,12 +67,14 @@ export function PromoteListFiltersProvider({
   const [submitterQ, setSubmitterQ] = React.useState(
     () => stored.submitterQ ?? "",
   );
-  const [submittedFrom, setSubmittedFrom] = React.useState(
-    () => stored.submittedFrom ?? "",
-  );
-  const [submittedTo, setSubmittedTo] = React.useState(
-    () => stored.submittedTo ?? "",
-  );
+  const [submittedFrom, setSubmittedFrom] = React.useState(() => {
+    if (stored.submittedFrom !== undefined) return stored.submittedFrom;
+    return getDefaultSubmittedDateRange().submittedFrom;
+  });
+  const [submittedTo, setSubmittedTo] = React.useState(() => {
+    if (stored.submittedTo !== undefined) return stored.submittedTo;
+    return getDefaultSubmittedDateRange().submittedTo;
+  });
   const [listPage, setListPage] = React.useState(() =>
     Math.max(1, Number(stored.listPage) || 1),
   );

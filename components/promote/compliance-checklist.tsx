@@ -65,7 +65,7 @@ export function ComplianceChecklist({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           {checklistRows.map((row, i) => {
             const st: GateStatus = row.complete ? "passed" : "pending";
             const itemDate = new Date(baseDate);
@@ -76,15 +76,15 @@ export function ComplianceChecklist({
               <div
                 key={row.label}
                 className={cn(
-                  "flex items-center justify-between p-2.5 rounded-lg border text-xs",
+                  "flex min-w-0 items-center justify-between gap-2 rounded-lg border p-2.5 text-xs",
                   statusBg(st),
                 )}
               >
-                <div className="flex items-center gap-2">
-                  <StatusIcon status={st} className="size-3.5" />
-                  <span>{row.label}</span>
+                <div className="flex min-w-0 items-center gap-2">
+                  <StatusIcon status={st} className="size-3.5 shrink-0" />
+                  <span className="leading-snug">{row.label}</span>
                 </div>
-                <span className="text-xs text-muted-foreground font-mono">
+                <span className="shrink-0 font-mono text-[10px] text-muted-foreground sm:text-xs">
                   {dateStr}
                 </span>
               </div>

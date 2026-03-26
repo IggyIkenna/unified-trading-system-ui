@@ -58,6 +58,25 @@ interface ServiceTabsProps {
   className?: string;
   /** When `"end"`, tab links align to the right (e.g. promote detail toolbar). */
   tabsAlign?: "start" | "end";
+  /** When true, tabs share full row width equally (each tab flex-1, centered). */
+  tabsSpread?: boolean;
+}
+
+function TabLabel({ tab, spread }: { tab: ServiceTab; spread: boolean }) {
+  const Icon = tab.icon;
+  return (
+    <span
+      className={cn(
+        "inline-flex min-w-0 items-center gap-1.5",
+        spread && "max-w-full justify-center",
+      )}
+    >
+      {Icon ? (
+        <Icon className="size-3.5 shrink-0 opacity-90" aria-hidden />
+      ) : null}
+      <span className={cn(spread && "truncate")}>{tab.label}</span>
+    </span>
+  );
 }
 
 export function ServiceTabs({
@@ -66,10 +85,15 @@ export function ServiceTabs({
   entitlements,
   className,
   tabsAlign = "start",
+  tabsSpread = false,
 }: ServiceTabsProps) {
   const pathname = usePathname() || "";
   const hasWildcard = entitlements?.includes("*") ?? true;
-  const alignEnd = tabsAlign === "end";
+  const alignEnd = tabsAlign === "end" && !tabsSpread;
+
+  const tabItemClass = tabsSpread
+    ? "flex min-w-0 flex-1 basis-0 items-center justify-center px-1.5 py-2 sm:px-2"
+    : "inline-flex items-center gap-1.5 px-3 py-2 whitespace-nowrap";
 
   return (
     <div className={cn("border-b border-border bg-card/30", className)}>
@@ -77,13 +101,16 @@ export function ServiceTabs({
         className={cn(
           "flex items-center gap-2 px-4 sm:px-6",
           alignEnd && !rightSlot && "justify-end",
-          (!alignEnd || rightSlot) && "justify-between",
+          (!alignEnd || rightSlot) && !tabsSpread && "justify-between",
+          tabsSpread && !rightSlot && "min-w-0",
         )}
       >
         <nav
           className={cn(
             "flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]",
             alignEnd && "justify-end",
+            tabsSpread &&
+              "min-w-0 w-full flex-1 justify-stretch gap-0.5 sm:gap-1",
           )}
           aria-label="Service sections"
         >
@@ -101,11 +128,14 @@ export function ServiceTabs({
               return (
                 <span
                   key={tab.href}
-                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground/40 cursor-not-allowed"
+                  className={cn(
+                    tabItemClass,
+                    "flex items-center gap-1 text-sm font-medium border-b-2 border-transparent text-muted-foreground/40 cursor-not-allowed",
+                  )}
                   title={`Upgrade to access ${tab.label}`}
                 >
-                  {tab.label}
-                  <Lock className="size-3" />
+                  <TabLabel tab={tab} spread={tabsSpread} />
+                  <Lock className="size-3 shrink-0" />
                 </span>
               );
             }
@@ -114,10 +144,13 @@ export function ServiceTabs({
               return (
                 <span
                   key={tab.href}
-                  className="flex items-center gap-1 px-3 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground/40 cursor-not-allowed whitespace-nowrap"
+                  className={cn(
+                    tabItemClass,
+                    "flex items-center gap-1 text-sm font-medium border-b-2 border-transparent text-muted-foreground/40 cursor-not-allowed",
+                  )}
                   title={tab.navDisabledTitle ?? "Not available"}
                 >
-                  {tab.label}
+                  <TabLabel tab={tab} spread={tabsSpread} />
                   <Lock className="size-3 shrink-0" />
                 </span>
               );
@@ -128,13 +161,14 @@ export function ServiceTabs({
                 key={tab.href}
                 href={tab.href}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                  tabItemClass,
+                  "text-sm font-medium border-b-2 transition-colors",
                   isActive
                     ? "border-primary text-primary"
                     : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
                 )}
               >
-                {tab.label}
+                <TabLabel tab={tab} spread={tabsSpread} />
               </Link>
             );
           })}

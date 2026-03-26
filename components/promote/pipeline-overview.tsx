@@ -26,12 +26,7 @@ import {
 } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import { STAGE_META } from "./stage-meta";
-import type { CandidateStrategy, PromotionStage } from "./types";
-import { STAGE_ORDER } from "./types";
-
-function stagePassed(c: CandidateStrategy, s: PromotionStage) {
-  return c.stages[s].status === "passed";
-}
+import type { CandidateStrategy } from "./types";
 
 export function PipelineOverview({
   selectedId,
@@ -43,17 +38,6 @@ export function PipelineOverview({
   const { filtered, candidates } = usePromoteListFilters();
 
   const pipelineDerived = React.useMemo(() => {
-    const n = candidates.length || 1;
-    const conversion = {} as Record<PromotionStage, number>;
-    STAGE_ORDER.forEach((stage, idx) => {
-      const denom =
-        idx === 0
-          ? n
-          : candidates.filter((c) => stagePassed(c, STAGE_ORDER[idx - 1]!))
-              .length;
-      const num = candidates.filter((c) => stagePassed(c, stage)).length;
-      conversion[stage] = denom > 0 ? Math.round((num / denom) * 100) : 0;
-    });
     const dwells = candidates.map((c) => c.daysInCurrentStage ?? 0);
     const avgDwell = dwells.length
       ? dwells.reduce((a, b) => a + b, 0) / dwells.length
@@ -67,14 +51,14 @@ export function PipelineOverview({
       ? modelRisk.reduce((s, c) => s + (c.daysInCurrentStage ?? 0), 0) /
         modelRisk.length
       : avgDwell;
-    return { conversion, avgDwell, velocityDays };
+    return { avgDwell, velocityDays };
   }, [candidates]);
 
-  const pipelineCounts = STAGE_ORDER.map((stage) => ({
-    stage,
-    count: filtered.filter((c) => c.currentStage === stage).length,
-    ...STAGE_META[stage],
-  }));
+  const avgMaxDrawdown =
+    filtered.length === 0
+      ? 0
+      : filtered.reduce((s, c) => s + c.metrics.maxDrawdown, 0) /
+        filtered.length;
 
   const totalPassed = candidates.filter(
     (c) => c.stages.governance.status === "passed",
@@ -91,80 +75,62 @@ export function PipelineOverview({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col 2xl:flex-row gap-3 rounded-lg border border-border bg-card/30 p-3">
-        <div className="grid grid-cols-3 md:grid-cols-6 2xl:grid-cols-6 gap-0 flex-1">
-          {pipelineCounts.map((p) => {
-            const Icon = p.icon;
-            return (
-              <div
-                key={p.stage}
-                className="border-l-2 border-primary/20 pl-3 pr-2 py-2 first:border-l-0 first:pl-0"
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <Icon className="size-3.5 text-muted-foreground shrink-0" />
-                  <span className="text-sm font-medium leading-tight truncate">
-                    {p.label}
-                  </span>
-                </div>
-                <div className="text-2xl font-bold font-mono">{p.count}</div>
-                <div className="flex items-center justify-between text-xs font-mono text-muted-foreground mt-1">
-                  <span>Conv</span>
-                  <span className="text-cyan-400/90">
-                    {pipelineDerived.conversion[p.stage]}%
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+      <div className="grid grid-cols-2 gap-0 rounded-lg border border-border bg-card/30 p-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center first:border-l-0">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">
+            Avg Sharpe
+          </p>
+          <p className="mt-1 font-mono text-2xl font-bold">
+            {fmtNum(
+              filtered.reduce((s, c) => s + c.metrics.sharpe, 0) /
+                (filtered.length || 1),
+            )}
+          </p>
         </div>
-
-        <div className="hidden 2xl:block w-px bg-border self-stretch" />
-        <div className="block 2xl:hidden h-px bg-border" />
-
-        <div className="grid grid-cols-3 md:grid-cols-5 2xl:grid-cols-5 gap-0 flex-shrink-0">
-          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2 first:border-l-0 first:pl-0">
-            <p className="text-sm uppercase tracking-wider text-muted-foreground">
-              In Pipeline
-            </p>
-            <p className="text-2xl font-bold font-mono mt-1">
-              {filtered.length}
-            </p>
-          </div>
-          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
-            <p className="text-sm uppercase tracking-wider text-muted-foreground">
-              Avg Sharpe
-            </p>
-            <p className="text-2xl font-bold font-mono mt-1">
-              {fmtNum(
-                filtered.reduce((s, c) => s + c.metrics.sharpe, 0) /
-                  (filtered.length || 1),
-              )}
-            </p>
-          </div>
-          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
-            <p className="text-sm uppercase tracking-wider text-muted-foreground">
-              Avg Dwell
-            </p>
-            <p className="text-2xl font-bold font-mono mt-1 text-cyan-400">
-              {fmtNum(pipelineDerived.avgDwell, 1)}d
-            </p>
-          </div>
-          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
-            <p className="text-sm uppercase tracking-wider text-muted-foreground">
-              Velocity
-            </p>
-            <p className="text-2xl font-bold font-mono mt-1">
-              {fmtNum(pipelineDerived.velocityDays, 1)}d
-            </p>
-          </div>
-          <div className="border-l-2 border-cyan-500/20 pl-3 pr-2 py-2">
-            <p className="text-sm uppercase tracking-wider text-muted-foreground">
-              Approved 30d
-            </p>
-            <p className="text-2xl font-bold font-mono mt-1 text-emerald-400">
-              {totalPassed + HISTORICAL_APPROVALS_30D}
-            </p>
-          </div>
+        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">
+            Avg max DD
+          </p>
+          <p className="mt-1 font-mono text-2xl font-bold text-rose-400/90">
+            {fmtPct(avgMaxDrawdown)}
+          </p>
+        </div>
+        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">
+            Velocity
+          </p>
+          <p className="mt-1 font-mono text-2xl font-bold">
+            {fmtNum(pipelineDerived.velocityDays, 1)}d
+          </p>
+        </div>
+        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">
+            Approved 30d
+          </p>
+          <p className="mt-1 font-mono text-2xl font-bold text-emerald-400">
+            {totalPassed + HISTORICAL_APPROVALS_30D}
+          </p>
+        </div>
+        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">
+            In cohort
+          </p>
+          <p className="mt-1 font-mono text-2xl font-bold text-cyan-400/90">
+            {filtered.length}
+          </p>
+        </div>
+        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
+          <p className="text-sm uppercase tracking-wider text-muted-foreground">
+            Past SLA
+          </p>
+          <p
+            className={cn(
+              "mt-1 font-mono text-2xl font-bold",
+              slaBreaches > 0 ? "text-rose-400" : "text-muted-foreground",
+            )}
+          >
+            {slaBreaches}
+          </p>
         </div>
       </div>
 

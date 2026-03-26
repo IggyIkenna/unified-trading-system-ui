@@ -9,9 +9,157 @@ import { PortfolioImpactPanel } from "./portfolio-impact-panel";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy, GateStatus } from "./types";
 
+type RiskMetricCard = {
+  label: string;
+  value: string;
+  color?: string;
+  hint?: string;
+};
+
 export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
   const risk = strategy.riskProfile;
   const m = strategy.metrics;
+
+  const stressPassed = risk.stressScenarios.filter(
+    (s) => s.status === "passed",
+  ).length;
+  const stressTotal = risk.stressScenarios.length;
+  const maxStressImpact =
+    risk.stressScenarios.length > 0
+      ? Math.min(...risk.stressScenarios.map((s) => s.impact))
+      : 0;
+
+  const row1Metrics: RiskMetricCard[] = [
+    {
+      label: "Daily VaR (95%)",
+      value: fmtPct(m.dailyVaR),
+      color: "text-rose-400",
+    },
+    {
+      label: "CVaR (99%)",
+      value: fmtPct(m.cvar),
+      color: "text-rose-400",
+    },
+    {
+      label: "Tail Ratio",
+      value: fmtNum(m.tailRatio),
+      color: m.tailRatio >= 1.2 ? "text-emerald-400" : "text-amber-400",
+    },
+    {
+      label: "Worst Day",
+      value: fmtPct(risk.worstDay),
+      color: "text-rose-400",
+    },
+    {
+      label: "Worst Week",
+      value: fmtPct(risk.worstWeek),
+      color: "text-rose-400",
+    },
+    {
+      label: "Worst Month",
+      value: fmtPct(risk.worstMonth),
+      color: "text-rose-400",
+    },
+  ];
+
+  const row2Metrics: RiskMetricCard[] = [
+    {
+      label: "Correlation",
+      value: fmtNum(risk.correlationToPortfolio),
+      color:
+        risk.correlationToPortfolio <= 0.2
+          ? "text-emerald-400"
+          : risk.correlationToPortfolio <= 0.4
+            ? "text-amber-400"
+            : "text-rose-400",
+      hint:
+        risk.correlationToPortfolio <= 0.2
+          ? "Low — strong diversifier"
+          : "Moderate vs portfolio",
+    },
+    {
+      label: "Concentration",
+      value: fmtPct(risk.concentrationRisk),
+      color:
+        risk.concentrationRisk <= 0.15 ? "text-emerald-400" : "text-amber-400",
+      hint: "Max single-name exposure",
+    },
+    {
+      label: "Liquidity",
+      value: `${risk.liquidityScore}`,
+      color: risk.liquidityScore >= 90 ? "text-emerald-400" : "text-amber-400",
+      hint: "Exit capacity vs SLA",
+    },
+    {
+      label: "Stress pass",
+      value: `${stressPassed}/${stressTotal}`,
+      color:
+        stressPassed === stressTotal
+          ? "text-emerald-400"
+          : stressPassed > 0
+            ? "text-amber-400"
+            : "text-rose-400",
+      hint: "Scenarios within tolerance",
+    },
+    {
+      label: "Max stress",
+      value: fmtPct(maxStressImpact),
+      color: "text-rose-400",
+      hint: "Worst scenario P&L",
+    },
+    {
+      label: "Win / loss",
+      value: fmtNum(m.winLossRatio),
+      color: m.winLossRatio >= 1.2 ? "text-emerald-400" : "text-amber-400",
+      hint: "Avg win ÷ avg loss",
+    },
+  ];
+
+  const riskGates: {
+    label: string;
+    status: GateStatus;
+    actual: string;
+    threshold: string;
+  }[] = [
+    {
+      label: "Daily VaR within limit (≤ 3%)",
+      status: (Math.abs(m.dailyVaR) <= 0.03
+        ? "passed"
+        : "failed") as GateStatus,
+      actual: fmtPct(m.dailyVaR),
+      threshold: "≤ 3%",
+    },
+    {
+      label: "CVaR within limit (≤ 5%)",
+      status: (Math.abs(m.cvar) <= 0.05 ? "passed" : "failed") as GateStatus,
+      actual: fmtPct(m.cvar),
+      threshold: "≤ 5%",
+    },
+    {
+      label: "All stress scenarios within tolerance",
+      status: (risk.stressScenarios.every((s) => s.status === "passed")
+        ? "passed"
+        : risk.stressScenarios.some((s) => s.status === "failed")
+          ? "failed"
+          : "pending") as GateStatus,
+      actual: `${stressPassed}/${stressTotal}`,
+      threshold: "All passed",
+    },
+    {
+      label: "Portfolio correlation acceptable",
+      status: (risk.correlationToPortfolio <= 0.4
+        ? "passed"
+        : "failed") as GateStatus,
+      actual: fmtNum(risk.correlationToPortfolio),
+      threshold: "≤ 0.40",
+    },
+    {
+      label: "Liquidity score above minimum",
+      status: (risk.liquidityScore >= 80 ? "passed" : "failed") as GateStatus,
+      actual: `${risk.liquidityScore}`,
+      threshold: "≥ 80",
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -32,147 +180,64 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
         </Badge>
       </div>
 
-      <div className="grid grid-cols-6 gap-3">
-        {[
-          {
-            label: "Daily VaR (95%)",
-            value: fmtPct(m.dailyVaR),
-            color: "text-rose-400",
-          },
-          {
-            label: "CVaR (99%)",
-            value: fmtPct(m.cvar),
-            color: "text-rose-400",
-          },
-          {
-            label: "Tail Ratio",
-            value: fmtNum(m.tailRatio),
-            color: m.tailRatio >= 1.2 ? "text-emerald-400" : "text-amber-400",
-          },
-          {
-            label: "Worst Day",
-            value: fmtPct(risk.worstDay),
-            color: "text-rose-400",
-          },
-          {
-            label: "Worst Week",
-            value: fmtPct(risk.worstWeek),
-            color: "text-rose-400",
-          },
-          {
-            label: "Worst Month",
-            value: fmtPct(risk.worstMonth),
-            color: "text-rose-400",
-          },
-        ].map((item) => (
-          <Card key={item.label}>
-            <CardContent className="pt-4 pb-3">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+        {[...row1Metrics, ...row2Metrics].map((item) => (
+          <Card key={item.label} className="flex min-h-0 min-w-0 shadow-sm">
+            <CardContent className="flex min-h-[6.5rem] flex-1 flex-col justify-center px-3 py-2.5 text-center">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground sm:text-sm">
                 {item.label}
               </p>
-              <p className={cn("text-xl font-bold font-mono mt-1", item.color)}>
+              <p
+                className={cn(
+                  "mt-1 break-words font-mono text-xl font-bold leading-tight sm:text-2xl",
+                  item.color,
+                )}
+              >
                 {item.value}
               </p>
+              {item.hint ? (
+                <p className="mt-1.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground sm:text-xs">
+                  {item.hint}
+                </p>
+              ) : null}
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Correlation to Portfolio
-            </p>
-            <p
-              className={cn(
-                "text-2xl font-bold font-mono mt-1",
-                risk.correlationToPortfolio <= 0.2
-                  ? "text-emerald-400"
-                  : risk.correlationToPortfolio <= 0.4
-                    ? "text-amber-400"
-                    : "text-rose-400",
-              )}
-            >
-              {fmtNum(risk.correlationToPortfolio)}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {risk.correlationToPortfolio <= 0.2
-                ? "Low — excellent diversifier"
-                : "Moderate correlation"}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Concentration Risk
-            </p>
-            <p
-              className={cn(
-                "text-2xl font-bold font-mono mt-1",
-                risk.concentrationRisk <= 0.15
-                  ? "text-emerald-400"
-                  : "text-amber-400",
-              )}
-            >
-              {fmtPct(risk.concentrationRisk)}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Max single-name exposure
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Liquidity Score
-            </p>
-            <p
-              className={cn(
-                "text-2xl font-bold font-mono mt-1",
-                risk.liquidityScore >= 90
-                  ? "text-emerald-400"
-                  : "text-amber-400",
-              )}
-            >
-              {risk.liquidityScore}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Ability to exit within SLA
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-sm">
             <AlertTriangle className="size-4" />
             Historical Stress Scenarios
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             {risk.stressScenarios.map((scenario) => (
               <div
                 key={scenario.name}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border",
+                  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
                   statusBg(scenario.status),
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <StatusIcon status={scenario.status} className="size-4" />
-                  <span className="text-sm font-medium">{scenario.name}</span>
+                <div className="flex min-w-0 items-start gap-2 sm:items-center">
+                  <StatusIcon
+                    status={scenario.status}
+                    className="mt-0.5 size-4 shrink-0 sm:mt-0"
+                  />
+                  <span className="text-sm font-medium leading-snug">
+                    {scenario.name}
+                  </span>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-mono text-rose-400">
+                <div className="flex shrink-0 flex-col gap-1.5 sm:items-end sm:text-right">
+                  <span className="font-mono text-sm text-rose-400">
                     {fmtPct(scenario.impact)}
                   </span>
                   <Badge
                     variant="outline"
-                    className={cn("text-xs", statusBg(scenario.status))}
+                    className={cn("w-fit text-xs", statusBg(scenario.status))}
                   >
                     {scenario.status}
                   </Badge>
@@ -188,69 +253,31 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
           <CardTitle className="text-sm">Risk Gate Summary</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {[
-              {
-                label: "Daily VaR within limit (≤ 3%)",
-                status: (Math.abs(m.dailyVaR) <= 0.03
-                  ? "passed"
-                  : "failed") as GateStatus,
-                actual: fmtPct(m.dailyVaR),
-                threshold: "≤ 3%",
-              },
-              {
-                label: "CVaR within limit (≤ 5%)",
-                status: (Math.abs(m.cvar) <= 0.05
-                  ? "passed"
-                  : "failed") as GateStatus,
-                actual: fmtPct(m.cvar),
-                threshold: "≤ 5%",
-              },
-              {
-                label: "All stress scenarios within tolerance",
-                status: (risk.stressScenarios.every(
-                  (s) => s.status === "passed",
-                )
-                  ? "passed"
-                  : risk.stressScenarios.some((s) => s.status === "failed")
-                    ? "failed"
-                    : "pending") as GateStatus,
-                actual: `${risk.stressScenarios.filter((s) => s.status === "passed").length}/${risk.stressScenarios.length}`,
-                threshold: "All passed",
-              },
-              {
-                label: "Portfolio correlation acceptable",
-                status: (risk.correlationToPortfolio <= 0.4
-                  ? "passed"
-                  : "failed") as GateStatus,
-                actual: fmtNum(risk.correlationToPortfolio),
-                threshold: "≤ 0.40",
-              },
-              {
-                label: "Liquidity score above minimum",
-                status: (risk.liquidityScore >= 80
-                  ? "passed"
-                  : "failed") as GateStatus,
-                actual: `${risk.liquidityScore}`,
-                threshold: "≥ 80",
-              },
-            ].map((gate) => (
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            {riskGates.map((gate) => (
               <div
                 key={gate.label}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border",
+                  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
                   statusBg(gate.status),
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <StatusIcon status={gate.status} className="size-4" />
-                  <span className="text-sm font-medium">{gate.label}</span>
-                </div>
-                <div className="flex items-center gap-4 text-sm font-mono">
-                  <span className="text-muted-foreground text-xs">
-                    {gate.threshold}
+                <div className="flex min-w-0 items-start gap-2 sm:items-center">
+                  <StatusIcon
+                    status={gate.status}
+                    className="mt-0.5 size-4 shrink-0 sm:mt-0"
+                  />
+                  <span className="text-sm font-medium leading-snug">
+                    {gate.label}
                   </span>
-                  <span className={statusColor(gate.status)}>
+                </div>
+                <div className="flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm">
+                  <span className="text-muted-foreground">
+                    Threshold: {gate.threshold}
+                  </span>
+                  <span
+                    className={cn("font-semibold", statusColor(gate.status))}
+                  >
                     {gate.actual}
                   </span>
                 </div>

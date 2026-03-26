@@ -156,7 +156,7 @@ export function ModelAssessmentTab({
         </Badge>
       </div>
 
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {[
           {
             label: "IC",
@@ -177,23 +177,30 @@ export function ModelAssessmentTab({
             color:
               ml.oosPerformance >= 0.8 ? "text-emerald-400" : "text-amber-400",
           },
+          {
+            label: "F1",
+            value: fmtNum(ml.f1),
+            color: ml.f1 >= 0.6 ? "text-emerald-400" : "text-amber-400",
+          },
           { label: "Features", value: `${ml.featureCount}`, color: "" },
           { label: "Training", value: ml.trainingPeriod, color: "" },
         ].map((item) => (
-          <Card key={item.label}>
-            <CardContent className="pt-4 pb-3">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+          <Card key={item.label} className="flex min-h-0 min-w-0 shadow-sm">
+            <CardContent className="flex min-h-[5.25rem] flex-1 flex-col justify-center px-3 py-2.5 text-center">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground sm:text-sm">
                 {item.label}
               </p>
-              <p className={cn("text-lg font-bold font-mono mt-1", item.color)}>
+              <p
+                className={cn(
+                  "mt-1 break-words font-mono text-xl font-bold leading-tight sm:text-2xl",
+                  item.color,
+                )}
+              >
                 {item.value}
               </p>
             </CardContent>
           </Card>
         ))}
-      </div>
-
-      <div className="grid grid-cols-6 gap-3">
         {[
           { label: "Sharpe", value: fmtNum(m.sharpe) },
           { label: "Sortino", value: fmtNum(m.sortino) },
@@ -210,12 +217,17 @@ export function ModelAssessmentTab({
           },
           { label: "Profit Factor", value: fmtNum(m.profitFactor) },
         ].map((item) => (
-          <Card key={item.label}>
-            <CardContent className="pt-4 pb-3">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
+          <Card key={item.label} className="flex min-h-0 min-w-0 shadow-sm">
+            <CardContent className="flex min-h-[5.25rem] flex-1 flex-col justify-center px-3 py-2.5 text-center">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground sm:text-sm">
                 {item.label}
               </p>
-              <p className={cn("text-xl font-bold font-mono mt-1", item.color)}>
+              <p
+                className={cn(
+                  "mt-1 break-words font-mono text-xl font-bold leading-tight sm:text-2xl",
+                  item.color,
+                )}
+              >
                 {item.value}
               </p>
             </CardContent>
@@ -229,28 +241,35 @@ export function ModelAssessmentTab({
             <CardTitle className="text-sm">{category}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
               {gates.map((gate) => (
                 <div
                   key={gate.id}
                   className={cn(
-                    "flex items-center justify-between p-3 rounded-lg border",
+                    "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
                     statusBg(gate.status),
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <StatusIcon status={gate.status} className="size-4" />
-                    <div>
-                      <span className="text-sm font-medium">{gate.label}</span>
-                      {gate.mandatory && (
-                        <Badge variant="outline" className="text-xs px-1 ml-2">
-                          Required
-                        </Badge>
-                      )}
+                  <div className="flex min-w-0 items-start gap-2 sm:items-center">
+                    <StatusIcon
+                      status={gate.status}
+                      className="mt-0.5 size-4 shrink-0 sm:mt-0"
+                    />
+                    <div className="min-w-0 text-left">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className="text-sm font-medium leading-snug">
+                          {gate.label}
+                        </span>
+                        {gate.mandatory && (
+                          <Badge variant="outline" className="px-1 text-xs">
+                            Required
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-sm font-mono">
-                    <span className="text-muted-foreground text-xs">
+                  <div className="flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm">
+                    <span className="text-muted-foreground">
                       Threshold: {gate.threshold}
                     </span>
                     <span

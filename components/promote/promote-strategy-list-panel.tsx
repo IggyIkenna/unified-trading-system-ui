@@ -18,8 +18,8 @@ import { STAGE_ORDER } from "@/components/promote/types";
 import { usePromoteLifecycleStore } from "@/lib/stores/promote-lifecycle-store";
 import { cn } from "@/lib/utils";
 
-const SELECT_ROW =
-  "mt-0.5 h-8 w-full rounded-md border border-border bg-background px-2 text-xs font-mono";
+const FILTER_SELECT =
+  "mt-0.5 h-7 w-full min-w-0 rounded-md border border-border bg-background px-2 text-[11px] font-mono";
 
 const PAGE_SIZE_OPTIONS = [10, 15, 25, 50] as const;
 
@@ -75,9 +75,6 @@ export function PromoteStrategyListPanel({
     return rows;
   }, [cohortWithoutStageFilter]);
 
-  const rangeStart = filtered.length === 0 ? 0 : (listPage - 1) * pageSize + 1;
-  const rangeEnd = Math.min(listPage * pageSize, filtered.length);
-
   return (
     <div className={cn("flex h-full min-h-0 flex-col gap-2", className)}>
       <div
@@ -87,7 +84,8 @@ export function PromoteStrategyListPanel({
           "lg:sticky lg:top-2",
         )}
       >
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <div className="grid w-full grid-cols-1 gap-x-2 gap-y-2 sm:grid-cols-[minmax(0,3fr)_minmax(0,3fr)_minmax(0,3fr)_minmax(0,1fr)]">
+          {/* Row 1: stage | asset | archetype | prev/next */}
           <div className="min-w-0">
             <Label
               htmlFor="promote-stage-filter"
@@ -97,7 +95,7 @@ export function PromoteStrategyListPanel({
             </Label>
             <select
               id="promote-stage-filter"
-              className={SELECT_ROW}
+              className={FILTER_SELECT}
               value={stageFilter}
               onChange={(e) => setStageFilter(e.target.value)}
               aria-label="Filter by stage"
@@ -118,7 +116,7 @@ export function PromoteStrategyListPanel({
             </Label>
             <select
               id="promote-asset-filter"
-              className={SELECT_ROW}
+              className={FILTER_SELECT}
               value={asset}
               onChange={(e) => setAsset(e.target.value)}
               aria-label="Asset class"
@@ -139,7 +137,7 @@ export function PromoteStrategyListPanel({
             </Label>
             <select
               id="promote-archetype-filter"
-              className={SELECT_ROW}
+              className={FILTER_SELECT}
               value={archetype}
               onChange={(e) => setArchetype(e.target.value)}
               aria-label="Archetype"
@@ -151,10 +149,43 @@ export function PromoteStrategyListPanel({
               ))}
             </select>
           </div>
-        </div>
+          <div className="flex min-w-0 flex-col justify-end">
+            <span
+              className="text-[10px] uppercase leading-none tracking-wide text-transparent select-none"
+              aria-hidden
+            >
+              ·
+            </span>
+            <div className="mt-0.5 flex h-7 items-center justify-center gap-0.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-7 w-7 shrink-0"
+                disabled={listPage <= 1}
+                onClick={() => setListPage((p) => Math.max(1, p - 1))}
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="size-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-7 w-7 shrink-0"
+                disabled={listPage >= listTotalPages}
+                onClick={() =>
+                  setListPage((p) => Math.min(listTotalPages, p + 1))
+                }
+                aria-label="Next page"
+              >
+                <ChevronRight className="size-3.5" />
+              </Button>
+            </div>
+          </div>
 
-        <div className="flex flex-wrap items-end gap-x-2 gap-y-2">
-          <div className="min-w-[6.5rem] max-w-full flex-[1_1_8rem]">
+          {/* Row 2: search | from | to | page / size */}
+          <div className="min-w-0">
             <Label
               htmlFor="promote-submitter-filter"
               className="text-[10px] uppercase tracking-wide text-muted-foreground"
@@ -163,13 +194,13 @@ export function PromoteStrategyListPanel({
             </Label>
             <Input
               id="promote-submitter-filter"
-              className="mt-0.5 h-8 text-xs font-mono"
+              className="mt-0.5 h-7 w-full px-2 text-[11px] font-mono"
               placeholder="Name…"
               value={submitterQ}
               onChange={(e) => setSubmitterQ(e.target.value)}
             />
           </div>
-          <div className="w-[8.5rem] shrink-0">
+          <div className="min-w-0">
             <Label
               htmlFor="promote-from-date"
               className="text-[10px] uppercase tracking-wide text-muted-foreground"
@@ -179,12 +210,12 @@ export function PromoteStrategyListPanel({
             <Input
               id="promote-from-date"
               type="date"
-              className="mt-0.5 h-8 text-[11px] font-mono"
+              className="mt-0.5 h-7 w-full min-w-0 text-[11px] font-mono"
               value={submittedFrom}
               onChange={(e) => setSubmittedFrom(e.target.value)}
             />
           </div>
-          <div className="w-[8.5rem] shrink-0">
+          <div className="min-w-0">
             <Label
               htmlFor="promote-to-date"
               className="text-[10px] uppercase tracking-wide text-muted-foreground"
@@ -194,56 +225,37 @@ export function PromoteStrategyListPanel({
             <Input
               id="promote-to-date"
               type="date"
-              className="mt-0.5 h-8 text-[11px] font-mono"
+              className="mt-0.5 h-7 w-full min-w-0 text-[11px] font-mono"
               value={submittedTo}
               onChange={(e) => setSubmittedTo(e.target.value)}
             />
           </div>
-          <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-1">
-            <span className="mr-1 hidden text-[10px] tabular-nums text-muted-foreground sm:inline">
-              {filtered.length === 0
-                ? "0"
-                : `${rangeStart}–${rangeEnd} / ${filtered.length}`}
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-7 w-7"
-              disabled={listPage <= 1}
-              onClick={() => setListPage((p) => Math.max(1, p - 1))}
-              aria-label="Previous page"
+          <div className="min-w-0">
+            <Label
+              htmlFor="promote-page-size"
+              className="text-[10px] uppercase tracking-wide text-muted-foreground"
             >
-              <ChevronLeft className="size-3.5" />
-            </Button>
-            <span className="min-w-[2.75rem] text-center font-mono text-[10px] tabular-nums text-muted-foreground">
-              {listPage}/{listTotalPages}
-            </span>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="h-7 w-7"
-              disabled={listPage >= listTotalPages}
-              onClick={() =>
-                setListPage((p) => Math.min(listTotalPages, p + 1))
-              }
-              aria-label="Next page"
-            >
-              <ChevronRight className="size-3.5" />
-            </Button>
-            <select
-              className="h-7 rounded-md border border-border bg-background px-1 font-mono text-[10px]"
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              aria-label="Strategies per page"
-            >
-              {PAGE_SIZE_OPTIONS.map((n) => (
-                <option key={n} value={n}>
-                  {n}/pg
-                </option>
-              ))}
-            </select>
+              Page
+            </Label>
+            <div className="mt-0.5 flex h-7 min-w-0 items-center justify-center gap-0.5">
+              <span className="shrink-0 text-center font-mono text-[10px] tabular-nums text-muted-foreground">
+                {listPage}/{listTotalPages}
+              </span>
+              <select
+                id="promote-page-size"
+                className="h-7 w-9 max-w-full shrink-0 rounded-md border border-border bg-background py-0 pl-0.5 pr-0 text-center font-mono text-[10px] tabular-nums sm:w-10"
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+                aria-label="Strategies per page"
+                title="Strategies per page"
+              >
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>

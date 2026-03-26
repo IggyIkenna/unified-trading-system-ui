@@ -5,11 +5,8 @@ import {
   AlertTriangle,
   Check,
   CheckCircle2,
-  ChevronRight,
   Clock,
   History,
-  Layers,
-  Lock,
   Rocket,
   TestTube,
   Users,
@@ -109,86 +106,32 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Layers className="size-4" />
-            Stage Completion Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            {STAGE_ORDER.map((stage, idx) => {
-              const meta = STAGE_META[stage];
-              const Icon = meta.icon;
-              const s = strategy.stages[stage];
-              return (
-                <React.Fragment key={stage}>
-                  <div
-                    className={cn(
-                      "flex items-center gap-2 px-3 py-2 rounded-lg border",
-                      statusBg(s.status),
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "size-6 rounded-full flex items-center justify-center",
-                        s.status === "passed"
-                          ? "bg-emerald-500 text-white"
-                          : s.status === "pending"
-                            ? "bg-amber-500 text-white"
-                            : "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      {s.status === "passed" ? (
-                        <Check className="size-3.5" />
-                      ) : s.status === "not_started" ? (
-                        <Lock className="size-3" />
-                      ) : (
-                        <Icon className="size-3.5" />
-                      )}
-                    </div>
-                    <div className="text-left">
-                      <div className="text-xs font-medium">{meta.label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {s.status.replace("_", " ")}
-                      </div>
-                    </div>
-                  </div>
-                  {idx < STAGE_ORDER.length - 1 && (
-                    <ChevronRight className="size-4 text-muted-foreground shrink-0" />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
             <Users className="size-4" />
             Required Sign-offs ({signedCount}/{requiredSignoffs.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             {requiredSignoffs.map((signoff) => (
               <div
                 key={signoff.role}
                 className={cn(
-                  "flex items-center justify-between p-3 rounded-lg border",
+                  "flex min-w-0 items-center justify-between gap-2 rounded-lg border p-3",
                   signoff.signed
                     ? "bg-emerald-500/10 border-emerald-500/20"
                     : "bg-muted/20 border-border/50",
                 )}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 items-center gap-3">
                   {signoff.signed ? (
-                    <CheckCircle2 className="size-4 text-emerald-400" />
+                    <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
                   ) : (
-                    <Clock className="size-4 text-muted-foreground" />
+                    <Clock className="size-4 shrink-0 text-muted-foreground" />
                   )}
-                  <div>
-                    <p className="text-sm font-medium">{signoff.role}</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium leading-snug">
+                      {signoff.role}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {signoff.name}
                     </p>
@@ -196,11 +139,12 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                 </div>
                 <Badge
                   variant="outline"
-                  className={
+                  className={cn(
+                    "shrink-0",
                     signoff.signed
                       ? statusBg("passed")
-                      : "text-muted-foreground"
-                  }
+                      : "text-muted-foreground",
+                  )}
                 >
                   {signoff.signed ? "Signed" : "Pending"}
                 </Badge>
@@ -227,12 +171,12 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
               No reviews recorded yet
             </p>
           ) : (
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {[...strategy.reviewHistory].reverse().map((review) => (
                 <div
                   key={review.id}
                   className={cn(
-                    "flex gap-3 p-3 rounded-lg border",
+                    "flex min-w-0 gap-3 rounded-lg border p-3",
                     review.isOverride
                       ? "border-amber-500/50 bg-amber-500/5"
                       : "border-border/50",
@@ -240,7 +184,7 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                 >
                   <div
                     className={cn(
-                      "size-8 rounded-full flex items-center justify-center shrink-0",
+                      "flex size-8 shrink-0 items-center justify-center rounded-full",
                       review.decision === "approved"
                         ? "bg-emerald-500/15"
                         : review.decision === "rejected"
@@ -256,8 +200,8 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                       <Clock className="size-4 text-amber-400" />
                     )}
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="text-sm font-medium">
                         {review.reviewer}
                       </span>
@@ -287,14 +231,14 @@ export function GovernanceTab({ strategy }: { strategy: CandidateStrategy }) {
                           Override
                         </Badge>
                       ) : null}
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        {new Date(review.timestamp).toLocaleString()}
-                      </span>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {new Date(review.timestamp).toLocaleString()}
+                    </p>
+                    <p className="text-sm leading-snug text-muted-foreground">
                       {review.comment}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
+                    <p className="text-xs text-muted-foreground">
                       Stage: {STAGE_META[review.stage].label}
                     </p>
                   </div>

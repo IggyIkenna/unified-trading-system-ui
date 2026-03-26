@@ -1,14 +1,41 @@
 "use client";
 
 import * as React from "react";
+import {
+  Database,
+  FlaskConical,
+  LayoutDashboard,
+  Shield,
+  ShieldCheck,
+  TestTube,
+  Trophy,
+  Wallet,
+  Zap,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { ServiceTabs, type ServiceTab } from "@/components/shell/service-tabs";
 import { useAuth } from "@/hooks/use-auth";
-import { PROMOTE_LIFECYCLE_NAV } from "@/lib/config/services/promote.config";
+import {
+  PROMOTE_LIFECYCLE_NAV,
+  type PromoteLifecycleNavKey,
+} from "@/lib/config/services/promote.config";
 import {
   selectPromoteSelectedStrategy,
   usePromoteLifecycleStore,
 } from "@/lib/stores/promote-lifecycle-store";
 import { isPromoteStageLocked } from "@/components/promote/promote-stage-access";
+
+const PROMOTE_TAB_ICONS: Record<PromoteLifecycleNavKey, LucideIcon> = {
+  pipeline: LayoutDashboard,
+  data_validation: Database,
+  model_assessment: FlaskConical,
+  risk_stress: Shield,
+  execution_readiness: Zap,
+  champion: Trophy,
+  paper_trading: TestTube,
+  capital_allocation: Wallet,
+  governance: ShieldCheck,
+};
 
 export function PromoteLifecycleSubTabs() {
   const { user } = useAuth();
@@ -42,6 +69,7 @@ export function PromoteLifecycleSubTabs() {
         exact: def.key === "pipeline",
         navDisabled,
         navDisabledTitle,
+        icon: PROMOTE_TAB_ICONS[def.key],
       };
     });
   }, [selected]);
@@ -50,7 +78,7 @@ export function PromoteLifecycleSubTabs() {
     <ServiceTabs
       tabs={tabs}
       entitlements={user?.entitlements}
-      tabsAlign="end"
+      tabsSpread
       className="border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     />
   );

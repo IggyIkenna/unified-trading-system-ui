@@ -13,6 +13,28 @@ export type PromoteListFiltersStored = {
 
 const DEFAULT_PAGE_SIZE = 15;
 
+/** `YYYY-MM-DD` in the user's local calendar (avoids UTC day skew from `toISOString`). */
+function formatLocalYmd(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Default submitted-at window: last 7 days through today (local). */
+export function getDefaultSubmittedDateRange(): {
+  submittedFrom: string;
+  submittedTo: string;
+} {
+  const to = new Date();
+  const from = new Date(to);
+  from.setDate(from.getDate() - 7);
+  return {
+    submittedFrom: formatLocalYmd(from),
+    submittedTo: formatLocalYmd(to),
+  };
+}
+
 export function readPromoteListFiltersFromStorage(): Partial<PromoteListFiltersStored> {
   if (typeof window === "undefined") return {};
   try {
