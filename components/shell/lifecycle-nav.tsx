@@ -131,8 +131,8 @@ export function LifecycleNav({
     return true;
   };
 
-  // Stages hidden from nav — execution folded into Trading, observe folded into Trading tabs
-  const hiddenStages = new Set(["execute", "observe"]);
+  // Stages hidden from nav — execution folded into Trading
+  const hiddenStages = new Set(["execute"]);
 
   // Build nav items — keep locked items visible (except ops), mark them as locked
   const navItems = allNavItems
