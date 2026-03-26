@@ -1,8 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { GateCheckRow } from "@/components/shared/gate-check-row";
+import { MetricCard } from "@/components/shared/metric-card";
 import { FeatureStabilityPanel } from "./feature-stability-panel";
-import { fmtNum, fmtPct, statusBg, statusColor, StatusIcon } from "./helpers";
+import { fmtNum, fmtPct, statusBg } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import { RegimeAnalysisPanel } from "./regime-analysis-panel";
 import { WalkForwardPanel } from "./walk-forward-panel";
@@ -185,21 +186,14 @@ export function ModelAssessmentTab({
           { label: "Features", value: `${ml.featureCount}`, color: "" },
           { label: "Training", value: ml.trainingPeriod, color: "" },
         ].map((item) => (
-          <Card key={item.label} className="flex min-h-0 min-w-0 shadow-sm">
-            <CardContent className="flex min-h-[5.25rem] flex-1 flex-col justify-center px-3 py-2.5 text-center">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground sm:text-sm">
-                {item.label}
-              </p>
-              <p
-                className={cn(
-                  "mt-1 break-words font-mono text-xl font-bold leading-tight sm:text-2xl",
-                  item.color,
-                )}
-              >
-                {item.value}
-              </p>
-            </CardContent>
-          </Card>
+          <MetricCard
+            key={item.label}
+            tone="grid"
+            density="compact"
+            label={item.label}
+            primary={item.value}
+            primaryClassName={item.color}
+          />
         ))}
         {[
           { label: "Sharpe", value: fmtNum(m.sharpe) },
@@ -217,21 +211,14 @@ export function ModelAssessmentTab({
           },
           { label: "Profit Factor", value: fmtNum(m.profitFactor) },
         ].map((item) => (
-          <Card key={item.label} className="flex min-h-0 min-w-0 shadow-sm">
-            <CardContent className="flex min-h-[5.25rem] flex-1 flex-col justify-center px-3 py-2.5 text-center">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground sm:text-sm">
-                {item.label}
-              </p>
-              <p
-                className={cn(
-                  "mt-1 break-words font-mono text-xl font-bold leading-tight sm:text-2xl",
-                  item.color,
-                )}
-              >
-                {item.value}
-              </p>
-            </CardContent>
-          </Card>
+          <MetricCard
+            key={item.label}
+            tone="grid"
+            density="compact"
+            label={item.label}
+            primary={item.value}
+            primaryClassName={item.color}
+          />
         ))}
       </div>
 
@@ -243,42 +230,14 @@ export function ModelAssessmentTab({
           <CardContent>
             <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
               {gates.map((gate) => (
-                <div
+                <GateCheckRow
                   key={gate.id}
-                  className={cn(
-                    "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
-                    statusBg(gate.status),
-                  )}
-                >
-                  <div className="flex min-w-0 items-start gap-2 sm:items-center">
-                    <StatusIcon
-                      status={gate.status}
-                      className="mt-0.5 size-4 shrink-0 sm:mt-0"
-                    />
-                    <div className="min-w-0 text-left">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="text-sm font-medium leading-snug">
-                          {gate.label}
-                        </span>
-                        {gate.mandatory && (
-                          <Badge variant="outline" className="px-1 text-xs">
-                            Required
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm">
-                    <span className="text-muted-foreground">
-                      Threshold: {gate.threshold}
-                    </span>
-                    <span
-                      className={cn("font-semibold", statusColor(gate.status))}
-                    >
-                      {gate.actual}
-                    </span>
-                  </div>
-                </div>
+                  status={gate.status}
+                  title={gate.label}
+                  required={gate.mandatory}
+                  threshold={gate.threshold}
+                  actual={gate.actual}
+                />
               ))}
             </div>
           </CardContent>

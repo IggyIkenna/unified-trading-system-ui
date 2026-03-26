@@ -1,8 +1,9 @@
 import { ArrowRight, FileCheck, Layers } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { statusBg, statusColor, StatusIcon } from "./helpers";
+import { GateCheckRow } from "@/components/shared/gate-check-row";
+import { MetricCard } from "@/components/shared/metric-card";
+import { statusBg } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy, GateCheck } from "./types";
 
@@ -147,55 +148,41 @@ export function DataValidationTab({
       </div>
 
       <div className="grid grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Coverage
-            </p>
-            <p
-              className={cn(
-                "text-2xl font-bold font-mono mt-1",
-                dq.coverageScore >= 97 ? "text-emerald-400" : "text-amber-400",
-              )}
-            >
-              {dq.coverageScore}%
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Freshness
-            </p>
-            <p className="text-2xl font-bold font-mono mt-1">
-              {dq.freshnessMinutes}m
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Instruments
-            </p>
-            <p className="text-2xl font-bold font-mono mt-1">
-              {dq.instruments}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
-              Venues
-            </p>
-            <div className="flex flex-wrap gap-1 mt-1.5">
+        <MetricCard
+          tone="data"
+          density="default"
+          label="Coverage"
+          primary={`${dq.coverageScore}%`}
+          primaryClassName={
+            dq.coverageScore >= 97 ? "text-emerald-400" : "text-amber-400"
+          }
+        />
+        <MetricCard
+          tone="data"
+          density="default"
+          label="Freshness"
+          primary={`${dq.freshnessMinutes}m`}
+        />
+        <MetricCard
+          tone="data"
+          density="default"
+          label="Instruments"
+          primary={dq.instruments}
+        />
+        <MetricCard
+          tone="data"
+          density="default"
+          label="Venues"
+          body={
+            <div className="flex max-w-full flex-wrap justify-center gap-1">
               {dq.venues.map((v) => (
                 <Badge key={v} variant="outline" className="text-xs">
                   {v}
                 </Badge>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          }
+        />
       </div>
 
       <Card>
@@ -208,42 +195,14 @@ export function DataValidationTab({
         <CardContent>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             {gates.map((gate) => (
-              <div
+              <GateCheckRow
                 key={gate.id}
-                className={cn(
-                  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
-                  statusBg(gate.status),
-                )}
-              >
-                <div className="flex min-w-0 items-start gap-2 sm:items-center">
-                  <StatusIcon
-                    status={gate.status}
-                    className="mt-0.5 size-4 shrink-0 sm:mt-0"
-                  />
-                  <div className="min-w-0 text-left">
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="text-sm font-medium leading-snug">
-                        {gate.label}
-                      </span>
-                      {gate.mandatory && (
-                        <Badge variant="outline" className="px-1 text-xs">
-                          Required
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm">
-                  <span className="text-muted-foreground">
-                    Threshold: {gate.threshold}
-                  </span>
-                  <span
-                    className={cn("font-semibold", statusColor(gate.status))}
-                  >
-                    {gate.actual}
-                  </span>
-                </div>
-              </div>
+                status={gate.status}
+                title={gate.label}
+                required={gate.mandatory}
+                threshold={gate.threshold}
+                actual={gate.actual}
+              />
             ))}
           </div>
         </CardContent>

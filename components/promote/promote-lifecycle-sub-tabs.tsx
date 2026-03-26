@@ -24,6 +24,7 @@ import {
   usePromoteLifecycleStore,
 } from "@/lib/stores/promote-lifecycle-store";
 import { isPromoteStageLocked } from "@/components/promote/promote-stage-access";
+import type { PromotionStage } from "@/components/promote/types";
 
 const PROMOTE_TAB_ICONS: Record<PromoteLifecycleNavKey, LucideIcon> = {
   pipeline: LayoutDashboard,
@@ -51,15 +52,9 @@ export function PromoteLifecycleSubTabs() {
       } else if (!selected) {
         navDisabled = true;
         navDisabledTitle = "Select a strategy from the list first";
-      } else if (
-        def.key === "execution_readiness" ||
-        def.key === "paper_trading" ||
-        def.key === "governance"
-      ) {
-        if (isPromoteStageLocked(selected, def.key)) {
-          navDisabled = true;
-          navDisabledTitle = `${def.label} is locked until earlier stages progress`;
-        }
+      } else if (isPromoteStageLocked(selected, def.key as PromotionStage)) {
+        navDisabled = true;
+        navDisabledTitle = `${def.label} is locked until earlier stages progress`;
       }
 
       return {

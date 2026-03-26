@@ -5,27 +5,25 @@ export const PROMOTE_LIFECYCLE_BASE = "/services/promote";
 
 export const PROMOTE_PIPELINE_HREF = `${PROMOTE_LIFECYCLE_BASE}/pipeline`;
 
+export const PROMOTE_CHAMPION_HREF = `${PROMOTE_LIFECYCLE_BASE}/champion`;
+export const PROMOTE_CAPITAL_HREF = `${PROMOTE_LIFECYCLE_BASE}/capital-allocation`;
+
 const STAGE_HREFS: Record<PromotionStage, string> = {
   data_validation: `${PROMOTE_LIFECYCLE_BASE}/data-validation`,
   model_assessment: `${PROMOTE_LIFECYCLE_BASE}/model-assessment`,
   risk_stress: `${PROMOTE_LIFECYCLE_BASE}/risk-stress`,
   execution_readiness: `${PROMOTE_LIFECYCLE_BASE}/execution-readiness`,
+  champion: PROMOTE_CHAMPION_HREF,
   paper_trading: `${PROMOTE_LIFECYCLE_BASE}/paper-trading`,
+  capital_allocation: PROMOTE_CAPITAL_HREF,
   governance: `${PROMOTE_LIFECYCLE_BASE}/governance`,
 };
-
-export const PROMOTE_CHAMPION_HREF = `${PROMOTE_LIFECYCLE_BASE}/champion`;
-export const PROMOTE_CAPITAL_HREF = `${PROMOTE_LIFECYCLE_BASE}/capital-allocation`;
 
 export function promoteHrefForStage(stage: PromotionStage): string {
   return STAGE_HREFS[stage];
 }
 
-export type PromoteLifecycleNavKey =
-  | "pipeline"
-  | PromotionStage
-  | "champion"
-  | "capital_allocation";
+export type PromoteLifecycleNavKey = "pipeline" | PromotionStage;
 
 export interface PromoteLifecycleNavDefinition {
   key: PromoteLifecycleNavKey;
@@ -48,8 +46,12 @@ export const PROMOTE_LIFECYCLE_NAV: PromoteLifecycleNavDefinition[] = [
     label: "Execution",
     href: STAGE_HREFS.execution_readiness,
   },
-  { key: "champion", label: "Champion", href: PROMOTE_CHAMPION_HREF },
+  { key: "champion", label: "Champion", href: STAGE_HREFS.champion },
   { key: "paper_trading", label: "Paper", href: STAGE_HREFS.paper_trading },
-  { key: "capital_allocation", label: "Capital", href: PROMOTE_CAPITAL_HREF },
+  {
+    key: "capital_allocation",
+    label: "Capital",
+    href: STAGE_HREFS.capital_allocation,
+  },
   { key: "governance", label: "Governance", href: STAGE_HREFS.governance },
 ];

@@ -5,7 +5,7 @@ import { PromoteLifecycleStagePage } from "@/components/promote/promote-lifecycl
 
 export default function PromoteCapitalAllocationPage() {
   return (
-    <PromoteLifecycleStagePage>
+    <PromoteLifecycleStagePage gateStage="capital_allocation">
       {(strategy) => <CapitalAllocationTab strategy={strategy} />}
     </PromoteLifecycleStagePage>
   );

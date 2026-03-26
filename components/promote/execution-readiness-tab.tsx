@@ -10,7 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { fmtNum, fmtUsd, statusBg, statusColor, StatusIcon } from "./helpers";
+import { GateCheckRow } from "@/components/shared/gate-check-row";
+import { fmtNum, fmtUsd, statusBg, StatusIcon } from "./helpers";
+import { MetricCard } from "@/components/shared/metric-card";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy, GateStatus } from "./types";
 
@@ -223,26 +225,15 @@ export function ExecutionReadinessTab({
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {summaryMetrics.map((item) => (
-          <Card key={item.label} className="flex min-h-0 min-w-0 shadow-sm">
-            <CardContent className="flex min-h-[6.5rem] flex-1 flex-col justify-center px-3 py-2.5 text-center">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground sm:text-sm">
-                {item.label}
-              </p>
-              <p
-                className={cn(
-                  "mt-1 break-words font-mono text-xl font-bold leading-tight sm:text-2xl",
-                  item.color,
-                )}
-              >
-                {item.value}
-              </p>
-              {item.hint ? (
-                <p className="mt-1.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground sm:text-xs">
-                  {item.hint}
-                </p>
-              ) : null}
-            </CardContent>
-          </Card>
+          <MetricCard
+            key={item.label}
+            tone="grid"
+            density="default"
+            label={item.label}
+            primary={item.value}
+            primaryClassName={item.color}
+            hint={item.hint}
+          />
         ))}
       </div>
 
@@ -413,33 +404,13 @@ export function ExecutionReadinessTab({
         <CardContent>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             {executionGates.map((gate) => (
-              <div
+              <GateCheckRow
                 key={gate.label}
-                className={cn(
-                  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
-                  statusBg(gate.status),
-                )}
-              >
-                <div className="flex min-w-0 items-start gap-2 sm:items-center">
-                  <StatusIcon
-                    status={gate.status}
-                    className="mt-0.5 size-4 shrink-0 sm:mt-0"
-                  />
-                  <span className="text-sm font-medium leading-snug">
-                    {gate.label}
-                  </span>
-                </div>
-                <div className="flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm">
-                  <span className="text-muted-foreground">
-                    Threshold: {gate.threshold}
-                  </span>
-                  <span
-                    className={cn("font-semibold", statusColor(gate.status))}
-                  >
-                    {gate.actual}
-                  </span>
-                </div>
-              </div>
+                status={gate.status}
+                title={gate.label}
+                threshold={gate.threshold}
+                actual={gate.actual}
+              />
             ))}
           </div>
         </CardContent>

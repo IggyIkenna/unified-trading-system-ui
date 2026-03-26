@@ -2,10 +2,12 @@ import { AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { fmtNum, fmtPct, statusBg, statusColor, StatusIcon } from "./helpers";
+import { GateCheckRow } from "@/components/shared/gate-check-row";
+import { fmtNum, fmtPct, statusBg } from "./helpers";
 import { ModelDriftPanel } from "./model-drift-panel";
 import { MonteCarloPanel } from "./monte-carlo-panel";
 import { PortfolioImpactPanel } from "./portfolio-impact-panel";
+import { MetricCard } from "@/components/shared/metric-card";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy, GateStatus } from "./types";
 
@@ -182,26 +184,15 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {[...row1Metrics, ...row2Metrics].map((item) => (
-          <Card key={item.label} className="flex min-h-0 min-w-0 shadow-sm">
-            <CardContent className="flex min-h-[6.5rem] flex-1 flex-col justify-center px-3 py-2.5 text-center">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground sm:text-sm">
-                {item.label}
-              </p>
-              <p
-                className={cn(
-                  "mt-1 break-words font-mono text-xl font-bold leading-tight sm:text-2xl",
-                  item.color,
-                )}
-              >
-                {item.value}
-              </p>
-              {item.hint ? (
-                <p className="mt-1.5 line-clamp-2 text-[10px] leading-snug text-muted-foreground sm:text-xs">
-                  {item.hint}
-                </p>
-              ) : null}
-            </CardContent>
-          </Card>
+          <MetricCard
+            key={item.label}
+            tone="grid"
+            density="default"
+            label={item.label}
+            primary={item.value}
+            primaryClassName={item.color}
+            hint={item.hint}
+          />
         ))}
       </div>
 
@@ -215,34 +206,24 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
         <CardContent>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             {risk.stressScenarios.map((scenario) => (
-              <div
+              <GateCheckRow
                 key={scenario.name}
-                className={cn(
-                  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
-                  statusBg(scenario.status),
-                )}
-              >
-                <div className="flex min-w-0 items-start gap-2 sm:items-center">
-                  <StatusIcon
-                    status={scenario.status}
-                    className="mt-0.5 size-4 shrink-0 sm:mt-0"
-                  />
-                  <span className="text-sm font-medium leading-snug">
-                    {scenario.name}
-                  </span>
-                </div>
-                <div className="flex shrink-0 flex-col gap-1.5 sm:items-end sm:text-right">
-                  <span className="font-mono text-sm text-rose-400">
-                    {fmtPct(scenario.impact)}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className={cn("w-fit text-xs", statusBg(scenario.status))}
-                  >
-                    {scenario.status}
-                  </Badge>
-                </div>
-              </div>
+                status={scenario.status}
+                title={scenario.name}
+                trailing={
+                  <>
+                    <span className="font-mono text-sm text-rose-400">
+                      {fmtPct(scenario.impact)}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={cn("w-fit text-xs", statusBg(scenario.status))}
+                    >
+                      {scenario.status}
+                    </Badge>
+                  </>
+                }
+              />
             ))}
           </div>
         </CardContent>
@@ -255,33 +236,13 @@ export function RiskStressTab({ strategy }: { strategy: CandidateStrategy }) {
         <CardContent>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             {riskGates.map((gate) => (
-              <div
+              <GateCheckRow
                 key={gate.label}
-                className={cn(
-                  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between",
-                  statusBg(gate.status),
-                )}
-              >
-                <div className="flex min-w-0 items-start gap-2 sm:items-center">
-                  <StatusIcon
-                    status={gate.status}
-                    className="mt-0.5 size-4 shrink-0 sm:mt-0"
-                  />
-                  <span className="text-sm font-medium leading-snug">
-                    {gate.label}
-                  </span>
-                </div>
-                <div className="flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm">
-                  <span className="text-muted-foreground">
-                    Threshold: {gate.threshold}
-                  </span>
-                  <span
-                    className={cn("font-semibold", statusColor(gate.status))}
-                  >
-                    {gate.actual}
-                  </span>
-                </div>
-              </div>
+                status={gate.status}
+                title={gate.label}
+                threshold={gate.threshold}
+                actual={gate.actual}
+              />
             ))}
           </div>
         </CardContent>

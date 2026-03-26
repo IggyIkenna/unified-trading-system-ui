@@ -46,7 +46,7 @@ export function PromoteStrategyContextBar() {
           const href = promoteHrefForStage(stage);
           const active = pathname === href || pathname.startsWith(`${href}/`);
           const commonClass = cn(
-            "size-6 rounded-full flex items-center justify-center transition-all",
+            "size-5 shrink-0 rounded-full flex items-center justify-center transition-all text-[10px]",
             s.status === "passed" && "bg-emerald-500 text-white",
             s.status === "pending" && "bg-amber-500 text-white",
             s.status === "not_started" && "bg-muted text-muted-foreground",
@@ -83,7 +83,7 @@ export function PromoteStrategyContextBar() {
               {idx < STAGE_ORDER.length - 1 && (
                 <div
                   className={cn(
-                    "w-4 h-0.5 shrink-0",
+                    "w-2.5 h-0.5 shrink-0 sm:w-3",
                     s.status === "passed" ? "bg-emerald-500" : "bg-border",
                   )}
                 />

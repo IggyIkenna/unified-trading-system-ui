@@ -72,7 +72,9 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       },
       risk_stress: { status: "pending" },
       execution_readiness: { status: "not_started" },
+      champion: { status: "not_started" },
       paper_trading: { status: "not_started" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {
@@ -283,7 +285,9 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       model_assessment: { status: "pending" },
       risk_stress: { status: "not_started" },
       execution_readiness: { status: "not_started" },
+      champion: { status: "not_started" },
       paper_trading: { status: "not_started" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {
@@ -438,7 +442,15 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
         status: "passed",
         completedAt: "2026-03-18T10:00:00Z",
       },
+      champion: {
+        status: "passed",
+        completedAt: "2026-03-19T12:00:00Z",
+      },
       paper_trading: { status: "passed", completedAt: "2026-03-22T09:00:00Z" },
+      capital_allocation: {
+        status: "passed",
+        completedAt: "2026-03-24T09:00:00Z",
+      },
       governance: { status: "pending" },
     }),
     metrics: {
@@ -706,7 +718,9 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       },
       risk_stress: { status: "passed", completedAt: "2026-03-19T15:00:00Z" },
       execution_readiness: { status: "pending" },
+      champion: { status: "not_started" },
       paper_trading: { status: "not_started" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {
@@ -839,7 +853,15 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
         status: "passed",
         completedAt: "2026-03-14T11:00:00Z",
       },
+      champion: {
+        status: "passed",
+        completedAt: "2026-03-12T10:00:00Z",
+      },
       paper_trading: { status: "passed", completedAt: "2026-03-20T16:00:00Z" },
+      capital_allocation: {
+        status: "passed",
+        completedAt: "2026-03-22T11:00:00Z",
+      },
       governance: { status: "pending" },
     }),
     metrics: {
@@ -1022,7 +1044,9 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       model_assessment: { status: "not_started" },
       risk_stress: { status: "not_started" },
       execution_readiness: { status: "not_started" },
+      champion: { status: "not_started" },
       paper_trading: { status: "not_started" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {
@@ -1124,7 +1148,9 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       model_assessment: { status: "pending" },
       risk_stress: { status: "not_started" },
       execution_readiness: { status: "not_started" },
+      champion: { status: "not_started" },
       paper_trading: { status: "not_started" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {
@@ -1242,7 +1268,9 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       },
       risk_stress: { status: "pending" },
       execution_readiness: { status: "not_started" },
+      champion: { status: "not_started" },
       paper_trading: { status: "not_started" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {
@@ -1400,7 +1428,12 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
         status: "passed",
         completedAt: "2026-03-18T14:00:00Z",
       },
+      champion: {
+        status: "passed",
+        completedAt: "2026-03-19T09:00:00Z",
+      },
       paper_trading: { status: "pending" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {
@@ -1524,7 +1557,9 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       model_assessment: { status: "not_started" },
       risk_stress: { status: "not_started" },
       execution_readiness: { status: "not_started" },
+      champion: { status: "not_started" },
       paper_trading: { status: "not_started" },
+      capital_allocation: { status: "not_started" },
       governance: { status: "not_started" },
     }),
     metrics: {

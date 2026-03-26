@@ -1,16 +1,15 @@
-export type GateStatus =
-  | "passed"
-  | "failed"
-  | "pending"
-  | "warning"
-  | "not_started";
+import type { GateStatus } from "@/components/shared/gate-status";
+
+export type { GateStatus };
 
 export type PromotionStage =
   | "data_validation"
   | "model_assessment"
   | "risk_stress"
   | "execution_readiness"
+  | "champion"
   | "paper_trading"
+  | "capital_allocation"
   | "governance";
 
 export type ReviewDecision =
@@ -269,6 +268,8 @@ export const STAGE_ORDER: PromotionStage[] = [
   "model_assessment",
   "risk_stress",
   "execution_readiness",
+  "champion",
   "paper_trading",
+  "capital_allocation",
   "governance",
 ];

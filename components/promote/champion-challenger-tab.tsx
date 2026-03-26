@@ -268,7 +268,7 @@ export function ChampionChallengerTab({
         <PromoteWorkflowActions
           strategyId={strategy.id}
           strategyName={strategy.name}
-          stage={strategy.currentStage}
+          stage="champion"
           currentStage={strategy.currentStage}
         />
       </div>
@@ -360,7 +360,7 @@ export function ChampionChallengerTab({
       <PromoteWorkflowActions
         strategyId={strategy.id}
         strategyName={strategy.name}
-        stage={strategy.currentStage}
+        stage="champion"
         currentStage={strategy.currentStage}
       />
     </div>

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { fmtNum, fmtPct, fmtUsd, statusBg } from "./helpers";
+import { MetricCard } from "@/components/shared/metric-card";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy } from "./types";
 
@@ -32,7 +33,7 @@ export function CapitalAllocationTab({
         <PromoteWorkflowActions
           strategyId={strategy.id}
           strategyName={strategy.name}
-          stage={strategy.currentStage}
+          stage="capital_allocation"
           currentStage={strategy.currentStage}
         />
       </div>
@@ -53,55 +54,44 @@ export function CapitalAllocationTab({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Target ($)
-            </p>
-            <p className="text-xl font-mono font-bold mt-1">
-              {fmtUsd(c.proposedUsd)}
-            </p>
-            {c.conservativeSizingUsd !== undefined ? (
-              <p className="text-xs text-muted-foreground mt-1 font-mono">
-                Conservative {fmtUsd(c.conservativeSizingUsd)}
-              </p>
-            ) : null}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">% AUM</p>
-            <p className="text-xl font-mono font-bold mt-1">
-              {fmtNum(c.proposedPctAum, 1)}%
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Kelly (optimal)
-            </p>
-            <p className="text-xl font-mono font-bold mt-1 text-cyan-400">
-              {fmtPct(c.kellyOptimal)}
-            </p>
-            {c.halfKelly !== undefined ? (
-              <p className="text-xs text-muted-foreground mt-1 font-mono">
-                Half-Kelly {fmtPct(c.halfKelly)}
-              </p>
-            ) : null}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Risk parity wt
-            </p>
-            <p className="text-xl font-mono font-bold mt-1">
-              {fmtPct(c.riskParityWeight)}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="Target ($)"
+          primary={fmtUsd(c.proposedUsd)}
+          secondary={
+            c.conservativeSizingUsd !== undefined
+              ? `Conservative ${fmtUsd(c.conservativeSizingUsd)}`
+              : undefined
+          }
+          secondaryClassName="font-mono"
+        />
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="% AUM"
+          primary={`${fmtNum(c.proposedPctAum, 1)}%`}
+        />
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="Kelly (optimal)"
+          primary={fmtPct(c.kellyOptimal)}
+          primaryClassName="text-cyan-400"
+          secondary={
+            c.halfKelly !== undefined
+              ? `Half-Kelly ${fmtPct(c.halfKelly)}`
+              : undefined
+          }
+          secondaryClassName="font-mono"
+        />
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="Risk parity wt"
+          primary={fmtPct(c.riskParityWeight)}
+        />
       </div>
 
       {c.rampGateChecks && c.rampGateChecks.length > 0 ? (
@@ -244,7 +234,7 @@ export function CapitalAllocationTab({
       <PromoteWorkflowActions
         strategyId={strategy.id}
         strategyName={strategy.name}
-        stage={strategy.currentStage}
+        stage="capital_allocation"
         currentStage={strategy.currentStage}
       />
     </div>

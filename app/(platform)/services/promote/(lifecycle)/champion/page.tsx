@@ -5,7 +5,7 @@ import { PromoteLifecycleStagePage } from "@/components/promote/promote-lifecycl
 
 export default function PromoteChampionPage() {
   return (
-    <PromoteLifecycleStagePage>
+    <PromoteLifecycleStagePage gateStage="champion">
       {(strategy) => <ChampionChallengerTab strategy={strategy} />}
     </PromoteLifecycleStagePage>
   );
