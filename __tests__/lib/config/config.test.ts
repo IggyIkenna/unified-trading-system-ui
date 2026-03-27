@@ -12,7 +12,7 @@ describe("lib/config/api", () => {
     expect(keys).toContain("positions");
     expect(keys).toContain("risk");
     expect(keys).toContain("strategy");
-    expect(keys).toContain("data");
+    expect(keys).toContain("marketTick");
   });
 
   it("all endpoints are strings", () => {
@@ -68,9 +68,9 @@ describe("lib/config/auth", () => {
 });
 
 describe("lib/config/services", () => {
-  it("exports SERVICE_REGISTRY with 10 services", () => {
+  it("exports SERVICE_REGISTRY with 8 services", () => {
     expect(Array.isArray(SERVICE_REGISTRY)).toBe(true);
-    expect(SERVICE_REGISTRY.length).toBe(10);
+    expect(SERVICE_REGISTRY.length).toBe(8);
   });
 
   it("each service has required fields", () => {
