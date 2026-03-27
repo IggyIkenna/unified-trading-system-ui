@@ -48,11 +48,7 @@ import {
   STRATEGY_CANDIDATES,
   STRATEGY_ALERTS,
 } from "@/lib/strategy-platform-mock-data";
-import {
-  MOCK_CATALOGUE,
-  MOCK_INSTRUMENTS,
-  MOCK_SHARD_AVAILABILITY,
-} from "@/lib/data-service-mock-data";
+import { MOCK_CATALOGUE, MOCK_INSTRUMENTS, MOCK_SHARD_AVAILABILITY } from "@/lib/data-service-mock-data";
 import {
   getState as getProvisioningState,
   addUser,
@@ -65,30 +61,17 @@ import {
   removeApiKey,
   persist,
 } from "@/lib/api/mock-provisioning-state";
-import type {
-  MockUser,
-  MockOrganization,
-  MockVenueApiKey,
-} from "@/lib/api/mock-provisioning-state";
+import type { MockUser, MockOrganization, MockVenueApiKey } from "@/lib/api/mock-provisioning-state";
 import {
   getOrders as getLedgerOrders,
   placeMockOrder,
   cancelMockOrder,
   amendMockOrder,
 } from "@/lib/api/mock-trade-ledger";
-import {
-  getOnboardingState,
-  addApplication,
-  updateApplication,
-  addDocument,
-} from "@/lib/api/mock-onboarding-state";
-import type {
-  OnboardingApplication,
-  DocumentArtifact,
-} from "@/lib/api/mock-onboarding-state";
+import { getOnboardingState, addApplication, updateApplication, addDocument } from "@/lib/api/mock-onboarding-state";
+import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state";
 
-export const MOCK_MODE =
-  typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true";
+export const MOCK_MODE = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true";
 
 function json(data: unknown, delay = 50): Promise<Response> {
   return new Promise((resolve) => {
@@ -116,11 +99,7 @@ function parseMockJsonBody(opts?: RequestInit): Record<string, unknown> {
   }
 }
 
-function jsonStatus(
-  status: number,
-  data: unknown,
-  delay = 50,
-): Promise<Response> {
+function jsonStatus(status: number, data: unknown, delay = 50): Promise<Response> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(
@@ -156,9 +135,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   const totalPnl = perf.reduce((s, p) => s + p.pnl, 0);
   const totalMargin = totalExposure * 0.22; // ~22% margin usage
   const liveCount = perf.filter((p) => p.status === "live").length;
-  const pausedCount = perf.filter(
-    (p) => p.status === "paused" || p.status === "stopped",
-  ).length;
+  const pausedCount = perf.filter((p) => p.status === "paused" || p.status === "stopped").length;
 
   // Generate one position per strategy (consistent with perf data)
   // Map strategy names to domain-correct instruments and venues
@@ -168,61 +145,43 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   } {
     const n = name.toLowerCase();
     // Sports strategies
-    if (n.includes("nba"))
-      return { instrument: "NBA:GAME:LAL-GSW", venue: "betfair" };
-    if (n.includes("nfl"))
-      return { instrument: "NFL:GAME:KC-SF", venue: "pinnacle" };
-    if (n.includes("football") && !n.includes("market"))
-      return { instrument: "EPL:MATCH:MUN-LIV", venue: "bet365" };
-    if (n.includes("epl"))
-      return { instrument: "EPL:MATCH:MUN-LIV", venue: "betfair" };
-    if (n.includes("la liga") || n.includes("laliga"))
-      return { instrument: "LALIGA:MATCH:BAR-RMA", venue: "pinnacle" };
+    if (n.includes("nba")) return { instrument: "NBA:GAME:LAL-GSW", venue: "betfair" };
+    if (n.includes("nfl")) return { instrument: "NFL:GAME:KC-SF", venue: "pinnacle" };
+    if (n.includes("football") && !n.includes("market")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "bet365" };
+    if (n.includes("epl")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "betfair" };
+    if (n.includes("la liga") || n.includes("laliga")) return { instrument: "LALIGA:MATCH:BAR-RMA", venue: "pinnacle" };
     // Prediction market strategies
     if (n.includes("prediction") && n.includes("cefi"))
       return {
         instrument: "POLYMARKET:BINARY:BTC-100K@YES",
         venue: "polymarket",
       };
-    if (n.includes("prediction"))
-      return { instrument: "KALSHI:BINARY:FED-RATE-CUT@YES", venue: "kalshi" };
+    if (n.includes("prediction")) return { instrument: "KALSHI:BINARY:FED-RATE-CUT@YES", venue: "kalshi" };
     // DeFi strategies
-    if (n.includes("morpho"))
-      return { instrument: "MORPHO:SUPPLY:USDC", venue: "morpho" };
+    if (n.includes("morpho")) return { instrument: "MORPHO:SUPPLY:USDC", venue: "morpho" };
     if (n.includes("uniswap") || n.includes("uni v3") || n.includes("lp"))
       return { instrument: "UNISWAPV3:LP:ETH-USDC", venue: "uniswap" };
     if (n.includes("aave") || (n.includes("lending") && n.includes("aave")))
       return { instrument: "AAVE_V3:SUPPLY:USDT", venue: "aave" };
     if (n.includes("recursive") || n.includes("staked basis"))
       return { instrument: "AAVE_V3:SUPPLY:WEETH", venue: "aave" };
-    if (n.includes("eth basis"))
-      return { instrument: "ETH-PERP", venue: "hyperliquid" };
+    if (n.includes("eth basis")) return { instrument: "ETH-PERP", venue: "hyperliquid" };
     // CeFi strategies — match by asset name in strategy
-    if (n.includes("btc") && n.includes("basis"))
-      return { instrument: "BTC-PERP", venue: "binance" };
-    if (n.includes("btc") && n.includes("market making"))
-      return { instrument: "BTC-USDT", venue: "binance" };
+    if (n.includes("btc") && n.includes("basis")) return { instrument: "BTC-PERP", venue: "binance" };
+    if (n.includes("btc") && n.includes("market making")) return { instrument: "BTC-USDT", venue: "binance" };
     if (n.includes("btc")) return { instrument: "BTC-PERP", venue: "binance" };
-    if (n.includes("eth") && n.includes("options"))
-      return { instrument: "ETH-OPTIONS", venue: "deribit" };
-    if (n.includes("eth") && n.includes("momentum"))
-      return { instrument: "ETH-PERP", venue: "binance" };
-    if (n.includes("eth") && n.includes("mean rev"))
-      return { instrument: "ETH-USDT", venue: "okx" };
+    if (n.includes("eth") && n.includes("options")) return { instrument: "ETH-OPTIONS", venue: "deribit" };
+    if (n.includes("eth") && n.includes("momentum")) return { instrument: "ETH-PERP", venue: "binance" };
+    if (n.includes("eth") && n.includes("mean rev")) return { instrument: "ETH-USDT", venue: "okx" };
     if (n.includes("eth")) return { instrument: "ETH-PERP", venue: "binance" };
     if (n.includes("sol")) return { instrument: "SOL-PERP", venue: "binance" };
-    if (n.includes("doge"))
-      return { instrument: "DOGE-USDT", venue: "binance" };
-    if (n.includes("avax"))
-      return { instrument: "AVAX-PERP", venue: "binance" };
-    if (n.includes("link"))
-      return { instrument: "LINK-PERP", venue: "hyperliquid" };
-    if (n.includes("arb") && n.includes("mean"))
-      return { instrument: "ARB-USDT", venue: "okx" };
+    if (n.includes("doge")) return { instrument: "DOGE-USDT", venue: "binance" };
+    if (n.includes("avax")) return { instrument: "AVAX-PERP", venue: "binance" };
+    if (n.includes("link")) return { instrument: "LINK-PERP", venue: "hyperliquid" };
+    if (n.includes("arb") && n.includes("mean")) return { instrument: "ARB-USDT", venue: "okx" };
     if (n.includes("spy")) return { instrument: "SPY", venue: "ibkr" };
     if (n.includes("bond")) return { instrument: "TLT", venue: "ibkr" };
-    if (n.includes("multi-venue") || n.includes("arbitrage"))
-      return { instrument: "BTC-USDT", venue: "binance" };
+    if (n.includes("multi-venue") || n.includes("arbitrage")) return { instrument: "BTC-USDT", venue: "binance" };
     // Fallback
     return { instrument: "BTC-PERP", venue: "binance" };
   }
@@ -248,10 +207,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         strategy_name: s.name,
         instrument,
         side: (s.pnl >= 0 ? "LONG" : "SHORT") as "LONG" | "SHORT",
-        quantity:
-          basePrice > 0
-            ? Math.abs(s.exposure) / basePrice
-            : Math.abs(s.exposure),
+        quantity: basePrice > 0 ? Math.abs(s.exposure) / basePrice : Math.abs(s.exposure),
         entry_price: basePrice,
         current_price: basePrice * (1 + s.pnl / Math.max(s.nav, 1)),
         pnl: s.pnl,
@@ -266,18 +222,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         used: s.exposure * 0.22,
         available: s.nav - s.exposure * 0.22,
         total: s.nav,
-        utilization: Math.round(
-          ((s.exposure * 0.22) / Math.max(s.nav, 1)) * 100,
-        ),
-        trend: (s.pnlChange > 1
-          ? "up"
-          : s.pnlChange < -1
-            ? "down"
-            : "stable") as "up" | "down" | "stable",
-        marginCallDistance: Math.max(
-          5,
-          30 - Math.round(((s.exposure * 0.22) / Math.max(s.nav, 1)) * 30),
-        ),
+        utilization: Math.round(((s.exposure * 0.22) / Math.max(s.nav, 1)) * 100),
+        trend: (s.pnlChange > 1 ? "up" : s.pnlChange < -1 ? "down" : "stable") as "up" | "down" | "stable",
+        marginCallDistance: Math.max(5, 30 - Math.round(((s.exposure * 0.22) / Math.max(s.nav, 1)) * 30)),
         lastUpdate: new Date().toISOString(),
       };
     });
@@ -354,10 +301,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         maxDrawdown: s.maxDrawdown,
         pnlMTD: s.pnl,
       },
-      sparklineData: Array.from(
-        { length: 20 },
-        (_, j) => s.pnl * (0.5 + Math.sin(j * 0.3) * 0.5),
-      ),
+      sparklineData: Array.from({ length: 20 }, (_, j) => s.pnl * (0.5 + Math.sin(j * 0.3) * 0.5)),
     }));
     return json({ strategies: enriched, total: enriched.length });
   }
@@ -368,14 +312,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- Market Data ---
   if (route === "/api/market-data/tickers") {
     const RESTRICTED_SYMBOLS = ["DOGE-USDT", "SHIB-USDT"];
-    const DEFI_VENUES = [
-      "Uniswap",
-      "Aave",
-      "Hyperliquid",
-      "SushiSwap",
-      "Curve",
-      "Morpho",
-    ];
+    const DEFI_VENUES = ["Uniswap", "Aave", "Hyperliquid", "SushiSwap", "Curve", "Morpho"];
     const tickers = [
       "BTC-USDT",
       "ETH-USDT",
@@ -457,14 +394,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           strike,
           type,
           expiry: "2026-04-25",
-          bid:
-            type === "call"
-              ? Math.max(0, 42000 - strike) + 500
-              : Math.max(0, strike - 42000) + 500,
-          ask:
-            type === "call"
-              ? Math.max(0, 42000 - strike) + 700
-              : Math.max(0, strike - 42000) + 700,
+          bid: type === "call" ? Math.max(0, 42000 - strike) + 500 : Math.max(0, strike - 42000) + 500,
+          ask: type === "call" ? Math.max(0, 42000 - strike) + 700 : Math.max(0, strike - 42000) + 700,
           iv: 0.55 + Math.random() * 0.2,
           delta: type === "call" ? 0.5 : -0.5,
           gamma: 0.001,
@@ -520,9 +451,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- Execution ---
 
   // Cancel order: PUT /api/execution/orders/{id}/cancel
-  const cancelMatch = route.match(
-    /^\/api\/execution\/orders\/([^/]+)\/cancel$/,
-  );
+  const cancelMatch = route.match(/^\/api\/execution\/orders\/([^/]+)\/cancel$/);
   if (cancelMatch && opts?.method === "PUT") {
     const result = cancelMockOrder(cancelMatch[1]);
     return json({ order: result });
@@ -557,16 +486,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }
 
     // GET: merge static TCA orders with stateful ledger orders
-    const tcaVenues = [
-      "binance",
-      "okx",
-      "hyperliquid",
-      "deribit",
-      "aave",
-      "uniswap",
-      "polymarket",
-      "betfair",
-    ];
+    const tcaVenues = ["binance", "okx", "hyperliquid", "deribit", "aave", "uniswap", "polymarket", "betfair"];
     const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"];
     const tcaInstruments = [
       "BTC-PERP",
@@ -603,14 +523,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
                     ? 1
                     : instrument.includes("UNISWAP")
                       ? 1
-                      : instrument.includes("POLYMARKET") ||
-                          instrument.includes("BETFAIR")
+                      : instrument.includes("POLYMARKET") || instrument.includes("BETFAIR")
                         ? 0.65
                         : 100;
       const arrivalPrice = basePrice * (1 + Math.sin(i * 0.7) * 0.002);
       const slippageBps = parseFloat((Math.sin(i * 1.3) * 3 + 1.5).toFixed(1));
-      const avgFillPrice =
-        arrivalPrice * (1 + (slippageBps / 10000) * (side === "BUY" ? 1 : -1));
+      const avgFillPrice = arrivalPrice * (1 + (slippageBps / 10000) * (side === "BUY" ? 1 : -1));
       const quantity = instrument.includes("BTC")
         ? 0.5 + i * 0.1
         : instrument.includes("ETH")
@@ -620,9 +538,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       const durationMs = 500 + Math.round(Math.random() * 4500);
       const marketImpact = parseFloat((slippageBps * 0.4).toFixed(1));
       const timingCost = parseFloat((slippageBps * 0.25).toFixed(1));
-      const totalCost = parseFloat(
-        (Math.abs(slippageBps) + marketImpact * 0.3).toFixed(1),
-      );
+      const totalCost = parseFloat((Math.abs(slippageBps) + marketImpact * 0.3).toFixed(1));
       const vwap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.001);
       const twap = arrivalPrice * (1 + (Math.random() - 0.5) * 0.0008);
       return {
@@ -643,9 +559,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         strategy_id: `strat-${i % 6}`,
         strategy_name: `Strategy ${i % 6}`,
         edge_bps: parseFloat((-slippageBps).toFixed(1)),
-        instant_pnl: Math.round(
-          (avgFillPrice - arrivalPrice) * quantity * (side === "SELL" ? -1 : 1),
-        ),
+        instant_pnl: Math.round((avgFillPrice - arrivalPrice) * quantity * (side === "SELL" ? -1 : 1)),
         created_at: new Date(Date.now() - i * 1800000).toISOString(),
         tca: {
           slippage: slippageBps,
@@ -655,9 +569,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           arrivalPrice: parseFloat(arrivalPrice.toFixed(4)),
           vwap: parseFloat(vwap.toFixed(4)),
           twap: parseFloat(twap.toFixed(4)),
-          implementationShortfall: parseFloat(
-            (slippageBps + marketImpact).toFixed(1),
-          ),
+          implementationShortfall: parseFloat((slippageBps + marketImpact).toFixed(1)),
         },
       };
     });
@@ -744,18 +656,14 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const instrument = (body.instrument ?? "") as string;
     const quantity = (body.quantity ?? 0) as number;
     const price = (body.price ?? 0) as number;
-    if (
-      instrument.toUpperCase().includes("DOGE") ||
-      instrument.toUpperCase().includes("SHIB")
-    ) {
+    if (instrument.toUpperCase().includes("DOGE") || instrument.toUpperCase().includes("SHIB")) {
       return json({
         approved: false,
         checks: [
           {
             rule: "Restricted List",
             passed: false,
-            reason:
-              "Instrument on restricted list — requires risk committee override",
+            reason: "Instrument on restricted list — requires risk committee override",
           },
         ],
       });
@@ -788,10 +696,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/instruments/list") {
     const DEFI_CATEGORIES = ["defi"];
     const RESTRICTED_BASES = ["DOGE", "SHIB"];
-    const venueMap: Record<
-      string,
-      { venue: string; category: string; instruments: number; coverage: number }
-    > = {};
+    const venueMap: Record<string, { venue: string; category: string; instruments: number; coverage: number }> = {};
     const enrichedInstruments = MOCK_INSTRUMENTS.map((inst) => {
       if (!venueMap[inst.venue])
         venueMap[inst.venue] = {
@@ -820,10 +725,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/instruments/catalogue") {
     const DEFI_CATEGORIES = ["defi"];
     const RESTRICTED_BASES = ["DOGE", "SHIB"];
-    const SYMBOLOGY_MAP: Record<
-      string,
-      { bloomberg: string | null; reuters: string | null; coingecko: string }
-    > = {
+    const SYMBOLOGY_MAP: Record<string, { bloomberg: string | null; reuters: string | null; coingecko: string }> = {
       BTC: {
         bloomberg: "BTCUSD Curncy",
         reuters: "BTC=",
@@ -859,8 +761,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         internal: inst.instrumentKey,
         bloomberg: symData?.bloomberg ?? null,
         reuters: symData?.reuters ?? null,
-        coingecko:
-          symData?.coingecko ?? (baseCur ? baseCur.toLowerCase() : "unknown"),
+        coingecko: symData?.coingecko ?? (baseCur ? baseCur.toLowerCase() : "unknown"),
       };
       return { ...entry, entitlement, symbology };
     });
@@ -877,12 +778,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json({
       alerts: unacked.map((a) => ({
         id: a.id,
-        severity:
-          a.severity === "critical"
-            ? "critical"
-            : a.severity === "warning"
-              ? "high"
-              : "medium",
+        severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
         title: a.message,
         timestamp: a.triggeredAt,
         source: "strategy-service",
@@ -894,17 +790,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json({
       data: STRATEGY_ALERTS.map((a) => ({
         id: a.id,
-        severity:
-          a.severity === "critical"
-            ? "critical"
-            : a.severity === "warning"
-              ? "high"
-              : "medium",
-        status: a.resolvedAt
-          ? "resolved"
-          : a.acknowledgedAt
-            ? "acknowledged"
-            : "active",
+        severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
+        status: a.resolvedAt ? "resolved" : a.acknowledgedAt ? "acknowledged" : "active",
         title: a.message,
         description: a.message,
         source: "strategy-service",
@@ -919,15 +806,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   if (route === "/api/alerts/summary") {
     // Use same severity mapping as /api/alerts/list (critical→critical, warning→high, info→medium)
-    const critCount = STRATEGY_ALERTS.filter(
-      (a) => a.severity === "critical",
-    ).length;
-    const highCount = STRATEGY_ALERTS.filter(
-      (a) => a.severity === "warning",
-    ).length;
-    const medCount = STRATEGY_ALERTS.filter(
-      (a) => a.severity === "info",
-    ).length;
+    const critCount = STRATEGY_ALERTS.filter((a) => a.severity === "critical").length;
+    const highCount = STRATEGY_ALERTS.filter((a) => a.severity === "warning").length;
+    const medCount = STRATEGY_ALERTS.filter((a) => a.severity === "info").length;
     const unacked = STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt).length;
     return json({
       total: STRATEGY_ALERTS.length,
@@ -940,27 +821,18 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   // Acknowledge / escalate / resolve — mutate STRATEGY_ALERTS in place
-  if (
-    route === "/api/alerts/acknowledge" ||
-    route === "/api/alerts/escalate" ||
-    route === "/api/alerts/resolve"
-  ) {
+  if (route === "/api/alerts/acknowledge" || route === "/api/alerts/escalate" || route === "/api/alerts/resolve") {
     const action = route.split("/").pop() as string;
     // alertId from POST body
     let alertId: string | undefined;
     try {
-      alertId = opts?.body
-        ? JSON.parse(opts.body as string).alertId
-        : undefined;
+      alertId = opts?.body ? JSON.parse(opts.body as string).alertId : undefined;
     } catch {
       /* noop */
     }
-    const alert = alertId
-      ? STRATEGY_ALERTS.find((a) => a.id === alertId)
-      : undefined;
+    const alert = alertId ? STRATEGY_ALERTS.find((a) => a.id === alertId) : undefined;
     if (alert) {
-      if (action === "acknowledge")
-        alert.acknowledgedAt = new Date().toISOString();
+      if (action === "acknowledge") alert.acknowledgedAt = new Date().toISOString();
       if (action === "resolve") {
         alert.acknowledgedAt = alert.acknowledgedAt ?? new Date().toISOString();
         alert.resolvedAt = new Date().toISOString();
@@ -1189,10 +1061,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       })),
     );
   }
-  if (
-    route === "/api/risk/circuit-breaker" ||
-    route === "/api/risk/kill-switch"
-  ) {
+  if (route === "/api/risk/circuit-breaker" || route === "/api/risk/kill-switch") {
     return json({ ok: true });
   }
   if (route === "/api/risk/exposure-types") {
@@ -1206,11 +1075,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           threshold: 25,
           unit: "notional_pct",
           status: "OK",
-          subscribedStrategies: [
-            "CEFI_BTC_MM",
-            "DEFI_ETH_BASIS",
-            "TRADFI_SPY_ML",
-          ],
+          subscribedStrategies: ["CEFI_BTC_MM", "DEFI_ETH_BASIS", "TRADFI_SPY_ML"],
         },
         {
           id: "gamma",
@@ -1280,10 +1145,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           threshold: 2.0,
           unit: "pct_deviation",
           status: "OK",
-          subscribedStrategies: [
-            "DEFI_ETH_STAKED_BASIS",
-            "DEFI_ETH_RECURSIVE_BASIS",
-          ],
+          subscribedStrategies: ["DEFI_ETH_STAKED_BASIS", "DEFI_ETH_RECURSIVE_BASIS"],
         },
         {
           id: "liquidity",
@@ -1456,34 +1318,20 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const mlUrl = new URL(path, "http://mock.local");
     const mlPath = mlUrl.pathname;
 
-    if (
-      mlPath === "/api/ml/pipeline/status" &&
-      (!opts?.method || opts.method === "GET")
-    ) {
+    if (mlPath === "/api/ml/pipeline/status" && (!opts?.method || opts.method === "GET")) {
       return json(ML_PIPELINE_STATUS);
     }
-    if (
-      mlPath === "/api/ml/training/queue" &&
-      (!opts?.method || opts.method === "GET")
-    ) {
+    if (mlPath === "/api/ml/training/queue" && (!opts?.method || opts.method === "GET")) {
       return json(GPU_QUEUE_STATUS);
     }
-    if (
-      mlPath === "/api/ml/alerts" &&
-      (!opts?.method || opts.method === "GET")
-    ) {
+    if (mlPath === "/api/ml/alerts" && (!opts?.method || opts.method === "GET")) {
       return json(ML_ALERTS);
     }
-    if (
-      mlPath === "/api/ml/registry/models" &&
-      (!opts?.method || opts.method === "GET")
-    ) {
+    if (mlPath === "/api/ml/registry/models" && (!opts?.method || opts.method === "GET")) {
       return json(MODEL_VERSIONS);
     }
 
-    const cancelMatch = mlPath.match(
-      /^\/api\/ml\/training\/runs\/([^/]+)\/cancel$/,
-    );
+    const cancelMatch = mlPath.match(/^\/api\/ml\/training\/runs\/([^/]+)\/cancel$/);
     if (cancelMatch && opts?.method === "POST") {
       const runId = cancelMatch[1];
       const run = UNIFIED_TRAINING_RUNS.find((r) => r.id === runId);
@@ -1499,25 +1347,16 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       if (!template) {
         return jsonStatus(500, { error: "no_template" });
       }
-      const clone = JSON.parse(
-        JSON.stringify(template),
-      ) as (typeof UNIFIED_TRAINING_RUNS)[number];
-      const famId =
-        (typeof body.model_family_id === "string" && body.model_family_id) ||
-        clone.model_family_id;
+      const clone = JSON.parse(JSON.stringify(template)) as (typeof UNIFIED_TRAINING_RUNS)[number];
+      const famId = (typeof body.model_family_id === "string" && body.model_family_id) || clone.model_family_id;
       const fam = MODEL_FAMILIES.find((f) => f.id === famId);
       clone.id = `run-${Date.now()}`;
-      clone.name =
-        (typeof body.name === "string" && body.name.trim()) ||
-        `New run — ${clone.id}`;
-      clone.description =
-        (typeof body.description === "string" && body.description) ||
-        clone.description;
+      clone.name = (typeof body.name === "string" && body.name.trim()) || `New run — ${clone.id}`;
+      clone.description = (typeof body.description === "string" && body.description) || clone.description;
       clone.model_family_id = famId;
       clone.model_family_name = fam?.name ?? clone.model_family_name;
       clone.created_at = new Date().toISOString();
-      clone.created_by =
-        (typeof body.created_by === "string" && body.created_by) || "demo.user";
+      clone.created_by = (typeof body.created_by === "string" && body.created_by) || "demo.user";
       if (body.config && typeof body.config === "object") {
         clone.config = {
           ...clone.config,
@@ -1527,10 +1366,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       return json(clone);
     }
 
-    if (
-      mlPath === "/api/ml/training/runs" &&
-      (!opts?.method || opts.method === "GET")
-    ) {
+    if (mlPath === "/api/ml/training/runs" && (!opts?.method || opts.method === "GET")) {
       let list = [...UNIFIED_TRAINING_RUNS];
       const st = mlUrl.searchParams.get("status");
       const family = mlUrl.searchParams.get("family");
@@ -1553,9 +1389,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       return json(run);
     }
 
-    const analysisRunMatch = mlPath.match(
-      /^\/api\/ml\/analysis\/runs\/([^/]+)$/,
-    );
+    const analysisRunMatch = mlPath.match(/^\/api\/ml\/analysis\/runs\/([^/]+)$/);
     if (analysisRunMatch && (!opts?.method || opts.method === "GET")) {
       const runId = analysisRunMatch[1];
       const run = UNIFIED_TRAINING_RUNS.find((r) => r.id === runId);
@@ -1581,9 +1415,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       }
       const merged: typeof RUN_COMPARISONS = [];
       for (const b of compareIds) {
-        const matched = RUN_COMPARISONS.filter(
-          (c) => c.run_a_id === a && c.run_b_id === b,
-        );
+        const matched = RUN_COMPARISONS.filter((c) => c.run_a_id === a && c.run_b_id === b);
         if (matched.length > 0) {
           merged.push(...matched);
         } else {
@@ -1604,34 +1436,25 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }));
     return json({ data: enriched, families: enriched });
   }
-  if (route === "/api/ml/experiments")
-    return json({ data: EXPERIMENTS, experiments: EXPERIMENTS });
-  if (route.match(/\/api\/ml\/experiments\/[^/]+$/))
-    return json(EXPERIMENTS[0]);
-  if (route === "/api/ml/training-runs")
-    return json({ data: TRAINING_RUNS, runs: TRAINING_RUNS });
-  if (route === "/api/ml/training-jobs")
-    return json({ ok: true, jobId: "job-mock-001" });
+  if (route === "/api/ml/experiments") return json({ data: EXPERIMENTS, experiments: EXPERIMENTS });
+  if (route.match(/\/api\/ml\/experiments\/[^/]+$/)) return json(EXPERIMENTS[0]);
+  if (route === "/api/ml/training-runs") return json({ data: TRAINING_RUNS, runs: TRAINING_RUNS });
+  if (route === "/api/ml/training-jobs") return json({ ok: true, jobId: "job-mock-001" });
   if (route === "/api/ml/versions") return json(MODEL_VERSIONS);
-  if (route.match(/\/api\/ml\/models\/[^/]+\/promote/))
-    return json({ ok: true });
+  if (route.match(/\/api\/ml\/models\/[^/]+\/promote/)) return json({ ok: true });
   if (route === "/api/ml/deployments") return json(LIVE_DEPLOYMENTS);
   if (route === "/api/ml/features") return json(FEATURE_SET_VERSIONS);
   if (route === "/api/ml/datasets") return json(DATASET_SNAPSHOTS);
   if (route === "/api/ml/validation-results") return json(VALIDATION_PACKAGES);
-  if (route === "/api/ml/monitoring")
-    return json({ alerts: [], drift: [], performance: {} });
-  if (route === "/api/ml/governance")
-    return json({ policies: [], approvals: [] });
-  if (route === "/api/ml/config")
-    return json({ hyperparameters: {}, featureFlags: {} });
+  if (route === "/api/ml/monitoring") return json({ alerts: [], drift: [], performance: {} });
+  if (route === "/api/ml/governance") return json({ policies: [], approvals: [] });
+  if (route === "/api/ml/config") return json({ hyperparameters: {}, featureFlags: {} });
 
   // --- Reports ---
   if (route === "/api/reporting/reports") {
     // Build per-client portfolio summary that sums to $45.2M AUM
     const clientAums = [
-      12500000, 9800000, 7600000, 5400000, 3900000, 2800000, 1500000, 900000,
-      500000, 200000, 60000, 40000,
+      12500000, 9800000, 7600000, 5400000, 3900000, 2800000, 1500000, 900000, 500000, 200000, 60000, 40000,
     ];
     const portfolioSummary = CLIENTS.slice(0, 12).map((c, i) => ({
       clientId: c.id,
@@ -1641,9 +1464,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       ytdReturn: parseFloat((6 + Math.sin(i * 0.5) * 8).toFixed(1)),
     }));
     // Force average mtdReturn ≈ 3.2%
-    const avgMtd =
-      portfolioSummary.reduce((s, c) => s + c.mtdReturn, 0) /
-      portfolioSummary.length;
+    const avgMtd = portfolioSummary.reduce((s, c) => s + c.mtdReturn, 0) / portfolioSummary.length;
     const mtdDelta = 3.2 - avgMtd;
     portfolioSummary.forEach((c) => {
       c.mtdReturn = parseFloat((c.mtdReturn + mtdDelta).toFixed(1));
@@ -1652,13 +1473,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       data: Array.from({ length: 47 }, (_, i) => ({
         id: `rpt-${i + 1}`,
         clientId: portfolioSummary[i % portfolioSummary.length].clientId,
-        type: [
-          "daily-pnl",
-          "risk-summary",
-          "execution-quality",
-          "regulatory-mifid",
-          "settlement-summary",
-        ][i % 5],
+        type: ["daily-pnl", "risk-summary", "execution-quality", "regulatory-mifid", "settlement-summary"][i % 5],
         name: `${["Daily PnL", "Risk Summary", "Execution Quality", "MiFID II", "Settlement"][i % 5]} Report`,
         status: i < 40 ? "delivered" : "pending",
         generatedAt: new Date(Date.now() - i * 86400000).toISOString(),
@@ -1670,28 +1485,16 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         clientId: c.id,
         amount: 5000 + i * 2500,
         status: i < 3 ? "paid" : "pending",
-        dueDate: new Date(Date.now() + (30 - i * 7) * 86400000)
-          .toISOString()
-          .split("T")[0],
+        dueDate: new Date(Date.now() + (30 - i * 7) * 86400000).toISOString().split("T")[0],
       })),
     });
   }
-  if (
-    route.match(/^\/api\/reporting\/settlements\/[^/]+\/confirm$/) &&
-    opts?.method === "PUT"
-  ) {
+  if (route.match(/^\/api\/reporting\/settlements\/[^/]+\/confirm$/) && opts?.method === "PUT") {
     const settlementId = route.split("/").at(-2);
     return json({ ok: true, settlement_id: settlementId, status: "confirmed" });
   }
   if (route === "/api/reporting/settlements") {
-    const statuses = [
-      "confirmed",
-      "pending",
-      "failed",
-      "disputed",
-      "confirmed",
-      "pending",
-    ] as const;
+    const statuses = ["confirmed", "pending", "failed", "disputed", "confirmed", "pending"] as const;
     return json({
       settlements: CLIENTS.slice(0, 6).flatMap((c, ci) =>
         Array.from({ length: 3 }, (_, i) => ({
@@ -1746,17 +1549,11 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   // --- Reporting Subscriptions ---
-  if (
-    route.match(/^\/api\/reporting\/subscriptions\/[^/]+\/approve$/) &&
-    opts?.method === "PUT"
-  ) {
+  if (route.match(/^\/api\/reporting\/subscriptions\/[^/]+\/approve$/) && opts?.method === "PUT") {
     const subId = route.split("/").at(-2);
     return json({ ok: true, subscription_id: subId, status: "active" });
   }
-  if (
-    route === "/api/reporting/subscriptions/subscribe" &&
-    opts?.method === "POST"
-  ) {
+  if (route === "/api/reporting/subscriptions/subscribe" && opts?.method === "POST") {
     return json({
       subscription: { id: `sub-new-${Date.now()}`, status: "pending_approval" },
     });
@@ -1860,16 +1657,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       ],
       total: 4,
     });
-  if (
-    route === "/api/reporting/reconciliation/resolve" &&
-    opts?.method === "POST"
-  ) {
+  if (route === "/api/reporting/reconciliation/resolve" && opts?.method === "POST") {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     return json({ ok: true, break_id: body.break_id, status: "resolved" });
   }
   if (route === "/api/reporting/regulatory") return json([]);
-  if (route === "/api/reporting/pnl-attribution")
-    return json({ factors: [], total: 0 });
+  if (route === "/api/reporting/pnl-attribution") return json({ factors: [], total: 0 });
   if (route === "/api/reporting/executive-summary")
     return json({
       aum: 45200000,
@@ -1878,10 +1671,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       strategies: 12,
     });
   if (route === "/api/reporting/invoices") return json([]);
-  if (route.startsWith("/api/reporting/reconciliation/"))
-    return json({ ok: true });
-  if (route === "/api/reporting/generate")
-    return json({ ok: true, reportId: "rpt-mock-001" });
+  if (route.startsWith("/api/reporting/reconciliation/")) return json({ ok: true });
+  if (route === "/api/reporting/generate") return json({ ok: true, reportId: "rpt-mock-001" });
   if (route === "/api/reporting/schedules") return json([]);
 
   // --- Service Status ---
@@ -2443,10 +2234,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         details: "BTC direction model v3 deployed to inference",
       },
     ]);
-  if (route === "/api/audit/compliance")
-    return json({ status: "compliant", checks: [] });
-  if (route === "/api/audit/data-health")
-    return json({ status: "healthy", gaps: 0 });
+  if (route === "/api/audit/compliance") return json({ status: "compliant", checks: [] });
+  if (route === "/api/audit/data-health") return json({ status: "healthy", gaps: 0 });
   if (route === "/api/audit/batch-jobs") return json([]);
 
   // --- Users / Orgs ---
@@ -2456,8 +2245,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         ...o,
         status: "active",
         memberCount: 3 + i * 2,
-        subscriptionTier:
-          i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
+        subscriptionTier: i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
         monthlyFee: [0, 15000, 8000][i] ?? 5000,
         apiKeys: 2 + i,
         usageGb: 12 + i * 8,
@@ -2469,14 +2257,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json({
       data: ORGANIZATIONS.map((o, i) => ({
         orgId: o.id,
-        tier:
-          i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
+        tier: i === 0 ? "enterprise" : i === 1 ? "institutional" : "professional",
         entitlements:
-          i === 0
-            ? ["*"]
-            : i === 1
-              ? ["data-pro", "execution-full", "strategy-full", "reporting"]
-              : ["data-basic"],
+          i === 0 ? ["*"] : i === 1 ? ["data-pro", "execution-full", "strategy-full", "reporting"] : ["data-basic"],
         startDate: "2025-06-01",
         renewalDate: "2026-06-01",
         monthlyFee: [0, 15000, 8000][i] ?? 5000,
@@ -2501,9 +2284,62 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- News ---
   if (route === "/api/news/feed") return json({ data: [] });
 
+  // --- Economic / corporate calendar (hooks/api/use-calendar) ---
+  if (route === "/api/calendar/economic-results") {
+    return json({
+      data: [
+        {
+          id: "eco-nfp",
+          event_type: "NFP",
+          release_date: getToday(),
+          release_time_utc: "13:30:00Z",
+          actual_value: 216000,
+          previous_value: 227000,
+          unit: "jobs (000s)",
+          status: "released" as const,
+        },
+        {
+          id: "eco-cpi",
+          event_type: "CPI m/m",
+          release_date: getToday(),
+          release_time_utc: "12:30:00Z",
+          actual_value: 0.2,
+          previous_value: 0.3,
+          unit: "%",
+          status: "upcoming" as const,
+        },
+      ],
+    });
+  }
+  if (route === "/api/calendar/corporate-actions") {
+    return json({
+      data: [
+        {
+          id: "ca-aapl-div",
+          ticker: "AAPL",
+          event_type: "dividend" as const,
+          event_date: getToday(),
+          amount: 0.25,
+          actual_eps: null,
+          estimated_eps: null,
+          status: "confirmed" as const,
+        },
+        {
+          id: "ca-msft-earn",
+          ticker: "MSFT",
+          event_type: "earnings" as const,
+          event_date: getToday(),
+          amount: null,
+          actual_eps: null,
+          estimated_eps: 3.12,
+          status: "upcoming" as const,
+        },
+      ],
+    });
+  }
+
   // --- Chat ---
-  if (route.startsWith("/api/chat"))
-    return json({ message: "Mock mode — chat unavailable" });
+  if (route.startsWith("/api/chat")) return json({ message: "Mock mode — chat unavailable" });
 
   // --- Permission Catalogue ---
 
@@ -3217,8 +3053,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
               {
                 key: "fund-derivatives-tradfi",
                 label: "Fund Structure — Derivatives & TradFi (EU Regulated)",
-                description:
-                  "Crypto derivatives, options, futures, traditional markets — EU-regulated fund vehicles",
+                description: "Crypto derivatives, options, futures, traditional markets — EU-regulated fund vehicles",
                 internal_only: false,
               },
               {
@@ -3495,9 +3330,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json(MOCK_PERMISSION_CATALOGUE);
   }
   if (route.match(/^\/api\/auth\/catalogue\/search\/[^/]+$/)) {
-    const queryStr = decodeURIComponent(
-      route.split("/").pop() ?? "",
-    ).toLowerCase();
+    const queryStr = decodeURIComponent(route.split("/").pop() ?? "").toLowerCase();
     const results: Array<{
       domain: string;
       domain_label: string;
@@ -3532,14 +3365,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }
     return json({ results, total: results.length });
   }
-  if (
-    route.match(/^\/api\/auth\/catalogue\/[^/]+$/) &&
-    !route.includes("search")
-  ) {
+  if (route.match(/^\/api\/auth\/catalogue\/[^/]+$/) && !route.includes("search")) {
     const domainKey = route.split("/").pop();
-    const domain = MOCK_PERMISSION_CATALOGUE.domains.find(
-      (d) => d.key === domainKey,
-    );
+    const domain = MOCK_PERMISSION_CATALOGUE.domains.find((d) => d.key === domainKey);
     if (domain) return json({ domain });
     return json({ error: "Domain not found" });
   }
@@ -3583,9 +3411,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       return json({ user: updated ?? { error: "User not found" } });
     }
     const { users } = getProvisioningState();
-    const user = users.find(
-      (u) => u.firebase_uid === userId || u.id === userId,
-    );
+    const user = users.find((u) => u.firebase_uid === userId || u.id === userId);
     return json({ user: user ?? users[0] });
   }
   if (route === "/api/auth/provisioning/users/onboard") {
@@ -3685,14 +3511,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const urlObj = new URL(route, "http://localhost");
     const statusFilter = urlObj.searchParams.get("status");
     const { requests } = getProvisioningState();
-    const filtered = statusFilter
-      ? requests.filter((r) => r.status === statusFilter)
-      : requests;
+    const filtered = statusFilter ? requests.filter((r) => r.status === statusFilter) : requests;
     return json({ requests: filtered, total: filtered.length });
   }
-  if (
-    route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
     const reqId = route.split("/").at(-2);
     const body = opts?.body ? JSON.parse(opts.body as string) : {};
     const action = body.action as "approve" | "deny";
@@ -3704,20 +3526,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
     if (updated && action === "approve") {
       const state = getProvisioningState();
-      const existing = state.users.find(
-        (u) => u.email === updated.requester_email,
-      );
-      const entitlements = [
-        ...new Set([...updated.requested_entitlements, "reporting"]),
-      ];
-      const orgSlug =
-        updated.org_id ||
-        updated.requester_email.split("@")[1]?.split(".")[0] ||
-        "unknown";
+      const existing = state.users.find((u) => u.email === updated.requester_email);
+      const entitlements = [...new Set([...updated.requested_entitlements, "reporting"])];
+      const orgSlug = updated.org_id || updated.requester_email.split("@")[1]?.split(".")[0] || "unknown";
       let orgId = "";
       const existingOrg = state.organizations.find(
-        (o) =>
-          o.slug === orgSlug || o.contact_email === updated.requester_email,
+        (o) => o.slug === orgSlug || o.contact_email === updated.requester_email,
       );
       if (existingOrg) {
         orgId = existingOrg.id;
@@ -3740,9 +3554,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         orgId = newOrg.id;
       }
       if (existing) {
-        const merged = [
-          ...new Set([...existing.product_slugs, ...entitlements]),
-        ];
+        const merged = [...new Set([...existing.product_slugs, ...entitlements])];
         updateUser(existing.id, { product_slugs: merged, org_id: orgId });
       } else {
         addUser({
@@ -3776,7 +3588,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const uid = `uid-${Date.now()}`;
     const userId = `user-${Date.now()}`;
-    const orgSlug = (body.company || body.email.split("@")[1]?.split(".")[0] || "unknown").toLowerCase().replace(/\s+/g, "-");
+    const orgSlug = (body.company || body.email.split("@")[1]?.split(".")[0] || "unknown")
+      .toLowerCase()
+      .replace(/\s+/g, "-");
     const newUser: MockUser = {
       id: userId,
       firebase_uid: uid,
@@ -3861,20 +3675,14 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
 
   // --- Organizations ---
-  if (
-    route === "/api/auth/provisioning/organizations" &&
-    (!opts?.method || opts.method === "GET")
-  ) {
+  if (route === "/api/auth/provisioning/organizations" && (!opts?.method || opts.method === "GET")) {
     const state = getProvisioningState();
     return json({
       organizations: state.organizations,
       total: state.organizations.length,
     });
   }
-  if (
-    route === "/api/auth/provisioning/organizations" &&
-    opts?.method === "POST"
-  ) {
+  if (route === "/api/auth/provisioning/organizations" && opts?.method === "POST") {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const org: MockOrganization = {
       id: `org-${Date.now()}`,
@@ -3892,28 +3700,18 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     addOrganization(org);
     return json({ organization: org });
   }
-  if (
-    route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+$/) &&
-    !route.includes("api-keys")
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+$/) && !route.includes("api-keys")) {
     const orgId = route.split("/").pop()!;
     if (opts?.method === "PUT") {
       const body = opts.body ? JSON.parse(opts.body as string) : {};
       const updated = updateOrganization(orgId, body);
-      return updated
-        ? json({ organization: updated })
-        : json({ error: "not found" });
+      return updated ? json({ organization: updated }) : json({ error: "not found" });
     }
     const state = getProvisioningState();
     const org = state.organizations.find((o) => o.id === orgId);
     return org ? json({ organization: org }) : json({ error: "not found" });
   }
-  if (
-    route.match(
-      /^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys$/,
-    ) &&
-    opts?.method === "POST"
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys$/) && opts?.method === "POST") {
     const orgId = route.split("/").at(-2)!;
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const key: MockVenueApiKey = {
@@ -3927,12 +3725,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const org = addApiKey(orgId, key);
     return org ? json({ organization: org }) : json({ error: "org not found" });
   }
-  if (
-    route.match(
-      /^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys\/[^/]+$/,
-    ) &&
-    opts?.method === "DELETE"
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/organizations\/[^/]+\/api-keys\/[^/]+$/) && opts?.method === "DELETE") {
     const parts = route.split("/");
     const keyId = parts.pop()!;
     parts.pop(); // skip "api-keys"
@@ -3947,19 +3740,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("portal_user");
-        if (raw)
-          currentUserEmail =
-            (JSON.parse(raw) as { email?: string }).email ?? null;
+        if (raw) currentUserEmail = (JSON.parse(raw) as { email?: string }).email ?? null;
       } catch {
         /* ignore */
       }
     }
-    const user = currentUserEmail
-      ? state.users.find((u) => u.email === currentUserEmail)
-      : null;
-    const org = user?.org_id
-      ? state.organizations.find((o) => o.id === user.org_id)
-      : null;
+    const user = currentUserEmail ? state.users.find((u) => u.email === currentUserEmail) : null;
+    const org = user?.org_id ? state.organizations.find((o) => o.id === user.org_id) : null;
     return org ? json({ organization: org }) : json({ organization: null });
   }
 
@@ -4011,9 +3798,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Client Onboarding Applications ---
   if (
-    route.match(
-      /^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/,
-    ) &&
+    route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/) &&
     opts?.method === "POST"
   ) {
     const appId = route.split("/").at(-2)!;
@@ -4030,22 +3815,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     addDocument(newDoc);
     return json({ document: newDoc });
   }
-  if (
-    route.match(
-      /^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/,
-    )
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/documents$/)) {
     const appId = route.split("/").at(-2)!;
     const { documents } = getOnboardingState();
     const appDocs = documents.filter((d) => d.application_id === appId);
     return json({ documents: appDocs, total: appDocs.length });
   }
-  if (
-    route.match(
-      /^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/review$/,
-    ) &&
-    opts?.method === "PUT"
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/onboarding-applications\/[^/]+\/review$/) && opts?.method === "PUT") {
     const appId = route.split("/").at(-2)!;
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const newStatus = body.action === "reject" ? "rejected" : "approved";
@@ -4054,14 +3830,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       reviewer_id: body.reviewer_id ?? "admin",
       review_note: body.review_note ?? "",
     });
-    return updated
-      ? json({ application: updated })
-      : json({ error: "not found" });
+    return updated ? json({ application: updated }) : json({ error: "not found" });
   }
-  if (
-    route === "/api/auth/provisioning/onboarding-applications" &&
-    opts?.method === "POST"
-  ) {
+  if (route === "/api/auth/provisioning/onboarding-applications" && opts?.method === "POST") {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const now = new Date().toISOString();
     const newApp: OnboardingApplication = {
@@ -4392,15 +4163,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   ) {
     const uid = route.split("/").pop()!;
     const state = getProvisioningState();
-    const user = state.users.find(
-      (u) => u.id === uid || u.firebase_uid === uid,
-    );
+    const user = state.users.find((u) => u.id === uid || u.firebase_uid === uid);
     return user ? json({ user }) : json({ error: "not found" });
   }
-  if (
-    route === "/api/auth/provisioning/users/onboard" &&
-    opts?.method === "POST"
-  ) {
+  if (route === "/api/auth/provisioning/users/onboard" && opts?.method === "POST") {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const newUser: MockUser = {
       id: `user-${Date.now()}`,
@@ -4420,10 +4186,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       provisioning_steps: [{ service: "portal", status: "success" }],
     });
   }
-  if (
-    route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) &&
-    opts?.method === "PUT"
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+$/) && opts?.method === "PUT") {
     const uid = route.split("/").pop()!;
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const updated = updateUser(uid, body);
@@ -4473,14 +4236,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }
     const state = getProvisioningState();
     const statusFilter = path.split("?status=")[1];
-    const filtered = statusFilter
-      ? state.requests.filter((r) => r.status === statusFilter)
-      : state.requests;
+    const filtered = statusFilter ? state.requests.filter((r) => r.status === statusFilter) : state.requests;
     return json({ requests: filtered, total: filtered.length });
   }
-  if (
-    route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)
-  ) {
+  if (route.match(/^\/api\/auth\/provisioning\/access-requests\/[^/]+\/review$/)) {
     const reqId = route.split("/")[5];
     const body = opts?.body ? JSON.parse(opts.body as string) : {};
     const action = body.action as "approve" | "deny";
@@ -4491,20 +4250,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
     if (updated && action === "approve") {
       const state = getProvisioningState();
-      const existing = state.users.find(
-        (u) => u.email === updated.requester_email,
-      );
-      const entitlements = [
-        ...new Set([...updated.requested_entitlements, "reporting"]),
-      ];
-      const orgSlug =
-        updated.org_id ||
-        updated.requester_email.split("@")[1]?.split(".")[0] ||
-        "unknown";
+      const existing = state.users.find((u) => u.email === updated.requester_email);
+      const entitlements = [...new Set([...updated.requested_entitlements, "reporting"])];
+      const orgSlug = updated.org_id || updated.requester_email.split("@")[1]?.split(".")[0] || "unknown";
       let orgId = "";
       const existingOrg = state.organizations.find(
-        (o) =>
-          o.slug === orgSlug || o.contact_email === updated.requester_email,
+        (o) => o.slug === orgSlug || o.contact_email === updated.requester_email,
       );
       if (existingOrg) {
         orgId = existingOrg.id;
@@ -4527,9 +4278,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         orgId = newOrg.id;
       }
       if (existing) {
-        const merged = [
-          ...new Set([...existing.product_slugs, ...entitlements]),
-        ];
+        const merged = [...new Set([...existing.product_slugs, ...entitlements])];
         updateUser(existing.id, { product_slugs: merged, org_id: orgId });
       } else {
         addUser({
@@ -4585,9 +4334,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json(MOCK_PERMISSION_CATALOGUE);
   }
   if (route.startsWith("/api/auth/catalogue/search/")) {
-    const query = decodeURIComponent(
-      route.split("/api/auth/catalogue/search/")[1] || "",
-    ).toLowerCase();
+    const query = decodeURIComponent(route.split("/api/auth/catalogue/search/")[1] || "").toLowerCase();
     const results: Array<{
       domain: string;
       domain_label: string;
@@ -4625,8 +4372,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Health (service health endpoints) ---
   if (route === "/api/health") return json({ status: "healthy", mock: true });
-  if (route === "/api/auth/health")
-    return json({ status: "healthy", service: "auth-api", mock: true });
+  if (route === "/api/auth/health") return json({ status: "healthy", service: "auth-api", mock: true });
   if (route === "/api/reporting/health")
     return json({
       status: "healthy",
@@ -4645,21 +4391,17 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       service: "deployment-service",
       mock: true,
     });
-  if (route === "/api/config/health")
-    return json({ status: "healthy", service: "config-interface", mock: true });
+  if (route === "/api/config/health") return json({ status: "healthy", service: "config-interface", mock: true });
   if (route === "/api/analytics/health")
     return json({
       status: "healthy",
       service: "trading-analytics-api",
       mock: true,
     });
-  if (route === "/api/audit/health")
-    return json({ status: "healthy", service: "batch-audit-api", mock: true });
-  if (route === "/api/ml/health")
-    return json({ status: "healthy", service: "ml-inference-api", mock: true });
+  if (route === "/api/audit/health") return json({ status: "healthy", service: "batch-audit-api", mock: true });
+  if (route === "/api/ml/health") return json({ status: "healthy", service: "ml-inference-api", mock: true });
   if (route === "/api/market-data/health")
-    if (route.endsWith("/health"))
-      return json({ status: "healthy", mock: true });
+    if (route.endsWith("/health")) return json({ status: "healthy", mock: true });
 
   // --- Catch-all for reporting/execution/analytics/deployment with data ---
   if (route.startsWith("/api/reporting/")) return json({ data: [], total: 0 });
@@ -4674,8 +4416,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   )
     return json({ data: [], total: 0 });
   if (route.startsWith("/api/analytics/")) return json({ data: [], total: 0 });
-  if (route.startsWith("/api/market-data/"))
-    return json({ data: [], total: 0 });
+  if (route.startsWith("/api/market-data/")) return json({ data: [], total: 0 });
 
   return null;
 }
@@ -4688,16 +4429,8 @@ export function installMockHandler(): void {
   if (typeof window === "undefined") return;
 
   const originalFetch = window.fetch.bind(window);
-  window.fetch = async (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ): Promise<Response> => {
-    const url =
-      typeof input === "string"
-        ? input
-        : input instanceof URL
-          ? input.toString()
-          : input.url;
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
     if (url.startsWith("/api/")) {
       // Let real Next.js API routes pass through to the server
       if (url.startsWith("/api/onboarding/")) {
@@ -4717,7 +4450,5 @@ export function installMockHandler(): void {
     return originalFetch(input, init);
   };
 
-  console.info(
-    "[mock] Static visual preview mode active — all API calls intercepted",
-  );
+  console.info("[mock] Static visual preview mode active — all API calls intercepted");
 }
