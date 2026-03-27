@@ -415,6 +415,20 @@ export const routeMappings: RouteMapping[] = [
     lanes: ["strategy", "execution", "ml"],
     requiresAuth: true,
   },
+  {
+    path: "/services/observe/news",
+    label: "News",
+    primaryStage: "observe",
+    lanes: ["strategy", "execution", "data"],
+    requiresAuth: true,
+  },
+  {
+    path: "/services/observe/strategy-health",
+    label: "Strategy Health",
+    primaryStage: "observe",
+    lanes: ["strategy", "ml"],
+    requiresAuth: true,
+  },
 
   // Execution Service (Execute stage)
   {
@@ -639,14 +653,26 @@ export function getRouteMapping(path: string): RouteMapping | undefined {
     .filter((m) => path.startsWith(m.path + "/"))
     .sort((a, b) => b.path.length - a.path.length)[0];
 
-  return prefixMatch;
+  if (prefixMatch) return prefixMatch;
+
+  // Observe sub-routes must keep primaryStage "observe" for lifecycle nav (tabs may outpace explicit mappings).
+  const observeBase = "/services/observe";
+  if (path === observeBase || path.startsWith(`${observeBase}/`)) {
+    return {
+      path: observeBase,
+      label: "Observe",
+      primaryStage: "observe",
+      lanes: ["strategy", "execution", "capital"],
+      requiresAuth: true,
+    };
+  }
+
+  return undefined;
 }
 
 // Get all routes for a lifecycle stage
 export function getRoutesForStage(stage: LifecycleStage): RouteMapping[] {
-  return routeMappings.filter(
-    (m) => m.primaryStage === stage || m.secondaryStage === stage,
-  );
+  return routeMappings.filter((m) => m.primaryStage === stage || m.secondaryStage === stage);
 }
 
 // Get all routes for a domain lane
@@ -669,19 +695,8 @@ export interface LifecycleNavItem {
 }
 
 // Build navigation structure — simplified: one primary service link per stage
-export function buildLifecycleNav(
-  authRequired: boolean = true,
-): LifecycleNavItem[] {
-  const stages: LifecycleStage[] = [
-    "acquire",
-    "build",
-    "promote",
-    "run",
-    "execute",
-    "observe",
-    "manage",
-    "report",
-  ];
+export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavItem[] {
+  const stages: LifecycleStage[] = ["acquire", "build", "promote", "run", "execute", "observe", "manage", "report"];
 
   // Service-centric nav: each stage shows its primary service entry point
   const stageServiceMap: Record<
@@ -709,8 +724,7 @@ export function buildLifecycleNav(
         path: "/services/promote/pipeline",
         label: "Strategy Promotion",
         lanes: ["strategy", "ml"],
-        description:
-          "Review, assess, and approve strategies for live deployment",
+        description: "Review, assess, and approve strategies for live deployment",
       },
       {
         path: "/services/research/strategy/candidates",
@@ -747,6 +761,18 @@ export function buildLifecycleNav(
         label: "Alerts",
         lanes: ["strategy", "execution", "ml"],
         description: "Alert management and notifications",
+      },
+      {
+        path: "/services/observe/news",
+        label: "News",
+        lanes: ["strategy", "execution", "data"],
+        description: "Market and strategy news feed",
+      },
+      {
+        path: "/services/observe/strategy-health",
+        label: "Strategy Health",
+        lanes: ["strategy", "ml"],
+        description: "Strategy performance and health signals",
       },
       {
         path: "/services/observe/health",
