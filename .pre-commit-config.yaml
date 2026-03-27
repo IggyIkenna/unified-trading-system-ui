@@ -22,7 +22,7 @@ repos:
         name: Format with Prettier
         entry: pnpm exec prettier --write --ignore-unknown
         language: system
-        types_or: [javascript, jsx, ts, tsx, json, css, markdown, yaml]
+        types_or: [javascript, jsx, ts, tsx, json, css, markdown, yaml, html]
 
   # ESLint - uses the project's own ESLint 9 (flat config)
   - repo: local
