@@ -1,7 +1,14 @@
 {
-  "name": "my-project",
-  "version": "0.1.0",
+  "name": "@unified-trading/terminal",
+  "version": "0.2.0",
+  "description": "Unified Trading Terminal — customisable widget-based trading UI for multi-asset, multi-venue operations across DeFi, CeFi, TradFi, sports prediction markets, and derivatives.",
+  "author": "Odum Capital",
+  "license": "UNLICENSED",
   "private": true,
+  "repository": {
+    "type": "git",
+    "directory": "unified-trading-system-ui"
+  },
   "engines": {
     "node": ">=22"
   },
