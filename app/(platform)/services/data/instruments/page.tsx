@@ -11,60 +11,41 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, Bell } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { FinderBrowser } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import type { FinderSelections } from "@/components/shared/finder";
-import {
-  INSTRUMENTS_COLUMNS,
-  getInstrumentsContextStats,
-} from "@/components/data/instruments-finder-config";
+import { INSTRUMENTS_COLUMNS, getInstrumentsContextStats } from "@/components/data/instruments-finder-config";
 import type { DataCategory, InstrumentEntry } from "@/lib/data-service-types";
-import {
-  DATA_CATEGORY_LABELS,
-  FOLDERS_BY_CATEGORY,
-} from "@/lib/data-service-types";
-import {
-  MOCK_INSTRUMENT_COUNTS,
-  MOCK_ALERTS,
-} from "@/lib/data-service-mock-data";
+import { DATA_CATEGORY_LABELS, FOLDERS_BY_CATEGORY } from "@/lib/data-service-types";
+import { MOCK_INSTRUMENT_COUNTS, MOCK_ALERTS } from "@/lib/data-service-mock-data";
 import { useScopedCategories } from "@/hooks/use-scoped-categories";
 
 // ─── Instrument detail panel ──────────────────────────────────────────────────
 
 function InstrumentDetail({ selections }: { selections: FinderSelections }) {
   const instItem = selections["instrument"];
-  const venueData = selections["venue"]?.data as
-    | { venue: string; cat: DataCategory }
-    | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
   const catData = selections["category"]?.data as DataCategory | undefined;
 
   if (instItem) {
     const inst = instItem.data as InstrumentEntry | null;
-    if (!inst || !inst.symbol) {
+    if (!inst || !inst.symbol || !inst.instrumentKey || !Array.isArray(inst.dataTypes)) {
       return (
         <div className="p-4 space-y-3">
           <p className="text-xs font-mono font-semibold">{instItem.label}</p>
-          <p className="text-xs text-muted-foreground">
-            Instrument details not available in mock data.
-          </p>
+          <p className="text-xs text-muted-foreground">Instrument details not available in mock data.</p>
         </div>
       );
     }
     return (
       <div className="p-4 space-y-4">
         <div className="space-y-1.5">
-          <p className="text-xs font-mono font-bold text-foreground">
-            {inst.symbol}
-          </p>
-          <p className="text-xs text-muted-foreground font-mono">
-            {inst.instrumentKey}
-          </p>
+          <p className="text-xs font-mono font-bold text-foreground">{inst.symbol}</p>
+          <p className="text-xs text-muted-foreground font-mono">{inst.instrumentKey}</p>
         </div>
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-muted-foreground">Venue</p>
-            <p className="font-medium capitalize">
-              {inst.venue.replace(/_/g, " ")}
-            </p>
+            <p className="font-medium capitalize">{inst.venue.replace(/_/g, " ")}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Category</p>
@@ -72,9 +53,7 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
           </div>
           <div>
             <p className="text-muted-foreground">Type</p>
-            <p className="font-medium capitalize">
-              {inst.folder.replace(/_/g, " ")}
-            </p>
+            <p className="font-medium capitalize">{inst.folder.replace(/_/g, " ")}</p>
           </div>
           {inst.baseCurrency && (
             <div>
@@ -92,16 +71,12 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
           {inst.availableTo && (
             <div>
               <p className="text-muted-foreground">Delisted</p>
-              <p className="font-mono font-medium text-red-400">
-                {inst.availableTo}
-              </p>
+              <p className="font-mono font-medium text-red-400">{inst.availableTo}</p>
             </div>
           )}
         </div>
         <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-            Data Types
-          </p>
+          <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Data Types</p>
           <div className="flex flex-wrap gap-1">
             {inst.dataTypes.map((dt) => (
               <Badge key={dt} variant="secondary" className="text-xs font-mono">
@@ -119,21 +94,15 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
     const folders = FOLDERS_BY_CATEGORY[venueData.cat] ?? [];
     return (
       <div className="p-4 space-y-3">
-        <p className="text-sm font-semibold capitalize">
-          {venueData.venue.replace(/_/g, " ")}
-        </p>
+        <p className="text-sm font-semibold capitalize">{venueData.venue.replace(/_/g, " ")}</p>
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-muted-foreground">Total instruments</p>
-            <p className="font-mono font-bold text-foreground">
-              {counts?.total.toLocaleString() ?? "—"}
-            </p>
+            <p className="font-mono font-bold text-foreground">{counts?.total.toLocaleString() ?? "—"}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Active</p>
-            <p className="font-mono font-bold text-emerald-400">
-              {counts?.active.toLocaleString() ?? "—"}
-            </p>
+            <p className="font-mono font-bold text-emerald-400">{counts?.active.toLocaleString() ?? "—"}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Delisted</p>
@@ -147,9 +116,7 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
           </div>
         </div>
         <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">
-            Types
-          </p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">Types</p>
           <div className="flex flex-wrap gap-1">
             {folders.map((f) => (
               <Badge key={f} variant="secondary" className="text-xs capitalize">
@@ -163,9 +130,7 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
   }
 
   if (catData) {
-    const venues = Object.entries(MOCK_INSTRUMENT_COUNTS).filter(
-      ([, v]) => v.category === catData,
-    );
+    const venues = Object.entries(MOCK_INSTRUMENT_COUNTS).filter(([, v]) => v.category === catData);
     const total = venues.reduce((s, [, v]) => s + v.total, 0);
     return (
       <div className="p-4 space-y-3">
@@ -173,9 +138,7 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-muted-foreground">Total instruments</p>
-            <p className="font-mono font-bold text-foreground">
-              {total.toLocaleString()}
-            </p>
+            <p className="font-mono font-bold text-foreground">{total.toLocaleString()}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Venues</p>
@@ -183,9 +146,7 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
           </div>
         </div>
         <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">
-            Select a venue to drill down
-          </p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">Select a venue to drill down</p>
         </div>
       </div>
     );
@@ -193,12 +154,8 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
-      <p className="text-sm font-medium text-muted-foreground">
-        No instrument selected
-      </p>
-      <p className="text-xs text-muted-foreground/60 mt-1">
-        Drill down to browse instruments and their data types
-      </p>
+      <p className="text-sm font-medium text-muted-foreground">No instrument selected</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">Drill down to browse instruments and their data types</p>
     </div>
   );
 }
@@ -206,18 +163,10 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function InstrumentsPage() {
-  const newInstrumentAlerts = MOCK_ALERTS.filter(
-    (a) => a.type === "new_instruments",
-  );
+  const newInstrumentAlerts = MOCK_ALERTS.filter((a) => a.type === "new_instruments");
 
-  const totalAll = Object.values(MOCK_INSTRUMENT_COUNTS).reduce(
-    (s, v) => s + v.total,
-    0,
-  );
-  const totalActive = Object.values(MOCK_INSTRUMENT_COUNTS).reduce(
-    (s, v) => s + v.active,
-    0,
-  );
+  const totalAll = Object.values(MOCK_INSTRUMENT_COUNTS).reduce((s, v) => s + v.total, 0);
+  const totalActive = Object.values(MOCK_INSTRUMENT_COUNTS).reduce((s, v) => s + v.active, 0);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -226,17 +175,13 @@ export default function InstrumentsPage() {
         <div>
           <h1 className="text-lg font-bold tracking-tight">Instruments</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {totalAll.toLocaleString()} instruments ·{" "}
-            {totalActive.toLocaleString()} active ·{" "}
+            {totalAll.toLocaleString()} instruments · {totalActive.toLocaleString()} active ·{" "}
             {Object.keys(MOCK_INSTRUMENT_COUNTS).length} venues
           </p>
         </div>
         <div className="flex items-center gap-2">
           {newInstrumentAlerts.length > 0 && (
-            <Badge
-              variant="outline"
-              className="text-xs gap-1.5 border-sky-400/30 text-sky-400"
-            >
+            <Badge variant="outline" className="text-xs gap-1.5 border-sky-400/30 text-sky-400">
               <Bell className="size-3" />
               {newInstrumentAlerts.length} new alerts
             </Badge>
@@ -251,17 +196,13 @@ export default function InstrumentsPage() {
       {/* FinderBrowser */}
       <FinderBrowser
         columns={INSTRUMENTS_COLUMNS}
-        detailPanel={(selections) => (
-          <InstrumentDetail selections={selections} />
-        )}
+        detailPanel={(selections) => <InstrumentDetail selections={selections} />}
         contextStats={getInstrumentsContextStats}
         detailPanelTitle="Instrument Detail"
         emptyState={
           <div className="text-center">
-            <p className="text-sm font-medium">Select a category</p>
-            <p className="text-xs opacity-60 mt-1">
-              Browse instruments by asset class
-            </p>
+            <p className={cn(finderText.title, "font-medium")}>Select a category</p>
+            <p className={cn(finderText.sub, "opacity-60 mt-1")}>Browse instruments by asset class</p>
           </div>
         }
       />

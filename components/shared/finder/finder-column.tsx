@@ -5,10 +5,8 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { ColRow } from "@/components/shared/finder/col-row";
-import type {
-  FinderColumnDef,
-  FinderItem,
-} from "@/components/shared/finder/types";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
+import type { FinderColumnDef, FinderItem } from "@/components/shared/finder/types";
 
 const PAGE_SIZE = 100;
 
@@ -20,21 +18,13 @@ export interface FinderColumnProps {
   search?: string;
 }
 
-export function FinderColumn({
-  columnDef,
-  items,
-  selected,
-  onSelect,
-  search,
-}: FinderColumnProps) {
+export function FinderColumn({ columnDef, items, selected, onSelect, search }: FinderColumnProps) {
   const [page, setPage] = React.useState(0);
   const [internalSearch, setInternalSearch] = React.useState("");
 
   // Filter by external or internal search
   const filtered = React.useMemo(() => {
-    const q = (columnDef.showSearch ? internalSearch : (search ?? ""))
-      .toLowerCase()
-      .trim();
+    const q = (columnDef.showSearch ? internalSearch : (search ?? "")).toLowerCase().trim();
     if (!q) return items;
     return items.filter((item) => item.label.toLowerCase().includes(q));
   }, [items, search, internalSearch, columnDef.showSearch]);
@@ -47,18 +37,14 @@ export function FinderColumn({
   }, [itemsKey, columnDef.showSearch]);
 
   const shouldPaginate = columnDef.paginate && filtered.length > PAGE_SIZE;
-  const totalPages = shouldPaginate
-    ? Math.ceil(filtered.length / PAGE_SIZE)
-    : 1;
-  const displayItems = shouldPaginate
-    ? filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
-    : filtered;
+  const totalPages = shouldPaginate ? Math.ceil(filtered.length / PAGE_SIZE) : 1;
+  const displayItems = shouldPaginate ? filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE) : filtered;
 
   return (
     <div className="flex flex-col h-full">
       {/* Sticky header */}
       <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30 shrink-0">
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+        <p className={cn(finderText.meta, "font-semibold text-muted-foreground uppercase tracking-wider")}>
           {columnDef.label} · {filtered.length.toLocaleString()}
           {(search || internalSearch) && filtered.length !== items.length && (
             <span> / {items.length.toLocaleString()}</span>
@@ -70,7 +56,7 @@ export function FinderColumn({
       {columnDef.showSearch && (
         <div className="px-2 py-1.5 border-b border-border/30 shrink-0">
           <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3 text-muted-foreground" />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
             <Input
               placeholder={columnDef.searchPlaceholder ?? "Filter…"}
               value={internalSearch}
@@ -78,7 +64,7 @@ export function FinderColumn({
                 setInternalSearch(e.target.value);
                 setPage(0);
               }}
-              className="pl-6 h-6 text-xs border-border/40"
+              className={cn("pl-7 h-7 border-border/40", finderText.body)}
             />
           </div>
         </div>
@@ -88,22 +74,14 @@ export function FinderColumn({
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="p-1.5 space-y-0.5">
           {displayItems.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground text-xs">
-              No items found
-            </div>
+            <div className={cn("text-center py-8 text-muted-foreground", finderText.body)}>No items found</div>
           ) : (
             displayItems.map((item) => {
               const isActive = selected?.id === item.id;
-              const count = columnDef.getCount
-                ? columnDef.getCount(item)
-                : (item.count ?? null);
+              const count = columnDef.getCount ? columnDef.getCount(item) : (item.count ?? null);
 
               return (
-                <ColRow
-                  key={item.id}
-                  active={isActive}
-                  onClick={() => onSelect(item)}
-                >
+                <ColRow key={item.id} active={isActive} onClick={() => onSelect(item)}>
                   {/* Optional custom icon */}
                   {columnDef.renderIcon?.(item, isActive)}
 
@@ -111,7 +89,9 @@ export function FinderColumn({
                   {columnDef.renderLabel ? (
                     columnDef.renderLabel(item)
                   ) : (
-                    <span className="flex-1 font-medium truncate text-xs">
+                    <span
+                      className={cn("flex-1 min-w-0 font-medium break-words text-left leading-snug", finderText.body)}
+                    >
                       {item.label}
                     </span>
                   )}
@@ -120,25 +100,20 @@ export function FinderColumn({
                   {count !== null && count !== undefined && (
                     <span
                       className={cn(
-                        "text-[10px] tabular-nums shrink-0",
-                        isActive
-                          ? "text-primary-foreground/70"
-                          : "text-muted-foreground",
+                        finderText.meta,
+                        "tabular-nums shrink-0",
+                        isActive ? "text-primary-foreground/70" : "text-muted-foreground",
                       )}
                     >
-                      {typeof count === "number"
-                        ? count.toLocaleString()
-                        : count}
+                      {typeof count === "number" ? count.toLocaleString() : count}
                     </span>
                   )}
 
                   {/* Chevron */}
                   <ChevronRight
                     className={cn(
-                      "size-3 shrink-0",
-                      isActive
-                        ? "text-primary-foreground/60"
-                        : "text-muted-foreground/50",
+                      "size-3.5 shrink-0",
+                      isActive ? "text-primary-foreground/60" : "text-muted-foreground/50",
                     )}
                   />
                 </ColRow>
@@ -164,9 +139,12 @@ export function FinderColumn({
           <button
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page === totalPages - 1}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className={cn(
+              "flex items-center gap-1 text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors",
+              finderText.body,
+            )}
           >
-            Next <ChevronRight className="size-3" />
+            Next <ChevronRight className="size-3.5" />
           </button>
         </div>
       )}

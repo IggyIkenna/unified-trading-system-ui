@@ -65,15 +65,8 @@ interface ServiceTabsProps {
 function TabLabel({ tab, spread }: { tab: ServiceTab; spread: boolean }) {
   const Icon = tab.icon;
   return (
-    <span
-      className={cn(
-        "inline-flex min-w-0 items-center gap-1.5",
-        spread && "max-w-full justify-center",
-      )}
-    >
-      {Icon ? (
-        <Icon className="size-3.5 shrink-0 opacity-90" aria-hidden />
-      ) : null}
+    <span className={cn("inline-flex min-w-0 items-center gap-1.5", spread && "max-w-full justify-center")}>
+      {Icon ? <Icon className="size-3.5 shrink-0 opacity-90" aria-hidden /> : null}
       <span className={cn(spread && "truncate")}>{tab.label}</span>
     </span>
   );
@@ -109,8 +102,7 @@ export function ServiceTabs({
           className={cn(
             "flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]",
             alignEnd && "justify-end",
-            tabsSpread &&
-              "min-w-0 w-full flex-1 justify-stretch gap-0.5 sm:gap-1",
+            tabsSpread && "min-w-0 w-full flex-1 justify-stretch gap-0.5 sm:gap-1",
           )}
           aria-label="Service sections"
         >
@@ -120,9 +112,7 @@ export function ServiceTabs({
               ? pathname === tab.href || pathname === `${tab.href}/`
               : pathname === tab.href || pathname.startsWith(matchPath + "/");
             const isLocked =
-              tab.requiredEntitlement &&
-              !hasWildcard &&
-              !entitlements?.includes(tab.requiredEntitlement);
+              tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
 
             if (isLocked) {
               return (
@@ -174,11 +164,7 @@ export function ServiceTabs({
           })}
         </nav>
 
-        {rightSlot && (
-          <div className="flex items-center gap-2 pl-4 py-2 shrink-0">
-            {rightSlot}
-          </div>
-        )}
+        {rightSlot && <div className="flex items-center gap-2 pl-4 py-2 shrink-0">{rightSlot}</div>}
       </div>
     </div>
   );
@@ -189,8 +175,8 @@ export const DATA_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/data/overview" },
   { label: "Instruments", href: "/services/data/instruments" },
   { label: "Raw Data", href: "/services/data/raw" },
-  { label: "Events", href: "/services/data/events" },
   { label: "Processing", href: "/services/data/processing" },
+  { label: "Events", href: "/services/data/events" },
   { label: "Coverage", href: "/services/data/coverage" },
   { label: "Gaps & Quality", href: "/services/data/gaps" },
 ];

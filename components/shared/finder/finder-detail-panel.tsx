@@ -3,6 +3,7 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
 
 export interface FinderDetailPanelProps {
   children: React.ReactNode;
@@ -27,9 +28,9 @@ export function FinderDetailPanel({
           className="p-2 hover:bg-muted/40 transition-colors"
           aria-label="Expand detail panel"
         >
-          <ChevronLeft className="size-3.5 text-muted-foreground" />
+          <ChevronLeft className="size-4 text-muted-foreground" />
         </button>
-        <span className="text-[10px] text-muted-foreground [writing-mode:vertical-rl] rotate-180 mt-2">
+        <span className={cn(finderText.meta, "text-muted-foreground [writing-mode:vertical-rl] rotate-180 mt-2")}>
           {title}
         </span>
       </div>
@@ -37,15 +38,10 @@ export function FinderDetailPanel({
   }
 
   return (
-    <div
-      className={cn(
-        "shrink-0 flex flex-col min-h-0 bg-muted/5 border-l border-border/40",
-        width,
-      )}
-    >
+    <div className={cn("shrink-0 flex flex-col min-h-0 bg-muted/5 border-l border-border/40", width)}>
       {/* Header with collapse toggle */}
       <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30 flex items-center gap-2">
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider flex-1">
+        <p className={cn(finderText.meta, "font-semibold text-muted-foreground uppercase tracking-wider flex-1")}>
           {title}
         </p>
         <button
@@ -53,7 +49,7 @@ export function FinderDetailPanel({
           className="p-0.5 hover:bg-muted/40 rounded transition-colors"
           aria-label="Collapse detail panel"
         >
-          <ChevronRight className="size-3 text-muted-foreground" />
+          <ChevronRight className="size-3.5 text-muted-foreground" />
         </button>
       </div>
 

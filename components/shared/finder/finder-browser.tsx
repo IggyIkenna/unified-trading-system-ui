@@ -7,8 +7,18 @@ import { FinderColumn } from "@/components/shared/finder/finder-column";
 import { FinderContextStrip } from "@/components/shared/finder/finder-context-strip";
 import { FinderBreadcrumb } from "@/components/shared/finder/finder-breadcrumb";
 import { FinderDetailPanel } from "@/components/shared/finder/finder-detail-panel";
+import { FinderColumnResizeHandle } from "@/components/shared/finder/finder-column-resize-handle";
+import {
+  buildInitialFinderColumnWidths,
+  clampFinderColumnWidth,
+  getFinderColumnDefaultWidthPx,
+  isFlexFinderColumn,
+  isResizableFinderColumn,
+} from "@/components/shared/finder/column-width-utils";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderBrowserProps,
+  FinderColumnDef,
   FinderItem,
   FinderSelections,
 } from "@/components/shared/finder/types";
@@ -30,6 +40,39 @@ export function FinderBrowser({
     }
     return initial;
   });
+
+  const layoutKey = React.useMemo(() => columns.map((c) => `${c.id}:${c.width}`).join("|"), [columns]);
+
+  const prevLayoutKeyRef = React.useRef<string | null>(null);
+  const [columnWidths, setColumnWidths] = React.useState<Record<string, number>>(() =>
+    buildInitialFinderColumnWidths(columns),
+  );
+
+  React.useLayoutEffect(() => {
+    if (prevLayoutKeyRef.current === null) {
+      prevLayoutKeyRef.current = layoutKey;
+      return;
+    }
+    if (prevLayoutKeyRef.current !== layoutKey) {
+      prevLayoutKeyRef.current = layoutKey;
+      setColumnWidths(buildInitialFinderColumnWidths(columns));
+    }
+  }, [columns, layoutKey]);
+
+  const applyResize = React.useCallback(
+    (columnId: string, deltaX: number) => {
+      if (deltaX === 0) return;
+      setColumnWidths((prev) => {
+        const col = columns.find((c) => c.id === columnId);
+        if (!col || !isResizableFinderColumn(col)) return prev;
+        const cur = prev[columnId] ?? getFinderColumnDefaultWidthPx(col);
+        const nextW = clampFinderColumnWidth(col, cur + deltaX);
+        if (nextW === cur) return prev;
+        return { ...prev, [columnId]: nextW };
+      });
+    },
+    [columns],
+  );
 
   // When a column selection changes, clear all selections for columns after it
   const handleSelect = React.useCallback(
@@ -72,11 +115,39 @@ export function FinderBrowser({
   });
 
   // Check if the first column has no selection (for empty state)
-  const hasFirstSelection =
-    columns.length > 0 && selections[columns[0].id] !== null;
+  const hasFirstSelection = columns.length > 0 && selections[columns[0].id] !== null;
 
   // Compute stats from current selections
   const stats = contextStats(selections);
+
+  const columnStyle = React.useCallback(
+    (col: FinderColumnDef): React.CSSProperties | undefined => {
+      if (isFlexFinderColumn(col.width)) {
+        return {
+          minWidth: col.minWidthPx ?? 200,
+        };
+      }
+      if (!isResizableFinderColumn(col)) {
+        return undefined;
+      }
+      const w = columnWidths[col.id] ?? getFinderColumnDefaultWidthPx(col);
+      return {
+        width: w,
+        minWidth: col.minWidthPx ?? 96,
+        maxWidth: col.maxWidthPx,
+      };
+    },
+    [columnWidths],
+  );
+
+  const showResizeAfter = React.useCallback(
+    (col: FinderColumnDef, index: number) => {
+      if (!isResizableFinderColumn(col)) return false;
+      if (index < visibleColumns.length - 1) return true;
+      return !hasFirstSelection;
+    },
+    [visibleColumns.length, hasFirstSelection],
+  );
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -84,50 +155,50 @@ export function FinderBrowser({
       <FinderContextStrip stats={stats} />
 
       {/* Breadcrumb */}
-      <FinderBreadcrumb
-        columns={columns}
-        selections={selections}
-        onResetFrom={handleResetFrom}
-      />
+      <FinderBreadcrumb columns={columns} selections={selections} onResetFrom={handleResetFrom} />
 
       {/* Column browser + detail panel */}
       <div className="flex flex-1 min-h-0 overflow-hidden border-t border-border/20">
         {/* Left: columns */}
-        <div className="flex flex-1 min-w-0 min-h-0 overflow-x-auto overflow-y-hidden divide-x divide-border/50">
-          {visibleColumns.map((col) => {
+        <div className="flex flex-1 min-w-0 min-h-0 overflow-x-auto overflow-y-hidden">
+          {visibleColumns.map((col, visIndex) => {
             const colIndex = columns.indexOf(col);
             const items = col.getItems(selections);
-            const isFlexGrow = col.width === "flex-1";
+            const flex = isFlexFinderColumn(col.width);
 
             return (
-              <div
-                key={col.id}
-                className={cn(
-                  "shrink-0 flex flex-col min-h-0 overflow-hidden",
-                  isFlexGrow ? "flex-1 min-w-0" : col.width,
+              <React.Fragment key={col.id}>
+                <div
+                  className={cn(
+                    "shrink-0 flex flex-col min-h-0 overflow-hidden border-r border-border/50",
+                    flex && "flex-1 min-w-0",
+                    !flex && !isResizableFinderColumn(col) && col.width,
+                  )}
+                  style={isResizableFinderColumn(col) || flex ? columnStyle(col) : undefined}
+                >
+                  <FinderColumn
+                    columnDef={col}
+                    items={items}
+                    selected={selections[col.id]}
+                    onSelect={(item) => handleSelect(colIndex, item)}
+                    search={colIndex === 0 ? search : undefined}
+                  />
+                </div>
+                {showResizeAfter(col, visIndex) && (
+                  <FinderColumnResizeHandle onResizeDelta={(dx) => applyResize(col.id, dx)} />
                 )}
-              >
-                <FinderColumn
-                  columnDef={col}
-                  items={items}
-                  selected={selections[col.id]}
-                  onSelect={(item) => handleSelect(colIndex, item)}
-                  search={colIndex === 0 ? search : undefined}
-                />
-              </div>
+              </React.Fragment>
             );
           })}
 
           {/* Empty state — fills space when first column has no selection */}
           {!hasFirstSelection && (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-8 text-muted-foreground">
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-8 text-muted-foreground min-w-0">
               {emptyState ?? (
                 <>
-                  <Columns className="size-8 mb-2 opacity-20" />
-                  <p className="text-sm font-medium">Select an item</p>
-                  <p className="text-xs opacity-60 mt-1">
-                    Drill down to browse details
-                  </p>
+                  <Columns className="size-10 mb-2 opacity-20" />
+                  <p className={cn(finderText.title, "font-medium")}>Select an item</p>
+                  <p className={cn(finderText.sub, "opacity-60 mt-1")}>Drill down to browse details</p>
                 </>
               )}
             </div>
@@ -135,11 +206,7 @@ export function FinderBrowser({
         </div>
 
         {/* Right: detail panel */}
-        <FinderDetailPanel
-          title={detailPanelTitle}
-          width={detailPanelWidth}
-          defaultOpen={detailPanelDefaultOpen}
-        >
+        <FinderDetailPanel title={detailPanelTitle} width={detailPanelWidth} defaultOpen={detailPanelDefaultOpen}>
           {detailPanel(selections)}
         </FinderDetailPanel>
       </div>

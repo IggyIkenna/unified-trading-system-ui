@@ -9,6 +9,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,
   FinderContextStats,
@@ -23,32 +24,16 @@ import {
   type DataFolder,
   type DataType,
 } from "@/lib/data-service-types";
-import {
-  MOCK_INSTRUMENTS,
-  MOCK_INSTRUMENT_COUNTS,
-  MOCK_PIPELINE_STAGES,
-} from "@/lib/data-service-mock-data";
+import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
 
 // Data types available per folder (derived from instrument data types)
-function getDataTypesForFolderVenue(
-  venue: string,
-  folder: DataFolder,
-  cat: DataCategory,
-): DataType[] {
-  const instruments = MOCK_INSTRUMENTS.filter(
-    (i) => i.venue === venue && i.folder === folder,
-  );
+function getDataTypesForFolderVenue(venue: string, folder: DataFolder, cat: DataCategory): DataType[] {
+  const instruments = MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder);
   if (instruments.length === 0) {
     // Fallback based on folder type
     const defaults: Record<string, DataType[]> = {
       spot: ["ohlcv", "trades", "book_snapshot_5"],
-      perpetuals: [
-        "ohlcv",
-        "trades",
-        "book_snapshot_5",
-        "funding_rates",
-        "open_interest",
-      ],
+      perpetuals: ["ohlcv", "trades", "book_snapshot_5", "funding_rates", "open_interest"],
       options: ["ohlcv", "trades", "greeks", "iv_surface"],
       futures: ["ohlcv", "trades", "book_snapshot_5"],
       equity: ["ohlcv", "trades"],
@@ -72,11 +57,7 @@ function getDataTypesForFolderVenue(
 }
 
 // Mock completion percentages by data type (seeded deterministically)
-function getDataTypeCompletion(
-  venue: string,
-  folder: string,
-  dataType: string,
-): number {
+function getDataTypeCompletion(venue: string, folder: string, dataType: string): number {
   const seed = (venue.length + folder.length + dataType.length) % 100;
   const vals: Record<string, number> = {
     ohlcv: 95,
@@ -115,22 +96,20 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
   {
     id: "category",
     label: "Category",
-    width: "w-[155px]",
+    width: "w-[220px]",
+    defaultWidthPx: 220,
+    minWidthPx: 168,
     getItems: (): FinderItem[] => {
       const rawStage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "raw");
-      return (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map(
-        (cat) => {
-          const stageData = rawStage?.byCategory?.find(
-            (b) => b.category === cat,
-          );
-          return {
-            id: cat,
-            label: DATA_CATEGORY_LABELS[cat],
-            count: stageData?.completedShards ?? 0,
-            data: { cat, completionPct: stageData?.completionPct ?? 0 },
-          };
-        },
-      );
+      return (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map((cat) => {
+        const stageData = rawStage?.byCategory?.find((b) => b.category === cat);
+        return {
+          id: cat,
+          label: DATA_CATEGORY_LABELS[cat],
+          count: stageData?.completedShards ?? 0,
+          data: { cat, completionPct: stageData?.completionPct ?? 0 },
+        };
+      });
     },
     renderLabel: (item) => {
       const { cat, completionPct } = item.data as {
@@ -139,17 +118,11 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
       };
       return (
         <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <Badge
-              variant="outline"
-              className={cn(
-                "text-[9px] px-1 py-0 shrink-0",
-                CATEGORY_BADGE[cat],
-              )}
-            >
+          <div className="flex items-start gap-1.5 min-w-0">
+            <Badge variant="outline" className={cn(finderText.micro, "px-1 py-0 shrink-0", CATEGORY_BADGE[cat])}>
               {cat.toUpperCase().slice(0, 4)}
             </Badge>
-            <span className="flex-1 font-medium truncate text-xs">
+            <span className={cn("flex-1 min-w-0 font-medium break-words leading-snug text-left", finderText.body)}>
               {DATA_CATEGORY_LABELS[cat]}
             </span>
           </div>
@@ -158,16 +131,12 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
               <div
                 className={cn(
                   "h-full rounded-full",
-                  completionPct >= 90
-                    ? "bg-emerald-400"
-                    : completionPct >= 70
-                      ? "bg-yellow-400"
-                      : "bg-red-400",
+                  completionPct >= 90 ? "bg-emerald-400" : completionPct >= 70 ? "bg-yellow-400" : "bg-red-400",
                 )}
                 style={{ width: `${completionPct}%` }}
               />
             </div>
-            <span className="text-[9px] text-muted-foreground w-7 text-right">
+            <span className={cn(finderText.micro, "text-muted-foreground w-8 text-right")}>
               {completionPct.toFixed(0)}%
             </span>
           </div>
@@ -213,9 +182,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
       if (!venue || !cat) return [];
       const folders = FOLDERS_BY_CATEGORY[cat] ?? [];
       return folders.map((folder) => {
-        const instruments = MOCK_INSTRUMENTS.filter(
-          (i) => i.venue === venue && i.folder === folder,
-        );
+        const instruments = MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder);
         return {
           id: folder,
           label: folder.replace(/_/g, " "),
@@ -227,7 +194,9 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
     renderLabel: (item) => {
       const { folder } = item.data as { folder: DataFolder };
       return (
-        <span className="flex-1 font-medium truncate text-xs capitalize">
+        <span
+          className={cn("flex-1 min-w-0 font-medium capitalize break-words leading-snug text-left", finderText.body)}
+        >
           {folder.replace(/_/g, " ")}
         </span>
       );
@@ -261,20 +230,15 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
         dt: string;
         completionPct: number;
       };
-      const color =
-        completionPct >= 90
-          ? "text-emerald-400"
-          : completionPct >= 70
-            ? "text-yellow-400"
-            : "text-red-400";
+      const color = completionPct >= 90 ? "text-emerald-400" : completionPct >= 70 ? "text-yellow-400" : "text-red-400";
       return (
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="flex-1 font-medium truncate text-xs capitalize">
+        <div className="flex items-start gap-2 flex-1 min-w-0">
+          <span
+            className={cn("flex-1 min-w-0 font-medium capitalize break-words leading-snug text-left", finderText.body)}
+          >
             {dt.replace(/_/g, " ")}
           </span>
-          <span className={cn("text-xs font-mono shrink-0", color)}>
-            {completionPct}%
-          </span>
+          <span className={cn(finderText.body, "font-mono shrink-0", color)}>{completionPct}%</span>
         </div>
       );
     },
@@ -283,26 +247,17 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
   },
 ];
 
-export function getRawDataContextStats(
-  selections: FinderSelections,
-): FinderContextStats {
-  const catData = selections["category"]?.data as
-    | { cat: DataCategory; completionPct: number }
-    | undefined;
-  const venueData = selections["venue"]?.data as
-    | { venue: string; cat: DataCategory }
-    | undefined;
-  const folderData = selections["folder"]?.data as
-    | { folder: DataFolder; venue: string; cat: DataCategory }
-    | undefined;
+export function getRawDataContextStats(selections: FinderSelections): FinderContextStats {
+  const catData = selections["category"]?.data as { cat: DataCategory; completionPct: number } | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
+  const folderData = selections["folder"]?.data as { folder: DataFolder; venue: string; cat: DataCategory } | undefined;
   const dtData = selections["datatype"]?.data as
     | { dt: string; venue: string; folder: string; completionPct: number }
     | undefined;
 
   if (dtData) {
     const pct = dtData.completionPct;
-    const color =
-      pct >= 90 ? "bg-emerald-400" : pct >= 70 ? "bg-yellow-400" : "bg-red-400";
+    const color = pct >= 90 ? "bg-emerald-400" : pct >= 70 ? "bg-yellow-400" : "bg-red-400";
     return {
       name: `${dtData.venue.replace(/_/g, " ")} · ${dtData.dt.replace(/_/g, " ")}`,
       metrics: [{ label: "completion", value: pct, format: "percent" }],
@@ -311,24 +266,12 @@ export function getRawDataContextStats(
   }
 
   if (folderData) {
-    const dataTypes = getDataTypesForFolderVenue(
-      folderData.venue,
-      folderData.folder,
-      folderData.cat,
-    );
+    const dataTypes = getDataTypesForFolderVenue(folderData.venue, folderData.folder, folderData.cat);
     const avgPct = Math.round(
-      dataTypes.reduce(
-        (s, dt) =>
-          s + getDataTypeCompletion(folderData.venue, folderData.folder, dt),
-        0,
-      ) / dataTypes.length,
+      dataTypes.reduce((s, dt) => s + getDataTypeCompletion(folderData.venue, folderData.folder, dt), 0) /
+        dataTypes.length,
     );
-    const color =
-      avgPct >= 90
-        ? "bg-emerald-400"
-        : avgPct >= 70
-          ? "bg-yellow-400"
-          : "bg-red-400";
+    const color = avgPct >= 90 ? "bg-emerald-400" : avgPct >= 70 ? "bg-yellow-400" : "bg-red-400";
     return {
       name: `${folderData.venue.replace(/_/g, " ")} / ${folderData.folder.replace(/_/g, " ")}`,
       metrics: [
@@ -343,27 +286,11 @@ export function getRawDataContextStats(
     const folders = FOLDERS_BY_CATEGORY[venueData.cat] ?? [];
     const avgPct = Math.round(
       folders.reduce((s, f) => {
-        const dts = getDataTypesForFolderVenue(
-          venueData.venue,
-          f,
-          venueData.cat,
-        );
-        return (
-          s +
-          dts.reduce(
-            (ss, dt) => ss + getDataTypeCompletion(venueData.venue, f, dt),
-            0,
-          ) /
-            dts.length
-        );
+        const dts = getDataTypesForFolderVenue(venueData.venue, f, venueData.cat);
+        return s + dts.reduce((ss, dt) => ss + getDataTypeCompletion(venueData.venue, f, dt), 0) / dts.length;
       }, 0) / folders.length,
     );
-    const color =
-      avgPct >= 90
-        ? "bg-emerald-400"
-        : avgPct >= 70
-          ? "bg-yellow-400"
-          : "bg-red-400";
+    const color = avgPct >= 90 ? "bg-emerald-400" : avgPct >= 70 ? "bg-yellow-400" : "bg-red-400";
     return {
       name: venueData.venue.replace(/_/g, " "),
       metrics: [
@@ -391,11 +318,7 @@ export function getRawDataContextStats(
       progressBar: {
         value: catData.completionPct,
         color:
-          catData.completionPct >= 90
-            ? "bg-emerald-400"
-            : catData.completionPct >= 70
-              ? "bg-yellow-400"
-              : "bg-red-400",
+          catData.completionPct >= 90 ? "bg-emerald-400" : catData.completionPct >= 70 ? "bg-yellow-400" : "bg-red-400",
       },
     };
   }

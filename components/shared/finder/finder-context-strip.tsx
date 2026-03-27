@@ -2,16 +2,14 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type { FinderContextStats } from "@/components/shared/finder/types";
 
 export interface FinderContextStripProps {
   stats: FinderContextStats;
 }
 
-function formatMetricValue(
-  value: string | number,
-  format?: "number" | "percent" | "time",
-): string {
+function formatMetricValue(value: string | number, format?: "number" | "percent" | "time"): string {
   if (typeof value === "string") return value;
   switch (format) {
     case "percent":
@@ -27,16 +25,12 @@ function formatMetricValue(
 
 export function FinderContextStrip({ stats }: FinderContextStripProps) {
   return (
-    <div className="flex items-center gap-0 px-4 py-2.5 border-b border-border/40 bg-muted/20 text-xs">
+    <div className={cn("flex items-center gap-0 px-4 py-2.5 border-b border-border/40 bg-muted/20", finderText.body)}>
       {/* Left: name + badges */}
       <div className="flex items-center gap-2 min-w-0 flex-1">
         <span className="font-semibold truncate">{stats.name}</span>
         {stats.badges?.map((badge) => (
-          <Badge
-            key={badge.label}
-            variant="outline"
-            className={cn("text-[10px] shrink-0", badge.variant)}
-          >
+          <Badge key={badge.label} variant="outline" className={cn(finderText.meta, "shrink-0", badge.variant)}>
             {badge.icon}
             {badge.label}
           </Badge>
@@ -63,9 +57,7 @@ export function FinderContextStrip({ stats }: FinderContextStripProps) {
                 style={{ width: `${stats.progressBar.value}%` }}
               />
             </div>
-            <span className="font-bold tabular-nums text-foreground w-8 text-right">
-              {stats.progressBar.value}%
-            </span>
+            <span className="font-bold tabular-nums text-foreground w-8 text-right">{stats.progressBar.value}%</span>
           </div>
         )}
       </div>

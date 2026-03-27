@@ -9,6 +9,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,
   FinderContextStats,
@@ -23,10 +24,7 @@ import {
   type DataFolder,
   type InstrumentEntry,
 } from "@/lib/data-service-types";
-import {
-  MOCK_INSTRUMENTS,
-  MOCK_INSTRUMENT_COUNTS,
-} from "@/lib/data-service-mock-data";
+import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS } from "@/lib/data-service-mock-data";
 
 const CATEGORY_COLORS: Record<DataCategory, string> = {
   cefi: "border-blue-400/30 text-blue-400",
@@ -58,14 +56,13 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
   {
     id: "category",
     label: "Category",
-    width: "w-[160px]",
+    width: "w-[220px]",
+    defaultWidthPx: 220,
+    minWidthPx: 168,
     getItems: (): FinderItem[] =>
       (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map((cat) => {
         const venues = VENUES_BY_CATEGORY[cat] ?? [];
-        const total = venues.reduce(
-          (s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0),
-          0,
-        );
+        const total = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0), 0);
         return {
           id: cat,
           label: DATA_CATEGORY_LABELS[cat],
@@ -76,17 +73,11 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     renderLabel: (item) => {
       const cat = item.data as DataCategory;
       return (
-        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-          <Badge
-            variant="outline"
-            className={cn(
-              "text-[10px] px-1 py-0 shrink-0",
-              CATEGORY_COLORS[cat],
-            )}
-          >
+        <div className="flex items-start gap-1.5 flex-1 min-w-0">
+          <Badge variant="outline" className={cn(finderText.meta, "px-1 py-0 shrink-0", CATEGORY_COLORS[cat])}>
             {cat.toUpperCase().slice(0, 4)}
           </Badge>
-          <span className="flex-1 font-medium truncate text-xs">
+          <span className={cn("flex-1 min-w-0 font-medium break-words leading-snug text-left", finderText.body)}>
             {DATA_CATEGORY_LABELS[cat]}
           </span>
         </div>
@@ -116,22 +107,17 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
       const folders = FOLDERS_BY_CATEGORY[cat] ?? [];
       return (
         <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-          <span className="font-medium truncate text-xs capitalize">
+          <span className={cn("font-medium capitalize break-words leading-snug text-left min-w-0", finderText.body)}>
             {venue.replace(/_/g, " ")}
           </span>
           <div className="flex flex-wrap gap-0.5">
             {folders.slice(0, 2).map((f) => (
-              <span
-                key={f}
-                className="text-[9px] text-muted-foreground leading-tight"
-              >
+              <span key={f} className={cn(finderText.micro, "text-muted-foreground leading-tight")}>
                 {f}
               </span>
             ))}
             {folders.length > 2 && (
-              <span className="text-[9px] text-muted-foreground">
-                +{folders.length - 2}
-              </span>
+              <span className={cn(finderText.micro, "text-muted-foreground")}>+{folders.length - 2}</span>
             )}
           </div>
         </div>
@@ -154,9 +140,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
       return folders.map((folder) => {
         const instruments = MOCK_INSTRUMENTS.filter(
           (i) =>
-            i.category === cat &&
-            i.folder === folder &&
-            i.venue === (sel["venue"]?.data as { venue: string })?.venue,
+            i.category === cat && i.folder === folder && i.venue === (sel["venue"]?.data as { venue: string })?.venue,
         );
         return {
           id: folder,
@@ -169,17 +153,20 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     renderLabel: (item) => {
       const { folder } = item.data as { folder: DataFolder; cat: DataCategory };
       return (
-        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        <div className="flex items-start gap-1.5 flex-1 min-w-0">
           <Badge
             variant="outline"
             className={cn(
-              "text-[9px] px-1 py-0 shrink-0",
+              finderText.micro,
+              "px-1 py-0 shrink-0",
               FOLDER_COLORS[folder] ?? "border-border/50 text-muted-foreground",
             )}
           >
             {folder.replace(/_/g, " ").toUpperCase().slice(0, 4)}
           </Badge>
-          <span className="flex-1 font-medium truncate text-xs capitalize">
+          <span
+            className={cn("flex-1 min-w-0 font-medium capitalize break-words leading-snug text-left", finderText.body)}
+          >
             {folder.replace(/_/g, " ")}
           </span>
         </div>
@@ -199,18 +186,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
       const { venue } = (sel["venue"]?.data ?? {}) as { venue: string };
       const { folder } = (sel["folder"]?.data ?? {}) as { folder: DataFolder };
       if (!venue || !folder) return [];
-      const instruments = MOCK_INSTRUMENTS.filter(
-        (i) => i.venue === venue && i.folder === folder,
-      );
-      // If none found in mock, generate placeholders from counts
-      if (instruments.length === 0) {
-        const count = MOCK_INSTRUMENT_COUNTS[venue]?.total ?? 0;
-        return Array.from({ length: Math.min(count, 50) }, (_, i) => ({
-          id: `${venue}_${folder}_${i}`,
-          label: `${folder.toUpperCase()}_INSTRUMENT_${i + 1}`,
-          data: { symbol: `INST_${i + 1}`, venue, folder },
-        }));
-      }
+      const instruments = MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder);
       return instruments.map((inst) => ({
         id: inst.instrumentKey,
         label: inst.symbol,
@@ -220,16 +196,10 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
   },
 ];
 
-export function getInstrumentsContextStats(
-  selections: FinderSelections,
-): FinderContextStats {
+export function getInstrumentsContextStats(selections: FinderSelections): FinderContextStats {
   const cat = selections["category"]?.data as DataCategory | undefined;
-  const venueData = selections["venue"]?.data as
-    | { venue: string; cat: DataCategory }
-    | undefined;
-  const folderData = selections["folder"]?.data as
-    | { folder: DataFolder; cat: DataCategory }
-    | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
+  const folderData = selections["folder"]?.data as { folder: DataFolder; cat: DataCategory } | undefined;
   const instItem = selections["instrument"];
 
   if (instItem) {
@@ -248,14 +218,10 @@ export function getInstrumentsContextStats(
       venue: "",
       cat: "cefi" as DataCategory,
     };
-    const instruments = MOCK_INSTRUMENTS.filter(
-      (i) => i.venue === venue && i.folder === folderData.folder,
-    );
-    const count =
-      instruments.length || MOCK_INSTRUMENT_COUNTS[venue]?.total || 0;
+    const instruments = MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folderData.folder);
     return {
       name: `${venue.replace(/_/g, " ")} / ${folderData.folder.replace(/_/g, " ")}`,
-      metrics: [{ label: "instruments", value: count }],
+      metrics: [{ label: "instruments", value: instruments.length }],
     };
   }
 
@@ -272,14 +238,8 @@ export function getInstrumentsContextStats(
 
   if (cat) {
     const venues = VENUES_BY_CATEGORY[cat] ?? [];
-    const total = venues.reduce(
-      (s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0),
-      0,
-    );
-    const active = venues.reduce(
-      (s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.active ?? 0),
-      0,
-    );
+    const total = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0), 0);
+    const active = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.active ?? 0), 0);
     return {
       name: DATA_CATEGORY_LABELS[cat],
       metrics: [
@@ -290,14 +250,8 @@ export function getInstrumentsContextStats(
     };
   }
 
-  const allTotal = Object.values(MOCK_INSTRUMENT_COUNTS).reduce(
-    (s, v) => s + v.total,
-    0,
-  );
-  const allActive = Object.values(MOCK_INSTRUMENT_COUNTS).reduce(
-    (s, v) => s + v.active,
-    0,
-  );
+  const allTotal = Object.values(MOCK_INSTRUMENT_COUNTS).reduce((s, v) => s + v.total, 0);
+  const allActive = Object.values(MOCK_INSTRUMENT_COUNTS).reduce((s, v) => s + v.active, 0);
   const allVenues = Object.keys(MOCK_INSTRUMENT_COUNTS).length;
 
   return {

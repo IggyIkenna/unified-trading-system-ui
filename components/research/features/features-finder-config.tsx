@@ -9,34 +9,20 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Activity } from "lucide-react";
-import type {
-  IndividualFeature,
-  FeatureGroupEntry,
-  FeatureServiceNode,
-} from "@/lib/build-mock-data";
-import {
-  FEATURE_SERVICES,
-  SAMPLE_FEATURES_BY_GROUP,
-} from "@/lib/build-mock-data";
+import type { IndividualFeature, FeatureGroupEntry, FeatureServiceNode } from "@/lib/build-mock-data";
+import { FEATURE_SERVICES, SAMPLE_FEATURES_BY_GROUP } from "@/lib/build-mock-data";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,
   FinderContextStats,
   FinderItem,
   FinderSelections,
 } from "@/components/shared/finder/types";
-import {
-  FEAT_STATUS_CFG,
-  GROUP_STATUS_CFG,
-  SERVICE_COLORS,
-  SERVICE_BAR,
-} from "./feature-helpers";
+import { FEAT_STATUS_CFG, GROUP_STATUS_CFG, SERVICE_COLORS, SERVICE_BAR } from "./feature-helpers";
 
 // ─── Feature list builder ──────────────────────────────────────────────────────
 
-export function buildFeatureList(
-  group: FeatureGroupEntry,
-  userAdded: IndividualFeature[] = [],
-): IndividualFeature[] {
+export function buildFeatureList(group: FeatureGroupEntry, userAdded: IndividualFeature[] = []): IndividualFeature[] {
   const forGroup = userAdded.filter((f) => f.group_id === group.id);
   const samples = SAMPLE_FEATURES_BY_GROUP[group.id] ?? [];
   const remainingSlots = Math.max(0, group.feature_count - forGroup.length);
@@ -56,12 +42,8 @@ export function buildFeatureList(
         category_id: "",
         group_id: group.id,
         current_version: "v1.0",
-        status:
-          i % 7 === 0 ? "not_computed" : i % 11 === 0 ? "stale" : "active",
-        last_computed:
-          i % 7 === 0
-            ? null
-            : new Date(Date.now() - (i + 1) * 3600000).toISOString(),
+        status: i % 7 === 0 ? "not_computed" : i % 11 === 0 ? "stale" : "active",
+        last_computed: i % 7 === 0 ? null : new Date(Date.now() - (i + 1) * 3600000).toISOString(),
         description: `Auto-generated placeholder for ${group.display_name}`,
         parameters: {},
         symbols: [],
@@ -75,9 +57,7 @@ export function buildFeatureList(
 
 // ─── Column definitions ────────────────────────────────────────────────────────
 
-export function buildFeaturesColumns(
-  userAddedFeatures: IndividualFeature[],
-): FinderColumnDef[] {
+export function buildFeaturesColumns(userAddedFeatures: IndividualFeature[]): FinderColumnDef[] {
   return [
     {
       id: "service",
@@ -95,10 +75,9 @@ export function buildFeaturesColumns(
         return (
           <span
             className={cn(
-              "inline-flex items-center justify-center w-4 h-4 rounded text-[9px] font-bold shrink-0",
-              active
-                ? "bg-primary-foreground/20 text-primary-foreground"
-                : SERVICE_COLORS[svc.color],
+              "inline-flex items-center justify-center w-[19px] h-[19px] rounded font-bold shrink-0",
+              finderText.micro,
+              active ? "bg-primary-foreground/20 text-primary-foreground" : SERVICE_COLORS[svc.color],
             )}
           >
             {svc.display_name[0]}
@@ -128,9 +107,7 @@ export function buildFeaturesColumns(
       width: "w-[210px]",
       visibleWhen: (sel) => sel["category"] !== null,
       getItems: (sel): FinderItem[] => {
-        const cat = sel["category"]?.data as
-          | (typeof FEATURE_SERVICES)[0]["categories"][0]
-          | undefined;
+        const cat = sel["category"]?.data as (typeof FEATURE_SERVICES)[0]["categories"][0] | undefined;
         if (!cat) return [];
         return cat.groups.map((grp) => ({
           id: grp.id,
@@ -145,9 +122,9 @@ export function buildFeaturesColumns(
         const cfg = GROUP_STATUS_CFG[grp.status];
         const Icon = cfg.icon;
         return (
-          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-            <Icon className={cn("size-3 shrink-0", cfg.color)} />
-            <span className="flex-1 font-medium truncate text-xs">
+          <div className="flex items-start gap-1.5 flex-1 min-w-0">
+            <Icon className={cn("size-3.5 shrink-0 mt-0.5", cfg.color)} />
+            <span className={cn("flex-1 min-w-0 font-medium break-words leading-snug text-left", finderText.body)}>
               {grp.display_name}
             </span>
           </div>
@@ -181,11 +158,9 @@ export function buildFeaturesColumns(
         const sc = FEAT_STATUS_CFG[feat.status];
         const SI = sc.icon;
         return (
-          <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            <SI className={cn("size-3 shrink-0", sc.color)} />
-            <code className="font-mono truncate text-left text-xs">
-              {feat.name}
-            </code>
+          <div className="flex items-start gap-1.5 min-w-0 flex-1">
+            <SI className={cn("size-3.5 shrink-0 mt-0.5", sc.color)} />
+            <code className={cn("font-mono text-left break-all min-w-0", finderText.body)}>{feat.name}</code>
           </div>
         );
       },
@@ -197,24 +172,14 @@ export function buildFeaturesColumns(
 
 // ─── Context stats ─────────────────────────────────────────────────────────────
 
-export function getFeaturesContextStats(
-  selections: FinderSelections,
-): FinderContextStats {
+export function getFeaturesContextStats(selections: FinderSelections): FinderContextStats {
   const svc = selections["service"]?.data as FeatureServiceNode | undefined;
-  const cat = selections["category"]?.data as
-    | (typeof FEATURE_SERVICES)[0]["categories"][0]
-    | undefined;
+  const cat = selections["category"]?.data as (typeof FEATURE_SERVICES)[0]["categories"][0] | undefined;
   const grp = selections["group"]?.data as FeatureGroupEntry | undefined;
 
   if (!svc) {
-    const allTotal = FEATURE_SERVICES.reduce(
-      (s, sv) => s + sv.total_features,
-      0,
-    );
-    const allAvgPct = Math.round(
-      FEATURE_SERVICES.reduce((s, sv) => s + sv.computed_pct, 0) /
-        FEATURE_SERVICES.length,
-    );
+    const allTotal = FEATURE_SERVICES.reduce((s, sv) => s + sv.total_features, 0);
+    const allAvgPct = Math.round(FEATURE_SERVICES.reduce((s, sv) => s + sv.computed_pct, 0) / FEATURE_SERVICES.length);
     const allJobs = FEATURE_SERVICES.reduce((s, sv) => s + sv.active_jobs, 0);
     const allGroups = FEATURE_SERVICES.reduce(
       (s, sv) => s + sv.categories.reduce((cs, c) => cs + c.groups.length, 0),
@@ -228,7 +193,7 @@ export function getFeaturesContextStats(
               {
                 label: `${allJobs} active`,
                 variant: "border-blue-400/30 text-blue-400 gap-1",
-                icon: <Activity className="size-2.5 animate-pulse mr-0.5" />,
+                icon: <Activity className="size-3 animate-pulse mr-0.5" />,
               },
             ]
           : [],
@@ -253,7 +218,7 @@ export function getFeaturesContextStats(
               {
                 label: `${svc.active_jobs} active`,
                 variant: "border-blue-400/30 text-blue-400 gap-1",
-                icon: <Activity className="size-2.5 animate-pulse mr-0.5" />,
+                icon: <Activity className="size-3 animate-pulse mr-0.5" />,
               },
             ]
           : [],

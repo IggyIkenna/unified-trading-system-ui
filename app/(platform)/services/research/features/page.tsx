@@ -15,28 +15,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type {
-  FeatureCatalogueEntry,
-  IndividualFeature,
-} from "@/lib/build-mock-data";
+import type { FeatureCatalogueEntry, IndividualFeature } from "@/lib/build-mock-data";
 import { FEATURE_CATALOGUE, FEATURE_VERSIONS } from "@/lib/build-mock-data";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -56,27 +40,13 @@ import {
   Tag,
 } from "lucide-react";
 import * as React from "react";
-import { FinderBrowser } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import type { FinderSelections } from "@/components/shared/finder";
-import {
-  buildFeaturesColumns,
-  getFeaturesContextStats,
-} from "@/components/research/features/features-finder-config";
+import { buildFeaturesColumns, getFeaturesContextStats } from "@/components/research/features/features-finder-config";
 import { FeatureDetailPanel } from "@/components/research/features/feature-detail-panel";
-import {
-  NewFeatureDialog,
-  CatStatusBadge,
-  EditConfigDialog,
-} from "@/components/research/features/feature-dialogs";
-import {
-  FEAT_STATUS_CFG,
-  SHARD_COLORS,
-  SERVICE_COLORS,
-} from "@/components/research/features/feature-helpers";
-import type {
-  FeatureGroupEntry,
-  FeatureServiceNode,
-} from "@/lib/build-mock-data";
+import { NewFeatureDialog, CatStatusBadge, EditConfigDialog } from "@/components/research/features/feature-dialogs";
+import { FEAT_STATUS_CFG, SHARD_COLORS, SERVICE_COLORS } from "@/components/research/features/feature-helpers";
+import type { FeatureGroupEntry, FeatureServiceNode } from "@/lib/build-mock-data";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CATALOGUE VIEW — flat table/grid/tree with right detail panel
@@ -84,11 +54,7 @@ import type {
 
 type FlatViewMode = "grid" | "tree" | "table";
 
-function CatDetailPanel({
-  feature,
-}: {
-  feature: FeatureCatalogueEntry | null;
-}) {
+function CatDetailPanel({ feature }: { feature: FeatureCatalogueEntry | null }) {
   const [editOpen, setEditOpen] = React.useState(false);
   const [draft, setDraft] = React.useState<FeatureCatalogueEntry | null>(null);
   const displayed = draft?.id === feature?.id ? draft : feature;
@@ -97,12 +63,8 @@ function CatDetailPanel({
     return (
       <div className="flex flex-col items-center justify-center h-full px-6 text-center">
         <Code2 className="size-10 mb-3 text-muted-foreground/20" />
-        <p className="text-sm font-medium text-muted-foreground">
-          Select a feature
-        </p>
-        <p className="text-xs text-muted-foreground/60 mt-1">
-          Click any row to see details
-        </p>
+        <p className="text-sm font-medium text-muted-foreground">Select a feature</p>
+        <p className="text-xs text-muted-foreground/60 mt-1">Click any row to see details</p>
       </div>
     );
   }
@@ -115,33 +77,23 @@ function CatDetailPanel({
       <div className="p-4 space-y-4">
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge
-              variant="outline"
-              className={cn("text-xs", SHARD_COLORS[displayed.shard])}
-            >
+            <Badge variant="outline" className={cn("text-xs", SHARD_COLORS[displayed.shard])}>
               {displayed.shard}
             </Badge>
             <Badge variant="outline" className={cn("text-xs gap-1", sc.badge)}>
               <SI className="size-3" />
               {displayed.status === "not_computed"
                 ? "Not Computed"
-                : displayed.status.charAt(0).toUpperCase() +
-                  displayed.status.slice(1)}
+                : displayed.status.charAt(0).toUpperCase() + displayed.status.slice(1)}
             </Badge>
           </div>
-          <code className="text-sm font-mono font-semibold break-all">
-            {displayed.name}
-          </code>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {displayed.description}
-          </p>
+          <code className="text-sm font-mono font-semibold break-all">{displayed.name}</code>
+          <p className="text-xs text-muted-foreground leading-relaxed">{displayed.description}</p>
         </div>
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <GitBranch className="size-3" />
-            <span className="font-mono font-semibold text-foreground">
-              {displayed.current_version}
-            </span>
+            <span className="font-mono font-semibold text-foreground">{displayed.current_version}</span>
           </div>
           <span className="text-muted-foreground">
             {displayed.last_computed
@@ -173,23 +125,16 @@ function CatDetailPanel({
             </p>
             <div className="rounded-lg bg-muted/40 p-2.5 space-y-1.5">
               {Object.entries(displayed.parameters).map(([k, v]) => (
-                <div
-                  key={k}
-                  className="flex items-center justify-between text-xs"
-                >
+                <div key={k} className="flex items-center justify-between text-xs">
                   <span className="font-mono text-muted-foreground">{k}</span>
-                  <span className="font-mono font-medium">
-                    {Array.isArray(v) ? v.join(", ") : String(v)}
-                  </span>
+                  <span className="font-mono font-medium">{Array.isArray(v) ? v.join(", ") : String(v)}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
         <div className="space-y-1.5">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Computed For
-          </p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Computed For</p>
           <div className="flex flex-wrap gap-1">
             {displayed.symbols.map((s) => (
               <Badge key={s} variant="secondary" className="text-xs font-mono">
@@ -216,29 +161,20 @@ function CatDetailPanel({
           <>
             <Separator />
             <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Version History
-              </p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Version History</p>
               {versions.map((v, i) => (
                 <div
                   key={v.version}
                   className={cn(
                     "rounded-lg border p-2.5 space-y-1",
-                    i === 0
-                      ? "border-primary/30 bg-primary/5"
-                      : "border-border/50",
+                    i === 0 ? "border-primary/30 bg-primary/5" : "border-border/50",
                   )}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold">
-                        {v.version}
-                      </span>
+                      <span className="font-mono text-xs font-bold">{v.version}</span>
                       {i === 0 && (
-                        <Badge
-                          variant="outline"
-                          className="text-[10px] border-primary/30 text-primary px-1 py-0"
-                        >
+                        <Badge variant="outline" className="text-[10px] border-primary/30 text-primary px-1 py-0">
                           current
                         </Badge>
                       )}
@@ -249,9 +185,7 @@ function CatDetailPanel({
                       })}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {v.change_summary}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{v.change_summary}</p>
                 </div>
               ))}
             </div>
@@ -259,12 +193,7 @@ function CatDetailPanel({
         )}
         <Separator />
         <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="flex-1 gap-1"
-            onClick={() => setEditOpen(true)}
-          >
+          <Button size="sm" variant="outline" className="flex-1 gap-1" onClick={() => setEditOpen(true)}>
             <Settings2 className="size-3" /> Edit Config
           </Button>
         </div>
@@ -324,19 +253,12 @@ function CatGridView({
           >
             <CardContent className="p-3 space-y-2">
               <div className="flex items-start justify-between gap-2">
-                <code className="text-xs font-mono font-medium leading-tight break-all">
-                  {f.name}
-                </code>
+                <code className="text-xs font-mono font-medium leading-tight break-all">{f.name}</code>
                 <SI className={cn("size-3.5 shrink-0 mt-0.5", sc.color)} />
               </div>
-              <p className="text-xs text-muted-foreground line-clamp-2">
-                {f.description}
-              </p>
+              <p className="text-xs text-muted-foreground line-clamp-2">{f.description}</p>
               <div className="flex items-center gap-1 flex-wrap">
-                <Badge
-                  variant="outline"
-                  className={cn("text-xs", SHARD_COLORS[f.shard])}
-                >
+                <Badge variant="outline" className={cn("text-xs", SHARD_COLORS[f.shard])}>
                   {f.shard}
                 </Badge>
                 <Badge variant="secondary" className="text-xs">
@@ -370,9 +292,7 @@ function CatTreeView({
   selected: FeatureCatalogueEntry | null;
   onSelect: (f: FeatureCatalogueEntry) => void;
 }) {
-  const [expanded, setExpanded] = React.useState<Set<string>>(
-    new Set(["CeFi / Technical"]),
-  );
+  const [expanded, setExpanded] = React.useState<Set<string>>(new Set(["CeFi / Technical"]));
   const grouped: Record<string, FeatureCatalogueEntry[]> = {};
   for (const f of features) {
     const k = `${f.shard} / ${f.feature_group}`;
@@ -385,10 +305,7 @@ function CatTreeView({
         const isOpen = expanded.has(key);
         const [shard] = key.split(" / ");
         return (
-          <div
-            key={key}
-            className="rounded-lg border border-border/50 overflow-hidden"
-          >
+          <div key={key} className="rounded-lg border border-border/50 overflow-hidden">
             <button
               className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/40 transition-colors text-left"
               onClick={() =>
@@ -405,15 +322,11 @@ function CatTreeView({
                 <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
               )}
               <span className="font-medium text-sm flex-1">{key}</span>
-              <Badge
-                variant="outline"
-                className={cn("text-xs", SHARD_COLORS[shard])}
-              >
+              <Badge variant="outline" className={cn("text-xs", SHARD_COLORS[shard])}>
                 {shard}
               </Badge>
               <Badge variant="secondary" className="text-xs">
-                {items.filter((f) => f.status === "active").length}/
-                {items.length}
+                {items.filter((f) => f.status === "active").length}/{items.length}
               </Badge>
             </button>
             {isOpen && (
@@ -431,12 +344,8 @@ function CatTreeView({
                       onClick={() => onSelect(f)}
                     >
                       <SI className={cn("size-3.5 shrink-0", sc.color)} />
-                      <code className="font-mono font-medium flex-1 truncate">
-                        {f.name}
-                      </code>
-                      <span className="font-mono text-muted-foreground shrink-0">
-                        {f.current_version}
-                      </span>
+                      <code className="font-mono font-medium flex-1 truncate">{f.name}</code>
+                      <span className="font-mono text-muted-foreground shrink-0">{f.current_version}</span>
                       <ChevronRight className="size-3 text-muted-foreground shrink-0" />
                     </button>
                   );
@@ -486,17 +395,12 @@ function CatTableView({
                 <code className="text-xs font-mono font-medium">{f.name}</code>
               </TableCell>
               <TableCell>
-                <Badge
-                  variant="outline"
-                  className={cn("text-xs", SHARD_COLORS[f.shard])}
-                >
+                <Badge variant="outline" className={cn("text-xs", SHARD_COLORS[f.shard])}>
                   {f.shard}
                 </Badge>
               </TableCell>
               <TableCell>
-                <span className="text-xs text-muted-foreground">
-                  {f.feature_type}
-                </span>
+                <span className="text-xs text-muted-foreground">{f.feature_type}</span>
               </TableCell>
               <TableCell>
                 <span className="font-mono text-xs">{f.current_version}</span>
@@ -504,9 +408,7 @@ function CatTableView({
               <TableCell>
                 <CatStatusBadge status={f.status} />
               </TableCell>
-              <TableCell className="text-right text-xs tabular-nums">
-                {f.symbols.length}
-              </TableCell>
+              <TableCell className="text-right text-xs tabular-nums">{f.symbols.length}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -515,19 +417,12 @@ function CatTableView({
   );
 }
 
-function CatalogueView({
-  search,
-  catalogueSource,
-}: {
-  search: string;
-  catalogueSource: FeatureCatalogueEntry[];
-}) {
+function CatalogueView({ search, catalogueSource }: { search: string; catalogueSource: FeatureCatalogueEntry[] }) {
   const [viewMode, setViewMode] = React.useState<FlatViewMode>("table");
   const [shardFilter, setShardFilter] = React.useState("all");
   const [typeFilter, setTypeFilter] = React.useState("all");
   const [statusFilter, setStatusFilter] = React.useState("all");
-  const [selectedFeature, setSelectedFeature] =
-    React.useState<FeatureCatalogueEntry | null>(null);
+  const [selectedFeature, setSelectedFeature] = React.useState<FeatureCatalogueEntry | null>(null);
 
   const filtered = React.useMemo(() => {
     let items = catalogueSource;
@@ -540,12 +435,9 @@ function CatalogueView({
           f.tags.some((t) => t.toLowerCase().includes(q)),
       );
     }
-    if (shardFilter !== "all")
-      items = items.filter((f) => f.shard === shardFilter);
-    if (typeFilter !== "all")
-      items = items.filter((f) => f.feature_type === typeFilter);
-    if (statusFilter !== "all")
-      items = items.filter((f) => f.status === statusFilter);
+    if (shardFilter !== "all") items = items.filter((f) => f.shard === shardFilter);
+    if (typeFilter !== "all") items = items.filter((f) => f.feature_type === typeFilter);
+    if (statusFilter !== "all") items = items.filter((f) => f.status === statusFilter);
     return items;
   }, [search, shardFilter, typeFilter, statusFilter, catalogueSource]);
 
@@ -629,31 +521,17 @@ function CatalogueView({
                 <p className="text-sm">No features match</p>
               </div>
             ) : viewMode === "grid" ? (
-              <CatGridView
-                features={filtered}
-                selected={selectedFeature}
-                onSelect={setSelectedFeature}
-              />
+              <CatGridView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
             ) : viewMode === "tree" ? (
-              <CatTreeView
-                features={filtered}
-                selected={selectedFeature}
-                onSelect={setSelectedFeature}
-              />
+              <CatTreeView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
             ) : (
-              <CatTableView
-                features={filtered}
-                selected={selectedFeature}
-                onSelect={setSelectedFeature}
-              />
+              <CatTableView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
             )}
           </div>
         </div>
         <div className="w-[420px] shrink-0 border-l border-border/50 flex flex-col min-h-0 bg-muted/5">
           <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30">
-            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-              Feature Detail
-            </p>
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Feature Detail</p>
           </div>
           <div className="flex-1 min-h-0 overflow-hidden">
             <CatDetailPanel feature={selectedFeature} />
@@ -673,18 +551,11 @@ type PageMode = "finder" | "catalogue";
 export default function FeaturesPage() {
   const [pageMode, setPageMode] = React.useState<PageMode>("finder");
   const [search, setSearch] = React.useState("");
-  const [userAddedFeatures, setUserAddedFeatures] = React.useState<
-    IndividualFeature[]
-  >([]);
-  const [userCatalogue, setUserCatalogue] = React.useState<
-    FeatureCatalogueEntry[]
-  >([]);
+  const [userAddedFeatures, setUserAddedFeatures] = React.useState<IndividualFeature[]>([]);
+  const [userCatalogue, setUserCatalogue] = React.useState<FeatureCatalogueEntry[]>([]);
   const [newFeatureOpen, setNewFeatureOpen] = React.useState(false);
 
-  const catalogueMerged = React.useMemo(
-    () => [...FEATURE_CATALOGUE, ...userCatalogue],
-    [userCatalogue],
-  );
+  const catalogueMerged = React.useMemo(() => [...FEATURE_CATALOGUE, ...userCatalogue], [userCatalogue]);
 
   const existingFeatureNames = React.useMemo(() => {
     const s = new Set<string>();
@@ -695,10 +566,7 @@ export default function FeaturesPage() {
   }, [userCatalogue, userAddedFeatures]);
 
   // Column defs for FinderBrowser — memoized so they don't re-create on each render
-  const finderColumns = React.useMemo(
-    () => buildFeaturesColumns(userAddedFeatures),
-    [userAddedFeatures],
-  );
+  const finderColumns = React.useMemo(() => buildFeaturesColumns(userAddedFeatures), [userAddedFeatures]);
 
   // Detail panel — receives selections and extracts feature + service
   function renderFinderDetail(selections: FinderSelections) {
@@ -711,21 +579,13 @@ export default function FeaturesPage() {
         return (
           <div className="flex flex-col items-center justify-center h-full px-6 text-center">
             <Code2 className="size-10 mb-3 text-muted-foreground/20" />
-            <p className="text-sm font-medium text-muted-foreground">
-              No feature selected
-            </p>
+            <p className="text-sm font-medium text-muted-foreground">No feature selected</p>
             <p className="text-xs text-muted-foreground/60 mt-1 leading-relaxed">
-              Drill down to a feature to see its config, parameters, and version
-              history.
+              Drill down to a feature to see its config, parameters, and version history.
             </p>
           </div>
         );
-      return (
-        <FeatureDetailPanel
-          service={svcItem.data as FeatureServiceNode}
-          feature={null}
-        />
-      );
+      return <FeatureDetailPanel service={svcItem.data as FeatureServiceNode} feature={null} />;
     }
     const { feat, service } = featItem.data as {
       feat: IndividualFeature;
@@ -739,9 +599,7 @@ export default function FeaturesPage() {
       {/* ── Top bar ──────────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4 px-6 pt-4 pb-3 border-b border-border/50">
         <div>
-          <h1 className="text-lg font-bold tracking-tight">
-            Feature Catalogue
-          </h1>
+          <h1 className="text-lg font-bold tracking-tight">Feature Catalogue</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
             {pageMode === "finder"
               ? "Service → Category → Group → Feature"
@@ -752,9 +610,7 @@ export default function FeaturesPage() {
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
             <Input
-              placeholder={
-                pageMode === "finder" ? "Filter services…" : "Search features…"
-              }
+              placeholder={pageMode === "finder" ? "Filter services…" : "Search features…"}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-8 h-7 w-[180px] text-xs"
@@ -773,21 +629,12 @@ export default function FeaturesPage() {
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                 )}
               >
-                {m === "finder" ? (
-                  <Columns className="size-3" />
-                ) : (
-                  <Table2 className="size-3" />
-                )}
+                {m === "finder" ? <Columns className="size-3" /> : <Table2 className="size-3" />}
                 {m.charAt(0).toUpperCase() + m.slice(1)}
               </button>
             ))}
           </div>
-          <Button
-            size="sm"
-            className="h-7 text-xs"
-            type="button"
-            onClick={() => setNewFeatureOpen(true)}
-          >
+          <Button size="sm" className="h-7 text-xs" type="button" onClick={() => setNewFeatureOpen(true)}>
             <Plus className="size-3.5 mr-1" /> New Feature
           </Button>
         </div>
@@ -813,11 +660,9 @@ export default function FeaturesPage() {
           detailPanelTitle="Feature Detail"
           emptyState={
             <>
-              <Columns className="size-8 mb-2 opacity-20" />
-              <p className="text-sm font-medium">Select a service</p>
-              <p className="text-xs opacity-60 mt-1">
-                Drill down to browse individual features
-              </p>
+              <Columns className="size-10 mb-2 opacity-20" />
+              <p className={cn(finderText.title, "font-medium")}>Select a service</p>
+              <p className={cn(finderText.sub, "opacity-60 mt-1")}>Drill down to browse individual features</p>
             </>
           }
         />

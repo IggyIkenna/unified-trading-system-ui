@@ -9,6 +9,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,
   FinderContextStats,
@@ -23,11 +24,7 @@ import {
   type DataFolder,
   type Timeframe,
 } from "@/lib/data-service-types";
-import {
-  MOCK_INSTRUMENT_COUNTS,
-  MOCK_PIPELINE_STAGES,
-  MOCK_TIMEFRAME_STATUS,
-} from "@/lib/data-service-mock-data";
+import { MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/data-service-mock-data";
 
 const ALL_TIMEFRAMES: Timeframe[] = ["1m", "5m", "15m", "1h", "4h", "1d"];
 
@@ -40,11 +37,7 @@ const TIMEFRAME_LABELS: Record<Timeframe, string> = {
   "1d": "Daily",
 };
 
-function getTimeframeCompletion(
-  venue: string,
-  folder: string,
-  timeframe: Timeframe,
-): number {
+function getTimeframeCompletion(venue: string, folder: string, timeframe: Timeframe): number {
   const match = MOCK_TIMEFRAME_STATUS.find((t) => t.timeframe === timeframe);
   if (match) return match.completionPct;
   // Fallback: higher timeframes have lower completion (blocked by upstream)
@@ -72,19 +65,19 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
   {
     id: "category",
     label: "Category",
-    width: "w-[155px]",
+    width: "w-[220px]",
+    defaultWidthPx: 220,
+    minWidthPx: 168,
     getItems: (): FinderItem[] => {
       const stage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "processing");
-      return (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map(
-        (cat) => {
-          const stageData = stage?.byCategory?.find((b) => b.category === cat);
-          return {
-            id: cat,
-            label: DATA_CATEGORY_LABELS[cat],
-            data: { cat, completionPct: stageData?.completionPct ?? 0 },
-          };
-        },
-      );
+      return (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map((cat) => {
+        const stageData = stage?.byCategory?.find((b) => b.category === cat);
+        return {
+          id: cat,
+          label: DATA_CATEGORY_LABELS[cat],
+          data: { cat, completionPct: stageData?.completionPct ?? 0 },
+        };
+      });
     },
     renderLabel: (item) => {
       const { cat, completionPct } = item.data as {
@@ -93,17 +86,11 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
       };
       return (
         <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <Badge
-              variant="outline"
-              className={cn(
-                "text-[9px] px-1 py-0 shrink-0",
-                CATEGORY_BADGE[cat],
-              )}
-            >
+          <div className="flex items-start gap-1.5 min-w-0">
+            <Badge variant="outline" className={cn(finderText.micro, "px-1 py-0 shrink-0", CATEGORY_BADGE[cat])}>
               {cat.toUpperCase().slice(0, 4)}
             </Badge>
-            <span className="flex-1 font-medium truncate text-xs">
+            <span className={cn("flex-1 min-w-0 font-medium break-words leading-snug text-left", finderText.body)}>
               {DATA_CATEGORY_LABELS[cat]}
             </span>
           </div>
@@ -112,16 +99,12 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
               <div
                 className={cn(
                   "h-full rounded-full",
-                  completionPct >= 50
-                    ? "bg-emerald-400"
-                    : completionPct >= 20
-                      ? "bg-yellow-400"
-                      : "bg-red-400",
+                  completionPct >= 50 ? "bg-emerald-400" : completionPct >= 20 ? "bg-yellow-400" : "bg-red-400",
                 )}
                 style={{ width: `${completionPct}%` }}
               />
             </div>
-            <span className="text-[9px] text-muted-foreground w-7 text-right">
+            <span className={cn(finderText.micro, "text-muted-foreground w-8 text-right")}>
               {completionPct.toFixed(0)}%
             </span>
           </div>
@@ -170,7 +153,9 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
     renderLabel: (item) => {
       const { folder } = item.data as { folder: DataFolder };
       return (
-        <span className="flex-1 font-medium truncate text-xs capitalize">
+        <span
+          className={cn("flex-1 min-w-0 font-medium capitalize break-words leading-snug text-left", finderText.body)}
+        >
           {folder.replace(/_/g, " ")}
         </span>
       );
@@ -204,23 +189,12 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
         tf: Timeframe;
         completionPct: number;
       };
-      const color =
-        completionPct >= 50
-          ? "text-emerald-400"
-          : completionPct >= 20
-            ? "text-yellow-400"
-            : "text-red-400";
+      const color = completionPct >= 50 ? "text-emerald-400" : completionPct >= 20 ? "text-yellow-400" : "text-red-400";
       return (
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <span className="flex-1 font-medium text-xs font-mono">{tf}</span>
-          <span className="text-xs text-muted-foreground shrink-0">
-            {TIMEFRAME_LABELS[tf]}
-          </span>
-          <span
-            className={cn("text-xs font-mono shrink-0 w-10 text-right", color)}
-          >
-            {completionPct}%
-          </span>
+          <span className={cn("flex-1 font-medium font-mono", finderText.body)}>{tf}</span>
+          <span className={cn(finderText.body, "text-muted-foreground shrink-0")}>{TIMEFRAME_LABELS[tf]}</span>
+          <span className={cn(finderText.body, "font-mono shrink-0 w-11 text-right", color)}>{completionPct}%</span>
         </div>
       );
     },
@@ -229,26 +203,17 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
   },
 ];
 
-export function getProcessingContextStats(
-  selections: FinderSelections,
-): FinderContextStats {
-  const catData = selections["category"]?.data as
-    | { cat: DataCategory; completionPct: number }
-    | undefined;
-  const venueData = selections["venue"]?.data as
-    | { venue: string; cat: DataCategory }
-    | undefined;
-  const folderData = selections["folder"]?.data as
-    | { folder: DataFolder; venue: string; cat: DataCategory }
-    | undefined;
+export function getProcessingContextStats(selections: FinderSelections): FinderContextStats {
+  const catData = selections["category"]?.data as { cat: DataCategory; completionPct: number } | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
+  const folderData = selections["folder"]?.data as { folder: DataFolder; venue: string; cat: DataCategory } | undefined;
   const tfData = selections["timeframe"]?.data as
     | { tf: Timeframe; venue: string; folder: string; completionPct: number }
     | undefined;
 
   if (tfData) {
     const pct = tfData.completionPct;
-    const color =
-      pct >= 50 ? "bg-emerald-400" : pct >= 20 ? "bg-yellow-400" : "bg-red-400";
+    const color = pct >= 50 ? "bg-emerald-400" : pct >= 20 ? "bg-yellow-400" : "bg-red-400";
     return {
       name: `${tfData.venue.replace(/_/g, " ")} · ${TIMEFRAME_LABELS[tfData.tf]}`,
       metrics: [
@@ -261,18 +226,10 @@ export function getProcessingContextStats(
 
   if (folderData) {
     const avgPct = Math.round(
-      ALL_TIMEFRAMES.reduce(
-        (s, tf) =>
-          s + getTimeframeCompletion(folderData.venue, folderData.folder, tf),
-        0,
-      ) / ALL_TIMEFRAMES.length,
+      ALL_TIMEFRAMES.reduce((s, tf) => s + getTimeframeCompletion(folderData.venue, folderData.folder, tf), 0) /
+        ALL_TIMEFRAMES.length,
     );
-    const color =
-      avgPct >= 50
-        ? "bg-emerald-400"
-        : avgPct >= 20
-          ? "bg-yellow-400"
-          : "bg-red-400";
+    const color = avgPct >= 50 ? "bg-emerald-400" : avgPct >= 20 ? "bg-yellow-400" : "bg-red-400";
     return {
       name: `${folderData.venue.replace(/_/g, " ")} / ${folderData.folder.replace(/_/g, " ")}`,
       metrics: [
@@ -288,21 +245,11 @@ export function getProcessingContextStats(
     const avgPct = Math.round(
       ALL_TIMEFRAMES.reduce(
         (s, tf) =>
-          s +
-          folders.reduce(
-            (fs, f) => fs + getTimeframeCompletion(venueData.venue, f, tf),
-            0,
-          ) /
-            folders.length,
+          s + folders.reduce((fs, f) => fs + getTimeframeCompletion(venueData.venue, f, tf), 0) / folders.length,
         0,
       ) / ALL_TIMEFRAMES.length,
     );
-    const color =
-      avgPct >= 50
-        ? "bg-emerald-400"
-        : avgPct >= 20
-          ? "bg-yellow-400"
-          : "bg-red-400";
+    const color = avgPct >= 50 ? "bg-emerald-400" : avgPct >= 20 ? "bg-yellow-400" : "bg-red-400";
     return {
       name: venueData.venue.replace(/_/g, " "),
       metrics: [
@@ -330,11 +277,7 @@ export function getProcessingContextStats(
       progressBar: {
         value: catData.completionPct,
         color:
-          catData.completionPct >= 50
-            ? "bg-emerald-400"
-            : catData.completionPct >= 20
-              ? "bg-yellow-400"
-              : "bg-red-400",
+          catData.completionPct >= 50 ? "bg-emerald-400" : catData.completionPct >= 20 ? "bg-yellow-400" : "bg-red-400",
       },
     };
   }
@@ -342,15 +285,10 @@ export function getProcessingContextStats(
   const stage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "processing");
   const tfAgg = ALL_TIMEFRAMES.map((tf) => {
     const entries = MOCK_TIMEFRAME_STATUS.filter((t) => t.timeframe === tf);
-    const avg =
-      entries.length > 0
-        ? entries.reduce((s, e) => s + e.completionPct, 0) / entries.length
-        : 0;
+    const avg = entries.length > 0 ? entries.reduce((s, e) => s + e.completionPct, 0) / entries.length : 0;
     return { tf, pct: Math.round(avg * 10) / 10 };
   });
-  const overallAvg = Math.round(
-    tfAgg.reduce((s, { pct }) => s + pct, 0) / tfAgg.length,
-  );
+  const overallAvg = Math.round(tfAgg.reduce((s, { pct }) => s + pct, 0) / tfAgg.length);
 
   return {
     name: "Processing",

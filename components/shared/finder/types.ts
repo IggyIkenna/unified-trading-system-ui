@@ -16,7 +16,17 @@ export type FinderSelections = Record<string, FinderItem | null>;
 export interface FinderColumnDef<T = unknown> {
   id: string;
   label: string;
-  width: string; // Tailwind width class (e.g., "w-[168px]", "flex-1")
+  /**
+   * Layout hint: `w-[NNNpx]` for fixed, resizable columns, or `flex-1` for the last fluid column.
+   * Pixel values are parsed for default width and drag-to-resize (see defaultWidthPx / minWidthPx).
+   */
+  width: string;
+  /** Overrides pixel width parsed from `w-[Npx]` for initial size after reset */
+  defaultWidthPx?: number;
+  /** Minimum width when resizing (default 96) */
+  minWidthPx?: number;
+  /** Maximum width when resizing (default 560) */
+  maxWidthPx?: number;
   getItems: (selections: FinderSelections) => FinderItem<T>[];
   renderIcon?: (item: FinderItem<T>, active: boolean) => React.ReactNode;
   renderLabel?: (item: FinderItem<T>) => React.ReactNode;

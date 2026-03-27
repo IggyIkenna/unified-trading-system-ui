@@ -13,24 +13,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { RefreshCw, Download, AlertTriangle, CheckCircle2 } from "lucide-react";
-import { FinderBrowser } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import type { FinderSelections } from "@/components/shared/finder";
-import {
-  RAW_DATA_COLUMNS,
-  getRawDataContextStats,
-} from "@/components/data/raw-data-finder-config";
+import { RAW_DATA_COLUMNS, getRawDataContextStats } from "@/components/data/raw-data-finder-config";
 import { MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
 
 // ─── Detail panel ─────────────────────────────────────────────────────────────
 
 function RawDataDetail({ selections }: { selections: FinderSelections }) {
   const dtItem = selections["datatype"];
-  const folderData = selections["folder"]?.data as
-    | { folder: string; venue: string; cat: string }
-    | undefined;
-  const venueData = selections["venue"]?.data as
-    | { venue: string; cat: string }
-    | undefined;
+  const folderData = selections["folder"]?.data as { folder: string; venue: string; cat: string } | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: string } | undefined;
 
   if (dtItem) {
     const { dt, venue, folder, completionPct } = dtItem.data as {
@@ -39,28 +32,14 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
       folder: string;
       completionPct: number;
     };
-    const color =
-      completionPct >= 90
-        ? "text-emerald-400"
-        : completionPct >= 70
-          ? "text-yellow-400"
-          : "text-red-400";
-    const barColor =
-      completionPct >= 90
-        ? "bg-emerald-400"
-        : completionPct >= 70
-          ? "bg-yellow-400"
-          : "bg-red-400";
+    const color = completionPct >= 90 ? "text-emerald-400" : completionPct >= 70 ? "text-yellow-400" : "text-red-400";
+    const barColor = completionPct >= 90 ? "bg-emerald-400" : completionPct >= 70 ? "bg-yellow-400" : "bg-red-400";
 
     return (
       <div className="p-4 space-y-4">
         <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">
-            Data Type
-          </p>
-          <p className="text-sm font-semibold font-mono capitalize">
-            {dt.replace(/_/g, " ")}
-          </p>
+          <p className="text-xs text-muted-foreground uppercase tracking-wider">Data Type</p>
+          <p className="text-sm font-semibold font-mono capitalize">{dt.replace(/_/g, " ")}</p>
           <p className="text-xs text-muted-foreground">
             {venue.replace(/_/g, " ")} / {folder.replace(/_/g, " ")}
           </p>
@@ -68,9 +47,7 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Completion</span>
-            <span className={cn("font-mono font-bold", color)}>
-              {completionPct}%
-            </span>
+            <span className={cn("font-mono font-bold", color)}>{completionPct}%</span>
           </div>
           <div className="h-2 rounded-full bg-muted/60 overflow-hidden">
             <div
@@ -111,12 +88,8 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
   if (folderData) {
     return (
       <div className="p-4 space-y-3">
-        <p className="text-sm font-semibold capitalize">
-          {folderData.folder.replace(/_/g, " ")}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Select a data type to see completion details
-        </p>
+        <p className="text-sm font-semibold capitalize">{folderData.folder.replace(/_/g, " ")}</p>
+        <p className="text-xs text-muted-foreground">Select a data type to see completion details</p>
       </div>
     );
   }
@@ -124,12 +97,8 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
       <Download className="size-8 mb-2 opacity-20" />
-      <p className="text-sm font-medium text-muted-foreground">
-        No data type selected
-      </p>
-      <p className="text-xs text-muted-foreground/60 mt-1">
-        Drill down to see completion % and configure downloads
-      </p>
+      <p className="text-sm font-medium text-muted-foreground">No data type selected</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">Drill down to see completion % and configure downloads</p>
     </div>
   );
 }
@@ -153,19 +122,13 @@ export default function RawDataPage() {
         </div>
         <div className="flex items-center gap-2">
           {rawStage && rawStage.failedShards > 0 && (
-            <Badge
-              variant="outline"
-              className="text-xs gap-1.5 border-red-400/30 text-red-400"
-            >
+            <Badge variant="outline" className="text-xs gap-1.5 border-red-400/30 text-red-400">
               <AlertTriangle className="size-3" />
               {rawStage.failedShards} failed
             </Badge>
           )}
           {rawStage && rawStage.inProgressShards > 0 && (
-            <Badge
-              variant="outline"
-              className="text-xs gap-1.5 border-blue-400/30 text-blue-400"
-            >
+            <Badge variant="outline" className="text-xs gap-1.5 border-blue-400/30 text-blue-400">
               {rawStage.inProgressShards} active
             </Badge>
           )}
@@ -184,11 +147,9 @@ export default function RawDataPage() {
         detailPanelTitle="Data Type Detail"
         emptyState={
           <div className="text-center">
-            <Download className="size-8 mb-2 opacity-20 mx-auto" />
-            <p className="text-sm font-medium">Select a category</p>
-            <p className="text-xs opacity-60 mt-1">
-              Browse raw data availability by venue and data type
-            </p>
+            <Download className="size-10 mb-2 opacity-20 mx-auto" />
+            <p className={cn(finderText.title, "font-medium")}>Select a category</p>
+            <p className={cn(finderText.sub, "opacity-60 mt-1")}>Browse raw data availability by venue and data type</p>
           </div>
         }
       />
