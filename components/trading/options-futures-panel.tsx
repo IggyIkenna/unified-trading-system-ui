@@ -42,14 +42,25 @@ import {
   BarChart3,
   Grid3X3,
   Activity,
+  Zap,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
+import {
+  WatchlistPanel,
+  type WatchlistDefinition,
+  type WatchlistSymbol,
+} from "@/components/trading/watchlist-panel";
 
 // ---------- Types ----------
 
+type AssetClass = "crypto" | "tradfi";
 type Asset = "BTC" | "ETH" | "SOL" | "AVAX";
+type TradFiAsset = "SPY" | "QQQ" | "SPX";
 type Settlement = "inverse" | "linear";
 type Market = "deribit" | "okx" | "bybit";
-type MainTab = "options" | "futures" | "strategies";
+type TradFiMarket = "cboe" | "td" | "ibkr";
+type MainTab = "options" | "futures" | "strategies" | "scenario";
 type TradeDirection = "buy" | "sell";
 type OrderType = "limit" | "market" | "post-only" | "reduce-only";
 type GreekSurface = "delta" | "gamma" | "vega" | "theta";
@@ -144,6 +155,7 @@ interface SelectedInstrument {
 // ---------- Constants ----------
 
 const ASSETS: Asset[] = ["BTC", "ETH", "SOL", "AVAX"];
+const TRADFI_ASSETS: TradFiAsset[] = ["SPY", "QQQ", "SPX"];
 
 const SPOT_PRICES: Record<Asset, number> = {
   BTC: 71583,
@@ -152,11 +164,23 @@ const SPOT_PRICES: Record<Asset, number> = {
   AVAX: 42.15,
 };
 
+const TRADFI_SPOT_PRICES: Record<TradFiAsset, number> = {
+  SPY: 521.4,
+  QQQ: 446.2,
+  SPX: 5238.0,
+};
+
 const IV_INDEX: Record<Asset, number> = {
   BTC: 50.9,
   ETH: 55.2,
   SOL: 72.1,
   AVAX: 68.4,
+};
+
+const TRADFI_IV_INDEX: Record<TradFiAsset, number> = {
+  SPY: 16.8,
+  QQQ: 20.1,
+  SPX: 15.9,
 };
 
 const EXPIRY_DATES = [
@@ -174,6 +198,23 @@ const EXPIRY_DATES = [
   "25 DEC 26",
 ] as const;
 
+// US equity options follow monthly/quarterly OPEX cycle
+const TRADFI_EXPIRY_DATES = [
+  "ALL",
+  "21 MAR 26",
+  "18 APR 26",
+  "16 MAY 26",
+  "20 JUN 26",
+  "18 JUL 26",
+  "15 AUG 26",
+  "19 SEP 26",
+  "17 OCT 26",
+  "21 NOV 26",
+  "19 DEC 26",
+  "16 JAN 27",
+  "20 MAR 27",
+] as const;
+
 const EXPIRIES_WITH_POSITIONS = new Set(["26 JUN 26", "25 DEC 26"]);
 
 const STRIKE_INCREMENTS: Record<Asset, number> = {
@@ -182,6 +223,197 @@ const STRIKE_INCREMENTS: Record<Asset, number> = {
   SOL: 10,
   AVAX: 5,
 };
+
+const TRADFI_STRIKE_INCREMENTS: Record<TradFiAsset, number> = {
+  SPY: 5,
+  QQQ: 5,
+  SPX: 25,
+};
+
+// Scenario preset shocks used in the Scenario tab
+const SCENARIO_PRESETS = [
+  { label: "Base", spotPct: 0, volPct: 0 },
+  { label: "+10% Rally", spotPct: 10, volPct: -15 },
+  { label: "-10% Crash", spotPct: -10, volPct: 30 },
+  { label: "Vol Spike", spotPct: 0, volPct: 50 },
+  { label: "Vol Crush", spotPct: 0, volPct: -30 },
+  { label: "Melt-Up", spotPct: 20, volPct: -20 },
+] as const;
+
+// ---------- Watchlist mock data ----------
+
+const CRYPTO_WATCHLIST_SYMBOLS: WatchlistSymbol[] = [
+  {
+    id: "btc",
+    symbol: "BTC",
+    name: "Bitcoin",
+    price: 71583,
+    change24h: 2.41,
+    iv: 50.9,
+    category: "crypto",
+  },
+  {
+    id: "eth",
+    symbol: "ETH",
+    name: "Ethereum",
+    price: 3456,
+    change24h: 1.18,
+    iv: 55.2,
+    category: "crypto",
+  },
+  {
+    id: "sol",
+    symbol: "SOL",
+    name: "Solana",
+    price: 187.4,
+    change24h: -0.83,
+    iv: 72.1,
+    category: "crypto",
+  },
+  {
+    id: "avax",
+    symbol: "AVAX",
+    name: "Avalanche",
+    price: 42.15,
+    change24h: 3.5,
+    iv: 68.4,
+    category: "crypto",
+  },
+  {
+    id: "bnb",
+    symbol: "BNB",
+    name: "BNB",
+    price: 598,
+    change24h: 0.77,
+    iv: 44.2,
+    category: "crypto",
+  },
+  {
+    id: "link",
+    symbol: "LINK",
+    name: "Chainlink",
+    price: 18.9,
+    change24h: -1.2,
+    iv: 82.3,
+    category: "crypto",
+  },
+  {
+    id: "arb",
+    symbol: "ARB",
+    name: "Arbitrum",
+    price: 1.14,
+    change24h: -2.1,
+    iv: 91.5,
+    category: "crypto",
+  },
+  {
+    id: "op",
+    symbol: "OP",
+    name: "Optimism",
+    price: 2.87,
+    change24h: 4.3,
+    iv: 88.7,
+    category: "crypto",
+  },
+];
+
+const TRADFI_WATCHLIST_SYMBOLS: WatchlistSymbol[] = [
+  {
+    id: "spy",
+    symbol: "SPY",
+    name: "SPDR S&P 500 ETF",
+    price: 521.4,
+    change24h: 0.62,
+    iv: 16.8,
+    category: "tradfi",
+  },
+  {
+    id: "qqq",
+    symbol: "QQQ",
+    name: "Invesco QQQ Trust",
+    price: 446.2,
+    change24h: 0.91,
+    iv: 20.1,
+    category: "tradfi",
+  },
+  {
+    id: "spx",
+    symbol: "SPX",
+    name: "S&P 500 Index",
+    price: 5238.0,
+    change24h: 0.58,
+    iv: 15.9,
+    category: "tradfi",
+  },
+  {
+    id: "ndx",
+    symbol: "NDX",
+    name: "Nasdaq-100 Index",
+    price: 18420,
+    change24h: 0.85,
+    iv: 19.4,
+    category: "tradfi",
+  },
+  {
+    id: "iwm",
+    symbol: "IWM",
+    name: "iShares Russell 2000",
+    price: 207.8,
+    change24h: -0.44,
+    iv: 22.3,
+    category: "tradfi",
+  },
+  {
+    id: "aapl",
+    symbol: "AAPL",
+    name: "Apple Inc.",
+    price: 182.3,
+    change24h: -0.31,
+    iv: 24.1,
+    category: "tradfi",
+  },
+  {
+    id: "tsla",
+    symbol: "TSLA",
+    name: "Tesla Inc.",
+    price: 248.5,
+    change24h: 2.11,
+    iv: 58.7,
+    category: "tradfi",
+  },
+  {
+    id: "nvda",
+    symbol: "NVDA",
+    name: "NVIDIA Corp.",
+    price: 875.4,
+    change24h: 1.55,
+    iv: 52.3,
+    category: "tradfi",
+  },
+];
+
+const DEFAULT_WATCHLISTS: WatchlistDefinition[] = [
+  {
+    id: "crypto-top",
+    label: "Crypto Top 8",
+    symbols: CRYPTO_WATCHLIST_SYMBOLS,
+  },
+  {
+    id: "crypto-defi",
+    label: "DeFi Tokens",
+    symbols: CRYPTO_WATCHLIST_SYMBOLS.filter((s) =>
+      ["arb", "op", "link"].includes(s.id),
+    ),
+  },
+  { id: "tradfi-us", label: "US Equities", symbols: TRADFI_WATCHLIST_SYMBOLS },
+  {
+    id: "tradfi-indices",
+    label: "Indices & ETFs",
+    symbols: TRADFI_WATCHLIST_SYMBOLS.filter((s) =>
+      ["spy", "qqq", "spx", "ndx", "iwm"].includes(s.id),
+    ),
+  },
+];
 
 // ---------- Mock Data Generators ----------
 
@@ -392,6 +624,109 @@ function generateSpreadMatrix(asset: SpreadAsset): (SpreadCell | null)[][] {
   return matrix;
 }
 
+// Generate a TradFi option chain (SPY/QQQ/SPX) using different spot/IV/strike params
+function generateTradFiOptionChain(
+  asset: TradFiAsset,
+  _expiry: string,
+): OptionRow[] {
+  const spot = TRADFI_SPOT_PRICES[asset];
+  const inc = TRADFI_STRIKE_INCREMENTS[asset];
+  const baseIv = TRADFI_IV_INDEX[asset];
+  const timeToExpiry = 0.25;
+
+  const low = Math.floor((spot * 0.88) / inc) * inc;
+  const high = Math.ceil((spot * 1.12) / inc) * inc;
+  const strikes: number[] = [];
+  for (let s = low; s <= high; s += inc) strikes.push(s);
+
+  return strikes.map((strike, idx) => {
+    const moneyness = (strike - spot) / spot;
+    const absMoneyness = Math.abs(moneyness);
+    // Equity IV smile is shallower and skewed (put skew)
+    const putSkew = moneyness < 0 ? Math.abs(moneyness) * 15 : 0;
+    const ivSmile =
+      baseIv + absMoneyness * 12 + putSkew + seededRandom(strike + idx) * 2;
+    const ivBidOffset = 0.2 + absMoneyness * 0.3;
+    const callMark =
+      Math.max(0, spot - strike) +
+      spot * (ivSmile / 100) * Math.sqrt(timeToExpiry) * 0.4;
+    const putMark =
+      Math.max(0, strike - spot) +
+      spot * (ivSmile / 100) * Math.sqrt(timeToExpiry) * 0.4;
+    const callSpread = callMark * 0.015 * (1 + absMoneyness * 2);
+    const putSpread = putMark * 0.015 * (1 + absMoneyness * 2);
+    const d1 = -moneyness / ((ivSmile / 100) * Math.sqrt(timeToExpiry));
+    const callDelta = 0.5 + 0.4 * Math.tanh(d1);
+    const putDelta = callDelta - 1;
+    const oiBase = Math.round(
+      (5000 + seededRandom(strike + idx + 99) * 50000) * (1 - absMoneyness * 2),
+    );
+    return {
+      strike,
+      callBid: Math.max(0.01, callMark - callSpread),
+      callAsk: callMark + callSpread,
+      callMark,
+      callIvBid: ivSmile - ivBidOffset,
+      callIvAsk: ivSmile + ivBidOffset,
+      callDelta,
+      callOi: Math.max(0, oiBase),
+      callSize: Math.round(seededRandom(strike + idx + 10) * 500),
+      putBid: Math.max(0.01, putMark - putSpread),
+      putAsk: putMark + putSpread,
+      putMark,
+      putIvBid: ivSmile - ivBidOffset,
+      putIvAsk: ivSmile + ivBidOffset,
+      putDelta,
+      putOi: Math.max(0, oiBase * 1.3),
+      putSize: Math.round(seededRandom(strike + idx + 20) * 500),
+    };
+  });
+}
+
+// Generate scenario P&L grid: spotSteps × volSteps matrix
+// Returns a 2D array of P&L values for a mock notional position
+function generateScenarioGrid(
+  spotPrice: number,
+  baseIv: number,
+  spotSteps: number[], // e.g. [-20, -10, 0, 10, 20] as percentages
+  volSteps: number[], // e.g. [-30, -15, 0, 15, 30] as percentage-point deltas
+  notional: number,
+): {
+  pnl: number[][];
+  delta: number[][];
+  liqThreshold: number;
+} {
+  // Mock a delta-hedged options book: long gamma, short theta
+  // P&L ≈ 0.5 * gamma * dS² - theta * dt + vega * dVol
+  const gamma = notional * 0.00002;
+  const theta = notional * 0.0003;
+  const vega = notional * 0.008;
+  const baseDelta = notional * 0.3;
+  const dt = 1 / 252; // 1 day
+
+  const pnl = spotSteps.map((spotPct) =>
+    volSteps.map((volDelta) => {
+      const dS = spotPrice * (spotPct / 100);
+      const dVol = volDelta / 100;
+      return (
+        baseDelta * dS + 0.5 * gamma * dS * dS - theta * dt * 365 + vega * dVol
+      );
+    }),
+  );
+
+  const delta = spotSteps.map((spotPct) =>
+    volSteps.map((volDelta) => {
+      const dS = spotPrice * (spotPct / 100);
+      return baseDelta + gamma * dS + (volDelta / 100) * vega * 0.01;
+    }),
+  );
+
+  // Liquidation threshold: loss > 40% of notional
+  const liqThreshold = -notional * 0.4;
+
+  return { pnl, delta, liqThreshold };
+}
+
 function formatUsd(value: number, decimals: number = 2): string {
   if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(1)}B`;
   if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
@@ -453,99 +788,219 @@ function ivToColor(iv: number): string {
 
 // ---------- Sub-components ----------
 
-function InstrumentSelectorBar({
+// Single compact toolbar — all controls + tabs in one row
+function OptionsToolbar({
+  assetClass,
+  setAssetClass,
   asset,
   setAsset,
+  tradFiAsset,
+  setTradFiAsset,
   settlement,
   setSettlement,
   market,
   setMarket,
+  tradFiMarket,
+  setTradFiMarket,
+  activeTab,
+  setActiveTab,
+  showWatchlist,
+  setShowWatchlist,
 }: {
+  assetClass: AssetClass;
+  setAssetClass: (ac: AssetClass) => void;
   asset: Asset;
   setAsset: (a: Asset) => void;
+  tradFiAsset: TradFiAsset;
+  setTradFiAsset: (a: TradFiAsset) => void;
   settlement: Settlement;
   setSettlement: (s: Settlement) => void;
   market: Market;
   setMarket: (m: Market) => void;
+  tradFiMarket: TradFiMarket;
+  setTradFiMarket: (m: TradFiMarket) => void;
+  activeTab: MainTab;
+  setActiveTab: (t: MainTab) => void;
+  showWatchlist: boolean;
+  setShowWatchlist: (v: boolean) => void;
 }) {
-  const spot = SPOT_PRICES[asset];
-  const iv = IV_INDEX[asset];
+  const isCrypto = assetClass === "crypto";
+  const spot = isCrypto ? SPOT_PRICES[asset] : TRADFI_SPOT_PRICES[tradFiAsset];
+  const iv = isCrypto ? IV_INDEX[asset] : TRADFI_IV_INDEX[tradFiAsset];
+
+  const TABS: {
+    value: MainTab;
+    label: string;
+    icon: React.ReactNode;
+    cryptoOnly?: boolean;
+  }[] = [
+    { value: "options", label: "Chain", icon: <Grid3X3 className="size-3" /> },
+    {
+      value: "futures",
+      label: "Futures",
+      icon: <TrendingUp className="size-3" />,
+      cryptoOnly: true,
+    },
+    {
+      value: "strategies",
+      label: "Strategies",
+      icon: <Activity className="size-3" />,
+    },
+    { value: "scenario", label: "Scenario", icon: <Zap className="size-3" /> },
+  ];
 
   return (
-    <div className="flex items-center gap-3 px-4 py-2 border-b bg-muted/20 overflow-x-auto">
-      {/* Asset segmented buttons */}
-      <div className="flex items-center gap-0.5 rounded-lg border p-0.5 bg-muted/30">
-        {ASSETS.map((a) => (
+    <div className="flex items-center gap-2 px-3 py-1.5 border-b bg-muted/10 overflow-x-auto min-h-[42px]">
+      {/* Watchlist toggle */}
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-7 w-7 p-0 shrink-0"
+        onClick={() => setShowWatchlist(!showWatchlist)}
+        title={showWatchlist ? "Hide watchlist" : "Show watchlist"}
+      >
+        {showWatchlist ? (
+          <PanelLeftClose className="size-3.5" />
+        ) : (
+          <PanelLeftOpen className="size-3.5" />
+        )}
+      </Button>
+
+      <Separator orientation="vertical" className="h-5 shrink-0" />
+
+      {/* Asset class */}
+      <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
+        <Button
+          variant={isCrypto ? "default" : "ghost"}
+          size="sm"
+          className="h-6 px-2.5 text-xs font-medium"
+          onClick={() => setAssetClass("crypto")}
+        >
+          Crypto
+        </Button>
+        <Button
+          variant={!isCrypto ? "default" : "ghost"}
+          size="sm"
+          className="h-6 px-2.5 text-xs font-medium"
+          onClick={() => setAssetClass("tradfi")}
+        >
+          TradFi
+        </Button>
+      </div>
+
+      {/* Settlement (crypto only) */}
+      {isCrypto && (
+        <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
           <Button
-            key={a}
-            variant={asset === a ? "default" : "ghost"}
+            variant={settlement === "inverse" ? "default" : "ghost"}
             size="sm"
-            className={cn(
-              "h-7 px-3 text-xs font-mono",
-              asset === a && "shadow-sm",
-            )}
-            onClick={() => setAsset(a)}
+            className="h-6 px-2 text-xs"
+            onClick={() => setSettlement("inverse")}
           >
-            {a}
+            Inv
+          </Button>
+          <Button
+            variant={settlement === "linear" ? "default" : "ghost"}
+            size="sm"
+            className="h-6 px-2 text-xs"
+            onClick={() => setSettlement("linear")}
+          >
+            Lin
+          </Button>
+        </div>
+      )}
+
+      {/* Exchange */}
+      {isCrypto ? (
+        <Select value={market} onValueChange={(v) => setMarket(v as Market)}>
+          <SelectTrigger className="h-7 w-[100px] text-xs shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="deribit">Deribit</SelectItem>
+            <SelectItem value="okx">OKX</SelectItem>
+            <SelectItem value="bybit">Bybit</SelectItem>
+          </SelectContent>
+        </Select>
+      ) : (
+        <Select
+          value={tradFiMarket}
+          onValueChange={(v) => setTradFiMarket(v as TradFiMarket)}
+        >
+          <SelectTrigger className="h-7 w-[110px] text-xs shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="cboe">CBOE</SelectItem>
+            <SelectItem value="td">TD Ameritrade</SelectItem>
+            <SelectItem value="ibkr">IBKR</SelectItem>
+          </SelectContent>
+        </Select>
+      )}
+
+      <Separator orientation="vertical" className="h-5 shrink-0" />
+
+      {/* Asset pills */}
+      <div className="flex items-center gap-0.5 shrink-0">
+        {isCrypto
+          ? ASSETS.map((a) => (
+              <Button
+                key={a}
+                variant={asset === a ? "default" : "ghost"}
+                size="sm"
+                className="h-7 px-2.5 text-xs font-mono"
+                onClick={() => setAsset(a)}
+              >
+                {a}
+              </Button>
+            ))
+          : TRADFI_ASSETS.map((a) => (
+              <Button
+                key={a}
+                variant={tradFiAsset === a ? "default" : "ghost"}
+                size="sm"
+                className="h-7 px-2.5 text-xs font-mono"
+                onClick={() => setTradFiAsset(a)}
+              >
+                {a}
+              </Button>
+            ))}
+      </div>
+
+      <Separator orientation="vertical" className="h-5 shrink-0" />
+
+      {/* Spot + IV */}
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-1 text-xs whitespace-nowrap">
+          <span className="text-muted-foreground text-[10px]">Spot</span>
+          <span className="font-mono font-semibold">
+            {isCrypto ? formatUsd(spot) : `$${spot.toFixed(2)}`}
+          </span>
+        </div>
+        <div className="flex items-center gap-1 text-xs whitespace-nowrap">
+          <Activity className="size-3 text-muted-foreground" />
+          <span className="font-mono text-amber-400">{iv.toFixed(1)}%</span>
+          <span className="text-[10px] text-muted-foreground">IV</span>
+        </div>
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-1 min-w-0" />
+
+      {/* Tabs on the right */}
+      <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
+        {TABS.filter((t) => !t.cryptoOnly || isCrypto).map((t) => (
+          <Button
+            key={t.value}
+            variant={activeTab === t.value ? "default" : "ghost"}
+            size="sm"
+            className="h-6 px-2.5 text-xs gap-1"
+            onClick={() => setActiveTab(t.value)}
+          >
+            {t.icon}
+            {t.label}
           </Button>
         ))}
-      </div>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      {/* Settlement toggle */}
-      <div className="flex items-center gap-0.5 rounded-lg border p-0.5 bg-muted/30">
-        <Button
-          variant={settlement === "inverse" ? "default" : "ghost"}
-          size="sm"
-          className="h-7 px-3 text-xs"
-          onClick={() => setSettlement("inverse")}
-        >
-          Inverse
-        </Button>
-        <Button
-          variant={settlement === "linear" ? "default" : "ghost"}
-          size="sm"
-          className="h-7 px-3 text-xs"
-          onClick={() => setSettlement("linear")}
-        >
-          Linear
-        </Button>
-      </div>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      {/* Market dropdown */}
-      <Select value={market} onValueChange={(v) => setMarket(v as Market)}>
-        <SelectTrigger className="h-8 w-28 text-xs">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="deribit">Deribit</SelectItem>
-          <SelectItem value="okx">OKX</SelectItem>
-          <SelectItem value="bybit">Bybit</SelectItem>
-        </SelectContent>
-      </Select>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      {/* Spot price */}
-      <div className="flex items-center gap-1.5 text-xs whitespace-nowrap">
-        <span className="text-muted-foreground">Spot:</span>
-        <span className="font-mono font-bold">
-          {formatUsd(spot)} {asset}
-        </span>
-      </div>
-
-      <Separator orientation="vertical" className="h-6" />
-
-      {/* IV Index */}
-      <div className="flex items-center gap-1.5 text-xs whitespace-nowrap">
-        <Activity className="size-3 text-muted-foreground" />
-        <span className="font-mono font-medium">IV: {iv.toFixed(1)}%</span>
-        <span className="text-[10px] text-muted-foreground">
-          (VoV: {(iv * 0.15).toFixed(1)}%)
-        </span>
       </div>
     </div>
   );
@@ -3139,6 +3594,626 @@ function GreeksSurfacePanel({ asset }: { asset: Asset }) {
   );
 }
 
+// ---------- TradFi Options Chain ----------
+
+function TradFiOptionsChainTab({
+  tradFiAsset,
+  onSelectInstrument,
+}: {
+  tradFiAsset: TradFiAsset;
+  onSelectInstrument: (inst: SelectedInstrument) => void;
+}) {
+  const [selectedExpiry, setSelectedExpiry] = React.useState("18 APR 26");
+  const [aroundAtm, setAroundAtm] = React.useState(false);
+  const [displayUsd, setDisplayUsd] = React.useState(true);
+
+  const spot = TRADFI_SPOT_PRICES[tradFiAsset];
+  const chain = React.useMemo(
+    () => generateTradFiOptionChain(tradFiAsset, selectedExpiry),
+    [tradFiAsset, selectedExpiry],
+  );
+
+  const filteredChain = aroundAtm
+    ? chain.filter((row) => Math.abs(row.strike - spot) / spot < 0.1)
+    : chain;
+
+  const atmStrike = chain.reduce(
+    (closest, row) =>
+      Math.abs(row.strike - spot) < Math.abs(closest.strike - spot)
+        ? row
+        : closest,
+    chain[0],
+  );
+
+  const expectedMoveExpiry =
+    spot * (TRADFI_IV_INDEX[tradFiAsset] / 100) * Math.sqrt(0.25);
+
+  return (
+    <div className="space-y-3">
+      {/* Controls row */}
+      <div className="flex items-center gap-3 flex-wrap">
+        {/* Expiry picker */}
+        <Select value={selectedExpiry} onValueChange={setSelectedExpiry}>
+          <SelectTrigger className="h-8 w-36 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {TRADFI_EXPIRY_DATES.filter((e) => e !== "ALL").map((e) => (
+              <SelectItem key={e} value={e}>
+                {e}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span>Expected move:</span>
+          <span className="font-mono font-medium text-foreground">
+            ±${expectedMoveExpiry.toFixed(2)} (±
+            {((expectedMoveExpiry / spot) * 100).toFixed(1)}%)
+          </span>
+        </div>
+
+        <Button
+          variant={aroundAtm ? "default" : "outline"}
+          size="sm"
+          className="h-7 text-xs ml-auto"
+          onClick={() => setAroundAtm(!aroundAtm)}
+        >
+          ±10% ATM
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 text-xs"
+          onClick={() => setDisplayUsd(!displayUsd)}
+        >
+          {displayUsd ? "Show $" : "Show $"}
+        </Button>
+      </div>
+
+      {/* Chain table */}
+      <div className="rounded-md border overflow-x-auto">
+        <table className="w-full text-xs border-collapse">
+          <thead>
+            <tr className="bg-muted/30">
+              <th
+                colSpan={5}
+                className="text-center py-1 text-[10px] font-semibold text-emerald-400 border-r"
+              >
+                CALLS
+              </th>
+              <th className="text-center py-1 font-bold text-muted-foreground px-3">
+                STRIKE
+              </th>
+              <th
+                colSpan={5}
+                className="text-center py-1 text-[10px] font-semibold text-red-400 border-l"
+              >
+                PUTS
+              </th>
+            </tr>
+            <tr className="bg-muted/10 text-[10px] text-muted-foreground">
+              <th className="text-right pr-1 py-1">Bid</th>
+              <th className="text-right pr-1 py-1">Ask</th>
+              <th className="text-right pr-1 py-1">IV%</th>
+              <th className="text-right pr-1 py-1">Δ</th>
+              <th className="text-right pr-2 py-1 border-r">OI</th>
+              <th className="text-center px-3 py-1 font-bold text-foreground">
+                Strike
+              </th>
+              <th className="text-right pr-1 py-1 border-l">OI</th>
+              <th className="text-right pr-1 py-1">Δ</th>
+              <th className="text-right pr-1 py-1">IV%</th>
+              <th className="text-right pr-1 py-1">Bid</th>
+              <th className="text-right pr-1 py-1">Ask</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredChain.map((row) => {
+              const isAtm = row.strike === atmStrike.strike;
+              return (
+                <tr
+                  key={row.strike}
+                  className={cn(
+                    "border-t hover:bg-muted/10 cursor-pointer",
+                    isAtm && "bg-primary/5 ring-1 ring-inset ring-primary/20",
+                  )}
+                  onClick={() =>
+                    onSelectInstrument({
+                      type: "option",
+                      name: `${tradFiAsset} ${selectedExpiry} ${row.strike}C`,
+                      strike: row.strike,
+                      expiry: selectedExpiry,
+                      putCall: "C",
+                      price: row.callMark,
+                    })
+                  }
+                >
+                  <td className="text-right pr-1 py-0.5 font-mono text-emerald-400">
+                    {displayUsd
+                      ? `$${row.callBid.toFixed(2)}`
+                      : row.callBid.toFixed(2)}
+                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-red-400">
+                    {displayUsd
+                      ? `$${row.callAsk.toFixed(2)}`
+                      : row.callAsk.toFixed(2)}
+                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">
+                    {row.callIvAsk.toFixed(1)}
+                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-blue-400">
+                    {row.callDelta.toFixed(2)}
+                  </td>
+                  <td className="text-right pr-2 py-0.5 text-muted-foreground border-r">
+                    {(row.callOi / 1000).toFixed(0)}k
+                  </td>
+                  <td
+                    className={cn(
+                      "text-center px-3 py-0.5 font-mono font-bold",
+                      isAtm ? "text-primary" : "text-foreground",
+                    )}
+                  >
+                    {row.strike}
+                  </td>
+                  <td className="text-right pr-1 py-0.5 text-muted-foreground border-l">
+                    {(row.putOi / 1000).toFixed(0)}k
+                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-red-400">
+                    {row.putDelta.toFixed(2)}
+                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">
+                    {row.putIvAsk.toFixed(1)}
+                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-emerald-400">
+                    {displayUsd
+                      ? `$${row.putBid.toFixed(2)}`
+                      : row.putBid.toFixed(2)}
+                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-red-400">
+                    {displayUsd
+                      ? `$${row.putAsk.toFixed(2)}`
+                      : row.putAsk.toFixed(2)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ---------- TradFi Vol Surface ----------
+
+function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
+  const spot = TRADFI_SPOT_PRICES[tradFiAsset];
+  const baseIv = TRADFI_IV_INDEX[tradFiAsset];
+
+  // Generate a simple skew-aware vol surface for display
+  const expiryLabels = ["1M", "2M", "3M", "6M", "9M", "12M", "18M", "24M"];
+  const strikes = [-20, -15, -10, -5, 0, 5, 10, 15, 20]; // % from spot
+
+  const volSurface = strikes.map((k) =>
+    expiryLabels.map((_e, ti) => {
+      const tenor = (ti + 1) * 0.083;
+      // Equity put skew — left tail has higher vol
+      const putSkew = k < 0 ? Math.abs(k) * 0.8 : k * 0.3;
+      const termStructure = baseIv - ti * 0.3; // term structure: short end elevated
+      return Math.max(
+        5,
+        termStructure + putSkew + seededRandom(k + ti * 7) * 1.5,
+      );
+    }),
+  );
+
+  return (
+    <Collapsible defaultOpen={false}>
+      <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-2 rounded-lg border bg-muted/10 hover:bg-muted/20 transition-colors text-sm font-medium">
+        <span className="flex items-center gap-2">
+          <BarChart3 className="size-4 text-blue-400" />
+          {tradFiAsset} Vol Surface (Put Skew)
+        </span>
+        <ChevronDown className="size-4 text-muted-foreground" />
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="mt-2 rounded-md border overflow-x-auto">
+          <table className="w-full text-[11px] border-collapse">
+            <thead>
+              <tr className="bg-muted/20">
+                <th className="text-right pr-2 py-1 text-muted-foreground w-16">
+                  Strike
+                </th>
+                {expiryLabels.map((e) => (
+                  <th
+                    key={e}
+                    className="text-center px-2 py-1 text-muted-foreground"
+                  >
+                    {e}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {strikes.map((k, ki) => (
+                <tr
+                  key={k}
+                  className={cn("border-t", k === 0 && "bg-primary/5")}
+                >
+                  <td className="text-right pr-2 py-0.5 font-mono text-muted-foreground">
+                    {k > 0 ? "+" : ""}
+                    {k}%
+                  </td>
+                  {expiryLabels.map((_e, ti) => {
+                    const iv = volSurface[ki][ti];
+                    const atm = volSurface[4][ti];
+                    const diff = iv - atm;
+                    const bg =
+                      diff > 5
+                        ? "bg-amber-900/50 text-amber-200"
+                        : diff > 2
+                          ? "bg-amber-900/30 text-amber-300"
+                          : diff < -2
+                            ? "bg-blue-900/30 text-blue-300"
+                            : "text-foreground";
+                    return (
+                      <td
+                        key={ti}
+                        className={cn(
+                          "text-center px-2 py-0.5 font-mono rounded-sm",
+                          bg,
+                        )}
+                      >
+                        {iv.toFixed(1)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="px-3 py-1.5 text-[10px] text-muted-foreground">
+            IV (%). Spot: ${spot.toFixed(2)} · Base IV: {baseIv.toFixed(1)}% ·
+            Yellow = vol premium above ATM
+          </p>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+// ---------- Scenario Analysis Tab ----------
+
+const SPOT_STEPS = [-20, -15, -10, -5, 0, 5, 10, 15, 20]; // % change
+const VOL_STEPS = [-30, -20, -10, 0, 10, 20, 30]; // vol %-pt delta
+
+function pnlColor(pnl: number, liq: number): string {
+  if (pnl <= liq) return "bg-red-800 text-white font-bold";
+  if (pnl < 0) {
+    const ratio = pnl / liq;
+    if (ratio > 0.7) return "bg-red-900/80 text-red-200";
+    if (ratio > 0.4) return "bg-red-900/50 text-red-300";
+    return "bg-red-900/30 text-red-400";
+  }
+  if (pnl < liq * -0.1) return "bg-emerald-900/20 text-emerald-400";
+  if (pnl < liq * -0.3) return "bg-emerald-900/40 text-emerald-300";
+  return "bg-emerald-900/60 text-emerald-200 font-semibold";
+}
+
+function ScenarioTab({
+  assetClass,
+  asset,
+  tradFiAsset,
+}: {
+  assetClass: AssetClass;
+  asset: Asset;
+  tradFiAsset: TradFiAsset;
+}) {
+  const isCrypto = assetClass === "crypto";
+  const spotPrice = isCrypto
+    ? SPOT_PRICES[asset]
+    : TRADFI_SPOT_PRICES[tradFiAsset];
+  const baseIv = isCrypto ? IV_INDEX[asset] : TRADFI_IV_INDEX[tradFiAsset];
+  const label = isCrypto ? asset : `$${tradFiAsset}`;
+  const notional = isCrypto ? 1_000_000 : 500_000;
+
+  const [activePreset, setActivePreset] = React.useState(0);
+  const [customSpot, setCustomSpot] = React.useState(0);
+  const [customVol, setCustomVol] = React.useState(0);
+  const [viewMode, setViewMode] = React.useState<"pnl" | "delta">("pnl");
+
+  const { pnl, delta, liqThreshold } = React.useMemo(
+    () =>
+      generateScenarioGrid(spotPrice, baseIv, SPOT_STEPS, VOL_STEPS, notional),
+    [spotPrice, baseIv, notional],
+  );
+
+  const matrix = viewMode === "pnl" ? pnl : delta;
+
+  // Single-point scenario from slider / preset
+  const presetSpot =
+    activePreset === -1 ? customSpot : SCENARIO_PRESETS[activePreset].spotPct;
+  const presetVol =
+    activePreset === -1 ? customVol : SCENARIO_PRESETS[activePreset].volPct;
+
+  const scenarioPnl = React.useMemo(() => {
+    const dS = spotPrice * (presetSpot / 100);
+    const dVol = presetVol / 100;
+    const gamma = notional * 0.00002;
+    const theta = notional * 0.0003;
+    const vega = notional * 0.008;
+    const baseDelta = notional * 0.3;
+    return (
+      baseDelta * dS +
+      0.5 * gamma * dS * dS -
+      theta * (1 / 252) * 365 +
+      vega * dVol
+    );
+  }, [spotPrice, presetSpot, presetVol, notional]);
+
+  const scenarioSpot = spotPrice * (1 + presetSpot / 100);
+  const scenarioIv = baseIv + presetVol;
+
+  return (
+    <div className="flex flex-col gap-4 p-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold flex items-center gap-2">
+            <Zap className="size-4 text-amber-400" />
+            Scenario Analysis — {label}
+          </h3>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            Deribit-style P&amp;L and Greeks across spot × vol shock grid.
+            Notional: {formatUsd(notional, 0)}.
+          </p>
+        </div>
+        <div className="flex items-center gap-0.5 rounded-lg border p-0.5 bg-muted/30">
+          <Button
+            variant={viewMode === "pnl" ? "default" : "ghost"}
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={() => setViewMode("pnl")}
+          >
+            P&amp;L
+          </Button>
+          <Button
+            variant={viewMode === "delta" ? "default" : "ghost"}
+            size="sm"
+            className="h-7 px-3 text-xs"
+            onClick={() => setViewMode("delta")}
+          >
+            Delta
+          </Button>
+        </div>
+      </div>
+
+      {/* Preset + single-scenario card */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Preset selector */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="py-2 px-4">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
+              Scenario Presets
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-3">
+            <div className="flex flex-wrap gap-2">
+              {SCENARIO_PRESETS.map((p, idx) => (
+                <Button
+                  key={p.label}
+                  variant={activePreset === idx ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => setActivePreset(idx)}
+                >
+                  {p.label}
+                </Button>
+              ))}
+              <Button
+                variant={activePreset === -1 ? "default" : "outline"}
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setActivePreset(-1)}
+              >
+                Custom
+              </Button>
+            </div>
+            {activePreset === -1 && (
+              <div className="mt-3 grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">
+                    Spot shock: {customSpot > 0 ? "+" : ""}
+                    {customSpot}%
+                  </label>
+                  <input
+                    type="range"
+                    min={-30}
+                    max={30}
+                    step={1}
+                    value={customSpot}
+                    onChange={(e) => setCustomSpot(Number(e.target.value))}
+                    className="w-full h-1.5 accent-primary"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] text-muted-foreground">
+                    Vol shock: {customVol > 0 ? "+" : ""}
+                    {customVol} pp
+                  </label>
+                  <input
+                    type="range"
+                    min={-40}
+                    max={60}
+                    step={1}
+                    value={customVol}
+                    onChange={(e) => setCustomVol(Number(e.target.value))}
+                    className="w-full h-1.5 accent-primary"
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Single-scenario result */}
+        <Card
+          className={cn(
+            "border",
+            scenarioPnl < 0 ? "border-red-900/40" : "border-emerald-900/40",
+          )}
+        >
+          <CardHeader className="py-2 px-4">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
+              Scenario Result
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-3 space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Spot →</span>
+              <span className="font-mono">
+                {isCrypto
+                  ? formatUsd(scenarioSpot)
+                  : `$${scenarioSpot.toFixed(2)}`}
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">IV →</span>
+              <span className="font-mono">{scenarioIv.toFixed(1)}%</span>
+            </div>
+            <Separator />
+            <div className="flex justify-between text-sm font-semibold">
+              <span>P&amp;L</span>
+              <span
+                className={cn(
+                  "font-mono",
+                  scenarioPnl >= 0 ? "text-emerald-400" : "text-red-400",
+                )}
+              >
+                {scenarioPnl >= 0 ? "+" : ""}
+                {formatUsd(scenarioPnl, 0)}
+              </span>
+            </div>
+            {scenarioPnl <= liqThreshold && (
+              <div className="rounded bg-red-900/60 px-2 py-1 text-[11px] text-red-200 font-medium text-center">
+                ⚠ Near liquidation threshold
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Full P&L / Delta matrix */}
+      <Card>
+        <CardHeader className="py-2 px-4">
+          <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+            {viewMode === "pnl" ? "P&L Matrix" : "Delta Matrix"}
+            <span className="ml-1 text-[10px] normal-case">
+              rows = spot shock %, cols = vol shock pp
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 pb-3 overflow-x-auto">
+          <table className="w-full text-[11px] border-collapse">
+            <thead>
+              <tr>
+                <th className="text-right pr-2 py-1 font-medium text-muted-foreground w-14">
+                  Spot ↓ / Vol →
+                </th>
+                {VOL_STEPS.map((v) => (
+                  <th
+                    key={v}
+                    className="text-center px-2 py-1 font-medium text-muted-foreground whitespace-nowrap"
+                  >
+                    {v > 0 ? "+" : ""}
+                    {v} pp
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {SPOT_STEPS.map((s, si) => (
+                <tr
+                  key={s}
+                  className={s === 0 ? "ring-1 ring-inset ring-white/10" : ""}
+                >
+                  <td className="text-right pr-2 py-0.5 font-medium text-muted-foreground whitespace-nowrap">
+                    {s > 0 ? "+" : ""}
+                    {s}%
+                  </td>
+                  {VOL_STEPS.map((_v, vi) => {
+                    const val = matrix[si][vi];
+                    const cellClass =
+                      viewMode === "pnl"
+                        ? pnlColor(val, liqThreshold)
+                        : val > 0
+                          ? "bg-emerald-900/30 text-emerald-300"
+                          : "bg-red-900/30 text-red-400";
+                    return (
+                      <td
+                        key={vi}
+                        className={cn(
+                          "text-center px-2 py-0.5 font-mono rounded-sm",
+                          cellClass,
+                        )}
+                      >
+                        {viewMode === "pnl"
+                          ? `${val >= 0 ? "+" : ""}${(val / 1000).toFixed(1)}k`
+                          : val.toFixed(0)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="mt-2 text-[10px] text-muted-foreground">
+            P&amp;L values in USD (k). Red cells = loss; darker red = near/at
+            liq threshold ({formatUsd(liqThreshold, 0)}).
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Key risk metrics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          {
+            label: "Max Gain",
+            value: `+${formatUsd(Math.max(...pnl.flat()), 0)}`,
+            color: "text-emerald-400",
+          },
+          {
+            label: "Max Loss",
+            value: formatUsd(Math.min(...pnl.flat()), 0),
+            color: "text-red-400",
+          },
+          {
+            label: "Break-even Spot",
+            value: `±${(Math.abs(liqThreshold) / (notional * 0.003)).toFixed(1)}%`,
+            color: "text-foreground",
+          },
+          {
+            label: "Liq Threshold",
+            value: formatUsd(liqThreshold, 0),
+            color: "text-red-500",
+          },
+        ].map((m) => (
+          <Card key={m.label} className="bg-muted/20">
+            <CardContent className="px-3 py-2 space-y-0.5">
+              <p className="text-[10px] text-muted-foreground">{m.label}</p>
+              <p className={cn("text-sm font-mono font-semibold", m.color)}>
+                {m.value}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ---------- Main Component ----------
 
 interface OptionsFuturesPanelProps {
@@ -3146,135 +4221,197 @@ interface OptionsFuturesPanelProps {
 }
 
 export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
+  // Asset-class state
+  const [assetClass, setAssetClass] = React.useState<AssetClass>("crypto");
+  const isCrypto = assetClass === "crypto";
+
+  // Crypto instrument state
   const [asset, setAsset] = React.useState<Asset>("BTC");
   const [settlement, setSettlement] = React.useState<Settlement>("inverse");
   const [market, setMarket] = React.useState<Market>("deribit");
+
+  // TradFi instrument state
+  const [tradFiAsset, setTradFiAsset] = React.useState<TradFiAsset>("SPY");
+  const [tradFiMarket, setTradFiMarket] = React.useState<TradFiMarket>("cboe");
+
+  // UI state
   const [selectedInstrument, setSelectedInstrument] =
     React.useState<SelectedInstrument | null>(null);
-  const [activeTab, setActiveTab] = React.useState<string>("options");
+  const [activeTab, setActiveTab] = React.useState<MainTab>("options");
   const [strategiesMode, setStrategiesMode] =
     React.useState<StrategiesMode>("futures-spreads");
+  const [showWatchlist, setShowWatchlist] = React.useState(true);
+  const [watchlistId, setWatchlistId] = React.useState("crypto-top");
+  const [selectedWatchlistSymbolId, setSelectedWatchlistSymbolId] =
+    React.useState<string>("btc");
+
+  // When switching asset class, swap to the relevant default watchlist and reset tab
+  function handleAssetClassChange(ac: AssetClass) {
+    setAssetClass(ac);
+    if (ac === "tradfi") {
+      if (activeTab === "futures") setActiveTab("options");
+      setWatchlistId("tradfi-us");
+    } else {
+      setWatchlistId("crypto-top");
+    }
+  }
+
+  // Selecting a symbol from the watchlist drives the active underlying
+  function handleWatchlistSelect(sym: WatchlistSymbol) {
+    setSelectedWatchlistSymbolId(sym.id);
+    if (isCrypto) {
+      const a = ASSETS.find((x) => x === sym.symbol);
+      if (a) setAsset(a);
+    } else {
+      const a = TRADFI_ASSETS.find((x) => x === sym.symbol);
+      if (a) setTradFiAsset(a);
+    }
+  }
+
+  // Keep watchlist selection in sync when asset pills change
+  React.useEffect(() => {
+    const id = isCrypto ? asset.toLowerCase() : tradFiAsset.toLowerCase();
+    setSelectedWatchlistSymbolId(id);
+  }, [asset, tradFiAsset, isCrypto]);
 
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <CardHeader className="pb-0 px-0 pt-0">
-        <div className="flex items-center gap-2 px-4 pt-3 pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <BarChart3 className="size-4" />
-            Options &amp; Futures
-          </CardTitle>
-          <Badge variant="secondary" className="text-[10px]">
-            {market.charAt(0).toUpperCase() + market.slice(1)}
-          </Badge>
-          <Badge variant="outline" className="text-[10px] font-mono">
-            {settlement === "inverse" ? "Coin-Settled" : "USDC-Settled"}
-          </Badge>
-        </div>
-        <InstrumentSelectorBar
-          asset={asset}
-          setAsset={setAsset}
-          settlement={settlement}
-          setSettlement={setSettlement}
-          market={market}
-          setMarket={setMarket}
-        />
-      </CardHeader>
-      <CardContent className="pt-3 px-0">
-        <div className="flex">
-          {/* Main content — 75% */}
-          <div className="flex-1 min-w-0 px-4">
-            <Tabs
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
-              <TabsList className="w-full grid grid-cols-3 h-8">
-                <TabsTrigger value="options" className="text-xs gap-1.5">
-                  <Grid3X3 className="size-3" />
-                  Options Chain
-                </TabsTrigger>
-                <TabsTrigger value="futures" className="text-xs gap-1.5">
-                  <TrendingUp className="size-3" />
-                  Futures
-                </TabsTrigger>
-                <TabsTrigger value="strategies" className="text-xs gap-1.5">
-                  <Activity className="size-3" />
-                  Strategies
-                </TabsTrigger>
-              </TabsList>
+    <div
+      className={cn(
+        "flex flex-col h-full overflow-hidden rounded-lg border bg-background",
+        className,
+      )}
+    >
+      {/* ── Single toolbar row ── */}
+      <OptionsToolbar
+        assetClass={assetClass}
+        setAssetClass={handleAssetClassChange}
+        asset={asset}
+        setAsset={setAsset}
+        tradFiAsset={tradFiAsset}
+        setTradFiAsset={setTradFiAsset}
+        settlement={settlement}
+        setSettlement={setSettlement}
+        market={market}
+        setMarket={setMarket}
+        tradFiMarket={tradFiMarket}
+        setTradFiMarket={setTradFiMarket}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        showWatchlist={showWatchlist}
+        setShowWatchlist={setShowWatchlist}
+      />
 
-              <div className="mt-3">
-                <TabsContent value="options" className="mt-0">
+      {/* ── Three-column body ── */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        {/* LEFT — Watchlist */}
+        {showWatchlist && (
+          <div className="w-[190px] shrink-0 overflow-hidden">
+            <WatchlistPanel
+              watchlists={DEFAULT_WATCHLISTS}
+              activeListId={watchlistId}
+              onListChange={setWatchlistId}
+              selectedSymbolId={selectedWatchlistSymbolId}
+              onSelectSymbol={handleWatchlistSelect}
+              editable
+              className="h-full"
+            />
+          </div>
+        )}
+
+        {/* CENTRE — Main content */}
+        <div className="flex-1 min-w-0 overflow-y-auto">
+          <div className="p-3 space-y-3">
+            {/* Tab content */}
+            {activeTab === "options" && (
+              <>
+                {isCrypto ? (
                   <OptionsChainTab
                     asset={asset}
                     onSelectInstrument={setSelectedInstrument}
                   />
-                </TabsContent>
-                <TabsContent value="futures" className="mt-0">
-                  <FuturesTab
+                ) : (
+                  <TradFiOptionsChainTab
+                    tradFiAsset={tradFiAsset}
+                    onSelectInstrument={setSelectedInstrument}
+                  />
+                )}
+                <div className="space-y-1">
+                  {isCrypto ? (
+                    <>
+                      <VolSurfacePanel asset={asset} />
+                      <GreeksSurfacePanel asset={asset} />
+                    </>
+                  ) : (
+                    <TradFiVolSurfacePanel tradFiAsset={tradFiAsset} />
+                  )}
+                </div>
+              </>
+            )}
+
+            {activeTab === "futures" && isCrypto && (
+              <FuturesTab
+                asset={asset}
+                onSelectInstrument={setSelectedInstrument}
+              />
+            )}
+
+            {activeTab === "strategies" && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 w-fit">
+                  <Button
+                    variant={
+                      strategiesMode === "futures-spreads" ? "default" : "ghost"
+                    }
+                    size="sm"
+                    className="h-7 px-3 text-xs"
+                    onClick={() => setStrategiesMode("futures-spreads")}
+                    disabled={!isCrypto}
+                  >
+                    Futures Spreads
+                  </Button>
+                  <Button
+                    variant={
+                      strategiesMode === "options-combos" ? "default" : "ghost"
+                    }
+                    size="sm"
+                    className="h-7 px-3 text-xs"
+                    onClick={() => setStrategiesMode("options-combos")}
+                  >
+                    Options Combos
+                  </Button>
+                </div>
+                {strategiesMode === "futures-spreads" && isCrypto ? (
+                  <FuturesSpreadsTab
+                    onSelectInstrument={setSelectedInstrument}
+                  />
+                ) : (
+                  <OptionsCombosPanel
                     asset={asset}
                     onSelectInstrument={setSelectedInstrument}
                   />
-                </TabsContent>
-                <TabsContent value="strategies" className="mt-0">
-                  <div className="space-y-3">
-                    {/* Strategies mode toggle */}
-                    <div className="flex items-center gap-0.5 rounded-lg border p-0.5 bg-muted/30 w-fit">
-                      <Button
-                        variant={
-                          strategiesMode === "futures-spreads"
-                            ? "default"
-                            : "ghost"
-                        }
-                        size="sm"
-                        className="h-7 px-3 text-xs"
-                        onClick={() => setStrategiesMode("futures-spreads")}
-                      >
-                        Futures Spreads
-                      </Button>
-                      <Button
-                        variant={
-                          strategiesMode === "options-combos"
-                            ? "default"
-                            : "ghost"
-                        }
-                        size="sm"
-                        className="h-7 px-3 text-xs"
-                        onClick={() => setStrategiesMode("options-combos")}
-                      >
-                        Options Combos
-                      </Button>
-                    </div>
-                    {strategiesMode === "futures-spreads" ? (
-                      <FuturesSpreadsTab
-                        onSelectInstrument={setSelectedInstrument}
-                      />
-                    ) : (
-                      <OptionsCombosPanel
-                        asset={asset}
-                        onSelectInstrument={setSelectedInstrument}
-                      />
-                    )}
-                  </div>
-                </TabsContent>
-              </div>
-            </Tabs>
-
-            {/* Visualisation panels — only visible on Options Chain tab */}
-            {activeTab === "options" && (
-              <div className="mt-4 space-y-1">
-                <VolSurfacePanel asset={asset} />
-                <GreeksSurfacePanel asset={asset} />
+                )}
               </div>
             )}
-          </div>
 
-          {/* Trade panel — sticky right sidebar ~25% */}
-          <div className="w-72 shrink-0 border-l px-4 py-1 sticky top-0 self-start">
-            <TradePanel instrument={selectedInstrument} />
+            {activeTab === "scenario" && (
+              <ScenarioTab
+                assetClass={assetClass}
+                asset={asset}
+                tradFiAsset={tradFiAsset}
+              />
+            )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* RIGHT — Trade panel (hidden on Scenario tab) */}
+        {activeTab !== "scenario" && (
+          <div className="w-64 shrink-0 border-l overflow-y-auto">
+            <div className="p-3">
+              <TradePanel instrument={selectedInstrument} />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
