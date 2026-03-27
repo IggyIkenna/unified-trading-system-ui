@@ -1,20 +1,16 @@
 import { FileCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { GateCheckRow } from "@/components/shared/gate-check-row";
+import { statusBg } from "./helpers";
 import { SR_11_7_ITEMS } from "./mock-fixtures";
-import { statusBg, StatusIcon } from "./helpers";
-import type { CandidateStrategy, GateStatus } from "./types";
+import type { CandidateStrategy, DocumentationChecklistItem, GateStatus } from "./types";
 
-export function ComplianceChecklist({
-  strategy,
-}: {
-  strategy: CandidateStrategy;
-}) {
+export function ComplianceChecklist({ strategy }: { strategy: CandidateStrategy }) {
   const comp = strategy.compliance;
   const docGate: GateStatus = comp.documentationComplete ? "passed" : "warning";
 
-  const checklistRows =
+  const checklistRows: DocumentationChecklistItem[] =
     comp.documentationChecklist ??
     SR_11_7_ITEMS.map((item) => ({
       label: item.label,
@@ -35,15 +31,11 @@ export function ComplianceChecklist({
         <div className="grid md:grid-cols-2 gap-3 text-xs">
           <div className="rounded-lg border border-border/60 p-3 space-y-1">
             <p className="text-muted-foreground">Registry ID</p>
-            <p className="font-mono text-lg">
-              {comp.modelId ?? `REG-${strategy.id}`}
-            </p>
+            <p className="font-mono text-lg">{comp.modelId ?? `REG-${strategy.id}`}</p>
           </div>
           <div className="rounded-lg border border-border/60 p-3 space-y-1">
             <p className="text-muted-foreground">Risk materiality score</p>
-            <p className="font-mono text-lg">
-              {comp.riskMaterialityScore ?? "—"}
-            </p>
+            <p className="font-mono text-lg">{comp.riskMaterialityScore ?? "—"}</p>
           </div>
           <div className="rounded-lg border border-border/60 p-3 space-y-1">
             <p className="text-muted-foreground">Model tier</p>
@@ -70,63 +62,34 @@ export function ComplianceChecklist({
             const st: GateStatus = row.complete ? "passed" : "pending";
             const itemDate = new Date(baseDate);
             itemDate.setDate(baseDate.getDate() - (checklistRows.length - i));
-            const dateStr =
-              row.lastUpdated ?? itemDate.toISOString().slice(0, 10);
+            const dateStr = row.lastUpdated ?? itemDate.toISOString().slice(0, 10);
             return (
-              <div
+              <GateCheckRow
                 key={row.label}
-                className={cn(
-                  "flex min-w-0 items-center justify-between gap-2 rounded-lg border p-2.5 text-xs",
-                  statusBg(st),
-                )}
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <StatusIcon status={st} className="size-3.5 shrink-0" />
-                  <span className="leading-snug">{row.label}</span>
-                </div>
-                <span className="shrink-0 font-mono text-[10px] text-muted-foreground sm:text-xs">
-                  {dateStr}
-                </span>
-              </div>
+                status={st}
+                title={row.label}
+                titleClassName="text-xs font-medium leading-snug"
+                className="p-2.5 text-xs sm:flex-row sm:items-center"
+                trailing={<span className="font-mono text-[10px] text-muted-foreground sm:text-xs">{dateStr}</span>}
+              />
             );
           })}
         </div>
 
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline" className={statusBg(docGate)}>
-            Documentation{" "}
-            {comp.documentationComplete ? "complete" : "incomplete"}
+            Documentation {comp.documentationComplete ? "complete" : "incomplete"}
           </Badge>
-          <Badge
-            variant="outline"
-            className={
-              comp.mrcReviewed ? statusBg("passed") : statusBg("pending")
-            }
-          >
+          <Badge variant="outline" className={comp.mrcReviewed ? statusBg("passed") : statusBg("pending")}>
             MRC {comp.mrcReviewed ? "reviewed" : "pending"}
           </Badge>
-          <Badge
-            variant="outline"
-            className={
-              comp.fcaNotified ? statusBg("passed") : statusBg("not_started")
-            }
-          >
+          <Badge variant="outline" className={comp.fcaNotified ? statusBg("passed") : statusBg("not_started")}>
             FCA {comp.fcaNotified ? "notified" : "n/a"}
           </Badge>
-          <Badge
-            variant="outline"
-            className={
-              comp.sec17a4Compliant ? statusBg("passed") : statusBg("warning")
-            }
-          >
+          <Badge variant="outline" className={comp.sec17a4Compliant ? statusBg("passed") : statusBg("warning")}>
             SEC 17a-4 {comp.sec17a4Compliant ? "aligned" : "review"}
           </Badge>
-          <Badge
-            variant="outline"
-            className={
-              comp.finra4512Compliant ? statusBg("passed") : statusBg("warning")
-            }
-          >
+          <Badge variant="outline" className={comp.finra4512Compliant ? statusBg("passed") : statusBg("warning")}>
             FINRA 4512 {comp.finra4512Compliant ? "aligned" : "review"}
           </Badge>
         </div>
@@ -143,28 +106,18 @@ export function ComplianceChecklist({
             <tbody className="font-mono text-xs">
               <tr className="border-b border-border/40">
                 <td className="p-2">Books &amp; records (17a-4)</td>
-                <td className="p-2">
-                  {comp.sec17a4Compliant ? "Pass" : "Gap"}
-                </td>
-                <td className="p-2 text-muted-foreground">
-                  WORM archive + immutability attestation
-                </td>
+                <td className="p-2">{comp.sec17a4Compliant ? "Pass" : "Gap"}</td>
+                <td className="p-2 text-muted-foreground">WORM archive + immutability attestation</td>
               </tr>
               <tr className="border-b border-border/40">
                 <td className="p-2">Communications / supervision (4512)</td>
-                <td className="p-2">
-                  {comp.finra4512Compliant ? "Pass" : "Gap"}
-                </td>
-                <td className="p-2 text-muted-foreground">
-                  Supervisory workflow + retention map
-                </td>
+                <td className="p-2">{comp.finra4512Compliant ? "Pass" : "Gap"}</td>
+                <td className="p-2 text-muted-foreground">Supervisory workflow + retention map</td>
               </tr>
               <tr>
                 <td className="p-2">Model risk (SR 11-7)</td>
                 <td className="p-2">{comp.mrcReviewed ? "Pass" : "Pending"}</td>
-                <td className="p-2 text-muted-foreground">
-                  MRC minutes ref · tier {comp.modelTier}
-                </td>
+                <td className="p-2 text-muted-foreground">MRC minutes ref · tier {comp.modelTier}</td>
               </tr>
             </tbody>
           </table>

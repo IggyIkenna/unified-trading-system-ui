@@ -6,12 +6,7 @@ import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import {
-  type GateStatus,
-  statusBg,
-  statusColor,
-  StatusIcon,
-} from "@/components/shared/gate-status";
+import { type GateStatus, statusBg, statusColor, StatusIcon } from "@/components/shared/gate-status";
 
 export type GateCheckRowProps = {
   status: GateStatus;
@@ -26,6 +21,8 @@ export type GateCheckRowProps = {
   actual?: React.ReactNode;
   /** Extra classes on the actual value span */
   actualClassName?: string;
+  /** Override title label typography (e.g. compact checklist rows) */
+  titleClassName?: string;
   /**
    * Custom right column; when set, threshold/actual block is not rendered.
    */
@@ -35,14 +32,11 @@ export type GateCheckRowProps = {
   className?: string;
 };
 
-const ROW_SHELL =
-  "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between";
+const ROW_SHELL = "flex min-w-0 flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between";
 
-const DEFAULT_METRICS_WRAP =
-  "flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm";
+const DEFAULT_METRICS_WRAP = "flex shrink-0 flex-col gap-0.5 text-left font-mono text-xs sm:text-right sm:text-sm";
 
-const DEFAULT_TRAILING_WRAP =
-  "flex shrink-0 flex-col gap-1.5 sm:items-end sm:text-right";
+const DEFAULT_TRAILING_WRAP = "flex shrink-0 flex-col gap-1.5 sm:items-end sm:text-right";
 
 function isNonEmpty(v: React.ReactNode): boolean {
   if (v == null) return false;
@@ -59,27 +53,21 @@ export function GateCheckRow({
   thresholdPrefix = "Threshold:",
   actual,
   actualClassName,
+  titleClassName,
   trailing,
   trailingClassName,
   className,
 }: GateCheckRowProps) {
   const showMetrics =
-    trailing == null &&
-    (isNonEmpty(threshold) ||
-      isNonEmpty(actual) ||
-      threshold === 0 ||
-      actual === 0);
+    trailing == null && (isNonEmpty(threshold) || isNonEmpty(actual) || threshold === 0 || actual === 0);
 
   return (
     <div className={cn(ROW_SHELL, statusBg(status), className)}>
       <div className="flex min-w-0 items-start gap-2 sm:items-center">
-        <StatusIcon
-          status={status}
-          className="mt-0.5 size-4 shrink-0 sm:mt-0"
-        />
+        <StatusIcon status={status} className="mt-0.5 size-4 shrink-0 sm:mt-0" />
         <div className="min-w-0 text-left">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-sm font-medium leading-snug">{title}</span>
+            <span className={cn("text-sm font-medium leading-snug", titleClassName)}>{title}</span>
             {required ? (
               <Badge variant="outline" className="px-1 text-xs">
                 {requiredLabel}
@@ -89,9 +77,7 @@ export function GateCheckRow({
         </div>
       </div>
       {trailing != null ? (
-        <div className={cn(DEFAULT_TRAILING_WRAP, trailingClassName)}>
-          {trailing}
-        </div>
+        <div className={cn(DEFAULT_TRAILING_WRAP, trailingClassName)}>{trailing}</div>
       ) : showMetrics ? (
         <div className={DEFAULT_METRICS_WRAP}>
           {isNonEmpty(threshold) ? (
@@ -100,15 +86,7 @@ export function GateCheckRow({
             </span>
           ) : null}
           {isNonEmpty(actual) ? (
-            <span
-              className={cn(
-                "font-semibold",
-                statusColor(status),
-                actualClassName,
-              )}
-            >
-              {actual}
-            </span>
+            <span className={cn("font-semibold", statusColor(status), actualClassName)}>{actual}</span>
           ) : null}
         </div>
       ) : null}
