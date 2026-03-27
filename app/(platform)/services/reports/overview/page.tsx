@@ -12,14 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReports, useSettlements } from "@/hooks/api/use-reports";
 import { CLIENTS, type FilterContext } from "@/lib/trading-data";
@@ -45,12 +38,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-type TransferStatus =
-  | "confirming"
-  | "settled"
-  | "confirmed"
-  | "pending"
-  | "failed";
+type TransferStatus = "confirming" | "settled" | "confirmed" | "pending" | "failed";
 
 export default function ReportsPage() {
   const {
@@ -69,14 +57,10 @@ export default function ReportsPage() {
 
   const allReports: Array<any> = (reportsApiData as any)?.data ?? [];
   const allSettlements: Array<any> =
-    (settlementsApiData as any)?.settlements ??
-    (settlementsApiData as any)?.data ??
-    [];
-  const allPortfolioSummary: Array<any> =
-    (reportsApiData as any)?.portfolioSummary ?? [];
+    (settlementsApiData as any)?.settlements ?? (settlementsApiData as any)?.data ?? [];
+  const allPortfolioSummary: Array<any> = (reportsApiData as any)?.portfolioSummary ?? [];
   const allInvoices: Array<any> = (reportsApiData as any)?.invoices ?? [];
-  const accountBalances: Array<any> =
-    (settlementsApiData as any)?.accountBalances ?? [];
+  const accountBalances: Array<any> = (settlementsApiData as any)?.accountBalances ?? [];
   const recentTransfers: Array<{
     time: string;
     from: string;
@@ -109,9 +93,7 @@ export default function ReportsPage() {
 
     // If orgs selected, get all clients in those orgs
     if (context.organizationIds.length > 0) {
-      return CLIENTS.filter((c) =>
-        context.organizationIds.includes(c.orgId),
-      ).map((c) => c.id);
+      return CLIENTS.filter((c) => context.organizationIds.includes(c.orgId)).map((c) => c.id);
     }
 
     // No filter = all clients
@@ -131,9 +113,7 @@ export default function ReportsPage() {
 
   const portfolioSummary = React.useMemo(() => {
     if (relevantClientIds.length === 0) return allPortfolioSummary;
-    return allPortfolioSummary.filter((p) =>
-      relevantClientIds.includes(p.clientId),
-    );
+    return allPortfolioSummary.filter((p) => relevantClientIds.includes(p.clientId));
   }, [relevantClientIds, allPortfolioSummary]);
 
   const invoices = React.useMemo(() => {
@@ -145,12 +125,9 @@ export default function ReportsPage() {
   const totalAum = portfolioSummary.reduce((sum, p) => sum + p.aum, 0);
   const avgMtdReturn =
     portfolioSummary.length > 0
-      ? portfolioSummary.reduce((sum, p) => sum + p.mtdReturn, 0) /
-        portfolioSummary.length
+      ? portfolioSummary.reduce((sum, p) => sum + p.mtdReturn, 0) / portfolioSummary.length
       : 0;
-  const pendingSettlement = settlements
-    .filter((s) => s.status !== "settled")
-    .reduce((sum, s) => sum + s.amount, 0);
+  const pendingSettlement = settlements.filter((s) => s.status !== "settled").reduce((sum, s) => sum + s.amount, 0);
   const reportsThisMonth = reports.length;
 
   const [generateOpen, setGenerateOpen] = React.useState(false);
@@ -160,11 +137,7 @@ export default function ReportsPage() {
     return (
       <div className="p-6 max-w-[1600px] mx-auto">
         <ApiError
-          error={
-            reportsErr instanceof Error
-              ? reportsErr
-              : new Error("Failed to load reports data")
-          }
+          error={reportsErr instanceof Error ? reportsErr : new Error("Failed to load reports data")}
           onRetry={() => {
             refetchReports();
             refetchSettlements();
@@ -215,12 +188,7 @@ export default function ReportsPage() {
               <Calendar className="size-4" />
               March 2026
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 no-print"
-              onClick={() => window.print()}
-            >
+            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => window.print()}>
               <Printer className="size-4" />
               Print
             </Button>
@@ -235,20 +203,11 @@ export default function ReportsPage() {
               ]}
               filename="reports-pnl"
             />
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 no-print"
-              onClick={() => setScheduleOpen(true)}
-            >
+            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => setScheduleOpen(true)}>
               <CalendarClock className="size-4" />
               Schedule
             </Button>
-            <Button
-              size="sm"
-              className="gap-2"
-              onClick={() => setGenerateOpen(true)}
-            >
+            <Button size="sm" className="gap-2" onClick={() => setGenerateOpen(true)}>
               <FileText className="size-4" />
               Generate Report
             </Button>
@@ -261,15 +220,10 @@ export default function ReportsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--pnl-positive)]/10">
-                  <DollarSign
-                    className="size-5"
-                    style={{ color: "var(--pnl-positive)" }}
-                  />
+                  <DollarSign className="size-5" style={{ color: "var(--pnl-positive)" }} />
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold">
-                    ${(totalAum / 1000000).toFixed(1)}m
-                  </p>
+                  <p className="text-2xl font-semibold">${(totalAum / 1000000).toFixed(1)}m</p>
                   <p className="text-xs text-muted-foreground">Total AUM</p>
                 </div>
               </div>
@@ -282,15 +236,11 @@ export default function ReportsPage() {
                   <TrendingUp className="size-5 text-primary" />
                 </div>
                 <div>
-                  <p
-                    className={`text-2xl font-semibold ${avgMtdReturn >= 0 ? "pnl-positive" : "pnl-negative"}`}
-                  >
+                  <p className={`text-2xl font-semibold ${avgMtdReturn >= 0 ? "pnl-positive" : "pnl-negative"}`}>
                     {avgMtdReturn >= 0 ? "+" : ""}
                     {avgMtdReturn.toFixed(1)}%
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    Avg MTD Return
-                  </p>
+                  <p className="text-xs text-muted-foreground">Avg MTD Return</p>
                 </div>
               </div>
             </CardContent>
@@ -299,18 +249,11 @@ export default function ReportsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                  <Receipt
-                    className="size-5"
-                    style={{ color: "var(--status-warning)" }}
-                  />
+                  <Receipt className="size-5" style={{ color: "var(--status-warning)" }} />
                 </div>
                 <div>
-                  <p className="text-2xl font-semibold">
-                    ${(pendingSettlement / 1000).toFixed(1)}k
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Pending Settlement
-                  </p>
+                  <p className="text-2xl font-semibold">${(pendingSettlement / 1000).toFixed(1)}k</p>
+                  <p className="text-xs text-muted-foreground">Pending Settlement</p>
                 </div>
               </div>
             </CardContent>
@@ -319,16 +262,11 @@ export default function ReportsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--surface-reports)]/10">
-                  <FileText
-                    className="size-5"
-                    style={{ color: "var(--surface-reports)" }}
-                  />
+                  <FileText className="size-5" style={{ color: "var(--surface-reports)" }} />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">{reportsThisMonth}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Reports This Month
-                  </p>
+                  <p className="text-xs text-muted-foreground">Reports This Month</p>
                 </div>
               </div>
             </CardContent>
@@ -364,56 +302,57 @@ export default function ReportsPage() {
           <TabsContent value="portfolio" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">
-                  Client Portfolio Summary
-                </CardTitle>
+                <CardTitle className="text-lg">Client Portfolio Summary</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {portfolioSummary.map((client) => (
-                    <div
-                      key={client.client}
-                      className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Users className="size-5 text-primary" />
+                  {portfolioSummary.map((row, idx) => {
+                    const clientLabel =
+                      typeof row.name === "string"
+                        ? row.name
+                        : typeof row.client === "string"
+                          ? row.client
+                          : "Unknown client";
+                    const clientLinkId =
+                      typeof row.clientId === "string" && row.clientId.length > 0
+                        ? row.clientId
+                        : clientLabel.toLowerCase().replace(/\s+/g, "-");
+                    return (
+                      <div
+                        key={row.clientId ?? `portfolio-${idx}`}
+                        className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <Users className="size-5 text-primary" />
+                          </div>
+                          <div>
+                            <EntityLink type="client" id={clientLinkId} label={clientLabel} className="font-semibold" />
+                            <p className="text-sm text-muted-foreground">
+                              AUM: ${((row.aum ?? 0) / 1000000).toFixed(1)}m
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <EntityLink
-                            type="client"
-                            id={client.client.toLowerCase().replace(" ", "-")}
-                            label={client.client}
-                            className="font-semibold"
-                          />
-                          <p className="text-sm text-muted-foreground">
-                            AUM: ${(client.aum / 1000000).toFixed(1)}m
-                          </p>
+                        <div className="flex items-center gap-8">
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">MTD</p>
+                            <PnLChange value={row.mtdReturn} size="sm" />
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">YTD</p>
+                            <PnLChange value={row.ytdReturn} size="sm" />
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">Sharpe</p>
+                            <p className="font-mono font-semibold">{row.sharpe ?? "—"}</p>
+                          </div>
+                          <Button variant="ghost" size="sm">
+                            <ArrowRight className="size-4" />
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-8">
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground">MTD</p>
-                          <PnLChange value={client.mtdReturn} size="sm" />
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground">YTD</p>
-                          <PnLChange value={client.ytdReturn} size="sm" />
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground">
-                            Sharpe
-                          </p>
-                          <p className="font-mono font-semibold">
-                            {client.sharpe}
-                          </p>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          <ArrowRight className="size-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -462,34 +401,23 @@ export default function ReportsPage() {
                       <div>
                         <p className="font-medium">{report.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {report.client} &bull; {report.date} &bull;{" "}
-                          {report.format}
+                          {report.client} &bull; {report.date} &bull; {report.format}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       {report.generated && (
-                        <span className="text-xs text-muted-foreground">
-                          Generated {report.generated}
-                        </span>
+                        <span className="text-xs text-muted-foreground">Generated {report.generated}</span>
                       )}
                       <Badge
                         variant={
-                          report.status === "ready"
-                            ? "default"
-                            : report.status === "sent"
-                              ? "secondary"
-                              : "outline"
+                          report.status === "ready" ? "default" : report.status === "sent" ? "secondary" : "outline"
                         }
                         className={
-                          report.status === "ready"
-                            ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
-                            : ""
+                          report.status === "ready" ? "bg-[var(--status-live)]/10 text-[var(--status-live)]" : ""
                         }
                       >
-                        {report.status === "generating" && (
-                          <Clock className="size-3 mr-1 animate-spin" />
-                        )}
+                        {report.status === "generating" && <Clock className="size-3 mr-1 animate-spin" />}
                         {report.status}
                       </Badge>
                       {report.status === "ready" && (
@@ -516,60 +444,75 @@ export default function ReportsPage() {
                 <CardTitle className="text-lg">Settlement Records</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {settlements.map((settlement) => (
-                  <div
-                    key={settlement.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-4">
-                      {settlement.status === "settled" && (
-                        <CheckCircle2 className="size-5 text-[var(--status-live)]" />
-                      )}
-                      {settlement.status === "confirmed" && (
-                        <CheckCircle2 className="size-5 text-[var(--status-warning)]" />
-                      )}
-                      {settlement.status === "pending" && (
-                        <Clock className="size-5 text-muted-foreground" />
-                      )}
-                      <div>
-                        <EntityLink
-                          type="settlement"
-                          id={settlement.id}
-                          label={settlement.client}
-                          className="font-medium"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          {settlement.type.replace("_", " ")} &bull; Due:{" "}
-                          {settlement.dueDate}
-                        </p>
+                {settlements.map((settlement) => {
+                  const clientRecord = CLIENTS.find((c) => c.id === settlement.clientId);
+                  const clientLabel =
+                    typeof settlement.client === "string"
+                      ? settlement.client
+                      : (clientRecord?.name ?? "Unknown client");
+                  const typeLine = typeof settlement.type === "string" ? settlement.type.replace(/_/g, " ") : null;
+                  const venueLine = typeof settlement.venue === "string" ? settlement.venue : null;
+                  const dateLine =
+                    typeof settlement.dueDate === "string"
+                      ? `Due: ${settlement.dueDate}`
+                      : settlement.settledAt
+                        ? `Settled: ${new Date(settlement.settledAt).toLocaleDateString()}`
+                        : null;
+                  const metaLine = [typeLine, venueLine, dateLine].filter(Boolean).join(" • ");
+
+                  return (
+                    <div
+                      key={settlement.id}
+                      className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/30 transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-4">
+                        {settlement.status === "settled" && (
+                          <CheckCircle2 className="size-5 text-[var(--status-live)]" />
+                        )}
+                        {settlement.status === "confirmed" && (
+                          <CheckCircle2 className="size-5 text-[var(--status-warning)]" />
+                        )}
+                        {settlement.status === "pending" && <Clock className="size-5 text-muted-foreground" />}
+                        {(settlement.status === "failed" || settlement.status === "disputed") && (
+                          <AlertCircle className="size-5 text-destructive" />
+                        )}
+                        <div>
+                          <EntityLink
+                            type="settlement"
+                            id={settlement.id}
+                            label={clientLabel}
+                            className="font-medium"
+                          />
+                          <p className="text-xs text-muted-foreground">{metaLine || "Settlement"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-6">
+                        <PnLValue value={settlement.amount} size="md" showSign />
+                        <Badge
+                          variant={
+                            settlement.status === "settled"
+                              ? "default"
+                              : settlement.status === "confirmed"
+                                ? "secondary"
+                                : "outline"
+                          }
+                          className={
+                            settlement.status === "settled"
+                              ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
+                              : settlement.status === "confirmed"
+                                ? "bg-[var(--status-warning)]/10 text-[var(--status-warning)]"
+                                : settlement.status === "failed" || settlement.status === "disputed"
+                                  ? "bg-destructive/10 text-destructive"
+                                  : ""
+                          }
+                        >
+                          {settlement.status}
+                        </Badge>
+                        {settlement.status === "pending" && <Button size="sm">Confirm</Button>}
                       </div>
                     </div>
-                    <div className="flex items-center gap-6">
-                      <PnLValue value={settlement.amount} size="md" showSign />
-                      <Badge
-                        variant={
-                          settlement.status === "settled"
-                            ? "default"
-                            : settlement.status === "confirmed"
-                              ? "secondary"
-                              : "outline"
-                        }
-                        className={
-                          settlement.status === "settled"
-                            ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
-                            : settlement.status === "confirmed"
-                              ? "bg-[var(--status-warning)]/10 text-[var(--status-warning)]"
-                              : ""
-                        }
-                      >
-                        {settlement.status}
-                      </Badge>
-                      {settlement.status === "pending" && (
-                        <Button size="sm">Confirm</Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
           </TabsContent>
@@ -595,9 +538,7 @@ export default function ReportsPage() {
                     <div className="flex items-center gap-4">
                       <Receipt
                         className={`size-5 ${
-                          invoice.status === "paid"
-                            ? "text-[var(--status-live)]"
-                            : "text-[var(--status-warning)]"
+                          invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
                         }`}
                       />
                       <div>
@@ -608,13 +549,9 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-6">
-                      <span className="font-mono font-semibold">
-                        ${invoice.amount.toLocaleString()}
-                      </span>
+                      <span className="font-mono font-semibold">${invoice.amount.toLocaleString()}</span>
                       <Badge
-                        variant={
-                          invoice.status === "paid" ? "default" : "secondary"
-                        }
+                        variant={invoice.status === "paid" ? "default" : "secondary"}
                         className={
                           invoice.status === "paid"
                             ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
@@ -639,18 +576,11 @@ export default function ReportsPage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">
-                    Capital Allocation by Venue
-                  </CardTitle>
+                  <CardTitle className="text-lg">Capital Allocation by Venue</CardTitle>
                   <div className="text-sm text-muted-foreground">
                     Total:{" "}
                     <span className="font-semibold text-foreground">
-                      $
-                      {(
-                        accountBalances.reduce((s, b) => s + b.total, 0) /
-                        1000000
-                      ).toFixed(2)}
-                      M
+                      ${(accountBalances.reduce((s, b) => s + b.total, 0) / 1000000).toFixed(2)}M
                     </span>
                   </div>
                 </div>
@@ -668,13 +598,10 @@ export default function ReportsPage() {
                   </TableHeader>
                   <TableBody>
                     {accountBalances.map((bal) => {
-                      const utilization =
-                        bal.total > 0 ? (bal.locked / bal.total) * 100 : 0;
+                      const utilization = bal.total > 0 ? (bal.locked / bal.total) * 100 : 0;
                       return (
                         <TableRow key={bal.venue}>
-                          <TableCell className="font-medium">
-                            {bal.venue}
-                          </TableCell>
+                          <TableCell className="font-medium">{bal.venue}</TableCell>
                           <TableCell className="text-right font-mono text-[var(--pnl-positive)]">
                             ${(bal.free / 1000).toFixed(0)}k
                           </TableCell>
@@ -686,13 +613,8 @@ export default function ReportsPage() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <Progress
-                                value={utilization}
-                                className="h-2 flex-1"
-                              />
-                              <span className="text-xs text-muted-foreground w-10">
-                                {utilization.toFixed(0)}%
-                              </span>
+                              <Progress value={utilization} className="h-2 flex-1" />
+                              <span className="text-xs text-muted-foreground w-10">{utilization.toFixed(0)}%</span>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -710,50 +632,30 @@ export default function ReportsPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {recentTransfers.map((transfer, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border"
-                  >
+                  <div key={idx} className="flex items-center justify-between p-4 rounded-lg border border-border">
                     <div className="flex items-center gap-4">
-                      {transfer.status === "settled" && (
-                        <CheckCircle2 className="size-5 text-[var(--status-live)]" />
-                      )}
-                      {transfer.status === "confirmed" && (
-                        <CheckCircle2 className="size-5 text-[var(--accent-blue)]" />
-                      )}
+                      {transfer.status === "settled" && <CheckCircle2 className="size-5 text-[var(--status-live)]" />}
+                      {transfer.status === "confirmed" && <CheckCircle2 className="size-5 text-[var(--accent-blue)]" />}
                       {transfer.status === "confirming" && (
                         <Loader2 className="size-5 text-[var(--accent-blue)] animate-spin" />
                       )}
-                      {transfer.status === "pending" && (
-                        <Clock className="size-5 text-muted-foreground" />
-                      )}
-                      {transfer.status === "failed" && (
-                        <AlertCircle className="size-5 text-destructive" />
-                      )}
+                      {transfer.status === "pending" && <Clock className="size-5 text-muted-foreground" />}
+                      {transfer.status === "failed" && <AlertCircle className="size-5 text-destructive" />}
                       <div>
                         <p className="font-medium">
-                          {transfer.from}{" "}
-                          <ArrowRight className="size-3 inline mx-1" />{" "}
-                          {transfer.to}
+                          {transfer.from} <ArrowRight className="size-3 inline mx-1" /> {transfer.to}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {transfer.time}
-                          {transfer.txHash && (
-                            <span className="ml-2 font-mono">
-                              {transfer.txHash}
-                            </span>
-                          )}
+                          {transfer.txHash && <span className="ml-2 font-mono">{transfer.txHash}</span>}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="font-mono font-medium">
-                        {transfer.amount}
-                      </span>
+                      <span className="font-mono font-medium">{transfer.amount}</span>
                       <Badge
                         variant={
-                          transfer.status === "settled" ||
-                          transfer.status === "confirmed"
+                          transfer.status === "settled" || transfer.status === "confirmed"
                             ? "default"
                             : transfer.status === "confirming"
                               ? "secondary"
@@ -762,8 +664,7 @@ export default function ReportsPage() {
                                 : "outline"
                         }
                         className={
-                          transfer.status === "settled" ||
-                          transfer.status === "confirmed"
+                          transfer.status === "settled" || transfer.status === "confirmed"
                             ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
                             : transfer.status === "confirming"
                               ? "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
@@ -771,8 +672,7 @@ export default function ReportsPage() {
                         }
                       >
                         {transfer.status}
-                        {transfer.confirmations &&
-                          ` (${transfer.confirmations})`}
+                        {transfer.confirmations && ` (${transfer.confirmations})`}
                       </Badge>
                     </div>
                   </div>
@@ -783,11 +683,7 @@ export default function ReportsPage() {
         </Tabs>
       </div>
 
-      <GenerateReportModal
-        open={generateOpen}
-        onOpenChange={setGenerateOpen}
-        defaultType="pnl-attribution"
-      />
+      <GenerateReportModal open={generateOpen} onOpenChange={setGenerateOpen} defaultType="pnl-attribution" />
       <ScheduleReportModal open={scheduleOpen} onOpenChange={setScheduleOpen} />
     </div>
   );

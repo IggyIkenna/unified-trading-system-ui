@@ -6,24 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
-import {
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  Receipt,
-  RefreshCw,
-  FileText,
-  ArrowDownCircle,
-} from "lucide-react";
+import { CheckCircle2, Clock, AlertTriangle, Receipt, RefreshCw, FileText, ArrowDownCircle } from "lucide-react";
 import { useSettlements } from "@/hooks/api/use-reports";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 
@@ -256,26 +242,75 @@ const MOCK_INVOICES: Invoice[] = [
   },
 ];
 
-function formatAmount(amount: number): string {
-  if (amount >= 10000)
-    return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  if (amount >= 1) return `$${amount.toFixed(2)}`;
-  return `$${amount.toFixed(4)}`;
+function formatVenue(venue: string): string {
+  if (!venue) return "—";
+  return venue.charAt(0).toUpperCase() + venue.slice(1).toLowerCase();
+}
+
+/** Map `/api/reporting/settlements` rows (amount, settledAt, …) into table `Settlement` rows. */
+function normalizeSettlementRow(row: unknown): Settlement {
+  const r = row as Record<string, unknown>;
+  const amount = typeof r.expectedAmount === "number" ? r.expectedAmount : typeof r.amount === "number" ? r.amount : 0;
+  const settledExplicit = r.settledAmount;
+  const settledAmount =
+    typeof settledExplicit === "number" ? settledExplicit : r.settledAt != null && r.settledAt !== "" ? amount : 0;
+
+  const rawStatus = String(r.status ?? "");
+  const statusMap: Record<string, SettlementStatus> = {
+    pending: "pending",
+    matched: "matched",
+    disputed: "disputed",
+    settled: "settled",
+    confirmed: "matched",
+    failed: "disputed",
+  };
+  const status = statusMap[rawStatus] ?? "pending";
+
+  const settledAtStr = typeof r.settledAt === "string" && r.settledAt.length > 0 ? r.settledAt : null;
+  const settlementDate =
+    typeof r.settlementDate === "string" ? r.settlementDate : settledAtStr ? settledAtStr.split("T")[0]! : "";
+
+  const date =
+    typeof r.date === "string" && r.date.length > 0
+      ? r.date
+      : settlementDate.length > 0
+        ? settlementDate
+        : new Date().toISOString().split("T")[0]!;
+
+  const venueRaw = typeof r.venue === "string" ? r.venue : "";
+  const instrument =
+    typeof r.instrument === "string" ? r.instrument : typeof r.currency === "string" ? `${r.currency} settlement` : "—";
+
+  const side: Side = r.side === "sell" || r.side === "buy" ? r.side : "buy";
+
+  return {
+    id: String(r.id ?? ""),
+    date,
+    venue: formatVenue(venueRaw),
+    instrument,
+    side,
+    expectedAmount: amount,
+    settledAmount,
+    status,
+    settlementDate,
+  };
+}
+
+function formatAmount(amount: number | undefined | null): string {
+  const n = typeof amount === "number" && Number.isFinite(amount) ? amount : 0;
+  if (n >= 10000) return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (n >= 1) return `$${n.toFixed(2)}`;
+  return `$${n.toFixed(4)}`;
 }
 
 function statusBadge(status: SettlementStatus) {
-  const config: Record<
-    SettlementStatus,
-    { className: string; icon: React.ReactNode }
-  > = {
+  const config: Record<SettlementStatus, { className: string; icon: React.ReactNode }> = {
     pending: {
-      className:
-        "bg-[var(--status-warning)]/10 text-[var(--status-warning)] border-[var(--status-warning)]/20",
+      className: "bg-[var(--status-warning)]/10 text-[var(--status-warning)] border-[var(--status-warning)]/20",
       icon: <Clock className="size-3 mr-1" />,
     },
     matched: {
-      className:
-        "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/20",
+      className: "bg-[var(--status-live)]/10 text-[var(--status-live)] border-[var(--status-live)]/20",
       icon: <CheckCircle2 className="size-3 mr-1" />,
     },
     disputed: {
@@ -283,8 +318,7 @@ function statusBadge(status: SettlementStatus) {
       icon: <AlertTriangle className="size-3 mr-1" />,
     },
     settled: {
-      className:
-        "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] border-[var(--accent-blue)]/20",
+      className: "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] border-[var(--accent-blue)]/20",
       icon: <ArrowDownCircle className="size-3 mr-1" />,
     },
   };
@@ -306,10 +340,7 @@ function sideBadge(side: Side) {
       Buy
     </Badge>
   ) : (
-    <Badge
-      variant="outline"
-      className="bg-destructive/10 text-destructive border-destructive/20"
-    >
+    <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
       Sell
     </Badge>
   );
@@ -319,18 +350,12 @@ const settlementColumns: ColumnDef<Settlement, unknown>[] = [
   {
     accessorKey: "id",
     header: "ID",
-    cell: ({ row }) => (
-      <span className="font-mono text-xs text-muted-foreground">
-        {row.getValue<string>("id")}
-      </span>
-    ),
+    cell: ({ row }) => <span className="font-mono text-xs text-muted-foreground">{row.getValue<string>("id")}</span>,
   },
   {
     accessorKey: "date",
     header: "Date",
-    cell: ({ row }) => (
-      <span className="text-sm">{row.getValue<string>("date")}</span>
-    ),
+    cell: ({ row }) => <span className="text-sm">{row.getValue<string>("date")}</span>,
   },
   {
     accessorKey: "venue",
@@ -344,11 +369,7 @@ const settlementColumns: ColumnDef<Settlement, unknown>[] = [
   {
     accessorKey: "instrument",
     header: "Instrument",
-    cell: ({ row }) => (
-      <span className="font-mono text-sm">
-        {row.getValue<string>("instrument")}
-      </span>
-    ),
+    cell: ({ row }) => <span className="font-mono text-sm">{row.getValue<string>("instrument")}</span>,
   },
   {
     accessorKey: "side",
@@ -359,23 +380,17 @@ const settlementColumns: ColumnDef<Settlement, unknown>[] = [
     accessorKey: "expectedAmount",
     header: () => <div className="text-right">Expected</div>,
     cell: ({ row }) => (
-      <div className="text-right font-mono text-sm">
-        {formatAmount(row.getValue<number>("expectedAmount"))}
-      </div>
+      <div className="text-right font-mono text-sm">{formatAmount(row.getValue<number>("expectedAmount"))}</div>
     ),
   },
   {
     accessorKey: "settledAmount",
     header: () => <div className="text-right">Settled</div>,
     cell: ({ row }) => {
-      const amount = row.getValue<number>("settledAmount");
+      const amount = row.getValue<number | undefined>("settledAmount");
       return (
         <div className="text-right font-mono text-sm">
-          {amount > 0 ? (
-            formatAmount(amount)
-          ) : (
-            <span className="text-muted-foreground">--</span>
-          )}
+          {(amount ?? 0) > 0 ? formatAmount(amount) : <span className="text-muted-foreground">--</span>}
         </div>
       );
     },
@@ -390,11 +405,7 @@ const settlementColumns: ColumnDef<Settlement, unknown>[] = [
     header: "Settlement Date",
     cell: ({ row }) => {
       const date = row.getValue<string>("settlementDate");
-      return (
-        <span className="text-sm">
-          {date || <span className="text-muted-foreground">--</span>}
-        </span>
-      );
+      return <span className="text-sm">{date || <span className="text-muted-foreground">--</span>}</span>;
     },
   },
 ];
@@ -445,19 +456,17 @@ export default function SettlementPage() {
   const [dateTo, setDateTo] = React.useState("");
 
   const rawSettlements: Settlement[] = React.useMemo(() => {
-    const apiSettlements = (apiData as Record<string, unknown>)?.settlements as
-      | Settlement[]
-      | undefined;
-    const apiDataArr = (apiData as Record<string, unknown>)?.data as
-      | Settlement[]
-      | undefined;
-    return apiSettlements ?? apiDataArr ?? MOCK_SETTLEMENTS;
+    const apiSettlements = (apiData as Record<string, unknown>)?.settlements as unknown[] | undefined;
+    const apiDataArr = (apiData as Record<string, unknown>)?.data as unknown[] | undefined;
+    const list = apiSettlements ?? apiDataArr;
+    if (list?.length) {
+      return list.map(normalizeSettlementRow);
+    }
+    return MOCK_SETTLEMENTS;
   }, [apiData]);
 
   const rawInvoices: Invoice[] = React.useMemo(() => {
-    const apiInvoices = (apiData as Record<string, unknown>)?.invoices as
-      | Invoice[]
-      | undefined;
+    const apiInvoices = (apiData as Record<string, unknown>)?.invoices as Invoice[] | undefined;
     return apiInvoices ?? MOCK_INVOICES;
   }, [apiData]);
 
@@ -478,21 +487,12 @@ export default function SettlementPage() {
     return filtered;
   }, [rawSettlements, statusFilter, venueFilter, dateFrom, dateTo]);
 
-  const venues = React.useMemo(
-    () => [...new Set(rawSettlements.map((s) => s.venue))].sort(),
-    [rawSettlements],
-  );
+  const venues = React.useMemo(() => [...new Set(rawSettlements.map((s) => s.venue))].sort(), [rawSettlements]);
 
   const totalCount = rawSettlements.length;
-  const pendingCount = rawSettlements.filter(
-    (s) => s.status === "pending",
-  ).length;
-  const matchedCount = rawSettlements.filter(
-    (s) => s.status === "matched",
-  ).length;
-  const disputedCount = rawSettlements.filter(
-    (s) => s.status === "disputed",
-  ).length;
+  const pendingCount = rawSettlements.filter((s) => s.status === "pending").length;
+  const matchedCount = rawSettlements.filter((s) => s.status === "matched").length;
+  const disputedCount = rawSettlements.filter((s) => s.status === "disputed").length;
 
   if (isLoading) return <LoadingSkeleton />;
 
@@ -503,15 +503,8 @@ export default function SettlementPage() {
           <CardContent className="pt-6">
             <div className="flex flex-col items-center gap-4 py-8">
               <AlertTriangle className="size-8 text-destructive" />
-              <p className="text-sm text-muted-foreground">
-                Failed to load settlement data.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => refetch()}
-              >
+              <p className="text-sm text-muted-foreground">Failed to load settlement data.</p>
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => refetch()}>
                 <RefreshCw className="size-4" />
                 Retry
               </Button>
@@ -535,9 +528,7 @@ export default function SettlementPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">{totalCount}</p>
-                  <p className="text-xs text-muted-foreground">
-                    Total Settlements
-                  </p>
+                  <p className="text-xs text-muted-foreground">Total Settlements</p>
                 </div>
               </div>
             </CardContent>
@@ -546,10 +537,7 @@ export default function SettlementPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                  <Clock
-                    className="size-5"
-                    style={{ color: "var(--status-warning)" }}
-                  />
+                  <Clock className="size-5" style={{ color: "var(--status-warning)" }} />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">{pendingCount}</p>
@@ -562,10 +550,7 @@ export default function SettlementPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-live)]/10">
-                  <CheckCircle2
-                    className="size-5"
-                    style={{ color: "var(--status-live)" }}
-                  />
+                  <CheckCircle2 className="size-5" style={{ color: "var(--status-live)" }} />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">{matchedCount}</p>
@@ -630,10 +615,7 @@ export default function SettlementPage() {
             className="w-[150px]"
             placeholder="To"
           />
-          {(statusFilter !== "all" ||
-            venueFilter !== "all" ||
-            dateFrom ||
-            dateTo) && (
+          {(statusFilter !== "all" || venueFilter !== "all" || dateFrom || dateTo) && (
             <Button
               variant="ghost"
               size="sm"
@@ -704,28 +686,20 @@ export default function SettlementPage() {
                 <div className="flex items-center gap-4">
                   <Receipt
                     className={`size-5 ${
-                      invoice.status === "paid"
-                        ? "text-[var(--status-live)]"
-                        : "text-[var(--status-warning)]"
+                      invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
                     }`}
                   />
                   <div>
-                    <p className="font-medium font-mono text-sm">
-                      {invoice.id}
-                    </p>
+                    <p className="font-medium font-mono text-sm">{invoice.id}</p>
                     <p className="text-xs text-muted-foreground">
                       {invoice.client} &bull; {invoice.date}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
-                  <span className="font-mono font-semibold">
-                    ${invoice.amount.toLocaleString()}
-                  </span>
+                  <span className="font-mono font-semibold">${invoice.amount.toLocaleString()}</span>
                   <Badge
-                    variant={
-                      invoice.status === "paid" ? "default" : "secondary"
-                    }
+                    variant={invoice.status === "paid" ? "default" : "secondary"}
                     className={
                       invoice.status === "paid"
                         ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
