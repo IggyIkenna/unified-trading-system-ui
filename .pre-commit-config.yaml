@@ -23,14 +23,15 @@ repos:
         name: Format with Prettier
         types_or: [javascript, jsx, ts, tsx, json, css, markdown, yaml]
         additional_dependencies:
-          - prettier@3.6.2
+          - prettier@3.8.1
 
-  # ESLint - TypeScript/React linter
-  - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.56.0
+  # ESLint - uses the project's own ESLint 9 (flat config)
+  - repo: local
     hooks:
       - id: eslint
         name: Lint with ESLint
+        entry: pnpm exec eslint --fix
+        language: system
         types_or: [javascript, jsx, ts, tsx]
 
   # Branch drift check - blocks commit if you're behind origin
@@ -38,8 +39,7 @@ repos:
     hooks:
       - id: check-branch-drift
         name: Check branch drift (are you behind origin?)
-        entry:
-          bash -c 'HOOK="${WORKSPACE_ROOT:-$(cd "$(git rev-parse --show-toplevel)/.." &&
+        entry: bash -c 'HOOK="${WORKSPACE_ROOT:-$(cd "$(git rev-parse --show-toplevel)/.." &&
           pwd)}/unified-trading-pm/scripts/hooks/check-branch-drift.sh"; [ -f "$HOOK" ] && bash "$HOOK" || exit 0'
         language: system
         always_run: true
@@ -54,7 +54,9 @@ repos:
       - id: end-of-file-fixer
         exclude: ^\.prettier-cache$
       - id: check-yaml
+        exclude: ^context/
       - id: check-json
+        exclude: ^context/
       - id: check-added-large-files
         args: ["--maxkb=1000"]
       - id: check-merge-conflict

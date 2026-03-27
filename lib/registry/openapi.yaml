@@ -2,9 +2,8 @@ openapi: 3.1.0
 info:
   title: Unified Trading System API
   description:
-    Comprehensive API spec generated from all FastAPI services in the Unified
-    Trading System. Each service is represented as a tag group with its endpoints
-    prefixed by /{service-name}/.
+    Comprehensive API spec generated from all FastAPI services in the Unified Trading System. Each service is represented
+    as a tag group with its endpoints prefixed by /{service-name}/.
   version: 1.0.0
 paths:
   /deployment-api/api/services:
@@ -14,8 +13,8 @@ paths:
         - Services
       summary: List Services
       description:
-        "List all available services with their sharding configurations.\n\
-        \nReturns:\n    List of services with their descriptions and dimensions."
+        "List all available services with their sharding configurations.\n\nReturns:\n    List of services with\
+        \ their descriptions and dimensions."
       operationId: list_services_api_services_get
       responses:
         "200":
@@ -32,9 +31,8 @@ paths:
         - Services
       summary: Get Service Config
       description:
-        "Get detailed configuration for a specific service.\n\nArgs:\n\
-        \    service_name: Name of the service\n\nReturns:\n    Full sharding configuration\
-        \ for the service."
+        "Get detailed configuration for a specific service.\n\nArgs:\n    service_name: Name of the service\n\n\
+        Returns:\n    Full sharding configuration for the service."
       operationId: get_service_config_api_services__service_name__get
       security:
         - APIKeyHeader: []
@@ -64,9 +62,8 @@ paths:
         - Services
       summary: Get Service Dimensions
       description:
-        "Get dimension values for a specific service.\n\nArgs:\n    service_name:\
-        \ Name of the service\n\nReturns:\n    Dimension definitions with their possible\
-        \ values."
+        "Get dimension values for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n\
+        \    Dimension definitions with their possible values."
       operationId: get_service_dimensions_api_services__service_name__dimensions_get
       security:
         - APIKeyHeader: []
@@ -96,11 +93,10 @@ paths:
         - Services
       summary: Discover Configs
       description:
-        "Discover config files from a cloud storage path.\n\nThis endpoint\
-        \ lists all .json config files in a cloud storage directory\nand returns the\
-        \ count for shard estimation.\n\nArgs:\n    service_name: Name of the service\
-        \ (for validation)\n    cloud_path: Cloud storage path (gs://... or s3://...)\n\
-        \nReturns:\n    List of discovered config file paths and count."
+        "Discover config files from a cloud storage path.\n\nThis endpoint lists all .json config files in a cloud\
+        \ storage directory\nand returns the count for shard estimation.\n\nArgs:\n    service_name: Name of the service (for\
+        \ validation)\n    cloud_path: Cloud storage path (gs://... or s3://...)\n\nReturns:\n    List of discovered config\
+        \ file paths and count."
       operationId: discover_configs_api_services__service_name__discover_configs_get
       security:
         - APIKeyHeader: []
@@ -136,10 +132,9 @@ paths:
         - Services
       summary: List Directories
       description:
-        "List subdirectories in a cloud storage path.\n\nThis enables hierarchical\
-        \ browsing of GCS directories for config selection.\n\nArgs:\n    service_name:\
-        \ Name of the service (for context)\n    cloud_path: Cloud storage path (gs://bucket/prefix/)\n\
-        \nReturns:\n    List of immediate subdirectory names."
+        "List subdirectories in a cloud storage path.\n\nThis enables hierarchical browsing of GCS directories\
+        \ for config selection.\n\nArgs:\n    service_name: Name of the service (for context)\n    cloud_path: Cloud storage\
+        \ path (gs://bucket/prefix/)\n\nReturns:\n    List of immediate subdirectory names."
       operationId: list_directories_api_services__service_name__list_directories_get
       security:
         - APIKeyHeader: []
@@ -329,9 +324,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Deployment Status Api Deployments  Deployment
-                  Id  Get
+                title: Response Get Deployment Status Api Deployments  Deployment Id  Get
         "422":
           description: Validation Error
           content:
@@ -442,9 +435,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Verify Deployment Completion Api Deployments  Deployment
-                  Id  Verify Get
+                title: Response Verify Deployment Completion Api Deployments  Deployment Id  Verify Get
         "422":
           description: Validation Error
           content:
@@ -508,9 +499,7 @@ paths:
                 type: object
                 additionalProperties:
                   type: string
-                title:
-                  Response Cancel Deployment Api Deployments  Deployment Id  Cancel
-                  Post
+                title: Response Cancel Deployment Api Deployments  Deployment Id  Cancel Post
         "422":
           description: Validation Error
           content:
@@ -543,9 +532,7 @@ paths:
                 type: object
                 additionalProperties:
                   type: string
-                title:
-                  Response Resume Deployment Api Deployments  Deployment Id  Resume
-                  Post
+                title: Response Resume Deployment Api Deployments  Deployment Id  Resume Post
         "422":
           description: Validation Error
           content:
@@ -586,9 +573,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Retry Failed Shards Api Deployments  Deployment Id  Retry
-                  Failed Post
+                title: Response Retry Failed Shards Api Deployments  Deployment Id  Retry Failed Post
         "422":
           description: Validation Error
           content:
@@ -617,9 +602,7 @@ paths:
               schema:
                 additionalProperties: true
                 type: object
-                title:
-                  Response Bulk Delete Deployments Api Deployments Bulk Delete
-                  Post
+                title: Response Bulk Delete Deployments Api Deployments Bulk Delete Post
         "422":
           description: Validation Error
           content:
@@ -653,9 +636,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Refresh Deployment Status Api Deployments  Deployment
-                  Id  Refresh Post
+                title: Response Refresh Deployment Status Api Deployments  Deployment Id  Refresh Post
         "422":
           description: Validation Error
           content:
@@ -726,9 +707,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Deployment Logs Api Deployments  Deployment Id  Logs
-                  Get
+                title: Response Get Deployment Logs Api Deployments  Deployment Id  Logs Get
         "422":
           description: Validation Error
           content:
@@ -760,9 +739,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Deployment Report Api Deployments  Deployment
-                  Id  Report Get
+                title: Response Get Deployment Report Api Deployments  Deployment Id  Report Get
         "422":
           description: Validation Error
           content:
@@ -811,9 +788,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Deployment Events Api Deployments  Deployment
-                  Id  Events Get
+                title: Response Get Deployment Events Api Deployments  Deployment Id  Events Get
         "422":
           description: Validation Error
           content:
@@ -833,8 +808,7 @@ paths:
 
         VM_ZONE_UNAVAILABLE, VM_TIMEOUT, CONTAINER_OOM, CLOUD_RUN_REVISION_FAILED.
 
-        Used by the History tab to surface infrastructure failure badges on shard
-        rows."
+        Used by the History tab to surface infrastructure failure badges on shard rows."
       operationId: get_deployment_vm_events_api_deployments__deployment_id__vm_events_get
       security:
         - APIKeyHeader: []
@@ -853,9 +827,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Deployment Vm Events Api Deployments  Deployment
-                  Id  Vm Events Get
+                title: Response Get Deployment Vm Events Api Deployments  Deployment Id  Vm Events Get
         "422":
           description: Validation Error
           content:
@@ -868,9 +840,7 @@ paths:
         - deployment-api
         - Deployments
       summary: Rollback Live Deployment
-      description:
-        'Roll back a live Cloud Run Service deployment to the previous
-        revision.
+      description: 'Roll back a live Cloud Run Service deployment to the previous revision.
 
 
         Only valid for deployments with deploy_mode="live". Calls the deployment-service
@@ -900,9 +870,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Rollback Live Deployment Api Deployments  Deployment
-                  Id  Rollback Post
+                title: Response Rollback Live Deployment Api Deployments  Deployment Id  Rollback Post
         "422":
           description: Validation Error
           content:
@@ -915,8 +883,7 @@ paths:
         - deployment-api
         - Deployments
       summary: Get Live Deployment Health
-      description:
-        "Return the current health check status of a live Cloud Run Service.
+      description: "Return the current health check status of a live Cloud Run Service.
 
 
         Polls the service /health endpoint and returns a structured response.
@@ -956,9 +923,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Live Deployment Health Api Deployments  Deployment
-                  Id  Live Health Get
+                title: Response Get Live Deployment Health Api Deployments  Deployment Id  Live Health Get
         "422":
           description: Validation Error
           content:
@@ -974,8 +939,7 @@ paths:
       description: "Return the configured GCS region for UI validation.
 
 
-        Used by DeployForm and DataStatusTab to warn when user selects a different
-        region
+        Used by DeployForm and DataStatusTab to warn when user selects a different region
 
         (cross-region egress costs)."
       operationId: get_region_config_api_config_region_get
@@ -1030,8 +994,8 @@ paths:
         - Configuration
       summary: Get Venues
       description:
-        "Get all venues organized by category.\n\nReturns:\n    Venues\
-        \ grouped by category (CEFI, TRADFI, DEFI) with their data types."
+        "Get all venues organized by category.\n\nReturns:\n    Venues grouped by category (CEFI, TRADFI, DEFI)\
+        \ with their data types."
       operationId: get_venues_api_config_venues_get
       responses:
         "200":
@@ -1048,9 +1012,8 @@ paths:
         - Configuration
       summary: Get Venues By Category
       description:
-        "Get venues for a specific category.\n\nArgs:\n    category: Category\
-        \ name (CEFI, TRADFI, DEFI)\n\nReturns:\n    List of venues and their data\
-        \ types for the category."
+        "Get venues for a specific category.\n\nArgs:\n    category: Category name (CEFI, TRADFI, DEFI)\n\nReturns:\n\
+        \    List of venues and their data types for the category."
       operationId: get_venues_by_category_api_config_venues__category__get
       security:
         - APIKeyHeader: []
@@ -1080,8 +1043,8 @@ paths:
         - Configuration
       summary: Get Expected Start Dates
       description:
-        "Get expected data start dates for all services.\n\nReturns:\n\
-        \    Start dates by service, category, and venue."
+        "Get expected data start dates for all services.\n\nReturns:\n    Start dates by service, category, and\
+        \ venue."
       operationId: get_expected_start_dates_api_config_expected_start_dates_get
       responses:
         "200":
@@ -1098,9 +1061,8 @@ paths:
         - Configuration
       summary: Get Service Start Dates
       description:
-        "Get expected start dates for a specific service.\n\nArgs:\n  \
-        \  service_name: Name of the service\n\nReturns:\n    Start dates by category\
-        \ and venue for the service."
+        "Get expected start dates for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n\
+        \    Start dates by category and venue for the service."
       operationId: get_service_start_dates_api_config_expected_start_dates__service_name__get
       security:
         - APIKeyHeader: []
@@ -1129,9 +1091,7 @@ paths:
         - deployment-api
         - Configuration
       summary: Get Dependencies
-      description:
-        "Get service dependency graph.\n\nReturns:\n    Full dependencies\
-        \ configuration including execution order."
+      description: "Get service dependency graph.\n\nReturns:\n    Full dependencies configuration including execution order."
       operationId: get_dependencies_api_config_dependencies_get
       responses:
         "200":
@@ -1148,9 +1108,8 @@ paths:
         - Configuration
       summary: Get Service Dependencies
       description:
-        "Get dependencies for a specific service.\n\nArgs:\n    service_name:\
-        \ Name of the service\n\nReturns:\n    Upstream dependencies, downstream dependents,\
-        \ and full DAG context."
+        "Get dependencies for a specific service.\n\nArgs:\n    service_name: Name of the service\n\nReturns:\n\
+        \    Upstream dependencies, downstream dependents, and full DAG context."
       operationId: get_service_dependencies_api_config_dependencies__service_name__get
       security:
         - APIKeyHeader: []
@@ -1201,9 +1160,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Service Checklist Api Checklists  Service Name  Checklist
-                  Get
+                title: Response Get Service Checklist Api Checklists  Service Name  Checklist Get
         "422":
           description: Validation Error
           content:
@@ -1240,9 +1197,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Validate Service Checklist Api Checklists  Service
-                  Name  Checklist Validate Get
+                title: Response Validate Service Checklist Api Checklists  Service Name  Checklist Validate Get
         "422":
           description: Validation Error
           content:
@@ -1278,11 +1233,9 @@ paths:
         - Epics
       summary: List Epics
       description:
-        "List all epics with summary readiness percentages.\n\nReturns\
-        \ compact summaries: epic_id, display_name, mvp_priority,\nepic_pct, total_required,\
-        \ completed, epic_complete, blocking_count.\n\nReads from:\n  - codex_dir\
-        \ (10-audit/repos/) for per-repo data\n  - epics_dir (11-project-management/epics/)\
-        \ for epic definitions"
+        "List all epics with summary readiness percentages.\n\nReturns compact summaries: epic_id, display_name,\
+        \ mvp_priority,\nepic_pct, total_required, completed, epic_complete, blocking_count.\n\nReads from:\n  - codex_dir\
+        \ (10-audit/repos/) for per-repo data\n  - epics_dir (11-project-management/epics/) for epic definitions"
       operationId: list_epics_api_epics_get
       responses:
         "200":
@@ -1303,8 +1256,7 @@ paths:
         - deployment-api
         - Epics
       summary: Get Epic Detail
-      description:
-        "Get detailed epic status: per-repo CR/BR stages, branch status,
+      description: "Get detailed epic status: per-repo CR/BR stages, branch status,
 
         data availability, feature groups, ML models, and blocking reasons."
       operationId: get_epic_detail_api_epics__epic_id__get
@@ -1338,8 +1290,7 @@ paths:
         - deployment-api
         - Data Status
       summary: Get Data Status
-      description:
-        "Get data completion status for a service across a date range.
+      description: "Get data completion status for a service across a date range.
 
 
         Returns completion percentages broken down by category and venue,
@@ -2306,14 +2257,12 @@ paths:
         - Capabilities
       summary: Get Service Categories
       description:
-        "Get supported categories for a service from its sharding config.\n\
-        \nReturns the categories that can be used for deployment and data status checks.\n\
-        This allows the UI to hide irrelevant category filters (e.g., hide CEFI/DEFI\n\
-        when viewing corporate-actions which is TRADFI-only).\n\nArgs:\n    service:\
-        \ Service name (e.g., \"instruments-service\", \"corporate-actions\")\n\n\
-        Returns:\n    {\"service\": str, \"categories\": List[str]}\n\nExamples:\n\
-        \    - instruments-service: [\"CEFI\", \"DEFI\", \"TRADFI\"]\n    - corporate-actions:\
-        \ [\"TRADFI\"]\n    - features-calendar-service: []  # No category dimension"
+        "Get supported categories for a service from its sharding config.\n\nReturns the categories that can be\
+        \ used for deployment and data status checks.\nThis allows the UI to hide irrelevant category filters (e.g., hide\
+        \ CEFI/DEFI\nwhen viewing corporate-actions which is TRADFI-only).\n\nArgs:\n    service: Service name (e.g., \"instruments-service\"\
+        , \"corporate-actions\")\n\nReturns:\n    {\"service\": str, \"categories\": List[str]}\n\nExamples:\n    - instruments-service:\
+        \ [\"CEFI\", \"DEFI\", \"TRADFI\"]\n    - corporate-actions: [\"TRADFI\"]\n    - features-calendar-service: []  #\
+        \ No category dimension"
       operationId: get_service_categories_api_capabilities_service_categories__service__get
       security:
         - APIKeyHeader: []
@@ -2350,8 +2299,7 @@ paths:
 
         Returns a list of triggers with last build info.
 
-        Results are cached for 5 minutes (TTL_BUILD_INFO) to avoid slow Cloud Build
-        API calls.
+        Results are cached for 5 minutes (TTL_BUILD_INFO) to avoid slow Cloud Build API calls.
 
         Use force_refresh=true to bypass cache."
       operationId: list_triggers_api_cloud_builds_triggers_get
@@ -2461,8 +2409,7 @@ paths:
         - deployment-api
         - cloud-builds
       summary: Get Library Status
-      description:
-        "Get detailed status for a library/SDK (like unified-trading-library).
+      description: "Get detailed status for a library/SDK (like unified-trading-library).
 
 
         Returns:
@@ -2503,9 +2450,7 @@ paths:
         - deployment-api
         - cloud-builds
       summary: Check Dependencies
-      description:
-        "Check if any libraries have failing quality gates that could affect
-        services.
+      description: "Check if any libraries have failing quality gates that could affect services.
 
 
         This is useful for catching version mismatches before they cause runtime errors."
@@ -2528,8 +2473,7 @@ paths:
       description: 'List available builds for a service from Artifact Registry.
 
 
-        Returns builds sorted by version descending. In mock mode (CLOUD_MOCK_MODE=true
-        or
+        Returns builds sorted by version descending. In mock mode (CLOUD_MOCK_MODE=true or
 
         CLOUD_PROVIDER=local), falls back to deployed_versions from the PM manifest.
 
@@ -2727,9 +2671,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ConfigVersionEntry"
-                title:
-                  Response List Domain Config Versions Api Config Store  Domain  Versions
-                  Get
+                title: Response List Domain Config Versions Api Config Store  Domain  Versions Get
         "422":
           description: Validation Error
           content:
@@ -2790,9 +2732,7 @@ paths:
         - deployment-api
         - config-store
       summary: Rollback Domain Config
-      description:
-        Roll back domain config to a specific version by re-saving it as
-        the new active.
+      description: Roll back domain config to a specific version by re-saving it as the new active.
       operationId: rollback_domain_config_api_config_store__domain__rollback__timestamp__post
       security:
         - APIKeyHeader: []
@@ -2833,12 +2773,10 @@ paths:
         - Commentary
       summary: Pipeline Uat Commentary
       description:
-        "Trigger pipeline UAT LLM commentary for a completed batch run.\n\
-        \nReturns 202 Accepted immediately. Commentary is generated asynchronously\n\
-        and written to GCS at:\n  gs://deployment-store-{project}/pipeline-uat/day={date}/run={run_id}.json\n\
-        \nArgs:\n    request: PipelineUATRequest with job_name, run_id, gcs_manifest_path.\n\
-        \    background_tasks: FastAPI BackgroundTasks for async execution.\n\nReturns:\n\
-        \    Accepted response with run_id and status."
+        "Trigger pipeline UAT LLM commentary for a completed batch run.\n\nReturns 202 Accepted immediately. Commentary\
+        \ is generated asynchronously\nand written to GCS at:\n  gs://deployment-store-{project}/pipeline-uat/day={date}/run={run_id}.json\n\
+        \nArgs:\n    request: PipelineUATRequest with job_name, run_id, gcs_manifest_path.\n    background_tasks: FastAPI\
+        \ BackgroundTasks for async execution.\n\nReturns:\n    Accepted response with run_id and status."
       operationId: pipeline_uat_commentary_api_commentary_pipeline_uat_post
       requestBody:
         content:
@@ -2854,9 +2792,7 @@ paths:
               schema:
                 additionalProperties: true
                 type: object
-                title:
-                  Response Pipeline Uat Commentary Api Commentary Pipeline Uat
-                  Post
+                title: Response Pipeline Uat Commentary Api Commentary Pipeline Uat Post
         "422":
           description: Validation Error
           content:
@@ -2934,9 +2870,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Update Venue Credentials Sports Venues  Venue Key  Credentials
-                  Put
+                title: Response Update Venue Credentials Sports Venues  Venue Key  Credentials Put
         "422":
           description: Validation Error
           content:
@@ -3241,9 +3175,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Assign Role Api User Management Users  User Id  Role
-                  Post
+                title: Response Assign Role Api User Management Users  User Id  Role Post
         "422":
           description: Validation Error
           content:
@@ -3376,9 +3308,7 @@ paths:
   /deployment-api/api/readiness:
     get:
       summary: Readiness Check
-      description:
-        Readiness probe — returns 503 if service is not ready to handle
-        requests.
+      description: Readiness probe — returns 503 if service is not ready to handle requests.
       operationId: readiness_check_api_readiness_get
       responses:
         "200":
@@ -3466,9 +3396,8 @@ paths:
     get:
       summary: Infra Health
       description:
-        "Layer 2 infra health check.\n\nVerifies that required GCS buckets,\
-        \ PubSub topics, and Secret Manager\nentries are accessible. Run after Terraform\
-        \ apply, before Layer 3 smoke tests.\n\nReturns:\n    JSON with status (\"\
+        "Layer 2 infra health check.\n\nVerifies that required GCS buckets, PubSub topics, and Secret Manager\n\
+        entries are accessible. Run after Terraform apply, before Layer 3 smoke tests.\n\nReturns:\n    JSON with status (\"\
         ok\" | \"degraded\" | \"error\" | \"skip\"), check details, and errors."
       operationId: infra_health_infra_health_get
       responses:
@@ -3511,7 +3440,7 @@ paths:
         - health
       summary: Health
       description: Liveness probe.
-      operationId: health_health_get
+      operationId: health_health_get__2
       responses:
         "200":
           description: Successful Response
@@ -3531,7 +3460,7 @@ paths:
         - health
       summary: Readiness
       description: Readiness probe.
-      operationId: readiness_readiness_get
+      operationId: readiness_readiness_get__2
       responses:
         "200":
           description: Successful Response
@@ -4170,9 +4099,7 @@ paths:
                   type: array
                   items:
                     type: string
-                title:
-                  Response Get Org Entitlements Organizations  Org Id  Entitlements
-                  Get
+                title: Response Get Org Entitlements Organizations  Org Id  Entitlements Get
         "422":
           description: Validation Error
           content:
@@ -4210,9 +4137,7 @@ paths:
                   type: array
                   items:
                     type: string
-                title:
-                  Response Update Org Entitlements Organizations  Org Id  Entitlements
-                  Put
+                title: Response Update Org Entitlements Organizations  Org Id  Entitlements Put
         "422":
           description: Validation Error
           content:
@@ -4542,9 +4467,7 @@ paths:
                     - type: array
                       items:
                         $ref: "#/components/schemas/ProvisioningStep"
-                title:
-                  Response Offboard User Provisioning Users  User Id  Offboard
-                  Post
+                title: Response Offboard User Provisioning Users  User Id  Offboard Post
         "422":
           description: Validation Error
           content:
@@ -4576,9 +4499,7 @@ paths:
                 type: object
                 additionalProperties:
                   type: string
-                title:
-                  Response Reprovision User Provisioning Users  User Id  Reprovision
-                  Post
+                title: Response Reprovision User Provisioning Users  User Id  Reprovision Post
         "422":
           description: Validation Error
           content:
@@ -4614,9 +4535,7 @@ paths:
                       items:
                         $ref: "#/components/schemas/WorkflowRun"
                     - type: integer
-                title:
-                  Response List User Workflows Provisioning Users  User Id  Workflows
-                  Get
+                title: Response List User Workflows Provisioning Users  User Id  Workflows Get
         "422":
           description: Validation Error
           content:
@@ -4645,9 +4564,7 @@ paths:
                       type: array
                     - type: integer
                 type: object
-                title:
-                  Response List Access Templates Provisioning Access Templates
-                  Get
+                title: Response List Access Templates Provisioning Access Templates Get
     post:
       tags:
         - auth-api
@@ -4671,9 +4588,7 @@ paths:
                 additionalProperties:
                   $ref: "#/components/schemas/AccessTemplate"
                 type: object
-                title:
-                  Response Create Access Template Provisioning Access Templates
-                  Post
+                title: Response Create Access Template Provisioning Access Templates Post
         "422":
           description: Validation Error
           content:
@@ -4711,9 +4626,7 @@ paths:
                 type: object
                 additionalProperties:
                   $ref: "#/components/schemas/AccessTemplate"
-                title:
-                  Response Update Access Template Provisioning Access Templates  Template
-                  Id  Put
+                title: Response Update Access Template Provisioning Access Templates  Template Id  Put
         "422":
           description: Validation Error
           content:
@@ -4744,9 +4657,7 @@ paths:
                 type: object
                 additionalProperties:
                   type: string
-                title:
-                  Response Delete Access Template Provisioning Access Templates  Template
-                  Id  Delete
+                title: Response Delete Access Template Provisioning Access Templates  Template Id  Delete
         "422":
           description: Validation Error
           content:
@@ -4771,9 +4682,7 @@ paths:
                 additionalProperties:
                   $ref: "#/components/schemas/HealthCheckResult"
                 type: object
-                title:
-                  Response Run Health Checks Provisioning Admin Health Checks
-                  Post
+                title: Response Run Health Checks Provisioning Admin Health Checks Post
   /auth-api/provisioning/admin/health-checks/history:
     get:
       tags:
@@ -4796,9 +4705,7 @@ paths:
                       type: array
                     - type: integer
                 type: object
-                title:
-                  Response Get Health Check History Provisioning Admin Health
-                  Checks History Get
+                title: Response Get Health Check History Provisioning Admin Health Checks History Get
   /auth-api/provisioning/access-requests:
     get:
       tags:
@@ -4830,9 +4737,7 @@ paths:
                       items:
                         $ref: "#/components/schemas/AccessRequest"
                     - type: integer
-                title:
-                  Response List Access Requests Provisioning Access Requests
-                  Get
+                title: Response List Access Requests Provisioning Access Requests Get
         "422":
           description: Validation Error
           content:
@@ -4862,9 +4767,7 @@ paths:
                 type: object
                 additionalProperties:
                   $ref: "#/components/schemas/AccessRequest"
-                title:
-                  Response Submit Access Request Provisioning Access Requests
-                  Post
+                title: Response Submit Access Request Provisioning Access Requests Post
         "422":
           description: Validation Error
           content:
@@ -4896,9 +4799,7 @@ paths:
                 type: object
                 additionalProperties:
                   $ref: "#/components/schemas/AccessRequest"
-                title:
-                  Response Get Access Request Provisioning Access Requests  Request
-                  Id  Get
+                title: Response Get Access Request Provisioning Access Requests  Request Id  Get
         "422":
           description: Validation Error
           content:
@@ -4936,9 +4837,7 @@ paths:
                 type: object
                 additionalProperties:
                   $ref: "#/components/schemas/AccessRequest"
-                title:
-                  Response Review Access Request Provisioning Access Requests  Request
-                  Id  Review Put
+                title: Response Review Access Request Provisioning Access Requests  Request Id  Review Put
         "422":
           description: Validation Error
           content:
@@ -4969,9 +4868,7 @@ paths:
                     type: object
                   type: array
                 type: object
-                title:
-                  Response List Firebase Auth Users Provisioning Firebase Auth
-                  Users Get
+                title: Response List Firebase Auth Users Provisioning Firebase Auth Users Get
   /auth-api/catalogue:
     get:
       tags:
@@ -5070,7 +4967,7 @@ paths:
         - health
       summary: Health
       description: Standard Cloud Run liveness probe.
-      operationId: health_health_get
+      operationId: health_health_get__3
       responses:
         "200":
           description: Successful Response
@@ -5087,7 +4984,7 @@ paths:
         - health
       summary: Readiness
       description: Runtime readiness with tier detection.
-      operationId: readiness_readiness_get
+      operationId: readiness_readiness_get__3
       responses:
         "200":
           description: Successful Response
@@ -5104,7 +5001,7 @@ paths:
         - health
       summary: Version
       description: Return service version information.
-      operationId: version_version_get
+      operationId: version_version_get__2
       responses:
         "200":
           description: Successful Response
@@ -5128,8 +5025,7 @@ paths:
 
         Real mode: proxies to client-reporting-api at port 8014.
 
-        Returns HTTP 503 when downstream is unreachable so the UI correctly detects
-        "down".'
+        Returns HTTP 503 when downstream is unreachable so the UI correctly detects "down".'
       operationId: reporting_health_reporting_health_get
       responses:
         "200":
@@ -6022,9 +5918,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Create Performance Snapshot Analytics Performance
-                  Post
+                title: Response Create Performance Snapshot Analytics Performance Post
   /unified-trading-api/analytics/organizations:
     get:
       tags:
@@ -6223,9 +6117,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Strategy Detail Analytics Strategies  Strategy
-                  Id  Get
+                title: Response Get Strategy Detail Analytics Strategies  Strategy Id  Get
         "422":
           description: Validation Error
           content:
@@ -6257,9 +6149,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Promote Strategy Analytics Strategies  Strategy Id  Promote
-                  Post
+                title: Response Promote Strategy Analytics Strategies  Strategy Id  Promote Post
         "422":
           description: Validation Error
           content:
@@ -6291,9 +6181,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Reject Strategy Analytics Strategies  Strategy Id  Reject
-                  Post
+                title: Response Reject Strategy Analytics Strategies  Strategy Id  Reject Post
         "422":
           description: Validation Error
           content:
@@ -6325,9 +6213,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Scale Strategy Analytics Strategies  Strategy Id  Scale
-                  Post
+                title: Response Scale Strategy Analytics Strategies  Strategy Id  Scale Post
         "422":
           description: Validation Error
           content:
@@ -7068,9 +6954,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Executive Summary Reporting Executive Summary
-                  Get
+                title: Response Get Executive Summary Reporting Executive Summary Get
         "422":
           description: Validation Error
           content:
@@ -8106,8 +7990,7 @@ paths:
         - unified-trading-api
         - instruments
       summary: Expire Mock Instrument
-      description:
-        "Expire a test instrument (set available_to=now, mock mode only).
+      description: "Expire a test instrument (set available_to=now, mock mode only).
 
 
         Supports glob patterns: POST /instruments/mock/expire/DERIBIT:OPTION:BTC-*"
@@ -8453,9 +8336,7 @@ paths:
               schema:
                 additionalProperties: true
                 type: object
-                title:
-                  Response Get Feature Freshness Service Status Feature Freshness
-                  Get
+                title: Response Get Feature Freshness Service Status Feature Freshness Get
       security:
         - APIKeyHeader: []
   /unified-trading-api/service-status/activity:
@@ -8620,8 +8501,7 @@ paths:
         - unified-trading-api
         - derivatives
       summary: Get Options Chain
-      description:
-        "Get options chain for an underlying. Serves seeded data matching
+      description: "Get options chain for an underlying. Serves seeded data matching
 
         features-volatility-service output shapes."
       operationId: get_options_chain_derivatives_options_chain_get
@@ -8708,9 +8588,7 @@ paths:
               schema:
                 additionalProperties: true
                 type: object
-                title:
-                  Response Get Portfolio Greeks Derivatives Portfolio Greeks
-                  Get
+                title: Response Get Portfolio Greeks Derivatives Portfolio Greeks Get
       security:
         - APIKeyHeader: []
   /unified-trading-api/chat/message:
@@ -8720,13 +8598,11 @@ paths:
         - chat
       summary: Chat Message
       description:
-        "Send a message to the tiered help chatbot.\n\nReturns an SSE stream\
-        \ of content chunks. Each event is:\n  data: {\"type\": \"content\", \"text\"\
-        : \"...\"} — partial text\n  data: {\"type\": \"done\"}                  \
-        \ — stream complete\n\nThe knowledge scope is determined by the caller's auth\
-        \ tier:\n  - No auth → PUBLIC (general info only)\n  - External org JWT →\
-        \ CLIENT (+ UI help, portfolio context)\n  - Internal org JWT → INTERNAL (+\
-        \ backend ops, compliance)"
+        "Send a message to the tiered help chatbot.\n\nReturns an SSE stream of content chunks. Each event is:\n\
+        \  data: {\"type\": \"content\", \"text\": \"...\"} — partial text\n  data: {\"type\": \"done\"}                 \
+        \  — stream complete\n\nThe knowledge scope is determined by the caller's auth tier:\n  - No auth → PUBLIC (general\
+        \ info only)\n  - External org JWT → CLIENT (+ UI help, portfolio context)\n  - Internal org JWT → INTERNAL (+ backend\
+        \ ops, compliance)"
       operationId: chat_message_chat_message_post
       requestBody:
         content:
@@ -8772,7 +8648,7 @@ paths:
   /client-reporting-api/health:
     get:
       summary: Health
-      operationId: health_health_get
+      operationId: health_health_get__4
       responses:
         "200":
           description: Successful Response
@@ -8787,9 +8663,7 @@ paths:
   /client-reporting-api/readiness:
     get:
       summary: Readiness Check
-      description:
-        Readiness probe — returns 503 if service is not ready to handle
-        requests.
+      description: Readiness probe — returns 503 if service is not ready to handle requests.
       operationId: readiness_check_readiness_get
       responses:
         "200":
@@ -8810,7 +8684,7 @@ paths:
         - auth
       summary: Login
       description: Authenticate with email + password, receive JWT.
-      operationId: login_auth_login_post
+      operationId: login_auth_login_post__2
       requestBody:
         content:
           application/json:
@@ -8866,9 +8740,7 @@ paths:
         - client-reporting-api
         - auth
       summary: List Demo Users
-      description:
-        List available demo users (for login UI convenience). No passwords
-        exposed.
+      description: List available demo users (for login UI convenience). No passwords exposed.
       operationId: list_demo_users_auth_users_get
       responses:
         "200":
@@ -8908,8 +8780,7 @@ paths:
       description: "List available reports.
 
 
-        In mock mode returns seed + mutated reports (performance, risk, compliance
-        types).
+        In mock mode returns seed + mutated reports (performance, risk, compliance types).
 
         In live mode reads from GCS report metadata."
       operationId: list_reports_api_reports_get
@@ -9060,8 +8931,7 @@ paths:
         - client-reporting-api
         - pnl
       summary: Get Performance
-      description:
-        "Return portfolio performance metrics (returns, sharpe, drawdown).
+      description: "Return portfolio performance metrics (returns, sharpe, drawdown).
 
 
         In mock mode returns realistic sample performance data.
@@ -9509,9 +9379,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Download Url Api V1 Documents  Document Id  Download
-                  Url Get
+                title: Response Get Download Url Api V1 Documents  Document Id  Download Url Get
         "422":
           description: Validation Error
           content:
@@ -9524,8 +9392,7 @@ paths:
         - client-reporting-api
         - documents
       summary: List Documents
-      description:
-        "List documents for an organisation, optionally filtered by category.
+      description: "List documents for an organisation, optionally filtered by category.
 
 
         In mock mode: returns seed + mutated documents from the in-memory store.
@@ -9837,9 +9704,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Download Invoice Api V1 Invoices  Invoice Id  Download
-                  Get
+                title: Response Download Invoice Api V1 Invoices  Invoice Id  Download Get
         "422":
           description: Validation Error
           content:
@@ -9900,9 +9765,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Trade Reporting Api V1 Compliance Trade Reporting
-                  Get
+                title: Response Get Trade Reporting Api V1 Compliance Trade Reporting Get
         "422":
           description: Validation Error
           content:
@@ -9915,8 +9778,7 @@ paths:
         - client-reporting-api
         - compliance
       summary: Get Best Execution
-      description:
-        "Best execution analysis — venue performance, slippage, fill rates.
+      description: "Best execution analysis — venue performance, slippage, fill rates.
 
 
         In mock mode: returns synthetic best execution analysis data.
@@ -9964,9 +9826,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Best Execution Api V1 Compliance Best Execution
-                  Get
+                title: Response Get Best Execution Api V1 Compliance Best Execution Get
         "422":
           description: Validation Error
           content:
@@ -9979,8 +9839,7 @@ paths:
         - client-reporting-api
         - compliance
       summary: Get Large Positions
-      description:
-        "Large position reporting — positions above regulatory thresholds.
+      description: "Large position reporting — positions above regulatory thresholds.
 
 
         In mock mode: returns synthetic large position data.
@@ -10033,8 +9892,7 @@ paths:
         - client-reporting-api
         - compliance
       summary: Get Compliance Dashboard
-      description:
-        "Compliance summary dashboard — overall status, alerts, violations.
+      description: "Compliance summary dashboard — overall status, alerts, violations.
 
 
         In mock mode: returns synthetic compliance dashboard data.
@@ -10083,9 +9941,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Compliance Dashboard Api V1 Compliance Dashboard
-                  Get
+                title: Response Get Compliance Dashboard Api V1 Compliance Dashboard Get
         "422":
           description: Validation Error
           content:
@@ -10098,8 +9954,7 @@ paths:
         - client-reporting-api
         - docusign
       summary: Send For Signature
-      description:
-        "Create a DocuSign envelope and send a document for signature.
+      description: "Create a DocuSign envelope and send a document for signature.
 
 
         In mock mode: creates a synthetic envelope record in the in-memory store.
@@ -10143,9 +9998,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Send For Signature Api V1 Documents  Document Id  Send
-                  For Signature Post
+                title: Response Send For Signature Api V1 Documents  Document Id  Send For Signature Post
         "422":
           description: Validation Error
           content:
@@ -10196,9 +10049,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Signature Status Api V1 Documents  Document Id  Signature
-                  Status Get
+                title: Response Get Signature Status Api V1 Documents  Document Id  Signature Status Get
         "422":
           description: Validation Error
           content:
@@ -10211,8 +10062,7 @@ paths:
         - client-reporting-api
         - docusign
       summary: Docusign Webhook
-      description:
-        "DocuSign webhook receiver — processes envelope status changes.
+      description: "DocuSign webhook receiver — processes envelope status changes.
 
 
         DocuSign sends webhook events when envelope status changes (sent, delivered,
@@ -10272,14 +10122,14 @@ paths:
               schema: {}
       tags:
         - client-reporting-api
+  /market-data-api/health:
     get:
       summary: Health
-      description:
-        "Liveness probe — always returns ok when the process is alive.
+      description: "Liveness probe — always returns ok when the process is alive.
 
 
         In mock mode includes per-venue data freshness from mock data."
-      operationId: health_health_get
+      operationId: health_health_get__5
       responses:
         "200":
           description: Successful Response
@@ -10289,13 +10139,12 @@ paths:
                 additionalProperties: true
                 type: object
                 title: Response Health Health Get
-      tags:
+      tags: []
+  /market-data-api/readiness:
     get:
       summary: Readiness Check
-      description:
-        Readiness probe — returns 503 if service is not ready to handle
-        requests.
-      operationId: readiness_check_readiness_get
+      description: Readiness probe — returns 503 if service is not ready to handle requests.
+      operationId: readiness_check_readiness_get__2
       responses:
         "200":
           description: Successful Response
@@ -10306,7 +10155,8 @@ paths:
                   type: string
                 type: object
                 title: Response Readiness Check Readiness Get
-      tags:
+      tags: []
+  /market-data-api/orderbook/{symbol}/snapshot:
     get:
       summary: Get Snapshot
       operationId: get_snapshot_orderbook__symbol__snapshot_get
@@ -10348,7 +10198,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
-      tags:
+      tags: []
+  /market-data-api/candles:
     get:
       summary: Get Candles
       description: "Return OHLCV candle data.
@@ -10437,7 +10288,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
-      tags:
+      tags: []
+  /market-data-api/venues:
     get:
       summary: List Venues
       description: Return the list of known venue names from the UAC VENUE_CATEGORY_MAP.
@@ -10477,7 +10329,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
-      tags:
+      tags: []
+  /market-data-api/venues/{venue}/validate:
     get:
       summary: Validate Venue
       description: "Validate a venue name against UAC VENUE_CATEGORY_MAP.
@@ -10526,7 +10379,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
-      tags:
+      tags: []
+  /market-data-api/stream/orderbook:
     get:
       summary: Stream Orderbook
       operationId: stream_orderbook_stream_orderbook_get
@@ -10572,7 +10426,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HTTPValidationError"
-      tags:
+      tags: []
+  /market-data-api/data-contract:
     get:
       summary: Data Contract
       description: Describe the upstream data contract for processed candles.
@@ -10587,22 +10442,23 @@ paths:
                   type: string
                 type: object
                 title: Response Data Contract Data Contract Get
-      tags:
+      tags: []
+  /market-data-api/metrics:
     get:
       summary: Metrics
       description: Prometheus metrics endpoint.
-      operationId: metrics_metrics_get
+      operationId: metrics_metrics_get__2
       responses:
         "200":
           description: Successful Response
           content:
             application/json:
               schema: {}
-      tags:
+      tags: []
   /alerting-service/health:
     get:
       summary: Health
-      operationId: health_health_get
+      operationId: health_health_get__6
       responses:
         "200":
           description: Successful Response
@@ -10618,7 +10474,7 @@ paths:
     get:
       summary: Readiness
       description: Readiness probe — checks config is loaded and service is ready.
-      operationId: readiness_readiness_get
+      operationId: readiness_readiness_get__4
       responses:
         "200":
           description: Successful Response
@@ -10768,9 +10624,8 @@ paths:
         - delivery
       summary: Get Delivery Status
       description:
-        "Return delivery records for a given alert_id.\n\nScans GCS history\
-        \ partitions (last 7 days) for matching records.\n\nReturns:\n    JSON object\
-        \ with ``alert_id`` and a list of ``records``."
+        "Return delivery records for a given alert_id.\n\nScans GCS history partitions (last 7 days) for matching\
+        \ records.\n\nReturns:\n    JSON object with ``alert_id`` and a list of ``records``."
       operationId: get_delivery_status_alerts_delivery_status__alert_id__get
       parameters:
         - name: alert_id
@@ -10803,9 +10658,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Delivery Status Alerts Delivery Status  Alert
-                  Id  Get
+                title: Response Get Delivery Status Alerts Delivery Status  Alert Id  Get
         "422":
           description: Validation Error
           content:
@@ -10867,11 +10720,10 @@ paths:
         - manual-trading
       summary: Submit Manual Instruction
       description:
-        "Submit manual instruction from operator UI.\n\nValidates request,\
-        \ logs event, routes to orchestrator (same path as automated strategies).\n\
-        \nArgs:\n    request: Manual instruction request\n    http_request: FastAPI\
-        \ request object\n\nReturns:\n    Instruction ID and status\n\nRaises:\n \
-        \   HTTPException: If validation fails or execution errors"
+        "Submit manual instruction from operator UI.\n\nValidates request, logs event, routes to orchestrator (same\
+        \ path as automated strategies).\n\nArgs:\n    request: Manual instruction request\n    http_request: FastAPI request\
+        \ object\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException: If validation fails or execution\
+        \ errors"
       operationId: submit_manual_instruction_manual_instruction_post
       requestBody:
         content:
@@ -10899,9 +10751,8 @@ paths:
         - manual-trading
       summary: Cancel Manual Instruction
       description:
-        "Cancel manual instruction.\n\nArgs:\n    request: Cancel instruction\
-        \ request\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException:\
-        \ If orchestrator not initialized"
+        "Cancel manual instruction.\n\nArgs:\n    request: Cancel instruction request\n\nReturns:\n    Instruction\
+        \ ID and status\n\nRaises:\n    HTTPException: If orchestrator not initialized"
       operationId: cancel_manual_instruction_manual_cancel_post
       requestBody:
         content:
@@ -10932,9 +10783,8 @@ paths:
         - manual-trading
       summary: Amend Manual Instruction
       description:
-        "Amend manual instruction.\n\nArgs:\n    request: Amend instruction\
-        \ request\n\nReturns:\n    Instruction ID and status\n\nRaises:\n    HTTPException:\
-        \ If orchestrator not initialized"
+        "Amend manual instruction.\n\nArgs:\n    request: Amend instruction request\n\nReturns:\n    Instruction\
+        \ ID and status\n\nRaises:\n    HTTPException: If orchestrator not initialized"
       operationId: amend_manual_instruction_manual_amend_post
       requestBody:
         content:
@@ -10965,8 +10815,8 @@ paths:
         - manual-trading
       summary: Get Instruction Status
       description:
-        "Get status of manual instruction.\n\nArgs:\n    instruction_id:\
-        \ Instruction ID\n\nReturns:\n    Instruction status and fills"
+        "Get status of manual instruction.\n\nArgs:\n    instruction_id: Instruction ID\n\nReturns:\n    Instruction\
+        \ status and fills"
       operationId: get_instruction_status_manual_instructions__instruction_id__get
       parameters:
         - name: instruction_id
@@ -10983,9 +10833,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Instruction Status Manual Instructions  Instruction
-                  Id  Get
+                title: Response Get Instruction Status Manual Instructions  Instruction Id  Get
         "422":
           description: Validation Error
           content:
@@ -11129,7 +10977,7 @@ paths:
     get:
       summary: Health
       description: Liveness probe — returns 200 when the process is running.
-      operationId: health_health_get
+      operationId: health_health_get__7
       responses:
         "200":
           description: Successful Response
@@ -11147,8 +10995,7 @@ paths:
   /execution-service/ready:
     get:
       summary: Ready
-      description:
-        "Readiness probe — returns 200 only when order recovery is complete.
+      description: "Readiness probe — returns 200 only when order recovery is complete.
 
 
         Returns 503 with status=starting if recovery has not yet finished.
@@ -11166,8 +11013,7 @@ paths:
   /execution-service/readiness:
     get:
       summary: Readiness
-      description:
-        "Readiness probe — verifies critical subsystems are initialised.
+      description: "Readiness probe — verifies critical subsystems are initialised.
 
 
         Checks:
@@ -11175,7 +11021,7 @@ paths:
         - Auth and limiter are wired (startup event has completed).
 
         Raises 503 if the service is not ready to handle requests."
-      operationId: readiness_readiness_get
+      operationId: readiness_readiness_get__5
       responses:
         "200":
           description: Successful Response
@@ -11187,9 +11033,7 @@ paths:
   /execution-service/admin/drain:
     post:
       summary: Admin Drain
-      description:
-        "Activate drain mode — complete in-flight orders, reject new with
-        503.
+      description: "Activate drain mode — complete in-flight orders, reject new with 503.
 
 
         Called by deployment workflows before a rolling update."
@@ -11314,16 +11158,14 @@ paths:
               schema:
                 additionalProperties: true
                 type: object
-                title:
-                  Response Admin Positions Snapshot Admin Positions Snapshot
-                  Get
+                title: Response Admin Positions Snapshot Admin Positions Snapshot Get
       tags:
         - execution-service
   /risk-and-exposure-service/:
     get:
       summary: Root
       description: Service info.
-      operationId: root__get
+      operationId: root__get__2
       responses:
         "200":
           description: Successful Response
@@ -11342,12 +11184,10 @@ paths:
       description: "Health check.
 
 
-        Returns service health plus data_freshness showing the last snapshot write
-        timestamp
+        Returns service health plus data_freshness showing the last snapshot write timestamp
 
-        (ISO-8601 UTC) or 'none' when no snapshot has been written in this process
-        lifetime."
-      operationId: health_health_get
+        (ISO-8601 UTC) or 'none' when no snapshot has been written in this process lifetime."
+      operationId: health_health_get__8
       responses:
         "200":
           description: Successful Response
@@ -11365,10 +11205,8 @@ paths:
   /risk-and-exposure-service/readiness:
     get:
       summary: Readiness
-      description:
-        Readiness probe — confirms config loaded and service is ready to
-        serve.
-      operationId: readiness_readiness_get
+      description: Readiness probe — confirms config loaded and service is ready to serve.
+      operationId: readiness_readiness_get__6
       responses:
         "200":
           description: Successful Response
@@ -11606,15 +11444,12 @@ paths:
     get:
       summary: Get Var
       description:
-        "Compute VaR, CVaR, and optional Stress VaR for a returns series.\n\
-        \nPhase 1: caller supplies `returns[]` in query params.\nPhase 2: fetch from\
-        \ position-monitor returns history.\n\nArgs:\n    client_id: Client identifier\
-        \ (logged with event).\n    confidence: Confidence level in (0, 1). Default\
-        \ 0.99.\n    horizon_days: Holding period. Default 1-day.\n    scenario: Optional\
-        \ stress scenario name.\n    returns: Daily P&L returns as decimals (e.g.\
-        \ -0.02 for -2%).\n\nReturns:\n    VaRResponse with var, cvar, stress_var,\
-        \ confidence, horizon_days, scenario."
-      operationId: get_var_risk_var_get
+        "Compute VaR, CVaR, and optional Stress VaR for a returns series.\n\nPhase 1: caller supplies `returns[]`\
+        \ in query params.\nPhase 2: fetch from position-monitor returns history.\n\nArgs:\n    client_id: Client identifier\
+        \ (logged with event).\n    confidence: Confidence level in (0, 1). Default 0.99.\n    horizon_days: Holding period.\
+        \ Default 1-day.\n    scenario: Optional stress scenario name.\n    returns: Daily P&L returns as decimals (e.g. -0.02\
+        \ for -2%).\n\nReturns:\n    VaRResponse with var, cvar, stress_var, confidence, horizon_days, scenario."
+      operationId: get_var_risk_var_get__2
       parameters:
         - name: client_id
           in: query
@@ -11928,8 +11763,7 @@ paths:
       description: "Return DeFiStakingAggregatedMetrics for a client.
 
 
-        Requires DeFiStakingAggregator to be wired with staking positions from DeFi
-        adapters."
+        Requires DeFiStakingAggregator to be wired with staking positions from DeFi adapters."
       operationId: get_defi_staking_defi_staking__client_id__get
       parameters:
         - name: client_id
@@ -12007,7 +11841,7 @@ paths:
     get:
       summary: Metrics
       description: Prometheus metrics endpoint.
-      operationId: metrics_metrics_get
+      operationId: metrics_metrics_get__3
       responses:
         "200":
           description: Successful Response
@@ -12021,7 +11855,7 @@ paths:
     get:
       summary: Root
       description: Root endpoint - service info.
-      operationId: root__get
+      operationId: root__get__3
       responses:
         "200":
           description: Successful Response
@@ -12038,7 +11872,7 @@ paths:
     get:
       summary: Readiness
       description: Readiness probe — confirms service initialized and ready to serve.
-      operationId: readiness_readiness_get
+      operationId: readiness_readiness_get__7
       responses:
         "200":
           description: Successful Response
@@ -12064,11 +11898,9 @@ paths:
     get:
       summary: List Positions
       description:
-        "List all positions (filtered by client_id, strategy_id, venue).\n\
-        \nArgs:\n    client_id: Optional client filter\n    strategy_id: Optional\
-        \ strategy filter\n    venue: Optional venue filter\n    api_client_id: Client\
-        \ ID from API key\n\nReturns:\n    List of positions\n\nRaises:\n    HTTPException:\
-        \ If forbidden or error"
+        "List all positions (filtered by client_id, strategy_id, venue).\n\nArgs:\n    client_id: Optional client\
+        \ filter\n    strategy_id: Optional strategy filter\n    venue: Optional venue filter\n    api_client_id: Client ID\
+        \ from API key\n\nReturns:\n    List of positions\n\nRaises:\n    HTTPException: If forbidden or error"
       operationId: list_positions_positions_get
       parameters:
         - name: client_id
@@ -12133,11 +11965,9 @@ paths:
     get:
       summary: Get Position
       description:
-        "Get specific position.\n\nArgs:\n    client_id: Client identifier\n\
-        \    strategy_id: Strategy identifier\n    venue: Venue identifier\n    instrument:\
-        \ Instrument identifier\n    api_client_id: Client ID from API key\n\nReturns:\n\
-        \    Position details\n\nRaises:\n    HTTPException: If forbidden, not found,\
-        \ or error"
+        "Get specific position.\n\nArgs:\n    client_id: Client identifier\n    strategy_id: Strategy identifier\n\
+        \    venue: Venue identifier\n    instrument: Instrument identifier\n    api_client_id: Client ID from API key\n\n\
+        Returns:\n    Position details\n\nRaises:\n    HTTPException: If forbidden, not found, or error"
       operationId: get_position_positions__client_id___strategy_id___venue___instrument__get
       parameters:
         - name: client_id
@@ -12198,8 +12028,8 @@ paths:
     get:
       summary: Get Reconciliation Status
       description:
-        "Get reconciliation status.\n\nArgs:\n    api_client_id: Client\
-        \ ID from API key\n\nReturns:\n    Reconciliation status summary"
+        "Get reconciliation status.\n\nArgs:\n    api_client_id: Client ID from API key\n\nReturns:\n    Reconciliation\
+        \ status summary"
       operationId: get_reconciliation_status_reconciliation_status_get
       parameters:
         - name: X-Api-Key
@@ -12236,9 +12066,8 @@ paths:
     post:
       summary: Trigger Reconciliation
       description:
-        "Trigger manual reconciliation.\n\nArgs:\n    request: FastAPI\
-        \ request object\n    api_client_id: Client ID from API key\n\nReturns:\n\
-        \    Reconciliation results"
+        "Trigger manual reconciliation.\n\nArgs:\n    request: FastAPI request object\n    api_client_id: Client\
+        \ ID from API key\n\nReturns:\n    Reconciliation results"
       operationId: trigger_reconciliation_reconciliation_trigger_post
       parameters:
         - name: X-Api-Key
@@ -12544,9 +12373,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Cloud Run Status Batch Api V1 Cloud Run Status
-                  Batch Post
+                title: Response Get Cloud Run Status Batch Api V1 Cloud Run Status Batch Post
         "422":
           description: Validation Error
           content:
@@ -12659,9 +12486,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Deployment Events Api V1 Deployments  Deployment
-                  Id  Events Get
+                title: Response Get Deployment Events Api V1 Deployments  Deployment Id  Events Get
         "422":
           description: Validation Error
           content:
@@ -12698,9 +12523,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Vm Events Api V1 Deployments  Deployment Id  Vm
-                  Events Get
+                title: Response Get Vm Events Api V1 Deployments  Deployment Id  Vm Events Get
         "422":
           description: Validation Error
           content:
@@ -12743,9 +12566,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Live Rollback Api V1 Deployments  Deployment Id  Rollback
-                  Post
+                title: Response Live Rollback Api V1 Deployments  Deployment Id  Rollback Post
         "422":
           description: Validation Error
           content:
@@ -12794,9 +12615,7 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-                title:
-                  Response Get Live Health Api V1 Deployments  Deployment Id  Live
-                  Health Get
+                title: Response Get Live Health Api V1 Deployments  Deployment Id  Live Health Get
         "422":
           description: Validation Error
           content:
@@ -12948,9 +12767,7 @@ paths:
                 type: object
                 additionalProperties:
                   type: string
-                title:
-                  Response Teardown Cluster Deployment Clusters  Cluster Name  Teardown
-                  Post
+                title: Response Teardown Cluster Deployment Clusters  Cluster Name  Teardown Post
         "422":
           description: Validation Error
           content:
@@ -13274,7 +13091,7 @@ paths:
         - market-tick-data-service
         - health
       summary: Health
-      operationId: health_health_get
+      operationId: health_health_get__9
       responses:
         "200":
           description: Successful Response
@@ -13287,7 +13104,7 @@ paths:
         - market-tick-data-service
         - health
       summary: Readiness
-      operationId: readiness_readiness_get
+      operationId: readiness_readiness_get__8
       responses:
         "200":
           description: Successful Response
@@ -13300,7 +13117,7 @@ paths:
         - pnl-attribution-service
         - health
       summary: Health
-      operationId: health_health_get
+      operationId: health_health_get__10
       responses:
         "200":
           description: Successful Response
@@ -13313,7 +13130,7 @@ paths:
         - pnl-attribution-service
         - health
       summary: Readiness
-      operationId: readiness_readiness_get
+      operationId: readiness_readiness_get__9
       responses:
         "200":
           description: Successful Response
@@ -16193,9 +16010,7 @@ components:
             - type: number
             - type: "null"
           title: Stress Var
-          description:
-            Stress VaR for the requested scenario (None if no scenario
-            given)
+          description: Stress VaR for the requested scenario (None if no scenario given)
         confidence:
           type: number
           title: Confidence
@@ -16767,9 +16582,7 @@ components:
         - snapshot_id
         - timestamp
       title: PortfolioView
-      description:
-        Full portfolio snapshot across all venues, asset classes, and risk
-        groups.
+      description: Full portfolio snapshot across all venues, asset classes, and risk groups.
     PositionResponse:
       properties:
         client_id:
@@ -17025,8 +16838,7 @@ components:
         - market_type
         - selection
       title: SportsArbPosition
-      description:
-        "Cross-venue sports arbitrage position for a single selection.
+      description: "Cross-venue sports arbitrage position for a single selection.
 
 
         Tracks back on venue A + lay on venue B for the same fixture/selection,
@@ -17720,6 +17532,7 @@ tags:
     description: Unified Trading API
   - name: client-reporting-api
     description: Client Reporting Service
+  - name: market-data-api
     description: Market Data API
   - name: alerting-service
     description: Alerting System

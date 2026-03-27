@@ -1,15 +1,36 @@
-# Directories to ignore
+# Build & cache
 .git/
+.next/
+out/
+build/
+dist/
+coverage/
 .prettier-cache/
 .ruff_cache/
 node_modules/
+
+# Test artifacts
+e2e/test-results/
+e2e/playwright-report/
+
+# Synced reference context (upstream-owned, not ours to format)
+context/
+
+# Archived / task management
 archived/
 escalations/
 task-state/
 tasks/
 task-summaries/
+_reference/
 
-# Files to ignore
+# Generated / lockfiles
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+lib/types/api-generated.ts
+
+# Misc
 *.bak
 *.log
 .DS_Store
