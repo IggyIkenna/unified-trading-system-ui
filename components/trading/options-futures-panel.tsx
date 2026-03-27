@@ -45,6 +45,10 @@ import {
   Zap,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
+  X,
+  Pencil,
+  Check,
 } from "lucide-react";
 import {
   WatchlistPanel,
@@ -796,6 +800,10 @@ function OptionsToolbar({
   setAsset,
   tradFiAsset,
   setTradFiAsset,
+  pinnedCryptoAssets,
+  setPinnedCryptoAssets,
+  pinnedTradFiAssets,
+  setPinnedTradFiAssets,
   settlement,
   setSettlement,
   market,
@@ -813,6 +821,10 @@ function OptionsToolbar({
   setAsset: (a: Asset) => void;
   tradFiAsset: TradFiAsset;
   setTradFiAsset: (a: TradFiAsset) => void;
+  pinnedCryptoAssets: Asset[];
+  setPinnedCryptoAssets: (a: Asset[]) => void;
+  pinnedTradFiAssets: TradFiAsset[];
+  setPinnedTradFiAssets: (a: TradFiAsset[]) => void;
   settlement: Settlement;
   setSettlement: (s: Settlement) => void;
   market: Market;
@@ -825,8 +837,7 @@ function OptionsToolbar({
   setShowWatchlist: (v: boolean) => void;
 }) {
   const isCrypto = assetClass === "crypto";
-  const spot = isCrypto ? SPOT_PRICES[asset] : TRADFI_SPOT_PRICES[tradFiAsset];
-  const iv = isCrypto ? IV_INDEX[asset] : TRADFI_IV_INDEX[tradFiAsset];
+  const [editingPins, setEditingPins] = React.useState(false);
 
   const TABS: {
     value: MainTab;
@@ -848,6 +859,12 @@ function OptionsToolbar({
     },
     { value: "scenario", label: "Scenario", icon: <Zap className="size-3" /> },
   ];
+
+  // All available symbols for adding
+  const unpinnedCrypto = ASSETS.filter((a) => !pinnedCryptoAssets.includes(a));
+  const unpinnedTradFi = TRADFI_ASSETS.filter(
+    (a) => !pinnedTradFiAssets.includes(a),
+  );
 
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 border-b bg-muted/10 overflow-x-auto min-h-[42px]">
@@ -940,48 +957,117 @@ function OptionsToolbar({
 
       <Separator orientation="vertical" className="h-5 shrink-0" />
 
-      {/* Asset pills */}
+      {/* Pinned asset pills — up to 5, configurable */}
       <div className="flex items-center gap-0.5 shrink-0">
         {isCrypto
-          ? ASSETS.map((a) => (
-              <Button
-                key={a}
-                variant={asset === a ? "default" : "ghost"}
-                size="sm"
-                className="h-7 px-2.5 text-xs font-mono"
-                onClick={() => setAsset(a)}
-              >
-                {a}
-              </Button>
+          ? pinnedCryptoAssets.map((a) => (
+              <div key={a} className="relative group">
+                <Button
+                  variant={asset === a ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 px-2.5 text-xs font-mono"
+                  onClick={() => setAsset(a)}
+                >
+                  {a}
+                </Button>
+                {editingPins && pinnedCryptoAssets.length > 1 && (
+                  <button
+                    onClick={() => {
+                      const next = pinnedCryptoAssets.filter((x) => x !== a);
+                      setPinnedCryptoAssets(next);
+                      if (asset === a) setAsset(next[0]);
+                    }}
+                    className="absolute -top-1 -right-1 z-10 rounded-full bg-destructive text-destructive-foreground size-3.5 flex items-center justify-center"
+                  >
+                    <X className="size-2.5" />
+                  </button>
+                )}
+              </div>
             ))
-          : TRADFI_ASSETS.map((a) => (
-              <Button
-                key={a}
-                variant={tradFiAsset === a ? "default" : "ghost"}
-                size="sm"
-                className="h-7 px-2.5 text-xs font-mono"
-                onClick={() => setTradFiAsset(a)}
-              >
-                {a}
-              </Button>
+          : pinnedTradFiAssets.map((a) => (
+              <div key={a} className="relative group">
+                <Button
+                  variant={tradFiAsset === a ? "default" : "ghost"}
+                  size="sm"
+                  className="h-7 px-2.5 text-xs font-mono"
+                  onClick={() => setTradFiAsset(a)}
+                >
+                  {a}
+                </Button>
+                {editingPins && pinnedTradFiAssets.length > 1 && (
+                  <button
+                    onClick={() => {
+                      const next = pinnedTradFiAssets.filter((x) => x !== a);
+                      setPinnedTradFiAssets(next);
+                      if (tradFiAsset === a) setTradFiAsset(next[0]);
+                    }}
+                    className="absolute -top-1 -right-1 z-10 rounded-full bg-destructive text-destructive-foreground size-3.5 flex items-center justify-center"
+                  >
+                    <X className="size-2.5" />
+                  </button>
+                )}
+              </div>
             ))}
-      </div>
 
-      <Separator orientation="vertical" className="h-5 shrink-0" />
+        {/* Add pin — only when < 5 pinned and in edit mode */}
+        {editingPins &&
+          (isCrypto
+            ? unpinnedCrypto.length > 0 &&
+              pinnedCryptoAssets.length < 5 && (
+                <Select
+                  onValueChange={(v) =>
+                    setPinnedCryptoAssets([...pinnedCryptoAssets, v as Asset])
+                  }
+                >
+                  <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
+                    <Plus className="size-3 mr-0.5" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unpinnedCrypto.map((a) => (
+                      <SelectItem key={a} value={a}>
+                        {a}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )
+            : unpinnedTradFi.length > 0 &&
+              pinnedTradFiAssets.length < 5 && (
+                <Select
+                  onValueChange={(v) =>
+                    setPinnedTradFiAssets([
+                      ...pinnedTradFiAssets,
+                      v as TradFiAsset,
+                    ])
+                  }
+                >
+                  <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
+                    <Plus className="size-3 mr-0.5" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unpinnedTradFi.map((a) => (
+                      <SelectItem key={a} value={a}>
+                        {a}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ))}
 
-      {/* Spot + IV */}
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="flex items-center gap-1 text-xs whitespace-nowrap">
-          <span className="text-muted-foreground text-[10px]">Spot</span>
-          <span className="font-mono font-semibold">
-            {isCrypto ? formatUsd(spot) : `$${spot.toFixed(2)}`}
-          </span>
-        </div>
-        <div className="flex items-center gap-1 text-xs whitespace-nowrap">
-          <Activity className="size-3 text-muted-foreground" />
-          <span className="font-mono text-amber-400">{iv.toFixed(1)}%</span>
-          <span className="text-[10px] text-muted-foreground">IV</span>
-        </div>
+        {/* Edit / done toggle */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+          onClick={() => setEditingPins(!editingPins)}
+          title={editingPins ? "Done editing" : "Edit pinned symbols"}
+        >
+          {editingPins ? (
+            <Check className="size-3.5" />
+          ) : (
+            <Pencil className="size-3" />
+          )}
+        </Button>
       </div>
 
       {/* Spacer */}
@@ -1072,54 +1158,135 @@ function OptionsChainTab({
     Math.abs(curr.strike - spot) < Math.abs(prev.strike - spot) ? curr : prev,
   ).strike;
 
-  return (
-    <div className="space-y-3">
-      {/* Expiry strip */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs px-1">
-          <span className="text-muted-foreground">
-            Underlying future:{" "}
-            <span className="font-mono font-medium text-foreground">
-              {formatUsd(spot + spot * 0.001, 2)}
-            </span>
-          </span>
-          <span className="text-muted-foreground">
-            Time to Expiry:{" "}
-            <span className="font-mono text-foreground">94d 18h 13m</span>
-            <span className="text-[10px] ml-1">(Quarterly)</span>
-          </span>
-        </div>
-        <ScrollArea className="w-full">
-          <div className="flex items-center gap-1 pb-2">
-            {EXPIRY_DATES.map((exp) => (
-              <Button
-                key={exp}
-                variant={selectedExpiry === exp ? "default" : "outline"}
-                size="sm"
-                className={cn(
-                  "h-7 px-2.5 text-[10px] font-mono whitespace-nowrap shrink-0",
-                  selectedExpiry === exp && "shadow-sm",
-                )}
-                onClick={() => setSelectedExpiry(exp)}
-              >
-                {exp}
-                {EXPIRIES_WITH_POSITIONS.has(exp) && (
-                  <Badge
-                    variant="secondary"
-                    className="ml-1 text-[8px] px-1 py-0 h-3.5"
-                  >
-                    POS
-                  </Badge>
-                )}
-              </Button>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
+  // First 5 expiries shown inline, the rest in overflow dropdown
+  const INLINE_COUNT = 5;
+  const inlineExpiries = EXPIRY_DATES.filter((e) => e !== "ALL").slice(
+    0,
+    INLINE_COUNT,
+  );
+  const overflowExpiries = EXPIRY_DATES.filter((e) => e !== "ALL").slice(
+    INLINE_COUNT,
+  );
+  const selectedIsOverflow = (overflowExpiries as readonly string[]).includes(
+    selectedExpiry,
+  );
 
-      {/* Filter toolbar */}
-      <div className="flex items-center gap-3 px-1">
+  // Mock time-to-expiry stats per expiry
+  const EXPIRY_META: Record<
+    string,
+    { days: number; hours: number; mins: number; kind: string }
+  > = {
+    "24 MAR 26": { days: 0, hours: 6, mins: 42, kind: "Daily" },
+    "25 MAR 26": { days: 1, hours: 6, mins: 42, kind: "Daily" },
+    "26 MAR 26": { days: 2, hours: 6, mins: 42, kind: "Daily" },
+    "27 MAR 26": { days: 3, hours: 6, mins: 42, kind: "Daily" },
+    "03 APR 26": { days: 10, hours: 6, mins: 42, kind: "Weekly" },
+    "10 APR 26": { days: 17, hours: 6, mins: 42, kind: "Weekly" },
+    "24 APR 26": { days: 31, hours: 6, mins: 42, kind: "Monthly" },
+    "29 MAY 26": { days: 66, hours: 6, mins: 42, kind: "Monthly" },
+    "26 JUN 26": { days: 94, hours: 18, mins: 13, kind: "Quarterly" },
+    "25 SEP 26": { days: 185, hours: 18, mins: 13, kind: "Quarterly" },
+    "25 DEC 26": { days: 276, hours: 18, mins: 13, kind: "Quarterly" },
+  };
+  const meta = EXPIRY_META[selectedExpiry] ?? {
+    days: 94,
+    hours: 18,
+    mins: 13,
+    kind: "Quarterly",
+  };
+  const underlyingFuture = spot + spot * 0.001;
+
+  return (
+    <div className="space-y-0">
+      {/* ── Top controls row: expiries + filters + CSV ── */}
+      <div className="flex items-center gap-2 px-1 pb-2 flex-wrap">
+        {/* Inline expiry pills */}
+        <div className="flex items-center gap-1 flex-wrap">
+          {inlineExpiries.map((exp) => (
+            <Button
+              key={exp}
+              variant={selectedExpiry === exp ? "default" : "outline"}
+              size="sm"
+              className={cn(
+                "h-7 px-2.5 text-[10px] font-mono whitespace-nowrap shrink-0",
+                selectedExpiry === exp && "shadow-sm",
+              )}
+              onClick={() => setSelectedExpiry(exp)}
+            >
+              {exp}
+              {EXPIRIES_WITH_POSITIONS.has(exp) && (
+                <Badge
+                  variant="secondary"
+                  className="ml-1 text-[8px] px-1 py-0 h-3.5"
+                >
+                  POS
+                </Badge>
+              )}
+            </Button>
+          ))}
+
+          {/* Overflow dropdown */}
+          {overflowExpiries.length > 0 && (
+            <Select
+              value={selectedIsOverflow ? selectedExpiry : ""}
+              onValueChange={(v) => setSelectedExpiry(v)}
+            >
+              <SelectTrigger
+                className={cn(
+                  "h-7 w-[110px] text-[10px] font-mono shrink-0",
+                  selectedIsOverflow &&
+                    "border-primary bg-primary text-primary-foreground",
+                )}
+              >
+                <SelectValue placeholder="More…" />
+              </SelectTrigger>
+              <SelectContent>
+                {overflowExpiries.map((exp) => (
+                  <SelectItem
+                    key={exp}
+                    value={exp}
+                    className="text-[11px] font-mono"
+                  >
+                    {exp}
+                    {EXPIRIES_WITH_POSITIONS.has(exp) && (
+                      <Badge
+                        variant="secondary"
+                        className="ml-1.5 text-[8px] px-1 py-0 h-3.5"
+                      >
+                        POS
+                      </Badge>
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
+        <Separator orientation="vertical" className="h-5 shrink-0" />
+
+        {/* Expiry stats — underlying future + time to expiry */}
+        <div className="flex items-center gap-3 text-xs">
+          <div className="flex items-center gap-1 whitespace-nowrap">
+            <span className="text-muted-foreground">Fut:</span>
+            <span className="font-mono font-semibold">
+              {formatUsd(underlyingFuture, 0)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 whitespace-nowrap">
+            <span className="text-muted-foreground">Exp:</span>
+            <span className="font-mono text-foreground">
+              {meta.days}d {meta.hours}h {meta.mins}m
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              ({meta.kind})
+            </span>
+          </div>
+        </div>
+
+        <Separator orientation="vertical" className="h-5 shrink-0" />
+
+        {/* Around ATM */}
         <div className="flex items-center gap-1.5">
           <Checkbox
             id="around-atm"
@@ -1128,11 +1295,13 @@ function OptionsChainTab({
           />
           <label
             htmlFor="around-atm"
-            className="text-xs text-muted-foreground cursor-pointer"
+            className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap"
           >
-            Around ATM
+            ±ATM
           </label>
         </div>
+
+        {/* Expected move */}
         <div className="flex items-center gap-1.5">
           <Checkbox
             id="expected-move"
@@ -1141,11 +1310,13 @@ function OptionsChainTab({
           />
           <label
             htmlFor="expected-move"
-            className="text-xs text-muted-foreground cursor-pointer"
+            className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap"
           >
-            Expected move
+            Exp. move
           </label>
         </div>
+
+        {/* USD / Coin toggle */}
         <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30">
           <Button
             variant={displayUsd ? "default" : "ghost"}
@@ -1164,8 +1335,14 @@ function OptionsChainTab({
             Coin
           </Button>
         </div>
+
+        {/* CSV — pushed to far right */}
         <div className="flex-1" />
-        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 text-[10px] gap-1 shrink-0"
+        >
           <Download className="size-3" />
           CSV
         </Button>
@@ -3628,47 +3805,122 @@ function TradFiOptionsChainTab({
   const expectedMoveExpiry =
     spot * (TRADFI_IV_INDEX[tradFiAsset] / 100) * Math.sqrt(0.25);
 
-  return (
-    <div className="space-y-3">
-      {/* Controls row */}
-      <div className="flex items-center gap-3 flex-wrap">
-        {/* Expiry picker */}
-        <Select value={selectedExpiry} onValueChange={setSelectedExpiry}>
-          <SelectTrigger className="h-8 w-36 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {TRADFI_EXPIRY_DATES.filter((e) => e !== "ALL").map((e) => (
-              <SelectItem key={e} value={e}>
-                {e}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+  // First 5 expiries inline, rest in overflow dropdown
+  const TF_INLINE = 5;
+  const tfInlineExpiries = TRADFI_EXPIRY_DATES.filter((e) => e !== "ALL").slice(
+    0,
+    TF_INLINE,
+  );
+  const tfOverflowExpiries = TRADFI_EXPIRY_DATES.filter(
+    (e) => e !== "ALL",
+  ).slice(TF_INLINE);
+  const tfSelectedIsOverflow = (
+    tfOverflowExpiries as readonly string[]
+  ).includes(selectedExpiry);
 
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span>Expected move:</span>
+  return (
+    <div className="space-y-0">
+      {/* ── Top controls row ── */}
+      <div className="flex items-center gap-2 px-1 pb-2 flex-wrap">
+        {/* Inline expiry pills */}
+        <div className="flex items-center gap-1 flex-wrap">
+          {tfInlineExpiries.map((exp) => (
+            <Button
+              key={exp}
+              variant={selectedExpiry === exp ? "default" : "outline"}
+              size="sm"
+              className="h-7 px-2.5 text-[10px] font-mono whitespace-nowrap shrink-0"
+              onClick={() => setSelectedExpiry(exp)}
+            >
+              {exp}
+            </Button>
+          ))}
+
+          {tfOverflowExpiries.length > 0 && (
+            <Select
+              value={tfSelectedIsOverflow ? selectedExpiry : ""}
+              onValueChange={(v) => setSelectedExpiry(v)}
+            >
+              <SelectTrigger
+                className={cn(
+                  "h-7 w-[110px] text-[10px] font-mono shrink-0",
+                  tfSelectedIsOverflow &&
+                    "border-primary bg-primary text-primary-foreground",
+                )}
+              >
+                <SelectValue placeholder="More…" />
+              </SelectTrigger>
+              <SelectContent>
+                {tfOverflowExpiries.map((exp) => (
+                  <SelectItem
+                    key={exp}
+                    value={exp}
+                    className="text-[11px] font-mono"
+                  >
+                    {exp}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
+        <Separator orientation="vertical" className="h-5 shrink-0" />
+
+        {/* Expected move display */}
+        <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+          <span>Exp. move:</span>
           <span className="font-mono font-medium text-foreground">
             ±${expectedMoveExpiry.toFixed(2)} (±
             {((expectedMoveExpiry / spot) * 100).toFixed(1)}%)
           </span>
         </div>
 
-        <Button
-          variant={aroundAtm ? "default" : "outline"}
-          size="sm"
-          className="h-7 text-xs ml-auto"
-          onClick={() => setAroundAtm(!aroundAtm)}
-        >
-          ±10% ATM
-        </Button>
+        <Separator orientation="vertical" className="h-5 shrink-0" />
+
+        {/* Around ATM */}
+        <div className="flex items-center gap-1.5">
+          <Checkbox
+            id="tf-around-atm"
+            checked={aroundAtm}
+            onCheckedChange={(c) => setAroundAtm(c === true)}
+          />
+          <label
+            htmlFor="tf-around-atm"
+            className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap"
+          >
+            ±ATM
+          </label>
+        </div>
+
+        {/* USD / $ toggle */}
+        <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30">
+          <Button
+            variant={displayUsd ? "default" : "ghost"}
+            size="sm"
+            className="h-6 px-2 text-[10px]"
+            onClick={() => setDisplayUsd(true)}
+          >
+            USD
+          </Button>
+          <Button
+            variant={!displayUsd ? "default" : "ghost"}
+            size="sm"
+            className="h-6 px-2 text-[10px]"
+            onClick={() => setDisplayUsd(false)}
+          >
+            Pts
+          </Button>
+        </div>
+
+        <div className="flex-1" />
         <Button
           variant="outline"
           size="sm"
-          className="h-7 text-xs"
-          onClick={() => setDisplayUsd(!displayUsd)}
+          className="h-7 text-[10px] gap-1 shrink-0"
         >
-          {displayUsd ? "Show $" : "Show $"}
+          <Download className="size-3" />
+          CSV
         </Button>
       </div>
 
@@ -4245,6 +4497,17 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
   const [selectedWatchlistSymbolId, setSelectedWatchlistSymbolId] =
     React.useState<string>("btc");
 
+  // Pinned asset pills (up to 5, user-configurable)
+  const [pinnedCryptoAssets, setPinnedCryptoAssets] = React.useState<Asset[]>([
+    "BTC",
+    "ETH",
+    "SOL",
+    "AVAX",
+  ]);
+  const [pinnedTradFiAssets, setPinnedTradFiAssets] = React.useState<
+    TradFiAsset[]
+  >(["SPY", "QQQ", "SPX"]);
+
   // When switching asset class, swap to the relevant default watchlist and reset tab
   function handleAssetClassChange(ac: AssetClass) {
     setAssetClass(ac);
@@ -4289,6 +4552,10 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
         setAsset={setAsset}
         tradFiAsset={tradFiAsset}
         setTradFiAsset={setTradFiAsset}
+        pinnedCryptoAssets={pinnedCryptoAssets}
+        setPinnedCryptoAssets={setPinnedCryptoAssets}
+        pinnedTradFiAssets={pinnedTradFiAssets}
+        setPinnedTradFiAssets={setPinnedTradFiAssets}
         settlement={settlement}
         setSettlement={setSettlement}
         market={market}
