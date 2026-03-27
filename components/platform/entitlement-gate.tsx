@@ -11,35 +11,41 @@ import { UpgradeCard } from "./upgrade-card";
 import type { Entitlement } from "@/lib/config/auth";
 
 interface EntitlementGateProps {
-  entitlement: Entitlement;
+  entitlement?: Entitlement;
+  entitlements?: string[];
   serviceName: string;
   description?: string;
   children: React.ReactNode;
 }
 
+const ENTITLEMENT_HIERARCHY: Record<string, string[]> = {
+  "data-basic": ["data-basic", "data-pro"],
+  "execution-basic": ["execution-basic", "execution-full"],
+};
+
+export function hasAnyEntitlement(required: string[], checker: (e: Entitlement) => boolean): boolean {
+  return required.some((e) => {
+    const acceptable = ENTITLEMENT_HIERARCHY[e] ?? [e];
+    return acceptable.some((a) => checker(a as Entitlement));
+  });
+}
+
 export function EntitlementGate({
   entitlement,
+  entitlements,
   serviceName,
   description,
   children,
 }: EntitlementGateProps) {
   const { hasEntitlement, isAdmin, isInternal } = useAuth();
 
-  // Admin and internal users see everything
   if (isAdmin() || isInternal()) return <>{children}</>;
 
-  // Check entitlement (with hierarchy: -full implies -basic, data-pro implies data-basic)
-  const entitlementHierarchy: Record<string, string[]> = {
-    "data-basic": ["data-basic", "data-pro"],
-    "execution-basic": ["execution-basic", "execution-full"],
-  };
-  const acceptableEntitlements = entitlementHierarchy[entitlement] ?? [
-    entitlement,
-  ];
-  if (acceptableEntitlements.some((e) => hasEntitlement(e as Entitlement)))
-    return <>{children}</>;
+  const requiredList = entitlements ?? (entitlement ? [entitlement] : []);
+  if (requiredList.length === 0) return <>{children}</>;
 
-  // Show upgrade card
+  if (hasAnyEntitlement(requiredList, hasEntitlement)) return <>{children}</>;
+
   return (
     <div className="p-8">
       <UpgradeCard

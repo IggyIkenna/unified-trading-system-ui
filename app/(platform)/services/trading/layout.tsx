@@ -6,11 +6,7 @@ import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,7 +17,9 @@ import { useServiceHealth } from "@/hooks/api/use-service-status";
 import { useOrders } from "@/hooks/api/use-orders";
 import { useNewsFeed, type NewsSeverity } from "@/hooks/api/use-news";
 import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import type { ImperativePanelHandle } from "react-resizable-panels";
+import { WorkspaceToolbar } from "@/components/widgets/workspace-toolbar";
 import {
   Activity,
   AlertTriangle,
@@ -47,8 +45,7 @@ const SEVERITY_DOT: Record<NewsSeverity, string> = {
 
 function TradingSidebar() {
   const { hasEntitlement, isAdmin, isInternal } = useAuth();
-  const canSeeInternalData =
-    isAdmin() || isInternal() || hasEntitlement("execution-basic");
+  const canSeeInternalData = isAdmin() || isInternal() || hasEntitlement("execution-basic");
 
   const { data: positionsSummary } = usePositionsSummary();
   const { data: alertsSummary } = useAlertsSummary();
@@ -61,9 +58,7 @@ function TradingSidebar() {
       <div className="h-full p-3 flex items-center justify-center">
         <div className="text-center space-y-2">
           <Lock className="size-5 text-muted-foreground mx-auto" />
-          <p className="text-xs text-muted-foreground">
-            Upgrade to view trading data
-          </p>
+          <p className="text-xs text-muted-foreground">Upgrade to view trading data</p>
         </div>
       </div>
     );
@@ -75,9 +70,7 @@ function TradingSidebar() {
   const ordersRaw = ordersData as unknown;
   const orders = Array.isArray(ordersRaw)
     ? ordersRaw
-    : (((ordersRaw as Record<string, unknown>)?.orders ?? []) as Array<
-        Record<string, unknown>
-      >);
+    : (((ordersRaw as Record<string, unknown>)?.orders ?? []) as Array<Record<string, unknown>>);
 
   const fmt = (v: unknown) => {
     const n = Number(v) || 0;
@@ -87,9 +80,7 @@ function TradingSidebar() {
   };
 
   const services = (health?.services ?? []) as Array<Record<string, unknown>>;
-  const healthyCount = services.filter(
-    (s) => s.status === "live" || s.status === "healthy",
-  ).length;
+  const healthyCount = services.filter((s) => s.status === "live" || s.status === "healthy").length;
 
   return (
     <div className="h-full space-y-3 p-3 overflow-y-auto">
@@ -103,28 +94,18 @@ function TradingSidebar() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
                 <div className="text-muted-foreground text-[10px]">Open</div>
-                <div className="font-mono font-medium">
-                  {Number(ps?.totalPositions) || 0}
-                </div>
+                <div className="font-mono font-medium">{Number(ps?.totalPositions) || 0}</div>
               </div>
               <div>
-                <div className="text-muted-foreground text-[10px]">
-                  Exposure
-                </div>
-                <div className="font-mono font-medium">
-                  {fmt(ps?.totalExposure)}
-                </div>
+                <div className="text-muted-foreground text-[10px]">Exposure</div>
+                <div className="font-mono font-medium">{fmt(ps?.totalExposure)}</div>
               </div>
               <div>
-                <div className="text-muted-foreground text-[10px]">
-                  Unrealised P&L
-                </div>
+                <div className="text-muted-foreground text-[10px]">Unrealised P&L</div>
                 <div
                   className={cn(
                     "font-mono font-medium",
-                    Number(ps?.totalUnrealizedPnl) >= 0
-                      ? "text-emerald-400"
-                      : "text-rose-400",
+                    Number(ps?.totalUnrealizedPnl) >= 0 ? "text-emerald-400" : "text-rose-400",
                   )}
                 >
                   {fmt(ps?.totalUnrealizedPnl)}
@@ -132,9 +113,7 @@ function TradingSidebar() {
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Margin</div>
-                <div className="font-mono font-medium">
-                  {fmt(ps?.totalMargin)}
-                </div>
+                <div className="font-mono font-medium">{fmt(ps?.totalMargin)}</div>
               </div>
             </div>
           </CardContent>
@@ -150,30 +129,20 @@ function TradingSidebar() {
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <div className="text-muted-foreground text-[10px]">
-                  Critical
-                </div>
-                <div className="font-mono font-medium text-rose-400">
-                  {Number(als?.critical) || 0}
-                </div>
+                <div className="text-muted-foreground text-[10px]">Critical</div>
+                <div className="font-mono font-medium text-rose-400">{Number(als?.critical) || 0}</div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Warning</div>
-                <div className="font-mono font-medium text-amber-400">
-                  {Number(als?.warning) || 0}
-                </div>
+                <div className="font-mono font-medium text-amber-400">{Number(als?.warning) || 0}</div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Total</div>
-                <div className="font-mono font-medium">
-                  {Number(als?.total) || 0}
-                </div>
+                <div className="font-mono font-medium">{Number(als?.total) || 0}</div>
               </div>
               <div>
                 <div className="text-muted-foreground text-[10px]">Unacked</div>
-                <div className="font-mono font-medium">
-                  {Number(als?.unacknowledged) || 0}
-                </div>
+                <div className="font-mono font-medium">{Number(als?.unacknowledged) || 0}</div>
               </div>
             </div>
           </CardContent>
@@ -188,39 +157,25 @@ function TradingSidebar() {
               <TrendingUp className="size-3" /> Recent Fills
             </div>
             <div className="space-y-1">
-              {(orders as Array<Record<string, unknown>>)
-                .slice(0, 3)
-                .map((o, i) => (
-                  <div
-                    key={String(o.order_id ?? i)}
-                    className="flex items-center justify-between text-[10px]"
-                  >
-                    <div className="flex items-center gap-1">
-                      {String(o.side) === "BUY" ? (
-                        <ArrowUpRight className="size-2.5 text-emerald-400" />
-                      ) : (
-                        <ArrowDownRight className="size-2.5 text-rose-400" />
-                      )}
-                      <span className="font-mono">
-                        {String(o.instrument ?? "")}
-                      </span>
-                    </div>
-                    <span
-                      className={cn(
-                        "font-mono",
-                        String(o.status) === "FILLED"
-                          ? "text-emerald-400"
-                          : "text-amber-400",
-                      )}
-                    >
-                      {String(o.status ?? "")}
-                    </span>
+              {(orders as Array<Record<string, unknown>>).slice(0, 3).map((o, i) => (
+                <div key={String(o.order_id ?? i)} className="flex items-center justify-between text-[10px]">
+                  <div className="flex items-center gap-1">
+                    {String(o.side) === "BUY" ? (
+                      <ArrowUpRight className="size-2.5 text-emerald-400" />
+                    ) : (
+                      <ArrowDownRight className="size-2.5 text-rose-400" />
+                    )}
+                    <span className="font-mono">{String(o.instrument ?? "")}</span>
                   </div>
-                ))}
-              {orders.length === 0 && (
-                <div className="text-[10px] text-muted-foreground text-center py-2">
-                  No recent fills
+                  <span
+                    className={cn("font-mono", String(o.status) === "FILLED" ? "text-emerald-400" : "text-amber-400")}
+                  >
+                    {String(o.status ?? "")}
+                  </span>
                 </div>
+              ))}
+              {orders.length === 0 && (
+                <div className="text-[10px] text-muted-foreground text-center py-2">No recent fills</div>
               )}
             </div>
           </CardContent>
@@ -236,9 +191,7 @@ function TradingSidebar() {
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div>
-                <div className="text-muted-foreground text-[10px]">
-                  Services
-                </div>
+                <div className="text-muted-foreground text-[10px]">Services</div>
                 <div className="font-mono font-medium">{services.length}</div>
               </div>
               <div>
@@ -260,12 +213,8 @@ function TradingSidebar() {
               <Wallet className="size-3" /> Accounts
             </div>
             <div className="text-xs">
-              <div className="text-muted-foreground text-[10px]">
-                Total Balance
-              </div>
-              <div className="font-mono font-medium">
-                {fmt(ps?.totalExposure ? Number(ps.totalExposure) * 1.8 : 0)}
-              </div>
+              <div className="text-muted-foreground text-[10px]">Total Balance</div>
+              <div className="font-mono font-medium">{fmt(ps?.totalExposure ? Number(ps.totalExposure) * 1.8 : 0)}</div>
             </div>
           </CardContent>
         </Card>
@@ -281,26 +230,15 @@ function TradingSidebar() {
             <div className="space-y-2">
               {(newsItems ?? []).slice(0, 4).map((item) => (
                 <div key={item.id} className="flex gap-2 items-start">
-                  <span
-                    className={cn(
-                      "mt-1.5 size-1.5 rounded-full shrink-0",
-                      SEVERITY_DOT[item.severity],
-                    )}
-                  />
+                  <span className={cn("mt-1.5 size-1.5 rounded-full shrink-0", SEVERITY_DOT[item.severity])} />
                   <div className="min-w-0">
-                    <div className="text-[10px] leading-snug line-clamp-2 text-foreground/80">
-                      {item.title}
-                    </div>
-                    <div className="text-[9px] text-muted-foreground mt-0.5">
-                      {item.source}
-                    </div>
+                    <div className="text-[10px] leading-snug line-clamp-2 text-foreground/80">{item.title}</div>
+                    <div className="text-[9px] text-muted-foreground mt-0.5">{item.source}</div>
                   </div>
                 </div>
               ))}
               {(newsItems ?? []).length === 0 && (
-                <div className="text-[10px] text-muted-foreground text-center py-1">
-                  No news
-                </div>
+                <div className="text-[10px] text-muted-foreground text-center py-1">No news</div>
               )}
             </div>
           </CardContent>
@@ -310,15 +248,22 @@ function TradingSidebar() {
   );
 }
 
-export default function TradingServiceLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const WIDGET_TABS = ["overview", "terminal"];
+
+function useWidgetTab(): string | null {
+  const pathname = usePathname();
+  for (const tab of WIDGET_TABS) {
+    if (pathname.includes(`/trading/${tab}`)) return tab;
+  }
+  return null;
+}
+
+export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { scope, setMode } = useGlobalScope();
   const quickViewRef = useRef<ImperativePanelHandle>(null);
   const [quickViewCollapsed, setQuickViewCollapsed] = useState(false);
+  const widgetTab = useWidgetTab();
 
   return (
     <div className="flex flex-col h-full">
@@ -331,26 +276,18 @@ export default function TradingServiceLayout({
       />
       {/* Main area: vertical nav + resizable content/quick-view */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        <TradingVerticalNav
-          tabs={TRADING_TABS}
-          entitlements={user?.entitlements}
-          bottomSlot={<LiveAsOfToggle />}
-        />
+        <TradingVerticalNav tabs={TRADING_TABS} entitlements={user?.entitlements} bottomSlot={<LiveAsOfToggle />} />
 
-        <ResizablePanelGroup
-          direction="horizontal"
-          autoSaveId="trading-layout-v2"
-          className="flex-1 min-w-0"
-        >
+        <ResizablePanelGroup direction="horizontal" autoSaveId="trading-layout-v2" className="flex-1 min-w-0">
           {/* Page content */}
           <ResizablePanel defaultSize={82} minSize={50}>
-            <div className="h-full overflow-auto">
-              <EntitlementGate
-                entitlement="execution-basic"
-                serviceName="Trading"
-              >
-                <ErrorBoundary>{children}</ErrorBoundary>
-              </EntitlementGate>
+            <div id="widget-fullscreen-boundary" className="h-full flex flex-col overflow-hidden relative">
+              {widgetTab && <WorkspaceToolbar tab={widgetTab} />}
+              <div className="flex-1 overflow-auto">
+                <EntitlementGate entitlement="execution-basic" serviceName="Trading">
+                  <ErrorBoundary>{children}</ErrorBoundary>
+                </EntitlementGate>
+              </div>
             </div>
           </ResizablePanel>
 
@@ -389,22 +326,10 @@ export default function TradingServiceLayout({
                     }
                   }}
                   className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                  title={
-                    quickViewCollapsed
-                      ? "Expand Quick View"
-                      : "Collapse Quick View"
-                  }
-                  aria-label={
-                    quickViewCollapsed
-                      ? "Expand Quick View"
-                      : "Collapse Quick View"
-                  }
+                  title={quickViewCollapsed ? "Expand Quick View" : "Collapse Quick View"}
+                  aria-label={quickViewCollapsed ? "Expand Quick View" : "Collapse Quick View"}
                 >
-                  {quickViewCollapsed ? (
-                    <PanelRightOpen className="size-4" />
-                  ) : (
-                    <PanelRightClose className="size-4" />
-                  )}
+                  {quickViewCollapsed ? <PanelRightOpen className="size-4" /> : <PanelRightClose className="size-4" />}
                 </button>
               </div>
               {/* Content — hidden when collapsed */}
