@@ -5,6 +5,9 @@ const nextConfig = {
     // Current generated file has syntax errors from openapi-typescript
     ignoreBuildErrors: true,
   },
+  turbopack: {
+    root: import.meta.dirname,
+  },
   experimental: {
     turbopackFileSystemCacheForBuild: true,
   },
@@ -18,6 +21,7 @@ const nextConfig = {
     return [
       {
         // HTML pages — always revalidate so deploys are visible immediately
+        // Next.js already handles /_next/static/* caching (immutable) natively
         source: "/((?!_next/static|_next/image|favicon|images/).*)",
         headers: [
           {
@@ -45,10 +49,8 @@ const nextConfig = {
 
   async rewrites() {
     if (process.env.NEXT_PUBLIC_MOCK_API === "true") return [];
-    const apiBase =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8030";
-    const authBase =
-      process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8200";
+    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8030";
+    const authBase = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8200";
     return [
       { source: "/api/auth/:path*", destination: `${authBase}/:path*` },
       { source: "/api/:path*", destination: `${apiBase}/:path*` },
