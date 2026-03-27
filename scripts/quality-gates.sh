@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Quality Gates Stub — TypeScript/React UI
-# SSOT: unified-trading-codex/06-coding-standards/quality-gates-ui-template.sh
+# SSOT: unified-trading-pm/codex/06-coding-standards/quality-gates-ui-template.sh
 #
 # Rolled out via: python3 unified-trading-pm/scripts/propagation/rollout-quality-gates-unified.py
 # Do NOT edit per-repo — edit base-ui.sh in PM and re-run rollout to propagate.

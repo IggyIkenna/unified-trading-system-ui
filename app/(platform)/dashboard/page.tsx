@@ -40,6 +40,7 @@ const STAGE_ORDER: LifecycleStage[] = [
   "build",
   "promote",
   "run",
+  "observe",
   "manage",
   "report",
 ];

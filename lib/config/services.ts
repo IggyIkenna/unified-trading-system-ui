@@ -1,9 +1,9 @@
 /**
- * Service registry — defines the 10 platform services, their lifecycle stages,
+ * Service registry — defines the 8 platform services, their lifecycle stages,
  * entitlements, and routing.
  *
  * SSOT: CITADEL_VISION_2026_03_22.md § Service Architecture
- * Lifecycle: Acquire → Build → Promote → Run → Execute → Observe → Manage → Report
+ * Lifecycle: Acquire → Build → Promote → Run → Observe → Report
  *
  * Each service maps to exactly one lifecycle stage and has a single entry route.
  * Navigation goes directly to the first tab of each service (no card landing pages).
@@ -87,17 +87,6 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     internalOnly: false,
   },
   {
-    key: "execution",
-    label: "Execution",
-    description:
-      "Execution analytics, algo comparison, venue connectivity, TCA, and custom execution strategies.",
-    href: "/services/execution/overview",
-    lifecycleStage: "execute",
-    requiredEntitlements: ["execution-basic"],
-    icon: "Zap",
-    internalOnly: false,
-  },
-  {
     key: "observe",
     label: "Observe",
     description:
@@ -106,17 +95,6 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     lifecycleStage: "observe",
     requiredEntitlements: ["execution-basic"],
     icon: "Eye",
-    internalOnly: false,
-  },
-  {
-    key: "manage",
-    label: "Manage",
-    description:
-      "Client onboarding, mandates, fee schedules, user management, and compliance controls.",
-    href: "/services/manage/clients",
-    lifecycleStage: "manage",
-    requiredEntitlements: ["reporting"],
-    icon: "Users",
     internalOnly: false,
   },
   {
@@ -149,7 +127,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     key: "admin",
     label: "Admin & Ops",
     description:
-      "System administration, deployments, DevOps, batch jobs, service registry, and operational monitoring.",
+      "Client onboarding, mandates, fee schedules, user management, deployments, service registry, and operational monitoring.",
     href: "/admin",
     lifecycleStage: "manage",
     requiredEntitlements: ["*"],
