@@ -4,64 +4,78 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Clock, Ban, DollarSign } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Ban,
+  DollarSign,
+  TrendingUp,
+  ChevronRight,
+  Layers,
+} from "lucide-react";
 import type { Bet, BetStatus, AccumulatorLeg } from "./types";
 import { MOCK_BETS } from "./mock-data";
 import { fmtOdds, fmtCurrency, fmtRelativeTime } from "./helpers";
-import { LeagueBadge, KpiTile, EmptyState, SectionHeader } from "./shared";
+import { LeagueBadge, KpiTile, EmptyState } from "./shared";
 import { useToast } from "@/hooks/use-toast";
 
-// ─── Bet Status Badge ─────────────────────────────────────────────────────────
+// ─── Status config ────────────────────────────────────────────────────────────
 
 const BET_STATUS_CONFIG: Record<
   BetStatus,
-  { label: string; className: string; icon: React.ElementType }
+  { label: string; colour: string; icon: React.ElementType }
 > = {
   open: {
     label: "Open",
-    className: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    colour: "text-[#22d3ee] border-[#22d3ee]/30 bg-[#22d3ee]/10",
     icon: Clock,
   },
   won: {
     label: "Won",
-    className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    colour: "text-[#4ade80] border-[#4ade80]/30 bg-[#4ade80]/10",
     icon: CheckCircle2,
   },
   lost: {
     label: "Lost",
-    className: "bg-red-500/15 text-red-400 border-red-500/30",
+    colour: "text-red-400 border-red-400/30 bg-red-400/10",
     icon: XCircle,
   },
   void: {
     label: "Void",
-    className: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+    colour: "text-amber-400 border-amber-400/30 bg-amber-400/10",
     icon: Ban,
   },
   cashed_out: {
     label: "Cashed Out",
-    className: "bg-purple-500/15 text-purple-400 border-purple-500/30",
+    colour: "text-purple-400 border-purple-400/30 bg-purple-400/10",
     icon: DollarSign,
   },
 };
 
-function BetStatusBadge({ status }: { status: BetStatus }) {
-  const cfg = BET_STATUS_CONFIG[status];
-  const Icon = cfg.icon;
+function BetStatusPill({
+  status,
+  className,
+}: {
+  status: BetStatus;
+  className?: string;
+}) {
+  const { label, colour, icon: Icon } = BET_STATUS_CONFIG[status];
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold",
-        cfg.className,
+        "inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 text-[9px] font-black border uppercase tracking-wider",
+        colour,
+        className,
       )}
     >
       <Icon className="size-2.5" />
-      {cfg.label}
+      {label}
     </span>
   );
 }
 
-// ─── KPI Summary Row ──────────────────────────────────────────────────────────
+// ─── KPI Summary ─────────────────────────────────────────────────────────────
 
 function BetsSummary({ bets }: { bets: Bet[] }) {
   const totalStaked = bets.reduce((s, b) => s + b.stake, 0);
@@ -75,123 +89,175 @@ function BetsSummary({ bets }: { bets: Bet[] }) {
     .reduce((s, b) => s + b.stake, 0);
 
   return (
-    <div className="grid grid-cols-4 gap-2 p-3 border-b">
+    <div className="grid grid-cols-4 gap-2 p-3 border-b border-zinc-800">
       <KpiTile label="Total Staked" value={fmtCurrency(totalStaked)} />
       <KpiTile
-        label="Total P&L"
-        value={totalPnl === 0 ? "—" : fmtCurrency(totalPnl)}
+        label="P&L"
+        value={
+          totalPnl === 0
+            ? "—"
+            : `${totalPnl > 0 ? "+" : ""}${fmtCurrency(totalPnl)}`
+        }
         valueClassName={
           totalPnl > 0
-            ? "text-emerald-500"
+            ? "text-[#4ade80]"
             : totalPnl < 0
-              ? "text-red-500"
-              : undefined
+              ? "text-red-400"
+              : "text-zinc-400"
         }
       />
       <KpiTile
         label="Win Rate"
         value={winRate !== "—" ? `${winRate}%` : "—"}
-        subtext={`${wins}/${settled.length} settled`}
+        subtext={`${wins} of ${settled.length} settled`}
       />
       <KpiTile label="Open Exposure" value={fmtCurrency(openExposure)} />
     </div>
   );
 }
 
-// ─── Bet Row ──────────────────────────────────────────────────────────────────
+// ─── Single Bet Card (used in Open + Settled) ─────────────────────────────────
 
-interface BetRowProps {
+interface BetCardProps {
   bet: Bet;
   showPnl?: boolean;
   showCashOut?: boolean;
 }
 
-function BetRow({ bet, showPnl = false, showCashOut = false }: BetRowProps) {
+function BetCard({ bet, showPnl = false, showCashOut = false }: BetCardProps) {
   const { toast } = useToast();
+  const isWon = bet.status === "won";
+  const isLost = bet.status === "lost";
+  const isOpen = bet.status === "open";
 
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 py-2.5 px-3 border-b border-border/40 last:border-0 hover:bg-muted/10 transition-colors">
-      {/* Main info */}
-      <div className="flex flex-col gap-1 min-w-0">
+    <div
+      className={cn(
+        "relative rounded-xl border mx-3 my-1.5 overflow-hidden transition-all",
+        isOpen
+          ? "border-zinc-700/60 bg-[#0f0f0f] hover:border-zinc-600"
+          : isWon
+            ? "border-[#4ade80]/20 bg-[#0d140d]/80"
+            : isLost
+              ? "border-red-500/20 bg-[#140d0d]/80"
+              : "border-zinc-800/50 bg-zinc-900/20 opacity-70",
+      )}
+    >
+      {/* Side accent stripe */}
+      <div
+        className={cn(
+          "absolute left-0 top-0 bottom-0 w-0.5",
+          isOpen
+            ? "bg-[#22d3ee]"
+            : isWon
+              ? "bg-[#4ade80]"
+              : isLost
+                ? "bg-red-500"
+                : "bg-zinc-700",
+        )}
+      />
+
+      <div className="pl-4 pr-3 py-3 flex flex-col gap-2">
+        {/* Top row: league + match + status */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <LeagueBadge league={bet.league} />
-          <span className="text-xs font-semibold truncate">
+          <span className="text-xs font-bold text-white">
             {bet.fixtureName}
           </span>
+          <BetStatusPill status={bet.status} className="ml-auto" />
         </div>
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground flex-wrap">
-          <span>{bet.market}</span>
-          <span>·</span>
-          <span className="font-medium text-foreground">{bet.outcome}</span>
-          <span>·</span>
-          <span>{bet.bookmaker}</span>
-          <span>·</span>
-          <span>{fmtRelativeTime(bet.placedAt)}</span>
-        </div>
-      </div>
 
-      {/* Status badge */}
-      <BetStatusBadge status={bet.status} />
+        {/* Market + outcome */}
+        <div className="flex items-center gap-1.5 text-[11px]">
+          <span className="text-zinc-500">{bet.market}</span>
+          <ChevronRight className="size-3 text-zinc-700" />
+          <span className="font-bold text-white">{bet.outcome}</span>
+          <span className="text-zinc-600">@</span>
+          <span className="text-[10px] text-zinc-500">{bet.bookmaker}</span>
+        </div>
 
-      {/* Numeric row */}
-      <div className="flex items-center gap-4 text-xs flex-wrap">
-        <div className="flex flex-col">
-          <span className="text-[9px] text-muted-foreground">Odds</span>
-          <span className="font-bold tabular-nums">{fmtOdds(bet.odds)}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] text-muted-foreground">Stake</span>
-          <span className="tabular-nums">{fmtCurrency(bet.stake)}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] text-muted-foreground">
-            Potential Return
-          </span>
-          <span className="tabular-nums">
-            {fmtCurrency(bet.potentialReturn)}
-          </span>
-        </div>
-        {bet.kellyStake && (
-          <div className="flex flex-col">
-            <span className="text-[9px] text-muted-foreground">Kelly</span>
-            <span className="tabular-nums text-muted-foreground">
-              {fmtCurrency(bet.kellyStake)}
+        {/* Odds + stake + return */}
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+              Odds
+            </span>
+            <span className="text-lg font-black text-white tabular-nums leading-tight">
+              {fmtOdds(bet.odds)}
             </span>
           </div>
-        )}
-        {showPnl && bet.pnl != null && (
+          <div className="h-8 w-px bg-zinc-800" />
           <div className="flex flex-col">
-            <span className="text-[9px] text-muted-foreground">P&L</span>
-            <span
-              className={cn(
-                "font-bold tabular-nums",
-                bet.pnl > 0 ? "text-emerald-500" : "text-red-500",
-              )}
+            <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+              Stake
+            </span>
+            <span className="text-sm font-bold tabular-nums text-zinc-300">
+              {fmtCurrency(bet.stake)}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+              Return
+            </span>
+            <span className="text-sm font-bold tabular-nums text-zinc-300">
+              {fmtCurrency(bet.potentialReturn)}
+            </span>
+          </div>
+          {bet.kellyStake && (
+            <div className="flex flex-col">
+              <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+                Kelly
+              </span>
+              <span className="text-sm tabular-nums text-zinc-500">
+                {fmtCurrency(bet.kellyStake)}
+              </span>
+            </div>
+          )}
+          {showPnl && bet.pnl != null && (
+            <>
+              <div className="h-8 w-px bg-zinc-800" />
+              <div className="flex flex-col">
+                <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+                  P&L
+                </span>
+                <span
+                  className={cn(
+                    "text-sm font-black tabular-nums",
+                    bet.pnl > 0 ? "text-[#4ade80]" : "text-red-400",
+                  )}
+                >
+                  {bet.pnl > 0 ? "+" : ""}
+                  {fmtCurrency(bet.pnl)}
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Footer: time + cash out */}
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-zinc-600">
+            {fmtRelativeTime(bet.placedAt)}
+          </span>
+          {showCashOut && isOpen && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="ml-auto h-7 text-[10px] px-3 font-bold border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white"
+              onClick={() =>
+                toast({
+                  title: "Cashed Out",
+                  description: `${bet.fixtureName} — ${fmtCurrency(bet.stake)} returned`,
+                  duration: 3000,
+                })
+              }
             >
-              {bet.pnl > 0 ? "+" : ""}
-              {fmtCurrency(bet.pnl)}
-            </span>
-          </div>
-        )}
+              <DollarSign className="size-3 mr-1" />
+              Cash Out
+            </Button>
+          )}
+        </div>
       </div>
-
-      {/* Cash-out button */}
-      {showCashOut && bet.status === "open" && (
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-6 text-[10px] px-2 self-center"
-          onClick={() =>
-            toast({
-              title: "Cash Out",
-              description: `${bet.fixtureName} — ${fmtCurrency(bet.stake)} returned`,
-              duration: 3000,
-            })
-          }
-        >
-          Cash Out
-        </Button>
-      )}
     </div>
   );
 }
@@ -200,11 +266,11 @@ function BetRow({ bet, showPnl = false, showCashOut = false }: BetRowProps) {
 
 function OpenBetsTab({ bets }: { bets: Bet[] }) {
   const open = bets.filter((b) => b.status === "open" && !b.isAccumulator);
-  if (open.length === 0) return <EmptyState message="No open bets" />;
+  if (open.length === 0) return <EmptyState message="No open single bets" />;
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col py-1">
       {open.map((bet) => (
-        <BetRow key={bet.id} bet={bet} showCashOut />
+        <BetCard key={bet.id} bet={bet} showCashOut />
       ))}
     </div>
   );
@@ -236,16 +302,16 @@ function SettledBetsTab({ bets }: { bets: Bet[] }) {
 
   return (
     <div className="flex flex-col">
-      <div className="flex items-center gap-1 px-3 py-2 border-b bg-muted/10">
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-zinc-800">
         {FILTERS.map(({ value, label }) => (
           <button
             key={value}
             onClick={() => setFilter(value)}
             className={cn(
-              "px-2.5 py-0.5 text-xs rounded-full border transition-colors",
+              "px-2.5 py-1 text-[10px] font-bold rounded-sm transition-colors",
               filter === value
-                ? "bg-primary text-primary-foreground border-primary"
-                : "border-border text-muted-foreground hover:text-foreground",
+                ? "bg-zinc-700 text-white"
+                : "text-zinc-500 hover:text-zinc-300",
             )}
           >
             {label}
@@ -255,27 +321,26 @@ function SettledBetsTab({ bets }: { bets: Bet[] }) {
       {filtered.length === 0 ? (
         <EmptyState message="No settled bets" />
       ) : (
-        filtered.map((bet) => <BetRow key={bet.id} bet={bet} showPnl />)
+        <div className="flex flex-col py-1">
+          {filtered.map((bet) => (
+            <BetCard key={bet.id} bet={bet} showPnl />
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
-// ─── Accumulators ─────────────────────────────────────────────────────────────
+// ─── Accumulator Card ─────────────────────────────────────────────────────────
 
-const LEG_STATUS_ICONS: Record<AccumulatorLeg["legStatus"], React.ElementType> =
-  {
-    pending: Clock,
-    won: CheckCircle2,
-    lost: XCircle,
-    void: Ban,
-  };
-
-const LEG_STATUS_COLOURS: Record<AccumulatorLeg["legStatus"], string> = {
-  pending: "text-muted-foreground",
-  won: "text-emerald-500",
-  lost: "text-red-500",
-  void: "text-amber-500",
+const LEG_STATUS_CONFIG: Record<
+  AccumulatorLeg["legStatus"],
+  { icon: React.ElementType; colour: string }
+> = {
+  pending: { icon: Clock, colour: "text-zinc-500" },
+  won: { icon: CheckCircle2, colour: "text-[#4ade80]" },
+  lost: { icon: XCircle, colour: "text-red-400" },
+  void: { icon: Ban, colour: "text-amber-400" },
 };
 
 function AccumulatorCard({ bet }: { bet: Bet }) {
@@ -283,90 +348,102 @@ function AccumulatorCard({ bet }: { bet: Bet }) {
   const legs = bet.accumulatorLegs ?? [];
   const allWon = legs.every((l) => l.legStatus === "won");
   const anyLost = legs.some((l) => l.legStatus === "lost");
-  const allPending = legs.every((l) => l.legStatus === "pending");
-
-  const overallColour = allWon
-    ? "border-emerald-500/30 bg-emerald-500/5"
-    : anyLost
-      ? "border-red-500/30 bg-red-500/5"
-      : "border-border";
 
   return (
     <div
       className={cn(
-        "rounded-lg border p-3 mx-3 my-1.5 flex flex-col gap-2",
-        overallColour,
+        "relative rounded-xl border mx-3 my-1.5 overflow-hidden",
+        allWon
+          ? "border-[#4ade80]/30 bg-[#0d140d]"
+          : anyLost
+            ? "border-red-500/20 bg-[#140d0d]/80"
+            : "border-zinc-700/60 bg-[#0f0f0f]",
       )}
     >
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold">{bet.fixtureName}</span>
-        <BetStatusBadge status={bet.status} />
-        <span className="ml-auto text-[10px] text-muted-foreground">
-          {fmtRelativeTime(bet.placedAt)}
-        </span>
-      </div>
-
-      {/* Legs */}
-      <div className="flex flex-col gap-1">
-        {legs.map((leg, i) => {
-          const Icon = LEG_STATUS_ICONS[leg.legStatus];
-          return (
-            <div key={i} className="flex items-center gap-1.5 text-[11px]">
-              <Icon
-                className={cn(
-                  "size-3 shrink-0",
-                  LEG_STATUS_COLOURS[leg.legStatus],
-                )}
-              />
-              <span className="text-muted-foreground truncate">
-                {leg.fixtureName}
-              </span>
-              <span className="mx-1 text-muted-foreground/40">·</span>
-              <span className="font-medium">{leg.outcome}</span>
-              <span className="ml-auto tabular-nums font-bold">
-                {fmtOdds(leg.odds)}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center gap-4 pt-1 border-t text-xs">
-        <div className="flex flex-col">
-          <span className="text-[9px] text-muted-foreground">
-            Combined odds
-          </span>
-          <span className="font-bold tabular-nums">{fmtOdds(bet.odds)}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] text-muted-foreground">Stake</span>
-          <span className="tabular-nums">{fmtCurrency(bet.stake)}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] text-muted-foreground">
-            Potential Return
-          </span>
-          <span className="tabular-nums">
-            {fmtCurrency(bet.potentialReturn)}
-          </span>
-        </div>
-        {bet.status === "open" && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="ml-auto h-6 text-[10px] px-2"
-            onClick={() =>
-              toast({
-                title: "Cash Out",
-                description: `Accumulator — ${fmtCurrency(bet.stake)} returned`,
-                duration: 3000,
-              })
-            }
-          >
-            Cash Out
-          </Button>
+      {/* Accent stripe */}
+      <div
+        className={cn(
+          "absolute left-0 top-0 bottom-0 w-0.5",
+          allWon ? "bg-[#4ade80]" : anyLost ? "bg-red-500" : "bg-[#22d3ee]",
         )}
+      />
+
+      <div className="pl-4 pr-3 py-3 flex flex-col gap-2.5">
+        {/* Header */}
+        <div className="flex items-center gap-2">
+          <Layers className="size-3.5 text-zinc-500 shrink-0" />
+          <span className="text-xs font-bold text-white">
+            {bet.fixtureName}
+          </span>
+          <BetStatusPill status={bet.status} className="ml-auto" />
+        </div>
+
+        {/* Legs tree */}
+        <div className="flex flex-col gap-1">
+          {legs.map((leg, i) => {
+            const { icon: Icon, colour } = LEG_STATUS_CONFIG[leg.legStatus];
+            return (
+              <div key={i} className="flex items-center gap-2 text-[11px]">
+                <Icon className={cn("size-3 shrink-0", colour)} />
+                <span className="text-zinc-400 truncate flex-1">
+                  {leg.fixtureName}
+                </span>
+                <span className="text-zinc-500 mx-1">·</span>
+                <span className="font-semibold text-zinc-300">
+                  {leg.outcome}
+                </span>
+                <span className="ml-auto font-black tabular-nums text-white">
+                  {fmtOdds(leg.odds)}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Summary */}
+        <div className="flex items-center gap-4 border-t border-zinc-800/60 pt-2">
+          <div className="flex flex-col">
+            <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+              Combined
+            </span>
+            <span className="text-lg font-black text-white tabular-nums">
+              {fmtOdds(bet.odds)}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+              Stake
+            </span>
+            <span className="text-sm font-bold tabular-nums text-zinc-300">
+              {fmtCurrency(bet.stake)}
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] text-zinc-600 uppercase tracking-widest">
+              Return
+            </span>
+            <span className="text-sm font-bold tabular-nums text-zinc-300">
+              {fmtCurrency(bet.potentialReturn)}
+            </span>
+          </div>
+          {bet.status === "open" && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="ml-auto h-7 text-[10px] px-3 font-bold border-zinc-700 text-zinc-300 hover:border-zinc-500"
+              onClick={() =>
+                toast({
+                  title: "Cashed Out",
+                  description: `Accumulator — ${fmtCurrency(bet.stake)} returned`,
+                  duration: 3000,
+                })
+              }
+            >
+              <DollarSign className="size-3 mr-1" />
+              Cash Out
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -376,7 +453,7 @@ function AccumulatorsTab({ bets }: { bets: Bet[] }) {
   const accas = bets.filter((b) => b.isAccumulator);
   if (accas.length === 0) return <EmptyState message="No accumulators" />;
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col py-1">
       {accas.map((b) => (
         <AccumulatorCard key={b.id} bet={b} />
       ))}
@@ -394,19 +471,27 @@ export function MyBetsTab() {
       <BetsSummary bets={bets} />
 
       <Tabs defaultValue="open" className="flex flex-col flex-1 min-h-0">
-        <TabsList className="mx-3 mt-2 h-8 bg-muted/40 shrink-0">
-          <TabsTrigger value="open" className="text-xs flex-1">
-            Open
-          </TabsTrigger>
-          <TabsTrigger value="settled" className="text-xs flex-1">
-            Settled
-          </TabsTrigger>
-          <TabsTrigger value="accumulators" className="text-xs flex-1">
-            Accumulators
-          </TabsTrigger>
-        </TabsList>
+        <div className="px-3 pt-2 border-b border-zinc-800 shrink-0">
+          <TabsList className="h-8 bg-zinc-900/60 w-full">
+            <TabsTrigger value="open" className="flex-1 text-[10px] font-bold">
+              Open
+            </TabsTrigger>
+            <TabsTrigger
+              value="settled"
+              className="flex-1 text-[10px] font-bold"
+            >
+              Settled
+            </TabsTrigger>
+            <TabsTrigger
+              value="accumulators"
+              className="flex-1 text-[10px] font-bold"
+            >
+              Accumulators
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <div className="flex-1 overflow-auto mt-2">
+        <div className="flex-1 overflow-auto">
           <TabsContent value="open" className="mt-0">
             <OpenBetsTab bets={bets} />
           </TabsContent>

@@ -2,126 +2,203 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Cloud, Wind, Zap } from "lucide-react";
-import type { Fixture } from "./types";
+import { AlertTriangle, Cloud, Zap, Clock, Flag } from "lucide-react";
+import type { Fixture, MatchStats } from "./types";
 import { isLive, isCompleted, fmtOdds } from "./helpers";
-import {
-  StatusPill,
-  LeagueBadge,
-  MatchStatsPanel,
-  ArbBadge,
-  FormDots,
-} from "./shared";
+import { StatusPill, LeagueBadge, ArbBadge, FormDots } from "./shared";
 import { MOCK_ARB_STREAM, getBestOdds } from "./mock-data";
 
-// ─── Event Timeline ───────────────────────────────────────────────────────────
-// Compact timeline — shows last 5 events
+const CREST_COLOURS: Record<string, string> = {
+  blue: "from-blue-600 to-blue-900",
+  red: "from-red-600 to-red-900",
+  white: "from-zinc-300 to-zinc-600",
+  yellow: "from-yellow-500 to-yellow-800",
+  green: "from-emerald-600 to-emerald-900",
+};
 
-function EventTimeline({
-  events,
-  maxItems = 5,
+function TeamCrest({ team }: { team: Fixture["home"] | Fixture["away"] }) {
+  const gradient =
+    CREST_COLOURS[team.logoSeed ?? "white"] ?? "from-zinc-600 to-zinc-900";
+  return (
+    <div
+      className={cn(
+        "rounded-md bg-gradient-to-br flex items-center justify-center font-black text-white shrink-0 border border-white/10 w-9 h-9 text-xs",
+        gradient,
+      )}
+    >
+      {team.shortName.slice(0, 3)}
+    </div>
+  );
+}
+
+function InlineStatsRow({
+  stats,
+  homeS,
+  awayS,
 }: {
-  events: Fixture["events"];
-  maxItems?: number;
+  stats: MatchStats;
+  homeS: string;
+  awayS: string;
 }) {
-  if (!events?.length) return null;
-  const recent = [...events].reverse().slice(0, maxItems);
-
-  const eventIcon = (type: NonNullable<Fixture["events"]>[number]["type"]) => {
-    switch (type) {
-      case "goal":
-        return "⚽";
-      case "yellow_card":
-        return "🟨";
-      case "red_card":
-        return "🟥";
-      case "substitution":
-        return "🔄";
-      case "var":
-        return "📺";
-      case "penalty":
-        return "🎯";
-    }
-  };
-
   return (
-    <div className="flex flex-col gap-0.5">
+    <p className="text-sm text-zinc-400 tabular-nums leading-snug">
+      <span className="text-zinc-500 font-medium">{homeS}</span>
+      <span className="text-zinc-600 mx-1">·</span>
+      xG{" "}
+      <span className="text-zinc-200 font-semibold">
+        {stats.home.xg.toFixed(1)}–{stats.away.xg.toFixed(1)}
+      </span>
+      <span className="text-zinc-600 mx-1">·</span>
+      SOT{" "}
+      <span className="text-zinc-200 font-semibold">
+        {stats.home.shotsOnTarget}–{stats.away.shotsOnTarget}
+      </span>
+      <span className="text-zinc-600 mx-1">·</span>
+      Poss{" "}
+      <span className="text-zinc-200 font-semibold">
+        {stats.home.possession}%–{stats.away.possession}%
+      </span>
+      <span className="text-zinc-600 mx-1">·</span>
+      Corn{" "}
+      <span className="text-zinc-200 font-semibold">
+        {stats.home.corners}–{stats.away.corners}
+      </span>
+      <span className="text-zinc-600 mx-1">·</span>
+      <span className="text-zinc-500 font-medium">{awayS}</span>
+    </p>
+  );
+}
+
+function EventsOneLine({ events }: { events: NonNullable<Fixture["events"]> }) {
+  const recent = [...events].slice(-4);
+  return (
+    <p className="text-sm text-zinc-500 truncate">
       {recent.map((ev, i) => (
-        <div
-          key={i}
-          className="flex items-center gap-1.5 text-[10px] text-muted-foreground"
-        >
-          <span className="tabular-nums w-6 text-right shrink-0">
+        <span key={i}>
+          {i > 0 && <span className="text-zinc-700"> · </span>}
+          <span className="tabular-nums text-zinc-600">
             {ev.minute}&apos;
-          </span>
-          <span>{eventIcon(ev.type)}</span>
+          </span>{" "}
+          {ev.type === "goal"
+            ? "⚽"
+            : ev.type === "yellow_card"
+              ? "🟨"
+              : ev.type === "var"
+                ? "VAR"
+                : ""}{" "}
           <span
-            className={cn(
-              "truncate",
-              ev.type === "goal" && "font-semibold text-foreground",
-            )}
+            className={ev.type === "goal" ? "text-zinc-200 font-semibold" : ""}
           >
-            {ev.player}
-            {ev.detail && (
-              <span className="text-muted-foreground"> ({ev.detail})</span>
-            )}
+            {ev.player.split(" ").pop()}
           </span>
-          <span className="ml-auto shrink-0 text-muted-foreground/60 capitalize">
-            {ev.team}
-          </span>
-        </div>
+        </span>
       ))}
-    </div>
+    </p>
   );
 }
 
-// ─── Live Score Display ───────────────────────────────────────────────────────
-
-function LiveScore({ fixture }: { fixture: Fixture }) {
-  const score = fixture.score;
+function CompactOddsRow({
+  homeOdds,
+  drawOdds,
+  awayOdds,
+}: {
+  homeOdds: ReturnType<typeof getBestOdds>;
+  drawOdds: ReturnType<typeof getBestOdds>;
+  awayOdds: ReturnType<typeof getBestOdds>;
+}) {
+  if (!homeOdds && !drawOdds && !awayOdds) return null;
   return (
-    <div className="flex items-center justify-between gap-2">
-      {/* Home team */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold truncate">{fixture.home.name}</p>
-        <p className="text-[10px] text-muted-foreground">
-          {fixture.home.shortName}
-        </p>
-      </div>
-
-      {/* Score */}
-      <div className="flex items-center gap-1.5 px-2 shrink-0">
-        <span className="text-2xl font-bold tabular-nums leading-none">
-          {score?.home ?? 0}
-        </span>
-        <span className="text-sm text-muted-foreground font-light">—</span>
-        <span className="text-2xl font-bold tabular-nums leading-none">
-          {score?.away ?? 0}
-        </span>
-        {fixture.score?.ht && (
-          <span className="ml-1 text-[9px] text-muted-foreground">
-            (HT {score?.ht?.home}-{score?.ht?.away})
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-bold tabular-nums">
+      {homeOdds && (
+        <span>
+          <span className="text-zinc-500 text-xs font-semibold mr-1.5">
+            Home
           </span>
-        )}
-      </div>
-
-      {/* Away team */}
-      <div className="flex-1 min-w-0 text-right">
-        <p className="text-sm font-semibold truncate">{fixture.away.name}</p>
-        <p className="text-[10px] text-muted-foreground">
-          {fixture.away.shortName}
-        </p>
-      </div>
+          <span className="text-white">{fmtOdds(homeOdds.odds)}</span>
+        </span>
+      )}
+      {drawOdds && (
+        <span>
+          <span className="text-zinc-500 text-xs font-semibold mr-1.5">
+            Draw
+          </span>
+          <span className="text-white">{fmtOdds(drawOdds.odds)}</span>
+        </span>
+      )}
+      {awayOdds && (
+        <span>
+          <span className="text-zinc-500 text-xs font-semibold mr-1.5">
+            Away
+          </span>
+          <span className="text-white">{fmtOdds(awayOdds.odds)}</span>
+        </span>
+      )}
     </div>
   );
 }
 
-// ─── Pre-match Teams Display ──────────────────────────────────────────────────
+interface CardShellProps {
+  children: React.ReactNode;
+  selected?: boolean;
+  onSelect?: () => void;
+  className?: string;
+}
 
-function PreMatchTeams({ fixture }: { fixture: Fixture }) {
+function CardShell({
+  children,
+  selected,
+  onSelect,
+  className,
+}: CardShellProps) {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect?.()}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect?.();
+        }
+      }}
+      className={cn(
+        "rounded-lg border border-zinc-800 bg-[#0f0f0f] p-2.5 text-left transition-colors cursor-pointer",
+        "hover:border-zinc-600 hover:bg-zinc-900/50",
+        selected &&
+          "ring-2 ring-[#22d3ee]/50 border-[#22d3ee]/30 bg-zinc-900/60",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+function LiveCard({
+  fixture,
+  selected,
+  onSelect,
+  onViewArb,
+  onOpenDetail,
+}: {
+  fixture: Fixture;
+  selected?: boolean;
+  onSelect?: () => void;
+  onViewArb?: (id: string) => void;
+  onOpenDetail?: (
+    f: Fixture,
+    tab?: "stats" | "odds-history" | "replay",
+  ) => void;
+}) {
+  const activeArb = MOCK_ARB_STREAM.find(
+    (a) => a.fixtureId === fixture.id && a.isActive,
+  );
+  const score = fixture.score;
+  const isHT = fixture.status === "HT";
+  const isSusp = fixture.status === "SUSP";
+  const stats = fixture.stats;
+
   const homeOdds = getBestOdds(
     fixture.id,
     `Home (${fixture.home.name})`,
@@ -134,120 +211,356 @@ function PreMatchTeams({ fixture }: { fixture: Fixture }) {
     "FT Result",
   );
 
+  return (
+    <CardShell
+      selected={selected}
+      onSelect={onSelect}
+      className={cn(
+        isSusp && "border-red-500/40",
+        !isSusp && !isHT && "border-[#22d3ee]/15",
+        isHT && "border-amber-500/25",
+      )}
+    >
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <LeagueBadge league={fixture.league} />
+          <span className="text-sm text-zinc-500">{fixture.round}</span>
+          <div className="ml-auto flex items-center gap-2">
+            {activeArb && (
+              <button
+                type="button"
+                className="shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewArb?.(fixture.id);
+                }}
+              >
+                <ArbBadge pct={activeArb.arbPct} />
+              </button>
+            )}
+            <StatusPill status={fixture.status} minute={fixture.minute} />
+          </div>
+        </div>
+
+        {isSusp && (
+          <p className="text-sm text-red-400 font-semibold flex items-center gap-2">
+            <AlertTriangle className="size-4 shrink-0" />
+            Market suspended
+          </p>
+        )}
+        {isHT && (
+          <p className="text-sm text-amber-400 font-medium">
+            Half time — markets reopening shortly
+          </p>
+        )}
+
+        <div className="flex items-center gap-3 min-h-[2.75rem]">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <TeamCrest team={fixture.home} />
+            <span className="text-base font-bold text-white truncate">
+              {fixture.home.name}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0 px-1">
+            <span className="text-3xl font-black tabular-nums text-white">
+              {score?.home ?? 0}
+            </span>
+            <span className="text-xl text-zinc-600">—</span>
+            <span className="text-3xl font-black tabular-nums text-white">
+              {score?.away ?? 0}
+            </span>
+            {score?.ht && (
+              <span className="text-xs text-zinc-500 ml-1 hidden sm:inline">
+                HT {score.ht.home}–{score.ht.away}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-1 min-w-0 flex-row-reverse">
+            <TeamCrest team={fixture.away} />
+            <span className="text-base font-bold text-white truncate">
+              {fixture.away.name}
+            </span>
+          </div>
+        </div>
+
+        {stats && (
+          <InlineStatsRow
+            stats={stats}
+            homeS={fixture.home.shortName}
+            awayS={fixture.away.shortName}
+          />
+        )}
+
+        {fixture.events && fixture.events.length > 0 && (
+          <EventsOneLine events={fixture.events} />
+        )}
+
+        <CompactOddsRow
+          homeOdds={homeOdds}
+          drawOdds={drawOdds}
+          awayOdds={awayOdds}
+        />
+
+        <div className="flex items-center gap-2 pt-1 border-t border-zinc-800/80">
+          <Button
+            type="button"
+            size="sm"
+            className="h-9 text-sm font-bold px-4 ml-auto bg-[#22d3ee] text-black hover:bg-[#22d3ee]/90"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.();
+              onOpenDetail?.(fixture, "stats");
+            }}
+          >
+            Place bet
+          </Button>
+        </div>
+      </div>
+    </CardShell>
+  );
+}
+
+function PreMatchCard({
+  fixture,
+  selected,
+  onSelect,
+  onOpenDetail,
+}: {
+  fixture: Fixture;
+  selected?: boolean;
+  onSelect?: () => void;
+  onOpenDetail?: (
+    f: Fixture,
+    tab?: "stats" | "odds-history" | "replay",
+  ) => void;
+}) {
   const kickoff = new Date(fixture.kickoff);
   const diffMs = kickoff.getTime() - Date.now();
   const diffH = Math.floor(diffMs / (1000 * 60 * 60));
   const diffM = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
   const countdown =
-    diffH > 0
-      ? `in ${diffH}h ${diffM}m`
-      : diffM > 0
-        ? `in ${diffM}m`
-        : "starting soon";
+    diffMs <= 0
+      ? "Starting soon"
+      : diffH > 48
+        ? `in ${Math.ceil(diffH / 24)}d`
+        : diffH > 0
+          ? `in ${diffH}h ${diffM}m`
+          : `in ${diffM}m`;
+
+  const homeOdds = getBestOdds(
+    fixture.id,
+    `Home (${fixture.home.name})`,
+    "FT Result",
+  );
+  const drawOdds = getBestOdds(fixture.id, "Draw", "FT Result");
+  const awayOdds = getBestOdds(
+    fixture.id,
+    `Away (${fixture.away.name})`,
+    "FT Result",
+  );
+  const pm = fixture.preMatch;
 
   return (
-    <div className="flex flex-col gap-2">
-      {/* Teams row */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex-1">
-          <p className="text-sm font-semibold">{fixture.home.name}</p>
-          {fixture.preMatch?.homeForm && (
-            <FormDots form={fixture.preMatch.homeForm} />
-          )}
-        </div>
-        <div className="flex flex-col items-center shrink-0 px-2">
-          <span className="text-[10px] text-muted-foreground">{countdown}</span>
-          <span className="text-xs font-medium">
+    <CardShell selected={selected} onSelect={onSelect}>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <LeagueBadge league={fixture.league} />
+          <span className="text-sm text-zinc-500">{fixture.round}</span>
+          <span className="ml-auto text-sm text-zinc-400 font-mono tabular-nums">
             {kickoff.toLocaleTimeString("en-GB", {
               hour: "2-digit",
               minute: "2-digit",
             })}
           </span>
-          <span className="text-[9px] text-muted-foreground">vs</span>
+          <span className="text-sm font-semibold text-[#22d3ee]">
+            {countdown}
+          </span>
         </div>
-        <div className="flex-1 text-right">
-          <p className="text-sm font-semibold">{fixture.away.name}</p>
-          {fixture.preMatch?.awayForm && (
-            <div className="flex justify-end">
-              <FormDots form={fixture.preMatch.awayForm} />
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 flex items-center gap-2 min-w-0">
+            <TeamCrest team={fixture.home} />
+            <div className="min-w-0">
+              <p className="text-base font-bold text-white truncate">
+                {fixture.home.name}
+              </p>
+              {pm?.homeForm && <FormDots form={pm.homeForm} />}
             </div>
-          )}
+          </div>
+          <span className="text-sm font-black text-zinc-600 shrink-0">vs</span>
+          <div className="flex-1 flex items-center gap-2 flex-row-reverse min-w-0">
+            <TeamCrest team={fixture.away} />
+            <div className="min-w-0 text-right">
+              <p className="text-base font-bold text-white truncate">
+                {fixture.away.name}
+              </p>
+              {pm?.awayForm && (
+                <div className="flex justify-end">
+                  <FormDots form={pm.awayForm} />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {pm && (
+          <>
+            <div className="flex h-1.5 rounded-full overflow-hidden bg-zinc-800">
+              <div
+                className="h-full bg-[#22d3ee]/70"
+                style={{ width: `${pm.forecastProbs.homeWin * 100}%` }}
+              />
+              <div
+                className="h-full bg-zinc-600/60"
+                style={{ width: `${pm.forecastProbs.draw * 100}%` }}
+              />
+              <div
+                className="h-full bg-[#a78bfa]/70"
+                style={{ width: `${pm.forecastProbs.awayWin * 100}%` }}
+              />
+            </div>
+            <p className="text-sm text-zinc-500">
+              Implied: {(pm.forecastProbs.homeWin * 100).toFixed(0)}% /{" "}
+              {(pm.forecastProbs.draw * 100).toFixed(0)}% /{" "}
+              {(pm.forecastProbs.awayWin * 100).toFixed(0)}%
+              {pm.xgModel && (
+                <span className="text-zinc-600">
+                  {" "}
+                  · xG {pm.xgModel.home.toFixed(1)}–{pm.xgModel.away.toFixed(1)}
+                </span>
+              )}
+            </p>
+          </>
+        )}
+
+        {(pm?.weather || (pm && pm.injuries.length > 0)) && (
+          <p className="text-sm text-zinc-500 flex flex-wrap items-center gap-x-3 gap-y-1">
+            {pm.weather && (
+              <span className="flex items-center gap-1">
+                <Cloud className="size-4 shrink-0" />
+                {pm.weather.tempC}°C {pm.weather.condition}
+              </span>
+            )}
+            {pm.injuries.length > 0 && (
+              <span className="text-amber-500/90">
+                {pm.injuries.length} injury note
+                {pm.injuries.length > 1 ? "s" : ""}
+              </span>
+            )}
+          </p>
+        )}
+
+        <CompactOddsRow
+          homeOdds={homeOdds}
+          drawOdds={drawOdds}
+          awayOdds={awayOdds}
+        />
+
+        <div className="flex items-center gap-2 pt-1 border-t border-zinc-800/80">
+          <Button
+            type="button"
+            size="sm"
+            className="h-9 text-sm font-bold px-4 ml-auto bg-[#22d3ee] text-black"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.();
+              onOpenDetail?.(fixture, "stats");
+            }}
+          >
+            Place bet
+          </Button>
         </div>
       </div>
-
-      {/* Best odds row */}
-      {(homeOdds || drawOdds || awayOdds) && (
-        <div className="flex items-center justify-between rounded-md bg-muted/30 px-2 py-1.5 text-xs">
-          {homeOdds && (
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-[9px] text-muted-foreground">Home</span>
-              <span className="font-bold tabular-nums">
-                {fmtOdds(homeOdds.odds)}
-              </span>
-              <span className="text-[8px] text-muted-foreground">
-                {homeOdds.bookmaker}
-              </span>
-            </div>
-          )}
-          {drawOdds && (
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-[9px] text-muted-foreground">Draw</span>
-              <span className="font-bold tabular-nums">
-                {fmtOdds(drawOdds.odds)}
-              </span>
-              <span className="text-[8px] text-muted-foreground">
-                {drawOdds.bookmaker}
-              </span>
-            </div>
-          )}
-          {awayOdds && (
-            <div className="flex flex-col items-center gap-0.5">
-              <span className="text-[9px] text-muted-foreground">Away</span>
-              <span className="font-bold tabular-nums">
-                {fmtOdds(awayOdds.odds)}
-              </span>
-              <span className="text-[8px] text-muted-foreground">
-                {awayOdds.bookmaker}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Pre-match meta: xG model, weather, injuries */}
-      {fixture.preMatch && (
-        <div className="flex items-center gap-3 text-[10px] text-muted-foreground flex-wrap">
-          <span>
-            xG model:{" "}
-            <span className="text-foreground font-medium">
-              {fixture.preMatch.xgModel.home.toFixed(1)} –{" "}
-              {fixture.preMatch.xgModel.away.toFixed(1)}
-            </span>
-          </span>
-          {fixture.preMatch.weather && (
-            <span className="flex items-center gap-0.5">
-              <Cloud className="size-2.5" />
-              {fixture.preMatch.weather.tempC}°C{" "}
-              {fixture.preMatch.weather.condition}
-            </span>
-          )}
-          {fixture.preMatch.injuries.length > 0 && (
-            <span className="flex items-center gap-0.5 text-amber-500">
-              <AlertTriangle className="size-2.5" />
-              {fixture.preMatch.injuries.length} injury alert
-              {fixture.preMatch.injuries.length > 1 ? "s" : ""}
-            </span>
-          )}
-        </div>
-      )}
-    </div>
+    </CardShell>
   );
 }
 
-// ─── Match Card ───────────────────────────────────────────────────────────────
-
-interface FixturesMatchCardProps {
+function CompletedCard({
+  fixture,
+  selected,
+  onSelect,
+  onOpenDetail,
+}: {
   fixture: Fixture;
+  selected?: boolean;
+  onSelect?: () => void;
+  onOpenDetail?: (
+    f: Fixture,
+    tab?: "stats" | "odds-history" | "replay",
+  ) => void;
+}) {
+  const score = fixture.score;
+  const stats = fixture.stats;
+  const hasReplay = (fixture.progressiveOdds?.length ?? 0) > 0;
+  const kickoff = new Date(fixture.kickoff);
+
+  return (
+    <CardShell selected={selected} onSelect={onSelect} className="opacity-90">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex items-center gap-2 flex-wrap min-w-0 flex-1">
+          <LeagueBadge league={fixture.league} />
+          <span className="text-sm text-zinc-500">
+            {kickoff.toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+            })}
+          </span>
+          <StatusPill status={fixture.status} />
+        </div>
+        <div className="flex items-center gap-3 flex-1 min-w-0 justify-center sm:justify-start">
+          <span className="text-base font-bold text-zinc-300 truncate max-w-[40%]">
+            {fixture.home.name}
+          </span>
+          <span className="text-2xl font-black tabular-nums text-white shrink-0">
+            {score?.home ?? "—"}–{score?.away ?? "—"}
+          </span>
+          <span className="text-base font-bold text-zinc-300 truncate max-w-[40%] text-right">
+            {fixture.away.name}
+          </span>
+        </div>
+        {stats && (
+          <p className="text-sm text-zinc-500 sm:ml-auto">
+            xG {stats.home.xg.toFixed(1)}–{stats.away.xg.toFixed(1)}
+            <span className="text-zinc-700 mx-2">·</span>
+            Corners {stats.home.corners}–{stats.away.corners}
+          </p>
+        )}
+        <div
+          className="flex gap-2 shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-9 text-sm"
+            onClick={() => onOpenDetail?.(fixture, "stats")}
+          >
+            <Flag className="size-4 mr-1" />
+            Stats
+          </Button>
+          {hasReplay && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-9 text-sm border-[#22d3ee]/30 text-[#22d3ee]"
+              onClick={() => onOpenDetail?.(fixture, "replay")}
+            >
+              <Clock className="size-4 mr-1" />
+              Replay
+            </Button>
+          )}
+        </div>
+      </div>
+    </CardShell>
+  );
+}
+
+export interface FixturesMatchCardProps {
+  fixture: Fixture;
+  selected?: boolean;
+  onSelect?: (fixture: Fixture) => void;
   onViewArb?: (fixtureId: string) => void;
   onOpenDetail?: (
     fixture: Fixture,
@@ -257,6 +570,8 @@ interface FixturesMatchCardProps {
 
 export function FixturesMatchCard({
   fixture,
+  selected,
+  onSelect,
   onViewArb,
   onOpenDetail,
 }: FixturesMatchCardProps) {
@@ -266,152 +581,35 @@ export function FixturesMatchCard({
     fixture.status === "SUSP";
   const completed = isCompleted(fixture.status);
 
-  // Check if there's an active arb for this fixture
-  const activeArb = MOCK_ARB_STREAM.find(
-    (a) => a.fixtureId === fixture.id && a.isActive,
-  );
+  const sel = () => onSelect?.(fixture);
 
+  if (live) {
+    return (
+      <LiveCard
+        fixture={fixture}
+        selected={selected}
+        onSelect={sel}
+        onViewArb={onViewArb}
+        onOpenDetail={onOpenDetail}
+      />
+    );
+  }
+  if (completed) {
+    return (
+      <CompletedCard
+        fixture={fixture}
+        selected={selected}
+        onSelect={sel}
+        onOpenDetail={onOpenDetail}
+      />
+    );
+  }
   return (
-    <Card
-      className={cn(
-        "transition-colors hover:bg-card/80",
-        live && "border-primary/20",
-      )}
-    >
-      <CardContent className="p-3 flex flex-col gap-2.5">
-        {/* Header row: league + round + status + arb badge */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <LeagueBadge league={fixture.league} />
-          <span className="text-[10px] text-muted-foreground">
-            {fixture.round}
-          </span>
-          <div className="flex items-center gap-1 ml-auto">
-            {activeArb && (
-              <ArbBadge pct={activeArb.arbPct} className="cursor-pointer" />
-            )}
-            <StatusPill status={fixture.status} minute={fixture.minute} />
-          </div>
-        </div>
-
-        {/* Suspended warning */}
-        {fixture.status === "SUSP" && (
-          <div className="flex items-center gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-2 py-1.5 text-xs text-red-400 animate-pulse">
-            <AlertTriangle className="size-3 shrink-0" />
-            Market suspended — quoting paused
-          </div>
-        )}
-
-        {/* HT notice */}
-        {fixture.status === "HT" && (
-          <div className="flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-xs text-amber-400">
-            <Wind className="size-3 shrink-0" />
-            Half time — markets reopening shortly
-          </div>
-        )}
-
-        {/* Main content area */}
-        {live || fixture.status === "HT" ? (
-          <>
-            <LiveScore fixture={fixture} />
-            {fixture.stats && (
-              <MatchStatsPanel
-                home={fixture.stats.home}
-                away={fixture.stats.away}
-                compact
-              />
-            )}
-            {fixture.events && fixture.events.length > 0 && (
-              <EventTimeline events={fixture.events} />
-            )}
-          </>
-        ) : completed ? (
-          <>
-            <LiveScore fixture={fixture} />
-            {fixture.stats && (
-              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                <span>
-                  xG: {fixture.stats.home.xg.toFixed(1)} –{" "}
-                  {fixture.stats.away.xg.toFixed(1)}
-                </span>
-                <span>
-                  Corners: {fixture.stats.home.corners}–
-                  {fixture.stats.away.corners}
-                </span>
-                <span>
-                  Shots OT: {fixture.stats.home.shotsOnTarget}–
-                  {fixture.stats.away.shotsOnTarget}
-                </span>
-                {(fixture.stats.home.redCards > 0 ||
-                  fixture.stats.away.redCards > 0) && (
-                  <span>
-                    🟥 {fixture.stats.home.redCards}–
-                    {fixture.stats.away.redCards}
-                  </span>
-                )}
-              </div>
-            )}
-          </>
-        ) : (
-          <PreMatchTeams fixture={fixture} />
-        )}
-
-        {/* Action buttons */}
-        <div className="flex items-center gap-1.5 pt-0.5">
-          {completed ? (
-            <>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-6 text-[10px] px-2"
-                onClick={() => onOpenDetail?.(fixture, "stats")}
-              >
-                View Stats
-              </Button>
-              {fixture.progressiveOdds &&
-                fixture.progressiveOdds.length > 0 && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-6 text-[10px] px-2"
-                    onClick={() => onOpenDetail?.(fixture, "replay")}
-                  >
-                    <Zap className="size-2.5 mr-1" />
-                    Replay
-                  </Button>
-                )}
-            </>
-          ) : (
-            <>
-              {activeArb && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 text-[10px] px-2 text-emerald-500 border-emerald-500/40 hover:bg-emerald-500/10"
-                  onClick={() => onViewArb?.(fixture.id)}
-                >
-                  <Zap className="size-2.5 mr-1" />
-                  View Arb
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-6 text-[10px] px-2"
-                onClick={() => onOpenDetail?.(fixture, "stats")}
-              >
-                Details
-              </Button>
-              <Button
-                size="sm"
-                className="h-6 text-[10px] px-2 ml-auto"
-                onClick={() => onOpenDetail?.(fixture, "stats")}
-              >
-                Place Bet
-              </Button>
-            </>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    <PreMatchCard
+      fixture={fixture}
+      selected={selected}
+      onSelect={sel}
+      onOpenDetail={onOpenDetail}
+    />
   );
 }

@@ -35,7 +35,7 @@ function ArbControls({
   ];
 
   return (
-    <div className="flex items-center gap-3 px-3 py-2 border-b bg-card/20 flex-wrap">
+    <div className="flex items-center gap-3 px-3 py-2 border-b border-zinc-800 bg-[#0d0d0d] flex-wrap">
       {/* Market selector */}
       <div className="flex items-center gap-1">
         <span className="text-[10px] text-muted-foreground uppercase tracking-wider mr-1">
@@ -46,10 +46,10 @@ function ArbControls({
             key={m}
             onClick={() => onMarketChange(m)}
             className={cn(
-              "px-2 py-0.5 text-xs rounded-full border transition-colors",
+              "px-2.5 py-1 text-[10px] font-bold rounded-sm border transition-colors",
               selectedMarket === m
-                ? "bg-primary text-primary-foreground border-primary"
-                : "border-border text-muted-foreground hover:text-foreground",
+                ? "bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40"
+                : "border-zinc-800 text-zinc-500 hover:text-zinc-300",
             )}
           >
             {m}
@@ -69,10 +69,10 @@ function ArbControls({
             key={t}
             onClick={() => onThresholdChange(t)}
             className={cn(
-              "px-2 py-0.5 text-xs rounded-full border transition-colors tabular-nums",
+              "px-2 py-0.5 text-[10px] font-bold rounded-sm border transition-colors tabular-nums",
               arbThreshold === t
-                ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
-                : "border-border text-muted-foreground hover:text-foreground",
+                ? "bg-[#4ade80]/15 text-[#4ade80] border-[#4ade80]/40"
+                : "border-zinc-800 text-zinc-500 hover:text-zinc-300",
             )}
           >
             {t}%
@@ -114,8 +114,8 @@ export function ArbTab({ fixtures }: ArbTabProps) {
           minSize={40}
           className="flex flex-col min-h-0"
         >
-          <div className="px-3 py-1.5 border-b">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="px-3 py-1.5 border-b border-zinc-800 bg-zinc-900/30">
+            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">
               Odds Grid — {selectedMarket}
             </span>
           </div>
@@ -136,9 +136,9 @@ export function ArbTab({ fixtures }: ArbTabProps) {
           minSize={25}
           className="flex flex-col min-h-0 border-l"
         >
-          <div className="px-3 py-1.5 border-b">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Arb Stream
+          <div className="px-3 py-1.5 border-b border-zinc-800 bg-zinc-900/30">
+            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">
+              Live Arb Stream
             </span>
           </div>
           <div className="flex-1 min-h-0 overflow-auto">

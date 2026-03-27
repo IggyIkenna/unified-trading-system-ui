@@ -56,20 +56,20 @@ function FilterBar({ filters, onChange }: FilterBarProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 border-b bg-card/30 px-4 py-2.5">
+    <div className="flex flex-col gap-2 border-b border-zinc-800 bg-[#0d0d0d] px-4 py-2.5">
       {/* Row 1: date range + status + search */}
       <div className="flex items-center gap-3 flex-wrap">
         {/* Date range */}
-        <div className="flex items-center gap-0.5 rounded-md border bg-muted/40 p-0.5">
+        <div className="flex items-center gap-0.5 rounded-md border border-zinc-800 bg-zinc-900/60 p-0.5">
           {DATE_TABS.map(({ value, label }) => (
             <button
               key={value}
               onClick={() => onChange({ ...filters, dateRange: value })}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded transition-colors",
+                "px-3 py-1.5 text-sm font-semibold rounded transition-colors",
                 filters.dateRange === value
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? "bg-zinc-700 text-white"
+                  : "text-zinc-500 hover:text-zinc-300",
               )}
             >
               {label}
@@ -84,10 +84,10 @@ function FilterBar({ filters, onChange }: FilterBarProps) {
               key={value}
               onClick={() => onChange({ ...filters, statusFilter: value })}
               className={cn(
-                "px-2.5 py-1 text-xs rounded-full border font-medium transition-colors",
+                "px-3 py-1.5 text-sm font-semibold rounded-sm border transition-colors",
                 filters.statusFilter === value
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/40",
+                  ? "bg-[#22d3ee]/15 text-[#22d3ee] border-[#22d3ee]/40"
+                  : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-600",
               )}
             >
               {label}
@@ -96,10 +96,10 @@ function FilterBar({ filters, onChange }: FilterBarProps) {
         </div>
 
         {/* Search */}
-        <div className="relative ml-auto w-44">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground" />
+        <div className="relative ml-auto w-52 max-w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            className="h-7 pl-7 pr-7 text-xs"
+            className="h-9 pl-9 pr-9 text-sm bg-zinc-900/60 border-zinc-800 focus:border-zinc-600"
             placeholder="Search teams…"
             value={filters.search}
             onChange={(e) => onChange({ ...filters, search: e.target.value })}
@@ -120,10 +120,10 @@ function FilterBar({ filters, onChange }: FilterBarProps) {
         <button
           onClick={() => onChange({ ...filters, leagues: [] })}
           className={cn(
-            "px-2 py-0.5 text-[10px] font-medium rounded-full border transition-colors",
+            "px-2.5 py-1 text-xs font-bold rounded-sm border transition-colors uppercase tracking-wide",
             filters.leagues.length === 0
-              ? "bg-primary text-primary-foreground border-primary"
-              : "border-border text-muted-foreground hover:text-foreground",
+              ? "bg-zinc-700 text-white border-zinc-600"
+              : "border-zinc-800 text-zinc-500 hover:text-zinc-300",
           )}
         >
           All Leagues
@@ -232,33 +232,28 @@ export function SportsPage() {
         onValueChange={setActiveTab}
         className="flex flex-col flex-1 min-h-0"
       >
-        {/* Tab triggers sit right below the filter bar */}
-        <div className="border-b bg-card/20 px-4">
-          <TabsList className="h-9 bg-transparent gap-1 p-0">
-            <TabsTrigger
-              value="fixtures"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-3 text-xs h-9"
-            >
-              Fixtures
-            </TabsTrigger>
-            <TabsTrigger
-              value="arb"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-3 text-xs h-9"
-            >
-              Arb
-            </TabsTrigger>
-            <TabsTrigger
-              value="my-bets"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:bg-transparent rounded-none px-3 text-xs h-9"
-            >
-              My Bets
-            </TabsTrigger>
+        {/* Tab triggers */}
+        <div className="border-b border-zinc-800 bg-[#0d0d0d] px-4">
+          <TabsList className="h-10 bg-transparent gap-0 p-0">
+            {[
+              { value: "fixtures", label: "Fixtures" },
+              { value: "arb", label: "Arb" },
+              { value: "my-bets", label: "My Bets" },
+            ].map(({ value, label }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="data-[state=active]:border-b-2 data-[state=active]:border-[#22d3ee] data-[state=active]:text-[#22d3ee] data-[state=active]:bg-transparent text-zinc-500 hover:text-zinc-300 rounded-none px-4 text-sm font-bold h-10 transition-colors"
+              >
+                {label}
+              </TabsTrigger>
+            ))}
           </TabsList>
         </div>
 
         <TabsContent
           value="fixtures"
-          className="flex-1 min-h-0 overflow-auto mt-0 p-0"
+          className="flex-1 min-h-0 overflow-hidden mt-0 p-0 flex flex-col"
         >
           <FixturesTab fixtures={filteredFixtures} onViewArb={handleViewArb} />
         </TabsContent>
