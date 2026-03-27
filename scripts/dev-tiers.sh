@@ -175,7 +175,7 @@ if [ "$TIER" = "0" ]; then
   echo "[T0] UI-only — no Python processes (static visual preview)"
   start_process "ui" "$UI_ROOT" \
     env NEXT_PUBLIC_MOCK_API=true NEXT_PUBLIC_AUTH_PROVIDER=demo \
-    npx next dev --port 3100
+    npx next dev --webpack --port 3100
   echo ""
   echo "  UI:   http://localhost:3100"
   echo "  Tier: 0 (in-browser mock — all API calls intercepted client-side)"

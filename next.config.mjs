@@ -26,16 +26,20 @@ const nextConfig = {
           },
         ],
       },
-      {
-        // Static assets (JS/CSS/fonts) — immutable, fingerprinted by Next.js
-        source: "/_next/static/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
+      // Static assets: immutable only in production — in dev, chunks change on restart
+      ...(process.env.NODE_ENV === "production"
+        ? [
+            {
+              source: "/_next/static/:path*",
+              headers: [
+                {
+                  key: "Cache-Control",
+                  value: "public, max-age=31536000, immutable",
+                },
+              ],
+            },
+          ]
+        : []),
     ];
   },
 
