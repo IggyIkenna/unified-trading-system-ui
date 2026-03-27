@@ -1,0 +1,15 @@
+# Directories to ignore
+.git/
+.prettier-cache/
+.ruff_cache/
+node_modules/
+archived/
+escalations/
+task-state/
+tasks/
+task-summaries/
+
+# Files to ignore
+*.bak
+*.log
+.DS_Store

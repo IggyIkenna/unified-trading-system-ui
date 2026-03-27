@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { fmtNum, fmtPct, statusColor } from "./helpers";
+import { MetricCard } from "@/components/shared/metric-card";
 import type { CandidateStrategy } from "./types";
 
 export function WalkForwardPanel({
@@ -36,30 +37,30 @@ export function WalkForwardPanel({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Consistency (σ Sharpe)
-            </p>
-            <p className="text-lg font-mono font-bold mt-1">{fmtNum(std)}</p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Degradation (last − first)
-            </p>
-            <p
-              className={`text-lg font-mono font-bold mt-1 ${degradation < 0 ? "text-amber-400" : "text-emerald-400"}`}
-            >
-              {fmtNum(degradation)}
-            </p>
-          </div>
-          <div className="rounded-lg border border-border/60 p-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Pooled t-stat
-            </p>
-            <p className="text-lg font-mono font-bold mt-1">
-              {fmtNum(pooledT)}
-            </p>
-          </div>
+          <MetricCard
+            variant="bordered"
+            tone="panelLg"
+            density="walkforward"
+            label="Consistency (σ Sharpe)"
+            primary={fmtNum(std)}
+          />
+          <MetricCard
+            variant="bordered"
+            tone="panelLg"
+            density="walkforward"
+            label="Degradation (last − first)"
+            primary={fmtNum(degradation)}
+            primaryClassName={
+              degradation < 0 ? "text-amber-400" : "text-emerald-400"
+            }
+          />
+          <MetricCard
+            variant="bordered"
+            tone="panelLg"
+            density="walkforward"
+            label="Pooled t-stat"
+            primary={fmtNum(pooledT)}
+          />
         </div>
         <p className="text-xs text-muted-foreground font-mono">
           Window-level p-values are approximate (two-sided vs. zero mean

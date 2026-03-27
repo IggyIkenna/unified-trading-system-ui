@@ -6,6 +6,11 @@ import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
@@ -14,6 +19,9 @@ import { usePositionsSummary } from "@/hooks/api/use-positions";
 import { useAlertsSummary } from "@/hooks/api/use-alerts";
 import { useServiceHealth } from "@/hooks/api/use-service-status";
 import { useOrders } from "@/hooks/api/use-orders";
+import { useNewsFeed, type NewsSeverity } from "@/hooks/api/use-news";
+import { useRef, useState } from "react";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 import {
   Activity,
   AlertTriangle,
@@ -23,9 +31,19 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Lock,
+  Newspaper,
+  PanelRightClose,
+  PanelRightOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+
+const SEVERITY_DOT: Record<NewsSeverity, string> = {
+  breaking: "bg-rose-500",
+  high: "bg-amber-400",
+  medium: "bg-blue-400",
+  low: "bg-muted-foreground/50",
+};
 
 function TradingSidebar() {
   const { hasEntitlement, isAdmin, isInternal } = useAuth();
@@ -36,6 +54,7 @@ function TradingSidebar() {
   const { data: alertsSummary } = useAlertsSummary();
   const { data: healthData } = useServiceHealth();
   const { data: ordersData } = useOrders();
+  const { data: newsItems } = useNewsFeed();
 
   if (!canSeeInternalData) {
     return (
@@ -74,10 +93,6 @@ function TradingSidebar() {
 
   return (
     <div className="h-full space-y-3 p-3 overflow-y-auto">
-      <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-        Quick View
-      </div>
-
       {/* Positions */}
       <Link href="/services/trading/positions">
         <Card className="hover:border-white/20 transition-colors cursor-pointer">
@@ -255,6 +270,42 @@ function TradingSidebar() {
           </CardContent>
         </Card>
       </Link>
+
+      {/* News */}
+      <Link href="/services/trading/markets">
+        <Card className="hover:border-white/20 transition-colors cursor-pointer">
+          <CardContent className="p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium">
+              <Newspaper className="size-3" /> News
+            </div>
+            <div className="space-y-2">
+              {(newsItems ?? []).slice(0, 4).map((item) => (
+                <div key={item.id} className="flex gap-2 items-start">
+                  <span
+                    className={cn(
+                      "mt-1.5 size-1.5 rounded-full shrink-0",
+                      SEVERITY_DOT[item.severity],
+                    )}
+                  />
+                  <div className="min-w-0">
+                    <div className="text-[10px] leading-snug line-clamp-2 text-foreground/80">
+                      {item.title}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground mt-0.5">
+                      {item.source}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {(newsItems ?? []).length === 0 && (
+                <div className="text-[10px] text-muted-foreground text-center py-1">
+                  No news
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
     </div>
   );
 }
@@ -266,6 +317,8 @@ export default function TradingServiceLayout({
 }) {
   const { user } = useAuth();
   const { scope, setMode } = useGlobalScope();
+  const quickViewRef = useRef<ImperativePanelHandle>(null);
+  const [quickViewCollapsed, setQuickViewCollapsed] = useState(false);
 
   return (
     <div className="flex flex-col h-full">
@@ -276,7 +329,7 @@ export default function TradingServiceLayout({
         onContextChange={(v) => setMode(v === "LIVE" ? "live" : "batch")}
         compact
       />
-      {/* Main area: vertical nav + content + quick-view sidebar */}
+      {/* Main area: vertical nav + resizable content/quick-view */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         <TradingVerticalNav
           tabs={TRADING_TABS}
@@ -284,17 +337,81 @@ export default function TradingServiceLayout({
           bottomSlot={<LiveAsOfToggle />}
         />
 
-        {/* Page content */}
-        <div className="flex-1 overflow-auto min-w-0">
-          <EntitlementGate entitlement="execution-basic" serviceName="Trading">
-            <ErrorBoundary>{children}</ErrorBoundary>
-          </EntitlementGate>
-        </div>
+        <ResizablePanelGroup
+          direction="horizontal"
+          autoSaveId="trading-layout-v2"
+          className="flex-1 min-w-0"
+        >
+          {/* Page content */}
+          <ResizablePanel defaultSize={82} minSize={50}>
+            <div className="h-full overflow-auto">
+              <EntitlementGate
+                entitlement="execution-basic"
+                serviceName="Trading"
+              >
+                <ErrorBoundary>{children}</ErrorBoundary>
+              </EntitlementGate>
+            </div>
+          </ResizablePanel>
 
-        {/* Quick-view sidebar */}
-        <aside className="w-[200px] shrink-0 border-l border-border overflow-y-auto">
-          <TradingSidebar />
-        </aside>
+          <ResizableHandle withHandle />
+
+          {/* Quick-view sidebar */}
+          <ResizablePanel
+            ref={quickViewRef}
+            defaultSize={18}
+            collapsedSize={4}
+            minSize={4}
+            maxSize={35}
+            collapsible
+            onCollapse={() => setQuickViewCollapsed(true)}
+            onExpand={() => setQuickViewCollapsed(false)}
+          >
+            <div className="flex flex-col h-full border-l border-border bg-card/30">
+              {/* Header — always visible, mirrors the left nav header */}
+              <div
+                className={cn(
+                  "flex items-center border-b border-border px-2 py-1.5",
+                  quickViewCollapsed ? "justify-center" : "justify-between",
+                )}
+              >
+                {!quickViewCollapsed && (
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 pl-1 select-none">
+                    Quick View
+                  </span>
+                )}
+                <button
+                  onClick={() => {
+                    if (quickViewCollapsed) {
+                      quickViewRef.current?.expand();
+                    } else {
+                      quickViewRef.current?.collapse();
+                    }
+                  }}
+                  className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  title={
+                    quickViewCollapsed
+                      ? "Expand Quick View"
+                      : "Collapse Quick View"
+                  }
+                  aria-label={
+                    quickViewCollapsed
+                      ? "Expand Quick View"
+                      : "Collapse Quick View"
+                  }
+                >
+                  {quickViewCollapsed ? (
+                    <PanelRightOpen className="size-4" />
+                  ) : (
+                    <PanelRightClose className="size-4" />
+                  )}
+                </button>
+              </div>
+              {/* Content — hidden when collapsed */}
+              {!quickViewCollapsed && <TradingSidebar />}
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </div>
   );

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePromoteListFilters } from "@/components/promote/promote-list-filters-context";
+import { MetricCard } from "@/components/shared/metric-card";
 import { HISTORICAL_APPROVALS_30D } from "./mock-fixtures";
 import {
   fmtNum,
@@ -76,62 +77,51 @@ export function PipelineOverview({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-0 rounded-lg border border-border bg-card/30 p-3 sm:grid-cols-3 lg:grid-cols-6">
-        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center first:border-l-0">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Avg Sharpe
-          </p>
-          <p className="mt-1 font-mono text-2xl font-bold">
-            {fmtNum(
-              filtered.reduce((s, c) => s + c.metrics.sharpe, 0) /
-                (filtered.length || 1),
-            )}
-          </p>
-        </div>
-        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Avg max DD
-          </p>
-          <p className="mt-1 font-mono text-2xl font-bold text-rose-400/90">
-            {fmtPct(avgMaxDrawdown)}
-          </p>
-        </div>
-        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Velocity
-          </p>
-          <p className="mt-1 font-mono text-2xl font-bold">
-            {fmtNum(pipelineDerived.velocityDays, 1)}d
-          </p>
-        </div>
-        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Approved 30d
-          </p>
-          <p className="mt-1 font-mono text-2xl font-bold text-emerald-400">
-            {totalPassed + HISTORICAL_APPROVALS_30D}
-          </p>
-        </div>
-        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            In cohort
-          </p>
-          <p className="mt-1 font-mono text-2xl font-bold text-cyan-400/90">
-            {filtered.length}
-          </p>
-        </div>
-        <div className="border-l-2 border-cyan-500/20 px-2 py-2 text-center">
-          <p className="text-sm uppercase tracking-wider text-muted-foreground">
-            Past SLA
-          </p>
-          <p
-            className={cn(
-              "mt-1 font-mono text-2xl font-bold",
-              slaBreaches > 0 ? "text-rose-400" : "text-muted-foreground",
-            )}
-          >
-            {slaBreaches}
-          </p>
-        </div>
+        <MetricCard
+          variant="pipeline"
+          tone="pipeline"
+          label="Avg Sharpe"
+          primary={fmtNum(
+            filtered.reduce((s, c) => s + c.metrics.sharpe, 0) /
+              (filtered.length || 1),
+          )}
+        />
+        <MetricCard
+          variant="pipeline"
+          tone="pipeline"
+          label="Avg max DD"
+          primary={fmtPct(avgMaxDrawdown)}
+          primaryClassName="text-rose-400/90"
+        />
+        <MetricCard
+          variant="pipeline"
+          tone="pipeline"
+          label="Velocity"
+          primary={`${fmtNum(pipelineDerived.velocityDays, 1)}d`}
+        />
+        <MetricCard
+          variant="pipeline"
+          tone="pipeline"
+          label="Approved 30d"
+          primary={totalPassed + HISTORICAL_APPROVALS_30D}
+          primaryClassName="text-emerald-400"
+        />
+        <MetricCard
+          variant="pipeline"
+          tone="pipeline"
+          label="In cohort"
+          primary={filtered.length}
+          primaryClassName="text-cyan-400/90"
+        />
+        <MetricCard
+          variant="pipeline"
+          tone="pipeline"
+          label="Past SLA"
+          primary={slaBreaches}
+          primaryClassName={
+            slaBreaches > 0 ? "text-rose-400" : "text-muted-foreground"
+          }
+        />
       </div>
 
       {slaBreaches > 0 && (

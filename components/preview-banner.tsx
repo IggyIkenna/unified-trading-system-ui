@@ -30,7 +30,8 @@ export function PreviewBanner() {
         <span className="inline-block px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-semibold uppercase tracking-wider mr-2">
           Preview
         </span>
-        Platform preview — some sections use sample data. Not all features are live yet.
+        Platform preview — some sections use sample data. Not all features are
+        live yet.
       </p>
       <button
         onClick={() => {

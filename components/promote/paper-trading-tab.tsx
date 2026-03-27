@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { fmtNum, fmtPct, fmtUsd, statusBg } from "./helpers";
+import { MetricCard } from "@/components/shared/metric-card";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import type { CandidateStrategy } from "./types";
 
@@ -68,57 +69,34 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
         </Badge>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Shadow P&amp;L
-            </p>
-            <p
-              className={cn(
-                "text-xl font-mono font-bold mt-1",
-                pt.pnl >= 0 ? "text-emerald-400" : "text-rose-400",
-              )}
-            >
-              {fmtUsd(pt.pnl)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Paper Sharpe
-            </p>
-            <p className="text-xl font-mono font-bold mt-1 text-cyan-400">
-              {fmtNum(pt.sharpe)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Backtest Sharpe (same window)
-            </p>
-            <p className="text-xl font-mono font-bold mt-1">
-              {fmtNum(pt.backtestSharpeForPeriod)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4 pb-3">
-            <p className="text-xs uppercase text-muted-foreground">
-              Divergence ratio
-            </p>
-            <p
-              className={cn(
-                "text-xl font-mono font-bold mt-1",
-                divOk ? "text-emerald-400" : "text-amber-400",
-              )}
-            >
-              {fmtNum(pt.divergenceRatio)}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="Shadow P&amp;L"
+          primary={fmtUsd(pt.pnl)}
+          primaryClassName={pt.pnl >= 0 ? "text-emerald-400" : "text-rose-400"}
+        />
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="Paper Sharpe"
+          primary={fmtNum(pt.sharpe)}
+          primaryClassName="text-cyan-400"
+        />
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="Backtest Sharpe (same window)"
+          primary={fmtNum(pt.backtestSharpeForPeriod)}
+        />
+        <MetricCard
+          tone="panel"
+          density="panel"
+          label="Divergence ratio"
+          primary={fmtNum(pt.divergenceRatio)}
+          primaryClassName={divOk ? "text-emerald-400" : "text-amber-400"}
+        />
       </div>
 
       <Card>
@@ -228,30 +206,36 @@ export function PaperTradingTab({ strategy }: { strategy: CandidateStrategy }) {
               Backtest vs paper (path divergence)
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid sm:grid-cols-3 gap-3 text-xs font-mono">
+          <CardContent className="grid gap-3 text-xs font-mono sm:grid-cols-3">
             {pt.returnDivergencePct !== undefined ? (
-              <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-xs text-muted-foreground">Return gap</p>
-                <p className="text-lg mt-1">
-                  {fmtNum(pt.returnDivergencePct, 1)}%
-                </p>
-              </div>
+              <MetricCard
+                variant="bordered"
+                tone="panelLg"
+                density="panelSm"
+                borderedSurfaceClassName="border-border/50"
+                label="Return gap"
+                primary={`${fmtNum(pt.returnDivergencePct, 1)}%`}
+              />
             ) : null}
             {pt.maxDdDivergencePct !== undefined ? (
-              <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-xs text-muted-foreground">Max DD gap</p>
-                <p className="text-lg mt-1">
-                  {fmtNum(pt.maxDdDivergencePct, 1)}%
-                </p>
-              </div>
+              <MetricCard
+                variant="bordered"
+                tone="panelLg"
+                density="panelSm"
+                borderedSurfaceClassName="border-border/50"
+                label="Max DD gap"
+                primary={`${fmtNum(pt.maxDdDivergencePct, 1)}%`}
+              />
             ) : null}
             {pt.hitRateDivergencePct !== undefined ? (
-              <div className="rounded-lg border border-border/50 p-3">
-                <p className="text-xs text-muted-foreground">Hit rate gap</p>
-                <p className="text-lg mt-1">
-                  {fmtNum(pt.hitRateDivergencePct, 1)}%
-                </p>
-              </div>
+              <MetricCard
+                variant="bordered"
+                tone="panelLg"
+                density="panelSm"
+                borderedSurfaceClassName="border-border/50"
+                label="Hit rate gap"
+                primary={`${fmtNum(pt.hitRateDivergencePct, 1)}%`}
+              />
             ) : null}
           </CardContent>
         </Card>

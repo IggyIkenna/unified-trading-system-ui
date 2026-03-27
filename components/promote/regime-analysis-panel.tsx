@@ -9,8 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 import { fmtNum, fmtPct } from "./helpers";
+import { MetricCard } from "@/components/shared/metric-card";
 import type { CandidateStrategy } from "./types";
 
 function heatColor(sharpe: number) {
@@ -39,19 +39,13 @@ export function RegimeAnalysisPanel({
       <CardContent className="space-y-4">
         <div className="grid grid-cols-7 gap-1.5">
           {rows.map((r) => (
-            <div key={r.regime} className="text-center space-y-1">
-              <div
-                className={cn(
-                  "rounded-md py-2 px-1 text-xs font-mono font-semibold",
-                  heatColor(r.sharpe),
-                )}
-              >
-                {fmtNum(r.sharpe)}
-              </div>
-              <p className="text-xs text-muted-foreground leading-tight line-clamp-2">
-                {r.regime}
-              </p>
-            </div>
+            <MetricCard
+              key={r.regime}
+              layout="heatmap"
+              primary={fmtNum(r.sharpe)}
+              label={r.regime}
+              primaryClassName={heatColor(r.sharpe)}
+            />
           ))}
         </div>
         <Table>

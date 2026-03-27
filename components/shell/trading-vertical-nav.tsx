@@ -10,7 +10,7 @@
  */
 
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Lock } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, Lock } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -48,10 +48,15 @@ export function TradingVerticalNav({
       {/* Collapse toggle */}
       <div
         className={cn(
-          "flex items-center border-b border-border px-2 py-2",
-          collapsed ? "justify-center" : "justify-end",
+          "flex items-center border-b border-border px-2 py-1.5",
+          collapsed ? "justify-center" : "justify-between",
         )}
       >
+        {!collapsed && (
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 pl-1 select-none">
+            Trading
+          </span>
+        )}
         <button
           onClick={() => setCollapsed((c) => !c)}
           className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
@@ -59,9 +64,9 @@ export function TradingVerticalNav({
           title={collapsed ? "Expand navigation" : "Collapse navigation"}
         >
           {collapsed ? (
-            <ChevronRight className="size-4" />
+            <PanelLeftOpen className="size-4" />
           ) : (
-            <ChevronLeft className="size-4" />
+            <PanelLeftClose className="size-4" />
           )}
         </button>
       </div>
