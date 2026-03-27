@@ -154,10 +154,10 @@ export const routeMappings: RouteMapping[] = [
     requiresAuth: true,
   },
 
-  // BUILD stage — Research & Backtesting Service
+  // BUILD stage — Research Service
   {
     path: "/services/research/overview",
-    label: "Research & Backtesting",
+    label: "Research",
     primaryStage: "build",
     lanes: ["ml", "strategy", "execution"],
     description: "ML models, strategy research, execution research",
@@ -714,7 +714,7 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
     build: [
       {
         path: "/services/research/overview",
-        label: "Research & Backtesting",
+        label: "Research",
         lanes: ["ml", "strategy", "execution"],
         description: "ML models, strategy research, execution research",
       },

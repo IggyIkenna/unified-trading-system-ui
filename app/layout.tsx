@@ -1,4 +1,3 @@
-import { OptionalVercelAnalytics } from "@/components/optional-vercel-analytics";
 import { PreviewBanner } from "@/components/preview-banner";
 import { StagingGate } from "@/components/staging-gate";
 import { Toaster } from "@/components/ui/sonner";
@@ -79,7 +78,6 @@ export default function RootLayout({
           </Providers>
         </StagingGate>
         <Toaster />
-        <OptionalVercelAnalytics />
       </body>
     </html>
   );

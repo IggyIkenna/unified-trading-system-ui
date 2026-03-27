@@ -27,11 +27,13 @@ interface WorkspaceToolbarProps {
   tab: string;
 }
 
+const EMPTY_WORKSPACES: readonly never[] = [];
+
 export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   const ensureTab = useWorkspaceStore((s) => s.ensureTab);
   React.useEffect(() => ensureTab(tab), [ensureTab, tab]);
 
-  const workspaces = useWorkspaceStore((s) => s.workspaces[tab] ?? []);
+  const workspaces = useWorkspaceStore((s) => s.workspaces[tab] ?? EMPTY_WORKSPACES);
   const activeId = useWorkspaceStore((s) => s.activeWorkspaceId[tab]);
   const editMode = useWorkspaceStore((s) => s.editMode);
   const setActiveWorkspace = useWorkspaceStore((s) => s.setActiveWorkspace);

@@ -109,7 +109,7 @@ export function DriftAnalysisPanel({
                 )}
                 <CardTitle className="text-sm flex items-center gap-2">
                   <ArrowLeftRight className="size-4" />
-                  Live vs Simulated
+                  Live vs Batch
                 </CardTitle>
                 {significantDrifts.length > 0 && (
                   <Badge

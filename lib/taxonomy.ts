@@ -941,7 +941,121 @@ export const NAVIGATION_SURFACE_CONFIG: Record<
 };
 
 // =============================================================================
-// LIFECYCLE PHASES
+// LIFECYCLE STAGES — CANONICAL LABELS
+// =============================================================================
+// These are the platform-wide lifecycle stages. Every navigation item, service
+// card, route label, and documentation reference MUST use these labels exactly.
+// The `stage` key is the machine identifier; `label` is the only user-facing name.
+// Do NOT invent synonyms ("Build" for "Research", "Run" for "Trading", etc.).
+
+export const PLATFORM_LIFECYCLE_STAGES = [
+  "acquire",
+  "build",
+  "promote",
+  "run",
+  "observe",
+  "manage",
+  "report",
+] as const;
+export type PlatformLifecycleStage = (typeof PLATFORM_LIFECYCLE_STAGES)[number];
+
+export const PLATFORM_LIFECYCLE_CONFIG: Record<
+  PlatformLifecycleStage,
+  {
+    label: string;
+    description: string;
+    order: number;
+    icon: string;
+    color: string;
+  }
+> = {
+  acquire: {
+    label: "Data",
+    description: "Instrument catalogue, market data, venue coverage, and freshness monitoring",
+    order: 1,
+    icon: "Database",
+    color: "text-sky-400",
+  },
+  build: {
+    label: "Research",
+    description: "ML models, strategy development, execution research, and backtesting",
+    order: 2,
+    icon: "FlaskConical",
+    color: "text-violet-400",
+  },
+  promote: {
+    label: "Promote",
+    description: "Strategy review, risk analysis, and deployment approval",
+    order: 3,
+    icon: "ArrowUpCircle",
+    color: "text-amber-400",
+  },
+  run: {
+    label: "Trading",
+    description: "Live trading, positions, orders, and account management",
+    order: 4,
+    icon: "TrendingUp",
+    color: "text-emerald-400",
+  },
+  observe: {
+    label: "Observe",
+    description: "Risk monitoring, alerts, strategy health, and system health",
+    order: 5,
+    icon: "Eye",
+    color: "text-cyan-400",
+  },
+  manage: {
+    label: "Manage",
+    description: "Clients, mandates, fees, and regulatory operations",
+    order: 6,
+    icon: "Settings2",
+    color: "text-rose-400",
+  },
+  report: {
+    label: "Reports",
+    description: "P&L attribution, settlement, reconciliation, and compliance reporting",
+    order: 7,
+    icon: "FileText",
+    color: "text-slate-400",
+  },
+};
+
+// =============================================================================
+// CANONICAL SERVICE LABELS — SSOT for all user-facing service names
+// =============================================================================
+// Every surface (nav, cards, tabs, docs, marketing) MUST use these exact names.
+// No synonyms. "Research & Backtesting" is wrong — it's "Research".
+
+export const SERVICE_LABELS = {
+  data: "Data",
+  research: "Research",
+  promote: "Promote",
+  trading: "Trading",
+  observe: "Observe",
+  reports: "Reports",
+  "investor-relations": "Investor Relations",
+  admin: "Admin & Ops",
+} as const;
+export type ServiceKey = keyof typeof SERVICE_LABELS;
+
+// =============================================================================
+// CANDIDATE LIFECYCLE WORDING — canonical verbs for strategy progression
+// =============================================================================
+// Use these exact terms across all surfaces. No synonyms.
+
+export const CANDIDATE_LIFECYCLE_VERBS = {
+  design: "Design",
+  backtest: "Backtest",
+  validate: "Validate",
+  review: "Review",
+  promote: "Promote",
+  deploy: "Deploy",
+  monitor: "Monitor",
+  retire: "Retire",
+} as const;
+
+// =============================================================================
+// LEGACY LIFECYCLE PHASES (deprecated — use PLATFORM_LIFECYCLE_STAGES)
 // =============================================================================
 
 export const LIFECYCLE_PHASES = [

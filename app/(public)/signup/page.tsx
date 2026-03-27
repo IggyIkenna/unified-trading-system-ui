@@ -47,7 +47,7 @@ const SERVICES = [
   },
   {
     id: "backtesting",
-    name: "Research & Backtesting",
+    name: "Research",
     icon: Brain,
     color: "text-violet-400",
     price: "Contact us",

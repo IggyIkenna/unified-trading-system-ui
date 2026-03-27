@@ -55,7 +55,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
   },
   {
     key: "research",
-    label: "Research & Backtesting",
+    label: "Research",
     description:
       "ML model training, signal configuration, strategy backtesting, feature engineering, and research pipeline.",
     href: "/services/research/overview",

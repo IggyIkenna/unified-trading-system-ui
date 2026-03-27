@@ -1,24 +1,35 @@
 "use client";
 
+/**
+ * RequireAuth — Auth boundary for the platform and ops route groups.
+ *
+ * If the user is authenticated, renders children.
+ * If not, redirects to /login with a redirect param back to the current page.
+ *
+ * Design rule: there is ONE login page at /login. RequireAuth does not render
+ * its own form — it bridges to the canonical sign-in experience.
+ */
+
 import * as React from "react";
-import Link from "next/link";
-import { Lock, ArrowRight, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { useRouter, usePathname } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 interface RequireAuthProps {
   children: React.ReactNode;
-  loginHref?: string;
 }
 
 export function RequireAuth({ children }: RequireAuthProps) {
-  const { user, loading, loginByEmail } = useAuth();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [error, setError] = React.useState("");
-  const [submitting, setSubmitting] = React.useState(false);
+  React.useEffect(() => {
+    if (!loading && !user) {
+      const redirect = encodeURIComponent(pathname || "/dashboard");
+      router.replace(`/login?redirect=${redirect}`);
+    }
+  }, [loading, user, pathname, router]);
 
   if (loading) {
     return (
@@ -28,105 +39,14 @@ export function RequireAuth({ children }: RequireAuthProps) {
     );
   }
 
-  if (user) return <>{children}</>;
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitting(true);
-    setError("");
-    const ok = await loginByEmail(email, password);
-    if (!ok) {
-      setError("Invalid credentials. Check your email and password.");
-    }
-    setSubmitting(false);
+  if (!user) {
+    // Show loading while redirect is pending
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b border-border">
-        <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="/" className="flex items-center gap-3">
-            <img
-              src="/images/odum-logo.png"
-              alt="Odum Research"
-              className="size-9"
-            />
-            <span className="text-lg font-semibold">Odum Research</span>
-          </Link>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/signup">Get Access</Link>
-          </Button>
-        </div>
-      </header>
-
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-5">
-          <div className="text-center">
-            <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-              <Lock className="size-5 text-primary" />
-            </div>
-            <h1 className="text-2xl font-bold">Sign in required</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              This area requires authentication. Sign in to continue.
-            </p>
-          </div>
-
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="ra-email" className="text-sm font-medium">
-                    Email
-                  </label>
-                  <input
-                    id="ra-email"
-                    type="email"
-                    placeholder="you@company.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="ra-password" className="text-sm font-medium">
-                    Password
-                  </label>
-                  <input
-                    id="ra-password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  />
-                </div>
-                {error && (
-                  <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
-                    {error}
-                  </p>
-                )}
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? (
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                  ) : (
-                    <ArrowRight className="mr-2 size-4" />
-                  )}
-                  Sign In
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          <p className="text-center text-xs text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-primary hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </div>
-      </main>
-    </div>
-  );
+  return <>{children}</>;
 }

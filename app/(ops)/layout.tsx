@@ -46,7 +46,8 @@ function AdminShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <UnifiedShell
-      orgName="Odum Internal"
+      orgName={user.org?.name ?? "Odum Internal"}
+      orgId={user.org?.id ?? "odum-internal"}
       userName={user.email?.split("@")[0] ?? "Admin"}
       userRole={user.role ?? "admin"}
     >

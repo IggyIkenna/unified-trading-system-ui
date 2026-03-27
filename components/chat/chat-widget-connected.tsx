@@ -1,24 +1,27 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ChatWidget } from "./chat-widget";
+import { ChatWidgetTree } from "./chat-widget-tree";
 
 /**
  * Auth-aware chat widget wrapper.
  *
- * Resolves the chat tier from the current auth context:
- *   - No user / unauthenticated → "public"
- *   - External org → "client"
- *   - Internal org → "internal"
+ * Currently uses the decision-tree chatbot (no backend needed).
+ * When the agentic backend is wired, swap to ChatWidget with tier prop.
+ *
+ * Tier → accent color:
+ *   - No user / unauthenticated → blue (should not appear — public layout has its own)
+ *   - External org → emerald (green)
+ *   - Internal org → amber (gold)
  */
 export function ChatWidgetConnected() {
   const auth = useAuth();
 
-  let tier: "public" | "client" | "internal" = "public";
+  let accent: "blue" | "emerald" | "amber" = "blue";
 
   if (auth.user) {
-    tier = auth.isInternal() ? "internal" : "client";
+    accent = auth.isInternal() ? "amber" : "emerald";
   }
 
-  return <ChatWidget tier={tier} />;
+  return <ChatWidgetTree accentColor={accent} />;
 }

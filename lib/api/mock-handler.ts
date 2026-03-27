@@ -2369,7 +2369,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
               },
               {
                 key: "research",
-                label: "Research & Backtesting",
+                label: "Research",
                 description: "ML, strategy, features",
                 internal_only: false,
               },

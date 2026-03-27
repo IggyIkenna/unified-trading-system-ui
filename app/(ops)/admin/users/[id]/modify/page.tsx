@@ -50,7 +50,7 @@ const SERVICE_ACCESS = [
     ],
   },
   {
-    category: "Research & Backtesting",
+    category: "Research",
     items: [
       {
         key: "ml-full",
