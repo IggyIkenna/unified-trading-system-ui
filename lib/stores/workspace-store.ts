@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { WidgetPlacement } from "@/components/widgets/widget-registry";
 import { getWidget } from "@/components/widgets/widget-registry";
-import { OVERVIEW_PRESETS, TERMINAL_PRESETS } from "@/components/widgets/workspace-presets";
+import { getPresetsForTab } from "@/components/widgets/preset-registry";
 
 export interface Workspace {
   id: string;
@@ -21,6 +21,7 @@ interface WorkspaceState {
 }
 
 interface WorkspaceActions extends WorkspaceState {
+  ensureTab: (tab: string) => void;
   setActiveWorkspace: (tab: string, id: string) => void;
   saveWorkspace: (tab: string, workspace: Workspace) => void;
   duplicateWorkspace: (tab: string, id: string, newName: string) => void;
@@ -28,11 +29,8 @@ interface WorkspaceActions extends WorkspaceState {
   updateLayout: (tab: string, layouts: WidgetPlacement[]) => void;
   addWidget: (tab: string, widgetId: string) => WidgetPlacement | null;
   removeWidget: (tab: string, instanceId: string) => void;
-  /** Merge a widget as a co-tab into an existing placement cell */
   mergeWidget: (tab: string, instanceId: string, widgetId: string) => void;
-  /** Remove a co-tab from a placement (or revert to primary if last co-tab) */
   removeCoTab: (tab: string, instanceId: string, widgetId: string) => void;
-  /** Set the active tab in a multi-tab cell */
   setActiveCoTab: (tab: string, instanceId: string, activeTabId: string) => void;
   toggleEditMode: () => void;
   exportWorkspace: (tab: string, id: string) => string;
@@ -44,14 +42,8 @@ const STORAGE_KEY = "unified-workspace-layouts";
 
 function buildInitialState(): WorkspaceState {
   return {
-    workspaces: {
-      overview: [...OVERVIEW_PRESETS],
-      terminal: [...TERMINAL_PRESETS],
-    },
-    activeWorkspaceId: {
-      overview: "overview-default",
-      terminal: "terminal-default",
-    },
+    workspaces: {},
+    activeWorkspaceId: {},
     editMode: true,
   };
 }
@@ -83,6 +75,20 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
   persist(
     (set, get) => ({
       ...buildInitialState(),
+
+      ensureTab: (tab) => {
+        const state = get();
+        if (state.workspaces[tab] && state.workspaces[tab].length > 0) return;
+        const presets = getPresetsForTab(tab);
+        if (presets.length === 0) return;
+        set((s) => ({
+          workspaces: { ...s.workspaces, [tab]: presets },
+          activeWorkspaceId: {
+            ...s.activeWorkspaceId,
+            [tab]: s.activeWorkspaceId[tab] ?? presets[0].id,
+          },
+        }));
+      },
 
       setActiveWorkspace: (tab, id) =>
         set((s) => ({
@@ -198,11 +204,7 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
               if (l.instanceId !== instanceId) return l;
               const existing = l.coTabs ?? [];
               if (existing.includes(widgetId) || l.widgetId === widgetId) return l;
-              return {
-                ...l,
-                coTabs: [...existing, widgetId],
-                activeTabId: widgetId,
-              };
+              return { ...l, coTabs: [...existing, widgetId], activeTabId: widgetId };
             });
             return { ...ws, layouts, updatedAt: new Date().toISOString() };
           });

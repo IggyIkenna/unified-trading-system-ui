@@ -2,11 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import type { Fixture, OddsMarket } from "./types";
 import { ARB_THRESHOLD_OPTIONS, DEFAULT_ARB_THRESHOLD } from "./mock-fixtures";
 import { ArbGrid } from "./arb-grid";
@@ -21,26 +17,15 @@ interface ArbControlsProps {
   onThresholdChange: (t: number) => void;
 }
 
-function ArbControls({
-  selectedMarket,
-  onMarketChange,
-  arbThreshold,
-  onThresholdChange,
-}: ArbControlsProps) {
+function ArbControls({ selectedMarket, onMarketChange, arbThreshold, onThresholdChange }: ArbControlsProps) {
   // Only offer markets we have mock data for
-  const availableMarkets: OddsMarket[] = [
-    "FT Result",
-    "Over/Under 2.5",
-    "BTTS",
-  ];
+  const availableMarkets: OddsMarket[] = ["FT Result", "Over/Under 2.5", "BTTS"];
 
   return (
     <div className="flex items-center gap-3 px-3 py-2 border-b border-zinc-800 bg-[#0d0d0d] flex-wrap">
       {/* Market selector */}
       <div className="flex items-center gap-1">
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wider mr-1">
-          Market
-        </span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider mr-1">Market</span>
         {availableMarkets.map((m) => (
           <button
             key={m}
@@ -61,9 +46,7 @@ function ArbControls({
 
       {/* Arb threshold */}
       <div className="flex items-center gap-1">
-        <span className="text-[10px] text-muted-foreground uppercase tracking-wider mr-1">
-          Min Arb
-        </span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider mr-1">Min Arb</span>
         {ARB_THRESHOLD_OPTIONS.map((t) => (
           <button
             key={t}
@@ -87,12 +70,17 @@ function ArbControls({
 
 interface ArbTabProps {
   fixtures: Fixture[];
+  /** When set with `onArbThresholdChange`, min-arb % is controlled by the parent (e.g. workspace context). */
+  arbThreshold?: number;
+  onArbThresholdChange?: (t: number) => void;
 }
 
-export function ArbTab({ fixtures }: ArbTabProps) {
-  const [selectedMarket, setSelectedMarket] =
-    React.useState<OddsMarket>("FT Result");
-  const [arbThreshold, setArbThreshold] = React.useState(DEFAULT_ARB_THRESHOLD);
+export function ArbTab({ fixtures, arbThreshold: arbThresholdProp, onArbThresholdChange }: ArbTabProps) {
+  const [selectedMarket, setSelectedMarket] = React.useState<OddsMarket>("FT Result");
+  const [internalThreshold, setInternalThreshold] = React.useState(DEFAULT_ARB_THRESHOLD);
+  const isThresholdControlled = arbThresholdProp !== undefined && onArbThresholdChange !== undefined;
+  const arbThreshold = isThresholdControlled ? arbThresholdProp : internalThreshold;
+  const setArbThreshold = isThresholdControlled ? onArbThresholdChange : setInternalThreshold;
 
   return (
     <div className="flex flex-col h-full min-h-0">
@@ -103,43 +91,25 @@ export function ArbTab({ fixtures }: ArbTabProps) {
         onThresholdChange={setArbThreshold}
       />
 
-      <ResizablePanelGroup
-        direction="horizontal"
-        autoSaveId="sports-arb-layout"
-        className="flex-1 min-h-0"
-      >
+      <ResizablePanelGroup direction="horizontal" autoSaveId="sports-arb-layout" className="flex-1 min-h-0">
         {/* Left: Odds grid */}
-        <ResizablePanel
-          defaultSize={65}
-          minSize={40}
-          className="flex flex-col min-h-0"
-        >
+        <ResizablePanel defaultSize={65} minSize={40} className="flex flex-col min-h-0">
           <div className="px-3 py-1.5 border-b border-zinc-800 bg-zinc-900/30">
             <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">
               Odds Grid — {selectedMarket}
             </span>
           </div>
           <div className="flex-1 overflow-auto">
-            <ArbGrid
-              fixtures={fixtures}
-              selectedMarket={selectedMarket}
-              arbThreshold={arbThreshold}
-            />
+            <ArbGrid fixtures={fixtures} selectedMarket={selectedMarket} arbThreshold={arbThreshold} />
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
         {/* Right: Arb stream */}
-        <ResizablePanel
-          defaultSize={35}
-          minSize={25}
-          className="flex flex-col min-h-0 border-l"
-        >
+        <ResizablePanel defaultSize={35} minSize={25} className="flex flex-col min-h-0 border-l">
           <div className="px-3 py-1.5 border-b border-zinc-800 bg-zinc-900/30">
-            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">
-              Live Arb Stream
-            </span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Live Arb Stream</span>
           </div>
           <div className="flex-1 min-h-0 overflow-auto">
             <ArbStream arbThreshold={arbThreshold} />

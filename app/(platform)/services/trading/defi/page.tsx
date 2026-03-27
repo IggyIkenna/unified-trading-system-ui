@@ -1,19 +1,25 @@
 "use client";
 
-import { DeFiOpsPanel } from "@/components/trading/defi-ops-panel";
+import { Suspense } from "react";
+import { WidgetGrid } from "@/components/widgets/widget-grid";
+import { DeFiDataProvider } from "@/components/widgets/defi/defi-data-context";
+
+import "@/components/widgets/defi/register";
+
+function DeFiPageContent() {
+  return (
+    <DeFiDataProvider>
+      <div className="h-full flex flex-col overflow-auto p-2">
+        <WidgetGrid tab="defi" />
+      </div>
+    </DeFiDataProvider>
+  );
+}
 
 export default function DeFiOpsPage() {
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold">DeFi Operations</h1>
-          <p className="text-sm text-muted-foreground">
-            Lending, swaps, liquidity, staking, and flash loan bundles
-          </p>
-        </div>
-      </div>
-      <DeFiOpsPanel />
-    </div>
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64">Loading DeFi…</div>}>
+      <DeFiPageContent />
+    </Suspense>
   );
 }

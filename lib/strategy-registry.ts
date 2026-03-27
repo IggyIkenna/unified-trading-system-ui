@@ -300,8 +300,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_ETH_BASIS_SCE_1H",
     name: "ETH Basis Trade",
-    description:
-      "Long spot ETH + short ETH perpetual on Hyperliquid. Delta-neutral funding rate arbitrage.",
+    description: "Long spot ETH + short ETH perpetual on Hyperliquid. Delta-neutral funding rate arbitrage.",
     strategyIdPattern: "DEFI_ETH_BASIS_SCE_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -364,11 +363,7 @@ export const STRATEGIES: Strategy[] = [
         {
           name: "USDT→ETH swap",
           sorEnabled: true,
-          allowedVenues: [
-            "UNISWAPV3-ETHEREUM",
-            "CURVE-ETHEREUM",
-            "BALANCER-ETH",
-          ],
+          allowedVenues: ["UNISWAPV3-ETHEREUM", "CURVE-ETHEREUM", "BALANCER-ETH"],
         },
         { name: "Short perp", sorEnabled: false },
       ],
@@ -515,8 +510,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_ETH_REC_STAKE_EVT_1H",
     name: "ETH Recursive Staked Basis",
-    description:
-      "Flash loan leveraged weETH staking yield + short perp hedge. 2.5x leveraged LST yield.",
+    description: "Flash loan leveraged weETH staking yield + short perp hedge. 2.5x leveraged LST yield.",
     strategyIdPattern: "DEFI_ETH_RECURSIVE_BASIS_SCE_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -592,13 +586,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     dataArchitecture: {
       rawDataSource: "CloudDataProvider (live) / CSVDataProvider (backtest)",
-      processedData: [
-        "eth_price",
-        "funding_rate",
-        "weeth_eth_rate",
-        "aave_borrow_apy_eth",
-        "health_factor",
-      ],
+      processedData: ["eth_price", "funding_rate", "weeth_eth_rate", "aave_borrow_apy_eth", "health_factor"],
       interval: "Time-driven (candle-based)",
       lowestGranularity: "1H",
       executionMode: "same_candle_exit",
@@ -609,11 +597,7 @@ export const STRATEGIES: Strategy[] = [
         {
           name: "WETH→weETH swap",
           sorEnabled: true,
-          allowedVenues: [
-            "CURVE-ETHEREUM",
-            "BALANCER-ETH",
-            "UNISWAPV3-ETHEREUM",
-          ],
+          allowedVenues: ["CURVE-ETHEREUM", "BALANCER-ETH", "UNISWAPV3-ETHEREUM"],
         },
         { name: "Flash borrow (Morpho)", sorEnabled: false },
         { name: "Aave deposit/borrow", sorEnabled: false },
@@ -665,8 +649,7 @@ export const STRATEGIES: Strategy[] = [
           color: "#dc2626",
         },
       ],
-      formula:
-        "equity = aweETH_value - debtWETH_value + perp_pnl + margin - initial",
+      formula: "equity = aweETH_value - debtWETH_value + perp_pnl + margin - initial",
     },
     riskProfile: {
       targetReturn: "25-35%",
@@ -748,12 +731,7 @@ export const STRATEGIES: Strategy[] = [
         description: "Morpho (0% fee)",
       },
     ],
-    venues: [
-      "AAVEV3-ETHEREUM",
-      "MORPHO-ETHEREUM",
-      "HYPERLIQUID",
-      "CURVE-ETHEREUM",
-    ],
+    venues: ["AAVEV3-ETHEREUM", "MORPHO-ETHEREUM", "HYPERLIQUID", "CURVE-ETHEREUM"],
     performance: {
       pnlTotal: 1245000,
       pnlMTD: 198000,
@@ -765,18 +743,10 @@ export const STRATEGIES: Strategy[] = [
     },
     sparklineData: [8, 10, 14, 12, 18, 22, 20, 26, 24, 30, 28, 35],
     references: {
-      implementation:
-        "strategy-service/engine/strategies/defi_recursive_basis.py",
+      implementation: "strategy-service/engine/strategies/defi_recursive_basis.py",
       configSchema: "strategy-service/docs/STRATEGY_MODES.md",
     },
-    instructionTypes: [
-      "FLASH_BORROW",
-      "SWAP",
-      "LEND",
-      "BORROW",
-      "TRADE",
-      "FLASH_REPAY",
-    ],
+    instructionTypes: ["FLASH_BORROW", "SWAP", "LEND", "BORROW", "TRADE", "FLASH_REPAY"],
   },
 
   // ============================================
@@ -785,8 +755,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_UNI_LP_EVT_1H",
     name: "Uniswap V3 LP (ETH-USDT)",
-    description:
-      "Concentrated liquidity provision on Uniswap V3. Earn swap fees with active range management.",
+    description: "Concentrated liquidity provision on Uniswap V3. Earn swap fees with active range management.",
     strategyIdPattern: "DEFI_ETH_MM_LP_V3_EVT",
     clientId: "defi-desk",
     assetClass: "DeFi",
@@ -850,13 +819,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     dataArchitecture: {
       rawDataSource: "NEVER direct - via features-onchain-service",
-      processedData: [
-        "pool_price",
-        "current_tick",
-        "fee_apy_24h",
-        "il_pct",
-        "pool_tvl",
-      ],
+      processedData: ["pool_price", "current_tick", "fee_apy_24h", "il_pct", "pool_tvl"],
       interval: "Event-driven on price move OR periodic",
       lowestGranularity: "Per-block (~12s on Ethereum)",
       executionMode: "event_driven",
@@ -902,8 +865,7 @@ export const STRATEGIES: Strategy[] = [
           color: "#dc2626",
         },
       ],
-      formula:
-        "total_pnl = (current_position_value + collected_fees) - initial_deposit",
+      formula: "total_pnl = (current_position_value + collected_fees) - initial_deposit",
     },
     riskProfile: {
       targetReturn: "10-25%",
@@ -1005,8 +967,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_BTC_MM_EVT_TICK",
     name: "BTC Market Making (Binance)",
-    description:
-      "Two-sided quoting on Binance BTC/USDT. Sub-second latency market making.",
+    description: "Two-sided quoting on Binance BTC/USDT. Sub-second latency market making.",
     strategyIdPattern: "CEFI_BTC_MM_BINANCE_EVT_SUB1S",
     clientId: "quant-fund",
     assetClass: "CeFi",
@@ -1070,12 +1031,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     dataArchitecture: {
       rawDataSource: "NEVER direct - via features service",
-      processedData: [
-        "mid_price",
-        "bid_ask_spread",
-        "realized_vol",
-        "orderbook_imbalance",
-      ],
+      processedData: ["mid_price", "bid_ask_spread", "realized_vol", "orderbook_imbalance"],
       interval: "Event-driven on underlying move > threshold",
       lowestGranularity: "Sub-second",
       executionMode: "event_driven",
@@ -1218,8 +1174,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_ETH_OPT_MM_EVT_TICK",
     name: "ETH Options MM (Deribit)",
-    description:
-      "Multi-strike options quoting with delta hedging. Greeks management across expiries.",
+    description: "Multi-strike options quoting with delta hedging. Greeks management across expiries.",
     strategyIdPattern: "CEFI_ETH_MM_OPT_DERIBIT_EVT_SUB1S",
     clientId: "quant-fund",
     assetClass: "CeFi",
@@ -1425,8 +1380,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_SPY_MOM_HUF_1D",
     name: "SPY ML Directional",
-    description:
-      "ML-driven directional strategy on SPY. LightGBM predictions with confidence-scaled sizing.",
+    description: "ML-driven directional strategy on SPY. LightGBM predictions with confidence-scaled sizing.",
     strategyIdPattern: "TRADFI_SPY_ML_DIRECTIONAL_V1",
     clientId: "alpha-main",
     assetClass: "TradFi",
@@ -1484,11 +1438,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     dataArchitecture: {
       rawDataSource: "Databento / IBKR",
-      processedData: [
-        "prediction_score",
-        "prediction_confidence",
-        "technical_features",
-      ],
+      processedData: ["prediction_score", "prediction_confidence", "technical_features"],
       interval: "ML prediction frequency",
       lowestGranularity: "1m bars",
       executionMode: "signal_driven",
@@ -1606,8 +1556,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_NFL_ARB_SCE_GAME",
     name: "Football Cross-Book Arb",
-    description:
-      "Cross-bookmaker arbitrage on football matches. Pinnacle vs Betfair vs Bet365.",
+    description: "Cross-bookmaker arbitrage on football matches. Pinnacle vs Betfair vs Bet365.",
     strategyIdPattern: "SPORTS_FOOTBALL_ARB_EVT",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -1802,8 +1751,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_BTC_BASIS_SCE_1H",
     name: "BTC Basis (Binance-HL)",
-    description:
-      "Binance spot BTC + Hyperliquid perp short. CeFi basis trade capturing funding rate.",
+    description: "Binance spot BTC + Hyperliquid perp short. CeFi basis trade capturing funding rate.",
     strategyIdPattern: "CEFI_BTC_BASIS_BINANCE_HL",
     clientId: "alpha-crypto",
     assetClass: "CeFi",
@@ -1961,8 +1909,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "PRED_POLY_ARB_SCE_1M",
     name: "Prediction Market Arb",
-    description:
-      "Cross-platform arbitrage between Polymarket and Kalshi on overlapping events.",
+    description: "Cross-platform arbitrage between Polymarket and Kalshi on overlapping events.",
     strategyIdPattern: "PRED_POLYMARKET_KALSHI_ARB",
     clientId: "alpha-crypto",
     assetClass: "Prediction",
@@ -2181,12 +2128,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     dataArchitecture: {
       rawDataSource: "Polymarket API / Binance WS / Deribit WS",
-      processedData: [
-        "poly_btc_up_odds",
-        "btc_perp_price",
-        "btc_options_iv",
-        "cross_asset_arb_signal",
-      ],
+      processedData: ["poly_btc_up_odds", "btc_perp_price", "btc_options_iv", "cross_asset_arb_signal"],
       interval: "Event-driven / 5m rebalance",
       lowestGranularity: "100ms (perp), 10s (prediction)",
       executionMode: "event_driven",
@@ -2327,8 +2269,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_AAVE_LEND_EVT_1D",
     name: "AAVE Lending (USDT)",
-    description:
-      "Supply USDT to Aave V3. Zero-alpha yield capture with liquidity index growth.",
+    description: "Supply USDT to Aave V3. Zero-alpha yield capture with liquidity index growth.",
     strategyIdPattern: "DEFI_AAVE_LENDING_ETH",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -2473,8 +2414,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_BTC_ML_DIR_HUF_4H",
     name: "ML Directional BTC",
-    description:
-      "ML-driven directional trading on BTC using gradient boosting models.",
+    description: "ML-driven directional trading on BTC using gradient boosting models.",
     strategyIdPattern: "CEFI_BTC_ML_DIR_HUF_4H",
     clientId: "quant-fund",
     assetClass: "CeFi",
@@ -2595,8 +2535,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_NBA_ML_HUF_GAME",
     name: "NBA Halftime ML",
-    description:
-      "ML model predicting NBA game outcomes at halftime. Kelly-criterion position sizing.",
+    description: "ML model predicting NBA game outcomes at halftime. Kelly-criterion position sizing.",
     strategyIdPattern: "SPORTS_NBA_ML_HUF_GAME",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -2683,9 +2622,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "kelly_fraction", value: "0.25", description: "Fractional Kelly" },
-    ],
+    configParams: [{ key: "kelly_fraction", value: "0.25", description: "Fractional Kelly" }],
     venues: ["BETFAIR", "PINNACLE", "DRAFTKINGS"],
     performance: {
       pnlTotal: 245000,
@@ -2710,8 +2647,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_MORPHO_LEND_EVT_1D",
     name: "Morpho Lending",
-    description:
-      "Supply USDC to Morpho protocol for enhanced yield with peer-to-peer matching.",
+    description: "Supply USDC to Morpho protocol for enhanced yield with peer-to-peer matching.",
     strategyIdPattern: "DEFI_MORPHO_LEND_EVT_1D",
     clientId: "defi-desk",
     assetClass: "DeFi",
@@ -2792,9 +2728,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "min_apy", value: "0.05", description: "Min 5% APY to stay" },
-    ],
+    configParams: [{ key: "min_apy", value: "0.05", description: "Min 5% APY to stay" }],
     venues: ["MORPHO-ETHEREUM"],
     performance: {
       pnlTotal: 98000,
@@ -2813,8 +2747,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_BOND_MEAN_REV_HUF_1D",
     name: "Bond Mean Reversion",
-    description:
-      "Mean reversion strategy on treasury ETFs (TLT, IEF). Statistical arbitrage on yield curve.",
+    description: "Mean reversion strategy on treasury ETFs (TLT, IEF). Statistical arbitrage on yield curve.",
     strategyIdPattern: "TRADFI_BOND_MEAN_REV_HUF_1D",
     clientId: "alpha-main",
     assetClass: "TradFi",
@@ -2926,8 +2859,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_ETH_MOM_HUF_4H",
     name: "ETH Momentum",
-    description:
-      "Momentum-based directional trading on ETH. Trend-following with volatility scaling.",
+    description: "Momentum-based directional trading on ETH. Trend-following with volatility scaling.",
     strategyIdPattern: "CEFI_ETH_MOM_HUF_4H",
     clientId: "vertex-core",
     assetClass: "CeFi",
@@ -3049,8 +2981,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_SOL_MOM_HUF_4H",
     name: "SOL Momentum",
-    description:
-      "Momentum-based directional trading on SOL. Higher volatility variant of ETH momentum.",
+    description: "Momentum-based directional trading on SOL. Higher volatility variant of ETH momentum.",
     strategyIdPattern: "CEFI_SOL_MOM_HUF_4H",
     clientId: "vertex-core",
     assetClass: "CeFi",
@@ -3172,8 +3103,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_MULTI_ARB_SCE_TICK",
     name: "Multi-Venue Arbitrage",
-    description:
-      "Cross-exchange arbitrage on BTC/ETH/SOL. Sub-second latency triangular arb.",
+    description: "Cross-exchange arbitrage on BTC/ETH/SOL. Sub-second latency triangular arb.",
     strategyIdPattern: "CEFI_MULTI_ARB_SCE_TICK",
     clientId: "vertex-core",
     assetClass: "CeFi",
@@ -3306,8 +3236,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_AVAX_MOMENTUM_HUF_1H",
     name: "AVAX Momentum",
-    description:
-      "Momentum-based directional trading on AVAX. Trend-following with volatility scaling.",
+    description: "Momentum-based directional trading on AVAX. Trend-following with volatility scaling.",
     strategyIdPattern: "CEFI_AVAX_MOMENTUM_HUF_1H",
     clientId: "delta-one",
     assetClass: "CeFi",
@@ -3422,8 +3351,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_ETH_MEAN_REV_SCE_4H",
     name: "ETH Mean Reversion",
-    description:
-      "Mean reversion strategy on ETH/USDT and ETH/USDC. Statistical arbitrage on spread deviations.",
+    description: "Mean reversion strategy on ETH/USDT and ETH/USDC. Statistical arbitrage on spread deviations.",
     strategyIdPattern: "CEFI_ETH_MEAN_REV_SCE_4H",
     clientId: "quant-fund",
     assetClass: "CeFi",
@@ -3537,8 +3465,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_DOGE_MM_HUF_30S",
     name: "DOGE Market Making",
-    description:
-      "Two-sided quoting on Binance DOGE/USDT. Sub-second latency market making on meme coins.",
+    description: "Two-sided quoting on Binance DOGE/USDT. Sub-second latency market making on meme coins.",
     strategyIdPattern: "CEFI_DOGE_MM_HUF_30S",
     clientId: "delta-one",
     assetClass: "CeFi",
@@ -3653,8 +3580,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_LINK_MOMENTUM_SCE_2H",
     name: "LINK Momentum",
-    description:
-      "Momentum-based directional trading on LINK perpetual. Staging for Hyperliquid deployment.",
+    description: "Momentum-based directional trading on LINK perpetual. Staging for Hyperliquid deployment.",
     strategyIdPattern: "CEFI_LINK_MOMENTUM_SCE_2H",
     clientId: "delta-one",
     assetClass: "CeFi",
@@ -3758,8 +3684,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_ARB_MEAN_REV_HUF_15M",
     name: "ARB Mean Reversion",
-    description:
-      "Mean reversion on ARB/USDT. Development phase strategy for beta fund.",
+    description: "Mean reversion on ARB/USDT. Development phase strategy for beta fund.",
     strategyIdPattern: "CEFI_ARB_MEAN_REV_HUF_15M",
     clientId: "quant-fund",
     assetClass: "CeFi",
@@ -3863,8 +3788,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_XRP_MM_HUF_1M",
     name: "XRP Market Making",
-    description:
-      "Two-sided quoting on Binance XRP/USDT. Fast-cycle market making.",
+    description: "Two-sided quoting on Binance XRP/USDT. Fast-cycle market making.",
     strategyIdPattern: "CEFI_XRP_MM_HUF_1M",
     clientId: "delta-one",
     assetClass: "CeFi",
@@ -3979,8 +3903,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_ES_ML_DIR_SCE_30M",
     name: "ES ML Directional",
-    description:
-      "ML-driven directional strategy on E-mini S&P 500 futures. Gradient boosting predictions.",
+    description: "ML-driven directional strategy on E-mini S&P 500 futures. Gradient boosting predictions.",
     strategyIdPattern: "TRADFI_ES_ML_DIR_SCE_30M",
     clientId: "quant-fund",
     assetClass: "TradFi",
@@ -4061,9 +3984,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "max_contracts", value: "50", description: "Max ES contracts" },
-    ],
+    configParams: [{ key: "max_contracts", value: "50", description: "Max ES contracts" }],
     venues: ["CME"],
     performance: {
       pnlTotal: 620000,
@@ -4084,8 +4005,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_SPY_OPTIONS_ML_EVT_1D",
     name: "SPY Options ML",
-    description:
-      "ML-driven options strategy on SPY. Volatility surface modeling with delta hedging.",
+    description: "ML-driven options strategy on SPY. Volatility surface modeling with delta hedging.",
     strategyIdPattern: "TRADFI_SPY_OPTIONS_ML_EVT_1D",
     clientId: "quant-fund",
     assetClass: "TradFi",
@@ -4206,8 +4126,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_CL_ML_DIR_SCE_1H",
     name: "Crude Oil ML Directional",
-    description:
-      "ML-driven directional strategy on CL and BZ crude oil futures.",
+    description: "ML-driven directional strategy on CL and BZ crude oil futures.",
     strategyIdPattern: "TRADFI_CL_ML_DIR_SCE_1H",
     clientId: "quant-fund",
     assetClass: "TradFi",
@@ -4289,9 +4208,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "max_contracts", value: "30", description: "Max CL contracts" },
-    ],
+    configParams: [{ key: "max_contracts", value: "30", description: "Max CL contracts" }],
     venues: ["CME"],
     performance: {
       pnlTotal: 410000,
@@ -4312,8 +4229,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_GC_MM_OPTIONS_EVT_TICK",
     name: "Gold Options MM",
-    description:
-      "Market making in gold options with delta hedging. Multi-strike quoting across expiries.",
+    description: "Market making in gold options with delta hedging. Multi-strike quoting across expiries.",
     strategyIdPattern: "TRADFI_GC_MM_OPTIONS_EVT_TICK",
     clientId: "delta-one",
     assetClass: "TradFi",
@@ -4407,9 +4323,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "spread_bps_atm", value: "12", description: "ATM spread in bps" },
-    ],
+    configParams: [{ key: "spread_bps_atm", value: "12", description: "ATM spread in bps" }],
     venues: ["CME"],
     performance: {
       pnlTotal: 780000,
@@ -4430,8 +4344,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_ZN_OPTIONS_ML_SCE_4H",
     name: "Treasury Options ML",
-    description:
-      "ML-driven options strategy on 10-Year Treasury Note futures. Volatility surface modeling.",
+    description: "ML-driven options strategy on 10-Year Treasury Note futures. Volatility surface modeling.",
     strategyIdPattern: "TRADFI_ZN_OPTIONS_ML_SCE_4H",
     clientId: "quant-fund",
     assetClass: "TradFi",
@@ -4520,9 +4433,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "STAGING", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "max_vega_usd", value: "80000", description: "Max vega exposure" },
-    ],
+    configParams: [{ key: "max_vega_usd", value: "80000", description: "Max vega exposure" }],
     venues: ["CME"],
     performance: {
       pnlTotal: 0,
@@ -4543,8 +4454,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_SI_ML_DIR_SCE_2H",
     name: "Silver ML Directional",
-    description:
-      "ML-driven directional strategy on silver futures. Vertex Partners allocation.",
+    description: "ML-driven directional strategy on silver futures. Vertex Partners allocation.",
     strategyIdPattern: "TRADFI_SI_ML_DIR_SCE_2H",
     clientId: "quant-fund",
     assetClass: "TradFi",
@@ -4625,9 +4535,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "max_contracts", value: "20", description: "Max SI contracts" },
-    ],
+    configParams: [{ key: "max_contracts", value: "20", description: "Max SI contracts" }],
     venues: ["CME"],
     performance: {
       pnlTotal: 290000,
@@ -4648,8 +4556,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_QQQ_MM_OPTIONS_EVT_5M",
     name: "QQQ Options MM",
-    description:
-      "Market making in QQQ options. Paper trading phase for beta fund.",
+    description: "Market making in QQQ options. Paper trading phase for beta fund.",
     strategyIdPattern: "TRADFI_QQQ_MM_OPTIONS_EVT_5M",
     clientId: "delta-one",
     assetClass: "TradFi",
@@ -4745,9 +4652,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "LIVE_MOCK", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "spread_bps_atm", value: "15", description: "ATM spread in bps" },
-    ],
+    configParams: [{ key: "spread_bps_atm", value: "15", description: "ATM spread in bps" }],
     venues: ["CBOE"],
     performance: {
       pnlTotal: 0,
@@ -4768,8 +4673,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_EURUSD_ML_DIR_SCE_1H",
     name: "EUR/USD ML Directional",
-    description:
-      "ML-driven directional strategy on 6E (EUR/USD) currency futures.",
+    description: "ML-driven directional strategy on 6E (EUR/USD) currency futures.",
     strategyIdPattern: "TRADFI_EURUSD_ML_DIR_SCE_1H",
     clientId: "quant-fund",
     assetClass: "TradFi",
@@ -4850,9 +4754,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "max_contracts", value: "40", description: "Max 6E contracts" },
-    ],
+    configParams: [{ key: "max_contracts", value: "40", description: "Max 6E contracts" }],
     venues: ["CME"],
     performance: {
       pnlTotal: 520000,
@@ -4873,8 +4775,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "TRADFI_HG_OPTIONS_ML_SCE_1D",
     name: "Copper Options ML",
-    description:
-      "ML-driven options strategy on HG copper futures. Development phase.",
+    description: "ML-driven options strategy on HG copper futures. Development phase.",
     strategyIdPattern: "TRADFI_HG_OPTIONS_ML_SCE_1D",
     clientId: "quant-fund",
     assetClass: "TradFi",
@@ -4951,9 +4852,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "MOCK", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "max_vega_usd", value: "50000", description: "Max vega exposure" },
-    ],
+    configParams: [{ key: "max_vega_usd", value: "50000", description: "Max vega exposure" }],
     venues: ["CME"],
     performance: {
       pnlTotal: 0,
@@ -4974,8 +4873,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_WBTC_BASIS_SCE_4H",
     name: "WBTC Basis Trade",
-    description:
-      "Long WBTC on Uniswap V3 + short BTC perp. DeFi basis trade on wrapped BTC.",
+    description: "Long WBTC on Uniswap V3 + short BTC perp. DeFi basis trade on wrapped BTC.",
     strategyIdPattern: "DEFI_WBTC_BASIS_SCE_4H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -5105,8 +5003,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_STETH_STAKED_BASIS_EVT_1D",
     name: "stETH Staked Basis",
-    description:
-      "Long stETH/wstETH staking yield + short ETH perp hedge. LST basis trade via Lido.",
+    description: "Long stETH/wstETH staking yield + short ETH perp hedge. LST basis trade via Lido.",
     strategyIdPattern: "DEFI_STETH_STAKED_BASIS_EVT_1D",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -5233,8 +5130,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK",
     name: "ETH Recursive Staked (Acme)",
-    description:
-      "Recursive staked basis via Aave V3. Flash loan leveraged wstETH/WETH looping.",
+    description: "Recursive staked basis via Aave V3. Flash loan leveraged wstETH/WETH looping.",
     strategyIdPattern: "DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK",
     clientId: "quant-fund",
     assetClass: "DeFi",
@@ -5328,9 +5224,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "target_leverage", value: "2.5", description: "Target leverage" },
-    ],
+    configParams: [{ key: "target_leverage", value: "2.5", description: "Target leverage" }],
     venues: ["AAVEV3-ETHEREUM"],
     performance: {
       pnlTotal: 380000,
@@ -5351,8 +5245,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_USDC_AAVE_LEND_EVT_1H",
     name: "USDC Aave Lending",
-    description:
-      "Multi-stablecoin lending on Aave V3. Supply USDC/USDT/DAI for yield optimization.",
+    description: "Multi-stablecoin lending on Aave V3. Supply USDC/USDT/DAI for yield optimization.",
     strategyIdPattern: "DEFI_USDC_AAVE_LEND_EVT_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -5445,9 +5338,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "min_supply_apy", value: "0.03", description: "Min 3% APY" },
-    ],
+    configParams: [{ key: "min_supply_apy", value: "0.03", description: "Min 3% APY" }],
     venues: ["AAVEV3-ETHEREUM"],
     performance: {
       pnlTotal: 220000,
@@ -5468,8 +5359,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_ARB_AMM_LP_SCE_4H",
     name: "ARB AMM LP",
-    description:
-      "Concentrated liquidity provision on Uniswap V3 for ARB/USDC and ARB/ETH pairs.",
+    description: "Concentrated liquidity provision on Uniswap V3 for ARB/USDC and ARB/ETH pairs.",
     strategyIdPattern: "DEFI_ARB_AMM_LP_SCE_4H",
     clientId: "defi-desk",
     assetClass: "DeFi",
@@ -5565,9 +5455,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "STAGING", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "tick_range", value: "2000", description: "Tick range offset" },
-    ],
+    configParams: [{ key: "tick_range", value: "2000", description: "Tick range offset" }],
     venues: ["UNISWAPV3-ETHEREUM"],
     performance: {
       pnlTotal: 0,
@@ -5588,8 +5476,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_MATIC_AMM_LP_SCE_2H",
     name: "MATIC AMM LP",
-    description:
-      "Concentrated liquidity provision for MATIC/USDC on Uniswap V3. Development phase.",
+    description: "Concentrated liquidity provision for MATIC/USDC on Uniswap V3. Development phase.",
     strategyIdPattern: "DEFI_MATIC_AMM_LP_SCE_2H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -5666,9 +5553,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "MOCK", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "tick_range", value: "1500", description: "Tick range offset" },
-    ],
+    configParams: [{ key: "tick_range", value: "1500", description: "Tick range offset" }],
     venues: ["UNISWAPV3-ETHEREUM"],
     performance: {
       pnlTotal: 0,
@@ -5689,8 +5574,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_DAI_AAVE_LEND_EVT_8H",
     name: "DAI Aave Lending",
-    description:
-      "Supply DAI/USDC to Aave V3 for yield. Conservative stablecoin lending.",
+    description: "Supply DAI/USDC to Aave V3 for yield. Conservative stablecoin lending.",
     strategyIdPattern: "DEFI_DAI_AAVE_LEND_EVT_8H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -5777,9 +5661,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "min_supply_apy", value: "0.025", description: "Min 2.5% APY" },
-    ],
+    configParams: [{ key: "min_supply_apy", value: "0.025", description: "Min 2.5% APY" }],
     venues: ["AAVEV3-ETHEREUM"],
     performance: {
       pnlTotal: 145000,
@@ -5800,8 +5682,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_EPL_ARB_EVT_MATCH",
     name: "EPL Cross-Book Arb",
-    description:
-      "Cross-bookmaker arbitrage on EPL matches. Back/lay across Betfair and bookmakers.",
+    description: "Cross-bookmaker arbitrage on EPL matches. Back/lay across Betfair and bookmakers.",
     strategyIdPattern: "SPORTS_EPL_ARB_EVT_MATCH",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -5898,9 +5779,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "min_arb_pct", value: "0.02", description: "Min 2% arb" },
-    ],
+    configParams: [{ key: "min_arb_pct", value: "0.02", description: "Min 2% arb" }],
     venues: ["BETFAIR", "PINNACLE"],
     performance: {
       pnlTotal: 185000,
@@ -5921,8 +5800,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_NFL_VALUE_BET_EVT_GAME",
     name: "NFL Value Betting",
-    description:
-      "Value betting on NFL moneyline and totals. Kelly-criterion sizing against sharp lines.",
+    description: "Value betting on NFL moneyline and totals. Kelly-criterion sizing against sharp lines.",
     strategyIdPattern: "SPORTS_NFL_VALUE_BET_EVT_GAME",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -6009,9 +5887,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "kelly_fraction", value: "0.25", description: "Fractional Kelly" },
-    ],
+    configParams: [{ key: "kelly_fraction", value: "0.25", description: "Fractional Kelly" }],
     venues: ["BETFAIR"],
     performance: {
       pnlTotal: 165000,
@@ -6032,8 +5908,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_LALIGA_ML_EVT_MATCH",
     name: "La Liga ML Sports",
-    description:
-      "ML-driven match prediction for La Liga. Gradient boosting on historical match data.",
+    description: "ML-driven match prediction for La Liga. Gradient boosting on historical match data.",
     strategyIdPattern: "SPORTS_LALIGA_ML_EVT_MATCH",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -6114,9 +5989,7 @@ export const STRATEGIES: Strategy[] = [
       },
     ],
     testingStatus: [{ stage: "LIVE_REAL", status: "done" }],
-    configParams: [
-      { key: "kelly_fraction", value: "0.20", description: "Fractional Kelly" },
-    ],
+    configParams: [{ key: "kelly_fraction", value: "0.20", description: "Fractional Kelly" }],
     venues: ["SMARKETS"],
     performance: {
       pnlTotal: 142000,
@@ -6137,8 +6010,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_NBA_MM_EVT_QUARTER",
     name: "NBA Market Making",
-    description:
-      "In-play market making on NBA moneyline and spread. Quarter-level rebalancing.",
+    description: "In-play market making on NBA moneyline and spread. Quarter-level rebalancing.",
     strategyIdPattern: "SPORTS_NBA_MM_EVT_QUARTER",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -6227,9 +6099,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "STAGING", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "spread_bps", value: "50", description: "Spread in bps" },
-    ],
+    configParams: [{ key: "spread_bps", value: "50", description: "Spread in bps" }],
     venues: ["BETFAIR"],
     performance: {
       pnlTotal: 0,
@@ -6250,8 +6120,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_MLB_VALUE_BET_EVT_GAME",
     name: "MLB Value Betting",
-    description:
-      "Value betting on MLB moneyline and run line. Paper trading phase.",
+    description: "Value betting on MLB moneyline and run line. Paper trading phase.",
     strategyIdPattern: "SPORTS_MLB_VALUE_BET_EVT_GAME",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -6340,9 +6209,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "LIVE_MOCK", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "kelly_fraction", value: "0.20", description: "Fractional Kelly" },
-    ],
+    configParams: [{ key: "kelly_fraction", value: "0.20", description: "Fractional Kelly" }],
     venues: ["SMARKETS"],
     performance: {
       pnlTotal: 0,
@@ -6363,8 +6230,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "SPORTS_SERIE_A_ARB_EVT_MATCH",
     name: "Serie A Arbitrage",
-    description:
-      "Cross-bookmaker arbitrage on Serie A matches. Development phase for beta fund.",
+    description: "Cross-bookmaker arbitrage on Serie A matches. Development phase for beta fund.",
     strategyIdPattern: "SPORTS_SERIE_A_ARB_EVT_MATCH",
     clientId: "sports-desk",
     assetClass: "Sports",
@@ -6441,9 +6307,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "MOCK", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "min_arb_pct", value: "0.025", description: "Min 2.5% arb" },
-    ],
+    configParams: [{ key: "min_arb_pct", value: "0.025", description: "Min 2.5% arb" }],
     venues: ["BETFAIR"],
     performance: {
       pnlTotal: 0,
@@ -6464,8 +6328,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "PREDICTION_POLY_ML_DIR_EVT_4H",
     name: "Prediction ML Directional",
-    description:
-      "ML-driven directional trading on Polymarket CPI and NFP prediction events.",
+    description: "ML-driven directional trading on Polymarket CPI and NFP prediction events.",
     strategyIdPattern: "PREDICTION_POLY_ML_DIR_EVT_4H",
     clientId: "quant-fund",
     assetClass: "Prediction",
@@ -6579,8 +6442,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "PREDICTION_POLY_ARB_EVT_1H",
     name: "Prediction Cross-Platform Arb",
-    description:
-      "Arbitrage between Polymarket crypto prediction events. ETH and BTC price threshold markets.",
+    description: "Arbitrage between Polymarket crypto prediction events. ETH and BTC price threshold markets.",
     strategyIdPattern: "PREDICTION_POLY_ARB_EVT_1H",
     clientId: "quant-fund",
     assetClass: "Prediction",
@@ -6678,9 +6540,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "STAGING", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "min_arb_pct", value: "0.03", description: "Min 3% arb" },
-    ],
+    configParams: [{ key: "min_arb_pct", value: "0.03", description: "Min 3% arb" }],
     venues: ["POLYMARKET"],
     performance: {
       pnlTotal: 0,
@@ -6701,8 +6561,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_MATIC_MOMENTUM_SCE_2H",
     name: "MATIC Momentum",
-    description:
-      "Momentum-based directional trading on MATIC/USDT. Development phase.",
+    description: "Momentum-based directional trading on MATIC/USDT. Development phase.",
     strategyIdPattern: "CEFI_MATIC_MOMENTUM_SCE_2H",
     clientId: "delta-one",
     assetClass: "CeFi",
@@ -6779,9 +6638,7 @@ export const STRATEGIES: Strategy[] = [
       { stage: "MOCK", status: "in_progress" },
       { stage: "LIVE_REAL", status: "pending" },
     ],
-    configParams: [
-      { key: "lookback_period", value: "16", description: "Momentum lookback" },
-    ],
+    configParams: [{ key: "lookback_period", value: "16", description: "Momentum lookback" }],
     venues: ["OKX"],
     performance: {
       pnlTotal: 0,
@@ -6802,8 +6659,7 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "CEFI_SUI_MOMENTUM_HUF_1H",
     name: "SUI Momentum",
-    description:
-      "Momentum-based directional trading on SUI/USDT. Trend-following with volatility scaling.",
+    description: "Momentum-based directional trading on SUI/USDT. Trend-following with volatility scaling.",
     strategyIdPattern: "CEFI_SUI_MOMENTUM_HUF_1H",
     clientId: "delta-one",
     assetClass: "CeFi",
@@ -6964,12 +6820,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     dataArchitecture: {
       rawDataSource: "Betfair Streaming API",
-      processedData: [
-        "best_back",
-        "best_lay",
-        "suspension_flag",
-        "sharp_calibration",
-      ],
+      processedData: ["best_back", "best_lay", "suspension_flag", "sharp_calibration"],
       interval: "Tick-driven",
       lowestGranularity: "Sub-second",
       executionMode: "event_driven",
@@ -7006,8 +6857,7 @@ export const STRATEGIES: Strategy[] = [
           color: "#ef4444",
         },
       ],
-      formula:
-        "total_pnl = spread_pnl + greening_pnl + inventory_pnl - commission",
+      formula: "total_pnl = spread_pnl + greening_pnl + inventory_pnl - commission",
     },
     riskProfile: {
       targetReturn: "20-35%",
@@ -7149,11 +6999,7 @@ export const STRATEGIES: Strategy[] = [
     ],
     dataArchitecture: {
       rawDataSource: "On-chain + Hyperliquid API",
-      processedData: [
-        "lst_eth_exchange_rate",
-        "funding_rate",
-        "eth_spot_price",
-      ],
+      processedData: ["lst_eth_exchange_rate", "funding_rate", "eth_spot_price"],
       interval: "Time-driven (candle-based)",
       lowestGranularity: "1H",
       executionMode: "same_candle_exit",
@@ -7197,8 +7043,7 @@ export const STRATEGIES: Strategy[] = [
           color: "#ef4444",
         },
       ],
-      formula:
-        "total_pnl = staking_yield + funding_pnl + lst_depeg_pnl + trading_pnl - fees_gas",
+      formula: "total_pnl = staking_yield + funding_pnl + lst_depeg_pnl + trading_pnl - fees_gas",
     },
     riskProfile: {
       targetReturn: "10-18%",
@@ -7443,15 +7288,11 @@ export function getStrategyById(id: string): Strategy | undefined {
   return STRATEGIES.find((s) => s.id === id);
 }
 
-export function getStrategiesByAssetClass(
-  assetClass: Strategy["assetClass"],
-): Strategy[] {
+export function getStrategiesByAssetClass(assetClass: Strategy["assetClass"]): Strategy[] {
   return STRATEGIES.filter((s) => s.assetClass === assetClass);
 }
 
-export function getStrategiesByArchetype(
-  archetype: Strategy["archetype"],
-): Strategy[] {
+export function getStrategiesByArchetype(archetype: Strategy["archetype"]): Strategy[] {
   return STRATEGIES.filter((s) => s.archetype === archetype);
 }
 
@@ -7467,25 +7308,20 @@ export function getStrategiesByClientId(clientId: string): Strategy[] {
   return STRATEGIES.filter((s) => s.clientId === clientId);
 }
 
-export function getStrategiesByExecutionMode(
-  mode: Strategy["executionMode"],
-): Strategy[] {
+export function getStrategiesByExecutionMode(mode: Strategy["executionMode"]): Strategy[] {
   return STRATEGIES.filter((s) => s.executionMode === mode);
 }
 
-export function getTotalAUM(): number {
-  return STRATEGIES.reduce(
-    (sum, s) => sum + Math.abs(s.performance.netExposure),
-    0,
-  );
+export function getTotalAUM(strategies: Strategy[] = STRATEGIES): number {
+  return strategies.reduce((sum, s) => sum + Math.abs(s.performance.netExposure), 0);
 }
 
-export function getTotalPnL(): number {
-  return STRATEGIES.reduce((sum, s) => sum + s.performance.pnlTotal, 0);
+export function getTotalPnL(strategies: Strategy[] = STRATEGIES): number {
+  return strategies.reduce((sum, s) => sum + s.performance.pnlTotal, 0);
 }
 
-export function getTotalMTDPnL(): number {
-  return STRATEGIES.reduce((sum, s) => sum + s.performance.pnlMTD, 0);
+export function getTotalMTDPnL(strategies: Strategy[] = STRATEGIES): number {
+  return strategies.reduce((sum, s) => sum + s.performance.pnlMTD, 0);
 }
 
 // =============================================================================
@@ -7524,9 +7360,7 @@ export function generatePositionsForStrategy(strategy: Strategy): Position[] {
       inst.role.toLowerCase().includes("short") ||
       inst.role.toLowerCase().includes("hedge") ||
       inst.role.toLowerCase().includes("debt");
-    const baseSize =
-      strategy.performance.netExposure /
-      (strategy.instruments.length * (isShort ? -1 : 1));
+    const baseSize = strategy.performance.netExposure / (strategy.instruments.length * (isShort ? -1 : 1));
 
     // Skip initial capital instruments
     if (inst.role.toLowerCase().includes("initial capital")) return;
@@ -7543,9 +7377,7 @@ export function generatePositionsForStrategy(strategy: Strategy): Position[] {
     const currentPrice = entryPrice * (1 + priceChange);
     const size = Math.abs(baseSize / entryPrice);
     const notional = size * currentPrice;
-    const unrealizedPnL = isShort
-      ? (entryPrice - currentPrice) * size
-      : (currentPrice - entryPrice) * size;
+    const unrealizedPnL = isShort ? (entryPrice - currentPrice) * size : (currentPrice - entryPrice) * size;
 
     positions.push({
       id: `pos-${strategy.id}-${idx}`,
@@ -7565,13 +7397,10 @@ export function generatePositionsForStrategy(strategy: Strategy): Position[] {
       currentPrice: Math.round(currentPrice * 100) / 100,
       notional: Math.abs(notional),
       unrealizedPnL: Math.round(unrealizedPnL),
-      unrealizedPnLPct:
-        Math.round((unrealizedPnL / Math.abs(baseSize)) * 10000) / 100,
+      unrealizedPnLPct: Math.round((unrealizedPnL / Math.abs(baseSize)) * 10000) / 100,
       margin: Math.abs(notional) * (inst.type === "Perp" ? 0.1 : 1),
       leverage: inst.type === "Perp" ? 10 : 1,
-      liquidationPrice: isShort
-        ? Math.round(entryPrice * 1.15)
-        : Math.round(entryPrice * 0.85),
+      liquidationPrice: isShort ? Math.round(entryPrice * 1.15) : Math.round(entryPrice * 0.85),
       healthFactor: inst.type === "aToken" ? 1.45 : undefined,
       ltv: inst.type === "aToken" ? 0.72 : undefined,
       lastUpdated: `${Math.floor(Math.random() * 10) + 1}s ago`,
@@ -7610,21 +7439,11 @@ export interface PnLBreakdownData {
 }
 
 // Map settlement types to categories
-function getSettlementCategory(
-  settlementType: string,
-): "REALIZED" | "UNREALIZED" | "RESIDUAL" {
-  const realizedTypes = [
-    "PER_FILL",
-    "PER_TRADE",
-    "FUNDING_8H",
-    "MATCH_SETTLEMENT",
-    "AAVE_INDEX",
-    "MORPHO_INDEX",
-  ];
+function getSettlementCategory(settlementType: string): "REALIZED" | "UNREALIZED" | "RESIDUAL" {
+  const realizedTypes = ["PER_FILL", "PER_TRADE", "FUNDING_8H", "MATCH_SETTLEMENT", "AAVE_INDEX", "MORPHO_INDEX"];
   const unrealizedTypes = ["MARK_TO_MARKET"];
   if (realizedTypes.some((t) => settlementType.includes(t))) return "REALIZED";
-  if (unrealizedTypes.some((t) => settlementType.includes(t)))
-    return "UNREALIZED";
+  if (unrealizedTypes.some((t) => settlementType.includes(t))) return "UNREALIZED";
   return "RESIDUAL";
 }
 
@@ -7633,11 +7452,7 @@ export function generatePnLBreakdown(strategy: Strategy): PnLBreakdownData {
   const components = strategy.pnlAttribution.components.map((comp) => {
     // Generate realistic breakdown based on strategy type
     let pct: number;
-    if (
-      comp.id.includes("cost") ||
-      comp.id.includes("fee") ||
-      comp.id.includes("slippage")
-    ) {
+    if (comp.id.includes("cost") || comp.id.includes("fee") || comp.id.includes("slippage")) {
       pct = -Math.random() * 15 - 5; // -5% to -20% of total
     } else if (comp.id.includes("funding") || comp.id.includes("spread")) {
       pct = Math.random() * 60 + 30; // 30% to 90% of total
@@ -7656,9 +7471,7 @@ export function generatePnLBreakdown(strategy: Strategy): PnLBreakdownData {
   });
 
   // Calculate realized, unrealized, and residual
-  const realized = components
-    .filter((c) => c.settlementCategory === "REALIZED")
-    .reduce((sum, c) => sum + c.value, 0);
+  const realized = components.filter((c) => c.settlementCategory === "REALIZED").reduce((sum, c) => sum + c.value, 0);
   const unrealized = components
     .filter((c) => c.settlementCategory === "UNREALIZED")
     .reduce((sum, c) => sum + c.value, 0);

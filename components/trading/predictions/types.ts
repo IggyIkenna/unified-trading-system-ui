@@ -120,6 +120,14 @@ export interface PredictionArbLeg {
   suggestedStake: number;
 }
 
+/** Quick-trade submit payload (widgets + mock ledger) */
+export interface PredictionQuickTradeParams {
+  marketId: string;
+  outcomeIndex: number;
+  side: "yes" | "no";
+  stakeUsd: number;
+}
+
 export interface PredictionArbOpportunity {
   id: string;
   marketType: PredictionArbMarketType;

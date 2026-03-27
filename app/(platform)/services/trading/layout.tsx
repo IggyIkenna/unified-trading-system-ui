@@ -248,14 +248,10 @@ function TradingSidebar() {
   );
 }
 
-const WIDGET_TABS = ["overview", "terminal"];
-
 function useWidgetTab(): string | null {
   const pathname = usePathname();
-  for (const tab of WIDGET_TABS) {
-    if (pathname.includes(`/trading/${tab}`)) return tab;
-  }
-  return null;
+  const match = pathname.match(/\/trading\/([^/]+)/);
+  return match?.[1] ?? null;
 }
 
 export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {

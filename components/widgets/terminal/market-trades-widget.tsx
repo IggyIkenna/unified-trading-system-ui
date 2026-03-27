@@ -18,7 +18,7 @@ export function MarketTradesWidget(_props: WidgetComponentProps) {
         <Tabs value={tab} onValueChange={(v) => setTab(v as "market" | "own")}>
           <TabsList className="h-7">
             <TabsTrigger value="market" className="text-[10px] h-5 px-2">
-              Market Trades
+              All
             </TabsTrigger>
             <TabsTrigger value="own" className="text-[10px] h-5 px-2">
               Own Trades

@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Clock, BarChart3, TrendingUp, CheckCircle2 } from "lucide-react";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { useToast } from "@/hooks/use-toast";
-import type { PredictionMarket } from "./types";
+import type { PredictionMarket, PredictionQuickTradeParams } from "./types";
 import { MOCK_MARKETS, MOCK_RECENT_FILLS } from "./mock-data";
 import { fmtVolume, calcKellyStake, fmtUsdPrecise, fmtRelativeTime } from "./helpers";
 import { VenueChip, LiveDot, ProbBadge } from "./shared";
@@ -22,7 +22,14 @@ const TOP_MARKETS = [...MOCK_MARKETS].sort((a, b) => b.volume - a.volume).slice(
 
 // ─── Trade Panel ──────────────────────────────────────────────────────────────
 
-function TradePanelInner({ market }: { market: PredictionMarket }) {
+export function TradePanelInner({
+  market,
+  onPlaceTrade,
+}: {
+  market: PredictionMarket;
+  /** When set, invoked instead of inline mock order + toast (e.g. workspace context). */
+  onPlaceTrade?: (params: PredictionQuickTradeParams) => void;
+}) {
   const { toast } = useToast();
   const [stakeAmount, setStakeAmount] = React.useState("");
   const [selectedSide, setSelectedSide] = React.useState<"yes" | "no">("yes");
@@ -40,6 +47,16 @@ function TradePanelInner({ market }: { market: PredictionMarket }) {
 
   function submit() {
     if (stakeNum <= 0) return;
+    if (onPlaceTrade) {
+      onPlaceTrade({
+        marketId: market.id,
+        outcomeIndex: selectedOutcomeIdx,
+        side: selectedSide,
+        stakeUsd: stakeNum,
+      });
+      setStakeAmount("");
+      return;
+    }
     const order = placeMockOrder({
       client_id: "internal-trader",
       instrument_id: `${market.venue.toUpperCase()}:${market.id}:${outcome.name}@${selectedSide.toUpperCase()}`,
@@ -133,7 +150,7 @@ function TradePanelInner({ market }: { market: PredictionMarket }) {
           size="sm"
           className={cn(
             "text-sm font-semibold",
-            selectedSide === "yes" && "bg-emerald-600 hover:bg-emerald-700 text-white"
+            selectedSide === "yes" && "bg-emerald-600 hover:bg-emerald-700 text-white",
           )}
           onClick={() => setSelectedSide("yes")}
         >
@@ -213,7 +230,7 @@ function TradePanelInner({ market }: { market: PredictionMarket }) {
       <Button
         className={cn(
           "w-full font-semibold",
-          selectedSide === "yes" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+          selectedSide === "yes" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700",
         )}
         disabled={stakeNum <= 0}
         onClick={submit}
@@ -226,12 +243,20 @@ function TradePanelInner({ market }: { market: PredictionMarket }) {
 
 // ─── Market selector ──────────────────────────────────────────────────────────
 
-function MarketSelector({ value, onChange }: { value: string; onChange: (id: string) => void }) {
+export function MarketSelector({
+  markets,
+  value,
+  onChange,
+}: {
+  markets: PredictionMarket[];
+  value: string;
+  onChange: (id: string) => void;
+}) {
   const [search, setSearch] = React.useState("");
 
   const options = search.trim()
-    ? MOCK_MARKETS.filter((m) => m.question.toLowerCase().includes(search.toLowerCase()))
-    : MOCK_MARKETS;
+    ? markets.filter((m) => m.question.toLowerCase().includes(search.toLowerCase()))
+    : markets;
 
   return (
     <div className="space-y-2">
@@ -266,7 +291,7 @@ function MarketSelector({ value, onChange }: { value: string; onChange: (id: str
 
 // ─── Top market quick-card ─────────────────────────────────────────────────────
 
-function TopMarketCard({ market, onSelect }: { market: PredictionMarket; onSelect: (id: string) => void }) {
+export function TopMarketCard({ market, onSelect }: { market: PredictionMarket; onSelect: (id: string) => void }) {
   const outcome = market.outcomes[0];
   return (
     <Card
@@ -288,7 +313,7 @@ function TopMarketCard({ market, onSelect }: { market: PredictionMarket; onSelec
           <span
             className={cn(
               "text-lg font-bold tabular-nums",
-              outcome.probability >= 50 ? "text-emerald-400" : "text-red-400"
+              outcome.probability >= 50 ? "text-emerald-400" : "text-red-400",
             )}
           >
             {outcome.probability}%
@@ -342,7 +367,7 @@ function RecentFills() {
                     variant="outline"
                     className={cn(
                       "text-[9px] font-bold",
-                      fill.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400"
+                      fill.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
                     )}
                   >
                     {fill.side.toUpperCase()}
@@ -384,7 +409,7 @@ export function TradeTab() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <MarketSelector value={selectedMarketId} onChange={setSelectedMarketId} />
+            <MarketSelector markets={MOCK_MARKETS} value={selectedMarketId} onChange={setSelectedMarketId} />
             {selectedMarket ? (
               <TradePanelInner market={selectedMarket} />
             ) : (

@@ -1,7 +1,7 @@
 "use client";
 
 import type { WidgetComponentProps } from "../widget-registry";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -48,10 +48,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
 
   return (
     <Card className="h-full border-0 rounded-none flex flex-col">
-      <CardHeader className="pb-2 pt-2 px-3 shrink-0">
-        <CardTitle className="text-sm">Order Entry</CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-auto px-3 pb-3 space-y-3">
+      <CardContent className="flex-1 overflow-auto px-3 pb-3 pt-2 space-y-3">
         {/* Buy / Sell toggle */}
         <div className="grid grid-cols-2 gap-1">
           <Button

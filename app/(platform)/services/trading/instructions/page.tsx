@@ -1,20 +1,25 @@
 "use client";
 
-import { StrategyInstructionViewer } from "@/components/trading/strategy-instruction-viewer";
+import { Suspense } from "react";
+import { WidgetGrid } from "@/components/widgets/widget-grid";
+import { InstructionsDataProvider } from "@/components/widgets/instructions/instructions-data-context";
+
+import "@/components/widgets/instructions/register";
+
+function InstructionsPageContent() {
+  return (
+    <InstructionsDataProvider>
+      <div className="h-full flex flex-col overflow-auto p-2">
+        <WidgetGrid tab="instructions" />
+      </div>
+    </InstructionsDataProvider>
+  );
+}
 
 export default function InstructionsPage() {
   return (
-    <div className="flex flex-col gap-4 p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold">Strategy Instructions</h1>
-          <p className="text-sm text-muted-foreground">
-            Signal → Instruction → Fill pipeline — what strategies want vs what
-            executed
-          </p>
-        </div>
-      </div>
-      <StrategyInstructionViewer />
-    </div>
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64">Loading instructions...</div>}>
+      <InstructionsPageContent />
+    </Suspense>
   );
 }

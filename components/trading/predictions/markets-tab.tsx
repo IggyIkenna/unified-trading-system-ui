@@ -51,7 +51,7 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function CategoryPills({ active, onSelect }: { active: MarketCategory; onSelect: (c: MarketCategory) => void }) {
+export function CategoryPills({ active, onSelect }: { active: MarketCategory; onSelect: (c: MarketCategory) => void }) {
   return (
     <ScrollArea className="w-full whitespace-nowrap">
       <div className="flex gap-2 pb-2">
@@ -106,7 +106,7 @@ function PriceHistoryChart({ series }: { series: { t: number; prob: number }[] }
   );
 }
 
-function BinaryMarketCard({ market, onSelect }: { market: PredictionMarket; onSelect: (id: string) => void }) {
+export function BinaryMarketCard({ market, onSelect }: { market: PredictionMarket; onSelect: (id: string) => void }) {
   const outcome = market.outcomes[0];
   return (
     <Card
@@ -164,7 +164,13 @@ function BinaryMarketCard({ market, onSelect }: { market: PredictionMarket; onSe
   );
 }
 
-function MultiOutcomeMarketCard({ market, onSelect }: { market: PredictionMarket; onSelect: (id: string) => void }) {
+export function MultiOutcomeMarketCard({
+  market,
+  onSelect,
+}: {
+  market: PredictionMarket;
+  onSelect: (id: string) => void;
+}) {
   return (
     <Card
       className="bg-card hover:bg-muted/50 transition-colors cursor-pointer border-border/50"
@@ -233,7 +239,17 @@ function MultiOutcomeMarketCard({ market, onSelect }: { market: PredictionMarket
   );
 }
 
-function MarketDetailPanel({ market, onClose }: { market: PredictionMarket; onClose: () => void }) {
+export function MarketDetailPanel({
+  market,
+  allMarkets,
+  onClose,
+  onSelectRelated,
+}: {
+  market: PredictionMarket;
+  allMarkets: PredictionMarket[];
+  onClose: () => void;
+  onSelectRelated?: (id: string) => void;
+}) {
   const { toast } = useToast();
   const [stakeAmount, setStakeAmount] = React.useState("");
   const [selectedSide, setSelectedSide] = React.useState<"yes" | "no">("yes");
@@ -407,7 +423,7 @@ function MarketDetailPanel({ market, onClose }: { market: PredictionMarket; onCl
           <Button
             className={cn(
               "w-full",
-              selectedSide === "yes" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700"
+              selectedSide === "yes" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-red-600 hover:bg-red-700",
             )}
             disabled={stakeNum <= 0}
             onClick={() => {
@@ -454,7 +470,8 @@ function MarketDetailPanel({ market, onClose }: { market: PredictionMarket; onCl
         {/* Related markets */}
         <div className="space-y-2 pt-2">
           <p className="text-xs text-muted-foreground font-medium">Related markets</p>
-          {MOCK_MARKETS.filter((m) => m.category === market.category && m.id !== market.id)
+          {allMarkets
+            .filter((m) => m.category === market.category && m.id !== market.id)
             .slice(0, 3)
             .map((related) => {
               const p =
@@ -464,6 +481,15 @@ function MarketDetailPanel({ market, onClose }: { market: PredictionMarket; onCl
               return (
                 <div
                   key={related.id}
+                  role={onSelectRelated ? "button" : undefined}
+                  tabIndex={onSelectRelated ? 0 : undefined}
+                  onClick={() => onSelectRelated?.(related.id)}
+                  onKeyDown={(e) => {
+                    if (onSelectRelated && (e.key === "Enter" || e.key === " ")) {
+                      e.preventDefault();
+                      onSelectRelated(related.id);
+                    }
+                  }}
                   className="flex items-center justify-between rounded-md border border-border/30 px-3 py-2 hover:bg-muted/30 cursor-pointer text-xs"
                 >
                   <span className="truncate mr-2">{related.question}</span>
@@ -507,7 +533,7 @@ export function MarketsTab() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       markets = markets.filter(
-        (m) => m.question.toLowerCase().includes(q) || m.outcomes.some((o) => o.name.toLowerCase().includes(q))
+        (m) => m.question.toLowerCase().includes(q) || m.outcomes.some((o) => o.name.toLowerCase().includes(q)),
       );
     }
 
@@ -533,7 +559,12 @@ export function MarketsTab() {
   if (selectedMarket) {
     return (
       <div className="space-y-4">
-        <MarketDetailPanel market={selectedMarket} onClose={() => setSelectedMarketId(null)} />
+        <MarketDetailPanel
+          market={selectedMarket}
+          allMarkets={MOCK_MARKETS}
+          onClose={() => setSelectedMarketId(null)}
+          onSelectRelated={setSelectedMarketId}
+        />
       </div>
     );
   }
@@ -551,7 +582,7 @@ export function MarketsTab() {
               size="sm"
               className={cn(
                 "text-xs h-8 rounded-none px-3 border-r border-border/50 last:border-r-0",
-                venueFilter === venue && "bg-muted text-foreground"
+                venueFilter === venue && "bg-muted text-foreground",
               )}
               onClick={() => setVenueFilter(venue)}
             >
@@ -613,7 +644,7 @@ export function MarketsTab() {
               <BinaryMarketCard key={market.id} market={market} onSelect={setSelectedMarketId} />
             ) : (
               <MultiOutcomeMarketCard key={market.id} market={market} onSelect={setSelectedMarketId} />
-            )
+            ),
           )}
         </div>
       )}

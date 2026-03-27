@@ -108,11 +108,7 @@
           "file": "app/(platform)/services/research/strategy/backtests/page.tsx",
           "state": "REAL",
           "lines": 740,
-          "api_hooks": [
-            "useStrategyBacktests",
-            "useStrategyTemplates",
-            "useCreateBacktest"
-          ]
+          "api_hooks": ["useStrategyBacktests", "useStrategyTemplates", "useCreateBacktest"]
         },
         {
           "label": "Backtests",
@@ -376,11 +372,7 @@
           "file": "app/(platform)/services/trading/book/page.tsx",
           "state": "REAL",
           "lines": 770,
-          "api_hooks": [
-            "usePlaceOrder",
-            "usePreTradeCheck",
-            "useOrganizationsList"
-          ]
+          "api_hooks": ["usePlaceOrder", "usePreTradeCheck", "useOrganizationsList"]
         },
         {
           "label": "Accounts",
@@ -395,12 +387,8 @@
           "route": "/services/trading/pnl",
           "file": "app/(platform)/services/trading/pnl/page.tsx",
           "state": "REAL",
-          "lines": 2162,
-          "api_hooks": [
-            "useTickers",
-            "useStrategyPerformance",
-            "useOrganizationsList"
-          ]
+          "lines": 25,
+          "api_hooks": ["useTickers", "useStrategyPerformance", "useOrganizationsList"]
         }
       ],
       "sub_routes": [
@@ -426,13 +414,27 @@
           "route": "/services/trading/alerts",
           "file": "app/(platform)/services/trading/alerts/page.tsx",
           "state": "REAL",
-          "lines": 806
+          "lines": 27
         },
         {
           "route": "/services/trading/risk",
           "file": "app/(platform)/services/trading/risk/page.tsx",
           "state": "REAL",
           "lines": 1967
+        },
+        {
+          "route": "/services/trading/instructions",
+          "file": "app/(platform)/services/trading/instructions/page.tsx",
+          "state": "REAL",
+          "lines": 32,
+          "description": "Widget workspace — strategy instruction pipeline (mock fixtures); widgets in components/widgets/instructions/"
+        },
+        {
+          "route": "/services/trading/predictions",
+          "file": "app/(platform)/services/trading/predictions/page.tsx",
+          "state": "REAL",
+          "lines": 28,
+          "description": "Widget workspace — prediction markets (mock); widgets in components/widgets/predictions/"
         }
       ]
     },
@@ -449,12 +451,7 @@
           "route": "/services/execution/overview",
           "state": "REAL",
           "lines": 372,
-          "api_hooks": [
-            "useAlgos",
-            "useExecutionMetrics",
-            "useOrders",
-            "useVenues"
-          ]
+          "api_hooks": ["useAlgos", "useExecutionMetrics", "useOrders", "useVenues"]
         },
         {
           "label": "Algos",
@@ -532,12 +529,7 @@
           "route": "/services/trading/alerts",
           "state": "REAL",
           "lines": 806,
-          "api_hooks": [
-            "useAlerts",
-            "useAcknowledgeAlert",
-            "useEscalateAlert",
-            "useResolveAlert"
-          ]
+          "api_hooks": ["useAlerts", "useAcknowledgeAlert", "useEscalateAlert", "useResolveAlert"]
         },
         {
           "label": "News",
@@ -558,11 +550,7 @@
           "route": "/services/observe/health",
           "state": "REAL",
           "lines": 1047,
-          "api_hooks": [
-            "useServiceHealth",
-            "useFeatureFreshness",
-            "useServiceActivity"
-          ]
+          "api_hooks": ["useServiceHealth", "useFeatureFreshness", "useServiceActivity"]
         }
       ]
     },
@@ -879,10 +867,7 @@
       "/markets/* -> /services/trading/pnl",
       "/trading/markets -> /services/trading/pnl"
     ],
-    "removed_routes": [
-      "/portal/* -> /dashboard",
-      "/services/overview -> /dashboard"
-    ]
+    "removed_routes": ["/portal/* -> /dashboard", "/services/overview -> /dashboard"]
   },
   "shell_components": {
     "unified_shell": "components/shell/unified-shell.tsx — wraps all (platform) and (ops) routes",

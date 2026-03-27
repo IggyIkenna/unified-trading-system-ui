@@ -4,7 +4,7 @@ import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { CandlestickChart } from "@/components/trading/candlestick-chart";
 import { DepthChart } from "@/components/trading/order-book";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTerminalData } from "./terminal-data-context";
@@ -72,21 +72,18 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
   return (
     <Card className="h-full border-0 rounded-none flex flex-col">
       <CardHeader className="pb-2 pt-2 px-3 shrink-0">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm">Price Chart</CardTitle>
-          <div className="flex items-center gap-1">
-            {(["candles", "line", "depth", "options"] as const).map((ct) => (
-              <Button
-                key={ct}
-                variant={chartType === ct ? "secondary" : "ghost"}
-                size="sm"
-                className="h-6 px-2 text-[10px]"
-                onClick={() => setChartType(ct)}
-              >
-                {ct.charAt(0).toUpperCase() + ct.slice(1)}
-              </Button>
-            ))}
-          </div>
+        <div className="flex items-center justify-end gap-1">
+          {(["candles", "line", "depth", "options"] as const).map((ct) => (
+            <Button
+              key={ct}
+              variant={chartType === ct ? "secondary" : "ghost"}
+              size="sm"
+              className="h-6 px-2 text-[10px]"
+              onClick={() => setChartType(ct)}
+            >
+              {ct.charAt(0).toUpperCase() + ct.slice(1)}
+            </Button>
+          ))}
         </div>
         <div className="flex items-center gap-1 mt-1">
           {INDICATORS.map((ind) => (

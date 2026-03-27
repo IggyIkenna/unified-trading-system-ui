@@ -20,7 +20,7 @@ interface FixtureGroups {
   completed: Fixture[];
 }
 
-function groupFixtures(fixtures: Fixture[]): FixtureGroups {
+export function groupFixtures(fixtures: Fixture[]): FixtureGroups {
   const now = new Date();
   const todayEnd = new Date(now);
   todayEnd.setHours(23, 59, 59, 999);
@@ -53,15 +53,9 @@ function groupFixtures(fixtures: Fixture[]): FixtureGroups {
     }
   }
 
-  groups.upcomingToday.sort(
-    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime(),
-  );
-  groups.upcomingLater.sort(
-    (a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime(),
-  );
-  groups.completed.sort(
-    (a, b) => new Date(b.kickoff).getTime() - new Date(a.kickoff).getTime(),
-  );
+  groups.upcomingToday.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  groups.upcomingLater.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
+  groups.completed.sort((a, b) => new Date(b.kickoff).getTime() - new Date(a.kickoff).getTime());
 
   return groups;
 }
@@ -80,7 +74,7 @@ function useIsLargeScreen() {
 
 // ─── Sections ───────────────────────────────────────────────────────────────────
 
-interface FixtureSectionProps {
+export interface FixtureSectionProps {
   title: string;
   fixtures: Fixture[];
   selectedId: string | null;
@@ -89,7 +83,7 @@ interface FixtureSectionProps {
   onOpenDetail: (f: Fixture, tab?: "stats" | "odds-history" | "replay") => void;
 }
 
-function FixtureSection({
+export function FixtureSection({
   title,
   fixtures,
   selectedId,
@@ -125,19 +119,14 @@ interface FixturesTabProps {
 export function FixturesTab({ fixtures, onViewArb }: FixturesTabProps) {
   const isLg = useIsLargeScreen();
   const [selected, setSelected] = React.useState<Fixture | null>(null);
-  const [detailTab, setDetailTab] = React.useState<
-    "stats" | "odds-history" | "replay"
-  >("stats");
+  const [detailTab, setDetailTab] = React.useState<"stats" | "odds-history" | "replay">("stats");
 
   function selectFixture(f: Fixture) {
     setSelected(f);
     setDetailTab("stats");
   }
 
-  function openDetail(
-    f: Fixture,
-    tab: "stats" | "odds-history" | "replay" = "stats",
-  ) {
+  function openDetail(f: Fixture, tab: "stats" | "odds-history" | "replay" = "stats") {
     setSelected(f);
     setDetailTab(tab);
   }
@@ -214,12 +203,9 @@ export function FixturesTab({ fixtures, onViewArb }: FixturesTabProps) {
           />
         ) : (
           <div className="flex flex-col items-center justify-center p-6 text-center min-h-[200px]">
-            <p className="text-base font-semibold text-zinc-400">
-              Select a match
-            </p>
+            <p className="text-base font-semibold text-zinc-400">Select a match</p>
             <p className="text-sm text-zinc-600 mt-2 max-w-[240px]">
-              Click a fixture for full stats, lineups, and odds history. The
-              list stays visible.
+              Click a fixture for full stats, lineups, and odds history. The list stays visible.
             </p>
           </div>
         )}

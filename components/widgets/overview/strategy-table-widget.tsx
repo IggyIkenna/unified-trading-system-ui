@@ -4,7 +4,7 @@ import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -91,10 +91,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
         <CardHeader className="pb-2 pt-2 px-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
-              <CardTitle className="text-sm">
-                Strategy Performance
-                {perfLoading && <Loader2 className="inline-block size-3.5 animate-spin ml-2" />}
-              </CardTitle>
+              {perfLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
               <input
                 type="text"
                 placeholder="Search..."

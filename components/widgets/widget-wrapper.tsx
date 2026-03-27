@@ -98,6 +98,27 @@ function WidgetBody({
   );
 }
 
+function categorizeWidget(w: WidgetDefinition): string {
+  const desc = (w.description + " " + w.label).toLowerCase();
+  if (desc.includes("chart") || desc.includes("graph") || desc.includes("series") || desc.includes("heatmap"))
+    return "Charts & Visualizations";
+  if (
+    desc.includes("table") ||
+    desc.includes("book") ||
+    desc.includes("list") ||
+    desc.includes("feed") ||
+    desc.includes("fills")
+  )
+    return "Tables & Data";
+  if (desc.includes("kpi") || desc.includes("metric") || desc.includes("summary") || desc.includes("strip"))
+    return "Metrics & KPIs";
+  if (desc.includes("filter") || desc.includes("control") || desc.includes("scope") || desc.includes("selector"))
+    return "Controls & Filters";
+  if (desc.includes("entry") || desc.includes("order") || desc.includes("trade") || desc.includes("form"))
+    return "Trading & Execution";
+  return "Other";
+}
+
 function AddCoTabButton({
   pageTab,
   placement,
@@ -108,11 +129,19 @@ function AddCoTabButton({
   currentAllWidgetIds: string[];
 }) {
   const mergeWidget = useWorkspaceStore((s) => s.mergeWidget);
+  const addWidget = useWorkspaceStore((s) => s.addWidget);
   const available = getWidgetsForTab(pageTab).filter(
     (w) => w.id !== placement.widgetId && !(placement.coTabs ?? []).includes(w.id),
   );
 
   if (available.length === 0) return null;
+
+  const grouped = available.reduce<Record<string, WidgetDefinition[]>>((acc, w) => {
+    const cat = categorizeWidget(w);
+    (acc[cat] ??= []).push(w);
+    return acc;
+  }, {});
+  const categories = Object.keys(grouped).sort();
 
   return (
     <DropdownMenu>
@@ -125,25 +154,45 @@ function AddCoTabButton({
           <Plus className="size-3" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-52 z-[60]" onClick={(e) => e.stopPropagation()}>
+      <DropdownMenuContent
+        align="end"
+        className="w-56 max-h-72 overflow-y-auto z-[60]"
+        onClick={(e) => e.stopPropagation()}
+      >
         <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground pb-1">
-          Add as tab
+          Add component
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {available.map((w) => {
-          const alreadyOnScreen = currentAllWidgetIds.includes(w.id);
-          return (
-            <DropdownMenuItem
-              key={w.id}
-              className="gap-2 text-xs cursor-pointer"
-              onSelect={() => mergeWidget(pageTab, placement.instanceId, w.id)}
-            >
-              <w.icon className="size-3 shrink-0 text-muted-foreground" />
-              <span className="flex-1 truncate">{w.label}</span>
-              {alreadyOnScreen && <span className="text-[9px] text-muted-foreground shrink-0">merge</span>}
-            </DropdownMenuItem>
-          );
-        })}
+        {categories.map((cat) => (
+          <React.Fragment key={cat}>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-[9px] uppercase tracking-wider text-muted-foreground/60 py-0.5">
+              {cat}
+            </DropdownMenuLabel>
+            {grouped[cat].map((w) => {
+              const alreadyOnScreen = currentAllWidgetIds.includes(w.id);
+              return (
+                <DropdownMenuItem
+                  key={w.id}
+                  className="gap-2 text-xs cursor-pointer"
+                  onSelect={() => {
+                    if (alreadyOnScreen) {
+                      mergeWidget(pageTab, placement.instanceId, w.id);
+                    } else {
+                      addWidget(pageTab, w.id);
+                    }
+                  }}
+                >
+                  <w.icon className="size-3 shrink-0 text-muted-foreground" />
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate">{w.label}</div>
+                    <div className="text-[9px] text-muted-foreground/60 truncate">{w.description}</div>
+                  </div>
+                  {alreadyOnScreen && <span className="text-[9px] text-primary/70 shrink-0 font-medium">merge</span>}
+                </DropdownMenuItem>
+              );
+            })}
+          </React.Fragment>
+        ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

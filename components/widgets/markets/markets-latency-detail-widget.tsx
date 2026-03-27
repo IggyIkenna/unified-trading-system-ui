@@ -1,0 +1,254 @@
+"use client";
+
+import * as React from "react";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { KpiStrip, CollapsibleSection } from "@/components/widgets/shared";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { cn } from "@/lib/utils";
+import { useMarketsData } from "./markets-data-context";
+
+/** Deterministic simulated batch per stage (avoids Math.random hydration drift). */
+function simulatedBatchMs(live: number, idx: number, field: "p50" | "p95" | "p99"): number {
+  const base = field === "p50" ? 0.92 : field === "p95" ? 0.9 : 0.88;
+  const step = 0.008 * (idx + 1);
+  return live * (base - step);
+}
+
+export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
+  const { latencyMetrics, selectedLatencyService, latencyViewMode, latencyDataMode } = useMarketsData();
+
+  const metric = React.useMemo(
+    () => latencyMetrics.find((m) => m.serviceId === selectedLatencyService),
+    [latencyMetrics, selectedLatencyService],
+  );
+
+  if (!metric) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-sm text-muted-foreground">
+        <p>Select a service in Latency Summary to view breakdown and charts.</p>
+      </div>
+    );
+  }
+
+  const kpiMetrics = [
+    { label: "p50", value: `${metric.p50.toFixed(1)}ms` },
+    { label: "p95", value: `${metric.p95.toFixed(1)}ms` },
+    {
+      label: "p99",
+      value: `${metric.p99.toFixed(1)}ms`,
+      sentiment: (metric.p99 > 30 ? "negative" : "neutral") as "negative" | "neutral",
+    },
+  ];
+
+  return (
+    <div className="p-2 space-y-3">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span
+          className={cn(
+            "size-2.5 rounded-full shrink-0",
+            metric.status === "healthy" && "bg-[var(--status-live)]",
+            metric.status === "warning" && "bg-[var(--status-warning)]",
+            metric.status === "critical" && "bg-[var(--status-error)]",
+          )}
+        />
+        <span className="text-sm font-medium truncate">{metric.service}</span>
+        <Badge variant="outline" className="text-[10px] ml-auto">
+          {latencyDataMode === "live" ? "Live" : latencyDataMode === "batch" ? "Batch" : "Compare"}
+        </Badge>
+      </div>
+
+      <KpiStrip metrics={kpiMetrics} columns={3} className="rounded-md" />
+
+      {latencyDataMode === "compare" && (
+        <div className="text-[10px] text-muted-foreground px-0.5">
+          Compare row uses live vs simulated batch multipliers per stage (stable).
+        </div>
+      )}
+
+      {latencyViewMode === "cross-section" && (
+        <Card className="border-border/60">
+          <CardHeader className="py-2 px-3">
+            <span className="text-xs font-medium">Lifecycle breakdown</span>
+          </CardHeader>
+          <CardContent className="px-3 pb-3 pt-0 space-y-2">
+            {metric.lifecycle.map((stage, idx) => {
+              const totalP50 = metric.lifecycle.reduce((s, x) => s + x.p50, 0);
+              const percentage = (stage.p50 / totalP50) * 100;
+              return (
+                <div key={stage.stage} className="space-y-1">
+                  <div className="flex items-center justify-between gap-2 text-[10px]">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="font-mono text-muted-foreground w-3">{idx + 1}</span>
+                      <span className="font-medium truncate">{stage.stage}</span>
+                    </div>
+                    <div className="flex gap-3 font-mono text-[10px] shrink-0">
+                      <span className="text-muted-foreground w-12 text-right">{stage.p50.toFixed(2)}</span>
+                      <span className="text-muted-foreground w-12 text-right">{stage.p95.toFixed(2)}</span>
+                      <span className={cn("w-12 text-right", stage.p99 > 5 ? "text-[var(--status-warning)]" : "")}>
+                        {stage.p99.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[var(--accent-blue)] rounded-full"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <span className="text-[9px] text-muted-foreground w-10 text-right">{percentage.toFixed(0)}%</span>
+                  </div>
+                </div>
+              );
+            })}
+            <div className="flex justify-end gap-3 pt-2 border-t text-[9px] text-muted-foreground font-mono">
+              <span className="w-12 text-right">p50</span>
+              <span className="w-12 text-right">p95</span>
+              <span className="w-12 text-right">p99</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {latencyViewMode === "time-series" && (
+        <Card className="border-border/60">
+          <CardHeader className="py-2 px-3">
+            <span className="text-xs font-medium">Latency over time (24h)</span>
+          </CardHeader>
+          <CardContent className="px-2 pb-2">
+            <div className="h-[220px] w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={metric.timeSeries}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="time" stroke="var(--muted-foreground)" fontSize={10} tickLine={false} />
+                  <YAxis
+                    stroke="var(--muted-foreground)"
+                    fontSize={10}
+                    tickLine={false}
+                    tickFormatter={(v) => `${v}ms`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      fontSize: "11px",
+                    }}
+                    formatter={(value: number) => [`${value.toFixed(2)}ms`]}
+                  />
+                  <Legend wrapperStyle={{ fontSize: "10px" }} />
+                  <Area
+                    type="monotone"
+                    dataKey="p99"
+                    stackId="1"
+                    stroke="var(--status-warning)"
+                    fill="var(--status-warning)"
+                    fillOpacity={0.2}
+                    name="p99"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="p95"
+                    stackId="2"
+                    stroke="var(--accent-blue)"
+                    fill="var(--accent-blue)"
+                    fillOpacity={0.3}
+                    name="p95"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="p50"
+                    stackId="3"
+                    stroke="var(--pnl-positive)"
+                    fill="var(--pnl-positive)"
+                    fillOpacity={0.4}
+                    name="p50"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {latencyDataMode === "compare" && (
+        <CollapsibleSection title="Live vs batch by stage" defaultOpen count={metric.lifecycle.length}>
+          <div className="overflow-x-auto px-1 pb-2">
+            <table className="w-full text-[10px]">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-1.5 font-medium">Stage</th>
+                  <th className="text-center p-1.5 font-medium" colSpan={3}>
+                    Live
+                  </th>
+                  <th className="text-center p-1.5 font-medium" colSpan={3}>
+                    Batch
+                  </th>
+                  <th className="text-center p-1.5 font-medium" colSpan={3}>
+                    Delta
+                  </th>
+                </tr>
+                <tr className="border-b text-muted-foreground">
+                  <th className="p-1" />
+                  <th className="p-1">p50</th>
+                  <th className="p-1">p95</th>
+                  <th className="p-1">p99</th>
+                  <th className="p-1">p50</th>
+                  <th className="p-1">p95</th>
+                  <th className="p-1">p99</th>
+                  <th className="p-1">p50</th>
+                  <th className="p-1">p95</th>
+                  <th className="p-1">p99</th>
+                </tr>
+              </thead>
+              <tbody>
+                {metric.lifecycle.map((stage, idx) => {
+                  const b50 = simulatedBatchMs(stage.p50, idx, "p50");
+                  const b95 = simulatedBatchMs(stage.p95, idx, "p95");
+                  const b99 = simulatedBatchMs(stage.p99, idx, "p99");
+                  return (
+                    <tr key={stage.stage} className="border-b border-border/50 hover:bg-muted/20">
+                      <td className="p-1.5 font-medium">{stage.stage}</td>
+                      <td className="p-1.5 font-mono text-center">{stage.p50.toFixed(2)}</td>
+                      <td className="p-1.5 font-mono text-center">{stage.p95.toFixed(2)}</td>
+                      <td className="p-1.5 font-mono text-center">{stage.p99.toFixed(2)}</td>
+                      <td className="p-1.5 font-mono text-center text-muted-foreground">{b50.toFixed(2)}</td>
+                      <td className="p-1.5 font-mono text-center text-muted-foreground">{b95.toFixed(2)}</td>
+                      <td className="p-1.5 font-mono text-center text-muted-foreground">{b99.toFixed(2)}</td>
+                      <td
+                        className={cn(
+                          "p-1.5 font-mono text-center",
+                          stage.p50 - b50 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
+                        )}
+                      >
+                        {(stage.p50 - b50 > 0 ? "+" : "") + (stage.p50 - b50).toFixed(2)}
+                      </td>
+                      <td
+                        className={cn(
+                          "p-1.5 font-mono text-center",
+                          stage.p95 - b95 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
+                        )}
+                      >
+                        {(stage.p95 - b95 > 0 ? "+" : "") + (stage.p95 - b95).toFixed(2)}
+                      </td>
+                      <td
+                        className={cn(
+                          "p-1.5 font-mono text-center",
+                          stage.p99 - b99 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
+                        )}
+                      >
+                        {(stage.p99 - b99 > 0 ? "+" : "") + (stage.p99 - b99).toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CollapsibleSection>
+      )}
+    </div>
+  );
+}

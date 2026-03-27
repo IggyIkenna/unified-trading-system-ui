@@ -46,6 +46,9 @@ function layoutsToPartialPlacements(layout: Layout, existing: WidgetPlacement[])
 }
 
 export function WidgetGrid({ tab }: WidgetGridProps) {
+  const ensureTab = useWorkspaceStore((s) => s.ensureTab);
+  React.useEffect(() => ensureTab(tab), [ensureTab, tab]);
+
   const placements = useActiveLayouts(tab);
   const updateLayout = useWorkspaceStore((s) => s.updateLayout);
   const removeWidget = useWorkspaceStore((s) => s.removeWidget);

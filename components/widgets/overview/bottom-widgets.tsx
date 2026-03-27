@@ -14,8 +14,7 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
   const { pnlComponents, totalPnl } = useOverviewData();
   return (
     <div className="p-3 h-full overflow-auto">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium">P&L Attribution</span>
+      <div className="flex justify-end mb-2">
         <Link href="/services/trading/pnl">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
@@ -31,8 +30,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
   const { mockAlerts, alertsLoading } = useOverviewData();
   return (
     <div className="p-3 h-full overflow-auto">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium">Alerts</span>
+      <div className="flex justify-end mb-2">
         <Link href="/services/trading/alerts">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
@@ -82,8 +80,7 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="p-3 h-full overflow-auto">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium">Recent Fills</span>
+      <div className="flex justify-end mb-2">
         <Link href="/services/trading/orders">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All
@@ -132,8 +129,7 @@ export function HealthGridWidget(_props: WidgetComponentProps) {
   const { allMockServices } = useOverviewData();
   return (
     <div className="p-3 h-full overflow-auto">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium">System Health</span>
+      <div className="flex justify-end mb-2">
         <Link href="/services/observe/health">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
             View All

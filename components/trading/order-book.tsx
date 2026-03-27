@@ -3,13 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { mock01 } from "@/lib/deterministic-mock";
 import { cn } from "@/lib/utils";
 import { DollarSign } from "lucide-react";
@@ -30,6 +24,7 @@ interface OrderBookProps {
   spreadBps: number;
   midPrice: number;
   venue?: string;
+  hideTitle?: boolean;
   className?: string;
 }
 
@@ -47,16 +42,8 @@ function generateMockOrderBook(
   // Realistic tick sizes and spreads by symbol
   // BTC/USDT on Binance: ~$0.10 tick, spread ~$0.20-0.50
   // ETH/USDT: ~$0.01 tick, spread ~$0.05-0.20
-  const tickSize = symbol.includes("BTC")
-    ? 0.1
-    : symbol.includes("ETH")
-      ? 0.01
-      : 0.01;
-  const baseSpread = symbol.includes("BTC")
-    ? 0.2
-    : symbol.includes("ETH")
-      ? 0.05
-      : 0.02;
+  const tickSize = symbol.includes("BTC") ? 0.1 : symbol.includes("ETH") ? 0.01 : 0.01;
+  const baseSpread = symbol.includes("BTC") ? 0.2 : symbol.includes("ETH") ? 0.05 : 0.02;
 
   // Seed incorporates tick for variation over time
   const baseSeed = symbol.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -78,15 +65,13 @@ function generateMockOrderBook(
     // Price steps down by tick size + small random
     const bidPrice = bestBid - tickSize * i - rand() * tickSize * 0.5;
     // Size increases as we go deeper (more liquidity at worse prices)
-    const bidSize =
-      (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10);
+    const bidSize = (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10);
     bidCumulative += bidSize;
     bids.push({ price: bidPrice, size: bidSize, total: bidCumulative });
 
     // Asks (ascending from best ask)
     const askPrice = bestAsk + tickSize * i + rand() * tickSize * 0.5;
-    const askSize =
-      (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10);
+    const askSize = (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10);
     askCumulative += askSize;
     asks.push({ price: askPrice, size: askSize, total: askCumulative });
   }
@@ -103,6 +88,7 @@ export function OrderBook({
   spreadBps,
   midPrice,
   venue = "Binance",
+  hideTitle = false,
   className,
 }: OrderBookProps) {
   const [showNative, setShowNative] = React.useState(false);
@@ -128,68 +114,54 @@ export function OrderBook({
 
   return (
     <Card className={cn("overflow-hidden", className)}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
-            Order Book
-            <Badge variant="outline" className="text-[10px] font-mono">
-              {symbol}
-            </Badge>
-            <Badge variant="secondary" className="text-[10px]">
-              {venue}
-            </Badge>
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            {/* Native/USD Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 px-2 text-xs"
-              onClick={() => setShowNative(!showNative)}
-            >
-              <DollarSign
-                className={cn("size-3 mr-1", showNative && "opacity-50")}
-              />
-              {showNative ? "Native" : "USD"}
-            </Button>
-            {/* Decimal selector */}
-            <Select
-              value={decimals.toString()}
-              onValueChange={(v) => setDecimals(parseInt(v))}
-            >
-              <SelectTrigger className="h-6 w-16 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="0">0</SelectItem>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="4">4</SelectItem>
-              </SelectContent>
-            </Select>
+      {!hideTitle && (
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm flex items-center gap-2">
+              Order Book
+              <Badge variant="outline" className="text-[10px] font-mono">
+                {symbol}
+              </Badge>
+              <Badge variant="secondary" className="text-[10px]">
+                {venue}
+              </Badge>
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              {/* Native/USD Toggle */}
+              <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => setShowNative(!showNative)}>
+                <DollarSign className={cn("size-3 mr-1", showNative && "opacity-50")} />
+                {showNative ? "Native" : "USD"}
+              </Button>
+              {/* Decimal selector */}
+              <Select value={decimals.toString()} onValueChange={(v) => setDecimals(parseInt(v))}>
+                <SelectTrigger className="h-6 w-16 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">0</SelectItem>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="4">4</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
 
-        {/* Spread indicator */}
-        <div className="flex items-center justify-center gap-4 py-2 bg-muted/30 rounded mt-2">
-          <span className="text-xs text-muted-foreground">
-            Spread:{" "}
-            <span className="font-mono text-foreground">
-              ${spread.toFixed(2)}
+          {/* Spread indicator */}
+          <div className="flex items-center justify-center gap-4 py-2 bg-muted/30 rounded mt-2">
+            <span className="text-xs text-muted-foreground">
+              Spread: <span className="font-mono text-foreground">${spread.toFixed(2)}</span>
+              <span className="text-muted-foreground ml-1">({spreadBps.toFixed(1)} bps)</span>
             </span>
-            <span className="text-muted-foreground ml-1">
-              ({spreadBps.toFixed(1)} bps)
+            <span className="text-xs text-muted-foreground">
+              Mid:{" "}
+              <span className="font-mono text-foreground">
+                ${midPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+              </span>
             </span>
-          </span>
-          <span className="text-xs text-muted-foreground">
-            Mid:{" "}
-            <span className="font-mono text-foreground">
-              $
-              {midPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-            </span>
-          </span>
-        </div>
-      </CardHeader>
+          </div>
+        </CardHeader>
+      )}
 
       <CardContent className="pt-0 px-0">
         <div className="grid grid-cols-2 gap-0">
@@ -249,15 +221,10 @@ export function OrderBook({
                     className="relative flex items-center justify-between px-3 py-1 text-xs hover:bg-muted/30 cursor-pointer group"
                   >
                     {/* Volume bar (background) */}
-                    <div
-                      className="absolute left-0 top-0 bottom-0 bg-rose-500/10"
-                      style={{ width: `${barWidth}%` }}
-                    />
+                    <div className="absolute left-0 top-0 bottom-0 bg-rose-500/10" style={{ width: `${barWidth}%` }} />
 
                     {/* Content */}
-                    <span className="relative z-10 font-mono text-rose-400 font-medium">
-                      {formatPrice(ask.price)}
-                    </span>
+                    <span className="relative z-10 font-mono text-rose-400 font-medium">{formatPrice(ask.price)}</span>
                     <span className="relative z-10 font-mono text-muted-foreground group-hover:text-foreground">
                       {formatSize(ask.size, ask.price)}
                     </span>
@@ -280,11 +247,7 @@ export function OrderBook({
         <div className="flex items-center justify-center py-2 border-t border-border">
           <span className="text-sm font-mono font-medium">
             Last:{" "}
-            <span
-              className={cn(
-                lastPrice >= midPrice ? "text-emerald-400" : "text-rose-400",
-              )}
-            >
+            <span className={cn(lastPrice >= midPrice ? "text-emerald-400" : "text-rose-400")}>
               $
               {lastPrice.toLocaleString(undefined, {
                 maximumFractionDigits: 2,
@@ -307,14 +270,7 @@ interface DepthChartProps {
   className?: string;
 }
 
-export function DepthChart({
-  bids,
-  asks,
-  midPrice,
-  symbol,
-  height = 200,
-  className,
-}: DepthChartProps) {
+export function DepthChart({ bids, asks, midPrice, symbol, height = 200, className }: DepthChartProps) {
   // Max cumulative volume (at the deepest levels)
   const maxBidVolume = bids[bids.length - 1]?.total || 0;
   const maxAskVolume = asks[asks.length - 1]?.total || 0;
@@ -327,16 +283,13 @@ export function DepthChart({
   const totalPriceRange = maxPrice - minPrice;
 
   // Convert price to x position (0-100)
-  const priceToX = (price: number) =>
-    ((price - minPrice) / totalPriceRange) * 100;
+  const priceToX = (price: number) => ((price - minPrice) / totalPriceRange) * 100;
 
   // Bids: cumulative volume grows as price decreases (going left from mid)
   // Path starts at mid (0 volume) and steps down-left to each bid level
   const bidPoints: string[] = [];
   // Start at the best bid with the cumulative volume at that level
-  bidPoints.push(
-    `M ${priceToX(bids[0]?.price || midPrice)} ${100 - (bids[0]?.total / maxVolume) * 90}`,
-  );
+  bidPoints.push(`M ${priceToX(bids[0]?.price || midPrice)} ${100 - (bids[0]?.total / maxVolume) * 90}`);
 
   for (let i = 1; i < bids.length; i++) {
     const x = priceToX(bids[i].price);
@@ -355,9 +308,7 @@ export function DepthChart({
 
   // Asks: cumulative volume grows as price increases (going right from mid)
   const askPoints: string[] = [];
-  askPoints.push(
-    `M ${priceToX(asks[0]?.price || midPrice)} ${100 - (asks[0]?.total / maxVolume) * 90}`,
-  );
+  askPoints.push(`M ${priceToX(asks[0]?.price || midPrice)} ${100 - (asks[0]?.total / maxVolume) * 90}`);
 
   for (let i = 1; i < asks.length; i++) {
     const x = priceToX(asks[i].price);
@@ -378,12 +329,7 @@ export function DepthChart({
         <CardTitle className="text-sm">Market Depth</CardTitle>
       </CardHeader>
       <CardContent className="pt-0">
-        <svg
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          className="w-full"
-          style={{ height }}
-        >
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full" style={{ height }}>
           {/* Grid lines */}
           <line
             x1={priceToX(midPrice)}
@@ -393,62 +339,24 @@ export function DepthChart({
             stroke="var(--border)"
             strokeWidth="0.5"
           />
-          <line
-            x1="0"
-            y1="50"
-            x2="100"
-            y2="50"
-            stroke="var(--border)"
-            strokeWidth="0.25"
-            strokeDasharray="2"
-          />
-          <line
-            x1="0"
-            y1="75"
-            x2="100"
-            y2="75"
-            stroke="var(--border)"
-            strokeWidth="0.25"
-            strokeDasharray="2"
-          />
-          <line
-            x1="0"
-            y1="25"
-            x2="100"
-            y2="25"
-            stroke="var(--border)"
-            strokeWidth="0.25"
-            strokeDasharray="2"
-          />
+          <line x1="0" y1="50" x2="100" y2="50" stroke="var(--border)" strokeWidth="0.25" strokeDasharray="2" />
+          <line x1="0" y1="75" x2="100" y2="75" stroke="var(--border)" strokeWidth="0.25" strokeDasharray="2" />
+          <line x1="0" y1="25" x2="100" y2="25" stroke="var(--border)" strokeWidth="0.25" strokeDasharray="2" />
 
           {/* Bid area (green) - cumulative volume at each price */}
-          <path
-            d={bidPoints.join(" ")}
-            fill="rgba(16, 185, 129, 0.3)"
-            stroke="rgb(16, 185, 129)"
-            strokeWidth="1.5"
-          />
+          <path d={bidPoints.join(" ")} fill="rgba(16, 185, 129, 0.3)" stroke="rgb(16, 185, 129)" strokeWidth="1.5" />
 
           {/* Ask area (red) - cumulative volume at each price */}
-          <path
-            d={askPoints.join(" ")}
-            fill="rgba(239, 68, 68, 0.3)"
-            stroke="rgb(239, 68, 68)"
-            strokeWidth="1.5"
-          />
+          <path d={askPoints.join(" ")} fill="rgba(239, 68, 68, 0.3)" stroke="rgb(239, 68, 68)" strokeWidth="1.5" />
         </svg>
 
         {/* Price labels */}
         <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
-          <span>
-            ${minPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-          </span>
+          <span>${minPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
           <span className="font-medium text-foreground">
             ${midPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </span>
-          <span>
-            ${maxPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-          </span>
+          <span>${maxPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
         </div>
       </CardContent>
     </Card>
@@ -480,16 +388,11 @@ export function OrderBookWithDepth({
   };
 
   const midPrice = initialMidPrice || defaultMidPrices[symbol] || 100;
-  const { bids, asks } = React.useMemo(
-    () => generateMockOrderBook(symbol, midPrice),
-    [symbol, midPrice],
-  );
+  const { bids, asks } = React.useMemo(() => generateMockOrderBook(symbol, midPrice), [symbol, midPrice]);
 
   const spread = asks[0]?.price - bids[0]?.price || 0;
   const spreadBps = (spread / midPrice) * 10000;
-  const symbolSalt = symbol
-    .split("")
-    .reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const symbolSalt = symbol.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
   const lastPrice = midPrice + (mock01(0, symbolSalt) - 0.5) * spread;
 
   return (
@@ -504,13 +407,7 @@ export function OrderBookWithDepth({
         midPrice={midPrice}
         venue={venue}
       />
-      <DepthChart
-        bids={bids}
-        asks={asks}
-        midPrice={midPrice}
-        symbol={symbol}
-        height={400}
-      />
+      <DepthChart bids={bids} asks={asks} midPrice={midPrice} symbol={symbol} height={400} />
     </div>
   );
 }

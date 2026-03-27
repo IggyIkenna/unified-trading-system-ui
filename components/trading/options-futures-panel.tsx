@@ -8,29 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Slider } from "@/components/ui/slider";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   TrendingUp,
   TrendingDown,
@@ -50,750 +35,61 @@ import {
   Pencil,
   Check,
 } from "lucide-react";
+import { WatchlistPanel, type WatchlistSymbol } from "@/components/trading/watchlist-panel";
+import type {
+  AssetClass,
+  Asset,
+  TradFiAsset,
+  Settlement,
+  Market,
+  TradFiMarket,
+  MainTab,
+  TradeDirection,
+  OrderType,
+  GreekSurface,
+  StrategiesMode,
+  ComboType,
+  ComboLeg,
+  OptionRow,
+  FutureRow,
+  SpreadCell,
+  SelectedInstrument,
+  SpreadAsset,
+} from "@/lib/types/options";
 import {
-  WatchlistPanel,
-  type WatchlistDefinition,
-  type WatchlistSymbol,
-} from "@/components/trading/watchlist-panel";
-
-// ---------- Types ----------
-
-type AssetClass = "crypto" | "tradfi";
-type Asset = "BTC" | "ETH" | "SOL" | "AVAX";
-type TradFiAsset = "SPY" | "QQQ" | "SPX";
-type Settlement = "inverse" | "linear";
-type Market = "deribit" | "okx" | "bybit";
-type TradFiMarket = "cboe" | "td" | "ibkr";
-type MainTab = "options" | "futures" | "strategies" | "scenario";
-type TradeDirection = "buy" | "sell";
-type OrderType = "limit" | "market" | "post-only" | "reduce-only";
-type GreekSurface = "delta" | "gamma" | "vega" | "theta";
-type StrategiesMode = "futures-spreads" | "options-combos";
-type ComboType =
-  | "vertical-spread"
-  | "straddle"
-  | "strangle"
-  | "calendar"
-  | "butterfly"
-  | "risk-reversal";
-
-interface ComboLeg {
-  strike: number;
-  type: "call" | "put";
-  direction: "buy" | "sell";
-  price: number;
-  delta: number;
-  gamma: number;
-  theta: number;
-  vega: number;
-}
-
-interface OptionRow {
-  strike: number;
-  callBid: number;
-  callAsk: number;
-  callMark: number;
-  callIvBid: number;
-  callIvAsk: number;
-  callDelta: number;
-  callOi: number;
-  callSize: number;
-  putBid: number;
-  putAsk: number;
-  putMark: number;
-  putIvBid: number;
-  putIvAsk: number;
-  putDelta: number;
-  putOi: number;
-  putSize: number;
-}
-
-interface FutureRow {
-  contract: string;
-  asset: Asset;
-  settlement: string;
-  markPrice: number;
-  change24h: number;
-  volume24h: number;
-  openInterest: number;
-  fundingRate: number | null;
-  basis: number | null;
-  isPerpetual: boolean;
-  favourite: boolean;
-}
-
-interface SpreadCell {
-  longLabel: string;
-  shortLabel: string;
-  spreadLabel: string;
-  bid: number;
-  ask: number;
-  bidDepth: number;
-  askDepth: number;
-}
-
-interface SelectedInstrument {
-  name: string;
-  type: "option" | "future" | "spread" | "combo";
-  strike?: number;
-  expiry?: string;
-  putCall?: "C" | "P";
-  price: number;
-  lastPrice?: number;
-  delta?: number;
-  gamma?: number;
-  theta?: number;
-  vega?: number;
-  iv?: number;
-  // Spread-specific fields
-  longLeg?: string;
-  shortLeg?: string;
-  spreadBid?: number;
-  spreadAsk?: number;
-  // Combo-specific fields
-  legs?: ComboLeg[];
-  comboType?: string;
-  netDebit?: number;
-}
-
-// ---------- Constants ----------
-
-const ASSETS: Asset[] = ["BTC", "ETH", "SOL", "AVAX"];
-const TRADFI_ASSETS: TradFiAsset[] = ["SPY", "QQQ", "SPX"];
-
-const SPOT_PRICES: Record<Asset, number> = {
-  BTC: 71583,
-  ETH: 3456,
-  SOL: 187.4,
-  AVAX: 42.15,
-};
-
-const TRADFI_SPOT_PRICES: Record<TradFiAsset, number> = {
-  SPY: 521.4,
-  QQQ: 446.2,
-  SPX: 5238.0,
-};
-
-const IV_INDEX: Record<Asset, number> = {
-  BTC: 50.9,
-  ETH: 55.2,
-  SOL: 72.1,
-  AVAX: 68.4,
-};
-
-const TRADFI_IV_INDEX: Record<TradFiAsset, number> = {
-  SPY: 16.8,
-  QQQ: 20.1,
-  SPX: 15.9,
-};
-
-const EXPIRY_DATES = [
-  "ALL",
-  "24 MAR 26",
-  "25 MAR 26",
-  "26 MAR 26",
-  "27 MAR 26",
-  "03 APR 26",
-  "10 APR 26",
-  "24 APR 26",
-  "29 MAY 26",
-  "26 JUN 26",
-  "25 SEP 26",
-  "25 DEC 26",
-] as const;
-
-// US equity options follow monthly/quarterly OPEX cycle
-const TRADFI_EXPIRY_DATES = [
-  "ALL",
-  "21 MAR 26",
-  "18 APR 26",
-  "16 MAY 26",
-  "20 JUN 26",
-  "18 JUL 26",
-  "15 AUG 26",
-  "19 SEP 26",
-  "17 OCT 26",
-  "21 NOV 26",
-  "19 DEC 26",
-  "16 JAN 27",
-  "20 MAR 27",
-] as const;
-
-const EXPIRIES_WITH_POSITIONS = new Set(["26 JUN 26", "25 DEC 26"]);
-
-const STRIKE_INCREMENTS: Record<Asset, number> = {
-  BTC: 2000,
-  ETH: 100,
-  SOL: 10,
-  AVAX: 5,
-};
-
-const TRADFI_STRIKE_INCREMENTS: Record<TradFiAsset, number> = {
-  SPY: 5,
-  QQQ: 5,
-  SPX: 25,
-};
-
-// Scenario preset shocks used in the Scenario tab
-const SCENARIO_PRESETS = [
-  { label: "Base", spotPct: 0, volPct: 0 },
-  { label: "+10% Rally", spotPct: 10, volPct: -15 },
-  { label: "-10% Crash", spotPct: -10, volPct: 30 },
-  { label: "Vol Spike", spotPct: 0, volPct: 50 },
-  { label: "Vol Crush", spotPct: 0, volPct: -30 },
-  { label: "Melt-Up", spotPct: 20, volPct: -20 },
-] as const;
-
-// ---------- Watchlist mock data ----------
-
-const CRYPTO_WATCHLIST_SYMBOLS: WatchlistSymbol[] = [
-  {
-    id: "btc",
-    symbol: "BTC",
-    name: "Bitcoin",
-    price: 71583,
-    change24h: 2.41,
-    iv: 50.9,
-    category: "crypto",
-  },
-  {
-    id: "eth",
-    symbol: "ETH",
-    name: "Ethereum",
-    price: 3456,
-    change24h: 1.18,
-    iv: 55.2,
-    category: "crypto",
-  },
-  {
-    id: "sol",
-    symbol: "SOL",
-    name: "Solana",
-    price: 187.4,
-    change24h: -0.83,
-    iv: 72.1,
-    category: "crypto",
-  },
-  {
-    id: "avax",
-    symbol: "AVAX",
-    name: "Avalanche",
-    price: 42.15,
-    change24h: 3.5,
-    iv: 68.4,
-    category: "crypto",
-  },
-  {
-    id: "bnb",
-    symbol: "BNB",
-    name: "BNB",
-    price: 598,
-    change24h: 0.77,
-    iv: 44.2,
-    category: "crypto",
-  },
-  {
-    id: "link",
-    symbol: "LINK",
-    name: "Chainlink",
-    price: 18.9,
-    change24h: -1.2,
-    iv: 82.3,
-    category: "crypto",
-  },
-  {
-    id: "arb",
-    symbol: "ARB",
-    name: "Arbitrum",
-    price: 1.14,
-    change24h: -2.1,
-    iv: 91.5,
-    category: "crypto",
-  },
-  {
-    id: "op",
-    symbol: "OP",
-    name: "Optimism",
-    price: 2.87,
-    change24h: 4.3,
-    iv: 88.7,
-    category: "crypto",
-  },
-];
-
-const TRADFI_WATCHLIST_SYMBOLS: WatchlistSymbol[] = [
-  {
-    id: "spy",
-    symbol: "SPY",
-    name: "SPDR S&P 500 ETF",
-    price: 521.4,
-    change24h: 0.62,
-    iv: 16.8,
-    category: "tradfi",
-  },
-  {
-    id: "qqq",
-    symbol: "QQQ",
-    name: "Invesco QQQ Trust",
-    price: 446.2,
-    change24h: 0.91,
-    iv: 20.1,
-    category: "tradfi",
-  },
-  {
-    id: "spx",
-    symbol: "SPX",
-    name: "S&P 500 Index",
-    price: 5238.0,
-    change24h: 0.58,
-    iv: 15.9,
-    category: "tradfi",
-  },
-  {
-    id: "ndx",
-    symbol: "NDX",
-    name: "Nasdaq-100 Index",
-    price: 18420,
-    change24h: 0.85,
-    iv: 19.4,
-    category: "tradfi",
-  },
-  {
-    id: "iwm",
-    symbol: "IWM",
-    name: "iShares Russell 2000",
-    price: 207.8,
-    change24h: -0.44,
-    iv: 22.3,
-    category: "tradfi",
-  },
-  {
-    id: "aapl",
-    symbol: "AAPL",
-    name: "Apple Inc.",
-    price: 182.3,
-    change24h: -0.31,
-    iv: 24.1,
-    category: "tradfi",
-  },
-  {
-    id: "tsla",
-    symbol: "TSLA",
-    name: "Tesla Inc.",
-    price: 248.5,
-    change24h: 2.11,
-    iv: 58.7,
-    category: "tradfi",
-  },
-  {
-    id: "nvda",
-    symbol: "NVDA",
-    name: "NVIDIA Corp.",
-    price: 875.4,
-    change24h: 1.55,
-    iv: 52.3,
-    category: "tradfi",
-  },
-];
-
-const DEFAULT_WATCHLISTS: WatchlistDefinition[] = [
-  {
-    id: "crypto-top",
-    label: "Crypto Top 8",
-    symbols: CRYPTO_WATCHLIST_SYMBOLS,
-  },
-  {
-    id: "crypto-defi",
-    label: "DeFi Tokens",
-    symbols: CRYPTO_WATCHLIST_SYMBOLS.filter((s) =>
-      ["arb", "op", "link"].includes(s.id),
-    ),
-  },
-  { id: "tradfi-us", label: "US Equities", symbols: TRADFI_WATCHLIST_SYMBOLS },
-  {
-    id: "tradfi-indices",
-    label: "Indices & ETFs",
-    symbols: TRADFI_WATCHLIST_SYMBOLS.filter((s) =>
-      ["spy", "qqq", "spx", "ndx", "iwm"].includes(s.id),
-    ),
-  },
-];
-
-// ---------- Mock Data Generators ----------
-
-function seededRandom(seed: number): number {
-  const x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
-}
-
-function generateStrikes(asset: Asset): number[] {
-  const spot = SPOT_PRICES[asset];
-  const inc = STRIKE_INCREMENTS[asset];
-  const strikes: number[] = [];
-  const low = Math.floor((spot * 0.8) / inc) * inc;
-  const high = Math.ceil((spot * 1.2) / inc) * inc;
-  for (let s = low; s <= high; s += inc) {
-    strikes.push(s);
-  }
-  return strikes;
-}
-
-function generateOptionChain(asset: Asset, _expiry: string): OptionRow[] {
-  const spot = SPOT_PRICES[asset];
-  const strikes = generateStrikes(asset);
-  const baseIv = IV_INDEX[asset];
-  const timeToExpiry = 0.25; // ~3 months
-
-  return strikes.map((strike, idx) => {
-    const moneyness = (strike - spot) / spot;
-    const absMoneyness = Math.abs(moneyness);
-
-    // IV smile: higher for deep ITM/OTM
-    const ivSmile = baseIv + absMoneyness * 30 + seededRandom(strike + 1) * 5;
-    const ivBidOffset = 0.3 + absMoneyness * 0.5;
-    const ivAskOffset = 0.3 + absMoneyness * 0.5;
-
-    // Simplified Black-Scholes delta approximation
-    const d1Approx = -moneyness / ((ivSmile / 100) * Math.sqrt(timeToExpiry));
-    const callDelta = Math.max(
-      0.01,
-      Math.min(0.99, 0.5 + 0.4 * Math.tanh(d1Approx)),
-    );
-    const putDelta = callDelta - 1;
-
-    // Mark price approximation (intrinsic + time value)
-    const callIntrinsic = Math.max(0, spot - strike);
-    const putIntrinsic = Math.max(0, strike - spot);
-    const timeValue =
-      spot *
-      (ivSmile / 100) *
-      Math.sqrt(timeToExpiry) *
-      0.4 *
-      (1 - absMoneyness * 0.5);
-    const callMark = Math.max(
-      callIntrinsic + timeValue * callDelta,
-      spot * 0.001,
-    );
-    const putMark = Math.max(
-      putIntrinsic + timeValue * (1 - callDelta),
-      spot * 0.001,
-    );
-
-    // Spread: wider for OTM
-    const spreadMultiplier = 1 + absMoneyness * 3;
-    const callSpread = callMark * 0.02 * spreadMultiplier;
-    const putSpread = putMark * 0.02 * spreadMultiplier;
-
-    // OI: higher near ATM
-    const oiBase = 25000 * (1 - absMoneyness * 2);
-    const callOi = Math.max(
-      500,
-      Math.floor(oiBase + seededRandom(strike * 3) * 10000),
-    );
-    const putOi = Math.max(
-      500,
-      Math.floor(oiBase + seededRandom(strike * 7) * 10000),
-    );
-
-    return {
-      strike,
-      callBid: Math.max(0, callMark - callSpread),
-      callAsk: callMark + callSpread,
-      callMark,
-      callIvBid: ivSmile - ivBidOffset,
-      callIvAsk: ivSmile + ivAskOffset,
-      callDelta,
-      callOi,
-      callSize: Math.floor(seededRandom(idx + 100) * 50),
-      putBid: Math.max(0, putMark - putSpread),
-      putAsk: putMark + putSpread,
-      putMark,
-      putIvBid: ivSmile - ivBidOffset,
-      putIvAsk: ivSmile + ivAskOffset,
-      putDelta,
-      putOi,
-      putSize: Math.floor(seededRandom(idx + 200) * 50),
-    };
-  });
-}
-
-function generateFuturesData(asset: Asset): FutureRow[] {
-  const spot = SPOT_PRICES[asset];
-  const settlement = asset === "BTC" || asset === "ETH" ? asset : "USDC";
-  const rows: FutureRow[] = [];
-
-  // Perpetual
-  rows.push({
-    contract: `${asset}-PERPETUAL`,
-    asset,
-    settlement,
-    markPrice: spot + seededRandom(1) * spot * 0.001,
-    change24h: (seededRandom(2) - 0.5) * 6,
-    volume24h: 500_000_000 + seededRandom(3) * 1_000_000_000,
-    openInterest: 200_000_000 + seededRandom(4) * 500_000_000,
-    fundingRate: (seededRandom(5) - 0.45) * 0.03,
-    basis: null,
-    isPerpetual: true,
-    favourite: false,
-  });
-
-  // Dated futures
-  const quarters = ["26MAR26", "26JUN26", "25SEP26", "25DEC26", "26MAR27"];
-  quarters.forEach((q, i) => {
-    const basisBps = 3 + i * 2 + seededRandom(i + 10) * 4;
-    rows.push({
-      contract: `${asset}-${q}`,
-      asset,
-      settlement,
-      markPrice: spot * (1 + basisBps / 100),
-      change24h: (seededRandom(i + 20) - 0.5) * 5,
-      volume24h: 50_000_000 + seededRandom(i + 30) * 200_000_000,
-      openInterest: 30_000_000 + seededRandom(i + 40) * 150_000_000,
-      fundingRate: null,
-      basis: basisBps,
-      isPerpetual: false,
-      favourite: false,
-    });
-  });
-
-  return rows;
-}
-
-// ---------- Futures Spreads Data ----------
-
-const SPREAD_EXPIRIES = [
-  "Perpetual",
-  "27 MAR",
-  "03 APR",
-  "24 APR",
-  "26 JUN",
-  "25 SEP",
-  "25 DEC",
-] as const;
-
-type SpreadAsset = "BTC" | "ETH";
-
-function generateSpreadMatrix(asset: SpreadAsset): (SpreadCell | null)[][] {
-  const spot = SPOT_PRICES[asset];
-  // Mark prices per expiry (increasing contango)
-  const marks = SPREAD_EXPIRIES.map(
-    (_, i) => spot * (1 + i * 0.008 + seededRandom(i + 50) * 0.003),
-  );
-
-  const matrix: (SpreadCell | null)[][] = [];
-
-  for (let longIdx = 0; longIdx < SPREAD_EXPIRIES.length; longIdx++) {
-    const row: (SpreadCell | null)[] = [];
-    for (let shortIdx = 0; shortIdx < SPREAD_EXPIRIES.length; shortIdx++) {
-      if (shortIdx <= longIdx) {
-        // Upper triangle + diagonal: invalid (long must be before short, or same)
-        row.push(null);
-      } else {
-        const rawSpread = marks[shortIdx] - marks[longIdx];
-        const halfWidth =
-          Math.abs(rawSpread) * 0.02 +
-          seededRandom(longIdx * 10 + shortIdx) * 2;
-        const bid = rawSpread - halfWidth;
-        const ask = rawSpread + halfWidth;
-        const bidDepth = Math.floor(
-          5 + seededRandom(longIdx * 7 + shortIdx * 3) * 40,
-        );
-        const askDepth = Math.floor(
-          5 + seededRandom(longIdx * 11 + shortIdx * 5) * 40,
-        );
-
-        const longLabel =
-          SPREAD_EXPIRIES[longIdx] === "Perpetual"
-            ? "PERP"
-            : SPREAD_EXPIRIES[longIdx];
-        const shortLabel =
-          SPREAD_EXPIRIES[shortIdx] === "Perpetual"
-            ? "PERP"
-            : SPREAD_EXPIRIES[shortIdx];
-
-        row.push({
-          longLabel,
-          shortLabel,
-          spreadLabel: `${shortLabel} \u2013 ${longLabel}`,
-          bid,
-          ask,
-          bidDepth,
-          askDepth,
-        });
-      }
-    }
-    matrix.push(row);
-  }
-
-  return matrix;
-}
-
-// Generate a TradFi option chain (SPY/QQQ/SPX) using different spot/IV/strike params
-function generateTradFiOptionChain(
-  asset: TradFiAsset,
-  _expiry: string,
-): OptionRow[] {
-  const spot = TRADFI_SPOT_PRICES[asset];
-  const inc = TRADFI_STRIKE_INCREMENTS[asset];
-  const baseIv = TRADFI_IV_INDEX[asset];
-  const timeToExpiry = 0.25;
-
-  const low = Math.floor((spot * 0.88) / inc) * inc;
-  const high = Math.ceil((spot * 1.12) / inc) * inc;
-  const strikes: number[] = [];
-  for (let s = low; s <= high; s += inc) strikes.push(s);
-
-  return strikes.map((strike, idx) => {
-    const moneyness = (strike - spot) / spot;
-    const absMoneyness = Math.abs(moneyness);
-    // Equity IV smile is shallower and skewed (put skew)
-    const putSkew = moneyness < 0 ? Math.abs(moneyness) * 15 : 0;
-    const ivSmile =
-      baseIv + absMoneyness * 12 + putSkew + seededRandom(strike + idx) * 2;
-    const ivBidOffset = 0.2 + absMoneyness * 0.3;
-    const callMark =
-      Math.max(0, spot - strike) +
-      spot * (ivSmile / 100) * Math.sqrt(timeToExpiry) * 0.4;
-    const putMark =
-      Math.max(0, strike - spot) +
-      spot * (ivSmile / 100) * Math.sqrt(timeToExpiry) * 0.4;
-    const callSpread = callMark * 0.015 * (1 + absMoneyness * 2);
-    const putSpread = putMark * 0.015 * (1 + absMoneyness * 2);
-    const d1 = -moneyness / ((ivSmile / 100) * Math.sqrt(timeToExpiry));
-    const callDelta = 0.5 + 0.4 * Math.tanh(d1);
-    const putDelta = callDelta - 1;
-    const oiBase = Math.round(
-      (5000 + seededRandom(strike + idx + 99) * 50000) * (1 - absMoneyness * 2),
-    );
-    return {
-      strike,
-      callBid: Math.max(0.01, callMark - callSpread),
-      callAsk: callMark + callSpread,
-      callMark,
-      callIvBid: ivSmile - ivBidOffset,
-      callIvAsk: ivSmile + ivBidOffset,
-      callDelta,
-      callOi: Math.max(0, oiBase),
-      callSize: Math.round(seededRandom(strike + idx + 10) * 500),
-      putBid: Math.max(0.01, putMark - putSpread),
-      putAsk: putMark + putSpread,
-      putMark,
-      putIvBid: ivSmile - ivBidOffset,
-      putIvAsk: ivSmile + ivBidOffset,
-      putDelta,
-      putOi: Math.max(0, oiBase * 1.3),
-      putSize: Math.round(seededRandom(strike + idx + 20) * 500),
-    };
-  });
-}
-
-// Generate scenario P&L grid: spotSteps × volSteps matrix
-// Returns a 2D array of P&L values for a mock notional position
-function generateScenarioGrid(
-  spotPrice: number,
-  baseIv: number,
-  spotSteps: number[], // e.g. [-20, -10, 0, 10, 20] as percentages
-  volSteps: number[], // e.g. [-30, -15, 0, 15, 30] as percentage-point deltas
-  notional: number,
-): {
-  pnl: number[][];
-  delta: number[][];
-  liqThreshold: number;
-} {
-  // Mock a delta-hedged options book: long gamma, short theta
-  // P&L ≈ 0.5 * gamma * dS² - theta * dt + vega * dVol
-  const gamma = notional * 0.00002;
-  const theta = notional * 0.0003;
-  const vega = notional * 0.008;
-  const baseDelta = notional * 0.3;
-  const dt = 1 / 252; // 1 day
-
-  const pnl = spotSteps.map((spotPct) =>
-    volSteps.map((volDelta) => {
-      const dS = spotPrice * (spotPct / 100);
-      const dVol = volDelta / 100;
-      return (
-        baseDelta * dS + 0.5 * gamma * dS * dS - theta * dt * 365 + vega * dVol
-      );
-    }),
-  );
-
-  const delta = spotSteps.map((spotPct) =>
-    volSteps.map((volDelta) => {
-      const dS = spotPrice * (spotPct / 100);
-      return baseDelta + gamma * dS + (volDelta / 100) * vega * 0.01;
-    }),
-  );
-
-  // Liquidation threshold: loss > 40% of notional
-  const liqThreshold = -notional * 0.4;
-
-  return { pnl, delta, liqThreshold };
-}
-
-function formatUsd(value: number, decimals: number = 2): string {
-  if (value >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(1)}B`;
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000)
-    return `$${value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
-  return `$${value.toFixed(decimals)}`;
-}
-
-function formatCompact(value: number): string {
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)}B`;
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(1)}K`;
-  return value.toFixed(0);
-}
-
-// ---------- Vol Surface Data ----------
-
-function generateVolSurface(asset: Asset): {
-  strikes: number[];
-  expiries: string[];
-  ivs: number[][];
-} {
-  const spot = SPOT_PRICES[asset];
-  const inc = STRIKE_INCREMENTS[asset];
-  const baseIv = IV_INDEX[asset];
-
-  const strikes = [
-    Math.floor((spot * 0.85) / inc) * inc,
-    Math.floor((spot * 0.9) / inc) * inc,
-    Math.floor((spot * 0.95) / inc) * inc,
-    Math.round(spot / inc) * inc,
-    Math.ceil((spot * 1.05) / inc) * inc,
-    Math.ceil((spot * 1.1) / inc) * inc,
-  ];
-  const expiries = ["1W", "1M", "3M", "6M", "1Y"];
-
-  const ivs = strikes.map((strike) => {
-    const moneyness = Math.abs((strike - spot) / spot);
-    return expiries.map((_, eIdx) => {
-      const termPremium = eIdx * 1.5;
-      const smile = moneyness * 25;
-      return baseIv + smile + termPremium + seededRandom(strike + eIdx) * 3;
-    });
-  });
-
-  return { strikes, expiries, ivs };
-}
-
-function ivToColor(iv: number): string {
-  const minIv = 40;
-  const maxIv = 80;
-  const ratio = Math.max(0, Math.min(1, (iv - minIv) / (maxIv - minIv)));
-  // Blue (cold) to orange (warm)
-  const r = Math.round(50 + ratio * 200);
-  const g = Math.round(100 + (1 - Math.abs(ratio - 0.5) * 2) * 100);
-  const b = Math.round(220 - ratio * 180);
-  return `rgb(${r}, ${g}, ${b})`;
-}
+  ASSETS,
+  TRADFI_ASSETS,
+  SPOT_PRICES,
+  TRADFI_SPOT_PRICES,
+  IV_INDEX,
+  TRADFI_IV_INDEX,
+  EXPIRY_DATES,
+  TRADFI_EXPIRY_DATES,
+  EXPIRIES_WITH_POSITIONS,
+  STRIKE_INCREMENTS,
+  TRADFI_STRIKE_INCREMENTS,
+  SCENARIO_PRESETS,
+  DEFAULT_WATCHLISTS,
+  seededRandom,
+  generateStrikes,
+  generateOptionChain,
+  generateFuturesData,
+  generateSpreadMatrix,
+  SPREAD_EXPIRIES,
+  generateTradFiOptionChain,
+  generateScenarioGrid,
+  formatUsd,
+  formatCompact,
+  generateVolSurface,
+  ivToColor,
+  SPOT_STEPS,
+  VOL_STEPS,
+} from "@/lib/mocks/fixtures/options-futures-mock";
 
 // ---------- Sub-components ----------
 
 // Single compact toolbar — all controls + tabs in one row
-function OptionsToolbar({
+export function OptionsToolbar({
   assetClass,
   setAssetClass,
   asset,
@@ -862,9 +158,7 @@ function OptionsToolbar({
 
   // All available symbols for adding
   const unpinnedCrypto = ASSETS.filter((a) => !pinnedCryptoAssets.includes(a));
-  const unpinnedTradFi = TRADFI_ASSETS.filter(
-    (a) => !pinnedTradFiAssets.includes(a),
-  );
+  const unpinnedTradFi = TRADFI_ASSETS.filter((a) => !pinnedTradFiAssets.includes(a));
 
   return (
     <div className="flex items-center gap-2 px-3 py-1.5 border-b bg-muted/10 overflow-x-auto min-h-[42px]">
@@ -876,11 +170,7 @@ function OptionsToolbar({
         onClick={() => setShowWatchlist(!showWatchlist)}
         title={showWatchlist ? "Hide watchlist" : "Show watchlist"}
       >
-        {showWatchlist ? (
-          <PanelLeftClose className="size-3.5" />
-        ) : (
-          <PanelLeftOpen className="size-3.5" />
-        )}
+        {showWatchlist ? <PanelLeftClose className="size-3.5" /> : <PanelLeftOpen className="size-3.5" />}
       </Button>
 
       <Separator orientation="vertical" className="h-5 shrink-0" />
@@ -940,10 +230,7 @@ function OptionsToolbar({
           </SelectContent>
         </Select>
       ) : (
-        <Select
-          value={tradFiMarket}
-          onValueChange={(v) => setTradFiMarket(v as TradFiMarket)}
-        >
+        <Select value={tradFiMarket} onValueChange={(v) => setTradFiMarket(v as TradFiMarket)}>
           <SelectTrigger className="h-7 w-[110px] text-xs shrink-0">
             <SelectValue />
           </SelectTrigger>
@@ -1014,11 +301,7 @@ function OptionsToolbar({
           (isCrypto
             ? unpinnedCrypto.length > 0 &&
               pinnedCryptoAssets.length < 5 && (
-                <Select
-                  onValueChange={(v) =>
-                    setPinnedCryptoAssets([...pinnedCryptoAssets, v as Asset])
-                  }
-                >
+                <Select onValueChange={(v) => setPinnedCryptoAssets([...pinnedCryptoAssets, v as Asset])}>
                   <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
                     <Plus className="size-3 mr-0.5" />
                   </SelectTrigger>
@@ -1033,14 +316,7 @@ function OptionsToolbar({
               )
             : unpinnedTradFi.length > 0 &&
               pinnedTradFiAssets.length < 5 && (
-                <Select
-                  onValueChange={(v) =>
-                    setPinnedTradFiAssets([
-                      ...pinnedTradFiAssets,
-                      v as TradFiAsset,
-                    ])
-                  }
-                >
+                <Select onValueChange={(v) => setPinnedTradFiAssets([...pinnedTradFiAssets, v as TradFiAsset])}>
                   <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
                     <Plus className="size-3 mr-0.5" />
                   </SelectTrigger>
@@ -1062,11 +338,7 @@ function OptionsToolbar({
           onClick={() => setEditingPins(!editingPins)}
           title={editingPins ? "Done editing" : "Edit pinned symbols"}
         >
-          {editingPins ? (
-            <Check className="size-3.5" />
-          ) : (
-            <Pencil className="size-3" />
-          )}
+          {editingPins ? <Check className="size-3.5" /> : <Pencil className="size-3" />}
         </Button>
       </div>
 
@@ -1092,7 +364,7 @@ function OptionsToolbar({
   );
 }
 
-function OptionsChainTab({
+export function OptionsChainTab({
   asset,
   onSelectInstrument,
 }: {
@@ -1105,14 +377,9 @@ function OptionsChainTab({
   const [displayUsd, setDisplayUsd] = React.useState(true);
 
   const spot = SPOT_PRICES[asset];
-  const chain = React.useMemo(
-    () => generateOptionChain(asset, selectedExpiry),
-    [asset, selectedExpiry],
-  );
+  const chain = React.useMemo(() => generateOptionChain(asset, selectedExpiry), [asset, selectedExpiry]);
 
-  const filteredChain = aroundAtm
-    ? chain.filter((row) => Math.abs(row.strike - spot) / spot < 0.08)
-    : chain;
+  const filteredChain = aroundAtm ? chain.filter((row) => Math.abs(row.strike - spot) / spot < 0.08) : chain;
 
   // Expected move bounds (1-sigma)
   const iv = IV_INDEX[asset];
@@ -1120,19 +387,8 @@ function OptionsChainTab({
   const moveUpper = spot + sigma1;
   const moveLower = spot - sigma1;
 
-  const handleCellClick = (
-    row: OptionRow,
-    side: "C" | "P",
-    useAsk: boolean,
-  ) => {
-    const price =
-      side === "C"
-        ? useAsk
-          ? row.callAsk
-          : row.callBid
-        : useAsk
-          ? row.putAsk
-          : row.putBid;
+  const handleCellClick = (row: OptionRow, side: "C" | "P", useAsk: boolean) => {
+    const price = side === "C" ? (useAsk ? row.callAsk : row.callBid) : useAsk ? row.putAsk : row.putBid;
     const delta = side === "C" ? row.callDelta : row.putDelta;
     const mark = side === "C" ? row.callMark : row.putMark;
 
@@ -1147,10 +403,7 @@ function OptionsChainTab({
       gamma: 0.003 + seededRandom(row.strike) * 0.005,
       theta: -(8 + seededRandom(row.strike + 1) * 15),
       vega: 0.1 + seededRandom(row.strike + 2) * 0.2,
-      iv:
-        side === "C"
-          ? (row.callIvBid + row.callIvAsk) / 2
-          : (row.putIvBid + row.putIvAsk) / 2,
+      iv: side === "C" ? (row.callIvBid + row.callIvAsk) / 2 : (row.putIvBid + row.putIvAsk) / 2,
     });
   };
 
@@ -1160,22 +413,12 @@ function OptionsChainTab({
 
   // First 5 expiries shown inline, the rest in overflow dropdown
   const INLINE_COUNT = 5;
-  const inlineExpiries = EXPIRY_DATES.filter((e) => e !== "ALL").slice(
-    0,
-    INLINE_COUNT,
-  );
-  const overflowExpiries = EXPIRY_DATES.filter((e) => e !== "ALL").slice(
-    INLINE_COUNT,
-  );
-  const selectedIsOverflow = (overflowExpiries as readonly string[]).includes(
-    selectedExpiry,
-  );
+  const inlineExpiries = EXPIRY_DATES.filter((e) => e !== "ALL").slice(0, INLINE_COUNT);
+  const overflowExpiries = EXPIRY_DATES.filter((e) => e !== "ALL").slice(INLINE_COUNT);
+  const selectedIsOverflow = (overflowExpiries as readonly string[]).includes(selectedExpiry);
 
   // Mock time-to-expiry stats per expiry
-  const EXPIRY_META: Record<
-    string,
-    { days: number; hours: number; mins: number; kind: string }
-  > = {
+  const EXPIRY_META: Record<string, { days: number; hours: number; mins: number; kind: string }> = {
     "24 MAR 26": { days: 0, hours: 6, mins: 42, kind: "Daily" },
     "25 MAR 26": { days: 1, hours: 6, mins: 42, kind: "Daily" },
     "26 MAR 26": { days: 2, hours: 6, mins: 42, kind: "Daily" },
@@ -1215,10 +458,7 @@ function OptionsChainTab({
             >
               {exp}
               {EXPIRIES_WITH_POSITIONS.has(exp) && (
-                <Badge
-                  variant="secondary"
-                  className="ml-1 text-[8px] px-1 py-0 h-3.5"
-                >
+                <Badge variant="secondary" className="ml-1 text-[8px] px-1 py-0 h-3.5">
                   POS
                 </Badge>
               )}
@@ -1227,32 +467,21 @@ function OptionsChainTab({
 
           {/* Overflow dropdown */}
           {overflowExpiries.length > 0 && (
-            <Select
-              value={selectedIsOverflow ? selectedExpiry : ""}
-              onValueChange={(v) => setSelectedExpiry(v)}
-            >
+            <Select value={selectedIsOverflow ? selectedExpiry : ""} onValueChange={(v) => setSelectedExpiry(v)}>
               <SelectTrigger
                 className={cn(
                   "h-7 w-[110px] text-[10px] font-mono shrink-0",
-                  selectedIsOverflow &&
-                    "border-primary bg-primary text-primary-foreground",
+                  selectedIsOverflow && "border-primary bg-primary text-primary-foreground",
                 )}
               >
                 <SelectValue placeholder="More…" />
               </SelectTrigger>
               <SelectContent>
                 {overflowExpiries.map((exp) => (
-                  <SelectItem
-                    key={exp}
-                    value={exp}
-                    className="text-[11px] font-mono"
-                  >
+                  <SelectItem key={exp} value={exp} className="text-[11px] font-mono">
                     {exp}
                     {EXPIRIES_WITH_POSITIONS.has(exp) && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-1.5 text-[8px] px-1 py-0 h-3.5"
-                      >
+                      <Badge variant="secondary" className="ml-1.5 text-[8px] px-1 py-0 h-3.5">
                         POS
                       </Badge>
                     )}
@@ -1269,18 +498,14 @@ function OptionsChainTab({
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1 whitespace-nowrap">
             <span className="text-muted-foreground">Fut:</span>
-            <span className="font-mono font-semibold">
-              {formatUsd(underlyingFuture, 0)}
-            </span>
+            <span className="font-mono font-semibold">{formatUsd(underlyingFuture, 0)}</span>
           </div>
           <div className="flex items-center gap-1 whitespace-nowrap">
             <span className="text-muted-foreground">Exp:</span>
             <span className="font-mono text-foreground">
               {meta.days}d {meta.hours}h {meta.mins}m
             </span>
-            <span className="text-[10px] text-muted-foreground">
-              ({meta.kind})
-            </span>
+            <span className="text-[10px] text-muted-foreground">({meta.kind})</span>
           </div>
         </div>
 
@@ -1288,15 +513,8 @@ function OptionsChainTab({
 
         {/* Around ATM */}
         <div className="flex items-center gap-1.5">
-          <Checkbox
-            id="around-atm"
-            checked={aroundAtm}
-            onCheckedChange={(c) => setAroundAtm(c === true)}
-          />
-          <label
-            htmlFor="around-atm"
-            className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap"
-          >
+          <Checkbox id="around-atm" checked={aroundAtm} onCheckedChange={(c) => setAroundAtm(c === true)} />
+          <label htmlFor="around-atm" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">
             ±ATM
           </label>
         </div>
@@ -1308,10 +526,7 @@ function OptionsChainTab({
             checked={showExpectedMove}
             onCheckedChange={(c) => setShowExpectedMove(c === true)}
           />
-          <label
-            htmlFor="expected-move"
-            className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap"
-          >
+          <label htmlFor="expected-move" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">
             Exp. move
           </label>
         </div>
@@ -1338,11 +553,7 @@ function OptionsChainTab({
 
         {/* CSV — pushed to far right */}
         <div className="flex-1" />
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-7 text-[10px] gap-1 shrink-0"
-        >
+        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1 shrink-0">
           <Download className="size-3" />
           CSV
         </Button>
@@ -1354,19 +565,11 @@ function OptionsChainTab({
           <table className="w-full text-[11px]">
             <thead>
               <tr className="border-b bg-muted/40">
-                <th
-                  colSpan={6}
-                  className="text-center text-xs font-semibold py-1.5 text-emerald-400 border-r"
-                >
+                <th colSpan={6} className="text-center text-xs font-semibold py-1.5 text-emerald-400 border-r">
                   CALLS
                 </th>
-                <th className="text-center text-xs font-semibold py-1.5 px-3 border-x bg-muted/60">
-                  STRIKE
-                </th>
-                <th
-                  colSpan={6}
-                  className="text-center text-xs font-semibold py-1.5 text-rose-400 border-l"
-                >
+                <th className="text-center text-xs font-semibold py-1.5 px-3 border-x bg-muted/60">STRIKE</th>
+                <th colSpan={6} className="text-center text-xs font-semibold py-1.5 text-rose-400 border-l">
                   PUTS
                 </th>
               </tr>
@@ -1376,13 +579,9 @@ function OptionsChainTab({
                 <th className="py-1 px-1.5 text-right font-normal">Size</th>
                 <th className="py-1 px-1.5 text-right font-normal">IV</th>
                 <th className="py-1 px-1.5 text-right font-normal">Bid</th>
-                <th className="py-1 px-1.5 text-right font-normal border-r">
-                  Mark
-                </th>
+                <th className="py-1 px-1.5 text-right font-normal border-r">Mark</th>
                 <th className="py-1 px-3 text-center font-semibold text-foreground border-x bg-muted/40" />
-                <th className="py-1 px-1.5 text-left font-normal border-l">
-                  Mark
-                </th>
+                <th className="py-1 px-1.5 text-left font-normal border-l">Mark</th>
                 <th className="py-1 px-1.5 text-left font-normal">Ask</th>
                 <th className="py-1 px-1.5 text-left font-normal">IV</th>
                 <th className="py-1 px-1.5 text-left font-normal">Delta</th>
@@ -1394,10 +593,7 @@ function OptionsChainTab({
                 const isAtm = row.strike === closestAtmStrike;
                 const callItm = row.strike < spot;
                 const putItm = row.strike > spot;
-                const inExpectedMove =
-                  showExpectedMove &&
-                  row.strike >= moveLower &&
-                  row.strike <= moveUpper;
+                const inExpectedMove = showExpectedMove && row.strike >= moveLower && row.strike <= moveUpper;
                 const coinDivisor = displayUsd ? 1 : spot;
 
                 return (
@@ -1411,19 +607,13 @@ function OptionsChainTab({
                   >
                     {/* Calls side */}
                     <td
-                      className={cn(
-                        "py-1 px-1.5 text-right font-mono",
-                        callItm && "bg-emerald-500/5",
-                      )}
+                      className={cn("py-1 px-1.5 text-right font-mono", callItm && "bg-emerald-500/5")}
                       onClick={() => handleCellClick(row, "C", false)}
                     >
                       {formatCompact(row.callOi)}
                     </td>
                     <td
-                      className={cn(
-                        "py-1 px-1.5 text-right font-mono",
-                        callItm && "bg-emerald-500/5",
-                      )}
+                      className={cn("py-1 px-1.5 text-right font-mono", callItm && "bg-emerald-500/5")}
                       onClick={() => handleCellClick(row, "C", false)}
                     >
                       <span
@@ -1463,20 +653,13 @@ function OptionsChainTab({
                       )}
                       onClick={() => handleCellClick(row, "C", false)}
                     >
-                      {displayUsd
-                        ? formatUsd(row.callBid)
-                        : (row.callBid / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.callBid) : (row.callBid / coinDivisor).toFixed(4)}
                     </td>
                     <td
-                      className={cn(
-                        "py-1 px-1.5 text-right font-mono border-r",
-                        callItm && "bg-emerald-500/5",
-                      )}
+                      className={cn("py-1 px-1.5 text-right font-mono border-r", callItm && "bg-emerald-500/5")}
                       onClick={() => handleCellClick(row, "C", true)}
                     >
-                      {displayUsd
-                        ? formatUsd(row.callMark)
-                        : (row.callMark / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.callMark) : (row.callMark / coinDivisor).toFixed(4)}
                     </td>
 
                     {/* Strike centre */}
@@ -1487,24 +670,15 @@ function OptionsChainTab({
                       )}
                     >
                       {row.strike.toLocaleString()}
-                      {isAtm && (
-                        <span className="text-[8px] ml-1 text-amber-400/70">
-                          ATM
-                        </span>
-                      )}
+                      {isAtm && <span className="text-[8px] ml-1 text-amber-400/70">ATM</span>}
                     </td>
 
                     {/* Puts side */}
                     <td
-                      className={cn(
-                        "py-1 px-1.5 text-left font-mono border-l",
-                        putItm && "bg-rose-500/5",
-                      )}
+                      className={cn("py-1 px-1.5 text-left font-mono border-l", putItm && "bg-rose-500/5")}
                       onClick={() => handleCellClick(row, "P", false)}
                     >
-                      {displayUsd
-                        ? formatUsd(row.putMark)
-                        : (row.putMark / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.putMark) : (row.putMark / coinDivisor).toFixed(4)}
                     </td>
                     <td
                       className={cn(
@@ -1513,24 +687,16 @@ function OptionsChainTab({
                       )}
                       onClick={() => handleCellClick(row, "P", true)}
                     >
-                      {displayUsd
-                        ? formatUsd(row.putAsk)
-                        : (row.putAsk / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.putAsk) : (row.putAsk / coinDivisor).toFixed(4)}
                     </td>
                     <td
-                      className={cn(
-                        "py-1 px-1.5 text-left font-mono text-muted-foreground",
-                        putItm && "bg-rose-500/5",
-                      )}
+                      className={cn("py-1 px-1.5 text-left font-mono text-muted-foreground", putItm && "bg-rose-500/5")}
                       onClick={() => handleCellClick(row, "P", true)}
                     >
                       {row.putIvAsk.toFixed(1)}%
                     </td>
                     <td
-                      className={cn(
-                        "py-1 px-1.5 text-left font-mono",
-                        putItm && "bg-rose-500/5",
-                      )}
+                      className={cn("py-1 px-1.5 text-left font-mono", putItm && "bg-rose-500/5")}
                       onClick={() => handleCellClick(row, "P", true)}
                     >
                       <span
@@ -1546,10 +712,7 @@ function OptionsChainTab({
                       </span>
                     </td>
                     <td
-                      className={cn(
-                        "py-1 px-1.5 text-left font-mono",
-                        putItm && "bg-rose-500/5",
-                      )}
+                      className={cn("py-1 px-1.5 text-left font-mono", putItm && "bg-rose-500/5")}
                       onClick={() => handleCellClick(row, "P", true)}
                     >
                       {formatCompact(row.putOi)}
@@ -1566,7 +729,7 @@ function OptionsChainTab({
   );
 }
 
-function FuturesTab({
+export function FuturesTab({
   asset,
   onSelectInstrument,
 }: {
@@ -1589,17 +752,8 @@ function FuturesTab({
 
   const filteredFutures = allFutures.filter((f) => {
     if (filter === "perpetuals" && !f.isPerpetual) return false;
-    if (
-      filter !== "all" &&
-      filter !== "perpetuals" &&
-      !f.contract.includes(filter.replace(/ /g, ""))
-    )
-      return false;
-    if (
-      searchQuery &&
-      !f.contract.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-      return false;
+    if (filter !== "all" && filter !== "perpetuals" && !f.contract.includes(filter.replace(/ /g, ""))) return false;
+    if (searchQuery && !f.contract.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
@@ -1685,19 +839,11 @@ function FuturesTab({
               <tr className="border-b bg-muted/40 text-muted-foreground">
                 <th className="py-1.5 px-1.5 text-center w-8 font-normal" />
                 <th className="py-1.5 px-2 text-left font-normal">Contract</th>
-                <th className="py-1.5 px-2 text-left font-normal">
-                  Settlement
-                </th>
-                <th className="py-1.5 px-2 text-right font-normal">
-                  Mark Price
-                </th>
+                <th className="py-1.5 px-2 text-left font-normal">Settlement</th>
+                <th className="py-1.5 px-2 text-right font-normal">Mark Price</th>
                 <th className="py-1.5 px-2 text-right font-normal">24h %</th>
-                <th className="py-1.5 px-2 text-right font-normal">
-                  24h Volume
-                </th>
-                <th className="py-1.5 px-2 text-right font-normal">
-                  Open Interest
-                </th>
+                <th className="py-1.5 px-2 text-right font-normal">24h Volume</th>
+                <th className="py-1.5 px-2 text-right font-normal">Open Interest</th>
                 <th className="py-1.5 px-2 text-right font-normal">Funding</th>
                 <th className="py-1.5 px-2 text-right font-normal">Basis%</th>
               </tr>
@@ -1722,9 +868,7 @@ function FuturesTab({
                       <Star
                         className={cn(
                           "size-3",
-                          favourites.has(row.contract)
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-muted-foreground",
+                          favourites.has(row.contract) ? "fill-amber-400 text-amber-400" : "text-muted-foreground",
                         )}
                       />
                     </Button>
@@ -1732,20 +876,13 @@ function FuturesTab({
                   <td className="py-1.5 px-2 font-mono font-medium">
                     {row.contract}
                     {row.isPerpetual && (
-                      <Badge
-                        variant="outline"
-                        className="ml-1.5 text-[8px] px-1 py-0 h-3.5"
-                      >
+                      <Badge variant="outline" className="ml-1.5 text-[8px] px-1 py-0 h-3.5">
                         PERP
                       </Badge>
                     )}
                   </td>
-                  <td className="py-1.5 px-2 font-mono text-muted-foreground">
-                    {row.settlement}
-                  </td>
-                  <td className="py-1.5 px-2 text-right font-mono">
-                    {formatUsd(row.markPrice)}
-                  </td>
+                  <td className="py-1.5 px-2 font-mono text-muted-foreground">{row.settlement}</td>
+                  <td className="py-1.5 px-2 text-right font-mono">{formatUsd(row.markPrice)}</td>
                   <td
                     className={cn(
                       "py-1.5 px-2 text-right font-mono font-medium",
@@ -1755,9 +892,7 @@ function FuturesTab({
                     {row.change24h >= 0 ? "+" : ""}
                     {row.change24h.toFixed(2)}%
                   </td>
-                  <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
-                    {formatUsd(row.volume24h)}
-                  </td>
+                  <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{formatUsd(row.volume24h)}</td>
                   <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
                     {formatUsd(row.openInterest)}
                   </td>
@@ -1778,9 +913,7 @@ function FuturesTab({
                   <td
                     className={cn(
                       "py-1.5 px-2 text-right font-mono",
-                      row.basis !== null
-                        ? "text-blue-400"
-                        : "text-muted-foreground",
+                      row.basis !== null ? "text-blue-400" : "text-muted-foreground",
                     )}
                   >
                     {row.basis !== null ? `${row.basis.toFixed(2)}%` : "--"}
@@ -1796,17 +929,10 @@ function FuturesTab({
   );
 }
 
-function FuturesSpreadsTab({
-  onSelectInstrument,
-}: {
-  onSelectInstrument: (inst: SelectedInstrument) => void;
-}) {
+export function FuturesSpreadsTab({ onSelectInstrument }: { onSelectInstrument: (inst: SelectedInstrument) => void }) {
   const [spreadAsset, setSpreadAsset] = React.useState<SpreadAsset>("BTC");
 
-  const matrix = React.useMemo(
-    () => generateSpreadMatrix(spreadAsset),
-    [spreadAsset],
-  );
+  const matrix = React.useMemo(() => generateSpreadMatrix(spreadAsset), [spreadAsset]);
 
   const handleCellClick = (cell: SpreadCell) => {
     const longContract = `${spreadAsset}-${cell.longLabel.replace(/ /g, "")}`;
@@ -1852,10 +978,7 @@ function FuturesSpreadsTab({
                   Long Leg &darr; / Short Leg &rarr;
                 </th>
                 {SPREAD_EXPIRIES.map((exp) => (
-                  <th
-                    key={exp}
-                    className="py-2 px-2 text-center font-mono font-medium text-xs whitespace-nowrap"
-                  >
+                  <th key={exp} className="py-2 px-2 text-center font-mono font-medium text-xs whitespace-nowrap">
                     {exp === "Perpetual" ? "PERP" : exp}
                   </th>
                 ))}
@@ -1873,18 +996,9 @@ function FuturesSpreadsTab({
                       return (
                         <td
                           key={shortIdx}
-                          className={cn(
-                            "py-2 px-2 text-center",
-                            shortIdx === longIdx
-                              ? "bg-muted/40"
-                              : "bg-muted/15",
-                          )}
+                          className={cn("py-2 px-2 text-center", shortIdx === longIdx ? "bg-muted/40" : "bg-muted/15")}
                         >
-                          {shortIdx === longIdx ? (
-                            <span className="text-muted-foreground/40">
-                              &mdash;
-                            </span>
-                          ) : null}
+                          {shortIdx === longIdx ? <span className="text-muted-foreground/40">&mdash;</span> : null}
                         </td>
                       );
                     }
@@ -1895,9 +1009,7 @@ function FuturesSpreadsTab({
                         onClick={() => handleCellClick(cell)}
                       >
                         <div className="rounded border bg-card/80 p-1.5 min-w-[90px] space-y-0.5">
-                          <p className="text-[9px] text-muted-foreground font-medium truncate">
-                            {cell.spreadLabel}
-                          </p>
+                          <p className="text-[9px] text-muted-foreground font-medium truncate">{cell.spreadLabel}</p>
                           <div className="flex items-center justify-center gap-2">
                             <span className="font-mono text-emerald-400 font-medium">
                               {cell.bid >= 0 ? "+" : ""}
@@ -1925,8 +1037,8 @@ function FuturesSpreadsTab({
       </div>
 
       <p className="text-[10px] text-muted-foreground px-1">
-        Click a cell to pre-fill a two-legged spread order in the Trade Panel.
-        Values show net spread (far mark - near mark). Green = bid, grey = ask.
+        Click a cell to pre-fill a two-legged spread order in the Trade Panel. Values show net spread (far mark - near
+        mark). Green = bid, grey = ask.
       </p>
     </div>
   );
@@ -1943,30 +1055,19 @@ const COMBO_TYPES: { value: ComboType; label: string }[] = [
   { value: "risk-reversal", label: "Risk Reversal" },
 ];
 
-const CALENDAR_EXPIRIES = [
-  "26 JUN 26",
-  "25 SEP 26",
-  "25 DEC 26",
-  "26 MAR 27",
-  "26 JUN 27",
-  "25 SEP 27",
-] as const;
+const CALENDAR_EXPIRIES = ["26 JUN 26", "25 SEP 26", "25 DEC 26", "26 MAR 27", "26 JUN 27", "25 SEP 27"] as const;
 
-function OptionsCombosPanel({
+export function OptionsCombosPanel({
   asset,
   onSelectInstrument,
 }: {
   asset: Asset;
   onSelectInstrument: (inst: SelectedInstrument) => void;
 }) {
-  const [comboType, setComboType] =
-    React.useState<ComboType>("vertical-spread");
+  const [comboType, setComboType] = React.useState<ComboType>("vertical-spread");
   const spot = SPOT_PRICES[asset];
   const strikes = React.useMemo(() => generateStrikes(asset), [asset]);
-  const chain = React.useMemo(
-    () => generateOptionChain(asset, "26 JUN 26"),
-    [asset],
-  );
+  const chain = React.useMemo(() => generateOptionChain(asset, "26 JUN 26"), [asset]);
   const inc = STRIKE_INCREMENTS[asset];
 
   // Map strike -> OptionRow for quick lookup
@@ -2022,22 +1123,10 @@ function OptionsCombosPanel({
     name: label,
     type: "combo",
     price: Math.abs(netDebit),
-    delta: legs.reduce(
-      (s, l) => s + l.delta * (l.direction === "buy" ? 1 : -1),
-      0,
-    ),
-    gamma: legs.reduce(
-      (s, l) => s + l.gamma * (l.direction === "buy" ? 1 : -1),
-      0,
-    ),
-    theta: legs.reduce(
-      (s, l) => s + l.theta * (l.direction === "buy" ? 1 : -1),
-      0,
-    ),
-    vega: legs.reduce(
-      (s, l) => s + l.vega * (l.direction === "buy" ? 1 : -1),
-      0,
-    ),
+    delta: legs.reduce((s, l) => s + l.delta * (l.direction === "buy" ? 1 : -1), 0),
+    gamma: legs.reduce((s, l) => s + l.gamma * (l.direction === "buy" ? 1 : -1), 0),
+    theta: legs.reduce((s, l) => s + l.theta * (l.direction === "buy" ? 1 : -1), 0),
+    vega: legs.reduce((s, l) => s + l.vega * (l.direction === "buy" ? 1 : -1), 0),
     legs,
     comboType: type,
     netDebit,
@@ -2049,9 +1138,8 @@ function OptionsCombosPanel({
       <div className="space-y-3">
         <ComboTypePills comboType={comboType} setComboType={setComboType} />
         <p className="text-[10px] text-muted-foreground px-1">
-          Bull call spread: BUY lower strike call, SELL higher strike call (same
-          expiry). Lower triangle shows valid combinations. Click a cell to
-          trade.
+          Bull call spread: BUY lower strike call, SELL higher strike call (same expiry). Lower triangle shows valid
+          combinations. Click a cell to trade.
         </p>
         <div className="border rounded-lg overflow-hidden">
           <ScrollArea className="w-full">
@@ -2062,10 +1150,7 @@ function OptionsCombosPanel({
                     Long &darr; / Short &rarr;
                   </th>
                   {strikes.map((s) => (
-                    <th
-                      key={s}
-                      className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap"
-                    >
+                    <th key={s} className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap">
                       {s.toLocaleString()}
                     </th>
                   ))}
@@ -2082,25 +1167,16 @@ function OptionsCombosPanel({
                         return (
                           <td
                             key={sIdx}
-                            className={cn(
-                              "py-1.5 px-1 text-center",
-                              sIdx === lIdx ? "bg-muted/40" : "bg-muted/15",
-                            )}
+                            className={cn("py-1.5 px-1 text-center", sIdx === lIdx ? "bg-muted/40" : "bg-muted/15")}
                           >
-                            {sIdx === lIdx ? (
-                              <span className="text-muted-foreground/40">
-                                &mdash;
-                              </span>
-                            ) : null}
+                            {sIdx === lIdx ? <span className="text-muted-foreground/40">&mdash;</span> : null}
                           </td>
                         );
                       }
                       const longG = getGreeks(longStrike, "call");
                       const shortG = getGreeks(shortStrike, "call");
                       const netDebit = longG.price - shortG.price;
-                      const spread =
-                        Math.abs(netDebit) * 0.02 +
-                        seededRandom(longStrike + shortStrike) * 2;
+                      const spread = Math.abs(netDebit) * 0.02 + seededRandom(longStrike + shortStrike) * 2;
                       const legs: ComboLeg[] = [
                         {
                           strike: longStrike,
@@ -2122,14 +1198,7 @@ function OptionsCombosPanel({
                           className="py-1 px-1 text-center cursor-pointer hover:bg-muted/40 transition-colors"
                           onClick={() => {
                             const label = `BUY ${asset}-26JUN26-${longStrike}-C / SELL ${asset}-26JUN26-${shortStrike}-C`;
-                            onSelectInstrument(
-                              buildComboInstrument(
-                                label,
-                                legs,
-                                "Vertical Spread",
-                                netDebit,
-                              ),
-                            );
+                            onSelectInstrument(buildComboInstrument(label, legs, "Vertical Spread", netDebit));
                           }}
                         >
                           <div className="rounded border bg-card/80 p-1 min-w-[80px] space-y-0.5">
@@ -2137,9 +1206,7 @@ function OptionsCombosPanel({
                               <span
                                 className={cn(
                                   "font-mono font-medium",
-                                  netDebit > 0
-                                    ? "text-rose-400"
-                                    : "text-emerald-400",
+                                  netDebit > 0 ? "text-rose-400" : "text-emerald-400",
                                 )}
                               >
                                 {formatUsd(Math.abs(netDebit - spread), 1)}
@@ -2168,10 +1235,7 @@ function OptionsCombosPanel({
 
   // --- Straddle (list/table, not matrix) ---
   if (comboType === "straddle") {
-    const straddleStrikes = strikes.slice(
-      Math.max(0, atmIdx - 5),
-      Math.min(strikes.length, atmIdx + 6),
-    );
+    const straddleStrikes = strikes.slice(Math.max(0, atmIdx - 5), Math.min(strikes.length, atmIdx + 6));
 
     return (
       <div className="space-y-3">
@@ -2185,21 +1249,11 @@ function OptionsCombosPanel({
               <thead>
                 <tr className="border-b bg-muted/40 text-muted-foreground">
                   <th className="py-1.5 px-2 text-right font-normal">Strike</th>
-                  <th className="py-1.5 px-2 text-right font-normal">
-                    Call Price
-                  </th>
-                  <th className="py-1.5 px-2 text-right font-normal">
-                    Put Price
-                  </th>
-                  <th className="py-1.5 px-2 text-right font-normal">
-                    Net Cost
-                  </th>
-                  <th className="py-1.5 px-2 text-right font-normal">
-                    Combined IV
-                  </th>
-                  <th className="py-1.5 px-2 text-right font-normal">
-                    Net Delta
-                  </th>
+                  <th className="py-1.5 px-2 text-right font-normal">Call Price</th>
+                  <th className="py-1.5 px-2 text-right font-normal">Put Price</th>
+                  <th className="py-1.5 px-2 text-right font-normal">Net Cost</th>
+                  <th className="py-1.5 px-2 text-right font-normal">Combined IV</th>
+                  <th className="py-1.5 px-2 text-right font-normal">Net Delta</th>
                 </tr>
               </thead>
               <tbody>
@@ -2208,13 +1262,7 @@ function OptionsCombosPanel({
                   const putG = getGreeks(strike, "put");
                   const netCost = callG.price + putG.price;
                   const row = chainMap.get(strike);
-                  const combinedIv = row
-                    ? (row.callIvBid +
-                        row.callIvAsk +
-                        row.putIvBid +
-                        row.putIvAsk) /
-                      4
-                    : 0;
+                  const combinedIv = row ? (row.callIvBid + row.callIvAsk + row.putIvBid + row.putIvAsk) / 4 : 0;
                   const netDelta = callG.delta + putG.delta;
                   const isAtm = strike === closestAtmStrike;
                   const legs: ComboLeg[] = [
@@ -2231,30 +1279,15 @@ function OptionsCombosPanel({
                       )}
                       onClick={() => {
                         const label = `BUY ${asset}-26JUN26-${strike}-C + BUY ${asset}-26JUN26-${strike}-P`;
-                        onSelectInstrument(
-                          buildComboInstrument(
-                            label,
-                            legs,
-                            "Straddle",
-                            netCost,
-                          ),
-                        );
+                        onSelectInstrument(buildComboInstrument(label, legs, "Straddle", netCost));
                       }}
                     >
                       <td className="py-1.5 px-2 text-right font-mono font-medium">
                         {strike.toLocaleString()}
-                        {isAtm && (
-                          <span className="text-[8px] ml-1 text-amber-400/70">
-                            ATM
-                          </span>
-                        )}
+                        {isAtm && <span className="text-[8px] ml-1 text-amber-400/70">ATM</span>}
                       </td>
-                      <td className="py-1.5 px-2 text-right font-mono">
-                        {formatUsd(callG.price)}
-                      </td>
-                      <td className="py-1.5 px-2 text-right font-mono">
-                        {formatUsd(putG.price)}
-                      </td>
+                      <td className="py-1.5 px-2 text-right font-mono">{formatUsd(callG.price)}</td>
+                      <td className="py-1.5 px-2 text-right font-mono">{formatUsd(putG.price)}</td>
                       <td className="py-1.5 px-2 text-right font-mono font-medium text-rose-400">
                         {formatUsd(netCost)}
                       </td>
@@ -2291,8 +1324,7 @@ function OptionsCombosPanel({
       <div className="space-y-3">
         <ComboTypePills comboType={comboType} setComboType={setComboType} />
         <p className="text-[10px] text-muted-foreground px-1">
-          Buy OTM call + buy OTM put at different strikes. Full matrix (any
-          combination valid).
+          Buy OTM call + buy OTM put at different strikes. Full matrix (any combination valid).
         </p>
         <div className="border rounded-lg overflow-hidden">
           <ScrollArea className="w-full">
@@ -2303,10 +1335,7 @@ function OptionsCombosPanel({
                     Call &darr; / Put &rarr;
                   </th>
                   {putStrikes.map((s) => (
-                    <th
-                      key={s}
-                      className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap"
-                    >
+                    <th key={s} className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap">
                       {s.toLocaleString()}P
                     </th>
                   ))}
@@ -2343,23 +1372,12 @@ function OptionsCombosPanel({
                           className="py-1 px-1 text-center cursor-pointer hover:bg-muted/40 transition-colors"
                           onClick={() => {
                             const label = `BUY ${asset}-26JUN26-${callStrike}-C + BUY ${asset}-26JUN26-${putStrike}-P`;
-                            onSelectInstrument(
-                              buildComboInstrument(
-                                label,
-                                legs,
-                                "Strangle",
-                                netCost,
-                              ),
-                            );
+                            onSelectInstrument(buildComboInstrument(label, legs, "Strangle", netCost));
                           }}
                         >
                           <div className="rounded border bg-card/80 p-1 min-w-[70px] space-y-0.5">
-                            <span className="font-mono font-medium text-rose-400">
-                              {formatUsd(netCost, 1)}
-                            </span>
-                            <p className="text-[8px] text-muted-foreground/60">
-                              Debit
-                            </p>
+                            <span className="font-mono font-medium text-rose-400">{formatUsd(netCost, 1)}</span>
+                            <p className="text-[8px] text-muted-foreground/60">Debit</p>
                           </div>
                         </td>
                       );
@@ -2377,17 +1395,13 @@ function OptionsCombosPanel({
 
   // --- Calendar Spread (same strike, different expiries) ---
   if (comboType === "calendar") {
-    const calStrikes = strikes.slice(
-      Math.max(0, atmIdx - 4),
-      Math.min(strikes.length, atmIdx + 5),
-    );
+    const calStrikes = strikes.slice(Math.max(0, atmIdx - 4), Math.min(strikes.length, atmIdx + 5));
 
     return (
       <div className="space-y-3">
         <ComboTypePills comboType={comboType} setComboType={setComboType} />
         <p className="text-[10px] text-muted-foreground px-1">
-          Long far-expiry call, short near-expiry call at the same strike. Net
-          debit shown.
+          Long far-expiry call, short near-expiry call at the same strike. Net debit shown.
         </p>
         <div className="border rounded-lg overflow-hidden">
           <ScrollArea className="w-full">
@@ -2413,17 +1427,10 @@ function OptionsCombosPanel({
                   const baseG = getGreeks(strike, "call");
 
                   return (
-                    <tr
-                      key={strike}
-                      className={cn("border-b", isAtm && "bg-amber-500/10")}
-                    >
+                    <tr key={strike} className={cn("border-b", isAtm && "bg-amber-500/10")}>
                       <td className="py-2 px-2 font-mono font-medium text-[10px] whitespace-nowrap bg-muted/20">
                         {strike.toLocaleString()}
-                        {isAtm && (
-                          <span className="text-[8px] ml-1 text-amber-400/70">
-                            ATM
-                          </span>
-                        )}
+                        {isAtm && <span className="text-[8px] ml-1 text-amber-400/70">ATM</span>}
                       </td>
                       {CALENDAR_EXPIRIES.map((exp, eIdx) => {
                         // Near expiry is always first column; further expiries cost more
@@ -2460,23 +1467,12 @@ function OptionsCombosPanel({
                             className="py-1 px-1 text-center cursor-pointer hover:bg-muted/40 transition-colors"
                             onClick={() => {
                               const label = `BUY ${asset}-${exp.replace(/ /g, "")}-${strike}-C / SELL ${asset}-26JUN26-${strike}-C`;
-                              onSelectInstrument(
-                                buildComboInstrument(
-                                  label,
-                                  legs,
-                                  "Calendar Spread",
-                                  netDebit,
-                                ),
-                              );
+                              onSelectInstrument(buildComboInstrument(label, legs, "Calendar Spread", netDebit));
                             }}
                           >
                             <div className="rounded border bg-card/80 p-1 min-w-[70px] space-y-0.5">
-                              <span className="font-mono font-medium text-rose-400">
-                                {formatUsd(netDebit, 1)}
-                              </span>
-                              <p className="text-[8px] text-muted-foreground/60">
-                                Debit
-                              </p>
+                              <span className="font-mono font-medium text-rose-400">{formatUsd(netDebit, 1)}</span>
+                              <p className="text-[8px] text-muted-foreground/60">Debit</p>
                             </div>
                           </td>
                         );
@@ -2495,10 +1491,7 @@ function OptionsCombosPanel({
 
   // --- Butterfly (buy 1 lower, sell 2 middle, buy 1 upper) ---
   if (comboType === "butterfly") {
-    const centerStrikes = strikes.slice(
-      Math.max(0, atmIdx - 4),
-      Math.min(strikes.length, atmIdx + 5),
-    );
+    const centerStrikes = strikes.slice(Math.max(0, atmIdx - 4), Math.min(strikes.length, atmIdx + 5));
 
     return (
       <div className="space-y-3">
@@ -2515,10 +1508,7 @@ function OptionsCombosPanel({
                     Center &darr; / Width &rarr;
                   </th>
                   {wingWidths.map((w) => (
-                    <th
-                      key={w}
-                      className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap"
-                    >
+                    <th key={w} className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap">
                       {w.toLocaleString()}
                     </th>
                   ))}
@@ -2528,17 +1518,10 @@ function OptionsCombosPanel({
                 {centerStrikes.map((center) => {
                   const isAtm = center === closestAtmStrike;
                   return (
-                    <tr
-                      key={center}
-                      className={cn("border-b", isAtm && "bg-amber-500/10")}
-                    >
+                    <tr key={center} className={cn("border-b", isAtm && "bg-amber-500/10")}>
                       <td className="py-2 px-2 font-mono font-medium text-[10px] whitespace-nowrap bg-muted/20">
                         {center.toLocaleString()}
-                        {isAtm && (
-                          <span className="text-[8px] ml-1 text-amber-400/70">
-                            ATM
-                          </span>
-                        )}
+                        {isAtm && <span className="text-[8px] ml-1 text-amber-400/70">ATM</span>}
                       </td>
                       {wingWidths.map((width) => {
                         const lower = center - width;
@@ -2547,24 +1530,17 @@ function OptionsCombosPanel({
                         const lowerG = getGreeks(lower, "call");
                         const centerG = getGreeks(center, "call");
                         const upperG = getGreeks(upper, "call");
-                        const hasData =
-                          chainMap.has(lower) && chainMap.has(upper);
+                        const hasData = chainMap.has(lower) && chainMap.has(upper);
 
                         if (!hasData) {
                           return (
-                            <td
-                              key={width}
-                              className="py-1.5 px-1 text-center bg-muted/15"
-                            >
-                              <span className="text-muted-foreground/40 text-[9px]">
-                                N/A
-                              </span>
+                            <td key={width} className="py-1.5 px-1 text-center bg-muted/15">
+                              <span className="text-muted-foreground/40 text-[9px]">N/A</span>
                             </td>
                           );
                         }
 
-                        const netDebit =
-                          lowerG.price - 2 * centerG.price + upperG.price;
+                        const netDebit = lowerG.price - 2 * centerG.price + upperG.price;
                         const legs: ComboLeg[] = [
                           {
                             strike: lower,
@@ -2643,30 +1619,19 @@ function OptionsCombosPanel({
                             className="py-1 px-1 text-center cursor-pointer hover:bg-muted/40 transition-colors"
                             onClick={() => {
                               const label = `BUY ${lower}C / SELL 2x${center}C / BUY ${upper}C`;
-                              onSelectInstrument(
-                                buildComboInstrument(
-                                  label,
-                                  allLegs,
-                                  "Butterfly",
-                                  netDebit,
-                                ),
-                              );
+                              onSelectInstrument(buildComboInstrument(label, allLegs, "Butterfly", netDebit));
                             }}
                           >
                             <div className="rounded border bg-card/80 p-1 min-w-[70px] space-y-0.5">
                               <span
                                 className={cn(
                                   "font-mono font-medium",
-                                  netDebit > 0
-                                    ? "text-rose-400"
-                                    : "text-emerald-400",
+                                  netDebit > 0 ? "text-rose-400" : "text-emerald-400",
                                 )}
                               >
                                 {formatUsd(Math.abs(netDebit), 1)}
                               </span>
-                              <p className="text-[8px] text-muted-foreground/60">
-                                {netDebit > 0 ? "Debit" : "Credit"}
-                              </p>
+                              <p className="text-[8px] text-muted-foreground/60">{netDebit > 0 ? "Debit" : "Credit"}</p>
                             </div>
                           </td>
                         );
@@ -2691,9 +1656,7 @@ function OptionsCombosPanel({
   return (
     <div className="space-y-3">
       <ComboTypePills comboType={comboType} setComboType={setComboType} />
-      <p className="text-[10px] text-muted-foreground px-1">
-        Sell OTM put, buy OTM call. Net credit or debit shown.
-      </p>
+      <p className="text-[10px] text-muted-foreground px-1">Sell OTM put, buy OTM call. Net credit or debit shown.</p>
       <div className="border rounded-lg overflow-hidden">
         <ScrollArea className="w-full">
           <table className="w-full text-[10px]">
@@ -2703,10 +1666,7 @@ function OptionsCombosPanel({
                   Call &darr; / Put &rarr;
                 </th>
                 {rrPutStrikes.map((s) => (
-                  <th
-                    key={s}
-                    className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap"
-                  >
+                  <th key={s} className="py-2 px-1.5 text-center font-mono font-medium text-[10px] whitespace-nowrap">
                     {s.toLocaleString()}P
                   </th>
                 ))}
@@ -2744,30 +1704,19 @@ function OptionsCombosPanel({
                         className="py-1 px-1 text-center cursor-pointer hover:bg-muted/40 transition-colors"
                         onClick={() => {
                           const label = `BUY ${asset}-26JUN26-${callStrike}-C / SELL ${asset}-26JUN26-${putStrike}-P`;
-                          onSelectInstrument(
-                            buildComboInstrument(
-                              label,
-                              legs,
-                              "Risk Reversal",
-                              -netCredit,
-                            ),
-                          );
+                          onSelectInstrument(buildComboInstrument(label, legs, "Risk Reversal", -netCredit));
                         }}
                       >
                         <div className="rounded border bg-card/80 p-1 min-w-[70px] space-y-0.5">
                           <span
                             className={cn(
                               "font-mono font-medium",
-                              netCredit >= 0
-                                ? "text-emerald-400"
-                                : "text-rose-400",
+                              netCredit >= 0 ? "text-emerald-400" : "text-rose-400",
                             )}
                           >
                             {formatUsd(Math.abs(netCredit), 1)}
                           </span>
-                          <p className="text-[8px] text-muted-foreground/60">
-                            {netCredit >= 0 ? "Credit" : "Debit"}
-                          </p>
+                          <p className="text-[8px] text-muted-foreground/60">{netCredit >= 0 ? "Credit" : "Debit"}</p>
                         </div>
                       </td>
                     );
@@ -2783,13 +1732,7 @@ function OptionsCombosPanel({
   );
 }
 
-function ComboTypePills({
-  comboType,
-  setComboType,
-}: {
-  comboType: ComboType;
-  setComboType: (ct: ComboType) => void;
-}) {
+function ComboTypePills({ comboType, setComboType }: { comboType: ComboType; setComboType: (ct: ComboType) => void }) {
   return (
     <ScrollArea className="w-full">
       <div className="flex items-center gap-1 pb-1">
@@ -2810,7 +1753,7 @@ function ComboTypePills({
   );
 }
 
-function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
+export function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
   const [direction, setDirection] = React.useState<TradeDirection>("buy");
   const [orderType, setOrderType] = React.useState<OrderType>("limit");
   const [price, setPrice] = React.useState("");
@@ -2837,41 +1780,23 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
       : null;
 
   const marginRequired =
-    amountNum > 0 && priceNum > 0
-      ? (amountNum * priceNum) /
-        (instrument?.type === "future" ? leverageVal : 1)
-      : 0;
+    amountNum > 0 && priceNum > 0 ? (amountNum * priceNum) / (instrument?.type === "future" ? leverageVal : 1) : 0;
 
   // Spread margin: combined margin for both legs
   const spreadMargin =
-    instrument?.type === "spread" && amountNum > 0
-      ? Math.abs(instrument.spreadAsk ?? 0) * amountNum * 1.2
-      : 0;
+    instrument?.type === "spread" && amountNum > 0 ? Math.abs(instrument.spreadAsk ?? 0) * amountNum * 1.2 : 0;
 
   const noInstrument = !instrument;
 
   // ---------- Mode 4: Combo Trade Panel ----------
   if (instrument?.type === "combo") {
     const legs = instrument.legs ?? [];
-    const netDelta = legs.reduce(
-      (s, l) => s + l.delta * (l.direction === "buy" ? 1 : -1),
-      0,
-    );
-    const netGamma = legs.reduce(
-      (s, l) => s + l.gamma * (l.direction === "buy" ? 1 : -1),
-      0,
-    );
-    const netTheta = legs.reduce(
-      (s, l) => s + l.theta * (l.direction === "buy" ? 1 : -1),
-      0,
-    );
-    const netVega = legs.reduce(
-      (s, l) => s + l.vega * (l.direction === "buy" ? 1 : -1),
-      0,
-    );
+    const netDelta = legs.reduce((s, l) => s + l.delta * (l.direction === "buy" ? 1 : -1), 0);
+    const netGamma = legs.reduce((s, l) => s + l.gamma * (l.direction === "buy" ? 1 : -1), 0);
+    const netTheta = legs.reduce((s, l) => s + l.theta * (l.direction === "buy" ? 1 : -1), 0);
+    const netVega = legs.reduce((s, l) => s + l.vega * (l.direction === "buy" ? 1 : -1), 0);
     const netDebit = instrument.netDebit ?? 0;
-    const comboMargin =
-      amountNum > 0 ? Math.abs(netDebit) * amountNum * 1.2 : 0;
+    const comboMargin = amountNum > 0 ? Math.abs(netDebit) * amountNum * 1.2 : 0;
 
     return (
       <div className="space-y-3">
@@ -2887,29 +1812,16 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
 
         {/* Legs */}
         <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-            Legs
-          </p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Legs</p>
           {legs.map((leg, idx) => (
-            <div
-              key={idx}
-              className="flex items-center justify-between text-xs"
-            >
+            <div key={idx} className="flex items-center justify-between text-xs">
               <span
-                className={cn(
-                  "font-mono font-medium",
-                  leg.direction === "buy"
-                    ? "text-emerald-400"
-                    : "text-rose-400",
-                )}
+                className={cn("font-mono font-medium", leg.direction === "buy" ? "text-emerald-400" : "text-rose-400")}
               >
-                {leg.direction === "buy" ? "BUY" : "SELL"}{" "}
-                {leg.strike.toLocaleString()}
+                {leg.direction === "buy" ? "BUY" : "SELL"} {leg.strike.toLocaleString()}
                 {leg.type === "call" ? "C" : "P"}
               </span>
-              <span className="font-mono text-muted-foreground">
-                {formatUsd(leg.price)}
-              </span>
+              <span className="font-mono text-muted-foreground">{formatUsd(leg.price)}</span>
             </div>
           ))}
         </div>
@@ -2919,15 +1831,8 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
         {/* Net Debit/Credit */}
         <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              Net {netDebit > 0 ? "Debit" : "Credit"}
-            </span>
-            <span
-              className={cn(
-                "font-mono font-bold text-sm",
-                netDebit > 0 ? "text-rose-400" : "text-emerald-400",
-              )}
-            >
+            <span className="text-muted-foreground">Net {netDebit > 0 ? "Debit" : "Credit"}</span>
+            <span className={cn("font-mono font-bold text-sm", netDebit > 0 ? "text-rose-400" : "text-emerald-400")}>
               {formatUsd(Math.abs(netDebit))}
             </span>
           </div>
@@ -2935,9 +1840,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
 
         {/* Combined Greeks */}
         <div className="p-3 rounded-lg border bg-muted/30">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
-            Combined Greeks
-          </p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Combined Greeks</p>
           <div className="grid grid-cols-4 gap-2 text-center">
             <TooltipProvider>
               <Tooltip>
@@ -2965,9 +1868,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
                 <TooltipTrigger asChild>
                   <div>
                     <p className="text-[10px] text-muted-foreground">&Gamma;</p>
-                    <p className="font-mono text-xs font-medium">
-                      {netGamma.toFixed(4)}
-                    </p>
+                    <p className="font-mono text-xs font-medium">{netGamma.toFixed(4)}</p>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -2980,9 +1881,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
                 <TooltipTrigger asChild>
                   <div>
                     <p className="text-[10px] text-muted-foreground">&nu;</p>
-                    <p className="font-mono text-xs font-medium">
-                      {netVega.toFixed(3)}
-                    </p>
+                    <p className="font-mono text-xs font-medium">{netVega.toFixed(3)}</p>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -2995,9 +1894,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
                 <TooltipTrigger asChild>
                   <div>
                     <p className="text-[10px] text-muted-foreground">&Theta;</p>
-                    <p className="font-mono text-xs font-medium">
-                      {netTheta.toFixed(1)}
-                    </p>
+                    <p className="font-mono text-xs font-medium">{netTheta.toFixed(1)}</p>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -3010,9 +1907,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
 
         {/* Size */}
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">
-            Size (contracts)
-          </label>
+          <label className="text-xs text-muted-foreground">Size (contracts)</label>
           <Input
             type="number"
             placeholder="0"
@@ -3040,12 +1935,8 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
         {/* Margin */}
         <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              Combined Margin Required
-            </span>
-            <span className="font-mono font-medium">
-              {comboMargin > 0 ? formatUsd(comboMargin) : "--"}
-            </span>
+            <span className="text-muted-foreground">Combined Margin Required</span>
+            <span className="font-mono font-medium">{comboMargin > 0 ? formatUsd(comboMargin) : "--"}</span>
           </div>
         </div>
 
@@ -3054,9 +1945,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
           className="w-full h-10 text-sm font-semibold bg-blue-600 hover:bg-blue-700"
           disabled={amountNum <= 0}
           onClick={() => {
-            const legDesc = legs
-              .map((l) => `${l.direction} ${l.strike}`)
-              .join("+");
+            const legDesc = legs.map((l) => `${l.direction} ${l.strike}`).join("+");
             const order = placeMockOrder({
               client_id: "internal-trader",
               instrument_id: `OPTIONS:COMBO:${instrument.comboType}:${legDesc}`,
@@ -3089,12 +1978,8 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
         <div className="space-y-1">
           <p className="text-xs text-muted-foreground">Spread Order</p>
           <div className="text-sm font-mono font-bold">
-            <p className="truncate text-emerald-400">
-              Long: {instrument.longLeg}
-            </p>
-            <p className="truncate text-rose-400">
-              Short: {instrument.shortLeg}
-            </p>
+            <p className="truncate text-emerald-400">Long: {instrument.longLeg}</p>
+            <p className="truncate text-rose-400">Short: {instrument.shortLeg}</p>
           </div>
         </div>
 
@@ -3102,9 +1987,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
 
         {/* Net cost (Bid/Ask) */}
         <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">
-            Spread Pricing
-          </p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Spread Pricing</p>
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Bid</span>
             <span className="font-mono font-medium text-emerald-400">
@@ -3124,8 +2007,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Mid</span>
             <span className="font-mono">
-              {instrument.spreadBid !== undefined &&
-              instrument.spreadAsk !== undefined
+              {instrument.spreadBid !== undefined && instrument.spreadAsk !== undefined
                 ? formatUsd((instrument.spreadBid + instrument.spreadAsk) / 2)
                 : "--"}
             </span>
@@ -3134,9 +2016,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
 
         {/* Size */}
         <div className="space-y-1.5">
-          <label className="text-xs text-muted-foreground">
-            Size (contracts)
-          </label>
+          <label className="text-xs text-muted-foreground">Size (contracts)</label>
           <Input
             type="number"
             placeholder="0"
@@ -3164,12 +2044,8 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
         {/* Combined margin */}
         <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              Combined Margin Required
-            </span>
-            <span className="font-mono font-medium">
-              {spreadMargin > 0 ? formatUsd(spreadMargin) : "--"}
-            </span>
+            <span className="text-muted-foreground">Combined Margin Required</span>
+            <span className="font-mono font-medium">{spreadMargin > 0 ? formatUsd(spreadMargin) : "--"}</span>
           </div>
         </div>
 
@@ -3208,9 +2084,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
       {/* Header */}
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground">Selected Instrument</p>
-        <p className="text-sm font-mono font-bold truncate">
-          {instrument ? instrument.name : "Click a row to select"}
-        </p>
+        <p className="text-sm font-mono font-bold truncate">{instrument ? instrument.name : "Click a row to select"}</p>
       </div>
 
       <Separator />
@@ -3220,10 +2094,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
         <Button
           variant={direction === "buy" ? "default" : "outline"}
           size="sm"
-          className={cn(
-            "h-9 text-sm font-semibold",
-            direction === "buy" && "bg-emerald-600 hover:bg-emerald-700",
-          )}
+          className={cn("h-9 text-sm font-semibold", direction === "buy" && "bg-emerald-600 hover:bg-emerald-700")}
           onClick={() => setDirection("buy")}
           disabled={noInstrument}
         >
@@ -3233,10 +2104,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
         <Button
           variant={direction === "sell" ? "default" : "outline"}
           size="sm"
-          className={cn(
-            "h-9 text-sm font-semibold",
-            direction === "sell" && "bg-rose-600 hover:bg-rose-700",
-          )}
+          className={cn("h-9 text-sm font-semibold", direction === "sell" && "bg-rose-600 hover:bg-rose-700")}
           onClick={() => setDirection("sell")}
           disabled={noInstrument}
         >
@@ -3249,24 +2117,18 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Order Type</label>
         <div className="grid grid-cols-4 gap-1">
-          {(["limit", "market", "post-only", "reduce-only"] as const).map(
-            (ot) => (
-              <Button
-                key={ot}
-                variant={orderType === ot ? "default" : "outline"}
-                size="sm"
-                className="text-[10px] h-7 px-1"
-                onClick={() => setOrderType(ot)}
-                disabled={noInstrument}
-              >
-                {ot === "post-only"
-                  ? "Post"
-                  : ot === "reduce-only"
-                    ? "Reduce"
-                    : ot.charAt(0).toUpperCase() + ot.slice(1)}
-              </Button>
-            ),
-          )}
+          {(["limit", "market", "post-only", "reduce-only"] as const).map((ot) => (
+            <Button
+              key={ot}
+              variant={orderType === ot ? "default" : "outline"}
+              size="sm"
+              className="text-[10px] h-7 px-1"
+              onClick={() => setOrderType(ot)}
+              disabled={noInstrument}
+            >
+              {ot === "post-only" ? "Post" : ot === "reduce-only" ? "Reduce" : ot.charAt(0).toUpperCase() + ot.slice(1)}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -3286,9 +2148,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
       {/* Amount */}
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">
-          {instrument?.type === "option"
-            ? "Size (contracts)"
-            : "Size (contracts)"}
+          {instrument?.type === "option" ? "Size (contracts)" : "Size (contracts)"}
         </label>
         <Input
           type="number"
@@ -3319,28 +2179,18 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
       {instrument?.type === "option" && (
         <>
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">
-              Implied Volatility
-            </label>
-            <div className="p-2 rounded-md border bg-muted/30 font-mono text-sm">
-              {instrument.iv?.toFixed(1)}%
-            </div>
+            <label className="text-xs text-muted-foreground">Implied Volatility</label>
+            <div className="p-2 rounded-md border bg-muted/30 font-mono text-sm">{instrument.iv?.toFixed(1)}%</div>
           </div>
           <div className="p-3 rounded-lg border bg-muted/30">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">
-              Greeks
-            </p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Greeks</p>
             <div className="grid grid-cols-4 gap-2 text-center">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        &Delta;
-                      </p>
-                      <p className="font-mono text-xs font-medium">
-                        {instrument.delta?.toFixed(3)}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground">&Delta;</p>
+                      <p className="font-mono text-xs font-medium">{instrument.delta?.toFixed(3)}</p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -3352,12 +2202,8 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        &Gamma;
-                      </p>
-                      <p className="font-mono text-xs font-medium">
-                        {instrument.gamma?.toFixed(4)}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground">&Gamma;</p>
+                      <p className="font-mono text-xs font-medium">{instrument.gamma?.toFixed(4)}</p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -3369,12 +2215,8 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        &Theta;
-                      </p>
-                      <p className="font-mono text-xs font-medium">
-                        {instrument.theta?.toFixed(1)}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground">&Theta;</p>
+                      <p className="font-mono text-xs font-medium">{instrument.theta?.toFixed(1)}</p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -3387,9 +2229,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
                   <TooltipTrigger asChild>
                     <div>
                       <p className="text-[10px] text-muted-foreground">&nu;</p>
-                      <p className="font-mono text-xs font-medium">
-                        {instrument.vega?.toFixed(3)}
-                      </p>
+                      <p className="font-mono text-xs font-medium">{instrument.vega?.toFixed(3)}</p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -3408,18 +2248,9 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs text-muted-foreground">Leverage</label>
-              <span className="text-xs font-mono font-bold">
-                {leverageVal}x
-              </span>
+              <span className="text-xs font-mono font-bold">{leverageVal}x</span>
             </div>
-            <Slider
-              value={leverage}
-              onValueChange={setLeverage}
-              min={1}
-              max={50}
-              step={1}
-              className="w-full"
-            />
+            <Slider value={leverage} onValueChange={setLeverage} min={1} max={50} step={1} className="w-full" />
             <div className="flex items-center justify-between text-[10px] text-muted-foreground font-mono">
               <span>1x</span>
               <span>10x</span>
@@ -3431,22 +2262,14 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
             <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Liquidation Price</span>
-                <span
-                  className={cn(
-                    "font-mono font-bold",
-                    direction === "buy" ? "text-rose-400" : "text-emerald-400",
-                  )}
-                >
+                <span className={cn("font-mono font-bold", direction === "buy" ? "text-rose-400" : "text-emerald-400")}>
                   {formatUsd(liqPrice)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Distance</span>
                 <span className="font-mono text-muted-foreground">
-                  {((Math.abs(priceNum - liqPrice) / priceNum) * 100).toFixed(
-                    1,
-                  )}
-                  %
+                  {((Math.abs(priceNum - liqPrice) / priceNum) * 100).toFixed(1)}%
                 </span>
               </div>
             </div>
@@ -3460,19 +2283,13 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
       <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Order Value</span>
-          <span className="font-mono">
-            {amountNum > 0 && priceNum > 0
-              ? formatUsd(amountNum * priceNum)
-              : "--"}
-          </span>
+          <span className="font-mono">{amountNum > 0 && priceNum > 0 ? formatUsd(amountNum * priceNum) : "--"}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">
             {instrument?.type === "future" ? "Margin Required" : "Total Cost"}
           </span>
-          <span className="font-mono font-medium">
-            {marginRequired > 0 ? formatUsd(marginRequired) : "--"}
-          </span>
+          <span className="font-mono font-medium">{marginRequired > 0 ? formatUsd(marginRequired) : "--"}</span>
         </div>
       </div>
 
@@ -3480,15 +2297,9 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
       <Button
         className={cn(
           "w-full h-10 text-sm font-semibold",
-          direction === "buy"
-            ? "bg-emerald-600 hover:bg-emerald-700"
-            : "bg-rose-600 hover:bg-rose-700",
+          direction === "buy" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700",
         )}
-        disabled={
-          noInstrument ||
-          amountNum <= 0 ||
-          (orderType !== "market" && priceNum <= 0)
-        }
+        disabled={noInstrument || amountNum <= 0 || (orderType !== "market" && priceNum <= 0)}
         onClick={() => {
           if (!instrument) return;
           const order = placeMockOrder({
@@ -3498,10 +2309,7 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
             side: direction,
             order_type: orderType === "market" ? "market" : "limit",
             quantity: amountNum,
-            price:
-              orderType === "market"
-                ? (instrument.lastPrice ?? priceNum)
-                : priceNum,
+            price: orderType === "market" ? (instrument.lastPrice ?? priceNum) : priceNum,
             asset_class: "CeFi",
             lane: "options",
           });
@@ -3519,26 +2327,19 @@ function TradePanel({ instrument }: { instrument: SelectedInstrument | null }) {
   );
 }
 
-function VolSurfacePanel({ asset }: { asset: Asset }) {
+export function VolSurfacePanel({ asset }: { asset: Asset }) {
   const [open, setOpen] = React.useState(false);
   const surface = React.useMemo(() => generateVolSurface(asset), [asset]);
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full justify-between h-9 px-3 text-xs"
-        >
+        <Button variant="ghost" className="w-full justify-between h-9 px-3 text-xs">
           <span className="flex items-center gap-1.5">
             <Grid3X3 className="size-3.5" />
             Vol Surface / Term Structure
           </span>
-          {open ? (
-            <ChevronUp className="size-3.5" />
-          ) : (
-            <ChevronDown className="size-3.5" />
-          )}
+          {open ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent>
@@ -3547,14 +2348,9 @@ function VolSurfacePanel({ asset }: { asset: Asset }) {
             <table className="w-full text-[10px]">
               <thead>
                 <tr>
-                  <th className="py-1 px-2 text-left text-muted-foreground font-normal">
-                    Strike
-                  </th>
+                  <th className="py-1 px-2 text-left text-muted-foreground font-normal">Strike</th>
                   {surface.expiries.map((exp) => (
-                    <th
-                      key={exp}
-                      className="py-1 px-2 text-center text-muted-foreground font-normal"
-                    >
+                    <th key={exp} className="py-1 px-2 text-center text-muted-foreground font-normal">
                       {exp}
                     </th>
                   ))}
@@ -3563,9 +2359,7 @@ function VolSurfacePanel({ asset }: { asset: Asset }) {
               <tbody>
                 {surface.strikes.map((strike, sIdx) => (
                   <tr key={strike}>
-                    <td className="py-1 px-2 font-mono font-medium">
-                      {strike.toLocaleString()}
-                    </td>
+                    <td className="py-1 px-2 font-mono font-medium">{strike.toLocaleString()}</td>
                     {surface.ivs[sIdx].map((iv, eIdx) => (
                       <td
                         key={eIdx}
@@ -3585,24 +2379,15 @@ function VolSurfacePanel({ asset }: { asset: Asset }) {
           </div>
           <div className="flex items-center gap-3 mt-2 text-[9px] text-muted-foreground">
             <span className="flex items-center gap-1">
-              <span
-                className="inline-block w-3 h-3 rounded"
-                style={{ backgroundColor: ivToColor(42) }}
-              />
+              <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: ivToColor(42) }} />
               Low IV
             </span>
             <span className="flex items-center gap-1">
-              <span
-                className="inline-block w-3 h-3 rounded"
-                style={{ backgroundColor: ivToColor(60) }}
-              />
+              <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: ivToColor(60) }} />
               Mid IV
             </span>
             <span className="flex items-center gap-1">
-              <span
-                className="inline-block w-3 h-3 rounded"
-                style={{ backgroundColor: ivToColor(78) }}
-              />
+              <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: ivToColor(78) }} />
               High IV
             </span>
           </div>
@@ -3612,10 +2397,9 @@ function VolSurfacePanel({ asset }: { asset: Asset }) {
   );
 }
 
-function GreeksSurfacePanel({ asset }: { asset: Asset }) {
+export function GreeksSurfacePanel({ asset }: { asset: Asset }) {
   const [open, setOpen] = React.useState(false);
-  const [selectedGreek, setSelectedGreek] =
-    React.useState<GreekSurface>("delta");
+  const [selectedGreek, setSelectedGreek] = React.useState<GreekSurface>("delta");
   const surface = React.useMemo(() => generateVolSurface(asset), [asset]);
 
   // Generate greek values from IV surface
@@ -3634,17 +2418,11 @@ function GreeksSurfacePanel({ asset }: { asset: Asset }) {
           case "delta":
             return normCdf;
           case "gamma":
-            return (
-              (0.01 / ((iv / 100) * sqrtT * spot)) * Math.exp((-d1 * d1) / 2)
-            );
+            return (0.01 / ((iv / 100) * sqrtT * spot)) * Math.exp((-d1 * d1) / 2);
           case "vega":
             return spot * sqrtT * Math.exp((-d1 * d1) / 2) * 0.01;
           case "theta":
-            return (
-              -(spot * (iv / 100) * Math.exp((-d1 * d1) / 2)) /
-              (2 * sqrtT) /
-              365
-            );
+            return -(spot * (iv / 100) * Math.exp((-d1 * d1) / 2)) / (2 * sqrtT) / 365;
         }
       });
     });
@@ -3694,27 +2472,17 @@ function GreeksSurfacePanel({ asset }: { asset: Asset }) {
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-full justify-between h-9 px-3 text-xs"
-        >
+        <Button variant="ghost" className="w-full justify-between h-9 px-3 text-xs">
           <span className="flex items-center gap-1.5">
             <BarChart3 className="size-3.5" />
             Greeks Surface
           </span>
-          {open ? (
-            <ChevronUp className="size-3.5" />
-          ) : (
-            <ChevronDown className="size-3.5" />
-          )}
+          {open ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent>
         <div className="p-3 border rounded-lg mt-1 space-y-2">
-          <Select
-            value={selectedGreek}
-            onValueChange={(v) => setSelectedGreek(v as GreekSurface)}
-          >
+          <Select value={selectedGreek} onValueChange={(v) => setSelectedGreek(v as GreekSurface)}>
             <SelectTrigger className="h-7 w-32 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -3729,14 +2497,9 @@ function GreeksSurfacePanel({ asset }: { asset: Asset }) {
             <table className="w-full text-[10px]">
               <thead>
                 <tr>
-                  <th className="py-1 px-2 text-left text-muted-foreground font-normal">
-                    Strike
-                  </th>
+                  <th className="py-1 px-2 text-left text-muted-foreground font-normal">Strike</th>
                   {surface.expiries.map((exp) => (
-                    <th
-                      key={exp}
-                      className="py-1 px-2 text-center text-muted-foreground font-normal"
-                    >
+                    <th key={exp} className="py-1 px-2 text-center text-muted-foreground font-normal">
                       {exp}
                     </th>
                   ))}
@@ -3745,9 +2508,7 @@ function GreeksSurfacePanel({ asset }: { asset: Asset }) {
               <tbody>
                 {surface.strikes.map((strike, sIdx) => (
                   <tr key={strike}>
-                    <td className="py-1 px-2 font-mono font-medium">
-                      {strike.toLocaleString()}
-                    </td>
+                    <td className="py-1 px-2 font-mono font-medium">{strike.toLocaleString()}</td>
                     {greekValues[sIdx].map((val, eIdx) => (
                       <td
                         key={eIdx}
@@ -3773,7 +2534,7 @@ function GreeksSurfacePanel({ asset }: { asset: Asset }) {
 
 // ---------- TradFi Options Chain ----------
 
-function TradFiOptionsChainTab({
+export function TradFiOptionsChainTab({
   tradFiAsset,
   onSelectInstrument,
 }: {
@@ -3790,33 +2551,20 @@ function TradFiOptionsChainTab({
     [tradFiAsset, selectedExpiry],
   );
 
-  const filteredChain = aroundAtm
-    ? chain.filter((row) => Math.abs(row.strike - spot) / spot < 0.1)
-    : chain;
+  const filteredChain = aroundAtm ? chain.filter((row) => Math.abs(row.strike - spot) / spot < 0.1) : chain;
 
   const atmStrike = chain.reduce(
-    (closest, row) =>
-      Math.abs(row.strike - spot) < Math.abs(closest.strike - spot)
-        ? row
-        : closest,
+    (closest, row) => (Math.abs(row.strike - spot) < Math.abs(closest.strike - spot) ? row : closest),
     chain[0],
   );
 
-  const expectedMoveExpiry =
-    spot * (TRADFI_IV_INDEX[tradFiAsset] / 100) * Math.sqrt(0.25);
+  const expectedMoveExpiry = spot * (TRADFI_IV_INDEX[tradFiAsset] / 100) * Math.sqrt(0.25);
 
   // First 5 expiries inline, rest in overflow dropdown
   const TF_INLINE = 5;
-  const tfInlineExpiries = TRADFI_EXPIRY_DATES.filter((e) => e !== "ALL").slice(
-    0,
-    TF_INLINE,
-  );
-  const tfOverflowExpiries = TRADFI_EXPIRY_DATES.filter(
-    (e) => e !== "ALL",
-  ).slice(TF_INLINE);
-  const tfSelectedIsOverflow = (
-    tfOverflowExpiries as readonly string[]
-  ).includes(selectedExpiry);
+  const tfInlineExpiries = TRADFI_EXPIRY_DATES.filter((e) => e !== "ALL").slice(0, TF_INLINE);
+  const tfOverflowExpiries = TRADFI_EXPIRY_DATES.filter((e) => e !== "ALL").slice(TF_INLINE);
+  const tfSelectedIsOverflow = (tfOverflowExpiries as readonly string[]).includes(selectedExpiry);
 
   return (
     <div className="space-y-0">
@@ -3837,26 +2585,18 @@ function TradFiOptionsChainTab({
           ))}
 
           {tfOverflowExpiries.length > 0 && (
-            <Select
-              value={tfSelectedIsOverflow ? selectedExpiry : ""}
-              onValueChange={(v) => setSelectedExpiry(v)}
-            >
+            <Select value={tfSelectedIsOverflow ? selectedExpiry : ""} onValueChange={(v) => setSelectedExpiry(v)}>
               <SelectTrigger
                 className={cn(
                   "h-7 w-[110px] text-[10px] font-mono shrink-0",
-                  tfSelectedIsOverflow &&
-                    "border-primary bg-primary text-primary-foreground",
+                  tfSelectedIsOverflow && "border-primary bg-primary text-primary-foreground",
                 )}
               >
                 <SelectValue placeholder="More…" />
               </SelectTrigger>
               <SelectContent>
                 {tfOverflowExpiries.map((exp) => (
-                  <SelectItem
-                    key={exp}
-                    value={exp}
-                    className="text-[11px] font-mono"
-                  >
+                  <SelectItem key={exp} value={exp} className="text-[11px] font-mono">
                     {exp}
                   </SelectItem>
                 ))}
@@ -3880,15 +2620,8 @@ function TradFiOptionsChainTab({
 
         {/* Around ATM */}
         <div className="flex items-center gap-1.5">
-          <Checkbox
-            id="tf-around-atm"
-            checked={aroundAtm}
-            onCheckedChange={(c) => setAroundAtm(c === true)}
-          />
-          <label
-            htmlFor="tf-around-atm"
-            className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap"
-          >
+          <Checkbox id="tf-around-atm" checked={aroundAtm} onCheckedChange={(c) => setAroundAtm(c === true)} />
+          <label htmlFor="tf-around-atm" className="text-xs text-muted-foreground cursor-pointer whitespace-nowrap">
             ±ATM
           </label>
         </div>
@@ -3914,11 +2647,7 @@ function TradFiOptionsChainTab({
         </div>
 
         <div className="flex-1" />
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-7 text-[10px] gap-1 shrink-0"
-        >
+        <Button variant="outline" size="sm" className="h-7 text-[10px] gap-1 shrink-0">
           <Download className="size-3" />
           CSV
         </Button>
@@ -3929,19 +2658,11 @@ function TradFiOptionsChainTab({
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="bg-muted/30">
-              <th
-                colSpan={5}
-                className="text-center py-1 text-[10px] font-semibold text-emerald-400 border-r"
-              >
+              <th colSpan={5} className="text-center py-1 text-[10px] font-semibold text-emerald-400 border-r">
                 CALLS
               </th>
-              <th className="text-center py-1 font-bold text-muted-foreground px-3">
-                STRIKE
-              </th>
-              <th
-                colSpan={5}
-                className="text-center py-1 text-[10px] font-semibold text-red-400 border-l"
-              >
+              <th className="text-center py-1 font-bold text-muted-foreground px-3">STRIKE</th>
+              <th colSpan={5} className="text-center py-1 text-[10px] font-semibold text-red-400 border-l">
                 PUTS
               </th>
             </tr>
@@ -3951,9 +2672,7 @@ function TradFiOptionsChainTab({
               <th className="text-right pr-1 py-1">IV%</th>
               <th className="text-right pr-1 py-1">Δ</th>
               <th className="text-right pr-2 py-1 border-r">OI</th>
-              <th className="text-center px-3 py-1 font-bold text-foreground">
-                Strike
-              </th>
+              <th className="text-center px-3 py-1 font-bold text-foreground">Strike</th>
               <th className="text-right pr-1 py-1 border-l">OI</th>
               <th className="text-right pr-1 py-1">Δ</th>
               <th className="text-right pr-1 py-1">IV%</th>
@@ -3983,21 +2702,13 @@ function TradFiOptionsChainTab({
                   }
                 >
                   <td className="text-right pr-1 py-0.5 font-mono text-emerald-400">
-                    {displayUsd
-                      ? `$${row.callBid.toFixed(2)}`
-                      : row.callBid.toFixed(2)}
+                    {displayUsd ? `$${row.callBid.toFixed(2)}` : row.callBid.toFixed(2)}
                   </td>
                   <td className="text-right pr-1 py-0.5 font-mono text-red-400">
-                    {displayUsd
-                      ? `$${row.callAsk.toFixed(2)}`
-                      : row.callAsk.toFixed(2)}
+                    {displayUsd ? `$${row.callAsk.toFixed(2)}` : row.callAsk.toFixed(2)}
                   </td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">
-                    {row.callIvAsk.toFixed(1)}
-                  </td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-blue-400">
-                    {row.callDelta.toFixed(2)}
-                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">{row.callIvAsk.toFixed(1)}</td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-blue-400">{row.callDelta.toFixed(2)}</td>
                   <td className="text-right pr-2 py-0.5 text-muted-foreground border-r">
                     {(row.callOi / 1000).toFixed(0)}k
                   </td>
@@ -4012,21 +2723,13 @@ function TradFiOptionsChainTab({
                   <td className="text-right pr-1 py-0.5 text-muted-foreground border-l">
                     {(row.putOi / 1000).toFixed(0)}k
                   </td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-red-400">
-                    {row.putDelta.toFixed(2)}
-                  </td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">
-                    {row.putIvAsk.toFixed(1)}
-                  </td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-red-400">{row.putDelta.toFixed(2)}</td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">{row.putIvAsk.toFixed(1)}</td>
                   <td className="text-right pr-1 py-0.5 font-mono text-emerald-400">
-                    {displayUsd
-                      ? `$${row.putBid.toFixed(2)}`
-                      : row.putBid.toFixed(2)}
+                    {displayUsd ? `$${row.putBid.toFixed(2)}` : row.putBid.toFixed(2)}
                   </td>
                   <td className="text-right pr-1 py-0.5 font-mono text-red-400">
-                    {displayUsd
-                      ? `$${row.putAsk.toFixed(2)}`
-                      : row.putAsk.toFixed(2)}
+                    {displayUsd ? `$${row.putAsk.toFixed(2)}` : row.putAsk.toFixed(2)}
                   </td>
                 </tr>
               );
@@ -4040,7 +2743,7 @@ function TradFiOptionsChainTab({
 
 // ---------- TradFi Vol Surface ----------
 
-function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
+export function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
   const spot = TRADFI_SPOT_PRICES[tradFiAsset];
   const baseIv = TRADFI_IV_INDEX[tradFiAsset];
 
@@ -4054,10 +2757,7 @@ function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
       // Equity put skew — left tail has higher vol
       const putSkew = k < 0 ? Math.abs(k) * 0.8 : k * 0.3;
       const termStructure = baseIv - ti * 0.3; // term structure: short end elevated
-      return Math.max(
-        5,
-        termStructure + putSkew + seededRandom(k + ti * 7) * 1.5,
-      );
+      return Math.max(5, termStructure + putSkew + seededRandom(k + ti * 7) * 1.5);
     }),
   );
 
@@ -4075,14 +2775,9 @@ function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
           <table className="w-full text-[11px] border-collapse">
             <thead>
               <tr className="bg-muted/20">
-                <th className="text-right pr-2 py-1 text-muted-foreground w-16">
-                  Strike
-                </th>
+                <th className="text-right pr-2 py-1 text-muted-foreground w-16">Strike</th>
                 {expiryLabels.map((e) => (
-                  <th
-                    key={e}
-                    className="text-center px-2 py-1 text-muted-foreground"
-                  >
+                  <th key={e} className="text-center px-2 py-1 text-muted-foreground">
                     {e}
                   </th>
                 ))}
@@ -4090,10 +2785,7 @@ function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
             </thead>
             <tbody>
               {strikes.map((k, ki) => (
-                <tr
-                  key={k}
-                  className={cn("border-t", k === 0 && "bg-primary/5")}
-                >
+                <tr key={k} className={cn("border-t", k === 0 && "bg-primary/5")}>
                   <td className="text-right pr-2 py-0.5 font-mono text-muted-foreground">
                     {k > 0 ? "+" : ""}
                     {k}%
@@ -4111,13 +2803,7 @@ function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
                             ? "bg-blue-900/30 text-blue-300"
                             : "text-foreground";
                     return (
-                      <td
-                        key={ti}
-                        className={cn(
-                          "text-center px-2 py-0.5 font-mono rounded-sm",
-                          bg,
-                        )}
-                      >
+                      <td key={ti} className={cn("text-center px-2 py-0.5 font-mono rounded-sm", bg)}>
                         {iv.toFixed(1)}
                       </td>
                     );
@@ -4127,8 +2813,7 @@ function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
             </tbody>
           </table>
           <p className="px-3 py-1.5 text-[10px] text-muted-foreground">
-            IV (%). Spot: ${spot.toFixed(2)} · Base IV: {baseIv.toFixed(1)}% ·
-            Yellow = vol premium above ATM
+            IV (%). Spot: ${spot.toFixed(2)} · Base IV: {baseIv.toFixed(1)}% · Yellow = vol premium above ATM
           </p>
         </div>
       </CollapsibleContent>
@@ -4137,9 +2822,6 @@ function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsset }) {
 }
 
 // ---------- Scenario Analysis Tab ----------
-
-const SPOT_STEPS = [-20, -15, -10, -5, 0, 5, 10, 15, 20]; // % change
-const VOL_STEPS = [-30, -20, -10, 0, 10, 20, 30]; // vol %-pt delta
 
 function pnlColor(pnl: number, liq: number): string {
   if (pnl <= liq) return "bg-red-800 text-white font-bold";
@@ -4154,7 +2836,7 @@ function pnlColor(pnl: number, liq: number): string {
   return "bg-emerald-900/60 text-emerald-200 font-semibold";
 }
 
-function ScenarioTab({
+export function ScenarioTab({
   assetClass,
   asset,
   tradFiAsset,
@@ -4164,9 +2846,7 @@ function ScenarioTab({
   tradFiAsset: TradFiAsset;
 }) {
   const isCrypto = assetClass === "crypto";
-  const spotPrice = isCrypto
-    ? SPOT_PRICES[asset]
-    : TRADFI_SPOT_PRICES[tradFiAsset];
+  const spotPrice = isCrypto ? SPOT_PRICES[asset] : TRADFI_SPOT_PRICES[tradFiAsset];
   const baseIv = isCrypto ? IV_INDEX[asset] : TRADFI_IV_INDEX[tradFiAsset];
   const label = isCrypto ? asset : `$${tradFiAsset}`;
   const notional = isCrypto ? 1_000_000 : 500_000;
@@ -4177,18 +2857,15 @@ function ScenarioTab({
   const [viewMode, setViewMode] = React.useState<"pnl" | "delta">("pnl");
 
   const { pnl, delta, liqThreshold } = React.useMemo(
-    () =>
-      generateScenarioGrid(spotPrice, baseIv, SPOT_STEPS, VOL_STEPS, notional),
+    () => generateScenarioGrid(spotPrice, baseIv, SPOT_STEPS, VOL_STEPS, notional),
     [spotPrice, baseIv, notional],
   );
 
   const matrix = viewMode === "pnl" ? pnl : delta;
 
   // Single-point scenario from slider / preset
-  const presetSpot =
-    activePreset === -1 ? customSpot : SCENARIO_PRESETS[activePreset].spotPct;
-  const presetVol =
-    activePreset === -1 ? customVol : SCENARIO_PRESETS[activePreset].volPct;
+  const presetSpot = activePreset === -1 ? customSpot : SCENARIO_PRESETS[activePreset].spotPct;
+  const presetVol = activePreset === -1 ? customVol : SCENARIO_PRESETS[activePreset].volPct;
 
   const scenarioPnl = React.useMemo(() => {
     const dS = spotPrice * (presetSpot / 100);
@@ -4197,12 +2874,7 @@ function ScenarioTab({
     const theta = notional * 0.0003;
     const vega = notional * 0.008;
     const baseDelta = notional * 0.3;
-    return (
-      baseDelta * dS +
-      0.5 * gamma * dS * dS -
-      theta * (1 / 252) * 365 +
-      vega * dVol
-    );
+    return baseDelta * dS + 0.5 * gamma * dS * dS - theta * (1 / 252) * 365 + vega * dVol;
   }, [spotPrice, presetSpot, presetVol, notional]);
 
   const scenarioSpot = spotPrice * (1 + presetSpot / 100);
@@ -4218,8 +2890,7 @@ function ScenarioTab({
             Scenario Analysis — {label}
           </h3>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            Deribit-style P&amp;L and Greeks across spot × vol shock grid.
-            Notional: {formatUsd(notional, 0)}.
+            Deribit-style P&amp;L and Greeks across spot × vol shock grid. Notional: {formatUsd(notional, 0)}.
           </p>
         </div>
         <div className="flex items-center gap-0.5 rounded-lg border p-0.5 bg-muted/30">
@@ -4247,9 +2918,7 @@ function ScenarioTab({
         {/* Preset selector */}
         <Card className="lg:col-span-2">
           <CardHeader className="py-2 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Scenario Presets
-            </CardTitle>
+            <CardTitle className="text-xs font-medium text-muted-foreground">Scenario Presets</CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-3">
             <div className="flex flex-wrap gap-2">
@@ -4311,25 +2980,14 @@ function ScenarioTab({
         </Card>
 
         {/* Single-scenario result */}
-        <Card
-          className={cn(
-            "border",
-            scenarioPnl < 0 ? "border-red-900/40" : "border-emerald-900/40",
-          )}
-        >
+        <Card className={cn("border", scenarioPnl < 0 ? "border-red-900/40" : "border-emerald-900/40")}>
           <CardHeader className="py-2 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground">
-              Scenario Result
-            </CardTitle>
+            <CardTitle className="text-xs font-medium text-muted-foreground">Scenario Result</CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-3 space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Spot →</span>
-              <span className="font-mono">
-                {isCrypto
-                  ? formatUsd(scenarioSpot)
-                  : `$${scenarioSpot.toFixed(2)}`}
-              </span>
+              <span className="font-mono">{isCrypto ? formatUsd(scenarioSpot) : `$${scenarioSpot.toFixed(2)}`}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">IV →</span>
@@ -4338,12 +2996,7 @@ function ScenarioTab({
             <Separator />
             <div className="flex justify-between text-sm font-semibold">
               <span>P&amp;L</span>
-              <span
-                className={cn(
-                  "font-mono",
-                  scenarioPnl >= 0 ? "text-emerald-400" : "text-red-400",
-                )}
-              >
+              <span className={cn("font-mono", scenarioPnl >= 0 ? "text-emerald-400" : "text-red-400")}>
                 {scenarioPnl >= 0 ? "+" : ""}
                 {formatUsd(scenarioPnl, 0)}
               </span>
@@ -4362,23 +3015,16 @@ function ScenarioTab({
         <CardHeader className="py-2 px-4">
           <CardTitle className="text-xs font-medium text-muted-foreground flex items-center gap-2">
             {viewMode === "pnl" ? "P&L Matrix" : "Delta Matrix"}
-            <span className="ml-1 text-[10px] normal-case">
-              rows = spot shock %, cols = vol shock pp
-            </span>
+            <span className="ml-1 text-[10px] normal-case">rows = spot shock %, cols = vol shock pp</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-3 overflow-x-auto">
           <table className="w-full text-[11px] border-collapse">
             <thead>
               <tr>
-                <th className="text-right pr-2 py-1 font-medium text-muted-foreground w-14">
-                  Spot ↓ / Vol →
-                </th>
+                <th className="text-right pr-2 py-1 font-medium text-muted-foreground w-14">Spot ↓ / Vol →</th>
                 {VOL_STEPS.map((v) => (
-                  <th
-                    key={v}
-                    className="text-center px-2 py-1 font-medium text-muted-foreground whitespace-nowrap"
-                  >
+                  <th key={v} className="text-center px-2 py-1 font-medium text-muted-foreground whitespace-nowrap">
                     {v > 0 ? "+" : ""}
                     {v} pp
                   </th>
@@ -4387,10 +3033,7 @@ function ScenarioTab({
             </thead>
             <tbody>
               {SPOT_STEPS.map((s, si) => (
-                <tr
-                  key={s}
-                  className={s === 0 ? "ring-1 ring-inset ring-white/10" : ""}
-                >
+                <tr key={s} className={s === 0 ? "ring-1 ring-inset ring-white/10" : ""}>
                   <td className="text-right pr-2 py-0.5 font-medium text-muted-foreground whitespace-nowrap">
                     {s > 0 ? "+" : ""}
                     {s}%
@@ -4404,16 +3047,8 @@ function ScenarioTab({
                           ? "bg-emerald-900/30 text-emerald-300"
                           : "bg-red-900/30 text-red-400";
                     return (
-                      <td
-                        key={vi}
-                        className={cn(
-                          "text-center px-2 py-0.5 font-mono rounded-sm",
-                          cellClass,
-                        )}
-                      >
-                        {viewMode === "pnl"
-                          ? `${val >= 0 ? "+" : ""}${(val / 1000).toFixed(1)}k`
-                          : val.toFixed(0)}
+                      <td key={vi} className={cn("text-center px-2 py-0.5 font-mono rounded-sm", cellClass)}>
+                        {viewMode === "pnl" ? `${val >= 0 ? "+" : ""}${(val / 1000).toFixed(1)}k` : val.toFixed(0)}
                       </td>
                     );
                   })}
@@ -4422,8 +3057,8 @@ function ScenarioTab({
             </tbody>
           </table>
           <p className="mt-2 text-[10px] text-muted-foreground">
-            P&amp;L values in USD (k). Red cells = loss; darker red = near/at
-            liq threshold ({formatUsd(liqThreshold, 0)}).
+            P&amp;L values in USD (k). Red cells = loss; darker red = near/at liq threshold (
+            {formatUsd(liqThreshold, 0)}).
           </p>
         </CardContent>
       </Card>
@@ -4455,9 +3090,7 @@ function ScenarioTab({
           <Card key={m.label} className="bg-muted/20">
             <CardContent className="px-3 py-2 space-y-0.5">
               <p className="text-[10px] text-muted-foreground">{m.label}</p>
-              <p className={cn("text-sm font-mono font-semibold", m.color)}>
-                {m.value}
-              </p>
+              <p className={cn("text-sm font-mono font-semibold", m.color)}>{m.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -4487,26 +3120,16 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
   const [tradFiMarket, setTradFiMarket] = React.useState<TradFiMarket>("cboe");
 
   // UI state
-  const [selectedInstrument, setSelectedInstrument] =
-    React.useState<SelectedInstrument | null>(null);
+  const [selectedInstrument, setSelectedInstrument] = React.useState<SelectedInstrument | null>(null);
   const [activeTab, setActiveTab] = React.useState<MainTab>("options");
-  const [strategiesMode, setStrategiesMode] =
-    React.useState<StrategiesMode>("futures-spreads");
+  const [strategiesMode, setStrategiesMode] = React.useState<StrategiesMode>("futures-spreads");
   const [showWatchlist, setShowWatchlist] = React.useState(true);
   const [watchlistId, setWatchlistId] = React.useState("crypto-top");
-  const [selectedWatchlistSymbolId, setSelectedWatchlistSymbolId] =
-    React.useState<string>("btc");
+  const [selectedWatchlistSymbolId, setSelectedWatchlistSymbolId] = React.useState<string>("btc");
 
   // Pinned asset pills (up to 5, user-configurable)
-  const [pinnedCryptoAssets, setPinnedCryptoAssets] = React.useState<Asset[]>([
-    "BTC",
-    "ETH",
-    "SOL",
-    "AVAX",
-  ]);
-  const [pinnedTradFiAssets, setPinnedTradFiAssets] = React.useState<
-    TradFiAsset[]
-  >(["SPY", "QQQ", "SPX"]);
+  const [pinnedCryptoAssets, setPinnedCryptoAssets] = React.useState<Asset[]>(["BTC", "ETH", "SOL", "AVAX"]);
+  const [pinnedTradFiAssets, setPinnedTradFiAssets] = React.useState<TradFiAsset[]>(["SPY", "QQQ", "SPX"]);
 
   // When switching asset class, swap to the relevant default watchlist and reset tab
   function handleAssetClassChange(ac: AssetClass) {
@@ -4538,12 +3161,7 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
   }, [asset, tradFiAsset, isCrypto]);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col h-full overflow-hidden rounded-lg border bg-background",
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col h-full overflow-hidden rounded-lg border bg-background", className)}>
       {/* ── Single toolbar row ── */}
       <OptionsToolbar
         assetClass={assetClass}
@@ -4592,15 +3210,9 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
             {activeTab === "options" && (
               <>
                 {isCrypto ? (
-                  <OptionsChainTab
-                    asset={asset}
-                    onSelectInstrument={setSelectedInstrument}
-                  />
+                  <OptionsChainTab asset={asset} onSelectInstrument={setSelectedInstrument} />
                 ) : (
-                  <TradFiOptionsChainTab
-                    tradFiAsset={tradFiAsset}
-                    onSelectInstrument={setSelectedInstrument}
-                  />
+                  <TradFiOptionsChainTab tradFiAsset={tradFiAsset} onSelectInstrument={setSelectedInstrument} />
                 )}
                 <div className="space-y-1">
                   {isCrypto ? (
@@ -4616,19 +3228,14 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
             )}
 
             {activeTab === "futures" && isCrypto && (
-              <FuturesTab
-                asset={asset}
-                onSelectInstrument={setSelectedInstrument}
-              />
+              <FuturesTab asset={asset} onSelectInstrument={setSelectedInstrument} />
             )}
 
             {activeTab === "strategies" && (
               <div className="space-y-3">
                 <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 w-fit">
                   <Button
-                    variant={
-                      strategiesMode === "futures-spreads" ? "default" : "ghost"
-                    }
+                    variant={strategiesMode === "futures-spreads" ? "default" : "ghost"}
                     size="sm"
                     className="h-7 px-3 text-xs"
                     onClick={() => setStrategiesMode("futures-spreads")}
@@ -4637,9 +3244,7 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
                     Futures Spreads
                   </Button>
                   <Button
-                    variant={
-                      strategiesMode === "options-combos" ? "default" : "ghost"
-                    }
+                    variant={strategiesMode === "options-combos" ? "default" : "ghost"}
                     size="sm"
                     className="h-7 px-3 text-xs"
                     onClick={() => setStrategiesMode("options-combos")}
@@ -4648,24 +3253,15 @@ export function OptionsFuturesPanel({ className }: OptionsFuturesPanelProps) {
                   </Button>
                 </div>
                 {strategiesMode === "futures-spreads" && isCrypto ? (
-                  <FuturesSpreadsTab
-                    onSelectInstrument={setSelectedInstrument}
-                  />
+                  <FuturesSpreadsTab onSelectInstrument={setSelectedInstrument} />
                 ) : (
-                  <OptionsCombosPanel
-                    asset={asset}
-                    onSelectInstrument={setSelectedInstrument}
-                  />
+                  <OptionsCombosPanel asset={asset} onSelectInstrument={setSelectedInstrument} />
                 )}
               </div>
             )}
 
             {activeTab === "scenario" && (
-              <ScenarioTab
-                assetClass={assetClass}
-                asset={asset}
-                tradFiAsset={tradFiAsset}
-              />
+              <ScenarioTab assetClass={assetClass} asset={asset} tradFiAsset={tradFiAsset} />
             )}
           </div>
         </div>

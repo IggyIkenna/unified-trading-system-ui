@@ -18,6 +18,7 @@ export function OrderBookWidget(_props: WidgetComponentProps) {
         spreadBps={spreadBps}
         midPrice={livePrice}
         venue={selectedInstrument.venue}
+        hideTitle
       />
     </div>
   );

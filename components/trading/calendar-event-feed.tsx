@@ -4,27 +4,11 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  ChevronDown,
-  ChevronRight,
-  Calendar,
-  TrendingUp,
-  Clock,
-} from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronRight, Calendar, TrendingUp, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  useEconomicResults,
-  useCorporateActions,
-} from "@/hooks/api/use-calendar";
-import type {
-  EconomicResultItem,
-  CorporateActionItem,
-} from "@/hooks/api/use-calendar";
+import { useEconomicResults, useCorporateActions } from "@/hooks/api/use-calendar";
+import type { EconomicResultItem, CorporateActionItem } from "@/hooks/api/use-calendar";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -39,20 +23,12 @@ function formatValue(value: number | null, unit: string): string {
   return String(value);
 }
 
-function formatDelta(
-  actual: number | null,
-  previous: number | null,
-): React.ReactNode {
+function formatDelta(actual: number | null, previous: number | null): React.ReactNode {
   if (actual === null || previous === null) return null;
   const delta = actual - previous;
   const isPositive = delta > 0;
   return (
-    <span
-      className={cn(
-        "text-xs ml-1",
-        isPositive ? "text-green-500" : "text-red-500",
-      )}
-    >
+    <span className={cn("text-xs ml-1", isPositive ? "text-green-500" : "text-red-500")}>
       {isPositive ? "+" : ""}
       {delta.toFixed(2)}
     </span>
@@ -74,10 +50,7 @@ function formatCountdown(releaseDate: string, releaseTime: string): string {
   }
 }
 
-function surprisePct(
-  actual: number | null,
-  estimated: number | null,
-): string | null {
+function surprisePct(actual: number | null, estimated: number | null): string | null {
   if (actual === null || estimated === null || estimated === 0) return null;
   const pct = ((actual - estimated) / Math.abs(estimated)) * 100;
   return `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
@@ -96,20 +69,14 @@ function MacroEventsTab() {
   const upcoming = events.filter((e) => e.status === "upcoming");
 
   if (isLoading) {
-    return (
-      <div className="text-sm text-muted-foreground p-4">
-        Loading macro events…
-      </div>
-    );
+    return <div className="text-sm text-muted-foreground p-4">Loading macro events…</div>;
   }
 
   return (
     <div className="space-y-3">
       {upcoming.length > 0 && (
         <div>
-          <p className="text-xs text-muted-foreground uppercase font-medium mb-1.5">
-            Upcoming
-          </p>
+          <p className="text-xs text-muted-foreground uppercase font-medium mb-1.5">Upcoming</p>
           <div className="space-y-1.5">
             {upcoming.map((evt) => (
               <MacroEventRow key={evt.id} event={evt} />
@@ -119,9 +86,7 @@ function MacroEventsTab() {
       )}
       {released.length > 0 && (
         <div>
-          <p className="text-xs text-muted-foreground uppercase font-medium mb-1.5 mt-3">
-            Recent
-          </p>
+          <p className="text-xs text-muted-foreground uppercase font-medium mb-1.5 mt-3">Recent</p>
           <div className="space-y-1.5">
             {released.map((evt) => (
               <MacroEventRow key={evt.id} event={evt} />
@@ -129,9 +94,7 @@ function MacroEventsTab() {
           </div>
         </div>
       )}
-      {events.length === 0 && (
-        <p className="text-sm text-muted-foreground">No events in range.</p>
-      )}
+      {events.length === 0 && <p className="text-sm text-muted-foreground">No events in range.</p>}
     </div>
   );
 }
@@ -141,15 +104,10 @@ function MacroEventRow({ event }: { event: EconomicResultItem }) {
   return (
     <div className="flex items-center justify-between rounded-md border px-3 py-2 text-sm">
       <div className="flex items-center gap-2">
-        <Badge
-          variant={isReleased ? "secondary" : "outline"}
-          className="text-[10px] font-semibold"
-        >
+        <Badge variant={isReleased ? "secondary" : "outline"} className="text-[10px] font-semibold">
           {event.event_type}
         </Badge>
-        <span className="text-muted-foreground text-xs">
-          {event.release_date}
-        </span>
+        <span className="text-muted-foreground text-xs">{event.release_date}</span>
       </div>
       <div className="text-right">
         {isReleased ? (
@@ -182,49 +140,25 @@ function CorporateActionsTab() {
   const splits = actions.filter((a) => a.event_type === "split");
 
   if (isLoading) {
-    return (
-      <div className="text-sm text-muted-foreground p-4">
-        Loading corporate actions…
-      </div>
-    );
+    return <div className="text-sm text-muted-foreground p-4">Loading corporate actions…</div>;
   }
 
   return (
     <div className="space-y-3">
-      {earnings.length > 0 && (
-        <CorporateActionSection title="Earnings" items={earnings} />
-      )}
-      {dividends.length > 0 && (
-        <CorporateActionSection title="Dividends" items={dividends} />
-      )}
-      {splits.length > 0 && (
-        <CorporateActionSection title="Splits" items={splits} />
-      )}
-      {actions.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          No corporate actions in range.
-        </p>
-      )}
+      {earnings.length > 0 && <CorporateActionSection title="Earnings" items={earnings} />}
+      {dividends.length > 0 && <CorporateActionSection title="Dividends" items={dividends} />}
+      {splits.length > 0 && <CorporateActionSection title="Splits" items={splits} />}
+      {actions.length === 0 && <p className="text-sm text-muted-foreground">No corporate actions in range.</p>}
     </div>
   );
 }
 
-function CorporateActionSection({
-  title,
-  items,
-}: {
-  title: string;
-  items: CorporateActionItem[];
-}) {
+function CorporateActionSection({ title, items }: { title: string; items: CorporateActionItem[] }) {
   const [open, setOpen] = React.useState(true);
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className="flex items-center gap-1 text-xs font-medium text-muted-foreground uppercase hover:text-foreground w-full">
-        {open ? (
-          <ChevronDown className="h-3 w-3" />
-        ) : (
-          <ChevronRight className="h-3 w-3" />
-        )}
+        {open ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         {title} ({items.length})
       </CollapsibleTrigger>
       <CollapsibleContent>
@@ -258,31 +192,20 @@ function CorporateActionRow({ item }: { item: CorporateActionItem }) {
         )}
       </div>
       <div className="text-right font-mono text-xs">
-        {item.event_type === "dividend" && item.amount !== null && (
-          <span>${item.amount.toFixed(2)}</span>
-        )}
+        {item.event_type === "dividend" && item.amount !== null && <span>${item.amount.toFixed(2)}</span>}
         {item.event_type === "earnings" && (
           <>
             {item.actual_eps !== null ? (
               <span>
                 EPS {item.actual_eps.toFixed(2)}
                 {surprise && (
-                  <span
-                    className={cn(
-                      "ml-1",
-                      surprise.startsWith("+")
-                        ? "text-green-500"
-                        : "text-red-500",
-                    )}
-                  >
+                  <span className={cn("ml-1", surprise.startsWith("+") ? "text-green-500" : "text-red-500")}>
                     ({surprise})
                   </span>
                 )}
               </span>
             ) : item.estimated_eps !== null ? (
-              <span className="text-muted-foreground">
-                est. {item.estimated_eps.toFixed(2)}
-              </span>
+              <span className="text-muted-foreground">est. {item.estimated_eps.toFixed(2)}</span>
             ) : null}
           </>
         )}
@@ -295,29 +218,27 @@ function CorporateActionRow({ item }: { item: CorporateActionItem }) {
 // Main component
 // ---------------------------------------------------------------------------
 
-export function CalendarEventFeed({ className }: { className?: string }) {
+export function CalendarEventFeed({ className, hideTitle = false }: { className?: string; hideTitle?: boolean }) {
   const [open, setOpen] = React.useState(true);
 
   return (
-    <Collapsible
-      open={open}
-      onOpenChange={setOpen}
-      className={cn("w-full", className)}
-    >
+    <Collapsible open={open} onOpenChange={setOpen} className={cn("w-full", className)}>
       <Card className="rounded-lg border">
-        <CardHeader className="py-3 px-4">
-          <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-80">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              Calendar Events
-            </CardTitle>
-            {open ? (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            )}
-          </CollapsibleTrigger>
-        </CardHeader>
+        {!hideTitle && (
+          <CardHeader className="py-3 px-4">
+            <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-80">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                Calendar Events
+              </CardTitle>
+              {open ? (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              )}
+            </CollapsibleTrigger>
+          </CardHeader>
+        )}
         <CollapsibleContent>
           <CardContent className="px-4 pb-4 pt-0">
             <Tabs defaultValue="macro">

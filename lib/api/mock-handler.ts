@@ -70,6 +70,7 @@ import {
 } from "@/lib/api/mock-trade-ledger";
 import { getOnboardingState, addApplication, updateApplication, addDocument } from "@/lib/api/mock-onboarding-state";
 import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state";
+import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
 
 export const MOCK_MODE = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true";
 
@@ -268,6 +269,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         currency: "USD",
       })),
     );
+  }
+
+  if (route === "/api/accounts/transfer-history") {
+    return json({ transfers: MOCK_TRANSFER_HISTORY });
   }
 
   // --- Trading ---

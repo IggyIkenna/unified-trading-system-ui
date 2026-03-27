@@ -1,4 +1,5 @@
 import { registerWidget } from "../widget-registry";
+import { registerPresets } from "../preset-registry";
 import { BarChart3, LineChart, LayoutGrid, Table2, PieChart, Bell, ArrowRightLeft, Server } from "lucide-react";
 import { ScopeSummaryWidget } from "./scope-summary-widget";
 import { PnLChartWidget } from "./pnl-chart-widget";
@@ -6,13 +7,34 @@ import { KPIStripWidget } from "./kpi-strip-widget";
 import { StrategyTableWidget } from "./strategy-table-widget";
 import { PnLAttributionWidget, AlertsPreviewWidget, RecentFillsWidget, HealthGridWidget } from "./bottom-widgets";
 
+registerPresets("overview", [
+  {
+    id: "overview-default",
+    name: "Default",
+    tab: "overview",
+    isPreset: true,
+    layouts: [
+      { widgetId: "scope-summary", instanceId: "scope-summary-1", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "pnl-chart", instanceId: "pnl-chart-1", x: 0, y: 2, w: 12, h: 4 },
+      { widgetId: "kpi-strip", instanceId: "kpi-strip-1", x: 0, y: 6, w: 12, h: 2 },
+      { widgetId: "strategy-table", instanceId: "strategy-table-1", x: 0, y: 8, w: 12, h: 4 },
+      { widgetId: "pnl-attribution", instanceId: "pnl-attribution-1", x: 0, y: 12, w: 3, h: 3 },
+      { widgetId: "alerts-preview", instanceId: "alerts-preview-1", x: 3, y: 12, w: 3, h: 3 },
+      { widgetId: "recent-fills", instanceId: "recent-fills-1", x: 6, y: 12, w: 3, h: 3 },
+      { widgetId: "health-grid", instanceId: "health-grid-1", x: 9, y: 12, w: 3, h: 3 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+]);
+
 registerWidget({
   id: "scope-summary",
   label: "Scope & Controls",
   description: "Global scope summary with intervention controls and terminal link.",
   icon: LayoutGrid,
-  minW: 6,
-  minH: 2,
+  minW: 4,
+  minH: 1,
   defaultW: 12,
   defaultH: 2,
   requiredEntitlements: ["execution-basic", "execution-full"],
@@ -26,8 +48,8 @@ registerWidget({
   label: "P&L / NAV / Exposure Charts",
   description: "Live vs batch time series comparison with drift analysis.",
   icon: LineChart,
-  minW: 4,
-  minH: 3,
+  minW: 3,
+  minH: 2,
   defaultW: 12,
   defaultH: 4,
   requiredEntitlements: ["execution-basic", "execution-full"],
@@ -41,7 +63,7 @@ registerWidget({
   label: "Key Metrics",
   description: "P&L, exposure, margin, live strategies, and alerts at a glance.",
   icon: BarChart3,
-  minW: 6,
+  minW: 3,
   minH: 1,
   defaultW: 12,
   defaultH: 2,
@@ -56,8 +78,8 @@ registerWidget({
   label: "Strategy Performance",
   description: "Filterable strategy table grouped by asset class with real-time P&L.",
   icon: Table2,
-  minW: 6,
-  minH: 3,
+  minW: 4,
+  minH: 2,
   defaultW: 12,
   defaultH: 4,
   requiredEntitlements: ["execution-basic", "execution-full"],
@@ -71,7 +93,7 @@ registerWidget({
   label: "P&L Attribution",
   description: "Breakdown of P&L by factor: funding, carry, basis, delta, etc.",
   icon: PieChart,
-  minW: 3,
+  minW: 2,
   minH: 2,
   defaultW: 3,
   defaultH: 3,
@@ -86,7 +108,7 @@ registerWidget({
   label: "Alerts",
   description: "Recent critical and high alerts with severity indicators.",
   icon: Bell,
-  minW: 3,
+  minW: 2,
   minH: 2,
   defaultW: 3,
   defaultH: 3,
@@ -101,7 +123,7 @@ registerWidget({
   label: "Recent Fills",
   description: "Latest order fills with side, instrument, and status.",
   icon: ArrowRightLeft,
-  minW: 3,
+  minW: 2,
   minH: 2,
   defaultW: 3,
   defaultH: 3,
@@ -116,7 +138,7 @@ registerWidget({
   label: "System Health",
   description: "Service health grid showing status of platform services.",
   icon: Server,
-  minW: 3,
+  minW: 2,
   minH: 2,
   defaultW: 3,
   defaultH: 3,

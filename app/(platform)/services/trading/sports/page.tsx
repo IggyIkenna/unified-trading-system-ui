@@ -1,7 +1,25 @@
 "use client";
 
-import { SportsPage } from "@/components/trading/sports/sports-page";
+import { Suspense } from "react";
+import { WidgetGrid } from "@/components/widgets/widget-grid";
+import { SportsDataProvider } from "@/components/widgets/sports/sports-data-context";
+
+import "@/components/widgets/sports/register";
+
+function SportsPageContent() {
+  return (
+    <SportsDataProvider>
+      <div className="h-full flex flex-col overflow-auto p-2">
+        <WidgetGrid tab="sports" />
+      </div>
+    </SportsDataProvider>
+  );
+}
 
 export default function SportsBettingPage() {
-  return <SportsPage />;
+  return (
+    <Suspense fallback={<div className="p-6 flex items-center justify-center h-64">Loading sports…</div>}>
+      <SportsPageContent />
+    </Suspense>
+  );
 }

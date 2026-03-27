@@ -1,0 +1,390 @@
+"use client";
+
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CollapsibleSection } from "@/components/widgets/shared";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import {
+  CEFI_VENUES,
+  NETWORKS,
+  SUB_ACCOUNT_VENUES,
+  SUB_ACCOUNTS,
+  TRANSFER_ASSETS,
+} from "@/lib/config/services/accounts.config";
+import { formatCurrency } from "@/lib/reference-data";
+import type { BalanceRecord } from "@/lib/types/accounts";
+import { CheckCircle2, Clock, Copy } from "lucide-react";
+import { useAccountsData } from "./accounts-data-context";
+
+type TransferType = "venue-to-venue" | "sub-account" | "withdraw" | "deposit";
+
+function freeUsdForVenue(venue: string, balances: BalanceRecord[]): number {
+  return balances.filter((b) => b.venue === venue).reduce((sum, b) => sum + b.free, 0);
+}
+
+const TYPE_PILLS: { id: TransferType; label: string }[] = [
+  { id: "venue-to-venue", label: "Venue" },
+  { id: "sub-account", label: "Sub ↔ Main" },
+  { id: "withdraw", label: "Withdraw" },
+  { id: "deposit", label: "Deposit" },
+];
+
+export function AccountsTransferWidget(_props: WidgetComponentProps) {
+  const { balances } = useAccountsData();
+  const [transferType, setTransferType] = React.useState<TransferType>("venue-to-venue");
+  const [fromVenue, setFromVenue] = React.useState<string>(CEFI_VENUES[0]);
+  const [toVenue, setToVenue] = React.useState<string>(CEFI_VENUES[1]);
+  const [asset, setAsset] = React.useState<string>(TRANSFER_ASSETS[0]);
+  const [amount, setAmount] = React.useState("");
+  const [toAddress, setToAddress] = React.useState("");
+  const [network, setNetwork] = React.useState<string>(NETWORKS[0]);
+  const [direction, setDirection] = React.useState<"sub-to-main" | "main-to-sub">("sub-to-main");
+  const [subAccount, setSubAccount] = React.useState(SUB_ACCOUNTS[0] as string);
+  const [copied, setCopied] = React.useState(false);
+
+  const availableUsd = freeUsdForVenue(fromVenue, balances);
+  const amountNum = parseFloat(amount) || 0;
+
+  const handleCopyAddress = () => {
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <CollapsibleSection title="Transfer" defaultOpen={false}>
+      <div className="space-y-3 px-1 pb-1">
+        <div className="space-y-1">
+          <span className="text-xs text-muted-foreground">Transfer type</span>
+          <div className="grid grid-cols-2 gap-1">
+            {TYPE_PILLS.map((p) => (
+              <Button
+                key={p.id}
+                type="button"
+                variant={transferType === p.id ? "default" : "outline"}
+                size="sm"
+                className="h-8 text-[10px] px-2"
+                onClick={() => setTransferType(p.id)}
+              >
+                {p.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {transferType === "venue-to-venue" && (
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">From</label>
+                <Select value={fromVenue} onValueChange={setFromVenue}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CEFI_VENUES.map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">To</label>
+                <Select value={toVenue} onValueChange={setToVenue}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CEFI_VENUES.map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Asset</label>
+              <Select value={asset} onValueChange={setAsset}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TRANSFER_ASSETS.map((a) => (
+                    <SelectItem key={a} value={a}>
+                      <span className="font-mono">{a}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Amount</label>
+              <Input
+                type="number"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="h-8 font-mono text-xs"
+              />
+            </div>
+            <div className="p-2 rounded-md border bg-muted/30 space-y-1.5 text-xs">
+              <div className="flex justify-between gap-2">
+                <span className="text-muted-foreground shrink-0">Available (venue free USD)</span>
+                <span className="font-mono text-right">${formatCurrency(availableUsd)}</span>
+              </div>
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                <span>Asset</span>
+                <span className="font-mono">{asset}</span>
+              </div>
+              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <Clock className="size-3 shrink-0" />
+                ~30 min (chain confirmation)
+              </div>
+            </div>
+            <Button className="w-full h-8 text-xs" disabled={amountNum <= 0 || fromVenue === toVenue}>
+              Initiate Transfer
+            </Button>
+          </div>
+        )}
+
+        {transferType === "sub-account" && (
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Venue</label>
+              <Select value={fromVenue} onValueChange={setFromVenue}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SUB_ACCOUNT_VENUES.map((v) => (
+                    <SelectItem key={v} value={v}>
+                      {v}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-1">
+              <Button
+                type="button"
+                variant={direction === "sub-to-main" ? "default" : "outline"}
+                size="sm"
+                className="text-[10px] h-8"
+                onClick={() => setDirection("sub-to-main")}
+              >
+                Sub → Main
+              </Button>
+              <Button
+                type="button"
+                variant={direction === "main-to-sub" ? "default" : "outline"}
+                size="sm"
+                className="text-[10px] h-8"
+                onClick={() => setDirection("main-to-sub")}
+              >
+                Main → Sub
+              </Button>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Sub-account</label>
+              <Select value={subAccount} onValueChange={setSubAccount}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SUB_ACCOUNTS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Asset</label>
+              <Select value={asset} onValueChange={setAsset}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TRANSFER_ASSETS.map((a) => (
+                    <SelectItem key={a} value={a}>
+                      <span className="font-mono">{a}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Amount</label>
+              <Input
+                type="number"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="h-8 font-mono text-xs"
+              />
+            </div>
+            <div className="p-2 rounded-md border bg-muted/30 text-[10px]">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Speed</span>
+                <span className="text-emerald-400">Instant</span>
+              </div>
+            </div>
+            <Button className="w-full h-8 text-xs" disabled={amountNum <= 0}>
+              Transfer
+            </Button>
+          </div>
+        )}
+
+        {transferType === "withdraw" && (
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">From venue</label>
+              <Select value={fromVenue} onValueChange={setFromVenue}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CEFI_VENUES.map((v) => (
+                    <SelectItem key={v} value={v}>
+                      {v}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">To address</label>
+              <Input
+                placeholder="0x... or ENS"
+                value={toAddress}
+                onChange={(e) => setToAddress(e.target.value)}
+                className="h-8 font-mono text-xs"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Network</label>
+              <Select value={network} onValueChange={setNetwork}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {NETWORKS.map((n) => (
+                    <SelectItem key={n} value={n}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">Asset</label>
+                <Select value={asset} onValueChange={setAsset}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {TRANSFER_ASSETS.map((a) => (
+                      <SelectItem key={a} value={a}>
+                        <span className="font-mono">{a}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">Amount</label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="h-8 font-mono text-xs"
+                />
+              </div>
+            </div>
+            <div className="p-2 rounded-md border bg-muted/30 space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Available (USD)</span>
+                <span className="font-mono">${formatCurrency(availableUsd)}</span>
+              </div>
+              <div className="flex justify-between text-[10px]">
+                <span className="text-muted-foreground">Network fee (est.)</span>
+                <span className="font-mono">~$2.50</span>
+              </div>
+            </div>
+            <Button className="w-full h-8 text-xs" disabled={amountNum <= 0 || !toAddress}>
+              Withdraw
+            </Button>
+          </div>
+        )}
+
+        {transferType === "deposit" && (
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Deposit to</label>
+              <Select value={fromVenue} onValueChange={setFromVenue}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CEFI_VENUES.map((v) => (
+                    <SelectItem key={v} value={v}>
+                      {v}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Network</label>
+              <Select value={network} onValueChange={setNetwork}>
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {NETWORKS.map((n) => (
+                    <SelectItem key={n} value={n}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="p-2 rounded-md border bg-muted/30 space-y-2">
+              <div className="space-y-1">
+                <p className="text-[10px] text-muted-foreground">Deposit address</p>
+                <div className="flex items-center gap-1.5">
+                  <code className="text-[10px] font-mono bg-background px-1.5 py-0.5 rounded flex-1 truncate">
+                    0x7a23b8c1d9e4f6a2b3c5d7e8f0a1b2c3d4e5f691
+                  </code>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 gap-1 text-[10px] shrink-0 px-2"
+                    onClick={handleCopyAddress}
+                  >
+                    {copied ? <CheckCircle2 className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
+                    {copied ? "OK" : "Copy"}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex items-center justify-center w-20 h-20 mx-auto rounded-md border border-dashed border-muted-foreground/30 bg-background">
+                <span className="text-[10px] text-muted-foreground">QR</span>
+              </div>
+            </div>
+            <Button variant="outline" className="w-full h-8 text-xs">
+              I&apos;ve sent the deposit
+            </Button>
+          </div>
+        )}
+      </div>
+    </CollapsibleSection>
+  );
+}

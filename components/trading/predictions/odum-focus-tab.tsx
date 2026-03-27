@@ -18,8 +18,11 @@ import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 
 // ─── Filter bar ───────────────────────────────────────────────────────────────
 
-type InstrumentFilter = OdumInstrumentType | "all";
-type TfFilter = Timeframe | "all";
+export type OdumInstrumentFilter = OdumInstrumentType | "all";
+export type OdumTfFilter = Timeframe | "all";
+
+type InstrumentFilter = OdumInstrumentFilter;
+type TfFilter = OdumTfFilter;
 
 const TYPE_FILTERS: { value: InstrumentFilter; label: string }[] = [
   { value: "all", label: "All" },
@@ -160,7 +163,7 @@ function QuantCard({ inst }: { inst: OdumInstrument }) {
             <p
               className={cn(
                 "text-2xl font-bold tabular-nums",
-                inst.currentOddsYes >= 50 ? "text-emerald-400" : "text-red-400"
+                inst.currentOddsYes >= 50 ? "text-emerald-400" : "text-red-400",
               )}
             >
               {inst.currentOddsYes}¢
@@ -352,10 +355,14 @@ const FOOTBALL_MARKETS = [
 
 // ─── Main Export ─────────────────────────────────────────────────────────────
 
-export function OdumFocusTab() {
-  const [typeFilter, setTypeFilter] = React.useState<InstrumentFilter>("all");
-  const [tfFilter, setTfFilter] = React.useState<TfFilter>("all");
+export interface OdumFocusBodyProps {
+  typeFilter: OdumInstrumentFilter;
+  setTypeFilter: (f: OdumInstrumentFilter) => void;
+  tfFilter: OdumTfFilter;
+  setTfFilter: (f: OdumTfFilter) => void;
+}
 
+export function OdumFocusBody({ typeFilter, setTypeFilter, tfFilter, setTfFilter }: OdumFocusBodyProps) {
   const filteredInstruments = React.useMemo(() => {
     return ODUM_INSTRUMENTS.filter((inst) => {
       if (typeFilter !== "all" && inst.type !== typeFilter) return false;
@@ -378,7 +385,7 @@ export function OdumFocusTab() {
               onClick={() => setTypeFilter(value)}
               className={cn(
                 "px-2.5 py-1 text-[10px] font-bold rounded transition-colors",
-                typeFilter === value ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300"
+                typeFilter === value ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300",
               )}
             >
               {label}
@@ -394,7 +401,7 @@ export function OdumFocusTab() {
                 onClick={() => setTfFilter(value)}
                 className={cn(
                   "px-2 py-1 text-[10px] font-bold rounded transition-colors",
-                  tfFilter === value ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300"
+                  tfFilter === value ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300",
                 )}
               >
                 {label}
@@ -455,5 +462,18 @@ export function OdumFocusTab() {
         </div>
       )}
     </div>
+  );
+}
+
+export function OdumFocusTab() {
+  const [typeFilter, setTypeFilter] = React.useState<InstrumentFilter>("all");
+  const [tfFilter, setTfFilter] = React.useState<TfFilter>("all");
+  return (
+    <OdumFocusBody
+      typeFilter={typeFilter}
+      setTypeFilter={setTypeFilter}
+      tfFilter={tfFilter}
+      setTfFilter={setTfFilter}
+    />
   );
 }
