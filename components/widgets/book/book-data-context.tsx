@@ -95,6 +95,17 @@ export interface BookTradeDataContextValue {
   fee: string;
   setFee: (v: string) => void;
 
+  // OTC-specific fields
+  settlementMethod: string;
+  setSettlementMethod: (v: string) => void;
+  settlementCurrency: string;
+  setSettlementCurrency: (v: string) => void;
+  bilateralTerms: string;
+  setBilateralTerms: (v: string) => void;
+  isdaReference: string;
+  setIsdaReference: (v: string) => void;
+  isOtcCategory: boolean;
+
   orderState: BookOrderState;
   /** Used by preview widget for Edit / Retry navigation in the state machine */
   setOrderState: (s: BookOrderState) => void;
@@ -229,6 +240,13 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
   const [counterparty, setCounterparty] = React.useState("");
   const [sourceReference, setSourceReference] = React.useState("");
   const [fee, setFee] = React.useState("");
+
+  // OTC-specific
+  const [settlementMethod, setSettlementMethod] = React.useState("DVP");
+  const [settlementCurrency, setSettlementCurrency] = React.useState("USDT");
+  const [bilateralTerms, setBilateralTerms] = React.useState("");
+  const [isdaReference, setIsdaReference] = React.useState("");
+  const isOtcCategory = category === "otc";
 
   const [orderState, setOrderState] = React.useState<BookOrderState>("idle");
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -453,6 +471,16 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
       fee,
       setFee,
 
+      settlementMethod,
+      setSettlementMethod,
+      settlementCurrency,
+      setSettlementCurrency,
+      bilateralTerms,
+      setBilateralTerms,
+      isdaReference,
+      setIsdaReference,
+      isOtcCategory,
+
       orderState,
       setOrderState,
       errorMessage,
@@ -496,6 +524,11 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
       counterparty,
       sourceReference,
       fee,
+      settlementMethod,
+      settlementCurrency,
+      bilateralTerms,
+      isdaReference,
+      isOtcCategory,
       orderState,
       errorMessage,
       complianceResult,

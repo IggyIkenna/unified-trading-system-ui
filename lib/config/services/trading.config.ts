@@ -30,7 +30,7 @@ export const TRADING_OPERATION_TYPES = [
 export type TradingOperationType = (typeof TRADING_OPERATION_TYPES)[number];
 
 /** Reference data for book trade (venues, categories, algos). */
-export type BookCategoryTab = "cefi_spot" | "cefi_derivatives" | "defi" | "tradfi" | "sports" | "prediction";
+export type BookCategoryTab = "cefi_spot" | "cefi_derivatives" | "defi" | "tradfi" | "sports" | "prediction" | "otc";
 
 export type BookAlgoType = "MARKET" | "TWAP" | "VWAP" | "ICEBERG" | "SOR" | "BEST_PRICE" | "BENCHMARK_FILL";
 
@@ -41,6 +41,7 @@ export const BOOK_VENUES_BY_CATEGORY: Record<BookCategoryTab, string[]> = {
   tradfi: ["NYSE", "NASDAQ", "LSE", "CME", "ICE", "Eurex"],
   sports: ["Betfair", "Smarkets", "Pinnacle"],
   prediction: ["Polymarket", "Kalshi"],
+  otc: ["OTC Desk", "Jane Street", "Jump Trading", "Wintermute", "DRW", "Cumberland", "Galaxy Digital"],
 };
 
 export const BOOK_CATEGORY_LABELS: Record<BookCategoryTab, string> = {
@@ -50,6 +51,7 @@ export const BOOK_CATEGORY_LABELS: Record<BookCategoryTab, string> = {
   tradfi: "TradFi",
   sports: "Sports",
   prediction: "Prediction",
+  otc: "OTC / Bilateral",
 };
 
 export const BOOK_ALGO_OPTIONS: BookAlgoType[] = [
