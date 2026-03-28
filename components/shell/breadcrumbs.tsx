@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
 import { getRouteMapping } from "@/lib/lifecycle-mapping";
 import { GlobalScopeFilters } from "@/components/platform/global-scope-filters";
+import { PageHelp } from "@/components/platform/page-help";
 
 export function Breadcrumbs() {
   const pathname = usePathname() || "";
@@ -102,6 +103,7 @@ export function Breadcrumbs() {
               </span>
             </>
           )}
+        <PageHelp pathname={pathname} />
       </div>
       <GlobalScopeFilters />
     </nav>

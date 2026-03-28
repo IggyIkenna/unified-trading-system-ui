@@ -175,12 +175,15 @@ export default function ReportsPage() {
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* Header */}
+        {/* Header — premium, calm, stewardship feel */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Reporting & Settlement</h1>
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">Investment Reporting</h1>
             <p className="text-sm text-muted-foreground">
-              Client reports, portfolio performance, invoices, and settlements
+              Portfolio performance, attribution, settlements, and client statements
+            </p>
+            <p className="text-[10px] text-muted-foreground/60 font-mono">
+              Data as of {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} &middot; Reconciled T+1
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -214,61 +217,40 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Summary Cards */}
+        {/* Summary — premium KPI strip with institutional spacing */}
         <div className="grid grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--pnl-positive)]/10">
-                  <DollarSign className="size-5" style={{ color: "var(--pnl-positive)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">${(totalAum / 1000000).toFixed(1)}m</p>
-                  <p className="text-xs text-muted-foreground">Total AUM</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Assets Under Management</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
+                ${(totalAum / 1_000_000).toFixed(1)}m
+              </p>
+              <p className="text-[10px] text-muted-foreground/60">Across {portfolioSummary.length} client mandates</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <TrendingUp className="size-5 text-primary" />
-                </div>
-                <div>
-                  <p className={`text-2xl font-semibold ${avgMtdReturn >= 0 ? "pnl-positive" : "pnl-negative"}`}>
-                    {avgMtdReturn >= 0 ? "+" : ""}
-                    {avgMtdReturn.toFixed(1)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground">Avg MTD Return</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Month-to-Date Return</p>
+              <p className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${avgMtdReturn >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}>
+                {avgMtdReturn >= 0 ? "+" : ""}{avgMtdReturn.toFixed(2)}%
+              </p>
+              <p className="text-[10px] text-muted-foreground/60">Weighted average across all mandates</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                  <Receipt className="size-5" style={{ color: "var(--status-warning)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">${(pendingSettlement / 1000).toFixed(1)}k</p>
-                  <p className="text-xs text-muted-foreground">Pending Settlement</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Pending Settlement</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
+                ${(pendingSettlement / 1_000).toFixed(1)}k
+              </p>
+              <p className="text-[10px] text-muted-foreground/60">{settlements.filter((s) => s.status !== "settled").length} transactions awaiting confirmation</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--surface-reports)]/10">
-                  <FileText className="size-5" style={{ color: "var(--surface-reports)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">{reportsThisMonth}</p>
-                  <p className="text-xs text-muted-foreground">Reports This Month</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Reports Generated</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{reportsThisMonth}</p>
+              <p className="text-[10px] text-muted-foreground/60">This period &middot; {reports.filter((r) => r.status === "sent").length} delivered to clients</p>
             </CardContent>
           </Card>
         </div>
@@ -300,9 +282,14 @@ export default function ReportsPage() {
 
           {/* Portfolio Tab */}
           <TabsContent value="portfolio" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Client Portfolio Summary</CardTitle>
+            <Card className="border-border/50">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-semibold">Client Portfolio Summary</CardTitle>
+                  <span className="text-[10px] text-muted-foreground/60 font-mono">
+                    {portfolioSummary.length} mandate{portfolioSummary.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">

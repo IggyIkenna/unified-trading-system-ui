@@ -38,6 +38,7 @@ import {
   Clock,
   DollarSign,
   AlertTriangle,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HealthBar } from "@/components/platform/health-bar";
@@ -57,23 +58,120 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Settings: Settings2,
 };
 
-// ─── Mock operational KPIs ────────────────────────────────────────────────────
-// In production these come from the API; in mock mode we generate realistic values.
+// ─── Role-aware KPI definitions ───────────────────────────────────────────────
+// Each entitlement tier sees KPIs relevant to their subscription.
+// In production these values come from the API; mock mode generates realistic data.
 
-function useMockKPIs(isLive: boolean) {
-  return React.useMemo(
-    () => ({
-      netPnL: isLive ? 142_380 : 138_920,
-      netPnLChange: isLive ? 3.2 : 2.8,
-      activeStrategies: 12,
-      openPositions: 47,
-      riskUtilization: 62,
-      alertsActive: isLive ? 3 : 0,
-      lastBatchRun: "2026-03-27 06:00 UTC",
-      dataFreshness: isLive ? "Real-time" : "T+1 06:00",
-    }),
-    [isLive],
-  );
+interface KPIDef {
+  label: string;
+  value: string;
+  change?: number;
+  icon: React.ElementType;
+  href: string;
+  alert?: boolean;
+  subtle?: boolean;
+}
+
+function useRoleKPIs(
+  hasEntitlement: (e: string) => boolean,
+  isLive: boolean,
+): KPIDef[] {
+  return React.useMemo(() => {
+    const kpis: KPIDef[] = [];
+
+    // Data KPIs — everyone with data access sees these
+    if (hasEntitlement("data-basic") || hasEntitlement("data-pro")) {
+      kpis.push({
+        label: "Instruments",
+        value: hasEntitlement("data-pro") ? "2,400+" : "180",
+        icon: Database,
+        href: "/services/data/instruments",
+      });
+      kpis.push({
+        label: "Data Freshness",
+        value: isLive ? "Real-time" : "T+1 06:00",
+        icon: Clock,
+        href: "/services/data/overview",
+        subtle: true,
+      });
+    }
+
+    // Research KPIs — strategy/ML users
+    if (hasEntitlement("strategy-full") || hasEntitlement("ml-full")) {
+      kpis.push({
+        label: "Backtests",
+        value: "38",
+        change: 5.2,
+        icon: FlaskConical,
+        href: "/services/research/strategy/backtests",
+      });
+      kpis.push({
+        label: "Models",
+        value: "6 champions",
+        icon: Brain,
+        href: "/services/research/ml/registry",
+      });
+    }
+
+    // Trading KPIs — execution users
+    if (hasEntitlement("execution-basic") || hasEntitlement("execution-full")) {
+      kpis.push({
+        label: "Net P&L",
+        value: `$${isLive ? "142.4" : "138.9"}K`,
+        change: isLive ? 3.2 : 2.8,
+        icon: DollarSign,
+        href: "/services/trading/pnl",
+      });
+      kpis.push({
+        label: "Positions",
+        value: "47",
+        icon: BarChart3,
+        href: "/services/trading/positions",
+      });
+      kpis.push({
+        label: "Risk Util.",
+        value: "62%",
+        icon: Shield,
+        href: "/services/observe/risk",
+        alert: 62 > 75,
+      });
+      kpis.push({
+        label: "Alerts",
+        value: isLive ? "3" : "0",
+        icon: AlertTriangle,
+        href: "/services/observe/alerts",
+        alert: isLive,
+      });
+    }
+
+    // Reporting KPIs — reporting/IR users (without trading)
+    if (
+      hasEntitlement("reporting") &&
+      !hasEntitlement("execution-basic")
+    ) {
+      kpis.push({
+        label: "AUM",
+        value: "$24.8m",
+        change: 1.4,
+        icon: DollarSign,
+        href: "/services/reports/overview",
+      });
+      kpis.push({
+        label: "MTD Return",
+        value: "+2.3%",
+        icon: TrendingUp,
+        href: "/services/reports/overview",
+      });
+      kpis.push({
+        label: "Pending Settlement",
+        value: "$48.2K",
+        icon: Clock,
+        href: "/services/reports/settlement",
+      });
+    }
+
+    return kpis;
+  }, [hasEntitlement, isLive]);
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -81,7 +179,7 @@ function useMockKPIs(isLive: boolean) {
 export default function DashboardPage() {
   const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
   const { mode, isLive, setMode } = useExecutionMode();
-  const kpis = useMockKPIs(isLive);
+  const kpis = useRoleKPIs(hasEntitlement, isLive);
 
   const allServices = SERVICE_REGISTRY.filter((svc) => {
     if (svc.internalOnly && user?.role !== "admin") return false;
@@ -102,6 +200,8 @@ export default function DashboardPage() {
 
   const showTrading = hasEntitlement("execution-basic");
   const showResearch = hasEntitlement("strategy-full");
+  // Batch/live toggle is only meaningful for users with real-time data access
+  const showBatchLiveToggle = showTrading || showResearch;
 
   return (
     <div className="bg-background">
@@ -120,69 +220,55 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-3">
             <HealthBar />
-            {/* Batch/Live mode indicator */}
-            <button
-              onClick={() => setMode(isLive ? "batch" : "live")}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
-                isLive
-                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                  : "border-primary/30 bg-primary/10 text-primary",
-              )}
-            >
-              {isLive ? (
-                <Radio className="size-3" />
-              ) : (
-                <Database className="size-3" />
-              )}
-              {isLive ? "Live" : "Batch"}
-            </button>
+            {/* Batch/Live mode indicator — only for users with real-time data */}
+            {showBatchLiveToggle && (
+              <button
+                onClick={() => setMode(isLive ? "batch" : "live")}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
+                  isLive
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                    : "border-primary/30 bg-primary/10 text-primary",
+                )}
+              >
+                {isLive ? (
+                  <Radio className="size-3" />
+                ) : (
+                  <Database className="size-3" />
+                )}
+                {isLive ? "Live" : "Batch"}
+              </button>
+            )}
           </div>
         </div>
 
-        {/* ── Row 2: Operational KPIs ────────────────────────────────── */}
-        {showTrading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <KPICard
-              label="Net P&L"
-              value={`$${(kpis.netPnL / 1000).toFixed(1)}K`}
-              change={kpis.netPnLChange}
-              icon={DollarSign}
-              href="/services/trading/pnl"
-            />
-            <KPICard
-              label="Active Strategies"
-              value={String(kpis.activeStrategies)}
-              icon={Zap}
-              href="/services/trading/strategies"
-            />
-            <KPICard
-              label="Open Positions"
-              value={String(kpis.openPositions)}
-              icon={BarChart3}
-              href="/services/trading/positions"
-            />
-            <KPICard
-              label="Risk Utilization"
-              value={`${kpis.riskUtilization}%`}
-              icon={Shield}
-              href="/services/observe/risk"
-              alert={kpis.riskUtilization > 75}
-            />
-            <KPICard
-              label="Active Alerts"
-              value={String(kpis.alertsActive)}
-              icon={AlertTriangle}
-              href="/services/observe/alerts"
-              alert={kpis.alertsActive > 0}
-            />
-            <KPICard
-              label="Data"
-              value={kpis.dataFreshness}
-              icon={Clock}
-              href="/services/data/overview"
-              subtle
-            />
+        {/* ── Row 2: Role-aware KPIs ────────────────────────────────── */}
+        {/* Every user sees KPIs relevant to their entitlements. Data-only users
+            see instruments + freshness. Research users see backtests + models.
+            Trading users see P&L + positions + risk. Reports-only users see AUM. */}
+        {kpis.length > 0 && (
+          <div
+            className={cn(
+              "grid gap-3",
+              kpis.length <= 3
+                ? "grid-cols-1 sm:grid-cols-3"
+                : kpis.length <= 4
+                  ? "grid-cols-2 sm:grid-cols-4"
+                  : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
+            )}
+          >
+            {kpis.map((kpi) => (
+              <KPICard
+                key={kpi.label}
+                label={kpi.label}
+                value={kpi.value}
+                change={kpi.change}
+                icon={kpi.icon}
+                href={kpi.href}
+                alert={kpi.alert}
+                subtle={kpi.subtle}
+              />
+            ))}
           </div>
         )}
 

@@ -263,13 +263,7 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
 
   return (
     <div className="flex flex-col h-full">
-      <BatchLiveRail
-        platform="strategy"
-        currentStage="Monitor"
-        context={scope.mode === "live" ? "LIVE" : "BATCH"}
-        onContextChange={(v) => setMode(v === "LIVE" ? "live" : "batch")}
-        compact
-      />
+      {/* Stage dots removed per UX review — traders don't need novice navigation */}
       {/* Main area: vertical nav + resizable content/quick-view */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         <TradingVerticalNav tabs={TRADING_TABS} entitlements={user?.entitlements} bottomSlot={<LiveAsOfToggle />} />
@@ -293,8 +287,8 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
           <ResizablePanel
             ref={quickViewRef}
             defaultSize={18}
-            collapsedSize={4}
-            minSize={4}
+            collapsedSize={2}
+            minSize={2}
             maxSize={35}
             collapsible
             onCollapse={() => setQuickViewCollapsed(true)}

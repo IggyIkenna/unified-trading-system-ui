@@ -227,11 +227,13 @@ export default function BuildOverviewPage() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Build Overview</h1>
-          <p className="text-muted-foreground mt-1">
-            Pipeline status across all Build stages — features, models,
-            strategies, and execution.
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Research Pipeline</h1>
+          <p className="text-sm text-muted-foreground">
+            Features, models, strategies, and execution research — one pipeline, one family.
+          </p>
+          <p className="text-[10px] text-muted-foreground/60 font-mono">
+            {runningJobs.length} active job{runningJobs.length !== 1 ? "s" : ""} &middot; {alerts.filter(a => a.severity === "critical" || a.severity === "warning").length} alert{alerts.filter(a => a.severity === "critical" || a.severity === "warning").length !== 1 ? "s" : ""}
           </p>
         </div>
         <div className="flex gap-2">
@@ -484,7 +486,7 @@ export default function BuildOverviewPage() {
             </CardTitle>
           </div>
           <CardDescription>
-            Latest changes across the Build pipeline
+            Latest changes across the research pipeline
           </CardDescription>
         </CardHeader>
         <CardContent>

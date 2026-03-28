@@ -48,10 +48,7 @@ export interface FilterDefinition {
 
 interface FilterBarProps {
   filters: FilterDefinition[];
-  values: Record<
-    string,
-    string | string[] | Date | { start: Date; end: Date } | undefined
-  >;
+  values: Record<string, unknown>;
   onChange: (key: string, value: unknown) => void;
   onReset: () => void;
   persistToUrl?: boolean;
@@ -342,6 +339,7 @@ export function FilterBar({
         params.set(filter.key, value.join(","));
       } else if (
         typeof value === "object" &&
+        value !== null &&
         "start" in value &&
         "end" in value
       ) {

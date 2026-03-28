@@ -58,9 +58,12 @@ export function ChatWidgetTree({ accentColor = "emerald" }: ChatWidgetTreeProps)
   const colors = ACCENT[accentColor];
 
   React.useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    // Defer scroll to after DOM paint so new content is measured
+    requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+      }
+    });
   }, [messages]);
 
   // Cmd+Shift+/ shortcut

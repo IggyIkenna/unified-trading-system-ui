@@ -116,10 +116,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
           <div className="h-full p-2">
             <CandlestickChart
               data={candleData as never}
-              overlays={indicatorOverlays as never}
-              symbol={selectedInstrument.symbol}
-              venue={selectedInstrument.venue}
-              timeframe={timeframe}
+              indicators={indicatorOverlays as never}
             />
           </div>
         )}
@@ -161,13 +158,13 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
         )}
         {chartType === "depth" && (
           <div className="h-full p-2">
-            <DepthChart bids={bids} asks={asks} midPrice={livePrice} />
+            <DepthChart bids={bids} asks={asks} midPrice={livePrice} symbol={selectedInstrument.symbol} />
           </div>
         )}
         {chartType === "options" && (
           <div className="h-full p-2 space-y-4 overflow-auto">
             <OptionsChain underlying={selectedInstrument.symbol} venue={selectedInstrument.venue} />
-            <VolSurfaceChart underlying={selectedInstrument.symbol} venue={selectedInstrument.venue} />
+            <VolSurfaceChart underlying={selectedInstrument.symbol} />
           </div>
         )}
       </CardContent>

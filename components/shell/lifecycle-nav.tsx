@@ -10,6 +10,7 @@
 
 import { ApiStatusIndicator } from "./api-status-indicator";
 import { NotificationBell } from "./notification-bell";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,7 @@ import {
   lifecycleStages,
 } from "@/lib/lifecycle-mapping";
 import { cn } from "@/lib/utils";
+import { Radio } from "lucide-react";
 import {
   ArrowUpCircle,
   Bell,
@@ -93,6 +95,7 @@ export function LifecycleNav({
     isInternal,
     logout: doLogout,
   } = useAuth();
+  const { isLive, setMode } = useExecutionMode();
 
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true);
@@ -344,8 +347,21 @@ export function LifecycleNav({
         </div>
       </div>
 
-      {/* Spacer */}
-      <div className="flex-1" />
+      {/* Centre: Live/Simulated toggle — the USP */}
+      <div className="flex-1 flex items-center justify-center">
+        <button
+          onClick={() => setMode(isLive ? "batch" : "live")}
+          className={cn(
+            "flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide transition-all",
+            isLive
+              ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
+              : "border-amber-500/40 bg-amber-500/15 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]",
+          )}
+        >
+          <Radio className={cn("size-3.5", isLive && "animate-pulse")} />
+          {isLive ? "LIVE" : "SIMULATED"}
+        </button>
+      </div>
 
       {/* Right: Search, Notifications, Org, User */}
       <div className="flex items-center gap-2 shrink-0">

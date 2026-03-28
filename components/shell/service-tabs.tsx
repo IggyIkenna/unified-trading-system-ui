@@ -322,11 +322,22 @@ export const REPORTS_TABS: ServiceTab[] = [
 ];
 
 // ── Admin/Ops (Internal Operations) ─────────────────────────────────────────
+// Consolidates all admin + ops surfaces into one tab bar to avoid sprawl.
+// Grouped: User Management | Operations | Configuration
 export const ADMIN_TABS: ServiceTab[] = [
+  // ── User Management ─────────────────────────────────────────────────────
   { label: "Users", href: "/admin/users" },
   { label: "Access Requests", href: "/admin/users/requests" },
   { label: "Onboard", href: "/admin/users/onboard" },
-  { label: "Catalogue", href: "/admin/users/catalogue" },
+  { label: "Organisations", href: "/admin/organizations", matchPrefix: "/admin/organizations" },
+  // ── Operations ──────────────────────────────────────────────────────────
+  { label: "Services", href: "/ops/services", group: "Operations" },
+  { label: "Jobs", href: "/ops/jobs" },
+  { label: "DevOps", href: "/devops" },
+  { label: "Approvals", href: "/approvals" },
+  // ── Configuration ───────────────────────────────────────────────────────
+  { label: "Config", href: "/config", group: "Configuration" },
+  { label: "Data Admin", href: "/admin/data" },
 ];
 
 // Alias — user management IS the admin section

@@ -147,7 +147,7 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
       )}
 
       <div className="flex-1 min-h-0">
-        <DataTableWidget columns={columns} data={stressScenarios as StressRow[]} rowKey={(row) => row.name} compact />
+        <DataTableWidget columns={columns} data={stressScenarios as unknown as StressRow[]} rowKey={(row) => row.name} compact />
       </div>
     </div>
   );
