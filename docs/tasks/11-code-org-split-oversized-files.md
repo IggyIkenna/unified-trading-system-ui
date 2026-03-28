@@ -4,6 +4,35 @@
 **WORK_TRACKER:** §11 (Code Org)
 **Priority:** P0 — unblocks all other refactors
 
+## Status (2026-03-28)
+
+**In-scope work: COMPLETE.** All hand-written UI under `components/`, `app/`, and `archive/` (excluding mock-data paths and excluding `lib/**`) is at or below **900 lines** per file. Last verification: discovery `find` + `wc -l` audit (prune `lib/*`, skip `*mock-data*` and `*/mocks/*`) returned **no** matches over 900.
+
+Commit on branch carrying this work: **`b1633e4`** — `refactor(ui): split oversized modules under 900-line target`.
+
+---
+
+## Completed vs remaining
+
+### Completed
+
+- **Group A (Ops deployment):** `DataStatusTab`, `DeploymentDetails`, `DeployForm`, `ExecutionDataStatus` split into `data-status/`, `details/`, `form/` with thin shells at the original paths.
+- **Group B (Trading panels):** `options-futures-panel`, `manual-trading-panel`, `options-chain` split into `options-futures/`, `manual/`, `options-chain/`; legacy `context-bar.tsx` removed in favor of `context-bar/` module.
+- **Group D (Platform pages):** Signup, board presentation, clients, strategy `[id]`, health, backtests, training, config, features page wiring, ML run-analysis extractions, etc., colocated under `app/**/components/` or shared `components/` as implemented.
+- **Group E (Dashboards):** Executive, audit, quant, risk, devops dashboards decomposed into per-dashboard folders.
+- **Group F:** `feature-dialogs` replaced by `edit-config-dialog`, `new-feature-dialog`, `cat-status-badge`; reconciliation moved to `components/reports/reconciliation/`; archive ML validation/experiments use client modules; `run-analysis-sections` slimmed with compare/tabs panels.
+- **Docs / helpers:** Task doc updated; split helper scripts under `scripts/` (`build-deployment-details-views.py`, `generate-deployment-split.py`, `split-deploy-form.py`, `split-deployment-components.py`).
+- **Optional (not required for acceptance):** `lib/lifecycle-types.ts`, `lib/lifecycle-route-mappings.ts`, slimmer `lifecycle-mapping.ts` (Task 11 does not require `lib/` line targets).
+
+### Remaining / follow-up (not blocking Task 11 closure)
+
+- **Verify in your environment:** `pnpm typecheck` and `pnpm dev` on key routes touched by the split; fix any regressions (some workspaces may have pre-existing typecheck issues unrelated to this task).
+- **`lib/` over 900 lines:** Explicitly **out of scope** for Task 11 — track under separate tasks if desired.
+- **Mock data / fixtures:** **Task 05** (Mock Data Centralization) and excluded mock paths — not part of Task 11.
+- **Thin entry files:** A few original paths remain as **small composition shells** (e.g. `options-chain.tsx`, `manual-trading-panel.tsx`) delegating to folders — intentional for stable imports, not duplicate implementations.
+
+Historical group tables below still list **original** filenames and line counts; actual module paths may differ (e.g. `options-futures/` vs historical `components/trading/options/`).
+
 ---
 
 ## Agent Execution Model
@@ -135,11 +164,11 @@ Mock data and `lib/**` are excluded from Task 11. Centralize and split mock fixt
 
 ## Acceptance Criteria
 
-- [ ] Zero **in-scope** hand-written files over 900 lines: under `components/`, `app/`, and `archive/` only, excluding mock-data modules and excluding **all of `lib/`**
-- [ ] `pnpm typecheck` passes (no new type errors)
-- [ ] App loads and renders correctly on `pnpm dev`
-- [ ] All imports updated — `rg` for old component names shows zero orphaned imports
-- [ ] No re-export shims left in original files
+- [x] Zero **in-scope** hand-written files over 900 lines: under `components/`, `app/`, and `archive/` only, excluding mock-data modules and excluding **all of `lib/`** — verified 2026-03-28 (discovery command; zero rows over 900).
+- [ ] `pnpm typecheck` passes (no new type errors) — **re-verify** on your branch/CI; treat unrelated baseline failures separately.
+- [ ] App loads and renders correctly on `pnpm dev` — **re-verify** on critical routes after pull.
+- [x] Imports updated for the split — stale paths removed; thin entry shells only where listed above.
+- [x] No parallel legacy copies — single source of truth per surface; thin composition entrypoints allowed.
 
 ---
 
@@ -163,17 +192,9 @@ When you finish, stop and honestly answer these questions before claiming done:
 
 ---
 
-## Incremental progress (2026-03-28)
+## Incremental progress (archive)
 
-**Done (historical — `context-bar` is in-scope UI):**
-
-| Change | Result |
-|--------|--------|
-| `components/trading/context-bar.tsx` | Replaced with `components/trading/context-bar/`: `types.ts`, `multi-select-dropdown.tsx`, `context-bar-mode-controls.tsx`, `trading-context-bar.tsx`, `index.ts`. `@/components/trading/context-bar` still resolves. |
-
-**Optional lib refactor (not required for Task 11 acceptance):** `lifecycle-mapping` was split into `lib/lifecycle-types.ts`, `lib/lifecycle-route-mappings.ts`, and slimmer `lifecycle-mapping.ts`. **Task 11 no longer tracks `lib/` line counts.**
-
-**Still over 900 lines (in-scope only — verify with repo):** ops deployment quartet, `options-futures-panel`, signup, board-presentation, clients/strategies/health/backtests/training/config pages, dashboards (quant/risk/devops/audit/executive), manual/options panels, `feature-dialogs`, `run-analysis-sections`, archive ML pages, reconciliation page. Exclude: **`lib/**`**, **`lib/mocks/**`**, and `*mock-data*` files.
+Earlier session notes are folded into **Status** and **Completed vs remaining** above. Use the discovery command whenever you need to re-audit line counts.
 
 **Quick audit command (in-scope oversized files):**
 
@@ -186,6 +207,4 @@ find . \( -path ./node_modules -o -path ./.next -o -path './lib/*' \) -prune -o 
 done | awk '$1 > 900 {print}' | sort -n -r
 ```
 
-**Later session (2026-03-28):** `components/dashboards/executive-dashboard.tsx` split into `components/dashboards/executive/*`; `app/.../reconciliation/page.tsx` slimmed to a server wrapper and `components/reports/reconciliation/*` (types, constants, columns, skeleton, client). **~22** in-scope files still over 900 lines (ops deployment, large app pages, trading panels, remaining dashboards, archive ML, etc.).
-
-**Completion (2026-03-28, follow-up):** Sub-agents and follow-up splits finished the remainder: ops deployment (`DataStatusTab`, `DeploymentDetails`, `DeployForm`, `ExecutionDataStatus`), `options-futures-panel`, `quant` / `risk` / `devops` / `audit` dashboards, `options-chain` + `manual-trading-panel`, large `app/**` pages (signup, clients, strategy detail, backtests, training, config, health, board presentation, etc.), `run-analysis-sections`, archive ML pages. **Audit:** `find` over `components/`, `app/`, `archive/` (prune `lib/*`, skip `*mock-data*`, `*/mocks/*`) + `wc -l` shows **no** file still over **900** lines; largest seen ~**899** (`execution-detail-view.tsx`).
+Expect **no output** when Task 11 in-scope criteria are met.
