@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useOrders, useCancelOrder, useAmendOrder } from "@/hooks/api/use-orders";
+import { getOrdersForScope } from "@/lib/mock-data";
+import { SEED_STRATEGIES } from "@/lib/mock-data/seed";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
@@ -123,11 +125,34 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
   const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const orders: OrderRecord[] = React.useMemo(() => {
-    if (!ordersRaw) return [];
-    const raw = ordersRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).orders;
-    return Array.isArray(arr) ? (arr as OrderRecord[]) : [];
-  }, [ordersRaw]);
+    const raw = ordersRaw as Record<string, unknown> | undefined;
+    const arr = raw ? (Array.isArray(raw) ? raw : (raw as Record<string, unknown>).orders) : undefined;
+    const apiResult = Array.isArray(arr) && arr.length > 0 ? (arr as OrderRecord[]) : [];
+    if (apiResult.length > 0) return apiResult;
+
+    // Fall back to seed data
+    const seed = getOrdersForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds);
+    return seed.map((s) => {
+      const strat = SEED_STRATEGIES.find((st) => st.id === s.strategyId);
+      return {
+        order_id: s.id,
+        instrument: s.instrument,
+        side: s.side.toUpperCase() as "BUY" | "SELL",
+        type: s.type,
+        price: s.price,
+        mark_price: s.price * (1 + (Math.random() - 0.5) * 0.002),
+        quantity: s.quantity,
+        filled: s.filledQty,
+        status: s.status,
+        venue: s.venue,
+        strategy_id: s.strategyId,
+        strategy_name: strat?.name ?? s.strategyId,
+        edge_bps: Math.round((Math.random() * 20 - 5) * 10) / 10,
+        instant_pnl: Math.round((Math.random() * 200 - 50) * 100) / 100,
+        created_at: s.timestamp,
+      };
+    });
+  }, [ordersRaw, globalScope]);
 
   const scopedOrders = React.useMemo(() => {
     let result = orders;

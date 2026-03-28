@@ -7,6 +7,7 @@ import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import { useAuth, type AuthUser } from "@/hooks/use-auth";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry";
+import { getTradesForScope } from "@/lib/mock-data";
 import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@/lib/config/services/trading.config";
 
 export type { BookAlgoType, BookCategoryTab } from "@/lib/config/services/trading.config";
@@ -388,13 +389,31 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
 
   const orgList = Array.isArray(organizations) ? (organizations as Array<{ id: string; name: string }>) : [];
 
-  const scopedTrades = React.useMemo(
-    () =>
-      globalScope.organizationIds.length > 0
-        ? MOCK_TRADES.filter((_, i) => i < Math.max(5, Math.ceil(MOCK_TRADES.length * 0.6)))
-        : MOCK_TRADES,
-    [globalScope.organizationIds],
-  );
+  const scopedTrades: BookTrade[] = React.useMemo(() => {
+    const seed = getTradesForScope(
+      globalScope.organizationIds,
+      globalScope.clientIds,
+      globalScope.strategyIds,
+    );
+    if (seed.length > 0) {
+      return seed.map((s) => ({
+        id: s.id,
+        timestamp: s.timestamp,
+        instrument: s.instrument,
+        venue: s.venue,
+        side: s.side,
+        quantity: s.quantity,
+        price: s.price,
+        fees: s.fees,
+        total: s.total,
+        status: s.status === "settled" ? "settled" as const : "filled" as const,
+        counterparty: s.counterparty,
+        settlementDate: s.settlementDate,
+        tradeType: s.tradeType,
+      }));
+    }
+    return MOCK_TRADES;
+  }, [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const value = React.useMemo(
     () => ({

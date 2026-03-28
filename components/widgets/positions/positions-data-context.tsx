@@ -4,6 +4,7 @@ import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { usePositions, useBalances } from "@/hooks/api/use-positions";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getPositionsForScope } from "@/lib/mock-data";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useWebSocket } from "@/hooks/use-websocket";
@@ -189,15 +190,39 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
   const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const positions: PositionRecord[] = React.useMemo(() => {
-    if (!positionsRaw) return [];
-    const raw = positionsRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).positions;
-    let result = Array.isArray(arr) ? (arr as PositionRecord[]) : [];
-    if (scopeStrategyIds.length > 0) {
+    const raw = positionsRaw as Record<string, unknown> | undefined;
+    const arr = raw ? (Array.isArray(raw) ? raw : (raw as Record<string, unknown>).positions) : undefined;
+    let result = Array.isArray(arr) && arr.length > 0 ? (arr as PositionRecord[]) : [];
+
+    // Fall back to seed data when API returns nothing
+    if (result.length === 0) {
+      const seed = getPositionsForScope(
+        globalScope.organizationIds,
+        globalScope.clientIds,
+        globalScope.strategyIds,
+      );
+      result = seed.map((s) => ({
+        id: s.id,
+        strategy_id: s.strategyId,
+        strategy_name: s.strategyName,
+        instrument: s.instrument,
+        side: s.side.toUpperCase() as "LONG" | "SHORT",
+        quantity: s.quantity,
+        entry_price: s.entryPrice,
+        current_price: s.currentPrice,
+        pnl: s.unrealisedPnl,
+        pnl_pct: s.entryPrice > 0 ? ((s.currentPrice - s.entryPrice) / s.entryPrice) * 100 : 0,
+        unrealized_pnl: s.unrealisedPnl,
+        venue: s.venue,
+        margin: Math.abs(s.quantity * s.entryPrice * 0.1),
+        leverage: 10,
+        updated_at: new Date().toISOString(),
+      }));
+    } else if (scopeStrategyIds.length > 0) {
       result = result.filter((p) => scopeStrategyIds.includes(p.strategy_id));
     }
     return result;
-  }, [positionsRaw, scopeStrategyIds]);
+  }, [positionsRaw, scopeStrategyIds, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const balances: BalanceRecord[] = React.useMemo(() => {
     if (!balancesRaw) return [];

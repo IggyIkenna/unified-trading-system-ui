@@ -23,6 +23,8 @@ import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
 import type { PnLBreakdown, TimeSeriesPoint, TradingClient, TradingOrganization } from "@/lib/trading-data";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { OverviewDataProvider, type OverviewData } from "@/components/widgets/overview/overview-data-context";
+import { getStrategiesForScope, getAlertsForScope } from "@/lib/mock-data";
+import { ORGANIZATIONS, CLIENTS } from "@/lib/trading-data";
 
 import "@/components/widgets/overview/register";
 
@@ -84,17 +86,26 @@ export default function OverviewPage() {
 
   useWebSocket({ url: "ws://localhost:8030/ws", enabled: wsScope.mode === "live", onMessage: handleWsMessage });
 
-  const organizations: TradingOrganization[] = orgsData?.organizations ?? [];
-  const clients: TradingClient[] = clientsData?.clients ?? [];
+  const organizations: TradingOrganization[] = orgsData?.organizations ?? ORGANIZATIONS;
+  const clients: TradingClient[] = clientsData?.clients ?? CLIENTS;
 
   const alertsRaw = alertsData as Record<string, unknown> | undefined;
-  const mockAlerts = (alertsRaw?.data ?? alertsRaw?.alerts ?? []) as Array<{
+  const apiAlerts = (alertsRaw?.data ?? alertsRaw?.alerts ?? []) as Array<{
     id: string;
     message: string;
     severity: "critical" | "high" | "medium" | "low";
     timestamp: string;
     source: string;
   }>;
+  const mockAlerts = apiAlerts.length > 0 ? apiAlerts : getAlertsForScope(
+    wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds,
+  ).map((a) => ({
+    id: a.id,
+    message: a.message,
+    severity: a.severity,
+    timestamp: a.timestamp,
+    source: a.source,
+  }));
 
   const healthRaw = healthData as Record<string, unknown> | undefined;
   const allMockServices: ServiceHealth[] = (healthRaw?.data ?? healthRaw?.services ?? []) as ServiceHealth[];
@@ -123,8 +134,26 @@ export default function OverviewPage() {
   const liveTimeSeries = timeseriesData?.timeseries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
   const batchTimeSeries = liveBatchData ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
 
-  const allStrategies = performanceData?.strategies ?? [];
+  const apiStrategies = performanceData?.strategies ?? [];
   const { scope: context } = useGlobalScope();
+
+  // Fall back to seed strategies when API returns nothing
+  const allStrategies = React.useMemo(() => {
+    if (apiStrategies.length > 0) return apiStrategies;
+    const seed = getStrategiesForScope(context.organizationIds, context.clientIds, context.strategyIds);
+    return seed.map((s) => ({
+      id: s.id,
+      name: s.name,
+      archetype: s.archetype,
+      status: s.status,
+      nav: s.aum,
+      exposure: s.aum * 0.8,
+      pnl: s.aum * s.mtdReturn / 100,
+      sharpe: s.sharpe,
+      orgId: s.orgId,
+      clientId: s.clientId,
+    }));
+  }, [apiStrategies, context.organizationIds, context.clientIds, context.strategyIds]);
 
   const strategyPerformance = React.useMemo(() => {
     let result = allStrategies;

@@ -5,6 +5,7 @@ import type { FilterDefinition } from "@/components/platform/filter-bar";
 
 export type AlertFilterBarValues = Record<string, string | string[] | Date | { start: Date; end: Date } | undefined>;
 import { useAcknowledgeAlert, useAlerts, useEscalateAlert, useResolveAlert } from "@/hooks/api/use-alerts";
+import { getAlertsForScope } from "@/lib/mock-data";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { toast } from "sonner";
@@ -71,11 +72,25 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
 
   const allAlerts: Alert[] = React.useMemo(() => {
     const raw = alertsData as Record<string, unknown> | undefined;
-    if (!raw) return [];
-    const fromData = raw.data as Alert[] | undefined;
-    const fromAlerts = raw.alerts as Alert[] | undefined;
-    return fromData ?? fromAlerts ?? [];
-  }, [alertsData]);
+    const fromData = raw?.data as Alert[] | undefined;
+    const fromAlerts = raw?.alerts as Alert[] | undefined;
+    const apiResult = fromData ?? fromAlerts ?? [];
+    if (apiResult.length > 0) return apiResult;
+
+    // Fall back to seed data
+    const seed = getAlertsForScope(scope.organizationIds, scope.clientIds, scope.strategyIds);
+    return seed.map((s) => ({
+      id: s.id,
+      severity: s.severity as AlertSeverity,
+      status: (s.acknowledged ? "acknowledged" : "active") as AlertStatus,
+      title: s.message.split(" — ")[0] || s.message,
+      description: s.message,
+      source: s.source,
+      entity: s.strategyId,
+      entityType: "strategy" as const,
+      timestamp: s.timestamp,
+    }));
+  }, [alertsData, scope.organizationIds, scope.clientIds, scope.strategyIds]);
 
   const acknowledgeMutation = useAcknowledgeAlert();
   const escalateMutation = useEscalateAlert();

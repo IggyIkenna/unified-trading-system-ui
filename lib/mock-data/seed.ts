@@ -91,34 +91,34 @@ export interface SeedPnlDay {
 
 export const SEED_STRATEGIES: SeedStrategy[] = [
   // Odum Internal — Trading Desk Alpha
-  { id: "strat-btc-mom-alpha", name: "BTC Momentum", archetype: "momentum", status: "live", sharpe: 1.82, mtdReturn: 4.2, aum: 8200000, orgId: "odum-internal", clientId: "desk-alpha" },
-  { id: "strat-eth-basis-alpha", name: "ETH Basis Trade", archetype: "basis", status: "live", sharpe: 2.14, mtdReturn: 2.8, aum: 5100000, orgId: "odum-internal", clientId: "desk-alpha" },
+  { id: "strat-btc-mom-alpha", name: "BTC Momentum", archetype: "momentum", status: "live", sharpe: 1.82, mtdReturn: 4.2, aum: 8200000, orgId: "odum", clientId: "delta-one" },
+  { id: "strat-eth-basis-alpha", name: "ETH Basis Trade", archetype: "basis", status: "live", sharpe: 2.14, mtdReturn: 2.8, aum: 5100000, orgId: "odum", clientId: "delta-one" },
   // Odum Internal — Trading Desk Beta
-  { id: "strat-ml-dir-beta", name: "ML Directional", archetype: "ml-directional", status: "live", sharpe: 1.45, mtdReturn: 3.1, aum: 6400000, orgId: "odum-internal", clientId: "desk-beta" },
-  { id: "strat-xexch-arb-beta", name: "Cross-Exchange Arb", archetype: "arbitrage", status: "live", sharpe: 3.21, mtdReturn: 1.2, aum: 3200000, orgId: "odum-internal", clientId: "desk-beta" },
+  { id: "strat-ml-dir-beta", name: "ML Directional", archetype: "ml-directional", status: "live", sharpe: 1.45, mtdReturn: 3.1, aum: 6400000, orgId: "odum", clientId: "quant-fund" },
+  { id: "strat-xexch-arb-beta", name: "Cross-Exchange Arb", archetype: "arbitrage", status: "live", sharpe: 3.21, mtdReturn: 1.2, aum: 3200000, orgId: "odum", clientId: "quant-fund" },
   // Odum Internal — DeFi Ops
-  { id: "strat-defi-yield", name: "DeFi Yield Farm", archetype: "yield", status: "live", sharpe: 1.65, mtdReturn: 5.4, aum: 4800000, orgId: "odum-internal", clientId: "defi-ops" },
-  { id: "strat-flash-arb", name: "Flash Loan Arb", archetype: "arbitrage", status: "shadow", sharpe: 2.88, mtdReturn: 0.8, aum: 1200000, orgId: "odum-internal", clientId: "defi-ops" },
+  { id: "strat-defi-yield", name: "DeFi Yield Farm", archetype: "yield", status: "live", sharpe: 1.65, mtdReturn: 5.4, aum: 4800000, orgId: "odum", clientId: "defi-desk" },
+  { id: "strat-flash-arb", name: "Flash Loan Arb", archetype: "arbitrage", status: "shadow", sharpe: 2.88, mtdReturn: 0.8, aum: 1200000, orgId: "odum", clientId: "defi-desk" },
   // Odum Internal — Sports Desk
-  { id: "strat-sports-arb", name: "Sports Arb", archetype: "arbitrage", status: "live", sharpe: 1.92, mtdReturn: 2.1, aum: 2400000, orgId: "odum-internal", clientId: "sports-desk" },
+  { id: "strat-sports-arb", name: "Sports Arb", archetype: "arbitrage", status: "live", sharpe: 1.92, mtdReturn: 2.1, aum: 2400000, orgId: "odum", clientId: "sports-desk" },
 
   // Apex Capital
-  { id: "strat-btc-mom-apex", name: "BTC Momentum", archetype: "momentum", status: "live", sharpe: 1.55, mtdReturn: 3.6, aum: 12000000, orgId: "apex-capital", clientId: "global-macro" },
-  { id: "strat-opts-vol-apex", name: "Options Vol", archetype: "volatility", status: "live", sharpe: 1.78, mtdReturn: 1.9, aum: 8500000, orgId: "apex-capital", clientId: "global-macro" },
-  { id: "strat-xexch-apex", name: "Cross-Exchange Arb", archetype: "arbitrage", status: "live", sharpe: 2.95, mtdReturn: 0.9, aum: 5400000, orgId: "apex-capital", clientId: "crypto-arb" },
+  { id: "strat-btc-mom-apex", name: "BTC Momentum", archetype: "momentum", status: "live", sharpe: 1.55, mtdReturn: 3.6, aum: 12000000, orgId: "alpha-capital", clientId: "alpha-main" },
+  { id: "strat-opts-vol-apex", name: "Options Vol", archetype: "volatility", status: "live", sharpe: 1.78, mtdReturn: 1.9, aum: 8500000, orgId: "alpha-capital", clientId: "alpha-main" },
+  { id: "strat-xexch-apex", name: "Cross-Exchange Arb", archetype: "arbitrage", status: "live", sharpe: 2.95, mtdReturn: 0.9, aum: 5400000, orgId: "alpha-capital", clientId: "alpha-crypto" },
 
   // Zenith Partners
-  { id: "strat-opts-zen", name: "Options Vol", archetype: "volatility", status: "live", sharpe: 2.05, mtdReturn: 2.4, aum: 9200000, orgId: "zenith-partners", clientId: "core-strategy" },
-  { id: "strat-spreads-zen", name: "Spread Trading", archetype: "relative-value", status: "paused", sharpe: 1.32, mtdReturn: -0.4, aum: 3100000, orgId: "zenith-partners", clientId: "core-strategy" },
+  { id: "strat-opts-zen", name: "Options Vol", archetype: "volatility", status: "live", sharpe: 2.05, mtdReturn: 2.4, aum: 9200000, orgId: "vertex-partners", clientId: "vertex-core" },
+  { id: "strat-spreads-zen", name: "Spread Trading", archetype: "relative-value", status: "paused", sharpe: 1.32, mtdReturn: -0.4, aum: 3100000, orgId: "vertex-partners", clientId: "vertex-core" },
 
   // Meridian Fund
-  { id: "strat-ml-dir-mer", name: "ML Directional", archetype: "ml-directional", status: "live", sharpe: 1.68, mtdReturn: 3.8, aum: 7600000, orgId: "meridian-fund", clientId: "systematic-trading" },
-  { id: "strat-eth-basis-mer", name: "ETH Basis Trade", archetype: "basis", status: "live", sharpe: 1.91, mtdReturn: 2.2, aum: 4200000, orgId: "meridian-fund", clientId: "systematic-trading" },
-  { id: "strat-disc-mer", name: "Discretionary Macro", archetype: "discretionary", status: "live", sharpe: 0.95, mtdReturn: 1.1, aum: 5800000, orgId: "meridian-fund", clientId: "discretionary-fund" },
+  { id: "strat-ml-dir-mer", name: "ML Directional", archetype: "ml-directional", status: "live", sharpe: 1.68, mtdReturn: 3.8, aum: 7600000, orgId: "meridian-fund", clientId: "meridian-systematic" },
+  { id: "strat-eth-basis-mer", name: "ETH Basis Trade", archetype: "basis", status: "live", sharpe: 1.91, mtdReturn: 2.2, aum: 4200000, orgId: "meridian-fund", clientId: "meridian-systematic" },
+  { id: "strat-disc-mer", name: "Discretionary Macro", archetype: "discretionary", status: "live", sharpe: 0.95, mtdReturn: 1.1, aum: 5800000, orgId: "meridian-fund", clientId: "meridian-discretionary" },
 
   // Atlas Ventures
-  { id: "strat-btc-mom-atlas", name: "BTC Momentum", archetype: "momentum", status: "live", sharpe: 1.42, mtdReturn: 3.9, aum: 3800000, orgId: "atlas-ventures", clientId: "growth-portfolio" },
-  { id: "strat-defi-atlas", name: "DeFi Yield Farm", archetype: "yield", status: "live", sharpe: 1.88, mtdReturn: 6.2, aum: 2900000, orgId: "atlas-ventures", clientId: "defi-ventures" },
+  { id: "strat-btc-mom-atlas", name: "BTC Momentum", archetype: "momentum", status: "live", sharpe: 1.42, mtdReturn: 3.9, aum: 3800000, orgId: "atlas-ventures", clientId: "atlas-growth" },
+  { id: "strat-defi-atlas", name: "DeFi Yield Farm", archetype: "yield", status: "live", sharpe: 1.88, mtdReturn: 6.2, aum: 2900000, orgId: "atlas-ventures", clientId: "atlas-defi" },
 ];
 
 // ── Positions ────────────────────────────────────────────────────────────────
@@ -130,60 +130,60 @@ function pos(id: string, instrument: string, venue: string, side: "long" | "shor
 
 export const SEED_POSITIONS: SeedPosition[] = [
   // Odum Internal — Desk Alpha (BTC Momentum + ETH Basis)
-  pos("pos-001", "BTC-USDT", "Binance", "long", 2.5, 64200, 67430, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "BTC Momentum"),
-  pos("pos-002", "BTC-PERP", "Hyperliquid", "long", 1.8, 65100, 67430, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "BTC Momentum"),
-  pos("pos-003", "ETH-USDT", "Binance", "long", 15, 3180, 3420, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "BTC Momentum"),
-  pos("pos-004", "SOL-USDT", "Binance", "long", 120, 132, 145, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "BTC Momentum"),
-  pos("pos-005", "ETH-USDT", "Binance", "long", 25, 3250, 3420, "odum-internal", "desk-alpha", "strat-eth-basis-alpha", "ETH Basis Trade"),
-  pos("pos-006", "ETH-PERP", "Hyperliquid", "short", 25, 3260, 3420, "odum-internal", "desk-alpha", "strat-eth-basis-alpha", "ETH Basis Trade"),
+  pos("pos-001", "BTC-USDT", "Binance", "long", 2.5, 64200, 67430, "odum", "delta-one", "strat-btc-mom-alpha", "BTC Momentum"),
+  pos("pos-002", "BTC-PERP", "Hyperliquid", "long", 1.8, 65100, 67430, "odum", "delta-one", "strat-btc-mom-alpha", "BTC Momentum"),
+  pos("pos-003", "ETH-USDT", "Binance", "long", 15, 3180, 3420, "odum", "delta-one", "strat-btc-mom-alpha", "BTC Momentum"),
+  pos("pos-004", "SOL-USDT", "Binance", "long", 120, 132, 145, "odum", "delta-one", "strat-btc-mom-alpha", "BTC Momentum"),
+  pos("pos-005", "ETH-USDT", "Binance", "long", 25, 3250, 3420, "odum", "delta-one", "strat-eth-basis-alpha", "ETH Basis Trade"),
+  pos("pos-006", "ETH-PERP", "Hyperliquid", "short", 25, 3260, 3420, "odum", "delta-one", "strat-eth-basis-alpha", "ETH Basis Trade"),
   // Odum Internal — Desk Beta (ML Directional + Cross-Exchange Arb)
-  pos("pos-007", "BTC-USDT", "Binance", "long", 1.2, 66800, 67430, "odum-internal", "desk-beta", "strat-ml-dir-beta", "ML Directional"),
-  pos("pos-008", "ETH-USDT", "Binance", "short", 10, 3500, 3420, "odum-internal", "desk-beta", "strat-ml-dir-beta", "ML Directional"),
-  pos("pos-009", "SOL-USDT", "Hyperliquid", "long", 80, 138, 145, "odum-internal", "desk-beta", "strat-ml-dir-beta", "ML Directional"),
-  pos("pos-010", "MATIC-USDT", "Binance", "long", 5000, 0.72, 0.78, "odum-internal", "desk-beta", "strat-ml-dir-beta", "ML Directional"),
-  pos("pos-011", "BTC-USDT", "Binance", "long", 0.5, 67200, 67430, "odum-internal", "desk-beta", "strat-xexch-arb-beta", "Cross-Exchange Arb"),
-  pos("pos-012", "BTC-USDT", "Hyperliquid", "short", 0.5, 67280, 67430, "odum-internal", "desk-beta", "strat-xexch-arb-beta", "Cross-Exchange Arb"),
+  pos("pos-007", "BTC-USDT", "Binance", "long", 1.2, 66800, 67430, "odum", "quant-fund", "strat-ml-dir-beta", "ML Directional"),
+  pos("pos-008", "ETH-USDT", "Binance", "short", 10, 3500, 3420, "odum", "quant-fund", "strat-ml-dir-beta", "ML Directional"),
+  pos("pos-009", "SOL-USDT", "Hyperliquid", "long", 80, 138, 145, "odum", "quant-fund", "strat-ml-dir-beta", "ML Directional"),
+  pos("pos-010", "MATIC-USDT", "Binance", "long", 5000, 0.72, 0.78, "odum", "quant-fund", "strat-ml-dir-beta", "ML Directional"),
+  pos("pos-011", "BTC-USDT", "Binance", "long", 0.5, 67200, 67430, "odum", "quant-fund", "strat-xexch-arb-beta", "Cross-Exchange Arb"),
+  pos("pos-012", "BTC-USDT", "Hyperliquid", "short", 0.5, 67280, 67430, "odum", "quant-fund", "strat-xexch-arb-beta", "Cross-Exchange Arb"),
   // Odum Internal — DeFi Ops
-  pos("pos-013", "WETH", "Uniswap", "long", 20, 3200, 3420, "odum-internal", "defi-ops", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-014", "USDC", "Aave", "long", 50000, 1.0, 1.0, "odum-internal", "defi-ops", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-015", "AAVE", "Uniswap", "long", 45, 92, 105, "odum-internal", "defi-ops", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-016", "UNI", "Uniswap", "long", 300, 7.2, 8.1, "odum-internal", "defi-ops", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-013", "WETH", "Uniswap", "long", 20, 3200, 3420, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-014", "USDC", "Aave", "long", 50000, 1.0, 1.0, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-015", "AAVE", "Uniswap", "long", 45, 92, 105, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-016", "UNI", "Uniswap", "long", 300, 7.2, 8.1, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
 
   // Apex Capital — Global Macro
-  pos("pos-017", "BTC-USDT", "Binance", "long", 5, 63800, 67430, "apex-capital", "global-macro", "strat-btc-mom-apex", "BTC Momentum"),
-  pos("pos-018", "BTC-PERP", "Hyperliquid", "long", 3, 64500, 67430, "apex-capital", "global-macro", "strat-btc-mom-apex", "BTC Momentum"),
-  pos("pos-019", "ETH-USDT", "Binance", "long", 30, 3100, 3420, "apex-capital", "global-macro", "strat-btc-mom-apex", "BTC Momentum"),
-  pos("pos-020", "BTC-CALL-70K", "Deribit", "long", 2, 2800, 3100, "apex-capital", "global-macro", "strat-opts-vol-apex", "Options Vol"),
-  pos("pos-021", "BTC-PUT-60K", "Deribit", "long", 3, 1200, 980, "apex-capital", "global-macro", "strat-opts-vol-apex", "Options Vol"),
-  pos("pos-022", "ETH-CALL-4K", "Deribit", "long", 10, 180, 210, "apex-capital", "global-macro", "strat-opts-vol-apex", "Options Vol"),
+  pos("pos-017", "BTC-USDT", "Binance", "long", 5, 63800, 67430, "alpha-capital", "alpha-main", "strat-btc-mom-apex", "BTC Momentum"),
+  pos("pos-018", "BTC-PERP", "Hyperliquid", "long", 3, 64500, 67430, "alpha-capital", "alpha-main", "strat-btc-mom-apex", "BTC Momentum"),
+  pos("pos-019", "ETH-USDT", "Binance", "long", 30, 3100, 3420, "alpha-capital", "alpha-main", "strat-btc-mom-apex", "BTC Momentum"),
+  pos("pos-020", "BTC-CALL-70K", "Deribit", "long", 2, 2800, 3100, "alpha-capital", "alpha-main", "strat-opts-vol-apex", "Options Vol"),
+  pos("pos-021", "BTC-PUT-60K", "Deribit", "long", 3, 1200, 980, "alpha-capital", "alpha-main", "strat-opts-vol-apex", "Options Vol"),
+  pos("pos-022", "ETH-CALL-4K", "Deribit", "long", 10, 180, 210, "alpha-capital", "alpha-main", "strat-opts-vol-apex", "Options Vol"),
   // Apex Capital — Crypto Arb
-  pos("pos-023", "BTC-USDT", "Binance", "long", 1, 67350, 67430, "apex-capital", "crypto-arb", "strat-xexch-apex", "Cross-Exchange Arb"),
-  pos("pos-024", "BTC-USDT", "Hyperliquid", "short", 1, 67410, 67430, "apex-capital", "crypto-arb", "strat-xexch-apex", "Cross-Exchange Arb"),
-  pos("pos-025", "ETH-USDT", "Binance", "long", 8, 3415, 3420, "apex-capital", "crypto-arb", "strat-xexch-apex", "Cross-Exchange Arb"),
+  pos("pos-023", "BTC-USDT", "Binance", "long", 1, 67350, 67430, "alpha-capital", "alpha-crypto", "strat-xexch-apex", "Cross-Exchange Arb"),
+  pos("pos-024", "BTC-USDT", "Hyperliquid", "short", 1, 67410, 67430, "alpha-capital", "alpha-crypto", "strat-xexch-apex", "Cross-Exchange Arb"),
+  pos("pos-025", "ETH-USDT", "Binance", "long", 8, 3415, 3420, "alpha-capital", "alpha-crypto", "strat-xexch-apex", "Cross-Exchange Arb"),
 
   // Zenith Partners — Options
-  pos("pos-026", "BTC-CALL-70K", "Deribit", "long", 5, 2600, 3100, "zenith-partners", "core-strategy", "strat-opts-zen", "Options Vol"),
-  pos("pos-027", "BTC-PUT-65K", "Deribit", "short", 5, 1800, 1600, "zenith-partners", "core-strategy", "strat-opts-zen", "Options Vol"),
-  pos("pos-028", "ETH-CALL-4K", "Deribit", "long", 20, 160, 210, "zenith-partners", "core-strategy", "strat-opts-zen", "Options Vol"),
-  pos("pos-029", "ETH-PUT-3K", "Deribit", "short", 15, 220, 180, "zenith-partners", "core-strategy", "strat-opts-zen", "Options Vol"),
-  pos("pos-030", "BTC-CALL-75K", "Deribit", "short", 3, 1400, 1200, "zenith-partners", "core-strategy", "strat-opts-zen", "Options Vol"),
+  pos("pos-026", "BTC-CALL-70K", "Deribit", "long", 5, 2600, 3100, "vertex-partners", "vertex-core", "strat-opts-zen", "Options Vol"),
+  pos("pos-027", "BTC-PUT-65K", "Deribit", "short", 5, 1800, 1600, "vertex-partners", "vertex-core", "strat-opts-zen", "Options Vol"),
+  pos("pos-028", "ETH-CALL-4K", "Deribit", "long", 20, 160, 210, "vertex-partners", "vertex-core", "strat-opts-zen", "Options Vol"),
+  pos("pos-029", "ETH-PUT-3K", "Deribit", "short", 15, 220, 180, "vertex-partners", "vertex-core", "strat-opts-zen", "Options Vol"),
+  pos("pos-030", "BTC-CALL-75K", "Deribit", "short", 3, 1400, 1200, "vertex-partners", "vertex-core", "strat-opts-zen", "Options Vol"),
 
   // Meridian Fund — Systematic
-  pos("pos-031", "BTC-USDT", "Binance", "long", 3, 65400, 67430, "meridian-fund", "systematic-trading", "strat-ml-dir-mer", "ML Directional"),
-  pos("pos-032", "ETH-USDT", "Binance", "long", 20, 3280, 3420, "meridian-fund", "systematic-trading", "strat-ml-dir-mer", "ML Directional"),
-  pos("pos-033", "SOL-USDT", "Binance", "short", 60, 152, 145, "meridian-fund", "systematic-trading", "strat-ml-dir-mer", "ML Directional"),
-  pos("pos-034", "ETH-USDT", "Hyperliquid", "long", 12, 3300, 3420, "meridian-fund", "systematic-trading", "strat-eth-basis-mer", "ETH Basis Trade"),
-  pos("pos-035", "ETH-PERP", "Hyperliquid", "short", 12, 3310, 3420, "meridian-fund", "systematic-trading", "strat-eth-basis-mer", "ETH Basis Trade"),
+  pos("pos-031", "BTC-USDT", "Binance", "long", 3, 65400, 67430, "meridian-fund", "meridian-systematic", "strat-ml-dir-mer", "ML Directional"),
+  pos("pos-032", "ETH-USDT", "Binance", "long", 20, 3280, 3420, "meridian-fund", "meridian-systematic", "strat-ml-dir-mer", "ML Directional"),
+  pos("pos-033", "SOL-USDT", "Binance", "short", 60, 152, 145, "meridian-fund", "meridian-systematic", "strat-ml-dir-mer", "ML Directional"),
+  pos("pos-034", "ETH-USDT", "Hyperliquid", "long", 12, 3300, 3420, "meridian-fund", "meridian-systematic", "strat-eth-basis-mer", "ETH Basis Trade"),
+  pos("pos-035", "ETH-PERP", "Hyperliquid", "short", 12, 3310, 3420, "meridian-fund", "meridian-systematic", "strat-eth-basis-mer", "ETH Basis Trade"),
   // Meridian Fund — Discretionary
-  pos("pos-036", "BTC-USDT", "Binance", "long", 2, 66000, 67430, "meridian-fund", "discretionary-fund", "strat-disc-mer", "Discretionary Macro"),
-  pos("pos-037", "LINK-USDT", "Binance", "long", 500, 14.2, 15.8, "meridian-fund", "discretionary-fund", "strat-disc-mer", "Discretionary Macro"),
+  pos("pos-036", "BTC-USDT", "Binance", "long", 2, 66000, 67430, "meridian-fund", "meridian-discretionary", "strat-disc-mer", "Discretionary Macro"),
+  pos("pos-037", "LINK-USDT", "Binance", "long", 500, 14.2, 15.8, "meridian-fund", "meridian-discretionary", "strat-disc-mer", "Discretionary Macro"),
 
   // Atlas Ventures
-  pos("pos-038", "BTC-USDT", "Binance", "long", 1.5, 65800, 67430, "atlas-ventures", "growth-portfolio", "strat-btc-mom-atlas", "BTC Momentum"),
-  pos("pos-039", "SOL-USDT", "Binance", "long", 100, 128, 145, "atlas-ventures", "growth-portfolio", "strat-btc-mom-atlas", "BTC Momentum"),
-  pos("pos-040", "WETH", "Uniswap", "long", 15, 3150, 3420, "atlas-ventures", "defi-ventures", "strat-defi-atlas", "DeFi Yield Farm"),
-  pos("pos-041", "UNI", "Uniswap", "long", 400, 6.8, 8.1, "atlas-ventures", "defi-ventures", "strat-defi-atlas", "DeFi Yield Farm"),
-  pos("pos-042", "AAVE", "Aave", "long", 30, 88, 105, "atlas-ventures", "defi-ventures", "strat-defi-atlas", "DeFi Yield Farm"),
+  pos("pos-038", "BTC-USDT", "Binance", "long", 1.5, 65800, 67430, "atlas-ventures", "atlas-growth", "strat-btc-mom-atlas", "BTC Momentum"),
+  pos("pos-039", "SOL-USDT", "Binance", "long", 100, 128, 145, "atlas-ventures", "atlas-growth", "strat-btc-mom-atlas", "BTC Momentum"),
+  pos("pos-040", "WETH", "Uniswap", "long", 15, 3150, 3420, "atlas-ventures", "atlas-defi", "strat-defi-atlas", "DeFi Yield Farm"),
+  pos("pos-041", "UNI", "Uniswap", "long", 400, 6.8, 8.1, "atlas-ventures", "atlas-defi", "strat-defi-atlas", "DeFi Yield Farm"),
+  pos("pos-042", "AAVE", "Aave", "long", 30, 88, 105, "atlas-ventures", "atlas-defi", "strat-defi-atlas", "DeFi Yield Farm"),
 ];
 
 // ── Orders ───────────────────────────────────────────────────────────────────
@@ -195,29 +195,29 @@ function ord(id: string, inst: string, venue: string, side: "buy" | "sell", qty:
 
 export const SEED_ORDERS: SeedOrder[] = [
   // Odum Internal
-  ord("ord-001", "BTC-USDT", "Binance", "buy", 0.5, 67500, 0, "open", "limit", 0, "odum-internal", "desk-alpha", "strat-btc-mom-alpha"),
-  ord("ord-002", "ETH-USDT", "Binance", "buy", 5, 3380, 5, "filled", "market", 1, "odum-internal", "desk-alpha", "strat-btc-mom-alpha"),
-  ord("ord-003", "ETH-PERP", "Hyperliquid", "sell", 5, 3400, 5, "filled", "limit", 1, "odum-internal", "desk-alpha", "strat-eth-basis-alpha"),
-  ord("ord-004", "SOL-USDT", "Binance", "buy", 50, 140, 30, "partially_filled", "limit", 0, "odum-internal", "desk-beta", "strat-ml-dir-beta"),
-  ord("ord-005", "BTC-USDT", "Binance", "sell", 0.3, 68000, 0, "open", "limit", 0, "odum-internal", "desk-beta", "strat-xexch-arb-beta"),
-  ord("ord-006", "WETH", "Uniswap", "buy", 5, 3410, 5, "filled", "market", 2, "odum-internal", "defi-ops", "strat-defi-yield"),
-  ord("ord-007", "AAVE", "Uniswap", "buy", 10, 100, 0, "cancelled", "limit", 3, "odum-internal", "defi-ops", "strat-defi-yield"),
+  ord("ord-001", "BTC-USDT", "Binance", "buy", 0.5, 67500, 0, "open", "limit", 0, "odum", "delta-one", "strat-btc-mom-alpha"),
+  ord("ord-002", "ETH-USDT", "Binance", "buy", 5, 3380, 5, "filled", "market", 1, "odum", "delta-one", "strat-btc-mom-alpha"),
+  ord("ord-003", "ETH-PERP", "Hyperliquid", "sell", 5, 3400, 5, "filled", "limit", 1, "odum", "delta-one", "strat-eth-basis-alpha"),
+  ord("ord-004", "SOL-USDT", "Binance", "buy", 50, 140, 30, "partially_filled", "limit", 0, "odum", "quant-fund", "strat-ml-dir-beta"),
+  ord("ord-005", "BTC-USDT", "Binance", "sell", 0.3, 68000, 0, "open", "limit", 0, "odum", "quant-fund", "strat-xexch-arb-beta"),
+  ord("ord-006", "WETH", "Uniswap", "buy", 5, 3410, 5, "filled", "market", 2, "odum", "defi-desk", "strat-defi-yield"),
+  ord("ord-007", "AAVE", "Uniswap", "buy", 10, 100, 0, "cancelled", "limit", 3, "odum", "defi-desk", "strat-defi-yield"),
   // Apex Capital
-  ord("ord-008", "BTC-USDT", "Binance", "buy", 2, 66800, 2, "filled", "market", 2, "apex-capital", "global-macro", "strat-btc-mom-apex"),
-  ord("ord-009", "BTC-CALL-70K", "Deribit", "buy", 1, 2900, 0, "open", "limit", 0, "apex-capital", "global-macro", "strat-opts-vol-apex"),
-  ord("ord-010", "BTC-USDT", "Binance", "buy", 0.5, 67300, 0.5, "filled", "limit", 1, "apex-capital", "crypto-arb", "strat-xexch-apex"),
-  ord("ord-011", "BTC-USDT", "Hyperliquid", "sell", 0.5, 67380, 0.5, "filled", "limit", 1, "apex-capital", "crypto-arb", "strat-xexch-apex"),
+  ord("ord-008", "BTC-USDT", "Binance", "buy", 2, 66800, 2, "filled", "market", 2, "alpha-capital", "alpha-main", "strat-btc-mom-apex"),
+  ord("ord-009", "BTC-CALL-70K", "Deribit", "buy", 1, 2900, 0, "open", "limit", 0, "alpha-capital", "alpha-main", "strat-opts-vol-apex"),
+  ord("ord-010", "BTC-USDT", "Binance", "buy", 0.5, 67300, 0.5, "filled", "limit", 1, "alpha-capital", "alpha-crypto", "strat-xexch-apex"),
+  ord("ord-011", "BTC-USDT", "Hyperliquid", "sell", 0.5, 67380, 0.5, "filled", "limit", 1, "alpha-capital", "alpha-crypto", "strat-xexch-apex"),
   // Zenith Partners
-  ord("ord-012", "BTC-CALL-70K", "Deribit", "buy", 2, 2700, 2, "filled", "limit", 3, "zenith-partners", "core-strategy", "strat-opts-zen"),
-  ord("ord-013", "ETH-PUT-3K", "Deribit", "sell", 5, 200, 0, "open", "limit", 0, "zenith-partners", "core-strategy", "strat-opts-zen"),
+  ord("ord-012", "BTC-CALL-70K", "Deribit", "buy", 2, 2700, 2, "filled", "limit", 3, "vertex-partners", "vertex-core", "strat-opts-zen"),
+  ord("ord-013", "ETH-PUT-3K", "Deribit", "sell", 5, 200, 0, "open", "limit", 0, "vertex-partners", "vertex-core", "strat-opts-zen"),
   // Meridian Fund
-  ord("ord-014", "BTC-USDT", "Binance", "buy", 1, 66200, 1, "filled", "market", 4, "meridian-fund", "systematic-trading", "strat-ml-dir-mer"),
-  ord("ord-015", "ETH-USDT", "Binance", "sell", 8, 3450, 0, "open", "limit", 0, "meridian-fund", "systematic-trading", "strat-ml-dir-mer"),
-  ord("ord-016", "LINK-USDT", "Binance", "buy", 200, 14.5, 200, "filled", "limit", 5, "meridian-fund", "discretionary-fund", "strat-disc-mer"),
+  ord("ord-014", "BTC-USDT", "Binance", "buy", 1, 66200, 1, "filled", "market", 4, "meridian-fund", "meridian-systematic", "strat-ml-dir-mer"),
+  ord("ord-015", "ETH-USDT", "Binance", "sell", 8, 3450, 0, "open", "limit", 0, "meridian-fund", "meridian-systematic", "strat-ml-dir-mer"),
+  ord("ord-016", "LINK-USDT", "Binance", "buy", 200, 14.5, 200, "filled", "limit", 5, "meridian-fund", "meridian-discretionary", "strat-disc-mer"),
   // Atlas Ventures
-  ord("ord-017", "BTC-USDT", "Binance", "buy", 0.5, 66000, 0.5, "filled", "market", 3, "atlas-ventures", "growth-portfolio", "strat-btc-mom-atlas"),
-  ord("ord-018", "WETH", "Uniswap", "buy", 5, 3380, 5, "filled", "market", 2, "atlas-ventures", "defi-ventures", "strat-defi-atlas"),
-  ord("ord-019", "UNI", "Uniswap", "buy", 100, 7.5, 0, "open", "limit", 0, "atlas-ventures", "defi-ventures", "strat-defi-atlas"),
+  ord("ord-017", "BTC-USDT", "Binance", "buy", 0.5, 66000, 0.5, "filled", "market", 3, "atlas-ventures", "atlas-growth", "strat-btc-mom-atlas"),
+  ord("ord-018", "WETH", "Uniswap", "buy", 5, 3380, 5, "filled", "market", 2, "atlas-ventures", "atlas-defi", "strat-defi-atlas"),
+  ord("ord-019", "UNI", "Uniswap", "buy", 100, 7.5, 0, "open", "limit", 0, "atlas-ventures", "atlas-defi", "strat-defi-atlas"),
 ];
 
 // ── Trades ───────────────────────────────────────────────────────────────────
@@ -231,34 +231,34 @@ function trd(id: string, inst: string, venue: string, side: "buy" | "sell", qty:
 
 export const SEED_TRADES: SeedTrade[] = [
   // Odum Internal
-  trd("trd-001", "BTC-USDT", "Binance", "buy", 2.5, 64200, "Exchange", 12, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "Binance"),
-  trd("trd-002", "BTC-PERP", "Hyperliquid", "buy", 1.8, 65100, "Exchange", 10, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "Hyperliquid"),
-  trd("trd-003", "ETH-USDT", "Binance", "buy", 15, 3180, "Exchange", 8, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "Binance"),
-  trd("trd-004", "ETH-USDT", "Binance", "buy", 25, 3250, "Exchange", 6, "odum-internal", "desk-alpha", "strat-eth-basis-alpha", "Binance"),
-  trd("trd-005", "ETH-PERP", "Hyperliquid", "sell", 25, 3260, "Exchange", 6, "odum-internal", "desk-alpha", "strat-eth-basis-alpha", "Hyperliquid"),
-  trd("trd-006", "WETH", "Uniswap", "buy", 20, 3200, "DeFi", 14, "odum-internal", "defi-ops", "strat-defi-yield", "Uniswap V3"),
-  trd("trd-007", "USDC", "Aave", "buy", 50000, 1.0, "DeFi", 15, "odum-internal", "defi-ops", "strat-defi-yield", "Aave V3"),
-  trd("trd-008", "BTC-USDT", "OTC Desk", "buy", 5, 63500, "OTC", 20, "odum-internal", "desk-alpha", "strat-btc-mom-alpha", "Cumberland"),
+  trd("trd-001", "BTC-USDT", "Binance", "buy", 2.5, 64200, "Exchange", 12, "odum", "delta-one", "strat-btc-mom-alpha", "Binance"),
+  trd("trd-002", "BTC-PERP", "Hyperliquid", "buy", 1.8, 65100, "Exchange", 10, "odum", "delta-one", "strat-btc-mom-alpha", "Hyperliquid"),
+  trd("trd-003", "ETH-USDT", "Binance", "buy", 15, 3180, "Exchange", 8, "odum", "delta-one", "strat-btc-mom-alpha", "Binance"),
+  trd("trd-004", "ETH-USDT", "Binance", "buy", 25, 3250, "Exchange", 6, "odum", "delta-one", "strat-eth-basis-alpha", "Binance"),
+  trd("trd-005", "ETH-PERP", "Hyperliquid", "sell", 25, 3260, "Exchange", 6, "odum", "delta-one", "strat-eth-basis-alpha", "Hyperliquid"),
+  trd("trd-006", "WETH", "Uniswap", "buy", 20, 3200, "DeFi", 14, "odum", "defi-desk", "strat-defi-yield", "Uniswap V3"),
+  trd("trd-007", "USDC", "Aave", "buy", 50000, 1.0, "DeFi", 15, "odum", "defi-desk", "strat-defi-yield", "Aave V3"),
+  trd("trd-008", "BTC-USDT", "OTC Desk", "buy", 5, 63500, "OTC", 20, "odum", "delta-one", "strat-btc-mom-alpha", "Cumberland"),
   // Apex Capital
-  trd("trd-009", "BTC-USDT", "Binance", "buy", 5, 63800, "Exchange", 15, "apex-capital", "global-macro", "strat-btc-mom-apex", "Binance"),
-  trd("trd-010", "BTC-PERP", "Hyperliquid", "buy", 3, 64500, "Exchange", 12, "apex-capital", "global-macro", "strat-btc-mom-apex", "Hyperliquid"),
-  trd("trd-011", "BTC-CALL-70K", "Deribit", "buy", 2, 2800, "Exchange", 8, "apex-capital", "global-macro", "strat-opts-vol-apex", "Deribit"),
-  trd("trd-012", "BTC-USDT", "OTC Desk", "buy", 3, 64000, "OTC", 18, "apex-capital", "global-macro", "strat-btc-mom-apex", "Galaxy Digital"),
-  trd("trd-013", "BTC-USDT", "Binance", "buy", 1, 67350, "Exchange", 1, "apex-capital", "crypto-arb", "strat-xexch-apex", "Binance"),
-  trd("trd-014", "BTC-USDT", "Hyperliquid", "sell", 1, 67410, "Exchange", 1, "apex-capital", "crypto-arb", "strat-xexch-apex", "Hyperliquid"),
+  trd("trd-009", "BTC-USDT", "Binance", "buy", 5, 63800, "Exchange", 15, "alpha-capital", "alpha-main", "strat-btc-mom-apex", "Binance"),
+  trd("trd-010", "BTC-PERP", "Hyperliquid", "buy", 3, 64500, "Exchange", 12, "alpha-capital", "alpha-main", "strat-btc-mom-apex", "Hyperliquid"),
+  trd("trd-011", "BTC-CALL-70K", "Deribit", "buy", 2, 2800, "Exchange", 8, "alpha-capital", "alpha-main", "strat-opts-vol-apex", "Deribit"),
+  trd("trd-012", "BTC-USDT", "OTC Desk", "buy", 3, 64000, "OTC", 18, "alpha-capital", "alpha-main", "strat-btc-mom-apex", "Galaxy Digital"),
+  trd("trd-013", "BTC-USDT", "Binance", "buy", 1, 67350, "Exchange", 1, "alpha-capital", "alpha-crypto", "strat-xexch-apex", "Binance"),
+  trd("trd-014", "BTC-USDT", "Hyperliquid", "sell", 1, 67410, "Exchange", 1, "alpha-capital", "alpha-crypto", "strat-xexch-apex", "Hyperliquid"),
   // Zenith Partners
-  trd("trd-015", "BTC-CALL-70K", "Deribit", "buy", 5, 2600, "Exchange", 10, "zenith-partners", "core-strategy", "strat-opts-zen", "Deribit"),
-  trd("trd-016", "BTC-PUT-65K", "Deribit", "sell", 5, 1800, "Exchange", 10, "zenith-partners", "core-strategy", "strat-opts-zen", "Deribit"),
-  trd("trd-017", "ETH-CALL-4K", "Deribit", "buy", 20, 160, "Exchange", 7, "zenith-partners", "core-strategy", "strat-opts-zen", "Deribit"),
+  trd("trd-015", "BTC-CALL-70K", "Deribit", "buy", 5, 2600, "Exchange", 10, "vertex-partners", "vertex-core", "strat-opts-zen", "Deribit"),
+  trd("trd-016", "BTC-PUT-65K", "Deribit", "sell", 5, 1800, "Exchange", 10, "vertex-partners", "vertex-core", "strat-opts-zen", "Deribit"),
+  trd("trd-017", "ETH-CALL-4K", "Deribit", "buy", 20, 160, "Exchange", 7, "vertex-partners", "vertex-core", "strat-opts-zen", "Deribit"),
   // Meridian Fund
-  trd("trd-018", "BTC-USDT", "Binance", "buy", 3, 65400, "Exchange", 9, "meridian-fund", "systematic-trading", "strat-ml-dir-mer", "Binance"),
-  trd("trd-019", "ETH-USDT", "Binance", "buy", 20, 3280, "Exchange", 7, "meridian-fund", "systematic-trading", "strat-ml-dir-mer", "Binance"),
-  trd("trd-020", "BTC-USDT", "OTC Desk", "buy", 2, 66000, "OTC", 5, "meridian-fund", "discretionary-fund", "strat-disc-mer", "Wintermute"),
-  trd("trd-021", "LINK-USDT", "Binance", "buy", 500, 14.2, "Exchange", 11, "meridian-fund", "discretionary-fund", "strat-disc-mer", "Binance"),
+  trd("trd-018", "BTC-USDT", "Binance", "buy", 3, 65400, "Exchange", 9, "meridian-fund", "meridian-systematic", "strat-ml-dir-mer", "Binance"),
+  trd("trd-019", "ETH-USDT", "Binance", "buy", 20, 3280, "Exchange", 7, "meridian-fund", "meridian-systematic", "strat-ml-dir-mer", "Binance"),
+  trd("trd-020", "BTC-USDT", "OTC Desk", "buy", 2, 66000, "OTC", 5, "meridian-fund", "meridian-discretionary", "strat-disc-mer", "Wintermute"),
+  trd("trd-021", "LINK-USDT", "Binance", "buy", 500, 14.2, "Exchange", 11, "meridian-fund", "meridian-discretionary", "strat-disc-mer", "Binance"),
   // Atlas Ventures
-  trd("trd-022", "BTC-USDT", "Binance", "buy", 1.5, 65800, "Exchange", 8, "atlas-ventures", "growth-portfolio", "strat-btc-mom-atlas", "Binance"),
-  trd("trd-023", "WETH", "Uniswap", "buy", 15, 3150, "DeFi", 12, "atlas-ventures", "defi-ventures", "strat-defi-atlas", "Uniswap V3"),
-  trd("trd-024", "UNI", "Uniswap", "buy", 400, 6.8, "DeFi", 10, "atlas-ventures", "defi-ventures", "strat-defi-atlas", "Uniswap V3"),
+  trd("trd-022", "BTC-USDT", "Binance", "buy", 1.5, 65800, "Exchange", 8, "atlas-ventures", "atlas-growth", "strat-btc-mom-atlas", "Binance"),
+  trd("trd-023", "WETH", "Uniswap", "buy", 15, 3150, "DeFi", 12, "atlas-ventures", "atlas-defi", "strat-defi-atlas", "Uniswap V3"),
+  trd("trd-024", "UNI", "Uniswap", "buy", 400, 6.8, "DeFi", 10, "atlas-ventures", "atlas-defi", "strat-defi-atlas", "Uniswap V3"),
 ];
 
 // ── Alerts ───────────────────────────────────────────────────────────────────
@@ -269,16 +269,16 @@ function alrt(id: string, msg: string, sev: "critical" | "high" | "medium" | "lo
 }
 
 export const SEED_ALERTS: SeedAlert[] = [
-  alrt("alert-001", "BTC Momentum position size exceeds 5% of NAV", "high", "risk-monitoring", 2, "odum-internal", "strat-btc-mom-alpha", false),
-  alrt("alert-002", "Hyperliquid venue latency spike (>500ms)", "medium", "venue-monitor", 4, "odum-internal", "strat-eth-basis-alpha", true),
-  alrt("alert-003", "DeFi Yield Farm: Aave health factor below 1.5", "critical", "defi-monitor", 1, "odum-internal", "strat-defi-yield", false),
-  alrt("alert-004", "ML Directional: signal confidence below 60%", "low", "strategy-health", 6, "odum-internal", "strat-ml-dir-beta", true),
-  alrt("alert-005", "Sports Arb: missed fill on Bet365 leg", "medium", "execution-monitor", 3, "odum-internal", "strat-sports-arb", false),
-  alrt("alert-006", "BTC Momentum: drawdown approaching -5% threshold", "high", "risk-monitoring", 1, "apex-capital", "strat-btc-mom-apex", false),
-  alrt("alert-007", "Cross-Exchange Arb: spread narrowed below minimum", "medium", "strategy-health", 5, "apex-capital", "strat-xexch-apex", true),
-  alrt("alert-008", "Options Vol: margin utilisation at 78%", "high", "risk-monitoring", 2, "apex-capital", "strat-opts-vol-apex", false),
-  alrt("alert-009", "Options Vol: BTC implied vol spike +8% in 1h", "medium", "market-monitor", 3, "zenith-partners", "strat-opts-zen", false),
-  alrt("alert-010", "Spread Trading paused — manual review required", "high", "strategy-health", 12, "zenith-partners", "strat-spreads-zen", true),
+  alrt("alert-001", "BTC Momentum position size exceeds 5% of NAV", "high", "risk-monitoring", 2, "odum", "strat-btc-mom-alpha", false),
+  alrt("alert-002", "Hyperliquid venue latency spike (>500ms)", "medium", "venue-monitor", 4, "odum", "strat-eth-basis-alpha", true),
+  alrt("alert-003", "DeFi Yield Farm: Aave health factor below 1.5", "critical", "defi-monitor", 1, "odum", "strat-defi-yield", false),
+  alrt("alert-004", "ML Directional: signal confidence below 60%", "low", "strategy-health", 6, "odum", "strat-ml-dir-beta", true),
+  alrt("alert-005", "Sports Arb: missed fill on Bet365 leg", "medium", "execution-monitor", 3, "odum", "strat-sports-arb", false),
+  alrt("alert-006", "BTC Momentum: drawdown approaching -5% threshold", "high", "risk-monitoring", 1, "alpha-capital", "strat-btc-mom-apex", false),
+  alrt("alert-007", "Cross-Exchange Arb: spread narrowed below minimum", "medium", "strategy-health", 5, "alpha-capital", "strat-xexch-apex", true),
+  alrt("alert-008", "Options Vol: margin utilisation at 78%", "high", "risk-monitoring", 2, "alpha-capital", "strat-opts-vol-apex", false),
+  alrt("alert-009", "Options Vol: BTC implied vol spike +8% in 1h", "medium", "market-monitor", 3, "vertex-partners", "strat-opts-zen", false),
+  alrt("alert-010", "Spread Trading paused — manual review required", "high", "strategy-health", 12, "vertex-partners", "strat-spreads-zen", true),
   alrt("alert-011", "ML Directional: model retrain completed", "low", "ml-pipeline", 8, "meridian-fund", "strat-ml-dir-mer", true),
   alrt("alert-012", "ETH Basis: funding rate inversion detected", "medium", "market-monitor", 4, "meridian-fund", "strat-eth-basis-mer", false),
   alrt("alert-013", "DeFi Yield Farm: gas price spike on Ethereum (>50 gwei)", "medium", "defi-monitor", 2, "atlas-ventures", "strat-defi-atlas", false),

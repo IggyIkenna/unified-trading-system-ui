@@ -12,6 +12,7 @@ import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope, getClientIdsForOrgs } from "@/lib/stores/scope-helpers";
+import { getStrategiesForScope, type SeedStrategy } from "@/lib/mock-data";
 import { CLIENTS } from "@/lib/trading-data";
 
 export interface StrategiesData {
@@ -51,7 +52,38 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
     (perfData as Record<string, unknown> | undefined)?.data ??
     (perfData as Record<string, unknown> | undefined)?.strategies;
   const perfRaw: unknown[] = Array.isArray(rawPayload) ? rawPayload : [];
-  const allStrategies: Strategy[] = perfRaw.length > 0 ? (perfRaw as Strategy[]) : DEFAULT_STRATEGIES;
+  const allStrategies: Strategy[] = React.useMemo(() => {
+    if (perfRaw.length > 0) return perfRaw as Strategy[];
+    // Merge registry strategies with seed data for richer org/client info
+    const seedStrats = getStrategiesForScope(
+      globalScope.organizationIds,
+      globalScope.clientIds,
+      globalScope.strategyIds,
+    );
+    if (seedStrats.length > 0 && (globalScope.organizationIds.length > 0 || globalScope.clientIds.length > 0 || globalScope.strategyIds.length > 0)) {
+      // When scope filters are active, use seed data which has org/client/strategy relationships
+      return seedStrats.map((s: SeedStrategy) => {
+        const existing = DEFAULT_STRATEGIES.find((d) => d.id === s.id);
+        if (existing) return { ...existing, clientId: s.clientId };
+        return {
+          id: s.id,
+          name: s.name,
+          description: `${s.archetype} strategy`,
+          archetype: s.archetype,
+          assetClass: s.archetype.includes("defi") || s.archetype.includes("yield") ? "DeFi" : s.archetype.includes("sport") ? "Sports" : "Crypto",
+          status: s.status,
+          venues: [],
+          sharpe: s.sharpe,
+          mtdReturn: s.mtdReturn,
+          aum: s.aum,
+          clientId: s.clientId,
+          pnl: 0,
+          maxDrawdown: 0,
+        } as Strategy;
+      });
+    }
+    return DEFAULT_STRATEGIES;
+  }, [perfRaw, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   // Apply global scope filtering: org -> client -> strategy cascade
   const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
