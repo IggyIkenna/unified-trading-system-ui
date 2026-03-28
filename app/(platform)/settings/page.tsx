@@ -29,12 +29,12 @@ const SETTINGS_SECTIONS = [
     disabled: true,
   },
   {
-    href: "#",
+    href: "/settings/notifications",
     icon: Bell,
     title: "Notifications",
-    description: "Configure alert preferences and email notifications.",
-    badge: "Coming Soon",
-    disabled: true,
+    description:
+      "Configure alert delivery channels, routing rules, and mobile push.",
+    badge: "New",
   },
 ];
 

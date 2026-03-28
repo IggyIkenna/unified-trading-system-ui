@@ -26,6 +26,10 @@ import {
   Lightbulb,
   Settings2,
   Cpu,
+  Database,
+  DollarSign,
+  Building2,
+  FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -47,6 +51,10 @@ export interface ServiceTab {
   navDisabledTitle?: string;
   /** Visual group separator — renders a divider above this item in vertical nav */
   group?: string;
+  /** Strategy family group key — tabs with the same familyGroup are rendered under a collapsible header */
+  familyGroup?: string;
+  /** Icon name hint for the family group header (used by first tab in a family) */
+  familyIcon?: string;
 }
 
 interface ServiceTabsProps {
@@ -179,6 +187,7 @@ export const DATA_TABS: ServiceTab[] = [
   { label: "Events", href: "/services/data/events" },
   { label: "Coverage", href: "/services/data/coverage" },
   { label: "Gaps & Quality", href: "/services/data/gaps" },
+  { label: "Valuation", href: "/services/data/valuation" },
 ];
 
 // ── Build (Quant Developer) ──────────────────────────────────────────────────
@@ -249,48 +258,104 @@ export const STRATEGY_SUB_TABS: ServiceTab[] = [
 ];
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────
-// Group 1: Common — relevant to all asset classes (monitoring + trading + analysis)
-// Group 2: Asset-specific — subscription-gated, FOMO-locked for non-subscribers
+// Group 1: Shared — relevant to all asset classes (monitoring + trading + analysis)
+// Group 2: Strategy families — collapsible groups for DeFi, Sports, Options, Predictions
 export const TRADING_TABS: ServiceTab[] = [
-  // ── Common ────────────────────────────────────────────────────────────────
+  // ── Shared (top-level, always visible) ────────────────────────────────────
   {
     label: "Overview",
     href: "/services/trading/overview",
     icon: LayoutDashboard,
   },
-  { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
-  { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
   { label: "Positions", href: "/services/trading/positions", icon: BookOpen },
   { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
+  { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
   { label: "Alerts", href: "/services/trading/alerts", icon: Bell },
-  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
-  { label: "P&L Breakdown", href: "/services/trading/pnl", icon: BarChart3 },
-  { label: "Risk", href: "/services/trading/risk", icon: ShieldAlert },
-  { label: "Markets", href: "/services/trading/markets", icon: LineChart },
-  { label: "Book Trade", href: "/services/trading/book", icon: BookMarked },
+  { label: "Book", href: "/services/trading/book", icon: BookMarked },
+  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet, exact: true },
+  { label: "SAFT", href: "/services/trading/accounts/saft", icon: FileText },
+  { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
+  { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
+  // ── DeFi family ───────────────────────────────────────────────────────────
   {
-    label: "Instructions",
-    href: "/services/trading/instructions",
-    icon: Settings2,
+    label: "DeFi",
+    href: "/services/trading/defi",
+    icon: Cpu,
+    group: "DeFi",
+    familyGroup: "DeFi",
+    familyIcon: "Layers",
   },
-  // ── Asset-specific ────────────────────────────────────────────────────────
   {
-    label: "Combos",
+    label: "Bundles",
     href: "/services/trading/bundles",
     icon: GitFork,
-    group: "Asset-Specific",
+    group: "DeFi",
+    familyGroup: "DeFi",
   },
-  { label: "DeFi Ops", href: "/services/trading/defi", icon: Cpu },
   {
-    label: "Options & Futures",
+    label: "Staking",
+    href: "/services/trading/defi/staking",
+    icon: Layers,
+    group: "DeFi",
+    familyGroup: "DeFi",
+    navDisabled: true,
+    navDisabledTitle: "Coming soon",
+  },
+  // ── Sports family ─────────────────────────────────────────────────────────
+  {
+    label: "Sports",
+    href: "/services/trading/sports",
+    icon: Trophy,
+    group: "Sports",
+    familyGroup: "Sports",
+    familyIcon: "Trophy",
+  },
+  {
+    label: "Accumulators",
+    href: "/services/trading/sports/accumulators",
+    icon: GitFork,
+    group: "Sports",
+    familyGroup: "Sports",
+  },
+  // ── Options & Futures family ──────────────────────────────────────────────
+  {
+    label: "Options",
     href: "/services/trading/options",
     icon: TrendingUp,
+    group: "Options & Futures",
+    familyGroup: "Options & Futures",
+    familyIcon: "BarChart3",
   },
-  { label: "Sports", href: "/services/trading/sports", icon: Trophy },
+  {
+    label: "Combo Builder",
+    href: "/services/trading/options/combos",
+    icon: GitFork,
+    group: "Options & Futures",
+    familyGroup: "Options & Futures",
+  },
+  {
+    label: "Pricing",
+    href: "/services/trading/options/pricing",
+    matchPrefix: "/services/trading/options/pricing",
+    icon: LineChart,
+    group: "Options & Futures",
+    familyGroup: "Options & Futures",
+  },
+  // ── Predictions family ────────────────────────────────────────────────────
   {
     label: "Predictions",
     href: "/services/trading/predictions",
     icon: Lightbulb,
+    group: "Predictions",
+    familyGroup: "Predictions",
+    familyIcon: "TrendingUp",
+  },
+  {
+    label: "Aggregators",
+    href: "/services/trading/predictions/aggregators",
+    icon: GitFork,
+    group: "Predictions",
+    familyGroup: "Predictions",
   },
 ];
 
@@ -300,6 +365,7 @@ export const OBSERVE_TABS: ServiceTab[] = [
   { label: "Alerts", href: "/services/observe/alerts" },
   { label: "News", href: "/services/observe/news" },
   { label: "Strategy Health", href: "/services/observe/strategy-health" },
+  { label: "Scenarios", href: "/services/observe/scenarios" },
   { label: "System Health", href: "/services/observe/health" },
 ];
 
@@ -316,6 +382,9 @@ export const MANAGE_TABS: ServiceTab[] = [
 export const REPORTS_TABS: ServiceTab[] = [
   { label: "P&L", href: "/services/reports/overview" },
   { label: "Executive", href: "/services/reports/executive" },
+  { label: "IBOR", href: "/services/reports/ibor", icon: Database },
+  { label: "NAV", href: "/services/reports/nav", icon: DollarSign },
+  { label: "Fund Admin", href: "/services/reports/fund-admin", icon: Building2 },
   { label: "Settlement", href: "/services/reports/settlement" },
   { label: "Reconciliation", href: "/services/reports/reconciliation" },
   { label: "Regulatory", href: "/services/reports/regulatory" },

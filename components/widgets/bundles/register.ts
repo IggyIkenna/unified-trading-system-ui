@@ -1,10 +1,11 @@
 import { registerWidget } from "../widget-registry";
 import { registerPresets } from "../preset-registry";
-import { DollarSign, FileText, Layers, Send } from "lucide-react";
+import { DollarSign, FileText, Layers, Send, Zap } from "lucide-react";
 import { BundleTemplatesWidget } from "./bundle-templates-widget";
 import { BundleStepsWidget } from "./bundle-steps-widget";
 import { BundlePnlWidget } from "./bundle-pnl-widget";
 import { BundleActionsWidget } from "./bundle-actions-widget";
+import { DefiAtomicBundleWidget } from "./defi-atomic-bundle-widget";
 
 registerPresets("bundles", [
   {
@@ -17,6 +18,7 @@ registerPresets("bundles", [
       { widgetId: "bundle-steps", instanceId: "bundle-steps-1", x: 4, y: 0, w: 8, h: 7 },
       { widgetId: "bundle-pnl", instanceId: "bundle-pnl-1", x: 0, y: 5, w: 4, h: 3 },
       { widgetId: "bundle-actions", instanceId: "bundle-actions-1", x: 0, y: 8, w: 4, h: 1 },
+      { widgetId: "defi-atomic-bundle", instanceId: "defi-atomic-bundle-1", x: 4, y: 7, w: 8, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -31,6 +33,7 @@ registerPresets("bundles", [
       { widgetId: "bundle-pnl", instanceId: "bundle-pnl-1", x: 8, y: 0, w: 4, h: 4 },
       { widgetId: "bundle-templates", instanceId: "bundle-templates-1", x: 8, y: 4, w: 4, h: 4 },
       { widgetId: "bundle-actions", instanceId: "bundle-actions-1", x: 0, y: 8, w: 12, h: 1 },
+      { widgetId: "defi-atomic-bundle", instanceId: "defi-atomic-bundle-1", x: 0, y: 9, w: 12, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -99,4 +102,21 @@ registerWidget({
   availableOn: ["bundles"],
   singleton: true,
   component: BundleActionsWidget,
+});
+
+registerWidget({
+  id: "defi-atomic-bundle",
+  label: "DeFi Atomic Bundles",
+  description:
+    "DeFi-specific atomic bundle builder with operation selector, pre-built templates (Flash Loan Arb, Leverage Long, Yield Harvest), gas estimation, and Tenderly simulation.",
+  icon: Zap,
+  minW: 4,
+  minH: 5,
+  defaultW: 8,
+  defaultH: 8,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Bundles",
+  availableOn: ["bundles"],
+  singleton: true,
+  component: DefiAtomicBundleWidget,
 });
