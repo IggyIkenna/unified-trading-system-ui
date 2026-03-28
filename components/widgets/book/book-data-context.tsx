@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { usePlaceOrder, usePreTradeCheck } from "@/hooks/api/use-orders";
 import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import { useAuth, type AuthUser } from "@/hooks/use-auth";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry";
 import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@/lib/config/services/trading.config";
 
@@ -184,10 +185,30 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
   const placeOrder = usePlaceOrder();
   const preTradeCheck = usePreTradeCheck();
   const { data: organizations } = useOrganizationsList();
+  const { scope: globalScope } = useGlobalScope();
 
   const [orgId, setOrgId] = React.useState("");
   const [clientId, setClientId] = React.useState("");
   const [strategyId, setStrategyId] = React.useState("manual");
+
+  // Sync book form org/client/strategy from global scope when it changes
+  React.useEffect(() => {
+    if (globalScope.organizationIds.length > 0) {
+      setOrgId(globalScope.organizationIds[0]);
+    }
+  }, [globalScope.organizationIds]);
+
+  React.useEffect(() => {
+    if (globalScope.clientIds.length > 0) {
+      setClientId(globalScope.clientIds[0]);
+    }
+  }, [globalScope.clientIds]);
+
+  React.useEffect(() => {
+    if (globalScope.strategyIds.length > 0) {
+      setStrategyId(globalScope.strategyIds[0]);
+    }
+  }, [globalScope.strategyIds]);
 
   const [executionMode, setExecutionMode] = React.useState<BookExecutionMode>("execute");
   const [category, setCategory] = React.useState<BookCategoryTab>("cefi_spot");
@@ -367,6 +388,14 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
 
   const orgList = Array.isArray(organizations) ? (organizations as Array<{ id: string; name: string }>) : [];
 
+  const scopedTrades = React.useMemo(
+    () =>
+      globalScope.organizationIds.length > 0
+        ? MOCK_TRADES.filter((_, i) => i < Math.max(5, Math.ceil(MOCK_TRADES.length * 0.6)))
+        : MOCK_TRADES,
+    [globalScope.organizationIds],
+  );
+
   const value = React.useMemo(
     () => ({
       orgId,
@@ -425,7 +454,7 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
 
       user,
 
-      trades: MOCK_TRADES,
+      trades: scopedTrades,
 
       registryStrategies: REGISTRY_STRATEGIES,
       categoryLabels: BOOK_CATEGORY_LABELS,
@@ -463,6 +492,7 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
       handleSubmit,
       resetForm,
       user,
+      scopedTrades,
       canExecute,
     ],
   );

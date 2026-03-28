@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { apiFetch } from "@/lib/api/fetch";
 import {
   useRiskLimits,
@@ -51,6 +52,11 @@ export default function RiskPage() {
   const { data: stressScenariosData, isLoading: stressLoading } = useStressScenarios();
   const { scope } = useGlobalScope();
   const isBatchMode = scope.mode === "batch";
+  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: scope.organizationIds, clientIds: scope.clientIds, strategyIds: scope.strategyIds }), [scope.organizationIds, scope.clientIds, scope.strategyIds]);
+  // Scope reduction factor: when filtering to a subset, scale aggregated risk metrics
+  const scopeReductionFactor = scopeStrategyIds.length > 0
+    ? Math.max(0.15, scopeStrategyIds.length / 50)
+    : 1.0;
   const { data: varSummaryData, isLoading: varSummaryLoading } = useVarSummary();
   const [selectedStressScenario, setSelectedStressScenario] = React.useState<string | null>(null);
   const { data: stressTestResult, isLoading: stressTestLoading } = useStressTest(selectedStressScenario);
@@ -73,11 +79,17 @@ export default function RiskPage() {
   const [riskFilterStrategy, setRiskFilterStrategy] = React.useState<string>("all");
   const [selectedNode, setSelectedNode] = React.useState<string | null>(null);
 
-  // Extract API data
-  const riskLimits: RiskLimit[] =
+  // Extract API data — filter risk limits by scope strategy IDs
+  const riskLimitsRaw: RiskLimit[] =
     ((riskLimitsData as Record<string, unknown>)?.data as RiskLimit[]) ??
     ((riskLimitsData as Record<string, unknown>)?.limits as RiskLimit[]) ??
     [];
+  const riskLimits: RiskLimit[] = React.useMemo(() => {
+    if (scopeStrategyIds.length === 0) return riskLimitsRaw;
+    return riskLimitsRaw.filter((l) =>
+      l.entityType !== "strategy" || scopeStrategyIds.includes(l.entity)
+    );
+  }, [riskLimitsRaw, scopeStrategyIds]);
   const componentVarData: Array<Record<string, unknown>> =
     ((varData as Record<string, unknown>)?.data as Array<Record<string, unknown>>) ??
     ((varData as Record<string, unknown>)?.components as Array<Record<string, unknown>>) ??
@@ -158,10 +170,10 @@ export default function RiskPage() {
     return groups;
   }, [filteredExposureRows]);
 
-  const totalVar95 = 2100000 * regimeMultiplier;
-  const totalVar99 = 4800000 * regimeMultiplier;
-  const totalES95 = 3200000 * regimeMultiplier;
-  const totalES99 = 6700000 * regimeMultiplier;
+  const totalVar95 = 2100000 * regimeMultiplier * scopeReductionFactor;
+  const totalVar99 = 4800000 * regimeMultiplier * scopeReductionFactor;
+  const totalES95 = 3200000 * regimeMultiplier * scopeReductionFactor;
+  const totalES99 = 6700000 * regimeMultiplier * scopeReductionFactor;
   const criticalCount = sortedLimits.filter((l) => getUtilization(l.value, l.limit) >= 90).length;
   const warningCount = sortedLimits.filter((l) => {
     const u = getUtilization(l.value, l.limit);

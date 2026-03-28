@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { CLIENTS } from "@/lib/trading-data";
 import type { Bet, Fixture, FootballLeague } from "@/components/trading/sports/types";
 import { MOCK_FIXTURES, MOCK_BETS } from "@/components/trading/sports/mock-data";
 import { DEFAULT_ARB_THRESHOLD } from "@/components/trading/sports/mock-fixtures";
@@ -79,6 +81,15 @@ const SportsDataContext = React.createContext<SportsDataContextValue | null>(nul
 
 export function SportsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
+  const { scope: globalScope } = useGlobalScope();
+
+  // Check if selected org has a sports desk
+  const hasSportsDesk = React.useMemo(() => {
+    if (globalScope.organizationIds.length === 0) return true; // no filter = show all
+    return CLIENTS.some(
+      (c) => globalScope.organizationIds.includes(c.orgId) && c.id === "sports-desk",
+    );
+  }, [globalScope.organizationIds]);
   const [filters, setFilters] = React.useState<GlobalFilters>({
     leagues: [],
     dateRange: "today",
@@ -91,6 +102,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
 
   const allFixtures = MOCK_FIXTURES;
   // Batch mode: only show settled/completed fixtures
+  // Org scope: show all fixtures (they're global) but mark as view-only if no sports desk
   const filteredFixtures = React.useMemo(() => {
     const filtered = applyFilters(allFixtures, filters);
     if (isBatch) return filtered.filter((f) => isCompleted(f.status));
@@ -104,10 +116,12 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
 
   const allBets = MOCK_BETS;
   // Paper mode: zero out all bet amounts (simulated, no real stakes)
+  // Org scope: hide bets if selected org has no sports desk
   const adjustedBets = React.useMemo(() => {
+    if (!hasSportsDesk) return [];
     if (!isPaper) return allBets;
     return allBets.map((b) => ({ ...b, stake: 0 }));
-  }, [allBets, isPaper]);
+  }, [allBets, isPaper, hasSportsDesk]);
 
   const openBets = React.useMemo(() => adjustedBets.filter((b) => b.status === "open"), [adjustedBets]);
   const settledBets = React.useMemo(() => adjustedBets.filter((b) => b.status !== "open"), [adjustedBets]);

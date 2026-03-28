@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useOrders, useCancelOrder, useAmendOrder } from "@/hooks/api/use-orders";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -119,6 +120,8 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [instrumentTypeFilter, setInstrumentTypeFilter] = React.useState<InstrumentType>("All");
 
+  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+
   const orders: OrderRecord[] = React.useMemo(() => {
     if (!ordersRaw) return [];
     const raw = ordersRaw as Record<string, unknown>;
@@ -128,8 +131,8 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
 
   const scopedOrders = React.useMemo(() => {
     let result = orders;
-    if (globalScope.strategyIds.length > 0) {
-      result = result.filter((o) => !o.strategy_id || globalScope.strategyIds.includes(String(o.strategy_id)));
+    if (scopeStrategyIds.length > 0) {
+      result = result.filter((o) => !o.strategy_id || scopeStrategyIds.includes(String(o.strategy_id)));
     }
     // Paper mode: tag order IDs with "(Paper)" suffix, mark all as simulated
     if (isPaper) {
@@ -144,7 +147,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
       result = result.filter((o) => o.status.toUpperCase().includes("FILLED"));
     }
     return result;
-  }, [orders, globalScope.strategyIds, isPaper, isBatch]);
+  }, [orders, scopeStrategyIds, isPaper, isBatch]);
 
   const filteredOrders = React.useMemo(() => {
     let result = scopedOrders;

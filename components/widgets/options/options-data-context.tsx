@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { WatchlistSymbol } from "@/components/trading/watchlist-panel";
 import type {
   Asset,
@@ -125,6 +126,7 @@ function findSymbolById(id: string): WatchlistSymbol | null {
 
 export function OptionsDataProvider({ children }: { children: React.ReactNode }) {
   const { mode } = useExecutionMode();
+  const { scope: globalScope } = useGlobalScope();
   const [assetClass, setAssetClass] = React.useState<AssetClass>("crypto");
   const isCrypto = assetClass === "crypto";
 
@@ -267,6 +269,14 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
     if (selectedInstrument) setOrderPrice(selectedInstrument.price.toFixed(2));
   }, [selectedInstrument]);
 
+  const scopedWatchlists = React.useMemo(
+    () =>
+      globalScope.organizationIds.length > 0 && !globalScope.organizationIds.includes("odum")
+        ? DEFAULT_WATCHLISTS.filter((wl) => wl.id.startsWith("crypto"))
+        : DEFAULT_WATCHLISTS,
+    [globalScope.organizationIds],
+  );
+
   const value: OptionsDataContextValue = React.useMemo(
     () => ({
       assetClass,
@@ -312,7 +322,7 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
       setScenarioDte,
       payoffData,
 
-      watchlists: DEFAULT_WATCHLISTS,
+      watchlists: scopedWatchlists,
       selectedSymbol,
       setSelectedSymbol,
 
@@ -371,6 +381,7 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
       scenarioPriceRange,
       scenarioDte,
       payoffData,
+      scopedWatchlists,
       selectedSymbol,
       setSelectedSymbol,
       tradeDirection,

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import type { FilterDefinition } from "@/components/platform/filter-bar";
@@ -158,6 +160,8 @@ function computeFilteredMarkets(
 
 export function PredictionsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
+  const { scope: globalScope } = useGlobalScope();
+  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
   const { toast } = useToast();
 
   const markets = MOCK_MARKETS;
@@ -228,16 +232,24 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
   );
 
   // Paper mode: tag all positions as simulated
+  // Org scope: reduce positions when a specific org is selected (deterministic subset)
   const openPositions = React.useMemo(() => {
-    const open = MOCK_POSITIONS.filter((p) => p.status === "open");
+    let open = MOCK_POSITIONS.filter((p) => p.status === "open");
+    if (scopeStrategyIds.length > 0) {
+      // Show a deterministic subset based on the number of scoped strategies
+      open = open.filter((_, i) => i < Math.max(1, Math.ceil(open.length * (scopeStrategyIds.length / 50))));
+    }
     if (isPaper) return open.map((p) => ({ ...p, label: "simulated" as const }));
     return open;
-  }, [isPaper]);
+  }, [isPaper, scopeStrategyIds]);
   const settledPositions = React.useMemo(() => {
-    const settled = MOCK_POSITIONS.filter((p) => p.status === "settled");
+    let settled = MOCK_POSITIONS.filter((p) => p.status === "settled");
+    if (scopeStrategyIds.length > 0) {
+      settled = settled.filter((_, i) => i < Math.max(1, Math.ceil(settled.length * (scopeStrategyIds.length / 50))));
+    }
     if (isPaper) return settled.map((p) => ({ ...p, label: "simulated" as const }));
     return settled;
-  }, [isPaper]);
+  }, [isPaper, scopeStrategyIds]);
 
   const portfolioKpis = React.useMemo(() => {
     const totalStaked = openPositions.reduce((s, p) => s + p.totalStaked, 0);

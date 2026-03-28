@@ -2,8 +2,10 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { useBalances } from "@/hooks/api/use-positions";
 import { useTransferHistory } from "@/hooks/api/use-transfer-history";
+import { ACCOUNTS } from "@/lib/trading-data";
 import type { BalanceRecord, TransferHistoryEntry } from "@/lib/types/accounts";
 import type { VenueMargin } from "@/components/trading/margin-utilization";
 
@@ -41,6 +43,7 @@ function coerceBalances(raw: unknown): BalanceRecord[] {
 
 export function AccountsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
+  const { scope: globalScope } = useGlobalScope();
   const { data: balancesRaw, isLoading, error, refetch } = useBalances();
   const {
     data: transferHistory = [],
@@ -51,13 +54,26 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
 
   const [transferOpen, setTransferOpen] = React.useState(false);
 
+  // Determine which venues belong to the selected org(s)
+  const orgVenues = React.useMemo(() => {
+    if (globalScope.organizationIds.length === 0) return null; // null = show all
+    const venues = new Set<string>();
+    ACCOUNTS.filter((a) => globalScope.organizationIds.includes(a.organizationId))
+      .forEach((a) => venues.add(a.venue));
+    return venues;
+  }, [globalScope.organizationIds]);
+
   // Paper mode: add "(Paper)" suffix to account names; Batch mode: add "(T+1)" suffix
   const balances = React.useMemo(() => {
-    const raw = coerceBalances(balancesRaw);
+    let raw = coerceBalances(balancesRaw);
+    // Filter by org-owned venues when scope is set
+    if (orgVenues) {
+      raw = raw.filter((b) => orgVenues.has(b.venue));
+    }
     if (isPaper) return raw.map((b) => ({ ...b, venue: `${b.venue} (Paper)` }));
     if (isBatch) return raw.map((b) => ({ ...b, venue: `${b.venue} (T+1)` }));
     return raw;
-  }, [balancesRaw, isPaper, isBatch]);
+  }, [balancesRaw, isPaper, isBatch, orgVenues]);
 
   const totalNAV = React.useMemo(() => balances.reduce((sum, b) => sum + b.total, 0), [balances]);
   const totalFree = React.useMemo(() => balances.reduce((sum, b) => sum + b.free, 0), [balances]);

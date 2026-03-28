@@ -4,6 +4,7 @@ import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { usePositions, useBalances } from "@/hooks/api/use-positions";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useQueryClient } from "@tanstack/react-query";
@@ -185,16 +186,18 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     if (strategyIdFilter) setStrategyFilter(strategyIdFilter);
   }, [strategyIdFilter]);
 
+  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+
   const positions: PositionRecord[] = React.useMemo(() => {
     if (!positionsRaw) return [];
     const raw = positionsRaw as Record<string, unknown>;
     const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).positions;
     let result = Array.isArray(arr) ? (arr as PositionRecord[]) : [];
-    if (globalScope.strategyIds.length > 0) {
-      result = result.filter((p) => globalScope.strategyIds.includes(p.strategy_id));
+    if (scopeStrategyIds.length > 0) {
+      result = result.filter((p) => scopeStrategyIds.includes(p.strategy_id));
     }
     return result;
-  }, [positionsRaw, globalScope.strategyIds]);
+  }, [positionsRaw, scopeStrategyIds]);
 
   const balances: BalanceRecord[] = React.useMemo(() => {
     if (!balancesRaw) return [];

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { MOCK_STRATEGY_INSTRUCTIONS } from "@/lib/mocks/fixtures/strategy-instructions";
 import { INSTRUCTION_STRATEGY_TYPES } from "@/lib/config/services/instructions.config";
 import { TRADING_OPERATION_TYPES } from "@/lib/config/services/trading.config";
@@ -42,6 +44,8 @@ const InstructionsDataContext = React.createContext<InstructionsDataContextValue
 
 export function InstructionsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
+  const { scope: globalScope } = useGlobalScope();
+  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
   const [strategyFilter, setStrategyFilter] = React.useState("ALL");
   const [opTypeFilter, setOpTypeFilter] = React.useState("ALL");
   const [selectedInstructionId, setSelectedInstructionId] = React.useState<string | null>(null);
@@ -50,6 +54,8 @@ export function InstructionsDataProvider({ children }: { children: React.ReactNo
 
   const filteredInstructions = React.useMemo(() => {
     let result = allInstructions.filter((inst) => {
+      // Global scope filtering by strategy
+      if (scopeStrategyIds.length > 0 && !scopeStrategyIds.includes(inst.strategyId)) return false;
       if (strategyFilter !== "ALL" && inst.strategyType !== strategyFilter) return false;
       if (opTypeFilter !== "ALL" && inst.instruction.operationType !== opTypeFilter) return false;
       return true;
@@ -66,7 +72,7 @@ export function InstructionsDataProvider({ children }: { children: React.ReactNo
       }));
     }
     return result;
-  }, [allInstructions, strategyFilter, opTypeFilter, isBatch, isPaper]);
+  }, [allInstructions, strategyFilter, opTypeFilter, isBatch, isPaper, scopeStrategyIds]);
 
   const summary = React.useMemo((): InstructionsSummary => {
     const total = filteredInstructions.length;

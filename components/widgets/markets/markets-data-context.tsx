@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { generateLiveBookUpdates, generateOrderFlowData } from "@/lib/mocks/generators/order-flow-generators";
 import { MOCK_RECON_RUNS } from "@/lib/mocks/fixtures/recon-runs";
 import { MOCK_LATENCY_METRICS } from "@/lib/mocks/fixtures/latency-metrics";
@@ -49,6 +51,8 @@ const MarketsDataContext = React.createContext<MarketsDataContextValue | null>(n
 
 export function MarketsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
+  const { scope: globalScope } = useGlobalScope();
+  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
   const [viewMode, setViewMode] = React.useState<"cross-section" | "time-series">("cross-section");
   const [dataMode, setDataMode] = React.useState<"live" | "batch">("live");
   const [dateRange, setDateRange] = React.useState("today");
@@ -74,7 +78,14 @@ export function MarketsDataProvider({ children }: { children: React.ReactNode })
     return generateLiveBookUpdates(orderFlowRange, assetClass, bookDepth);
   }, [orderFlowRange, assetClass, bookDepth, isBatch]);
 
-  const ownOrders = React.useMemo(() => orderFlowData.filter((o) => o.isOwn), [orderFlowData]);
+  const ownOrders = React.useMemo(() => {
+    let own = orderFlowData.filter((o) => o.isOwn);
+    // When scope is narrowed, reduce own orders deterministically based on scope
+    if (scopeStrategyIds.length > 0) {
+      own = own.filter((_, i) => i % Math.max(1, Math.ceil(own.length / Math.max(scopeStrategyIds.length, 3))) === 0);
+    }
+    return own;
+  }, [orderFlowData, scopeStrategyIds]);
 
   const refetch = React.useCallback(() => {}, []);
 

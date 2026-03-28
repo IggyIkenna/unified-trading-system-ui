@@ -10,6 +10,9 @@ import {
 } from "@/lib/strategy-registry";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope, getClientIdsForOrgs } from "@/lib/stores/scope-helpers";
+import { CLIENTS } from "@/lib/trading-data";
 
 export interface StrategiesData {
   strategies: Strategy[];
@@ -42,12 +45,31 @@ const StrategiesDataContext = React.createContext<StrategiesData | null>(null);
 export function StrategiesDataProvider({ children }: { children: React.ReactNode }) {
   const { mode, isLive } = useExecutionMode();
   const { data: perfData, isLoading } = useStrategyPerformance();
+  const { scope: globalScope } = useGlobalScope();
 
   const rawPayload =
     (perfData as Record<string, unknown> | undefined)?.data ??
     (perfData as Record<string, unknown> | undefined)?.strategies;
   const perfRaw: unknown[] = Array.isArray(rawPayload) ? rawPayload : [];
-  const strategies: Strategy[] = perfRaw.length > 0 ? (perfRaw as Strategy[]) : DEFAULT_STRATEGIES;
+  const allStrategies: Strategy[] = perfRaw.length > 0 ? (perfRaw as Strategy[]) : DEFAULT_STRATEGIES;
+
+  // Apply global scope filtering: org -> client -> strategy cascade
+  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeClientIds = React.useMemo(() => {
+    if (globalScope.clientIds.length > 0) return globalScope.clientIds;
+    if (globalScope.organizationIds.length > 0) return getClientIdsForOrgs(globalScope.organizationIds);
+    return [];
+  }, [globalScope.organizationIds, globalScope.clientIds]);
+
+  const strategies: Strategy[] = React.useMemo(() => {
+    let result = allStrategies;
+    if (scopeStrategyIds.length > 0) {
+      result = result.filter((s) => scopeStrategyIds.includes(s.id));
+    } else if (scopeClientIds.length > 0) {
+      result = result.filter((s) => scopeClientIds.includes(s.clientId));
+    }
+    return result;
+  }, [allStrategies, scopeStrategyIds, scopeClientIds]);
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedAssetClasses, setSelectedAssetClasses] = React.useState<string[]>([]);

@@ -5,6 +5,7 @@ import { useTickers } from "@/hooks/api/use-market-data";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { DEFAULT_RESIDUAL_PNL, DEFAULT_STRUCTURAL_PNL } from "@/lib/mocks/fixtures/pnl-attribution";
@@ -112,6 +113,16 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const [selectedOrgIds, setSelectedOrgIds] = React.useState<string[]>([]);
   const [selectedClientIds, setSelectedClientIds] = React.useState<string[]>([]);
   const [selectedStrategyIds, setSelectedStrategyIds] = React.useState<string[]>([]);
+
+  // Sync local P&L scope selectors with the global scope bar
+  React.useEffect(() => {
+    setSelectedOrgIds(globalScope.organizationIds);
+    const derivedClients = globalScope.clientIds.length > 0
+      ? globalScope.clientIds
+      : getClientIdsForOrgs(globalScope.organizationIds);
+    setSelectedClientIds(derivedClients);
+    setSelectedStrategyIds(getStrategyIdsForScope(globalScope));
+  }, [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const filterMultiplier = React.useMemo(() => {
     let m = 1;

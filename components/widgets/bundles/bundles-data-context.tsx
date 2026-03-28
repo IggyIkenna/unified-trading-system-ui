@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { CLIENTS } from "@/lib/trading-data";
 import {
   ALL_OPERATION_TYPES,
   BUNDLE_INSTRUMENTS,
@@ -41,6 +43,15 @@ const BundlesDataContext = React.createContext<BundlesDataContextValue | null>(n
 
 export function BundlesDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
+  const { scope: globalScope } = useGlobalScope();
+
+  // DeFi bundles only make sense for orgs with a DeFi desk
+  const hasDefiDesk = React.useMemo(() => {
+    if (globalScope.organizationIds.length === 0) return true;
+    return CLIENTS.some(
+      (c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk",
+    );
+  }, [globalScope.organizationIds]);
   const [steps, setSteps] = React.useState<BundleStep[]>([]);
   const [showTemplates, setShowTemplates] = React.useState(true);
 
@@ -145,6 +156,14 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
   const estimatedGas = isPaper ? steps.length * 7.25 : steps.length * 14.5;
   const netPnl = totalRevenue - totalCost - estimatedGas;
 
+  const scopedTemplates = React.useMemo(
+    () =>
+      hasDefiDesk
+        ? BUNDLE_TEMPLATES
+        : BUNDLE_TEMPLATES.filter((t) => !t.steps.some((s) => s.operationType === "FLASH_BORROW" || s.operationType === "FLASH_REPAY")),
+    [hasDefiDesk],
+  );
+
   const value = React.useMemo(
     () => ({
       steps,
@@ -153,7 +172,7 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
       moveStep,
       duplicateStep,
       updateStep,
-      templates: BUNDLE_TEMPLATES,
+      templates: scopedTemplates,
       showTemplates,
       setShowTemplates,
       loadTemplate,
@@ -175,6 +194,7 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
       moveStep,
       duplicateStep,
       updateStep,
+      scopedTemplates,
       showTemplates,
       loadTemplate,
       clearSteps,

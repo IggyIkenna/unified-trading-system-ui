@@ -113,8 +113,18 @@ const MOCK_ACTIVITY: ActivityEvent[] = [
   },
 ];
 
-export function ActivityFeed({ maxItems = 6 }: { maxItems?: number }) {
-  const events = MOCK_ACTIVITY.slice(0, maxItems);
+export function ActivityFeed({
+  maxItems = 6,
+  visibleStages,
+}: {
+  maxItems?: number;
+  /** If provided, only show events matching these stage labels */
+  visibleStages?: string[];
+}) {
+  const filtered = visibleStages
+    ? MOCK_ACTIVITY.filter((e) => visibleStages.includes(e.stage))
+    : MOCK_ACTIVITY;
+  const events = filtered.slice(0, maxItems);
 
   return (
     <div className="space-y-1">

@@ -46,7 +46,6 @@ const SYNONYMS: Record<string, string[]> = {
   fee: ["gas", "cost", "commission"],
   risk: ["exposure", "var", "drawdown", "alert", "monitor"],
   alert: ["notification", "warning", "threshold", "risk"],
-  notification: ["alert", "warning"],
   model: ["ml", "machine", "learning", "training", "inference"],
   ml: ["model", "machine", "learning", "training"],
   ai: ["ml", "model", "machine", "learning"],

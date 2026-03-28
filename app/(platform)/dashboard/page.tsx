@@ -41,6 +41,7 @@ import {
   Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Entitlement } from "@/lib/config/auth";
 import { HealthBar } from "@/components/platform/health-bar";
 import { QuickActions } from "@/components/platform/quick-actions";
 import { ActivityFeed } from "@/components/platform/activity-feed";
@@ -73,7 +74,7 @@ interface KPIDef {
 }
 
 function useRoleKPIs(
-  hasEntitlement: (e: string) => boolean,
+  hasEntitlement: (e: Entitlement) => boolean,
   isLive: boolean,
 ): KPIDef[] {
   return React.useMemo(() => {
@@ -198,10 +199,30 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
-  const showTrading = hasEntitlement("execution-basic");
-  const showResearch = hasEntitlement("strategy-full");
+  const showData = hasEntitlement("data-basic") || hasEntitlement("data-pro");
+  const showResearch = hasEntitlement("strategy-full") || hasEntitlement("ml-full");
+  const showTrading = hasEntitlement("execution-basic") || hasEntitlement("execution-full");
+  const showReporting = hasEntitlement("reporting");
   // Batch/live toggle is only meaningful for users with real-time data access
   const showBatchLiveToggle = showTrading || showResearch;
+
+  // Which lifecycle stages this user can access — filters breadcrumb + activity
+  const visibleStages = React.useMemo(() => {
+    const stages: PlatformLifecycleStage[] = [];
+    if (showData) stages.push("acquire");
+    if (showResearch) stages.push("build", "promote");
+    if (showTrading) stages.push("run", "observe");
+    if (showReporting || isAdmin() || isInternal()) stages.push("manage", "report");
+    // Admin/internal see everything
+    if (isAdmin() || isInternal()) return PLATFORM_LIFECYCLE_STAGES.slice();
+    return stages;
+  }, [showData, showResearch, showTrading, showReporting, isAdmin, isInternal]);
+
+  // Map stages to activity feed labels (canonical from PLATFORM_LIFECYCLE_CONFIG)
+  const visibleActivityLabels = React.useMemo(
+    () => visibleStages.map((s) => PLATFORM_LIFECYCLE_CONFIG[s].label),
+    [visibleStages],
+  );
 
   return (
     <div className="bg-background">
@@ -276,9 +297,9 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-5">
           {/* Left: Service Grid */}
           <div className="space-y-4">
-            {/* Lifecycle breadcrumb */}
+            {/* Lifecycle breadcrumb — only shows stages the user can access */}
             <div className="flex items-center gap-1 text-[10px]">
-              {PLATFORM_LIFECYCLE_STAGES.map((stage, i) => (
+              {visibleStages.map((stage, i) => (
                 <React.Fragment key={stage}>
                   {i > 0 && (
                     <ChevronRight className="size-2.5 text-muted-foreground/30" />
@@ -342,7 +363,7 @@ export default function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <ActivityFeed maxItems={6} />
+                <ActivityFeed maxItems={6} visibleStages={visibleActivityLabels} />
               </CardContent>
             </Card>
 
