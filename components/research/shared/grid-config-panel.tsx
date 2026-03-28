@@ -25,6 +25,40 @@ import {
   Zap,
 } from "lucide-react";
 
+// ─── Instruction Constraints (from UAC instruction_constraints.py) ──────────
+
+/** Maps instruction_type → allowed venue categories (from backend) */
+export const INSTRUCTION_VENUE_CONSTRAINTS: Record<string, Set<string>> = {
+  TRADE: new Set(["CeFi", "TradFi"]),
+  SWAP: new Set(["DeFi"]),
+  LEND: new Set(["DeFi"]),
+  BORROW: new Set(["DeFi"]),
+  STAKE: new Set(["DeFi"]),
+  FLASH_LOAN: new Set(["DeFi"]),
+};
+
+/** Maps strategy archetype → primary instruction types it generates */
+export const ARCHETYPE_INSTRUCTION_TYPES: Record<string, string[]> = {
+  momentum: ["TRADE"],
+  mean_reversion: ["TRADE"],
+  statistical_arb: ["TRADE"],
+  volatility: ["TRADE"],
+  yield: ["LEND", "SWAP", "STAKE"],
+  arbitrage: ["TRADE"],
+  value_betting: ["TRADE"],
+};
+
+/** Given an archetype, returns which venue categories are valid */
+export function getValidVenueCategories(archetype: string): Set<string> {
+  const instructionTypes = ARCHETYPE_INSTRUCTION_TYPES[archetype] ?? ["TRADE"];
+  const valid = new Set<string>();
+  for (const it of instructionTypes) {
+    const cats = INSTRUCTION_VENUE_CONSTRAINTS[it];
+    if (cats) for (const c of cats) valid.add(c);
+  }
+  return valid;
+}
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 /** A selectable/lockable subscription item */
@@ -178,24 +212,53 @@ function RangeParam({ param, onChange }: { param: GridParameter; onChange: (u: P
   const step = param.step ?? 1;
   const steps = step > 0 ? Math.floor((high - low) / step) + 1 : 1;
 
+  // Compute sensible step options based on the param range
+  const range = (param.max ?? 100) - (param.min ?? 0);
+  const stepOptions = React.useMemo(() => {
+    const opts: number[] = [];
+    // Generate step options: start from current step, then halve/double
+    const base = param.step ?? 1;
+    for (const mult of [0.1, 0.25, 0.5, 1, 2, 5, 10]) {
+      const v = base * mult;
+      if (v > 0 && v <= range / 2 && !opts.includes(v)) opts.push(v);
+    }
+    return opts.sort((a, b) => a - b).slice(0, 5);
+  }, [param.step, range]);
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-1.5">
           <Label className="text-xs">{param.label}</Label>
           {param.backendField && (
-            <span className="ml-2 text-[9px] font-mono text-muted-foreground/50">{param.backendField}</span>
+            <span className="text-[8px] font-mono text-muted-foreground/40">{param.backendField}</span>
           )}
         </div>
-        <Badge variant="secondary" className="text-[10px] font-mono">{steps} values</Badge>
+        <Badge variant="secondary" className="text-[10px] font-mono">{steps} val</Badge>
       </div>
-      <Slider min={param.min ?? 0} max={param.max ?? 100} step={step} value={[low, high]} onValueChange={([l, h]) => onChange({ rangeValue: [l, h] })} className="py-1" />
-      <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
+      <Slider min={param.min ?? 0} max={param.max ?? 100} step={step} value={[low, high]} onValueChange={([l, h]) => onChange({ rangeValue: [l, h] })} className="py-0.5" />
+      <div className="flex items-center justify-between text-[10px] text-muted-foreground font-mono">
         <span>{low}</span>
-        <span>step: {step}</span>
+        <div className="flex items-center gap-1">
+          <span className="text-muted-foreground/50">step:</span>
+          {stepOptions.map((s) => (
+            <button
+              key={s}
+              onClick={() => onChange({ step: s })}
+              className={cn(
+                "px-1 py-0 rounded text-[9px] transition-colors",
+                s === step
+                  ? "bg-primary/20 text-primary"
+                  : "hover:bg-muted/40 text-muted-foreground/60",
+              )}
+            >
+              {s % 1 === 0 ? s : s.toFixed(s < 0.1 ? 4 : s < 1 ? 2 : 1)}
+            </button>
+          ))}
+        </div>
         <span>{high}</span>
       </div>
-      {param.hint && <p className="text-[10px] text-muted-foreground">{param.hint}</p>}
+      {param.hint && <p className="text-[9px] text-muted-foreground/60">{param.hint}</p>}
     </div>
   );
 }
