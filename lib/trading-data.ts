@@ -299,22 +299,24 @@ export function getAccountsForVenue(venue: string): TradingAccount[] {
 
 // The actual hierarchy
 export const ORGANIZATIONS: TradingOrganization[] = [
-  { id: "odum", name: "Odum Research", type: "internal" },
-  { id: "alpha-capital", name: "Alpha Capital", type: "external" },
-  { id: "vertex-partners", name: "Vertex Partners", type: "external" },
+  { id: "odum", name: "Odum Internal", type: "internal" },
+  { id: "alpha-capital", name: "Apex Capital", type: "external" },
+  { id: "vertex-partners", name: "Zenith Partners", type: "external" },
+  { id: "meridian-fund", name: "Meridian Fund", type: "external" },
+  { id: "atlas-ventures", name: "Atlas Ventures", type: "external" },
 ];
 
 export const CLIENTS: TradingClient[] = [
   {
     id: "delta-one",
-    name: "Delta One Desk",
+    name: "Trading Desk Alpha",
     orgId: "odum",
     status: "active",
     capitalAllocation: 5000000,
   },
   {
     id: "quant-fund",
-    name: "Quant Fund",
+    name: "Trading Desk Beta",
     orgId: "odum",
     status: "active",
     capitalAllocation: 8000000,
@@ -328,23 +330,23 @@ export const CLIENTS: TradingClient[] = [
   },
   {
     id: "defi-desk",
-    name: "DeFi Desk",
+    name: "DeFi Ops",
     orgId: "odum",
     status: "active",
     capitalAllocation: 3000000,
   },
   {
     id: "alpha-main",
-    name: "Main Fund",
+    name: "Global Macro Fund",
     orgId: "alpha-capital",
     status: "active",
     capitalAllocation: 10000000,
   },
   {
     id: "alpha-crypto",
-    name: "Crypto Desk",
+    name: "Crypto Arbitrage",
     orgId: "alpha-capital",
-    status: "onboarding",
+    status: "active",
     capitalAllocation: 5000000,
   },
   {
@@ -353,6 +355,34 @@ export const CLIENTS: TradingClient[] = [
     orgId: "vertex-partners",
     status: "active",
     capitalAllocation: 15000000,
+  },
+  {
+    id: "meridian-systematic",
+    name: "Systematic Trading",
+    orgId: "meridian-fund",
+    status: "active",
+    capitalAllocation: 12000000,
+  },
+  {
+    id: "meridian-discretionary",
+    name: "Discretionary Fund",
+    orgId: "meridian-fund",
+    status: "active",
+    capitalAllocation: 8000000,
+  },
+  {
+    id: "atlas-growth",
+    name: "Growth Portfolio",
+    orgId: "atlas-ventures",
+    status: "active",
+    capitalAllocation: 6000000,
+  },
+  {
+    id: "atlas-defi",
+    name: "DeFi Ventures",
+    orgId: "atlas-ventures",
+    status: "onboarding",
+    capitalAllocation: 4000000,
   },
 ];
 

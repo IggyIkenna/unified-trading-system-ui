@@ -1,11 +1,12 @@
 import { registerWidget } from "../widget-registry";
 import { registerPresets } from "../preset-registry";
-import { Building2, ClipboardPen, FileText, Settings2, ShieldCheck } from "lucide-react";
+import { Building2, ClipboardPen, FileText, History, Settings2, ShieldCheck } from "lucide-react";
 import { BookHierarchyBarWidget } from "./book-hierarchy-bar-widget";
 import { BookOrderFormWidget } from "./book-order-form-widget";
 import { BookAlgoConfigWidget } from "./book-algo-config-widget";
 import { BookRecordDetailsWidget } from "./book-record-details-widget";
 import { BookPreviewComplianceWidget } from "./book-preview-compliance-widget";
+import { BookTradeHistoryWidget } from "./book-trade-history-widget";
 
 registerPresets("book", [
   {
@@ -14,16 +15,33 @@ registerPresets("book", [
     tab: "book",
     isPreset: true,
     layouts: [
-      { widgetId: "book-hierarchy-bar", instanceId: "book-hierarchy-bar-1", x: 0, y: 0, w: 12, h: 1 },
-      { widgetId: "book-order-form", instanceId: "book-order-form-1", x: 0, y: 1, w: 6, h: 8 },
-      { widgetId: "book-algo-config", instanceId: "book-algo-config-1", x: 6, y: 1, w: 6, h: 4 },
-      { widgetId: "book-record-details", instanceId: "book-record-details-1", x: 6, y: 5, w: 6, h: 3 },
-      { widgetId: "book-preview-compliance", instanceId: "book-preview-compliance-1", x: 6, y: 8, w: 6, h: 5 },
+      { widgetId: "book-trade-history", instanceId: "book-trade-history-1", x: 0, y: 0, w: 12, h: 8 },
+      { widgetId: "book-hierarchy-bar", instanceId: "book-hierarchy-bar-1", x: 0, y: 8, w: 12, h: 1 },
+      { widgetId: "book-order-form", instanceId: "book-order-form-1", x: 0, y: 9, w: 6, h: 8 },
+      { widgetId: "book-algo-config", instanceId: "book-algo-config-1", x: 6, y: 9, w: 6, h: 4 },
+      { widgetId: "book-record-details", instanceId: "book-record-details-1", x: 6, y: 13, w: 6, h: 3 },
+      { widgetId: "book-preview-compliance", instanceId: "book-preview-compliance-1", x: 6, y: 16, w: 6, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
   },
 ]);
+
+registerWidget({
+  id: "book-trade-history",
+  label: "Trade History",
+  description: "Table of executed trades with search, sort, and filtering",
+  icon: History,
+  minW: 6,
+  minH: 4,
+  defaultW: 12,
+  defaultH: 8,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Trade Booking",
+  availableOn: ["book"],
+  singleton: true,
+  component: BookTradeHistoryWidget,
+});
 
 registerWidget({
   id: "book-hierarchy-bar",
