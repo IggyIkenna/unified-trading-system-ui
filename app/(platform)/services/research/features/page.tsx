@@ -12,19 +12,26 @@
  *   └──────────┴──────────┴──────────┴────────────────┴──────────────┘
  */
 
+import { CatStatusBadge } from "@/components/research/features/cat-status-badge";
+import { EditConfigDialog } from "@/components/research/features/edit-config-dialog";
+import { FeatureDetailPanel } from "@/components/research/features/feature-detail-panel";
+import { FEAT_STATUS_CFG, SHARD_COLORS } from "@/components/research/features/feature-helpers";
+import { buildFeaturesColumns, getFeaturesContextStats } from "@/components/research/features/features-finder-config";
+import { NewFeatureDialog } from "@/components/research/features/new-feature-dialog";
+import type { FinderSelections } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import type { FeatureCatalogueEntry, IndividualFeature } from "@/lib/build-mock-data";
+import type { FeatureCatalogueEntry, FeatureServiceNode, IndividualFeature } from "@/lib/build-mock-data";
 import { FEATURE_CATALOGUE, FEATURE_VERSIONS } from "@/lib/build-mock-data";
+import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import {
-  ArrowRight,
   ChevronDown,
   ChevronRight,
   Code2,
@@ -37,16 +44,8 @@ import {
   Search,
   Settings2,
   Table2,
-  Tag,
 } from "lucide-react";
 import * as React from "react";
-import { FinderBrowser, finderText } from "@/components/shared/finder";
-import type { FinderSelections } from "@/components/shared/finder";
-import { buildFeaturesColumns, getFeaturesContextStats } from "@/components/research/features/features-finder-config";
-import { FeatureDetailPanel } from "@/components/research/features/feature-detail-panel";
-import { NewFeatureDialog, CatStatusBadge, EditConfigDialog } from "@/components/research/features/feature-dialogs";
-import { FEAT_STATUS_CFG, SHARD_COLORS, SERVICE_COLORS } from "@/components/research/features/feature-helpers";
-import type { FeatureGroupEntry, FeatureServiceNode } from "@/lib/build-mock-data";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // CATALOGUE VIEW — flat table/grid/tree with right detail panel

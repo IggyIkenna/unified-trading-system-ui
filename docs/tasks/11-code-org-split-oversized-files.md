@@ -6,19 +6,61 @@
 
 ---
 
+## Agent Execution Model
+
+This task uses a **two-phase approach** inside a single Cursor agent session.
+
+| Phase | What | Model | Output |
+|-------|------|-------|--------|
+| **Phase 1 — Discovery** | Run the audit command below. Classify every oversized file into a group (A-F). For each file, read it and propose a split strategy. | **Smart** (claude-4-opus or claude-3.7-sonnet) | A concrete list: file → group → split plan (what to extract, target filenames, estimated result size) |
+| **Phase 2 — Execution** | Take the Phase 1 list and mechanically split files, update imports, delete old code, run typecheck. | **Cheap** (claude-3.5-sonnet) | Code changes + passing typecheck |
+
+**Phase 1 and Phase 2 run in the same agent session.** Phase 1 produces the plan as text in chat (not a file), then Phase 2 executes it immediately. If the session is too large, break Phase 2 into one group per session (A, B, D, E, F — each independent).
+
+**Parallel execution:** Groups A-F are independent and can be given to separate agents in parallel. Each agent runs its own Phase 1 (discover files in its group) then Phase 2 (split them).
+
+---
+
+## Discovery Command (Phase 1 — run this FIRST)
+
+```bash
+cd unified-trading-system-ui
+find . \( -path ./node_modules -o -path ./.next -o -path './lib/*' \) -prune -o \
+  -type f \( -name '*.ts' -o -name '*.tsx' \) -print | while read f; do
+  case "$f" in *mock-data*) continue;; */mocks/*) continue;; esac
+  wc -l "$f"
+done | awk '$1 > 900 {print}' | sort -n -r
+```
+
+This produces the current list of oversized in-scope files. **Do not rely on the hardcoded
+file lists below — they are historical snapshots.** Always run the command above to get the
+live state before starting work.
+
+---
+
 ## Goal
 
-Split all hand-written files over 900 lines into smaller, single-responsibility modules. After this task, no hand-written file exceeds 900 lines, every split preserves existing functionality, and all imports are updated.
+Split hand-written **UI code** (components, app routes, archive pages) over 900 lines into smaller, single-responsibility modules. After this task, no **in-scope** file exceeds 900 lines, every split preserves existing functionality, and all imports are updated.
 
 ---
 
 ## Scope
 
-**37 files over 900 lines.** Exclude generated/data-registry files that are not hand-maintained UI:
-- `lib/types/api-generated.ts` (18k lines — codegen, not our problem)
-- `lib/strategy-registry.ts` (7.5k lines — static registry data, split only if beneficial)
+### Out of scope (do not require splits for Task 11)
+
+- **Entire `lib/` directory** — including config helpers, lifecycle mapping, reference data, taxonomy, trading data, codegen output (`api-generated.ts`), static registries (`strategy-registry.ts`), and any future lib modules. Size refactors there are optional / separate tasks.
+- **Mock data and mock infrastructure** — anything under `lib/mocks/`, `lib/api/mock-handler.ts`, `*mock-data*.ts` / `*mock-data*.tsx`, and similar (aligns with Task 05 — Mock Data Centralization).
+
+### In scope
+
+**`components/**`, `app/**`, and `archive/**`** (excluding paths that are purely mock-data modules, e.g. `components/promote/mock-data.ts`, `components/trading/sports/mock-data.ts`).
 
 **Split into groups by area. Each group can be given to a separate agent.**
+
+> **Note:** File lists below are **historical snapshots** from 2026-03-28. Files may have
+> been split, renamed, or grown since then. **Always run the Discovery Command above** to
+> get the current state before starting work. Use the group categories below as a
+> classification guide, not as the authoritative file list.
 
 ### Group A — Ops Deployment (4 files, ~13k lines)
 
@@ -37,18 +79,9 @@ Split all hand-written files over 900 lines into smaller, single-responsibility 
 | `components/trading/manual-trading-panel.tsx` | 1350 | Extract: order form, position list, execution controls → `components/trading/manual/`. |
 | `components/trading/options-chain.tsx` | 1162 | Extract: chain grid, strike selector, Greeks display → `components/trading/options/`. |
 
-### Group C — Mock Data Files (6 files, ~12.6k lines)
+### Group C — ~~Mock data~~ (out of scope)
 
-| File | Lines | Split Strategy |
-|------|-------|----------------|
-| `lib/api/mock-handler.ts` | 4459 | Split by domain: `lib/api/mock-handlers/trading.ts`, `research.ts`, `data.ts`, `ops.ts`, etc. Keep `mock-handler.ts` as aggregator that imports and registers all. |
-| `lib/ml-mock-data.ts` | 2907 | Move to `lib/mocks/fixtures/ml/`. Split by entity: models, training-runs, experiments, metrics. |
-| `lib/build-mock-data.ts` | 2595 | Move to `lib/mocks/fixtures/build/`. Split by entity. |
-| `lib/data-service-mock-data.ts` | 2452 | Move to `lib/mocks/fixtures/data-service/`. Split by entity. |
-| `components/promote/mock-data.ts` | 1684 | Move to `lib/mocks/fixtures/promote/`. |
-| `components/trading/sports/mock-data.ts` | 1555 | Move to `lib/mocks/fixtures/sports/`. |
-
-**Note:** Mock data splits overlap with Task 05 (Mock Data Centralization). For this task, focus on file-size splits and moving to `lib/mocks/`. Full schema alignment is Task 05.
+Mock data and `lib/**` are excluded from Task 11. Centralize and split mock fixtures under **Task 05 (Mock Data Centralization)** instead.
 
 ### Group D — Platform Pages (8 files, ~10.7k lines)
 
@@ -63,7 +96,7 @@ Split all hand-written files over 900 lines into smaller, single-responsibility 
 | `app/(platform)/services/research/ml/training/page.tsx` | 1267 | Extract: training run list, run detail, metrics charts. |
 | `app/(ops)/config/page.tsx` | 1147 | Extract: config sections by domain. |
 
-### Group E — Dashboards (4 files, ~4.9k lines)
+### Group E — Dashboards (5 files)
 
 | File | Lines | Split Strategy |
 |------|-------|----------------|
@@ -71,19 +104,20 @@ Split all hand-written files over 900 lines into smaller, single-responsibility 
 | `components/dashboards/risk-dashboard.tsx` | 1294 | Same pattern → `components/dashboards/risk/`. |
 | `components/dashboards/devops-dashboard.tsx` | 1164 | Same pattern → `components/dashboards/devops/`. |
 | `components/dashboards/audit-dashboard.tsx` | 1001 | Same pattern → `components/dashboards/audit/`. |
+| `components/dashboards/executive-dashboard.tsx` | 938 | Same pattern → `components/dashboards/executive/`. |
 
-### Group F — Remaining (5+ files)
+### Group F — Remaining in-scope UI
 
 | File | Lines | Split Strategy |
 |------|-------|----------------|
-| `lib/reference-data.ts` | 1369 | Split by domain: venues, instruments, currencies, etc. |
-| `lib/taxonomy.ts` | 1110 | Split by taxonomy category. |
-| `lib/trading-data.ts` | 1086 | Split by entity: positions, orders, alerts. |
 | `components/research/features/feature-dialogs.tsx` | 1041 | Extract each dialog into its own file. |
 | `app/(platform)/services/research/ml/components/run-analysis-sections.tsx` | 1057 | Split by section type. |
-| `lib/strategy-platform-mock-data.ts` | 937 | Move to `lib/mocks/fixtures/strategy/`. |
-| `components/trading/context-bar.tsx` | 916 | Extract sub-panels. |
-| `lib/lifecycle-mapping.ts` | 911 | Extract route-mappings data into separate file from logic. |
+| `components/trading/context-bar/` | (was 916) | Done: folder module with types, multi-select, mode controls, main bar. |
+| `archive/ml/validation/page.tsx` | 1076 | Extract sections into `archive/ml/validation/components/` or shared components. |
+| `archive/ml/experiments/id-page.tsx` | 948 | Extract panels/sections similarly. |
+| `app/(platform)/services/reports/reconciliation/page.tsx` | 933 | Extract reconciliation sections into `components/reports/` or colocated `components/`. |
+
+**Note:** Former Group F lib entries (`reference-data`, `taxonomy`, `trading-data`, `lifecycle-mapping`, `strategy-platform-mock-data`) are **out of scope** for Task 11 (entire `lib/` excluded).
 
 ---
 
@@ -101,7 +135,7 @@ Split all hand-written files over 900 lines into smaller, single-responsibility 
 
 ## Acceptance Criteria
 
-- [ ] Zero hand-written files over 900 lines (excluding `api-generated.ts` and `strategy-registry.ts`)
+- [ ] Zero **in-scope** hand-written files over 900 lines: under `components/`, `app/`, and `archive/` only, excluding mock-data modules and excluding **all of `lib/`**
 - [ ] `pnpm typecheck` passes (no new type errors)
 - [ ] App loads and renders correctly on `pnpm dev`
 - [ ] All imports updated — `rg` for old component names shows zero orphaned imports
@@ -126,3 +160,32 @@ When you finish, stop and honestly answer these questions before claiming done:
 6. **Am I satisfied with this work?** Not "is it done" but "is it good". This codebase is a real trading platform. The files you create will be maintained for years. If you're rushing to finish, slow down. Quality matters more than speed. A clean split of 3 groups is better than a sloppy split of all 6.
 
 **If the answer to any of these is "no" — go fix it before marking done.**
+
+---
+
+## Incremental progress (2026-03-28)
+
+**Done (historical — `context-bar` is in-scope UI):**
+
+| Change | Result |
+|--------|--------|
+| `components/trading/context-bar.tsx` | Replaced with `components/trading/context-bar/`: `types.ts`, `multi-select-dropdown.tsx`, `context-bar-mode-controls.tsx`, `trading-context-bar.tsx`, `index.ts`. `@/components/trading/context-bar` still resolves. |
+
+**Optional lib refactor (not required for Task 11 acceptance):** `lifecycle-mapping` was split into `lib/lifecycle-types.ts`, `lib/lifecycle-route-mappings.ts`, and slimmer `lifecycle-mapping.ts`. **Task 11 no longer tracks `lib/` line counts.**
+
+**Still over 900 lines (in-scope only — verify with repo):** ops deployment quartet, `options-futures-panel`, signup, board-presentation, clients/strategies/health/backtests/training/config pages, dashboards (quant/risk/devops/audit/executive), manual/options panels, `feature-dialogs`, `run-analysis-sections`, archive ML pages, reconciliation page. Exclude: **`lib/**`**, **`lib/mocks/**`**, and `*mock-data*` files.
+
+**Quick audit command (in-scope oversized files):**
+
+```bash
+cd unified-trading-system-ui
+find . \( -path ./node_modules -o -path ./.next -o -path './lib/*' \) -prune -o \
+  -type f \( -name '*.ts' -o -name '*.tsx' \) -print | while read f; do
+  case "$f" in *mock-data*) continue;; */mocks/*) continue;; esac
+  wc -l "$f"
+done | awk '$1 > 900 {print}' | sort -n -r
+```
+
+**Later session (2026-03-28):** `components/dashboards/executive-dashboard.tsx` split into `components/dashboards/executive/*`; `app/.../reconciliation/page.tsx` slimmed to a server wrapper and `components/reports/reconciliation/*` (types, constants, columns, skeleton, client). **~22** in-scope files still over 900 lines (ops deployment, large app pages, trading panels, remaining dashboards, archive ML, etc.).
+
+**Completion (2026-03-28, follow-up):** Sub-agents and follow-up splits finished the remainder: ops deployment (`DataStatusTab`, `DeploymentDetails`, `DeployForm`, `ExecutionDataStatus`), `options-futures-panel`, `quant` / `risk` / `devops` / `audit` dashboards, `options-chain` + `manual-trading-panel`, large `app/**` pages (signup, clients, strategy detail, backtests, training, config, health, board presentation, etc.), `run-analysis-sections`, archive ML pages. **Audit:** `find` over `components/`, `app/`, `archive/` (prune `lib/*`, skip `*mock-data*`, `*/mocks/*`) + `wc -l` shows **no** file still over **900** lines; largest seen ~**899** (`execution-detail-view.tsx`).
