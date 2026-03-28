@@ -281,8 +281,8 @@ export function WidgetWrapper({
         )}
       </div>
 
-      {/* Right action buttons — hidden until hover */}
-      <div className="flex items-center gap-0.5 shrink-0 ml-1 opacity-0 group-hover/header:opacity-100 transition-opacity">
+      {/* Right action buttons — always visible */}
+      <div className="flex items-center gap-0.5 shrink-0 ml-1">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -340,7 +340,7 @@ export function WidgetWrapper({
     <>
       <div
         className={cn(
-          "flex flex-col h-full rounded-lg border border-border bg-card overflow-hidden",
+          "flex flex-col h-full rounded-lg border border-border bg-card overflow-hidden relative z-[1]",
           editMode && "hover:border-border/80",
           expanded && "invisible",
         )}

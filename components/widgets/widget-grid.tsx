@@ -15,7 +15,7 @@ const COLS = { lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 };
 const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
 const MARGIN: [number, number] = [2, 2];
 const CONTAINER_PADDING: [number, number] = [0, 0];
-const RESIZE_HANDLES = ["se", "sw", "ne", "nw", "e", "w", "s", "n"] as const;
+const RESIZE_HANDLES = ["se", "e", "s"] as const;
 
 interface WidgetGridProps {
   tab: string;
