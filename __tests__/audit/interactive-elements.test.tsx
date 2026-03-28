@@ -4,6 +4,7 @@
  * Tests that key interactive components render and have functioning elements.
  */
 
+import { vi } from "vitest";
 import { render } from "@testing-library/react";
 import { KillSwitchPanel } from "@/components/trading/kill-switch-panel";
 
@@ -16,7 +17,7 @@ describe("Interactive Elements Audit", () => {
     });
 
     it("renders without console errors", () => {
-      const consoleSpy = jest
+      const consoleSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
       render(<KillSwitchPanel />);

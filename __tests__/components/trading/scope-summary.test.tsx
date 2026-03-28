@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom/vitest";
 import { ScopeSummary } from "@/components/trading/scope-summary";
 import { render, screen } from "@testing-library/react";
 
