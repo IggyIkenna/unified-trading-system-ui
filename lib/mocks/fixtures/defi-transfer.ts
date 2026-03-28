@@ -3,6 +3,7 @@ import type { BridgeRouteQuote, ChainPortfolio } from "@/lib/types/defi";
 export const DEFI_CHAINS = [
   "Ethereum", "Arbitrum", "Optimism", "Base", "Polygon",
   "BSC", "Avalanche", "Scroll", "Linea", "zkSync",
+  "Solana",
 ] as const;
 
 export const DEFI_TOKENS = ["ETH", "USDC", "USDT", "WETH", "WBTC", "DAI"] as const;
@@ -110,6 +111,13 @@ export const MOCK_CHAIN_PORTFOLIOS: ChainPortfolio[] = [
     gasTokenBalance: 0.15,
     gasTokenSymbol: "BNB",
   },
+  {
+    chain: "Solana",
+    totalUsd: 15_800,
+    tokenBreakdown: { SOL: 85.5, USDC: 2_300, mSOL: 12.0 },
+    gasTokenBalance: 85.5,
+    gasTokenSymbol: "SOL",
+  },
 ];
 
 /** Gas token minimum thresholds (below = insufficient warning). */
@@ -118,4 +126,5 @@ export const GAS_TOKEN_MIN_THRESHOLDS: Record<string, number> = {
   MATIC: 1.0,
   BNB: 0.005,
   AVAX: 0.1,
+  SOL: 0.05,
 };

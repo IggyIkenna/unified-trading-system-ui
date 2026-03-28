@@ -74,6 +74,9 @@ export interface DeFiDataContextValue {
   transferMode: "send" | "bridge";
   setTransferMode: (m: "send" | "bridge") => void;
 
+  bridgeRoutes: BridgeRouteQuote[];
+  getBridgeRoutes: (token: string, amount: number, fromChain: string, toChain: string) => BridgeRouteQuote[];
+
   executeDeFiOrder: (params: DeFiOrderParams) => void;
   readOnly?: boolean;
   mode?: string;
@@ -134,6 +137,16 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     setFlashSteps((steps) => steps.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   }, []);
 
+  const getBridgeRoutes = React.useCallback(
+    (token: string, amount: number, fromChain: string, toChain: string): BridgeRouteQuote[] => {
+      if (!hasDefiDesk) return [];
+      return getMockBridgeRoutes(token, amount, fromChain, toChain);
+    },
+    [hasDefiDesk],
+  );
+
+  const bridgeRoutes = React.useMemo<BridgeRouteQuote[]>(() => [], []);
+
   const executeDeFiOrder = React.useCallback((params: DeFiOrderParams) => {
     placeMockOrder(params);
   }, []);
@@ -184,6 +197,8 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       flashPnl,
       transferMode,
       setTransferMode,
+      bridgeRoutes,
+      getBridgeRoutes,
       executeDeFiOrder,
       readOnly: isBatch,
       mode,
@@ -196,6 +211,8 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       flashSteps,
       flashPnl,
       transferMode,
+      bridgeRoutes,
+      getBridgeRoutes,
       addFlashStep,
       removeFlashStep,
       updateFlashStep,

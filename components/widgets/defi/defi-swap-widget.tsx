@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { ArrowDown, ArrowLeftRight } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { CollapsibleSection } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
 import { useDeFiData } from "./defi-data-context";
 
 export function DeFiSwapWidget(_props: WidgetComponentProps) {
-  const { swapTokens, swapRoute, executeDeFiOrder } = useDeFiData();
+  const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
   const tokens = swapTokens as string[];
 
   const [tokenIn, setTokenIn] = React.useState("ETH");
@@ -22,11 +23,43 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
   const [amountIn, setAmountIn] = React.useState("");
   const [slippage, setSlippage] = React.useState("0.5");
 
+  // Gas balance check for selected chain
+  const chainPortfolio = MOCK_CHAIN_PORTFOLIOS.find((p) => p.chain === selectedChain);
+  const gasBalance = chainPortfolio?.gasTokenBalance ?? 0;
+  const gasSymbol = chainPortfolio?.gasTokenSymbol ?? "ETH";
+  const gasThreshold = GAS_TOKEN_MIN_THRESHOLDS[gasSymbol] ?? 0.01;
+  const isGasInsufficient = gasBalance < gasThreshold;
+
   const amountNum = parseFloat(amountIn) || 0;
   const route = amountNum > 0 && swapRoute ? swapRoute : null;
 
   return (
     <div className="space-y-3 p-1">
+      <div className="space-y-1.5">
+        <label className="text-xs text-muted-foreground">Chain</label>
+        <Select value={selectedChain} onValueChange={setSelectedChain}>
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DEFI_CHAINS.map((c) => (
+              <SelectItem key={c} value={c} className="text-xs">
+                {c}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {isGasInsufficient && (
+        <div className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs">
+          <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
+          <span className="text-amber-400">
+            Low {gasSymbol} balance ({gasBalance.toFixed(4)} {gasSymbol}). You may not have enough gas for this swap.
+          </span>
+        </div>
+      )}
+
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">You pay</label>
         <div className="flex gap-2">

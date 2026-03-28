@@ -1,17 +1,18 @@
 "use client";
 
 import * as React from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Fuel, Globe, Send, Wallet } from "lucide-react";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { AlertTriangle, ArrowRight, Clock, Fuel, Globe, Send, Trophy, Wallet } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { BRIDGE_PROTOCOLS, DEFI_CHAINS, DEFI_TOKENS } from "@/lib/mocks/fixtures/defi-transfer";
+import { DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
+import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 
 export function DeFiTransferWidget(_props: WidgetComponentProps) {
-  const { connectedWallet, tokenBalances, transferMode, setTransferMode, selectedChain, setSelectedChain } =
+  const { connectedWallet, tokenBalances, transferMode, setTransferMode, selectedChain, setSelectedChain, getBridgeRoutes } =
     useDeFiData();
 
   const [toAddress, setToAddress] = React.useState("");
@@ -19,14 +20,30 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
   const [toChain, setToChain] = React.useState<string>(DEFI_CHAINS[1]);
   const [token, setToken] = React.useState<string>(DEFI_TOKENS[0]);
   const [amount, setAmount] = React.useState("");
-  const [bridgeProtocol, setBridgeProtocol] = React.useState<string>(BRIDGE_PROTOCOLS[0]);
+  const [selectedRoute, setSelectedRoute] = React.useState<string>("");
 
   const amountNum = parseFloat(amount) || 0;
   const balance = tokenBalances[token] ?? 0;
 
+  const routes = React.useMemo(
+    () => getBridgeRoutes(token, amountNum, fromChain, toChain),
+    [getBridgeRoutes, token, amountNum, fromChain, toChain],
+  );
+
+  React.useEffect(() => {
+    const bestReturn = routes.find((r) => r.isBestReturn);
+    if (bestReturn) {
+      setSelectedRoute(bestReturn.protocol);
+    } else if (routes.length > 0) {
+      setSelectedRoute(routes[0].protocol);
+    } else {
+      setSelectedRoute("");
+    }
+  }, [routes]);
+
   const truncateAddr = (addr: string | null) => {
-    if (!addr || addr.length < 12) return addr ?? "—";
-    return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+    if (!addr || addr.length < 12) return addr ?? "\u2014";
+    return `${addr.slice(0, 6)}\u2026${addr.slice(-4)}`;
   };
 
   return (
@@ -138,6 +155,24 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             </div>
           </div>
 
+          {(() => {
+            const cp = MOCK_CHAIN_PORTFOLIOS.find((p) => p.chain === selectedChain);
+            const gb = cp?.gasTokenBalance ?? 0;
+            const gs = cp?.gasTokenSymbol ?? "ETH";
+            const thr = GAS_TOKEN_MIN_THRESHOLDS[gs] ?? 0.01;
+            if (gb < thr) {
+              return (
+                <div className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs">
+                  <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
+                  <span className="text-amber-400">
+                    Low {gs} balance ({gb.toFixed(4)} {gs}). Transfer may fail due to insufficient gas.
+                  </span>
+                </div>
+              );
+            }
+            return null;
+          })()}
+
           <Button className="w-full" disabled={amountNum <= 0 || amountNum > balance || !toAddress}>
             <Send className="size-3.5 mr-1.5" />
             Send {token}
@@ -179,22 +214,6 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">Bridge protocol</label>
-            <Select value={bridgeProtocol} onValueChange={setBridgeProtocol}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {BRIDGE_PROTOCOLS.map((p) => (
-                  <SelectItem key={p} value={p}>
-                    {p}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
             <label className="text-xs text-muted-foreground">Token</label>
             <Select value={token} onValueChange={setToken}>
               <SelectTrigger>
@@ -229,24 +248,81 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             />
           </div>
 
-          <CollapsibleSection title="Bridge fee / time" defaultOpen={false}>
-            <div className="px-2 pb-2">
-              <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Bridge fee</span>
-                  <span className="font-mono">~0.05% ($1.72)</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Estimated time</span>
-                  <span>~2–15 min</span>
-                </div>
+          {routes.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium">Available routes</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {fromChain} <ArrowRight className="inline size-2.5" /> {toChain}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {routes.map((route) => (
+                  <button
+                    key={route.protocol}
+                    type="button"
+                    className={cn(
+                      "w-full rounded-lg border p-2.5 text-left transition-colors",
+                      selectedRoute === route.protocol
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-muted/20 hover:bg-muted/40",
+                    )}
+                    onClick={() => setSelectedRoute(route.protocol)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className={cn(
+                            "size-3.5 rounded-full border-2 flex items-center justify-center",
+                            selectedRoute === route.protocol ? "border-primary" : "border-muted-foreground/40",
+                          )}
+                        >
+                          {selectedRoute === route.protocol && (
+                            <div className="size-1.5 rounded-full bg-primary" />
+                          )}
+                        </div>
+                        <span className="text-xs font-medium">{route.protocol}</span>
+                        {route.isBestReturn && (
+                          <Badge variant="default" className="h-4 px-1 text-[9px] gap-0.5">
+                            <Trophy className="size-2.5" />
+                            Best Return
+                          </Badge>
+                        )}
+                        {route.isFastest && !route.isBestReturn && (
+                          <Badge variant="outline" className="h-4 px-1 text-[9px] gap-0.5">
+                            <Clock className="size-2.5" />
+                            Fastest
+                          </Badge>
+                        )}
+                        {route.isFastest && route.isBestReturn && (
+                          <Badge variant="outline" className="h-4 px-1 text-[9px] gap-0.5">
+                            <Clock className="size-2.5" />
+                            Fastest
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="text-xs font-mono font-medium">
+                        {route.outputAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {token}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1.5 pl-5">
+                      <span className="text-[10px] text-muted-foreground">
+                        Fee: {route.feePct}% (${route.feeUsd.toFixed(2)})
+                      </span>
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                        <Clock className="size-2.5" />
+                        ~{route.estimatedTimeMin} min
+                      </span>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
-          </CollapsibleSection>
+          )}
 
-          <Button className="w-full" disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain}>
+          <Button className="w-full" disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain || !selectedRoute}>
             <Globe className="size-3.5 mr-1.5" />
-            Bridge {token}
+            Bridge {token} via {selectedRoute || "..."}
           </Button>
         </div>
       )}
