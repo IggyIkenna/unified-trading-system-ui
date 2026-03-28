@@ -1,11 +1,15 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 /**
  * ServiceTabs — Row 2 navigation.
  * Role-based contextual quick-nav that changes per active Row 1 (lifecycle) tab.
  * Each service defines its own tab set. Tabs support entitlement-based FOMO locking.
  */
 
+import { TabSectionHelp } from "@/components/shell/tab-section-help";
+import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
 import { cn } from "@/lib/utils";
 import {
   Lock,
@@ -80,6 +84,33 @@ function TabLabel({ tab, spread }: { tab: ServiceTab; spread: boolean }) {
   );
 }
 
+function TabRow({
+  tab,
+  isActive,
+  tabItemClass,
+  children,
+}: {
+  tab: ServiceTab;
+  isActive: boolean;
+  tabItemClass: string;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        tabItemClass,
+        "gap-0.5 border-b-2 transition-colors",
+        isActive
+          ? "border-primary text-primary"
+          : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
+      )}
+    >
+      {children}
+      <TabSectionHelp href={tab.href} tabLabel={tab.label} className="shrink-0 self-center mr-0.5" />
+    </div>
+  );
+}
+
 export function ServiceTabs({
   tabs,
   rightSlot,
@@ -124,50 +155,45 @@ export function ServiceTabs({
 
             if (isLocked) {
               return (
-                <span
-                  key={tab.href}
-                  className={cn(
-                    tabItemClass,
-                    "flex items-center gap-1 text-sm font-medium border-b-2 border-transparent text-muted-foreground/40 cursor-not-allowed",
-                  )}
-                  title={`Upgrade to access ${tab.label}`}
-                >
-                  <TabLabel tab={tab} spread={tabsSpread} />
-                  <Lock className="size-3 shrink-0" />
-                </span>
+                <TabRow key={tab.href} tab={tab} isActive={false} tabItemClass={tabItemClass}>
+                  <span
+                    className={cn(
+                      "flex min-w-0 flex-1 items-center gap-1 text-sm font-medium cursor-not-allowed text-muted-foreground/40",
+                    )}
+                    title={`Upgrade to access ${tab.label}`}
+                  >
+                    <TabLabel tab={tab} spread={tabsSpread} />
+                    <Lock className="size-3 shrink-0" />
+                  </span>
+                </TabRow>
               );
             }
 
             if (tab.navDisabled) {
               return (
-                <span
-                  key={tab.href}
-                  className={cn(
-                    tabItemClass,
-                    "flex items-center gap-1 text-sm font-medium border-b-2 border-transparent text-muted-foreground/40 cursor-not-allowed",
-                  )}
-                  title={tab.navDisabledTitle ?? "Not available"}
-                >
-                  <TabLabel tab={tab} spread={tabsSpread} />
-                  <Lock className="size-3 shrink-0" />
-                </span>
+                <TabRow key={tab.href} tab={tab} isActive={false} tabItemClass={tabItemClass}>
+                  <span
+                    className={cn(
+                      "flex min-w-0 flex-1 items-center gap-1 text-sm font-medium cursor-not-allowed text-muted-foreground/40",
+                    )}
+                    title={tab.navDisabledTitle ?? "Not available"}
+                  >
+                    <TabLabel tab={tab} spread={tabsSpread} />
+                    <Lock className="size-3 shrink-0" />
+                  </span>
+                </TabRow>
               );
             }
 
             return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={cn(
-                  tabItemClass,
-                  "text-sm font-medium border-b-2 transition-colors",
-                  isActive
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
-                )}
-              >
-                <TabLabel tab={tab} spread={tabsSpread} />
-              </Link>
+              <TabRow key={tab.href} tab={tab} isActive={isActive} tabItemClass={tabItemClass}>
+                <Link
+                  href={tab.href}
+                  className={cn("flex min-w-0 flex-1 items-center text-sm font-medium", tabsSpread && "justify-center")}
+                >
+                  <TabLabel tab={tab} spread={tabsSpread} />
+                </Link>
+              </TabRow>
             );
           })}
         </nav>
@@ -179,15 +205,16 @@ export function ServiceTabs({
 }
 
 // ── Acquire (Data Science / ETL) ─────────────────────────────────────────────
+const DS = DATA_SERVICE_SECTION_LABELS;
 export const DATA_TABS: ServiceTab[] = [
-  { label: "Overview", href: "/services/data/overview" },
-  { label: "Instruments", href: "/services/data/instruments" },
-  { label: "Raw Data", href: "/services/data/raw" },
-  { label: "Processing", href: "/services/data/processing" },
-  { label: "Events", href: "/services/data/events" },
-  { label: "Coverage", href: "/services/data/coverage" },
-  { label: "Gaps & Quality", href: "/services/data/gaps" },
-  { label: "Valuation", href: "/services/data/valuation" },
+  { label: DS.overview, href: "/services/data/overview" },
+  { label: DS.instruments, href: "/services/data/instruments" },
+  { label: DS.raw, href: "/services/data/raw" },
+  { label: DS.processing, href: "/services/data/processing" },
+  { label: DS.events, href: "/services/data/events" },
+  { label: DS.coverage, href: "/services/data/coverage" },
+  { label: DS.gaps, href: "/services/data/gaps" },
+  { label: DS.valuation, href: "/services/data/valuation" },
 ];
 
 // ── Build (Quant Developer) ──────────────────────────────────────────────────

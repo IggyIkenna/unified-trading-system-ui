@@ -1,3 +1,5 @@
+import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
+
 /**
  * Lifecycle Mapping Model
  *
@@ -333,14 +335,7 @@ export const routeMappings: RouteMapping[] = [
   },
 
   // RUN stage — Trading Service
-  {
-    path: "/dashboard",
-    label: "Command Center",
-    primaryStage: "run",
-    lanes: ["execution", "strategy", "capital"],
-    description: "KPIs, P&L, alerts, risk limits, service health",
-    requiresAuth: true,
-  },
+  // /dashboard is the platform hub — not mapped here so lifecycle nav has no active stage on that route.
   {
     path: "/services/trading/overview",
     label: "Trading Overview",
@@ -642,22 +637,51 @@ export const routeMappings: RouteMapping[] = [
   },
 ];
 
+function dataServiceSectionLabel(segment: string): string {
+  const key = segment as keyof typeof DATA_SERVICE_SECTION_LABELS;
+  if (key in DATA_SERVICE_SECTION_LABELS) {
+    return DATA_SERVICE_SECTION_LABELS[key];
+  }
+  return segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
+}
+
 // Get mapping for a specific route
 export function getRouteMapping(path: string): RouteMapping | undefined {
+  const normalized = path.replace(/\/$/, "") || "/";
+
   // First try exact match
-  const exactMatch = routeMappings.find((m) => m.path === path);
+  const exactMatch = routeMappings.find((m) => m.path === normalized);
   if (exactMatch) return exactMatch;
+
+  const DATA_SERVICE_HUB = "/services/data";
+  // Avoid `/services/data` hub prefix matching every child (wrong label "Data Service" in breadcrumbs / nav)
+  if (normalized === DATA_SERVICE_HUB || normalized.startsWith(`${DATA_SERVICE_HUB}/`)) {
+    if (normalized === DATA_SERVICE_HUB) {
+      return routeMappings.find((m) => m.path === DATA_SERVICE_HUB);
+    }
+    const segment = normalized.slice(DATA_SERVICE_HUB.length + 1).split("/")[0];
+    if (!segment) {
+      return routeMappings.find((m) => m.path === DATA_SERVICE_HUB);
+    }
+    return {
+      path: `${DATA_SERVICE_HUB}/${segment}`,
+      label: dataServiceSectionLabel(segment),
+      primaryStage: "acquire",
+      lanes: ["data"],
+      requiresAuth: true,
+    };
+  }
 
   // Try prefix match (for dynamic routes like /services/research/ml/experiments/[id])
   const prefixMatch = routeMappings
-    .filter((m) => path.startsWith(m.path + "/"))
+    .filter((m) => normalized.startsWith(m.path + "/"))
     .sort((a, b) => b.path.length - a.path.length)[0];
 
   if (prefixMatch) return prefixMatch;
 
   // Observe sub-routes must keep primaryStage "observe" for lifecycle nav (tabs may outpace explicit mappings).
   const observeBase = "/services/observe";
-  if (path === observeBase || path.startsWith(`${observeBase}/`)) {
+  if (normalized === observeBase || normalized.startsWith(`${observeBase}/`)) {
     return {
       path: observeBase,
       label: "Observe",
