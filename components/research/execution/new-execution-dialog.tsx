@@ -81,48 +81,84 @@ function CollapsibleConfigSection({
 // Algo types and per-algo param definitions
 // ---------------------------------------------------------------------------
 
+// Algo types aligned with execution-service GridConfig + AlgorithmSpec
 type AlgoType =
+  // TRADE instruction algos
   | "TWAP"
   | "VWAP"
-  | "Iceberg"
-  | "POV Dynamic"
-  | "Almgren-Chriss"
-  | "Aggressive Limit"
-  | "Passive Limit"
-  | "Market Only";
+  | "ADAPTIVE_TWAP"
+  | "ALMGREN_CHRISS"
+  | "POV_DYNAMIC"
+  | "HYBRID_OPTIMAL"
+  | "PASSIVE_AGGRESSIVE_HYBRID"
+  | "BENCHMARK_FILL"
+  // SWAP instruction algos
+  | "SMART_ORDER_ROUTER"
+  | "SOR_TWAP"
+  | "SWAP_TWAP"
+  | "MAX_SLIPPAGE";
 
-const ALL_ALGOS: AlgoType[] = [
-  "TWAP",
-  "VWAP",
-  "Iceberg",
-  "POV Dynamic",
-  "Almgren-Chriss",
-  "Aggressive Limit",
-  "Passive Limit",
-  "Market Only",
-];
+// Backend-aligned algo sets by instruction type
+const ALGOS_BY_INSTRUCTION_TYPE: Record<string, AlgoType[]> = {
+  TRADE: ["TWAP", "VWAP", "ADAPTIVE_TWAP", "ALMGREN_CHRISS", "POV_DYNAMIC", "HYBRID_OPTIMAL", "PASSIVE_AGGRESSIVE_HYBRID", "BENCHMARK_FILL"],
+  SWAP: ["SMART_ORDER_ROUTER", "SOR_TWAP", "SWAP_TWAP", "MAX_SLIPPAGE", "BENCHMARK_FILL"],
+  LEND: ["BENCHMARK_FILL"],
+  STAKE: ["BENCHMARK_FILL"],
+  BORROW: ["BENCHMARK_FILL"],
+  FLASH_LOAN: ["BENCHMARK_FILL"],
+};
+
+const ALGO_DISPLAY_NAMES: Record<AlgoType, string> = {
+  TWAP: "TWAP",
+  VWAP: "VWAP",
+  ADAPTIVE_TWAP: "Adaptive TWAP",
+  ALMGREN_CHRISS: "Almgren-Chriss",
+  POV_DYNAMIC: "POV Dynamic",
+  HYBRID_OPTIMAL: "Hybrid Optimal",
+  PASSIVE_AGGRESSIVE_HYBRID: "Passive/Aggressive Hybrid",
+  BENCHMARK_FILL: "Benchmark Fill",
+  SMART_ORDER_ROUTER: "Smart Order Router",
+  SOR_TWAP: "SOR + TWAP",
+  SWAP_TWAP: "Swap TWAP",
+  MAX_SLIPPAGE: "Max Slippage",
+};
+
+function getAlgosForType(instructionType: string): AlgoType[] {
+  return ALGOS_BY_INSTRUCTION_TYPE[instructionType] ?? ALGOS_BY_INSTRUCTION_TYPE.TRADE;
+}
+
+// Legacy compat
+const ALL_ALGOS: AlgoType[] = Object.keys(ALGO_DISPLAY_NAMES) as AlgoType[];
 
 const MOCK_STRATEGY_BACKTESTS = [
   { id: "sbt-001", name: "BTC Momentum v3 — Binance", instructions: [
-    { id: "instr-001", type: "SWAP", instrument: "BTC-USDT", venue: "Binance", defaultAlgo: "VWAP" as AlgoType },
-    { id: "instr-002", type: "SWAP", instrument: "ETH-USDT", venue: "Binance", defaultAlgo: "TWAP" as AlgoType },
+    { id: "instr-001", type: "TRADE", instrument: "BTC-USDT", venue: "Binance", defaultAlgo: "VWAP" as AlgoType },
+    { id: "instr-002", type: "TRADE", instrument: "ETH-USDT", venue: "Binance", defaultAlgo: "TWAP" as AlgoType },
   ]},
   { id: "sbt-002", name: "ETH Mean-Rev — Hyperliquid", instructions: [
-    { id: "instr-003", type: "TRADE", instrument: "ETH-PERP", venue: "Hyperliquid", defaultAlgo: "Aggressive Limit" as AlgoType },
+    { id: "instr-003", type: "TRADE", instrument: "ETH-PERP", venue: "Hyperliquid", defaultAlgo: "ADAPTIVE_TWAP" as AlgoType },
     { id: "instr-004", type: "TRADE", instrument: "ETH-USDT", venue: "Hyperliquid", defaultAlgo: "VWAP" as AlgoType },
   ]},
   { id: "sbt-003", name: "Multi-Asset Trend — OKX", instructions: [
-    { id: "instr-005", type: "SWAP", instrument: "BTC-USDT", venue: "OKX", defaultAlgo: "VWAP" as AlgoType },
-    { id: "instr-006", type: "SWAP", instrument: "SOL-USDT", venue: "OKX", defaultAlgo: "TWAP" as AlgoType },
-    { id: "instr-007", type: "SWAP", instrument: "ETH-USDT", venue: "OKX", defaultAlgo: "Iceberg" as AlgoType },
+    { id: "instr-005", type: "TRADE", instrument: "BTC-USDT", venue: "OKX", defaultAlgo: "VWAP" as AlgoType },
+    { id: "instr-006", type: "TRADE", instrument: "SOL-USDT", venue: "OKX", defaultAlgo: "TWAP" as AlgoType },
+    { id: "instr-007", type: "TRADE", instrument: "ETH-USDT", venue: "OKX", defaultAlgo: "POV_DYNAMIC" as AlgoType },
   ]},
   { id: "sbt-004", name: "DeFi Basis — Aave/Uniswap", instructions: [
-    { id: "instr-008", type: "LEND", instrument: "USDC", venue: "Aave", defaultAlgo: "Market Only" as AlgoType },
-    { id: "instr-009", type: "SWAP", instrument: "WETH-USDC", venue: "Uniswap", defaultAlgo: "Market Only" as AlgoType },
-    { id: "instr-010", type: "FLASH_LOAN", instrument: "USDC", venue: "Aave", defaultAlgo: "Market Only" as AlgoType },
+    { id: "instr-008", type: "LEND", instrument: "USDC", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
+    { id: "instr-009", type: "SWAP", instrument: "WETH-USDC", venue: "Uniswap", defaultAlgo: "SMART_ORDER_ROUTER" as AlgoType },
+    { id: "instr-010", type: "FLASH_LOAN", instrument: "USDC", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
   ]},
   { id: "sbt-005", name: "SOL Breakout — Binance", instructions: [
-    { id: "instr-011", type: "TRADE", instrument: "SOL-USDT", venue: "Binance", defaultAlgo: "Aggressive Limit" as AlgoType },
+    { id: "instr-011", type: "TRADE", instrument: "SOL-USDT", venue: "Binance", defaultAlgo: "ALMGREN_CHRISS" as AlgoType },
+  ]},
+  { id: "sbt-006", name: "Options Vol Surface — Deribit", instructions: [
+    { id: "instr-012", type: "TRADE", instrument: "ETH-28MAR-3500-C", venue: "Deribit", defaultAlgo: "PASSIVE_AGGRESSIVE_HYBRID" as AlgoType },
+    { id: "instr-013", type: "TRADE", instrument: "ETH-28MAR-3500-P", venue: "Deribit", defaultAlgo: "PASSIVE_AGGRESSIVE_HYBRID" as AlgoType },
+  ]},
+  { id: "sbt-007", name: "Staking Yield — Lido/Aave", instructions: [
+    { id: "instr-014", type: "STAKE", instrument: "ETH", venue: "Lido", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
+    { id: "instr-015", type: "LEND", instrument: "stETH", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
   ]},
 ];
 
@@ -304,12 +340,12 @@ export function NewExecutionBacktestDialog({
                               value={instrAlgos[instr.id] ?? instr.defaultAlgo}
                               onValueChange={(v) => setInstrAlgos((prev) => ({ ...prev, [instr.id]: v as AlgoType }))}
                             >
-                              <SelectTrigger className="h-7 text-xs w-[140px]">
+                              <SelectTrigger className="h-7 text-xs w-[180px]">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                {ALL_ALGOS.map((a) => (
-                                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                                {getAlgosForType(instr.type).map((a) => (
+                                  <SelectItem key={a} value={a}>{ALGO_DISPLAY_NAMES[a]}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
@@ -334,13 +370,34 @@ export function NewExecutionBacktestDialog({
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Slice Duration (seconds)</Label>
+                    <Label className="text-xs">horizon_secs</Label>
+                    <Input
+                      type="number"
+                      value={twapTimeLimit}
+                      onChange={(e) => setTwapTimeLimit(e.target.value)}
+                      min={60}
+                    />
+                    <p className="text-[10px] text-muted-foreground">Total execution horizon in seconds</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">num_slices</Label>
                     <Input
                       type="number"
                       value={twapSliceDuration}
                       onChange={(e) => setTwapSliceDuration(e.target.value)}
                       min={1}
                     />
+                    <p className="text-[10px] text-muted-foreground">Number of child orders</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">interval_secs</Label>
+                    <Input
+                      type="number"
+                      value={String(Math.round(Number(twapTimeLimit) / Math.max(1, Number(twapSliceDuration))))}
+                      readOnly
+                      className="bg-muted/30"
+                    />
+                    <p className="text-[10px] text-muted-foreground">Derived: horizon / slices</p>
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs">Order Type</Label>
@@ -357,24 +414,28 @@ export function NewExecutionBacktestDialog({
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {algo === "ADAPTIVE_TWAP" && (
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Adaptive TWAP Parameters
+                </p>
+                <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Time Limit (seconds)</Label>
-                    <Input
-                      type="number"
-                      value={twapTimeLimit}
-                      onChange={(e) => setTwapTimeLimit(e.target.value)}
-                      min={60}
-                    />
+                    <Label className="text-xs">horizon_secs</Label>
+                    <Input type="number" defaultValue="3600" min={60} />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Max Participation Rate %</Label>
-                    <Input
-                      type="number"
-                      value={twapMaxParticipation}
-                      onChange={(e) => setTwapMaxParticipation(e.target.value)}
-                      min={1}
-                      max={100}
-                    />
+                    <Label className="text-xs">urgency_factor</Label>
+                    <Input type="number" defaultValue="1.0" step="0.1" min={0.1} max={5} />
+                    <p className="text-[10px] text-muted-foreground">&gt;1 = faster execution</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">num_slices</Label>
+                    <Input type="number" defaultValue="10" min={1} />
                   </div>
                 </div>
               </div>
@@ -387,23 +448,26 @@ export function NewExecutionBacktestDialog({
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Time Limit (seconds)</Label>
+                    <Label className="text-xs">num_intervals</Label>
                     <Input
                       type="number"
                       value={vwapTimeLimit}
                       onChange={(e) => setVwapTimeLimit(e.target.value)}
-                      min={60}
+                      min={1}
                     />
+                    <p className="text-[10px] text-muted-foreground">Volume profile intervals</p>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Max Participation Rate %</Label>
-                    <Input
-                      type="number"
-                      value={vwapMaxParticipation}
-                      onChange={(e) => setVwapMaxParticipation(e.target.value)}
-                      min={1}
-                      max={100}
-                    />
+                    <Label className="text-xs">volume_profile</Label>
+                    <Select value={vwapAggressive ? "aggressive" : "standard"} onValueChange={(v) => setVwapAggressive(v === "aggressive")}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standard">Standard</SelectItem>
+                        <SelectItem value="aggressive">Aggressive</SelectItem>
+                        <SelectItem value="u_shaped">U-Shaped</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] text-muted-foreground">Intraday volume distribution</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 pt-1">
@@ -422,113 +486,140 @@ export function NewExecutionBacktestDialog({
               </div>
             )}
 
-            {algo === "Iceberg" && (
-              <div className="rounded-lg border border-border/50 p-3 space-y-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Iceberg Parameters
-                </p>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Show Size</Label>
-                    <Input
-                      type="number"
-                      value={icebergShowSize}
-                      onChange={(e) => setIcebergShowSize(e.target.value)}
-                      min={1}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Hidden Size</Label>
-                    <Input
-                      type="number"
-                      value={icebergHiddenSize}
-                      onChange={(e) => setIcebergHiddenSize(e.target.value)}
-                      min={1}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs">Time Limit (seconds)</Label>
-                    <Input
-                      type="number"
-                      value={icebergTimeLimit}
-                      onChange={(e) => setIcebergTimeLimit(e.target.value)}
-                      min={60}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {algo === "POV Dynamic" && (
+            {algo === "POV_DYNAMIC" && (
               <div className="rounded-lg border border-border/50 p-3 space-y-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   POV Dynamic Parameters
                 </p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Participation Rate %</Label>
-                    <Input
-                      type="number"
-                      value={povParticipation}
-                      onChange={(e) => setPovParticipation(e.target.value)}
-                      min={1}
-                      max={100}
-                    />
+                    <Label className="text-xs">target_pov</Label>
+                    <Input type="number" value={povParticipation} onChange={(e) => setPovParticipation(e.target.value)} min={1} max={100} />
+                    <p className="text-[10px] text-muted-foreground">Target % of volume</p>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Time Limit (seconds)</Label>
-                    <Input
-                      type="number"
-                      value={povTimeLimit}
-                      onChange={(e) => setPovTimeLimit(e.target.value)}
-                      min={60}
-                    />
+                    <Label className="text-xs">min_pov</Label>
+                    <Input type="number" defaultValue="5" min={1} max={100} />
+                    <p className="text-[10px] text-muted-foreground">Minimum participation</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">max_pov</Label>
+                    <Input type="number" defaultValue="40" min={1} max={100} />
+                    <p className="text-[10px] text-muted-foreground">Maximum participation</p>
                   </div>
                 </div>
               </div>
             )}
 
-            {algo === "Almgren-Chriss" && (
+            {algo === "ALMGREN_CHRISS" && (
               <div className="rounded-lg border border-border/50 p-3 space-y-3">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Almgren-Chriss Parameters
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <Label className="text-xs">Risk Aversion (0.01 - 10.0)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={acRiskAversion}
-                      onChange={(e) => setAcRiskAversion(e.target.value)}
-                      min={0.01}
-                      max={10}
-                    />
+                    <Label className="text-xs">risk_aversion</Label>
+                    <Input type="number" step="0.01" value={acRiskAversion} onChange={(e) => setAcRiskAversion(e.target.value)} min={0.01} max={10} />
+                    <p className="text-[10px] text-muted-foreground">Higher = more risk-averse (slower)</p>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Horizon (seconds)</Label>
-                    <Input
-                      type="number"
-                      value={acHorizon}
-                      onChange={(e) => setAcHorizon(e.target.value)}
-                      min={60}
-                    />
+                    <Label className="text-xs">horizon_secs</Label>
+                    <Input type="number" value={acHorizon} onChange={(e) => setAcHorizon(e.target.value)} min={60} />
+                    <p className="text-[10px] text-muted-foreground">Execution window in seconds</p>
                   </div>
                 </div>
               </div>
             )}
 
-            {(algo === "Aggressive Limit" || algo === "Passive Limit") && (
-              <div className="rounded-md bg-muted/30 p-3 text-xs text-muted-foreground italic">
-                {algo} uses default limit order parameters. No additional
-                configuration needed.
+            {algo === "HYBRID_OPTIMAL" && (
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Hybrid Optimal Parameters
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">horizon_secs</Label>
+                    <Input type="number" defaultValue="3600" min={60} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">volatility_threshold</Label>
+                    <Input type="number" step="0.01" defaultValue="0.02" />
+                    <p className="text-[10px] text-muted-foreground">Switch to aggressive above</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">trend_threshold</Label>
+                    <Input type="number" step="0.01" defaultValue="0.005" />
+                    <p className="text-[10px] text-muted-foreground">Directional trend trigger</p>
+                  </div>
+                </div>
               </div>
             )}
 
-            {algo === "Market Only" && (
+            {algo === "PASSIVE_AGGRESSIVE_HYBRID" && (
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Passive/Aggressive Hybrid Parameters
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">horizon_secs</Label>
+                    <Input type="number" defaultValue="3600" min={60} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">passive_time_pct</Label>
+                    <Input type="number" defaultValue="70" min={0} max={100} />
+                    <p className="text-[10px] text-muted-foreground">% of time in passive mode</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">price_improve_bps</Label>
+                    <Input type="number" defaultValue="5" min={0} />
+                    <p className="text-[10px] text-muted-foreground">BPS price improvement target</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {(algo === "SMART_ORDER_ROUTER" || algo === "MAX_SLIPPAGE") && (
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  {ALGO_DISPLAY_NAMES[algo]} Parameters
+                </p>
+                <div className="space-y-1">
+                  <Label className="text-xs">max_slippage_bps</Label>
+                  <Input type="number" defaultValue="50" min={1} />
+                  <p className="text-[10px] text-muted-foreground">Maximum allowed slippage in basis points</p>
+                </div>
+              </div>
+            )}
+
+            {(algo === "SOR_TWAP" || algo === "SWAP_TWAP") && (
+              <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  {ALGO_DISPLAY_NAMES[algo]} Parameters
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">horizon_secs</Label>
+                    <Input type="number" defaultValue="1800" min={60} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">num_slices</Label>
+                    <Input type="number" defaultValue="6" min={1} />
+                  </div>
+                  {algo === "SOR_TWAP" && (
+                    <div className="space-y-1">
+                      <Label className="text-xs">max_slippage_bps</Label>
+                      <Input type="number" defaultValue="50" min={1} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {algo === "BENCHMARK_FILL" && (
               <div className="rounded-md bg-muted/30 p-3 text-xs text-muted-foreground italic">
-                Market Only executes immediately at market price. No additional
-                parameters.
+                Benchmark Fill — zero-alpha execution at best available price.
+                Used for LEND, STAKE, BORROW instructions. No parameters.
               </div>
             )}
           </CollapsibleConfigSection>
