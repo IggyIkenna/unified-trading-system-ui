@@ -237,7 +237,7 @@ export default function ExecutionResearchPage() {
       <GridSearchDialog
         open={gridSearchOpen}
         onClose={() => setGridSearchOpen(false)}
-        defaultTab="execution"
+        domain="execution"
       />
       {candidateDialogBt && (
         <CandidateDialog

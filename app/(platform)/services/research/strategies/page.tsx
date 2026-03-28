@@ -349,7 +349,7 @@ export default function StrategiesPage() {
       <GridSearchDialog
         open={gridSearchOpen}
         onClose={() => setGridSearchOpen(false)}
-        defaultTab="strategy"
+        domain="strategy"
       />
     </div>
   );
