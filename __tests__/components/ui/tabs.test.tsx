@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -96,7 +97,7 @@ describe("Tabs", () => {
   });
 
   it("fires onValueChange callback", async () => {
-    const onValueChange = jest.fn();
+    const onValueChange = vi.fn();
     const user = userEvent.setup();
     render(
       <Tabs defaultValue="a" onValueChange={onValueChange}>

@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 /**
  * Filter Propagation Integration Tests
  *
@@ -36,7 +37,7 @@ const FILTER_AWARE_COMPONENTS = [
 describe("Filter Propagation", () => {
   describe("Context State Changes", () => {
     it("should update context when organization is selected", () => {
-      const setContext = jest.fn();
+      const setContext = vi.fn();
       const context = { ...mockContext };
 
       // Simulate selecting an organization
@@ -49,7 +50,7 @@ describe("Filter Propagation", () => {
     });
 
     it("should update context when client is selected", () => {
-      const setContext = jest.fn();
+      const setContext = vi.fn();
       const context = { ...mockContext };
 
       // Simulate selecting a client
@@ -61,7 +62,7 @@ describe("Filter Propagation", () => {
     });
 
     it("should update context when strategies are selected", () => {
-      const setContext = jest.fn();
+      const setContext = vi.fn();
       const context = { ...mockContext };
 
       // Simulate selecting strategies
