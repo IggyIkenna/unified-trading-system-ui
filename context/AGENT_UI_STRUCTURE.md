@@ -58,7 +58,7 @@ The platform should feel:
 - operator-grade
 - client-trustworthy
 - better than generic SaaS admin tools
-- better than clunky fund admin portals
+- better than clunky legacy portals
 - more coherent than disconnected internal tools
 
 The core problem we are solving is not just visual polish.

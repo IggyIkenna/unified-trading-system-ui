@@ -384,7 +384,7 @@ export const REPORTS_TABS: ServiceTab[] = [
   { label: "Executive", href: "/services/reports/executive" },
   { label: "IBOR", href: "/services/reports/ibor", icon: Database },
   { label: "NAV", href: "/services/reports/nav", icon: DollarSign },
-  { label: "Fund Admin", href: "/services/reports/fund-admin", icon: Building2 },
+  { label: "Fund Ops", href: "/services/reports/fund-operations", icon: Building2 },
   { label: "Settlement", href: "/services/reports/settlement" },
   { label: "Reconciliation", href: "/services/reports/reconciliation" },
   { label: "Regulatory", href: "/services/reports/regulatory" },

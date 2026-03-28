@@ -134,7 +134,7 @@ const FUND_TERMS = {
   redemptionNotice: "90 days written notice",
   auditFirm: "PricewaterhouseCoopers (PwC)",
   legalCounsel: "Walkers (Cayman)",
-  administrator: "Citco Fund Administration",
+  administrator: "Citco Fund Services",
   custodian: "Fireblocks (digital assets) / Anchorage Digital",
 };
 
@@ -189,7 +189,7 @@ function investorStatusBadge(status: InvestorRegister["status"]) {
 // Page component
 // ---------------------------------------------------------------------------
 
-export default function FundAdminPage() {
+export default function FundOperationsPage() {
   const [selectedInvestor, setSelectedInvestor] = React.useState("Odum Fund I");
   const capitalAccount = CAPITAL_ACCOUNTS[selectedInvestor] ?? [];
   const totalDistribution = DISTRIBUTION_WATERFALL[DISTRIBUTION_WATERFALL.length - 1]?.cumulative ?? 0;
@@ -198,7 +198,7 @@ export default function FundAdminPage() {
     <main className="flex-1 p-6 space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold">Fund Administration</h1>
+        <h1 className="text-xl font-semibold">Fund Operations</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           Investor register, capital accounts, distributions, and fund terms
         </p>

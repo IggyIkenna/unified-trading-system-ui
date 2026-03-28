@@ -29,7 +29,7 @@ The same system serves three distinct user tiers:
 The platform must **feel**:
 
 - **Institutional** — premium, dark, calm, operator-grade
-- **Client-trustworthy** — better than generic SaaS admin tools; better than clunky fund admin portals
+- **Client-trustworthy** — better than generic SaaS admin tools; better than clunky legacy portals
 - **Coherent** — unified across public, client, and internal experiences
 - **Information-forward** — clear role/service boundaries, strong status/provenance cues
 

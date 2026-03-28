@@ -136,12 +136,12 @@ const REG_FUND_OPTS = [
   {
     id: "fund_crypto_spot",
     label: "Crypto Spot Fund (FCA + EU ESMA)",
-    tooltip: "Regulated crypto spot fund vehicle managed by Odum under combined FCA and EU ESMA regulatory coverage. Includes fund administration, NAV calculation, and investor reporting.",
+    tooltip: "Regulated crypto spot fund vehicle managed by Odum under combined FCA and EU ESMA regulatory coverage. Includes fund operations, NAV calculation, and investor reporting.",
   },
   {
     id: "fund_derivatives",
     label: "Derivatives & Traditional Markets Fund (EU ESMA)",
-    tooltip: "EU-regulated fund for crypto derivatives, options, futures, and traditional markets (equities, FX, fixed income, commodities). Full fund administration and regulatory reporting included.",
+    tooltip: "EU-regulated fund for crypto derivatives, options, futures, and traditional markets (equities, FX, fixed income, commodities). Full fund operations and regulatory reporting included.",
   },
 ];
 const INV_OPTS = [

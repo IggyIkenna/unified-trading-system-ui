@@ -3132,7 +3132,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
               {
                 key: "tier-institutional",
                 label: "Institutional",
-                description: "Multi-strategy + fund admin",
+                description: "Multi-strategy + fund operations",
                 internal_only: false,
               },
               {
