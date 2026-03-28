@@ -109,7 +109,7 @@ function Section({
         </div>
         {open ? <ChevronDown className="size-4 text-muted-foreground" /> : <ChevronRight className="size-4 text-muted-foreground" />}
       </button>
-      {open && <CardContent className="pt-0 pb-4 space-y-3">{children}</CardContent>}
+      {open && <CardContent className="pt-0 pb-3 px-4 space-y-2">{children}</CardContent>}
     </Card>
   );
 }
@@ -129,45 +129,44 @@ function SubscriptionChips({
   const selectedCount = items.filter((i) => i.selected).length;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-muted-foreground">{title}</p>
-        <Badge variant="outline" className="text-[10px]">
-          {selectedCount} selected
-        </Badge>
+        <p className="text-[11px] font-medium text-muted-foreground">{title}</p>
+        <span className="text-[9px] text-muted-foreground/60">{selectedCount} sel.</span>
       </div>
-      {categories.map((cat) => (
-        <div key={cat} className="space-y-1">
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 pl-1">{cat}</p>
-          <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap items-center gap-x-1 gap-y-0.5">
+        {categories.map((cat, ci) => (
+          <React.Fragment key={cat}>
+            {ci > 0 && <span className="text-border mx-0.5">|</span>}
+            <span className="text-[8px] uppercase tracking-wider text-muted-foreground/40 mr-0.5">{cat}</span>
             {items.filter((i) => i.category === cat).map((item) => (
               <button
                 key={item.id}
                 onClick={() => item.enabled && onToggle(item.id)}
                 disabled={!item.enabled}
                 className={cn(
-                  "inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-all border",
+                  "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] transition-all border leading-tight",
                   !item.enabled
                     ? "bg-muted/10 text-muted-foreground/30 border-border/20 cursor-not-allowed"
                     : item.selected
-                      ? "bg-primary/15 text-primary border-primary/30 ring-1 ring-primary/20"
+                      ? "bg-primary/15 text-primary border-primary/30"
                       : "bg-muted/20 text-muted-foreground border-border/30 hover:border-primary/30 hover:text-foreground",
                 )}
                 title={!item.enabled ? `Upgrade to access ${item.label}` : item.selected ? "Click to deselect" : "Click to select"}
               >
                 {!item.enabled ? (
-                  <Lock className="size-3" />
+                  <Lock className="size-2.5" />
                 ) : item.selected ? (
-                  <CheckCircle2 className="size-3" />
+                  <CheckCircle2 className="size-2.5" />
                 ) : (
-                  <span className="size-3 rounded-full border border-muted-foreground/40" />
+                  <span className="size-2.5 rounded-full border border-muted-foreground/40" />
                 )}
                 {item.label}
               </button>
             ))}
-          </div>
-        </div>
-      ))}
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   );
 }
