@@ -21,6 +21,10 @@ import {
   ExecutionComparePanel,
   ExecutionDetailView,
 } from "@/components/research/execution/execution-detail-view";
+import {
+  CandidateBasket,
+  useCandidateBasket,
+} from "@/components/platform/candidate-basket";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -35,7 +39,12 @@ export default function ExecutionResearchPage() {
   const [showCompare, setShowCompare] = React.useState(false);
   const [candidateDialogBt, setCandidateDialogBt] =
     React.useState<ExecutionBacktest | null>(null);
-  const [candidates, setCandidates] = React.useState<Set<string>>(new Set());
+  const basket = useCandidateBasket();
+  // Backward-compat shim: child components still expect Set<string>
+  const candidates = React.useMemo(
+    () => new Set(basket.candidates.map((c) => c.id)),
+    [basket.candidates],
+  );
 
   const complete = EXECUTION_BACKTESTS.filter((b) => b.status === "complete");
   const running = EXECUTION_BACKTESTS.filter((b) => b.status === "running");
@@ -52,7 +61,16 @@ export default function ExecutionResearchPage() {
 
   const handlePromote = (confirmed: boolean) => {
     if (confirmed && candidateDialogBt) {
-      setCandidates((prev) => new Set([...prev, candidateDialogBt.id]));
+      basket.addCandidate({
+        id: candidateDialogBt.id,
+        type: "execution_algo",
+        name: candidateDialogBt.name,
+        version: candidateDialogBt.algo,
+        metrics: {
+          sharpe: candidateDialogBt.results?.sharpe_ratio ?? 0,
+          slippage_bps: candidateDialogBt.results?.avg_slippage_bps ?? 0,
+        },
+      });
       toast({
         title: "Strategy candidate created",
         description: `${candidateDialogBt.name} is now available in the Promote tab.`,
@@ -217,6 +235,17 @@ export default function ExecutionResearchPage() {
           onClose={handlePromote}
         />
       )}
+
+      {/* Shared Candidate Basket — same component across Strategy/ML/Execution */}
+      <CandidateBasket
+        platform="execution"
+        candidates={basket.candidates}
+        onRemove={basket.removeCandidate}
+        onClearAll={basket.clearAll}
+        onUpdateNote={basket.updateNote}
+        onSendToReview={() => {/* navigate to promote pipeline */}}
+        onPreparePackage={() => {/* generate promotion package */}}
+      />
     </div>
   );
 }

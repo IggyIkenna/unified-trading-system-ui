@@ -34,6 +34,10 @@ import {
 import * as React from "react";
 
 import { StrategyWizard } from "@/components/research/strategy-wizard";
+import {
+  CandidateBasket,
+  useCandidateBasket,
+} from "@/components/platform/candidate-basket";
 import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
@@ -205,9 +209,7 @@ export default function BacktestsPage() {
   const [filters, setFilters] = React.useState<FilterState>(EMPTY_FILTERS);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM);
-  const [candidateBasket, setCandidateBasket] = React.useState<Set<string>>(
-    new Set(),
-  );
+  const basket = useCandidateBasket();
   const [wizardOpen, setWizardOpen] = React.useState(false);
 
   // Filter logic
@@ -227,15 +229,24 @@ export default function BacktestsPage() {
   });
 
   function toggleCandidate(id: string) {
-    setCandidateBasket((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
+    if (basket.isSelected(id)) {
+      basket.removeCandidate(id);
+    } else {
+      const bt = backtests.find((b) => b.id === id);
+      if (bt) {
+        basket.addCandidate({
+          id: bt.id,
+          type: "strategy_config",
+          name: bt.templateName,
+          version: bt.instrument,
+          metrics: {
+            sharpe: bt.metrics?.sharpe ?? 0,
+            totalReturn: bt.metrics?.totalReturn ?? 0,
+            maxDrawdown: bt.metrics?.maxDrawdown ?? 0,
+          },
+        });
       }
-      return next;
-    });
+    }
   }
 
   const backtestColumns: ColumnDef<BacktestRun, unknown>[] = [
@@ -251,13 +262,13 @@ export default function BacktestsPage() {
             onClick={() => toggleCandidate(bt.id)}
             className="p-0.5 rounded hover:bg-muted"
             title={
-              candidateBasket.has(bt.id)
+              basket.isSelected(bt.id)
                 ? "Remove from basket"
                 : "Add to candidate basket"
             }
           >
             <Star
-              className={`size-3.5 ${candidateBasket.has(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+              className={`size-3.5 ${basket.isSelected(bt.id) ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
             />
           </button>
         );
@@ -626,50 +637,16 @@ export default function BacktestsPage() {
           </CardContent>
         </Card>
 
-        {/* Candidate Basket */}
-        {candidateBasket.size > 0 && (
-          <Card className="border-amber-500/30 bg-amber-500/5">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Star className="size-4 text-amber-400" />
-                Candidate Basket ({candidateBasket.size})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {Array.from(candidateBasket).map((btId) => {
-                  const bt = backtests.find((b) => b.id === btId);
-                  if (!bt) return null;
-                  return (
-                    <Badge
-                      key={btId}
-                      variant="outline"
-                      className="gap-1.5 border-amber-500/30 text-amber-300 pr-1"
-                    >
-                      {bt.templateName} / {bt.venue}
-                      <button
-                        onClick={() => toggleCandidate(btId)}
-                        className="rounded-full p-0.5 hover:bg-amber-500/20"
-                      >
-                        <X className="size-3" />
-                      </button>
-                    </Badge>
-                  );
-                })}
-              </div>
-              <div className="mt-3">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-amber-500/30 text-amber-300"
-                >
-                  <Plus className="size-3.5" />
-                  Promote Selected to Candidates
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* Shared Candidate Basket — same component across Strategy/ML/Execution */}
+        <CandidateBasket
+          platform="strategy"
+          candidates={basket.candidates}
+          onRemove={basket.removeCandidate}
+          onClearAll={basket.clearAll}
+          onUpdateNote={basket.updateNote}
+          onSendToReview={() => {/* navigate to promote pipeline */}}
+          onPreparePackage={() => {/* generate promotion package */}}
+        />
 
         {/* New Strategy Wizard */}
         <StrategyWizard open={wizardOpen} onOpenChange={setWizardOpen} />

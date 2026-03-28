@@ -518,58 +518,45 @@ export default function SettlementPage() {
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* Summary Cards */}
+        {/* Header */}
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">Settlement Status</h1>
+          <p className="text-sm text-muted-foreground">
+            Trade settlement tracking, matching, and dispute resolution
+          </p>
+          <p className="text-[10px] text-muted-foreground/60 font-mono">
+            {rawSettlements.length} records &middot; Last updated {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+          </p>
+        </div>
+
+        {/* Summary — premium institutional KPI cards */}
         <div className="grid grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Receipt className="size-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">{totalCount}</p>
-                  <p className="text-xs text-muted-foreground">Total Settlements</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Settlements</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{totalCount}</p>
+              <p className="text-[10px] text-muted-foreground/60">Across {venues.length} venues</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                  <Clock className="size-5" style={{ color: "var(--status-warning)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">{pendingCount}</p>
-                  <p className="text-xs text-muted-foreground">Pending</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Pending</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-warning)]">{pendingCount}</p>
+              <p className="text-[10px] text-muted-foreground/60">Awaiting confirmation</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--status-live)]/10">
-                  <CheckCircle2 className="size-5" style={{ color: "var(--status-live)" }} />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">{matchedCount}</p>
-                  <p className="text-xs text-muted-foreground">Matched</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Matched</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-live)]">{matchedCount}</p>
+              <p className="text-[10px] text-muted-foreground/60">Successfully reconciled</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-destructive/10">
-                  <AlertTriangle className="size-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold">{disputedCount}</p>
-                  <p className="text-xs text-muted-foreground">Disputed</p>
-                </div>
-              </div>
+          <Card className="border-border/50">
+            <CardContent className="pt-5 pb-4 space-y-1">
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Disputed</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-destructive">{disputedCount}</p>
+              <p className="text-[10px] text-muted-foreground/60">Requires investigation</p>
             </CardContent>
           </Card>
         </div>
