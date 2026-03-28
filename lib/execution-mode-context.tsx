@@ -8,6 +8,7 @@ interface ExecutionModeContextValue {
   setMode: (mode: ExecutionMode) => void;
   config: (typeof EXECUTION_MODES)[ExecutionMode];
   isLive: boolean;
+  isPaper: boolean;
   isBatch: boolean;
 }
 
@@ -28,6 +29,7 @@ export function ExecutionModeProvider({
       setMode,
       config: EXECUTION_MODES[mode],
       isLive: mode === "live",
+      isPaper: mode === "paper",
       isBatch: mode === "batch",
     }),
     [mode],

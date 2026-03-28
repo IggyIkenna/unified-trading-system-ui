@@ -95,7 +95,7 @@ export function LifecycleNav({
     isInternal,
     logout: doLogout,
   } = useAuth();
-  const { isLive, setMode } = useExecutionMode();
+  const { mode: execMode, setMode } = useExecutionMode();
 
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true);
@@ -347,25 +347,46 @@ export function LifecycleNav({
         </div>
       </div>
 
-      {/* Centre: Live/Simulated toggle — the USP */}
+      {/* Centre: 3-way mode selector — the USP */}
       <div className="flex-1 flex items-center justify-center">
-        <button
-          onClick={() => {
-            const next = isLive ? "batch" : "live";
-            console.log("[LiveToggle] switching to", next);
-            setMode(next);
-          }}
-          className={cn(
-            "flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide transition-all",
-            isLive
-              ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-              : "border-amber-500/40 bg-amber-500/15 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)]",
-          )}
-        >
-          <Radio className={cn("size-3.5", isLive && "animate-pulse")} />
-          <span>{isLive ? "LIVE" : "SIMULATED"}</span>
-          <span className="text-[9px] font-normal opacity-60">{isLive ? "Real execution" : "Paper trading"}</span>
-        </button>
+        <div className="flex items-center rounded-full border border-border/60 bg-muted/30 p-0.5">
+          <button
+            onClick={() => setMode("live")}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
+              execMode === "live"
+                ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.15)]"
+                : "text-muted-foreground/60 hover:text-muted-foreground",
+            )}
+          >
+            {execMode === "live" && <Radio className="size-3 animate-pulse" />}
+            Live
+          </button>
+          <button
+            onClick={() => setMode("paper")}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
+              execMode === "paper"
+                ? "border border-amber-500/40 bg-amber-500/15 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.15)]"
+                : "text-muted-foreground/60 hover:text-muted-foreground",
+            )}
+          >
+            {execMode === "paper" && <Radio className="size-3 animate-pulse" />}
+            Paper
+          </button>
+          <button
+            onClick={() => setMode("batch")}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
+              execMode === "batch"
+                ? "border border-blue-500/40 bg-blue-500/15 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.15)]"
+                : "text-muted-foreground/60 hover:text-muted-foreground",
+            )}
+          >
+            {execMode === "batch" && <Radio className="size-3 animate-pulse" />}
+            Batch
+          </button>
+        </div>
       </div>
 
       {/* Right: Search, Notifications, Org, User */}

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { generateLiveBookUpdates, generateOrderFlowData } from "@/lib/mocks/generators/order-flow-generators";
 import { MOCK_RECON_RUNS } from "@/lib/mocks/fixtures/recon-runs";
 import { MOCK_LATENCY_METRICS } from "@/lib/mocks/fixtures/latency-metrics";
@@ -41,11 +42,13 @@ export interface MarketsDataContextValue {
   isLoading: boolean;
   isError: boolean;
   refetch: () => void;
+  mode?: string;
 }
 
 const MarketsDataContext = React.createContext<MarketsDataContextValue | null>(null);
 
 export function MarketsDataProvider({ children }: { children: React.ReactNode }) {
+  const { isPaper, isBatch, mode } = useExecutionMode();
   const [viewMode, setViewMode] = React.useState<"cross-section" | "time-series">("cross-section");
   const [dataMode, setDataMode] = React.useState<"live" | "batch">("live");
   const [dateRange, setDateRange] = React.useState("today");
@@ -64,10 +67,12 @@ export function MarketsDataProvider({ children }: { children: React.ReactNode })
     [orderFlowRange, assetClass],
   );
 
-  const liveBookUpdates = React.useMemo(
-    () => generateLiveBookUpdates(orderFlowRange, assetClass, bookDepth),
-    [orderFlowRange, assetClass, bookDepth],
-  );
+  // Batch mode: disable live book updates (empty array, no ticking)
+  // Paper mode: add slight delay simulation by taking a snapshot (no live ticking)
+  const liveBookUpdates = React.useMemo(() => {
+    if (isBatch) return [];
+    return generateLiveBookUpdates(orderFlowRange, assetClass, bookDepth);
+  }, [orderFlowRange, assetClass, bookDepth, isBatch]);
 
   const ownOrders = React.useMemo(() => orderFlowData.filter((o) => o.isOwn), [orderFlowData]);
 
@@ -103,6 +108,7 @@ export function MarketsDataProvider({ children }: { children: React.ReactNode })
       isLoading: false,
       isError: false,
       refetch,
+      mode,
     }),
     [
       orderFlowData,
@@ -118,6 +124,9 @@ export function MarketsDataProvider({ children }: { children: React.ReactNode })
       viewMode,
       dataMode,
       dateRange,
+      isPaper,
+      isBatch,
+      mode,
       refetch,
     ],
   );

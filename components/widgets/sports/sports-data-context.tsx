@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import type { Bet, Fixture, FootballLeague } from "@/components/trading/sports/types";
 import { MOCK_FIXTURES, MOCK_BETS } from "@/components/trading/sports/mock-data";
 import { DEFAULT_ARB_THRESHOLD } from "@/components/trading/sports/mock-fixtures";
@@ -71,11 +72,13 @@ interface SportsDataContextValue {
   activeTab: SportsWorkspaceTab;
   setActiveTab: (t: SportsWorkspaceTab) => void;
   handleViewArb: (fixtureId?: string) => void;
+  mode?: string;
 }
 
 const SportsDataContext = React.createContext<SportsDataContextValue | null>(null);
 
 export function SportsDataProvider({ children }: { children: React.ReactNode }) {
+  const { isPaper, isBatch, mode } = useExecutionMode();
   const [filters, setFilters] = React.useState<GlobalFilters>({
     leagues: [],
     dateRange: "today",
@@ -87,7 +90,12 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
   const [activeTab, setActiveTab] = React.useState<SportsWorkspaceTab>("fixtures");
 
   const allFixtures = MOCK_FIXTURES;
-  const filteredFixtures = React.useMemo(() => applyFilters(allFixtures, filters), [allFixtures, filters]);
+  // Batch mode: only show settled/completed fixtures
+  const filteredFixtures = React.useMemo(() => {
+    const filtered = applyFilters(allFixtures, filters);
+    if (isBatch) return filtered.filter((f) => isCompleted(f.status));
+    return filtered;
+  }, [allFixtures, filters, isBatch]);
 
   const selectedFixture = React.useMemo(() => {
     if (!selectedFixtureId) return null;
@@ -95,8 +103,14 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
   }, [selectedFixtureId]);
 
   const allBets = MOCK_BETS;
-  const openBets = React.useMemo(() => allBets.filter((b) => b.status === "open"), [allBets]);
-  const settledBets = React.useMemo(() => allBets.filter((b) => b.status !== "open"), [allBets]);
+  // Paper mode: zero out all bet amounts (simulated, no real stakes)
+  const adjustedBets = React.useMemo(() => {
+    if (!isPaper) return allBets;
+    return allBets.map((b) => ({ ...b, stake: 0 }));
+  }, [allBets, isPaper]);
+
+  const openBets = React.useMemo(() => adjustedBets.filter((b) => b.status === "open"), [adjustedBets]);
+  const settledBets = React.useMemo(() => adjustedBets.filter((b) => b.status !== "open"), [adjustedBets]);
 
   const handleViewArb = React.useCallback((_fixtureId?: string) => {
     setActiveTab("arb");
@@ -115,8 +129,9 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       setArbThreshold,
       openBets,
       settledBets,
-      allBets,
+      allBets: adjustedBets,
       activeTab,
+      mode,
       setActiveTab,
       handleViewArb,
     }),
@@ -129,8 +144,11 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       arbThreshold,
       openBets,
       settledBets,
-      allBets,
+      adjustedBets,
       activeTab,
+      isPaper,
+      isBatch,
+      mode,
       handleViewArb,
     ],
   );

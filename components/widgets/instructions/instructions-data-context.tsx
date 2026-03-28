@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { MOCK_STRATEGY_INSTRUCTIONS } from "@/lib/mocks/fixtures/strategy-instructions";
 import { INSTRUCTION_STRATEGY_TYPES } from "@/lib/config/services/instructions.config";
 import { TRADING_OPERATION_TYPES } from "@/lib/config/services/trading.config";
@@ -34,11 +35,13 @@ interface InstructionsDataContextValue {
   resetFilters: () => void;
 
   refresh: () => void;
+  mode?: string;
 }
 
 const InstructionsDataContext = React.createContext<InstructionsDataContextValue | null>(null);
 
 export function InstructionsDataProvider({ children }: { children: React.ReactNode }) {
+  const { isPaper, isBatch, mode } = useExecutionMode();
   const [strategyFilter, setStrategyFilter] = React.useState("ALL");
   const [opTypeFilter, setOpTypeFilter] = React.useState("ALL");
   const [selectedInstructionId, setSelectedInstructionId] = React.useState<string | null>(null);
@@ -46,12 +49,24 @@ export function InstructionsDataProvider({ children }: { children: React.ReactNo
   const allInstructions = MOCK_STRATEGY_INSTRUCTIONS;
 
   const filteredInstructions = React.useMemo(() => {
-    return allInstructions.filter((inst) => {
+    let result = allInstructions.filter((inst) => {
       if (strategyFilter !== "ALL" && inst.strategyType !== strategyFilter) return false;
       if (opTypeFilter !== "ALL" && inst.instruction.operationType !== opTypeFilter) return false;
       return true;
     });
-  }, [allInstructions, strategyFilter, opTypeFilter]);
+    // Batch mode: only show executed instructions
+    if (isBatch) {
+      result = result.filter((i) => i.fill?.status === "FILLED");
+    }
+    // Paper mode: tag instructions with "(Simulated)" label
+    if (isPaper) {
+      result = result.map((i) => ({
+        ...i,
+        strategyType: `${i.strategyType} (Simulated)`,
+      }));
+    }
+    return result;
+  }, [allInstructions, strategyFilter, opTypeFilter, isBatch, isPaper]);
 
   const summary = React.useMemo((): InstructionsSummary => {
     const total = filteredInstructions.length;
@@ -127,6 +142,7 @@ export function InstructionsDataProvider({ children }: { children: React.ReactNo
       handleFilterChange,
       resetFilters,
       refresh,
+      mode,
     }),
     [
       strategyFilter,
@@ -141,6 +157,9 @@ export function InstructionsDataProvider({ children }: { children: React.ReactNo
       handleFilterChange,
       resetFilters,
       refresh,
+      isPaper,
+      isBatch,
+      mode,
     ],
   );
 

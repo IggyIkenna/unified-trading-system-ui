@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import type { WatchlistSymbol } from "@/components/trading/watchlist-panel";
 import type {
   Asset,
@@ -109,6 +110,7 @@ export interface OptionsDataContextValue {
   handleAssetClassChange: (ac: AssetClass) => void;
   handleWatchlistSelect: (sym: WatchlistSymbol) => void;
   isCrypto: boolean;
+  mode?: string;
 }
 
 const OptionsDataContext = React.createContext<OptionsDataContextValue | null>(null);
@@ -122,6 +124,7 @@ function findSymbolById(id: string): WatchlistSymbol | null {
 }
 
 export function OptionsDataProvider({ children }: { children: React.ReactNode }) {
+  const { mode } = useExecutionMode();
   const [assetClass, setAssetClass] = React.useState<AssetClass>("crypto");
   const isCrypto = assetClass === "crypto";
 
@@ -341,6 +344,7 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
       handleAssetClassChange,
       handleWatchlistSelect,
       isCrypto,
+      mode,
     }),
     [
       assetClass,
@@ -383,6 +387,7 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
       selectedInstrument,
       handleWatchlistSelect,
       isCrypto,
+      mode,
     ],
   );
 

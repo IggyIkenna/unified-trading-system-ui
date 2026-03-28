@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useOrders, useCancelOrder, useAmendOrder } from "@/hooks/api/use-orders";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -105,6 +106,7 @@ export { type OrderRecord, type InstrumentType, classifyInstrument };
 export function OrdersDataProvider({ children }: { children: React.ReactNode }) {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders();
   const { scope: globalScope } = useGlobalScope();
+  const { isPaper, isBatch } = useExecutionMode();
   const cancelMutation = useCancelOrder();
   const amendMutation = useAmendOrder();
 
@@ -125,9 +127,24 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
   }, [ordersRaw]);
 
   const scopedOrders = React.useMemo(() => {
-    if (globalScope.strategyIds.length === 0) return orders;
-    return orders.filter((o) => !o.strategy_id || globalScope.strategyIds.includes(String(o.strategy_id)));
-  }, [orders, globalScope.strategyIds]);
+    let result = orders;
+    if (globalScope.strategyIds.length > 0) {
+      result = result.filter((o) => !o.strategy_id || globalScope.strategyIds.includes(String(o.strategy_id)));
+    }
+    // Paper mode: tag order IDs with "(Paper)" suffix, mark all as simulated
+    if (isPaper) {
+      result = result.map((o) => ({
+        ...o,
+        order_id: o.order_id.endsWith("(Paper)") ? o.order_id : `${o.order_id} (Paper)`,
+        status: "SIMULATED",
+      }));
+    }
+    // Batch mode: only show filled (historically settled) orders
+    if (isBatch) {
+      result = result.filter((o) => o.status.toUpperCase().includes("FILLED"));
+    }
+    return result;
+  }, [orders, globalScope.strategyIds, isPaper, isBatch]);
 
   const filteredOrders = React.useMemo(() => {
     let result = scopedOrders;

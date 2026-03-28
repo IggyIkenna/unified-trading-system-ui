@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useBalances } from "@/hooks/api/use-positions";
 import { useTransferHistory } from "@/hooks/api/use-transfer-history";
 import type { BalanceRecord, TransferHistoryEntry } from "@/lib/types/accounts";
@@ -26,6 +27,7 @@ export interface AccountsDataContextValue extends AccountsData {
   transferHistoryLoading: boolean;
   transferHistoryError: boolean;
   refetchTransferHistory: () => void;
+  mode?: string;
 }
 
 const AccountsDataContext = React.createContext<AccountsDataContextValue | null>(null);
@@ -38,6 +40,7 @@ function coerceBalances(raw: unknown): BalanceRecord[] {
 }
 
 export function AccountsDataProvider({ children }: { children: React.ReactNode }) {
+  const { isPaper, isBatch, mode } = useExecutionMode();
   const { data: balancesRaw, isLoading, error, refetch } = useBalances();
   const {
     data: transferHistory = [],
@@ -48,7 +51,13 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
 
   const [transferOpen, setTransferOpen] = React.useState(false);
 
-  const balances = React.useMemo(() => coerceBalances(balancesRaw), [balancesRaw]);
+  // Paper mode: add "(Paper)" suffix to account names; Batch mode: add "(T+1)" suffix
+  const balances = React.useMemo(() => {
+    const raw = coerceBalances(balancesRaw);
+    if (isPaper) return raw.map((b) => ({ ...b, venue: `${b.venue} (Paper)` }));
+    if (isBatch) return raw.map((b) => ({ ...b, venue: `${b.venue} (T+1)` }));
+    return raw;
+  }, [balancesRaw, isPaper, isBatch]);
 
   const totalNAV = React.useMemo(() => balances.reduce((sum, b) => sum + b.total, 0), [balances]);
   const totalFree = React.useMemo(() => balances.reduce((sum, b) => sum + b.free, 0), [balances]);
@@ -97,6 +106,7 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
       transferHistoryLoading,
       transferHistoryError,
       refetchTransferHistory,
+      mode,
     }),
     [
       balances,
@@ -112,6 +122,9 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
       transferHistoryLoading,
       transferHistoryError,
       refetchTransferHistory,
+      isPaper,
+      isBatch,
+      mode,
     ],
   );
 

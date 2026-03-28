@@ -50,6 +50,12 @@ export const EXECUTION_MODES: Record<ExecutionMode, ExecutionModeConfig> = {
     latency: "Real-time (sub-second to seconds)",
     description: "Live market data via Pub/Sub, real-time execution",
   },
+  paper: {
+    mode: "paper",
+    dataSource: "pubsub",
+    latency: "Real-time (sub-second to seconds)",
+    description: "Live market data via Pub/Sub, simulated fills (paper trading)",
+  },
   batch: {
     mode: "batch",
     dataSource: "gcs",

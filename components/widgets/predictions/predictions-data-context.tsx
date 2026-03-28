@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import type { FilterDefinition } from "@/components/platform/filter-bar";
@@ -105,6 +106,7 @@ export interface PredictionsDataContextValue {
   marketsFilterValues: Record<string, unknown>;
   handleMarketsFilterChange: (key: string, value: unknown) => void;
   resetMarketsFilters: () => void;
+  mode?: string;
 }
 
 const PredictionsDataContext = React.createContext<PredictionsDataContextValue | null>(null);
@@ -155,6 +157,7 @@ function computeFilteredMarkets(
 }
 
 export function PredictionsDataProvider({ children }: { children: React.ReactNode }) {
+  const { isPaper, isBatch, mode } = useExecutionMode();
   const { toast } = useToast();
 
   const markets = MOCK_MARKETS;
@@ -176,7 +179,9 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
   const [recentFills, setRecentFills] = React.useState<RecentFill[]>(() => MOCK_RECENT_FILLS.map((f) => ({ ...f })));
   const [quickTradeMarketId, setQuickTradeMarketId] = React.useState(() => MOCK_MARKETS[0]?.id ?? "");
 
+  // Batch mode: stop the 8-second arb generation interval
   React.useEffect(() => {
+    if (isBatch) return;
     const timer = setInterval(() => {
       setArbs((prev) => {
         const updated = prev.map((a) =>
@@ -210,7 +215,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
       });
     }, 8000);
     return () => clearInterval(timer);
-  }, []);
+  }, [isBatch]);
 
   const filteredMarkets = React.useMemo(
     () => computeFilteredMarkets(markets, activeCategory, venueFilter, searchQuery, sortBy),
@@ -222,8 +227,17 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
     [markets, selectedMarketId],
   );
 
-  const openPositions = React.useMemo(() => MOCK_POSITIONS.filter((p) => p.status === "open"), []);
-  const settledPositions = React.useMemo(() => MOCK_POSITIONS.filter((p) => p.status === "settled"), []);
+  // Paper mode: tag all positions as simulated
+  const openPositions = React.useMemo(() => {
+    const open = MOCK_POSITIONS.filter((p) => p.status === "open");
+    if (isPaper) return open.map((p) => ({ ...p, label: "simulated" as const }));
+    return open;
+  }, [isPaper]);
+  const settledPositions = React.useMemo(() => {
+    const settled = MOCK_POSITIONS.filter((p) => p.status === "settled");
+    if (isPaper) return settled.map((p) => ({ ...p, label: "simulated" as const }));
+    return settled;
+  }, [isPaper]);
 
   const portfolioKpis = React.useMemo(() => {
     const totalStaked = openPositions.reduce((s, p) => s + p.totalStaked, 0);
@@ -426,6 +440,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
       marketsFilterValues,
       handleMarketsFilterChange,
       resetMarketsFilters,
+      mode,
     }),
     [
       markets,
@@ -453,6 +468,9 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
       marketsFilterValues,
       handleMarketsFilterChange,
       resetMarketsFilters,
+      isPaper,
+      isBatch,
+      mode,
     ],
   );
 

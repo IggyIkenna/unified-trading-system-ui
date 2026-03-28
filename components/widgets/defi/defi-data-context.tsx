@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
@@ -64,11 +65,14 @@ export interface DeFiDataContextValue {
   setTransferMode: (m: "send" | "bridge") => void;
 
   executeDeFiOrder: (params: DeFiOrderParams) => void;
+  readOnly?: boolean;
+  mode?: string;
 }
 
 const DeFiDataContext = React.createContext<DeFiDataContextValue | null>(null);
 
 export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
+  const { isPaper, isBatch, mode } = useExecutionMode();
   const [selectedChain, setSelectedChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
   const [flashSteps, setFlashSteps] = React.useState<FlashLoanStep[]>(INITIAL_FLASH_STEPS);
@@ -115,13 +119,29 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     placeMockOrder(params);
   }, []);
 
+  // Paper mode: 10x testnet balances; Batch mode: read-only flag
+  const adjustedTokenBalances = React.useMemo(() => {
+    if (!isPaper) return MOCK_TOKEN_BALANCES;
+    const scaled: Record<string, number> = {};
+    for (const [key, val] of Object.entries(MOCK_TOKEN_BALANCES)) {
+      scaled[key] = val * 10;
+    }
+    return scaled;
+  }, [isPaper]);
+
+  // Batch mode: mark protocols as historical
+  const adjustedLendingProtocols = React.useMemo(() => {
+    if (!isBatch) return LENDING_PROTOCOLS;
+    return LENDING_PROTOCOLS.map((p) => ({ ...p, name: `${p.name} (Historical)` }));
+  }, [isBatch]);
+
   const value = React.useMemo<DeFiDataContextValue>(
     () => ({
       connectedWallet: MOCK_WALLET,
       selectedChain,
       setSelectedChain,
-      tokenBalances: MOCK_TOKEN_BALANCES,
-      lendingProtocols: LENDING_PROTOCOLS,
+      tokenBalances: adjustedTokenBalances,
+      lendingProtocols: adjustedLendingProtocols,
       selectedLendingProtocol,
       setSelectedLendingProtocol,
       healthFactor,
@@ -137,10 +157,14 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       transferMode,
       setTransferMode,
       executeDeFiOrder,
+      readOnly: isBatch,
+      mode,
     }),
     [
       selectedChain,
       selectedLendingProtocol,
+      adjustedTokenBalances,
+      adjustedLendingProtocols,
       flashSteps,
       flashPnl,
       transferMode,
@@ -149,6 +173,9 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       updateFlashStep,
       executeDeFiOrder,
       swapRoute,
+      isBatch,
+      isPaper,
+      mode,
     ],
   );
 

@@ -269,7 +269,7 @@ export const STRATEGY_EXECUTION_MODE_CONFIG: Record<
 // SYSTEM EXECUTION MODES (Live vs Batch)
 // =============================================================================
 
-export const SYSTEM_MODES = ["live", "batch"] as const;
+export const SYSTEM_MODES = ["live", "paper", "batch"] as const;
 export type SystemMode = (typeof SYSTEM_MODES)[number];
 
 export const SYSTEM_MODE_CONFIG: Record<
@@ -284,14 +284,21 @@ export const SYSTEM_MODE_CONFIG: Record<
 > = {
   live: {
     label: "Live",
-    description: "Real-time market data and execution",
+    description: "Real-time data, real execution — orders hit venues",
     dataSource: "Pub/Sub streams",
     latency: "Sub-second to seconds",
     color: "var(--status-live)",
   },
+  paper: {
+    label: "Paper",
+    description: "Real-time data, simulated fills — no real money at risk",
+    dataSource: "Pub/Sub streams",
+    latency: "Sub-second to seconds",
+    color: "var(--status-warning)",
+  },
   batch: {
     label: "Batch",
-    description: "End-of-day reconciled data",
+    description: "Historical end-of-day data for backtesting and reconciliation",
     dataSource: "GCS / Data warehouse",
     latency: "T+1 by 08:00",
     color: "var(--surface-markets)",

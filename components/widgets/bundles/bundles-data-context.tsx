@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import {
   ALL_OPERATION_TYPES,
   BUNDLE_INSTRUMENTS,
@@ -32,11 +33,14 @@ export interface BundlesDataContextValue {
   operationTypes: readonly BundleOperationType[];
   venues: readonly string[];
   instruments: readonly string[];
+  readOnly?: boolean;
+  mode?: string;
 }
 
 const BundlesDataContext = React.createContext<BundlesDataContextValue | null>(null);
 
 export function BundlesDataProvider({ children }: { children: React.ReactNode }) {
+  const { isPaper, isBatch, mode } = useExecutionMode();
   const [steps, setSteps] = React.useState<BundleStep[]>([]);
   const [showTemplates, setShowTemplates] = React.useState(true);
 
@@ -137,7 +141,8 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
     [steps],
   );
 
-  const estimatedGas = steps.length * 14.5;
+  // Paper mode: halve gas estimates (testnet gas is cheaper)
+  const estimatedGas = isPaper ? steps.length * 7.25 : steps.length * 14.5;
   const netPnl = totalRevenue - totalCost - estimatedGas;
 
   const value = React.useMemo(
@@ -160,6 +165,8 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
       operationTypes: ALL_OPERATION_TYPES,
       venues: BUNDLE_VENUES,
       instruments: BUNDLE_INSTRUMENTS,
+      readOnly: isBatch,
+      mode,
     }),
     [
       steps,
@@ -175,6 +182,9 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
       totalRevenue,
       estimatedGas,
       netPnl,
+      isPaper,
+      isBatch,
+      mode,
     ],
   );
 
