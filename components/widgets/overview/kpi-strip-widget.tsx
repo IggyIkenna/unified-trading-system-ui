@@ -3,9 +3,12 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { KPICard } from "@/components/trading/kpi-card";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { useOverviewData } from "./overview-data-context";
+import { useOverviewDataSafe } from "./overview-data-context";
 
 export function KPIStripWidget(_props: WidgetComponentProps) {
+  const ctx = useOverviewDataSafe();
+  const { scope: context } = useGlobalScope();
+  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
   const {
     totalPnl,
     totalExposure,
@@ -16,9 +19,7 @@ export function KPIStripWidget(_props: WidgetComponentProps) {
     highAlerts,
     coreLoading,
     formatCurrency,
-  } = useOverviewData();
-
-  const { scope: context } = useGlobalScope();
+  } = ctx;
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 p-3 h-full">

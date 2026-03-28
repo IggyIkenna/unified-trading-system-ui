@@ -9,23 +9,25 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useOverviewData } from "./overview-data-context";
+import { useOverviewDataSafe } from "./overview-data-context";
 
 export function StrategyTableWidget(_props: WidgetComponentProps) {
-  const {
-    strategyPerformance,
-    filteredSortedStrategies: allFiltered,
-    realtimePnl,
-    perfLoading,
-    formatDollar,
-  } = useOverviewData();
-
+  const ctx = useOverviewDataSafe();
   const [strategySearch, setStrategySearch] = React.useState("");
   const [strategySort, setStrategySort] = React.useState<string>("-pnl");
   const [assetClassFilter, setAssetClassFilter] = React.useState("all");
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [showAll, setShowAll] = React.useState(false);
   const [collapsedGroups, setCollapsedGroups] = React.useState<Set<string> | null>(null);
+
+  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  const {
+    strategyPerformance,
+    filteredSortedStrategies: allFiltered,
+    realtimePnl,
+    perfLoading,
+    formatDollar,
+  } = ctx;
 
   const filtered = React.useMemo(() => {
     let result = [...(allFiltered as Array<Record<string, unknown>>)];

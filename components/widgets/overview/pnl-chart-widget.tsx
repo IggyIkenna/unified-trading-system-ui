@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown, ChevronUp, Database, Loader2, Radio } from "lucide-react";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { useOverviewData } from "./overview-data-context";
+import { useOverviewDataSafe } from "./overview-data-context";
 
 function getYesterday(): string {
   const d = new Date();
@@ -18,13 +18,14 @@ function getYesterday(): string {
 }
 
 export function PnLChartWidget(_props: WidgetComponentProps) {
-  const { liveTimeSeries, batchTimeSeries, realtimePnlPoints, timeseriesLoading, liveBatchLoading, formatCurrency } =
-    useOverviewData();
-
+  const ctx = useOverviewDataSafe();
   const { scope: context } = useGlobalScope();
   const [showTimeSeries, setShowTimeSeries] = React.useState(true);
   const [batchDate, setBatchDate] = React.useState(getYesterday());
   const { format: valueFormat, setFormat: setValueFormat } = useValueFormat("dollar");
+  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  const { liveTimeSeries, batchTimeSeries, realtimePnlPoints, timeseriesLoading, liveBatchLoading, formatCurrency } =
+    ctx;
 
   return (
     <div className="p-3 space-y-2 h-full overflow-auto">

@@ -53,3 +53,8 @@ export function useOverviewData(): OverviewData {
   if (!ctx) throw new Error("useOverviewData must be used within OverviewDataProvider");
   return ctx;
 }
+
+/** Safe version — returns null when used outside OverviewDataProvider (cross-tab widgets). */
+export function useOverviewDataSafe(): OverviewData | null {
+  return React.useContext(OverviewDataContext);
+}

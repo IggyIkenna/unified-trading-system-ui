@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useOverviewData } from "./overview-data-context";
+import { useOverviewDataSafe } from "./overview-data-context";
 
 export function PnLAttributionWidget(_props: WidgetComponentProps) {
-  const { pnlComponents, totalPnl } = useOverviewData();
+  const ctx = useOverviewDataSafe();
+  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  const { pnlComponents, totalPnl } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">
       <div className="flex justify-end mb-2">
@@ -27,7 +29,9 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
 }
 
 export function AlertsPreviewWidget(_props: WidgetComponentProps) {
-  const { mockAlerts, alertsLoading } = useOverviewData();
+  const ctx = useOverviewDataSafe();
+  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  const { mockAlerts, alertsLoading } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">
       <div className="flex justify-end mb-2">
@@ -72,7 +76,9 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
 }
 
 export function RecentFillsWidget(_props: WidgetComponentProps) {
-  const { ordersData, ordersLoading } = useOverviewData();
+  const ctx = useOverviewDataSafe();
+  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  const { ordersData, ordersLoading } = ctx;
   const raw = ordersData as unknown;
   const orders = Array.isArray(raw)
     ? raw
@@ -126,7 +132,9 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
 }
 
 export function HealthGridWidget(_props: WidgetComponentProps) {
-  const { allMockServices } = useOverviewData();
+  const ctx = useOverviewDataSafe();
+  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  const { allMockServices } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">
       <div className="flex justify-end mb-2">
