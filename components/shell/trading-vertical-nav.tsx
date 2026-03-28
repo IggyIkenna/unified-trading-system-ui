@@ -50,11 +50,7 @@ interface TradingVerticalNavProps {
   bottomSlot?: React.ReactNode;
 }
 
-export function TradingVerticalNav({
-  tabs,
-  entitlements,
-  bottomSlot,
-}: TradingVerticalNavProps) {
+export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVerticalNavProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [showNewPanel, setShowNewPanel] = useState(false);
   const [newPanelName, setNewPanelName] = useState("");
@@ -65,6 +61,7 @@ export function TradingVerticalNav({
   const hasWildcard = entitlements?.includes("*") ?? true;
   const customPanels = useWorkspaceStore((s) => s.customPanels);
   const createCustomPanel = useWorkspaceStore((s) => s.createCustomPanel);
+  const deleteCustomPanel = useWorkspaceStore((s) => s.deleteCustomPanel);
 
   useEffect(() => {
     if (showNewPanel && newPanelInputRef.current) {
@@ -120,11 +117,7 @@ export function TradingVerticalNav({
   // Check if all tabs in a family are locked
   const isFamilyLocked = (familyTabs: ServiceTab[]) => {
     return familyTabs.every((tab) => {
-      return (
-        tab.requiredEntitlement &&
-        !hasWildcard &&
-        !entitlements?.includes(tab.requiredEntitlement)
-      );
+      return tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
     });
   };
 
@@ -135,10 +128,7 @@ export function TradingVerticalNav({
     const isActive = tab.exact
       ? pathname === tab.href || pathname === `${tab.href}/`
       : pathname === tab.href || pathname.startsWith(matchPath + "/");
-    const isLocked =
-      tab.requiredEntitlement &&
-      !hasWildcard &&
-      !entitlements?.includes(tab.requiredEntitlement);
+    const isLocked = tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
 
     const Icon = tab.icon;
 
@@ -146,11 +136,8 @@ export function TradingVerticalNav({
       <span
         className={cn(
           "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-          isActive
-            ? "bg-primary/15 text-primary"
-            : "text-muted-foreground hover:text-foreground hover:bg-accent",
-          (isLocked || tab.navDisabled) &&
-            "opacity-35 cursor-not-allowed pointer-events-none",
+          isActive ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent",
+          (isLocked || tab.navDisabled) && "opacity-35 cursor-not-allowed pointer-events-none",
           collapsed && "justify-center px-0",
         )}
       >
@@ -163,38 +150,20 @@ export function TradingVerticalNav({
             )}
           />
         ) : (
-          <span
-            className={cn(
-              "shrink-0 rounded-sm bg-foreground/40",
-              collapsed ? "size-5" : "size-[18px]",
-            )}
-          />
+          <span className={cn("shrink-0 rounded-sm bg-foreground/40", collapsed ? "size-5" : "size-[18px]")} />
         )}
-        {!collapsed && (
-          <span className="truncate leading-none">{tab.label}</span>
-        )}
-        {!collapsed && (isLocked || tab.navDisabled) && (
-          <Lock className="size-3 shrink-0 ml-auto opacity-60" />
-        )}
+        {!collapsed && <span className="truncate leading-none">{tab.label}</span>}
+        {!collapsed && (isLocked || tab.navDisabled) && <Lock className="size-3 shrink-0 ml-auto opacity-60" />}
       </span>
     );
 
-    const wrapperClass = cn(
-      "px-2",
-      collapsed && "flex justify-center px-1",
-    );
-    const title = collapsed
-      ? isLocked
-        ? `${tab.label} (locked)`
-        : tab.label
-      : undefined;
+    const wrapperClass = cn("px-2", collapsed && "flex justify-center px-1");
+    const title = collapsed ? (isLocked ? `${tab.label} (locked)` : tab.label) : undefined;
 
     return (
       <div key={tab.href} className={wrapperClass}>
         {isLocked || tab.navDisabled ? (
-          <span title={title ?? tab.navDisabledTitle ?? `Upgrade to access ${tab.label}`}>
-            {itemContent}
-          </span>
+          <span title={title ?? tab.navDisabledTitle ?? `Upgrade to access ${tab.label}`}>{itemContent}</span>
         ) : (
           <Link href={tab.href} title={title}>
             {itemContent}
@@ -223,20 +192,14 @@ export function TradingVerticalNav({
           )}
           title={collapsed ? familyName : undefined}
         >
-          {FamilyIcon && !collapsed && (
-            <FamilyIcon className="size-3.5 shrink-0 text-foreground/40" />
-          )}
-          {FamilyIcon && collapsed && (
-            <FamilyIcon className="size-4 shrink-0 text-foreground/40" />
-          )}
+          {FamilyIcon && !collapsed && <FamilyIcon className="size-3.5 shrink-0 text-foreground/40" />}
+          {FamilyIcon && collapsed && <FamilyIcon className="size-4 shrink-0 text-foreground/40" />}
           {!collapsed && (
             <>
               <span className="text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap flex-1 text-left">
                 {familyName}
               </span>
-              {locked && (
-                <Lock className="size-3 shrink-0 opacity-40" />
-              )}
+              {locked && <Lock className="size-3 shrink-0 opacity-40" />}
               {isExpanded ? (
                 <ChevronDown className="size-3 shrink-0 opacity-50" />
               ) : (
@@ -248,9 +211,7 @@ export function TradingVerticalNav({
 
         {/* Family tabs — collapsible */}
         {(isExpanded || collapsed) && (
-          <div className={cn(!collapsed && "pl-2")}>
-            {familyTabs.map((tab) => renderTabItem(tab))}
-          </div>
+          <div className={cn(!collapsed && "pl-2")}>{familyTabs.map((tab) => renderTabItem(tab))}</div>
         )}
       </div>
     );
@@ -281,30 +242,18 @@ export function TradingVerticalNav({
           aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
           title={collapsed ? "Expand navigation" : "Collapse navigation"}
         >
-          {collapsed ? (
-            <PanelLeftOpen className="size-4" />
-          ) : (
-            <PanelLeftClose className="size-4" />
-          )}
+          {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </button>
       </div>
 
       {/* Nav items */}
-      <nav
-        className="flex-1 overflow-y-auto py-2"
-        aria-label="Trading sections"
-      >
+      <nav className="flex-1 overflow-y-auto py-2" aria-label="Trading sections">
         {/* Shared tabs (top-level) */}
         {sharedTabs.map((tab) => renderTabItem(tab))}
 
         {/* Separator between shared and family groups */}
         {Object.keys(familyGroups).length > 0 && (
-          <div
-            className={cn(
-              "mx-2 my-2 border-t border-border",
-              !collapsed && "flex items-center gap-2 pt-2 pb-1",
-            )}
-          >
+          <div className={cn("mx-2 my-2 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
             {!collapsed && (
               <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider whitespace-nowrap px-1">
                 Strategy Families
@@ -314,18 +263,11 @@ export function TradingVerticalNav({
         )}
 
         {/* Family groups */}
-        {Object.entries(familyGroups).map(([familyName, familyTabs]) =>
-          renderFamilyGroup(familyName, familyTabs),
-        )}
+        {Object.entries(familyGroups).map(([familyName, familyTabs]) => renderFamilyGroup(familyName, familyTabs))}
 
         {/* Custom panels */}
         {customPanels.length > 0 && (
-          <div
-            className={cn(
-              "mx-2 my-1 border-t border-border",
-              !collapsed && "flex items-center gap-2 pt-2 pb-1",
-            )}
-          >
+          <div className={cn("mx-2 my-1 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
             {!collapsed && (
               <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap px-1">
                 Custom
@@ -337,34 +279,47 @@ export function TradingVerticalNav({
           const panelHref = `/services/trading/custom/${panel.id}`;
           const isActive = pathname === panelHref || pathname.startsWith(panelHref + "/");
 
-          const itemContent = (
-            <span
-              className={cn(
-                "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-                isActive
-                  ? "bg-primary/15 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
-                collapsed && "justify-center px-0",
-              )}
-            >
-              <LayoutGrid
-                className={cn(
-                  "shrink-0",
-                  collapsed ? "size-5" : "size-[18px]",
-                  isActive ? "text-primary" : "text-foreground/60",
-                )}
-              />
-              {!collapsed && (
-                <span className="truncate leading-none">{panel.name}</span>
-              )}
-            </span>
-          );
-
           return (
-            <div key={panel.id} className={cn("px-2", collapsed && "flex justify-center px-1")}>
+            <div key={panel.id} className={cn("px-2 group relative", collapsed && "flex justify-center px-1")}>
               <Link href={panelHref} title={collapsed ? panel.name : undefined}>
-                {itemContent}
+                <span
+                  className={cn(
+                    "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
+                    isActive
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                    collapsed && "justify-center px-0",
+                  )}
+                >
+                  <LayoutGrid
+                    className={cn(
+                      "shrink-0",
+                      collapsed ? "size-5" : "size-[18px]",
+                      isActive ? "text-primary" : "text-foreground/60",
+                    )}
+                  />
+                  {!collapsed && <span className="truncate leading-none pr-6">{panel.name}</span>}
+                </span>
               </Link>
+
+              {!collapsed && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteCustomPanel(panel.id);
+                    if (isActive) {
+                      router.push("/services/trading/overview");
+                    }
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                  title={`Delete "${panel.name}"`}
+                  aria-label={`Delete panel ${panel.name}`}
+                >
+                  <X className="size-3" />
+                </button>
+              )}
             </div>
           );
         })}
@@ -381,12 +336,7 @@ export function TradingVerticalNav({
               )}
               title={collapsed ? "New Panel" : undefined}
             >
-              <Plus
-                className={cn(
-                  "shrink-0 text-foreground/60",
-                  collapsed ? "size-5" : "size-[18px]",
-                )}
-              />
+              <Plus className={cn("shrink-0 text-foreground/60", collapsed ? "size-5" : "size-[18px]")} />
               {!collapsed && <span className="truncate leading-none">New Panel</span>}
             </button>
           ) : (
@@ -414,7 +364,10 @@ export function TradingVerticalNav({
                   Create
                 </button>
                 <button
-                  onClick={() => { setShowNewPanel(false); setNewPanelName(""); }}
+                  onClick={() => {
+                    setShowNewPanel(false);
+                    setNewPanelName("");
+                  }}
                   className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent"
                 >
                   <X className="size-3.5" />
@@ -427,12 +380,7 @@ export function TradingVerticalNav({
 
       {/* Bottom slot (e.g. Live/As-Of toggle) */}
       {bottomSlot && (
-        <div
-          className={cn(
-            "border-t border-border p-2 shrink-0",
-            collapsed && "flex justify-center",
-          )}
-        >
+        <div className={cn("border-t border-border p-2 shrink-0", collapsed && "flex justify-center")}>
           {!collapsed && bottomSlot}
         </div>
       )}

@@ -691,6 +691,17 @@ export function getRouteMapping(path: string): RouteMapping | undefined {
     };
   }
 
+  const tradingBase = "/services/trading";
+  if (normalized === tradingBase || normalized.startsWith(`${tradingBase}/`)) {
+    return {
+      path: tradingBase,
+      label: "Trading",
+      primaryStage: "run",
+      lanes: ["execution", "strategy", "capital"],
+      requiresAuth: true,
+    };
+  }
+
   return undefined;
 }
 

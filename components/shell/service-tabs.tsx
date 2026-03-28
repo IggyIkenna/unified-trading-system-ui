@@ -312,6 +312,7 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "DeFi",
     familyGroup: "DeFi",
     familyIcon: "Layers",
+    exact: true,
   },
   {
     label: "Bundles",
@@ -335,6 +336,7 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "Sports",
     familyGroup: "Sports",
     familyIcon: "Trophy",
+    exact: true,
   },
   {
     label: "Place Bets",
@@ -358,6 +360,7 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "Options & Futures",
     familyGroup: "Options & Futures",
     familyIcon: "BarChart3",
+    exact: true,
   },
   {
     label: "Combo Builder",
@@ -382,6 +385,7 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "Predictions",
     familyGroup: "Predictions",
     familyIcon: "TrendingUp",
+    exact: true,
   },
   {
     label: "Aggregators",
