@@ -23,7 +23,7 @@ import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
 import type { PnLBreakdown, TimeSeriesPoint, TradingClient, TradingOrganization } from "@/lib/trading-data";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { OverviewDataProvider, type OverviewData } from "@/components/widgets/overview/overview-data-context";
-import { getStrategiesForScope, getAlertsForScope } from "@/lib/mock-data";
+import { getStrategiesForScope, getAlertsForScope, getAggregatedPnlForScope } from "@/lib/mock-data";
 import { ORGANIZATIONS, CLIENTS } from "@/lib/trading-data";
 
 import "@/components/widgets/overview/register";
@@ -108,7 +108,23 @@ export default function OverviewPage() {
   }));
 
   const healthRaw = healthData as Record<string, unknown> | undefined;
-  const allMockServices: ServiceHealth[] = (healthRaw?.data ?? healthRaw?.services ?? []) as ServiceHealth[];
+  const SEED_SERVICES: ServiceHealth[] = [
+    { name: "Market Data", freshness: 2, sla: 10, status: "live" },
+    { name: "Execution", freshness: 1, sla: 5, status: "live" },
+    { name: "Risk Engine", freshness: 5, sla: 15, status: "live" },
+    { name: "P&L Attribution", freshness: 8, sla: 30, status: "live" },
+    { name: "Position Monitor", freshness: 3, sla: 10, status: "live" },
+    { name: "Strategy Service", freshness: 4, sla: 10, status: "live" },
+    { name: "Features Pipeline", freshness: 12, sla: 60, status: "live" },
+    { name: "ML Inference", freshness: 45, sla: 60, status: "warning" },
+  ];
+  const allMockServices: ServiceHealth[] = (healthRaw?.data ?? healthRaw?.services ?? SEED_SERVICES) as ServiceHealth[];
+
+  // Fall back to seed PnL when API returns nothing
+  const seedPnlTotal = React.useMemo(() => {
+    const agg = getAggregatedPnlForScope(wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds);
+    return agg.reduce((sum, d) => sum + d.pnl, 0);
+  }, [wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds]);
 
   const aggregatedPnL: PnLBreakdown = pnlData ?? {
     strategyId: "AGGREGATE",
@@ -116,23 +132,41 @@ export default function OverviewPage() {
     orgId: "MULTIPLE",
     date: getToday(),
     mode: "live",
-    delta: 0,
-    funding: 0,
-    basis: 0,
-    interest_rate: 0,
-    greeks: 0,
-    mark_to_market: 0,
-    carry: 0,
-    fx: 0,
-    fees: 0,
-    slippage: 0,
-    residual: 0,
-    total: 0,
+    delta: Math.round(seedPnlTotal * 0.35),
+    funding: Math.round(seedPnlTotal * 0.15),
+    basis: Math.round(seedPnlTotal * 0.12),
+    interest_rate: Math.round(seedPnlTotal * 0.05),
+    greeks: Math.round(seedPnlTotal * 0.08),
+    mark_to_market: Math.round(seedPnlTotal * 0.1),
+    carry: Math.round(seedPnlTotal * 0.06),
+    fx: Math.round(seedPnlTotal * 0.02),
+    fees: Math.round(seedPnlTotal * -0.03),
+    slippage: Math.round(seedPnlTotal * -0.02),
+    residual: Math.round(seedPnlTotal * 0.12),
+    total: Math.round(seedPnlTotal),
   };
 
+  // Generate seed time series when API returns nothing
+  const seedTimeSeries = React.useMemo(() => {
+    const agg = getAggregatedPnlForScope(wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds);
+    if (agg.length === 0) return null;
+    let cumulativePnl = 0;
+    const baseNav = 50_000_000;
+    const pnl: TimeSeriesPoint[] = [];
+    const nav: TimeSeriesPoint[] = [];
+    const exposure: TimeSeriesPoint[] = [];
+    for (const d of agg) {
+      cumulativePnl += d.pnl;
+      pnl.push({ timestamp: d.date, value: Math.round(cumulativePnl) });
+      nav.push({ timestamp: d.date, value: Math.round(baseNav + cumulativePnl) });
+      exposure.push({ timestamp: d.date, value: Math.round(baseNav * 0.8 + cumulativePnl * 0.3) });
+    }
+    return { pnl, nav, exposure };
+  }, [wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds]);
+
   const emptyTs: TimeSeriesPoint[] = [];
-  const liveTimeSeries = timeseriesData?.timeseries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
-  const batchTimeSeries = liveBatchData ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
+  const liveTimeSeries = timeseriesData?.timeseries ?? seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
+  const batchTimeSeries = liveBatchData ?? seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
 
   const apiStrategies = performanceData?.strategies ?? [];
   const { scope: context } = useGlobalScope();
