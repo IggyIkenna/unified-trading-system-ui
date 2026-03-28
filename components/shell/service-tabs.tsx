@@ -402,7 +402,7 @@ export const ADMIN_TABS: ServiceTab[] = [
   // ── Operations ──────────────────────────────────────────────────────────
   { label: "Services", href: "/ops/services", group: "Operations" },
   { label: "Jobs", href: "/ops/jobs" },
-  { label: "DevOps", href: "/devops" },
+  { label: "Deployment & Readiness", href: "/devops" },
   { label: "Approvals", href: "/approvals" },
   // ── Configuration ───────────────────────────────────────────────────────
   { label: "Config", href: "/config", group: "Configuration" },
