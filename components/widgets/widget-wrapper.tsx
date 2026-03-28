@@ -9,6 +9,7 @@ import { UpgradeCard } from "@/components/platform/upgrade-card";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { type WidgetDefinition, type WidgetPlacement, getWidget, getAllWidgets } from "./widget-registry";
 import { useWorkspaceStore, useActiveLayouts } from "@/lib/stores/workspace-store";
+import { WidgetContextGuard } from "./widget-context-guard";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,17 +77,19 @@ function WidgetBody({
   return (
     <WidgetScroll axes="both" className="flex-1 min-h-0">
       {hasAccess ? (
-        <WidgetErrorBoundary widgetLabel={definition.label}>
-          <React.Suspense
-            fallback={
-              <div className="flex h-full items-center justify-center">
-                <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-              </div>
-            }
-          >
-            <Component instanceId={instanceId} config={config} />
-          </React.Suspense>
-        </WidgetErrorBoundary>
+        <WidgetContextGuard widgetLabel={definition.label}>
+          <WidgetErrorBoundary widgetLabel={definition.label}>
+            <React.Suspense
+              fallback={
+                <div className="flex h-full items-center justify-center">
+                  <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+                </div>
+              }
+            >
+              <Component instanceId={instanceId} config={config} />
+            </React.Suspense>
+          </WidgetErrorBoundary>
+        </WidgetContextGuard>
       ) : (
         <UpgradeCard
           serviceName={definition.label}
@@ -291,7 +294,7 @@ export function WidgetWrapper({
           {expanded ? <Minimize2 className="size-3" /> : <Maximize2 className="size-3" />}
         </button>
 
-        {editMode && !expanded && (
+        {!expanded && (
           <button
             onClick={(e) => {
               e.stopPropagation();

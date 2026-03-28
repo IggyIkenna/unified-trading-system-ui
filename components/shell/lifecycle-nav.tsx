@@ -350,7 +350,11 @@ export function LifecycleNav({
       {/* Centre: Live/Simulated toggle — the USP */}
       <div className="flex-1 flex items-center justify-center">
         <button
-          onClick={() => setMode(isLive ? "batch" : "live")}
+          onClick={() => {
+            const next = isLive ? "batch" : "live";
+            console.log("[LiveToggle] switching to", next);
+            setMode(next);
+          }}
           className={cn(
             "flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold tracking-wide transition-all",
             isLive
@@ -359,7 +363,8 @@ export function LifecycleNav({
           )}
         >
           <Radio className={cn("size-3.5", isLive && "animate-pulse")} />
-          {isLive ? "LIVE" : "SIMULATED"}
+          <span>{isLive ? "LIVE" : "SIMULATED"}</span>
+          <span className="text-[9px] font-normal opacity-60">{isLive ? "Real execution" : "Paper trading"}</span>
         </button>
       </div>
 

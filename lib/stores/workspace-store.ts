@@ -14,10 +14,17 @@ export interface Workspace {
   updatedAt: string;
 }
 
+export interface CustomPanel {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
 interface WorkspaceState {
   workspaces: Record<string, Workspace[]>;
   activeWorkspaceId: Record<string, string>;
   editMode: boolean;
+  customPanels: CustomPanel[];
 }
 
 interface WorkspaceActions extends WorkspaceState {
@@ -35,6 +42,9 @@ interface WorkspaceActions extends WorkspaceState {
   toggleEditMode: () => void;
   exportWorkspace: (tab: string, id: string) => string;
   importWorkspace: (tab: string, json: string) => boolean;
+  createCustomPanel: (name: string) => string;
+  deleteCustomPanel: (id: string) => void;
+  renameCustomPanel: (id: string, name: string) => void;
   reset: () => void;
 }
 
@@ -45,6 +55,7 @@ function buildInitialState(): WorkspaceState {
     workspaces: {},
     activeWorkspaceId: {},
     editMode: true,
+    customPanels: [],
   };
 }
 
@@ -268,6 +279,45 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
         }
       },
 
+      createCustomPanel: (name) => {
+        const id = `panel-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        const tab = `custom-${id}`;
+        const wsId = `${tab}-default`;
+        const now = new Date().toISOString();
+        const defaultWorkspace: Workspace = {
+          id: wsId,
+          name: "Default",
+          tab,
+          isPreset: false,
+          layouts: [],
+          createdAt: now,
+          updatedAt: now,
+        };
+        set((s) => ({
+          customPanels: [...s.customPanels, { id, name }],
+          workspaces: { ...s.workspaces, [tab]: [defaultWorkspace] },
+          activeWorkspaceId: { ...s.activeWorkspaceId, [tab]: wsId },
+        }));
+        return id;
+      },
+
+      deleteCustomPanel: (id) =>
+        set((s) => {
+          const tab = `custom-${id}`;
+          const { [tab]: _removed, ...remainingWorkspaces } = s.workspaces;
+          const { [tab]: _removedActive, ...remainingActive } = s.activeWorkspaceId;
+          return {
+            customPanels: s.customPanels.filter((p) => p.id !== id),
+            workspaces: remainingWorkspaces,
+            activeWorkspaceId: remainingActive,
+          };
+        }),
+
+      renameCustomPanel: (id, name) =>
+        set((s) => ({
+          customPanels: s.customPanels.map((p) => (p.id === id ? { ...p, name } : p)),
+        })),
+
       reset: () => set(buildInitialState()),
     }),
     {
@@ -276,6 +326,7 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
         workspaces: s.workspaces,
         activeWorkspaceId: s.activeWorkspaceId,
         editMode: s.editMode,
+        customPanels: s.customPanels,
       }),
     },
   ),

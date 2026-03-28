@@ -6,6 +6,7 @@ import type { Layout, LayoutItem, ResponsiveLayouts } from "react-grid-layout";
 import { ResponsiveGridLayout, useContainerWidth, verticalCompactor } from "react-grid-layout";
 import { getWidget, type WidgetPlacement } from "./widget-registry";
 import { WidgetWrapper } from "./widget-wrapper";
+import { AllWidgetProviders } from "./all-widget-providers";
 
 import "react-grid-layout/css/styles.css";
 
@@ -14,7 +15,7 @@ const COLS = { lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 };
 const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
 const MARGIN: [number, number] = [2, 2];
 const CONTAINER_PADDING: [number, number] = [0, 0];
-const RESIZE_HANDLES = ["se", "sw", "e", "w", "s"] as const;
+const RESIZE_HANDLES = ["se", "sw", "ne", "nw", "e", "w", "s", "n"] as const;
 
 interface WidgetGridProps {
   tab: string;
@@ -70,9 +71,9 @@ export function WidgetGrid({ tab }: WidgetGridProps) {
     [layout],
   );
 
-  const dragConfig = React.useMemo(() => ({ enabled: editMode, handle: ".widget-drag-handle" }), [editMode]);
+  const dragConfig = React.useMemo(() => ({ enabled: true, handle: ".widget-drag-handle" }), []);
 
-  const resizeConfig = React.useMemo(() => ({ enabled: editMode, handles: RESIZE_HANDLES }), [editMode]);
+  const resizeConfig = React.useMemo(() => ({ enabled: true, handles: RESIZE_HANDLES }), []);
 
   const handleLayoutChange = React.useCallback(
     (currentLayout: Layout, _allLayouts: ResponsiveLayouts) => {
@@ -108,6 +109,7 @@ export function WidgetGrid({ tab }: WidgetGridProps) {
 
   return (
     <div ref={containerRef}>
+      <AllWidgetProviders>
       <ResponsiveGridLayout
         className="widget-grid"
         layouts={allBreakpointLayouts}
@@ -142,6 +144,7 @@ export function WidgetGrid({ tab }: WidgetGridProps) {
           );
         })}
       </ResponsiveGridLayout>
+      </AllWidgetProviders>
     </div>
   );
 }

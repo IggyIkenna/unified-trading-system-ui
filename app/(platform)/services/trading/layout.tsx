@@ -20,6 +20,7 @@ import { useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { ImperativePanelHandle } from "react-resizable-panels";
 import { WorkspaceToolbar } from "@/components/widgets/workspace-toolbar";
+import { useWorkspaceSync } from "@/lib/stores/workspace-sync";
 import {
   Activity,
   AlertTriangle,
@@ -250,6 +251,9 @@ function TradingSidebar() {
 
 function useWidgetTab(): string | null {
   const pathname = usePathname();
+  // Custom panels: /trading/custom/<panelId> → tab = "custom-<panelId>"
+  const customMatch = pathname.match(/\/trading\/custom\/([^/]+)/);
+  if (customMatch?.[1]) return `custom-${customMatch[1]}`;
   const match = pathname.match(/\/trading\/([^/]+)/);
   return match?.[1] ?? null;
 }
@@ -260,6 +264,9 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
   const quickViewRef = useRef<ImperativePanelHandle>(null);
   const [quickViewCollapsed, setQuickViewCollapsed] = useState(false);
   const widgetTab = useWidgetTab();
+
+  // Sync workspace layouts with Firestore (no-op if Firebase not configured)
+  useWorkspaceSync();
 
   return (
     <div className="flex flex-col h-full">
