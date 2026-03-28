@@ -57,7 +57,7 @@ interface WorkspaceActions extends WorkspaceState {
   toggleEditMode: () => void;
   exportWorkspace: (tab: string, id: string) => string;
   importWorkspace: (tab: string, json: string) => boolean;
-  createCustomPanel: (name: string) => string;
+  createCustomPanel: (name: string) => string | null;
   deleteCustomPanel: (id: string) => void;
   renameCustomPanel: (id: string, name: string) => void;
   saveSnapshot: (tab: string, name: string) => string | null;
@@ -70,6 +70,10 @@ interface WorkspaceActions extends WorkspaceState {
 }
 
 const STORAGE_KEY = "unified-workspace-layouts";
+
+function normalizedCustomPanelName(name: string): string {
+  return name.trim().toLowerCase();
+}
 
 function buildInitialState(): WorkspaceState {
   return {
@@ -304,6 +308,13 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
       },
 
       createCustomPanel: (name) => {
+        const trimmed = name.trim();
+        if (!trimmed) return null;
+        const state = get();
+        const key = normalizedCustomPanelName(trimmed);
+        if (state.customPanels.some((p) => normalizedCustomPanelName(p.name) === key)) {
+          return null;
+        }
         const id = `panel-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         const tab = `custom-${id}`;
         const wsId = `${tab}-default`;
@@ -318,7 +329,7 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
           updatedAt: now,
         };
         set((s) => ({
-          customPanels: [...s.customPanels, { id, name }],
+          customPanels: [...s.customPanels, { id, name: trimmed }],
           workspaces: { ...s.workspaces, [tab]: [defaultWorkspace] },
           activeWorkspaceId: { ...s.activeWorkspaceId, [tab]: wsId },
         }));
@@ -337,10 +348,18 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
           };
         }),
 
-      renameCustomPanel: (id, name) =>
+      renameCustomPanel: (id, name) => {
+        const trimmed = name.trim();
+        if (!trimmed) return;
+        const state = get();
+        const key = normalizedCustomPanelName(trimmed);
+        if (state.customPanels.some((p) => p.id !== id && normalizedCustomPanelName(p.name) === key)) {
+          return;
+        }
         set((s) => ({
-          customPanels: s.customPanels.map((p) => (p.id === id ? { ...p, name } : p)),
-        })),
+          customPanels: s.customPanels.map((p) => (p.id === id ? { ...p, name: trimmed } : p)),
+        }));
+      },
 
       saveSnapshot: (tab, name) => {
         const state = get();
@@ -356,9 +375,10 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
         };
         set((s) => {
           const existing = s.snapshots[tab] ?? [];
-          const trimmed = existing.length >= MAX_SNAPSHOTS_PER_WORKSPACE
-            ? existing.slice(existing.length - MAX_SNAPSHOTS_PER_WORKSPACE + 1)
-            : existing;
+          const trimmed =
+            existing.length >= MAX_SNAPSHOTS_PER_WORKSPACE
+              ? existing.slice(existing.length - MAX_SNAPSHOTS_PER_WORKSPACE + 1)
+              : existing;
           return { snapshots: { ...s.snapshots, [tab]: [...trimmed, snapshot] } };
         });
         return snapshotId;

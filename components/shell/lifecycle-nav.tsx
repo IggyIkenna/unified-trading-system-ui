@@ -8,9 +8,6 @@
  * Acquire -> Build -> Promote -> Run -> Observe -> Manage -> Report
  */
 
-import { ApiStatusIndicator } from "./api-status-indicator";
-import { NotificationBell } from "./notification-bell";
-import { useExecutionMode } from "@/lib/execution-mode-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,12 +16,10 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import {
   buildLifecycleNav,
   domainLanes,
@@ -33,34 +28,35 @@ import {
   lifecycleStages,
 } from "@/lib/lifecycle-mapping";
 import { cn } from "@/lib/utils";
-import { Radio } from "lucide-react";
 import {
   ArrowUpCircle,
-  Bell,
   Building2,
-  Check,
   ChevronDown,
   Database,
   Eye,
   FileText,
+  LayoutDashboard,
   Lock,
   LogOut,
+  Moon,
   Play,
+  Radio,
   Search,
   Settings2,
+  Sun,
   User,
   Wrench,
   Zap,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
+import { ApiStatusIndicator } from "./api-status-indicator";
+import { NotificationBell } from "./notification-bell";
 
 // Icon mapping for lifecycle stages
-const stageIcons: Record<
-  LifecycleStage,
-  React.ComponentType<{ className?: string }>
-> = {
+const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: string }>> = {
   acquire: Database,
   build: Wrench,
   promote: ArrowUpCircle,
@@ -88,26 +84,15 @@ export function LifecycleNav({
 }: LifecycleNavProps) {
   const pathname = usePathname() || "";
   const [searchOpen, setSearchOpen] = React.useState(false);
-  const {
-    user,
-    hasEntitlement,
-    isAdmin,
-    isInternal,
-    logout: doLogout,
-  } = useAuth();
+  const { user, hasEntitlement, isAdmin, isInternal, logout: doLogout } = useAuth();
   const { mode: execMode, setMode } = useExecutionMode();
+  const { theme, setTheme } = useTheme();
 
   // Build navigation from lifecycle mapping, filter by entitlements
   const allNavItems = buildLifecycleNav(true);
 
   // Admin-only routes — hidden from internal traders
-  const adminOnlyRoutes = [
-    "/admin",
-    "/ops",
-    "/devops",
-    "/config",
-    "/approvals",
-  ];
+  const adminOnlyRoutes = ["/admin", "/ops", "/devops", "/config", "/approvals"];
   // Internal-only routes — visible to internal traders AND admins, hidden from clients
   const internalRoutes = ["/services/manage"];
 
@@ -116,21 +101,12 @@ export function LifecycleNav({
     // Promote hub spans strategy + ml lanes — requires either full entitlement
     if (path === "/services/promote" || path.startsWith("/services/promote/"))
       return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
-    if (adminOnlyRoutes.some((r) => path === r || path.startsWith(r + "/")))
-      return isAdmin();
-    if (internalRoutes.some((r) => path === r || path.startsWith(r + "/")))
-      return isInternal();
-    if (path.startsWith("/services/research"))
-      return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
-    if (
-      path.startsWith("/services/trading") ||
-      path.startsWith("/services/execution")
-    )
-      return (
-        hasEntitlement("execution-basic") || hasEntitlement("execution-full")
-      );
-    if (path.startsWith("/services/reports"))
-      return hasEntitlement("reporting");
+    if (adminOnlyRoutes.some((r) => path === r || path.startsWith(r + "/"))) return isAdmin();
+    if (internalRoutes.some((r) => path === r || path.startsWith(r + "/"))) return isInternal();
+    if (path.startsWith("/services/research")) return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
+    if (path.startsWith("/services/trading") || path.startsWith("/services/execution"))
+      return hasEntitlement("execution-basic") || hasEntitlement("execution-full");
+    if (path.startsWith("/services/reports")) return hasEntitlement("reporting");
     return true;
   };
 
@@ -144,12 +120,8 @@ export function LifecycleNav({
       ...nav,
       items: nav.items
         .filter((item) => {
-          const isAdminRoute = adminOnlyRoutes.some(
-            (r) => item.path === r || item.path.startsWith(r + "/"),
-          );
-          const isInternalRoute = internalRoutes.some(
-            (r) => item.path === r || item.path.startsWith(r + "/"),
-          );
+          const isAdminRoute = adminOnlyRoutes.some((r) => item.path === r || item.path.startsWith(r + "/"));
+          const isInternalRoute = internalRoutes.some((r) => item.path === r || item.path.startsWith(r + "/"));
           if (isAdminRoute) return isAdmin();
           if (isInternalRoute) return isInternal();
           return true;
@@ -202,15 +174,10 @@ export function LifecycleNav({
             const Icon = stageIcons[nav.stage];
             const isActive = currentStage === nav.stage;
             const stageInfo = lifecycleStages[nav.stage];
-            const allLocked =
-              nav.items.length > 0 && nav.items.every((item) => item.locked);
-            const primaryItem =
-              nav.items.find((item) => !item.locked) ?? nav.items[0];
+            const allLocked = nav.items.length > 0 && nav.items.every((item) => item.locked);
+            const primaryItem = nav.items.find((item) => !item.locked) ?? nav.items[0];
             // Promote stage: primary link goes to the hub (only reached when !allLocked)
-            const primaryHref =
-              nav.stage === "promote"
-                ? "/services/promote"
-                : (primaryItem?.path ?? "/dashboard");
+            const primaryHref = nav.stage === "promote" ? "/services/promote" : (primaryItem?.path ?? "/dashboard");
 
             return (
               <React.Fragment key={nav.stage}>
@@ -218,9 +185,7 @@ export function LifecycleNav({
                   <div
                     className={cn(
                       "flex items-center rounded-md border border-transparent transition-all duration-150",
-                      !allLocked &&
-                        isActive &&
-                        "border-primary/20 bg-primary/10 text-primary",
+                      !allLocked && isActive && "border-primary/20 bg-primary/10 text-primary",
                       !allLocked &&
                         !isActive &&
                         "hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground",
@@ -253,9 +218,7 @@ export function LifecycleNav({
                         type="button"
                         className={cn(
                           "flex items-center pr-2 py-1.5 rounded-r-md text-xs shrink-0",
-                          allLocked
-                            ? "cursor-not-allowed opacity-40"
-                            : "hover:bg-muted/80",
+                          allLocked ? "cursor-not-allowed opacity-40" : "hover:bg-muted/80",
                         )}
                         aria-label={`${nav.label} destinations`}
                         disabled={allLocked}
@@ -273,16 +236,12 @@ export function LifecycleNav({
                       <Icon className={cn("size-4", stageInfo.color)} />
                       <div>
                         <div className="font-medium">{nav.label}</div>
-                        <div className="text-xs text-muted-foreground font-normal">
-                          {stageInfo.description}
-                        </div>
+                        <div className="text-xs text-muted-foreground font-normal">{stageInfo.description}</div>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {nav.items.map((item) => {
-                      const itemActive =
-                        pathname === item.path ||
-                        pathname.startsWith(item.path + "/");
+                      const itemActive = pathname === item.path || pathname.startsWith(item.path + "/");
                       if (item.locked) {
                         // Locked item — visible but not clickable, with upgrade hint
                         return (
@@ -293,10 +252,7 @@ export function LifecycleNav({
                               title="Not part of your subscription — upgrade to access"
                             >
                               <span>{item.label}</span>
-                              <Badge
-                                variant="outline"
-                                className="text-[9px] px-1 py-0 h-4"
-                              >
+                              <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
                                 Upgrade
                               </Badge>
                             </Link>
@@ -338,9 +294,7 @@ export function LifecycleNav({
                 </DropdownMenu>
 
                 {/* Subtle connector between stages */}
-                {idx < navItems.length - 1 && (
-                  <div className="w-2 h-px bg-border mx-0.5 hidden lg:block" />
-                )}
+                {idx < navItems.length - 1 && <div className="w-2 h-px bg-border mx-0.5 hidden lg:block" />}
               </React.Fragment>
             );
           })}
@@ -389,8 +343,21 @@ export function LifecycleNav({
         </div>
       </div>
 
-      {/* Right: Search, Notifications, Org, User */}
+      {/* Right: Dashboard, Search, Notifications, Org, User */}
       <div className="flex items-center gap-2 shrink-0">
+        <Link
+          href="/dashboard"
+          className={cn(
+            "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
+            pathname === "/dashboard" || pathname === "/dashboard/"
+              ? "bg-primary/10 text-primary border border-primary/25"
+              : "text-muted-foreground hover:text-foreground bg-secondary/60 hover:bg-secondary",
+          )}
+        >
+          <LayoutDashboard className="size-3.5 shrink-0" />
+          <span className="hidden sm:inline">Dashboard</span>
+        </Link>
+
         {/* Search */}
         <button
           onClick={() => setSearchOpen(true)}
@@ -412,11 +379,7 @@ export function LifecycleNav({
         <NotificationBell />
 
         {/* Org display */}
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 gap-1.5 text-xs pointer-events-none"
-        >
+        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs pointer-events-none">
           <Building2 className="size-3.5" />
           <span className="hidden sm:inline max-w-24 truncate">{orgName}</span>
         </Button>
@@ -452,6 +415,12 @@ export function LifecycleNav({
               <Settings2 className="mr-2 size-4" />
               Settings
             </DropdownMenuItem>
+            {isAdmin() && (
+              <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+                {theme === "dark" ? <Sun className="mr-2 size-4" /> : <Moon className="mr-2 size-4" />}
+                {theme === "dark" ? "Light mode" : "Dark mode"}
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive"

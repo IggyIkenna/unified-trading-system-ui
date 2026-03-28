@@ -1,4 +1,5 @@
 import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
+import { getTradingNavLeafLabel } from "@/lib/config/services/trading-nav-paths.config";
 
 /**
  * Lifecycle Mapping Model
@@ -695,7 +696,7 @@ export function getRouteMapping(path: string): RouteMapping | undefined {
   if (normalized === tradingBase || normalized.startsWith(`${tradingBase}/`)) {
     return {
       path: tradingBase,
-      label: "Trading",
+      label: getTradingNavLeafLabel(normalized),
       primaryStage: "run",
       lanes: ["execution", "strategy", "capital"],
       requiresAuth: true,

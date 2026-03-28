@@ -10,80 +10,83 @@
    Bloomberg/Citadel-inspired dark theme with cyan accent
    Hierarchy: #0a0a0b → #111113 → #18181b → #1c1c1f */
 
+/* ── Light theme (default when .dark is not present) ──────────────────────── */
 :root {
-  /* Force dark mode as default for institutional trading platform */
-  --background: #0a0a0b;
-  --foreground: #fafafa;
-  --card: #111113;
-  --card-foreground: #fafafa;
-  --popover: #111113;
-  --popover-foreground: #fafafa;
-  --primary: #22d3ee;
-  --primary-foreground: #0a0a0b;
-  --secondary: #18181b;
-  --secondary-foreground: #fafafa;
-  --muted: #1c1c1f;
-  --muted-foreground: #a1a1aa;
-  --accent: #18181b;
-  --accent-foreground: #fafafa;
-  --destructive: #f87171;
-  --destructive-foreground: #0a0a0b;
-  --border: #27272a;
-  --input: #27272a;
-  --ring: #22d3ee;
+  --background: #f8f9fa;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #0891b2;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0891b2;
 
-  /* P&L semantic tokens */
-  --pnl-positive: #4ade80;
-  --pnl-negative: #f87171;
+  --pnl-positive: #16a34a;
+  --pnl-negative: #dc2626;
 
-  /* Status colors */
-  --status-live: #4ade80;
-  --status-warning: #fbbf24;
-  --status-critical: #f87171;
-  --status-idle: #71717a;
-  --status-running: #60a5fa;
+  --status-live: #16a34a;
+  --status-warning: #d97706;
+  --status-critical: #dc2626;
+  --status-idle: #94a3b8;
+  --status-running: #2563eb;
 
-  /* Surface accent colors for navigation */
-  --surface-trading: #4ade80;
-  --surface-strategy: #60a5fa;
-  --surface-markets: #a78bfa;
-  --surface-ops: #fbbf24;
-  --surface-config: #22d3ee;
-  --surface-ml: #f472b6;
-  --surface-reports: #fb923c;
+  --surface-trading: #16a34a;
+  --surface-strategy: #2563eb;
+  --surface-markets: #7c3aed;
+  --surface-ops: #d97706;
+  --surface-config: #0891b2;
+  --surface-ml: #db2777;
+  --surface-reports: #ea580c;
 
-  /* Risk threshold colors */
-  --risk-healthy: #4ade80;
-  --risk-warning: #fbbf24;
-  --risk-critical: #f87171;
+  --risk-healthy: #16a34a;
+  --risk-warning: #d97706;
+  --risk-critical: #dc2626;
 
-  /* Chart colors for institutional data */
-  --chart-1: #22d3ee;
-  --chart-2: #4ade80;
-  --chart-3: #60a5fa;
-  --chart-4: #a78bfa;
-  --chart-5: #fbbf24;
-  --chart-6: #f472b6;
+  --chart-1: #0891b2;
+  --chart-2: #16a34a;
+  --chart-3: #2563eb;
+  --chart-4: #7c3aed;
+  --chart-5: #d97706;
+  --chart-6: #db2777;
 
-  /* Recharts / SVG: tokens above are hex — use fill: var(--foreground) etc., never hsl(var(--token)) */
-
-  /* Updated radii for modern feel: 6/8/12/16px */
   --radius: 0.5rem;
 
-  /* Sidebar */
-  --sidebar: #0a0a0b;
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #22d3ee;
-  --sidebar-primary-foreground: #0a0a0b;
-  --sidebar-accent: #18181b;
-  --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #27272a;
-  --sidebar-ring: #22d3ee;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #09090b;
+  --sidebar-primary: #0891b2;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #0891b2;
 
-  /* Platform main column: fill the shell up to this cap (was implicit ~1280px via .container) */
+  /* Grid surface background hierarchy — light */
+  --surface-1: #f8f9fa;
+  --surface-2: #ffffff;
+  --surface-3: #f1f5f9;
+  --surface-4: #e2e8f0;
+
+  /* Elevation shadows — light */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
   --platform-page-max-width: 2400px;
 }
 
+/* ── Dark theme — Bloomberg/Citadel-inspired ─────────────────────────────── */
+/* Hierarchy: #0a0a0b → #111113 → #18181b → #1c1c1f */
 .dark {
   --background: #0a0a0b;
   --foreground: #fafafa;
@@ -104,11 +107,35 @@
   --border: #27272a;
   --input: #27272a;
   --ring: #22d3ee;
+
+  --pnl-positive: #4ade80;
+  --pnl-negative: #f87171;
+
+  --status-live: #4ade80;
+  --status-warning: #fbbf24;
+  --status-critical: #f87171;
+  --status-idle: #71717a;
+  --status-running: #60a5fa;
+
+  --surface-trading: #4ade80;
+  --surface-strategy: #60a5fa;
+  --surface-markets: #a78bfa;
+  --surface-ops: #fbbf24;
+  --surface-config: #22d3ee;
+  --surface-ml: #f472b6;
+  --surface-reports: #fb923c;
+
+  --risk-healthy: #4ade80;
+  --risk-warning: #fbbf24;
+  --risk-critical: #f87171;
+
   --chart-1: #22d3ee;
   --chart-2: #4ade80;
   --chart-3: #60a5fa;
   --chart-4: #a78bfa;
   --chart-5: #fbbf24;
+  --chart-6: #f472b6;
+
   --sidebar: #0a0a0b;
   --sidebar-foreground: #fafafa;
   --sidebar-primary: #22d3ee;
@@ -118,14 +145,47 @@
   --sidebar-border: #27272a;
   --sidebar-ring: #22d3ee;
 
+  /* Grid surface background hierarchy — dark */
+  --surface-1: #0a0a0b;
+  --surface-2: #111113;
+  --surface-3: #18181b;
+  --surface-4: #1c1c1f;
+
+  /* Elevation shadows — dark (subtle glows) */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+
   --platform-page-max-width: 2400px;
 }
 
 @theme inline {
-  /* IBM Plex Sans for UI, JetBrains Mono for data/values - institutional standard */
+  /* ── Fonts ──────────────────────────────────────────────────────────────── */
   --font-sans: "IBM Plex Sans", "Geist", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Geist Mono", monospace;
 
+  /* ── Typography scale ───────────────────────────────────────────────────
+     Semantic sizes for a dense trading platform.
+     Change here → propagates everywhere via Tailwind text-* utilities.
+     Usage: text-page-title, text-section-title, text-body, etc.          */
+  --text-page-title: 1.25rem;
+  --text-section-title: 1rem;
+  --text-body: 0.875rem;
+  --text-label: 0.75rem;
+  --text-caption: 0.6875rem;
+  --text-data: 0.8125rem;
+
+  /* ── Spacing scale ──────────────────────────────────────────────────────
+     4px-base geometric scale for information-dense layouts.
+     Usage: p-page, gap-section, p-card, gap-widget, p-cell, gap-tight    */
+  --spacing-page: 1.5rem;
+  --spacing-section: 1rem;
+  --spacing-card: 1rem;
+  --spacing-widget: 0.75rem;
+  --spacing-cell: 0.5rem;
+  --spacing-tight: 0.25rem;
+
+  /* ── Colors ─────────────────────────────────────────────────────────────  */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -146,18 +206,15 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* P&L Colors */
   --color-pnl-positive: var(--pnl-positive);
   --color-pnl-negative: var(--pnl-negative);
 
-  /* Status Colors */
   --color-status-live: var(--status-live);
   --color-status-warning: var(--status-warning);
   --color-status-critical: var(--status-critical);
   --color-status-idle: var(--status-idle);
   --color-status-running: var(--status-running);
 
-  /* Surface Colors */
   --color-surface-trading: var(--surface-trading);
   --color-surface-strategy: var(--surface-strategy);
   --color-surface-markets: var(--surface-markets);
@@ -166,12 +223,10 @@
   --color-surface-ml: var(--surface-ml);
   --color-surface-reports: var(--surface-reports);
 
-  /* Risk Colors */
   --color-risk-healthy: var(--risk-healthy);
   --color-risk-warning: var(--risk-warning);
   --color-risk-critical: var(--risk-critical);
 
-  /* Chart Colors */
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -179,12 +234,24 @@
   --color-chart-5: var(--chart-5);
   --color-chart-6: var(--chart-6);
 
-  /* Updated radii: 6/8/12/16px for modern institutional feel */
+  /* Surface hierarchy (theme-aware) */
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+
+  /* ── Radii: 6/8/12/16px for modern institutional feel ───────────────── */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
 
+  /* ── Shadows (theme-aware) ──────────────────────────────────────────── */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+
+  /* ── Sidebar ────────────────────────────────────────────────────────── */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -254,18 +321,18 @@
   background-color: color-mix(in srgb, var(--risk-critical) 20%, transparent);
 }
 
-/* Grid surface background hierarchy */
+/* Grid surface background hierarchy — uses theme-aware tokens */
 .surface-primary {
-  background-color: #0a0a0b;
+  background-color: var(--surface-1);
 }
 .surface-secondary {
-  background-color: #111113;
+  background-color: var(--surface-2);
 }
 .surface-tertiary {
-  background-color: #18181b;
+  background-color: var(--surface-3);
 }
 .surface-quaternary {
-  background-color: #1c1c1f;
+  background-color: var(--surface-4);
 }
 
 /* Scrolling venues animation */

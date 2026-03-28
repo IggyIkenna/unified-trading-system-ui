@@ -3,6 +3,7 @@ import { StagingGate } from "@/components/staging-gate";
 import { Toaster } from "@/components/ui/sonner";
 import { ExecutionModeProvider } from "@/lib/execution-mode-context";
 import { Providers } from "@/lib/providers";
+import { ThemeProvider } from "next-themes";
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -23,9 +24,7 @@ export const metadata: Metadata = {
   title: "Odum Research - Unified Trading Infrastructure",
   description:
     "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://odum-research.com",
-  ),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://odum-research.com"),
   openGraph: {
     title: "Odum Research",
     description:
@@ -57,8 +56,11 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0b",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
+    { media: "(prefers-color-scheme: light)", color: "#f8f9fa" },
+  ],
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({
@@ -67,17 +69,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${ibmPlexSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <StagingGate>
-          <PreviewBanner />
-          <Providers>
-            <ExecutionModeProvider>{children}</ExecutionModeProvider>
-          </Providers>
-        </StagingGate>
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <StagingGate>
+            <PreviewBanner />
+            <Providers>
+              <ExecutionModeProvider>{children}</ExecutionModeProvider>
+            </Providers>
+          </StagingGate>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

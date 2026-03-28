@@ -34,6 +34,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect, useMemo } from "react";
 import type { ServiceTab } from "./service-tabs";
 import { useWorkspaceStore } from "@/lib/stores/workspace-store";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 /** Map from familyIcon string hint to actual Lucide component */
 const FAMILY_ICON_MAP: Record<string, LucideIcon> = {
@@ -55,6 +65,7 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
   const [showNewPanel, setShowNewPanel] = useState(false);
   const [newPanelName, setNewPanelName] = useState("");
   const [collapsedFamilies, setCollapsedFamilies] = useState<Record<string, boolean>>({});
+  const [pendingDeletePanel, setPendingDeletePanel] = useState<{ id: string; name: string } | null>(null);
   const newPanelInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname() || "";
   const router = useRouter();
@@ -69,13 +80,35 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
     }
   }, [showNewPanel]);
 
+  const newPanelNameTaken = useMemo(() => {
+    const key = newPanelName.trim().toLowerCase();
+    if (!key) return false;
+    return customPanels.some((p) => p.name.trim().toLowerCase() === key);
+  }, [newPanelName, customPanels]);
+
   const handleCreatePanel = () => {
     const trimmed = newPanelName.trim();
-    if (!trimmed) return;
+    if (!trimmed || newPanelNameTaken) return;
     const panelId = createCustomPanel(trimmed);
+    if (panelId == null) return;
     setNewPanelName("");
     setShowNewPanel(false);
     router.push(`/services/trading/custom/${panelId}`);
+  };
+
+  const requestDeletePanel = (panel: { id: string; name: string }, isActive: boolean) => {
+    if (isActive) {
+      setPendingDeletePanel({ id: panel.id, name: panel.name });
+      return;
+    }
+    deleteCustomPanel(panel.id);
+  };
+
+  const confirmDeleteActivePanel = () => {
+    if (!pendingDeletePanel) return;
+    deleteCustomPanel(pendingDeletePanel.id);
+    router.push("/services/trading/overview");
+    setPendingDeletePanel(null);
   };
 
   const toggleFamily = (family: string) => {
@@ -218,172 +251,213 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
   };
 
   return (
-    <aside
-      className={cn(
-        "flex flex-col border-r border-border bg-card/30 shrink-0 transition-[width] duration-200 overflow-hidden",
-        navWidth,
-      )}
-    >
-      {/* Collapse toggle */}
-      <div
+    <>
+      <aside
         className={cn(
-          "flex items-center border-b border-border px-2 py-1.5",
-          collapsed ? "justify-center" : "justify-between",
+          "flex flex-col border-r border-border bg-card/30 shrink-0 transition-[width] duration-200 overflow-hidden",
+          navWidth,
         )}
       >
-        {!collapsed && (
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 pl-1 select-none">
-            Trading
-          </span>
-        )}
-        <button
-          onClick={() => setCollapsed((c) => !c)}
-          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-          aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
-          title={collapsed ? "Expand navigation" : "Collapse navigation"}
+        {/* Collapse toggle */}
+        <div
+          className={cn(
+            "flex items-center border-b border-border px-2 py-1.5",
+            collapsed ? "justify-center" : "justify-between",
+          )}
         >
-          {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
-        </button>
-      </div>
+          {!collapsed && (
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 pl-1 select-none">
+              Trading
+            </span>
+          )}
+          <button
+            onClick={() => setCollapsed((c) => !c)}
+            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
+            title={collapsed ? "Expand navigation" : "Collapse navigation"}
+          >
+            {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+          </button>
+        </div>
 
-      {/* Nav items */}
-      <nav className="flex-1 overflow-y-auto py-2" aria-label="Trading sections">
-        {/* Shared tabs (top-level) */}
-        {sharedTabs.map((tab) => renderTabItem(tab))}
+        {/* Nav items */}
+        <nav className="flex-1 overflow-y-auto py-2" aria-label="Trading sections">
+          {/* Shared tabs (top-level) */}
+          {sharedTabs.map((tab) => renderTabItem(tab))}
 
-        {/* Separator between shared and family groups */}
-        {Object.keys(familyGroups).length > 0 && (
-          <div className={cn("mx-2 my-2 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
-            {!collapsed && (
-              <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider whitespace-nowrap px-1">
-                Strategy Families
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Family groups */}
-        {Object.entries(familyGroups).map(([familyName, familyTabs]) => renderFamilyGroup(familyName, familyTabs))}
-
-        {/* Custom panels */}
-        {customPanels.length > 0 && (
-          <div className={cn("mx-2 my-1 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
-            {!collapsed && (
-              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap px-1">
-                Custom
-              </span>
-            )}
-          </div>
-        )}
-        {customPanels.map((panel) => {
-          const panelHref = `/services/trading/custom/${panel.id}`;
-          const isActive = pathname === panelHref || pathname.startsWith(panelHref + "/");
-
-          return (
-            <div key={panel.id} className={cn("px-2 group relative", collapsed && "flex justify-center px-1")}>
-              <Link href={panelHref} title={collapsed ? panel.name : undefined}>
-                <span
-                  className={cn(
-                    "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-                    isActive
-                      ? "bg-primary/15 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent",
-                    collapsed && "justify-center px-0",
-                  )}
-                >
-                  <LayoutGrid
-                    className={cn(
-                      "shrink-0",
-                      collapsed ? "size-5" : "size-[18px]",
-                      isActive ? "text-primary" : "text-foreground/60",
-                    )}
-                  />
-                  {!collapsed && <span className="truncate leading-none pr-6">{panel.name}</span>}
-                </span>
-              </Link>
-
+          {/* Separator between shared and family groups */}
+          {Object.keys(familyGroups).length > 0 && (
+            <div className={cn("mx-2 my-2 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
               {!collapsed && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    deleteCustomPanel(panel.id);
-                    if (isActive) {
-                      router.push("/services/trading/overview");
-                    }
-                  }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-                  title={`Delete "${panel.name}"`}
-                  aria-label={`Delete panel ${panel.name}`}
-                >
-                  <X className="size-3" />
-                </button>
+                <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider whitespace-nowrap px-1">
+                  Strategy Families
+                </span>
               )}
             </div>
-          );
-        })}
-
-        {/* New Panel button */}
-        <div className={cn("px-2 mt-1", collapsed && "flex justify-center px-1")}>
-          {!showNewPanel ? (
-            <button
-              onClick={() => setShowNewPanel(true)}
-              className={cn(
-                "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-                "text-muted-foreground hover:text-foreground hover:bg-accent",
-                collapsed && "justify-center px-0",
-              )}
-              title={collapsed ? "New Panel" : undefined}
-            >
-              <Plus className={cn("shrink-0 text-foreground/60", collapsed ? "size-5" : "size-[18px]")} />
-              {!collapsed && <span className="truncate leading-none">New Panel</span>}
-            </button>
-          ) : (
-            !collapsed && (
-              <div className="flex items-center gap-1 px-1">
-                <input
-                  ref={newPanelInputRef}
-                  value={newPanelName}
-                  onChange={(e) => setNewPanelName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleCreatePanel();
-                    if (e.key === "Escape") {
-                      setShowNewPanel(false);
-                      setNewPanelName("");
-                    }
-                  }}
-                  placeholder="Panel name"
-                  className="flex-1 min-w-0 h-7 px-2 text-xs bg-background border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <button
-                  onClick={handleCreatePanel}
-                  disabled={!newPanelName.trim()}
-                  className="h-7 px-2 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Create
-                </button>
-                <button
-                  onClick={() => {
-                    setShowNewPanel(false);
-                    setNewPanelName("");
-                  }}
-                  className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent"
-                >
-                  <X className="size-3.5" />
-                </button>
-              </div>
-            )
           )}
-        </div>
-      </nav>
 
-      {/* Bottom slot (e.g. Live/As-Of toggle) */}
-      {bottomSlot && (
-        <div className={cn("border-t border-border p-2 shrink-0", collapsed && "flex justify-center")}>
-          {!collapsed && bottomSlot}
-        </div>
-      )}
-    </aside>
+          {/* Family groups */}
+          {Object.entries(familyGroups).map(([familyName, familyTabs]) => renderFamilyGroup(familyName, familyTabs))}
+
+          {/* Custom panels */}
+          {customPanels.length > 0 && (
+            <div className={cn("mx-2 my-1 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
+              {!collapsed && (
+                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap px-1">
+                  Custom
+                </span>
+              )}
+            </div>
+          )}
+          {customPanels.map((panel) => {
+            const panelHref = `/services/trading/custom/${panel.id}`;
+            const isActive = pathname === panelHref || pathname.startsWith(panelHref + "/");
+
+            return (
+              <div key={panel.id} className={cn("px-2 group relative", collapsed && "flex justify-center px-1")}>
+                <Link href={panelHref} title={collapsed ? panel.name : undefined}>
+                  <span
+                    className={cn(
+                      "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
+                      isActive
+                        ? "bg-primary/15 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                      collapsed && "justify-center px-0",
+                    )}
+                  >
+                    <LayoutGrid
+                      className={cn(
+                        "shrink-0",
+                        collapsed ? "size-5" : "size-[18px]",
+                        isActive ? "text-primary" : "text-foreground/60",
+                      )}
+                    />
+                    {!collapsed && <span className="truncate leading-none pr-6">{panel.name}</span>}
+                  </span>
+                </Link>
+
+                {!collapsed && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      requestDeletePanel(panel, isActive);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                    title={`Delete "${panel.name}"`}
+                    aria-label={`Delete panel ${panel.name}`}
+                  >
+                    <X className="size-3" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
+
+          {/* New Panel button */}
+          <div className={cn("px-2 mt-1", collapsed && "flex justify-center px-1")}>
+            {!showNewPanel ? (
+              <button
+                onClick={() => setShowNewPanel(true)}
+                className={cn(
+                  "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
+                  "text-muted-foreground hover:text-foreground hover:bg-accent",
+                  collapsed && "justify-center px-0",
+                )}
+                title={collapsed ? "New Panel" : undefined}
+              >
+                <Plus className={cn("shrink-0 text-foreground/60", collapsed ? "size-5" : "size-[18px]")} />
+                {!collapsed && <span className="truncate leading-none">New Panel</span>}
+              </button>
+            ) : (
+              !collapsed && (
+                <div className="flex flex-col gap-0.5 px-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <input
+                      ref={newPanelInputRef}
+                      value={newPanelName}
+                      onChange={(e) => setNewPanelName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleCreatePanel();
+                        if (e.key === "Escape") {
+                          setShowNewPanel(false);
+                          setNewPanelName("");
+                        }
+                      }}
+                      placeholder="Panel name"
+                      aria-invalid={newPanelNameTaken}
+                      className={cn(
+                        "flex-1 min-w-0 h-7 px-2 text-xs bg-background border rounded-md focus:outline-none focus:ring-1",
+                        newPanelNameTaken
+                          ? "border-destructive focus:ring-destructive/40 focus:border-destructive"
+                          : "border-border focus:ring-primary",
+                      )}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCreatePanel}
+                      disabled={!newPanelName.trim() || newPanelNameTaken}
+                      className="h-7 px-2 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                    >
+                      Create
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNewPanel(false);
+                        setNewPanelName("");
+                      }}
+                      className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent shrink-0"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  </div>
+                  {newPanelNameTaken && (
+                    <p className="text-[10px] leading-snug text-destructive pl-0.5 pr-6">
+                      Name already in use — choose another.
+                    </p>
+                  )}
+                </div>
+              )
+            )}
+          </div>
+        </nav>
+
+        {/* Bottom slot (e.g. Live/As-Of toggle) */}
+        {bottomSlot && (
+          <div className={cn("border-t border-border p-2 shrink-0", collapsed && "flex justify-center")}>
+            {!collapsed && bottomSlot}
+          </div>
+        )}
+      </aside>
+
+      <AlertDialog
+        open={pendingDeletePanel !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDeletePanel(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this panel?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You are viewing &quot;{pendingDeletePanel?.name}&quot;. This will remove the panel and its layout.
+              Continue and go to Trading overview?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              type="button"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={confirmDeleteActivePanel}
+            >
+              Delete and leave
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

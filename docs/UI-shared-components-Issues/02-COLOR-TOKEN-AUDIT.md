@@ -1,236 +1,204 @@
-# 02 — Color Token Audit
+# B — Color Tokens, Theming & Theme-Readiness Audit
 
-**Date:** 2026-03-27
-**Scope:** All `.tsx` / `.ts` files in `unified-trading-system-ui` (excluding `globals.css` where tokens are defined)
-
----
-
-## 1. Design System Token Inventory (What Exists)
-
-`globals.css` defines **~60 CSS custom properties** organized into semantic groups:
-
-| Group   | Tokens                                                                                        | Purpose                    |
-| ------- | --------------------------------------------------------------------------------------------- | -------------------------- |
-| Core    | `--background`, `--foreground`, `--card`, `--muted`, `--accent`, `--primary`, `--secondary`   | Base surfaces and text     |
-| P&L     | `--pnl-positive` (#4ade80), `--pnl-negative` (#f87171)                                        | Profit/loss indicators     |
-| Status  | `--status-live`, `--status-warning`, `--status-critical`, `--status-idle`, `--status-running` | System status              |
-| Surface | `--surface-trading`, `--surface-strategy`, `--surface-markets`, etc.                          | Navigation/service accents |
-| Risk    | `--risk-healthy`, `--risk-warning`, `--risk-critical`                                         | Risk thresholds            |
-| Charts  | `--chart-1` through `--chart-6`                                                               | Data visualization palette |
-| Sidebar | `--sidebar`, `--sidebar-foreground`, `--sidebar-primary`, etc.                                | Shell sidebar              |
-
-Tailwind `@theme` block maps each to `--color-*` for utility class usage (e.g. `bg-primary`, `text-muted-foreground`).
-
-**Conclusion:** The token system is **comprehensive and well-designed**. The problem is **adoption**, not design.
+**Date:** 2026-03-28  
+**Scope:** `app/`, `components/` (TypeScript/TSX only for automated counts; `globals.css` and `lib/config/branding.ts` read as SSOT — per Module B instructions, Part 1 searches exclude `globals.css`)  
+**Previous audit:** First audit (prior `02-COLOR-TOKEN-AUDIT.md` removed from tree; this document replaces it)
 
 ---
 
-## 2. Token Bypass: Hardcoded Hex Colors (~400–450 occurrences)
+## 1. Current State
 
-### 2a. Registry/Config Files (Highest Density)
-
-| File                       | Approx. Matches | Example Values                                        |
-| -------------------------- | --------------- | ----------------------------------------------------- |
-| `lib/strategy-registry.ts` | ~146            | `#4ade80`, `#22d3ee`, `#ef4444`, `#60a5fa`, `#fbbf24` |
-| `lib/taxonomy.ts`          | ~34             | `#22c55e`, `#64748b`, `#22d3ee`                       |
-| `lib/reference-data.ts`    | ~10             | Various hex for category colors                       |
-
-**Problem:** These files assign colors to strategy types, asset classes, and taxonomy nodes as hardcoded hex strings. If the design system tokens change, these stay stale.
-
-**Fix:** Create a `lib/config/palette.ts` that reads from CSS variables (via `getComputedStyle` at runtime or a shared constant map) and reference those.
-
-### 2b. Trading Components
-
-| File                                           | Matches | Typical Values                         |
-| ---------------------------------------------- | ------- | -------------------------------------- |
-| `components/trading/vol-surface-chart.tsx`     | 8+      | `rgba(255,255,255,0.1)` for grid lines |
-| `components/trading/candlestick-chart.tsx`     | 10+     | Hardcoded greens/reds for candles      |
-| `components/trading/options-futures-panel.tsx` | 15+     | Hex for column highlights              |
-| `components/trading/order-book.tsx`            | 5+      | `rgb(16,185,129)` / `rgb(239,68,68)`   |
-| `components/trading/circuit-breaker-grid.tsx`  | 5+      | Status-related hex                     |
-| `components/trading/kpi-card.tsx`              | 3+      | `rgba()` for backgrounds               |
-
-### 2c. Research Components
-
-| File                                               | Matches | Issue                    |
-| -------------------------------------------------- | ------- | ------------------------ |
-| `components/research/equity-chart-with-layers.tsx` | 10+     | Chart line colors as hex |
-| `components/research/signal-overlay-chart.tsx`     | 8+      | `rgba()` for overlays    |
-| `components/research/win-loss-donut.tsx`           | 4+      | Pie chart colors         |
-| `components/research/profit-structure-chart.tsx`   | 5+      | Chart fills              |
-
-### 2d. Marketing Components
-
-| File                                              | Matches | Issue                  |
-| ------------------------------------------------- | ------- | ---------------------- |
-| `components/marketing/arbitrage-galaxy.tsx`       | 15+     | Canvas particle colors |
-| `components/marketing/galaxy-canvas.tsx`          | 10+     | WebGL/canvas colors    |
-| `components/marketing/market-galaxy.tsx`          | 10+     | Canvas colors          |
-| `components/marketing/operating-model-stages.tsx` | 5+      | Stage indicators       |
+- **`app/globals.css`** defines a full semantic token system in `:root` (light) and `.dark` (dark), including core UI, P&amp;L (`--pnl-positive` / `--pnl-negative`), status, surface-nav, risk, chart (`--chart-1`…`--chart-6`), surface hierarchy (`--surface-1`…`--surface-4`), sidebar, and shadow CSS variables.
+- **`@theme inline`** maps those variables to Tailwind color utilities (`--color-background`, `text-foreground`, `bg-card`, `text-pnl-positive`, `text-status-live`, etc.) — see `188:262:app/globals.css`.
+- **`next-themes`** (via app shell) is expected to toggle `.dark`; components must use semantic tokens or `var(--*)` so both themes stay coherent.
+- **Gap:** Large parts of the tree still use raw Tailwind palette classes (`text-emerald-400`, `bg-amber-500`, `text-zinc-400`, …), hardcoded hex/rgba in TSX, and shadcn primitives (`Badge`) that bake in palette utilities — so **theme switching is not visually reliable** across the product.
 
 ---
 
-## 3. Tailwind Neutral Palette Bypass (High Hundreds of Occurrences)
+## 2. Findings
 
-These utilities reference Tailwind's **built-in** zinc/gray/slate scales instead of the **design system** tokens:
+### 2.1 Part 1 — Theme-breaking violations (counts)
 
-### Token Mapping (What Should Be Used)
+Counts below are **occurrence totals** (one line may contain multiple matches), summed with `rg --count-matches` over `app/**/*.tsx` and `components/**/*.tsx`.
 
-| Hardcoded Pattern                                                   | Design System Equivalent                  | Hex Match                           |
-| ------------------------------------------------------------------- | ----------------------------------------- | ----------------------------------- |
-| `text-white`, `text-zinc-100`                                       | `text-foreground`                         | #fafafa                             |
-| `text-zinc-400`, `text-zinc-500`, `text-slate-400`, `text-gray-400` | `text-muted-foreground`                   | #a1a1aa                             |
-| `bg-zinc-900`                                                       | `bg-card`                                 | #111113 (close to zinc-900 #18181b) |
-| `bg-zinc-950`                                                       | `bg-background`                           | #0a0a0b                             |
-| `bg-zinc-800`, `bg-zinc-700`                                        | `bg-secondary` or `bg-muted`              | #18181b / #1c1c1f                   |
-| `border-zinc-800`, `border-zinc-700`                                | `border-border`                           | #27272a                             |
-| `text-zinc-300` (hover)                                             | `text-foreground` or `text-foreground/80` | -                                   |
+| Category | What we searched                                                                       |                                                                                                                Occurrences | Severity    |
+| -------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------: | ----------- |
+| **1a**   | `text-*` / `bg-*` / `border-*` on zinc, gray, slate, neutral, stone                    |                                                                                    **462** (text 260 + bg 106 + border 96) | 🟡 High     |
+| **1b**   | `text-*` / `bg-*` / `border-*` on green, red, blue, cyan, amber, yellow, emerald, rose |                                                                               **3,109** (text 1,721 + bg 858 + border 530) | 🔴 Critical |
+| **1c**   | Whole-word `text-white`, `text-black`, `bg-white`, `bg-black`                          |                                                                                                                    **121** | 🟡 High     |
+| **1c′**  | Related: `bg-black/…`, `text-white/…`, `bg-white/…` (opacity variants)                 |                                                                                                                     **18** | 🟡 High     |
+| **1d**   | Arbitrary Tailwind hex: `text-[#…]`, `bg-[#…]`, `border-[#…]`                          |                                                                                                                    **141** | 🟡 High     |
+| **1d′**  | Any `#hex` substring in `.tsx` under `app/` + `components/`                            | **304** lines (includes inline HTML/CSS strings, SVG `fill`/`stroke`, theme-color meta — not all are className violations) | 🟡 High     |
+| **1e**   | `rgb(`, `rgba(`, `hsl(`, `hsla(` in `.tsx`                                             |                                                                                                              **117** lines | 🟢 Medium   |
 
-### Hotspot Files
+**Files touched (any of 1a–1d Tailwind patterns above):** **262** unique `.tsx` files.
 
-| Directory                             | Files     | Scale of Issue                                            |
-| ------------------------------------- | --------- | --------------------------------------------------------- |
-| `components/trading/sports/*`         | ~12 files | **Very high** — sports components are the worst offenders |
-| `components/trading/predictions/*`    | ~5 files  | High                                                      |
-| `components/promote/*`                | ~8 files  | Medium                                                    |
-| `components/data/*-finder-config.tsx` | 3 files   | Medium                                                    |
-| `app/(public)/*`                      | ~10 files | Medium (some acceptable for marketing)                    |
-| `lib/lifecycle-mapping.ts`            | 1 file    | Medium (maps lifecycle → Tailwind colors)                 |
+**Top raw palette tokens (frequency sampling):**
 
----
+| Token              | Approx. occurrences |
+| ------------------ | ------------------: |
+| `text-emerald-400` |                 591 |
+| `text-amber-400`   |                 302 |
+| `text-red-400`     |                 203 |
+| `text-rose-400`    |                 180 |
+| `bg-emerald-500`   |                 195 |
+| `bg-amber-500`     |                 151 |
+| `bg-red-500`       |                  92 |
 
-## 4. Semantic Tailwind Colors Bypass Design Tokens
+**Neutral breakdown (text-\*):** zinc 223, slate 24, gray 2, neutral/stone 0 (subset of 260 total text neutral matches including multi-pattern lines).
 
-These use Tailwind's **named color scale** instead of the **semantic tokens**:
+### 2.2 Evidence tables (file:line + replacement)
 
-| Pattern                                                | Token To Use                                        | Meaning            |
-| ------------------------------------------------------ | --------------------------------------------------- | ------------------ |
-| `text-green-400`, `text-emerald-400`, `text-green-500` | `text-pnl-positive` or `text-status-live`           | Positive / success |
-| `text-red-400`, `text-red-500`, `text-rose-400`        | `text-pnl-negative` or `text-destructive`           | Negative / error   |
-| `text-cyan-400`, `text-cyan-500`                       | `text-primary`                                      | Primary accent     |
-| `text-amber-400`, `text-yellow-400`                    | `text-status-warning`                               | Warning            |
-| `text-blue-400`, `text-blue-500`                       | `text-[color:var(--chart-3)]` or add `--info` token | Informational      |
-| `bg-green-500/15`                                      | `bg-[color:var(--pnl-positive)]/15`                 | Success background |
-| `bg-red-500/15`                                        | `bg-[color:var(--pnl-negative)]/15`                 | Error background   |
-| `bg-cyan-500/15`                                       | `bg-primary/15`                                     | Running state bg   |
+#### `components/` — primitives & shared
 
----
+| File                                            | Line(s)               | Violation                                                                                                                                                                                 | Replace with                                                                                                                                                                                                                      |
+| ----------------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/ui/badge.tsx`                       | 17, 20–24             | `text-white` on destructive; `success`/`error`/`warning`/`running`/`pending` use `bg-green-500/15 text-green-500`, `bg-red-500/15`, `bg-amber-500/15`, `bg-cyan-500/15`, `bg-gray-500/15` | `text-destructive-foreground`; map variants to `text-pnl-positive` / `text-pnl-negative` / `text-status-warning` / `text-status-running` / `text-muted-foreground` with `bg-*` using `color-mix` or token-based opacity utilities |
+| `components/ui/button.tsx`                      | 14                    | `text-white` on destructive                                                                                                                                                               | `text-destructive-foreground`                                                                                                                                                                                                     |
+| `components/ui/dialog.tsx`                      | 41                    | `bg-black/50` overlay                                                                                                                                                                     | `bg-background/80` or dedicated `--overlay` token in `globals.css` + `bg-overlay`                                                                                                                                                 |
+| `components/shared/data-card.tsx`               | 32–41                 | `border-l-[#4ade80]`, `text-[#4ade80]`, etc.                                                                                                                                              | `border-l-pnl-positive`, `text-pnl-positive`, `text-pnl-negative`, `border-l-primary` (add token if needed)                                                                                                                       |
+| `components/ops/venue-connectivity.tsx`         | 223–229               | `color: "#3b82f6"` (and other hex) in TS objects                                                                                                                                          | `var(--status-running)`, `var(--status-idle)`, chart or status tokens                                                                                                                                                             |
+| `components/dashboards/executive-dashboard.tsx` | 78–118                | Chart series `color: "#4ade80"` …                                                                                                                                                         | `var(--chart-1)` … `var(--chart-6)` or theme-aware chart palette helper                                                                                                                                                           |
+| `components/trading/status-badge.tsx`           | 33–35, 44–88, 99, 105 | `style={{ color, backgroundColor }}` with **`rgba(...)` literals** for fills                                                                                                              | Prefer CSS vars only: `color-mix(in srgb, var(--status-live) 10%, transparent)` or new utility classes in `globals.css`; **blocked** uses `rgba(239, 68, 68, 0.1)` — not aligned with `--status-critical`                         |
 
-## 5. `branding.ts` vs `globals.css` Divergence 🔴
+#### `components/trading/` (highest-density)
 
-`lib/config/branding.ts` defines `BRAND_COLORS` that **do not match** `globals.css`:
+| File                                                  | Line(s)                             | Violation                                                  | Replace with                                                                                                             |
+| ----------------------------------------------------- | ----------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `components/trading/options-futures-panel.tsx`        | 568, 610, 622–624                   | `text-emerald-400`, `bg-emerald-500/5`, `text-emerald-500` | `text-pnl-positive`, `bg-pnl-positive/5` (add `@theme` if missing), muted variants via `text-muted-foreground` / opacity |
+| `components/trading/sports/my-bets-tab.tsx`           | (file-wide; **63** palette matches) | Heavy emerald/amber/red stacks                             | Tokenize P&amp;L + status                                                                                                |
+| `components/trading/sports/fixtures-match-card.tsx`   | (file-wide; **61** matches)         | Same                                                       | Same                                                                                                                     |
+| `components/trading/sports/fixtures-detail-panel.tsx` | (file-wide; **56** matches)         | Same                                                       | Same                                                                                                                     |
 
-| Token       | `branding.ts` Value          | `globals.css` Value | Match?                          |
-| ----------- | ---------------------------- | ------------------- | ------------------------------- |
-| primary     | `hsl(142, 76%, 36%)` (green) | `#22d3ee` (cyan)    | ❌ **Completely different hue** |
-| background  | `hsl(240, 10%, 4%)`          | `#0a0a0b`           | ≈ Close                         |
-| card        | `hsl(240, 6%, 8%)`           | `#111113`           | ≈ Close                         |
-| border      | `hsl(240, 4%, 16%)`          | `#27272a`           | ≈ Close                         |
-| muted       | `hsl(240, 5%, 65%)`          | `#a1a1aa`           | ≈ Close                         |
-| destructive | `hsl(0, 84%, 60%)`           | `#f87171`           | ≈ Close                         |
+#### `app/(public)/`
 
-**Critical issue:** `branding.ts` says primary is **green**, `globals.css` says primary is **cyan**. If any component reads from `BRAND_COLORS.primary`, it gets a different color than `var(--primary)`.
+| File                                        | Line(s)                     | Violation                                                      | Replace with                                                                                                                                    |
+| ------------------------------------------- | --------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/(public)/signup/page.tsx`              | 321–341                     | Inline `<style>` and `style="color:#555"` for PDF-style output | For **print/PDF-only** views, acceptable isolated stylesheet — but document as exception; prefer CSS variables if same component renders in-app |
+| `app/(public)/services/investment/page.tsx` | 285–314                     | SVG `stroke`/`fill`/`stopColor` hex (`#4ade80`)                | `currentColor` + `className="text-pnl-positive"` or `stroke="var(--pnl-positive)"`                                                              |
+| `app/(public)/services/regulatory/page.tsx` | (file-wide; **50** matches) | Marketing palette classes                                      | Marketing may keep stronger art direction — still use tokens where components are shared with platform                                          |
 
-**Fix:** Delete `BRAND_COLORS` from `branding.ts` or redefine it to reference the CSS variables. `globals.css` must be the single source of truth.
+#### `app/(platform)/`
 
----
+| File                                                            | Line(s)                     | Violation                          | Replace with                                                             |
+| --------------------------------------------------------------- | --------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| `app/(platform)/investor-relations/board-presentation/page.tsx` | (file-wide; **48** matches) | Dense slate/zinc + accent palettes | `text-foreground` / `text-muted-foreground` / `bg-card` / surface tokens |
+| `app/(platform)/services/research/ml/page.tsx`                  | (file-wide; **33** matches) | Raw blues/purples                  | `text-primary`, `text-status-running`, `text-chart-*`                    |
 
-## 6. Badge Component Uses Raw Tailwind Colors
+#### `app/(ops)/`
 
-`components/ui/badge.tsx` defines variants with **raw Tailwind colors** instead of design tokens:
+| File                                   | Line(s)                     | Violation                 | Replace with                                 |
+| -------------------------------------- | --------------------------- | ------------------------- | -------------------------------------------- |
+| `app/(ops)/internal/data-etl/page.tsx` | (file-wide; **33** matches) | Status colors via palette | `text-status-*`, `bg-muted`, `border-border` |
 
-```tsx
-// Current (line 20-24)
-success: "border-transparent bg-green-500/15 text-green-500",
-error: "border-transparent bg-red-500/15 text-red-500",
-warning: "border-transparent bg-amber-500/15 text-amber-500",
-running: "border-transparent bg-cyan-500/15 text-cyan-500",
-pending: "border-transparent bg-gray-500/15 text-gray-500",
-```
+#### `app/layout.tsx` (meta — not className but color SSOT)
 
-**Should be:**
+| File             | Line(s) | Violation                              | Replace with                                                                                                                                     |
+| ---------------- | ------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app/layout.tsx` | 62–63   | `themeColor` hex `#0a0a0b` / `#f8f9fa` | Acceptable if kept in sync with `globals.css` **or** read from a single TS export of theme metadata; **document** as duplicate of `--background` |
 
-```tsx
-success: "border-transparent bg-[color:var(--pnl-positive)]/15 text-pnl-positive",
-error: "border-transparent bg-[color:var(--pnl-negative)]/15 text-pnl-negative",
-warning: "border-transparent bg-[color:var(--status-warning)]/15 text-status-warning",
-running: "border-transparent bg-primary/15 text-primary",
-pending: "border-transparent bg-muted text-muted-foreground",
-```
+### 2.3 `components/ui` — Select, Tooltip
 
----
-
-## 7. StatusBadge Mixes Tokens with Hardcoded rgba
-
-`components/trading/status-badge.tsx` correctly uses `var(--status-live)` for `color` but hardcodes `rgba(74, 222, 128, 0.1)` for `bgColor`:
-
-```tsx
-// Current (line 41-46)
-live: {
-  color: "var(--status-live)",        // ✅ Token
-  bgColor: "rgba(74, 222, 128, 0.1)", // ❌ Hardcoded
-  dotColor: "var(--status-live)",      // ✅ Token
-},
-```
-
-**Fix:** Use `color-mix(in srgb, var(--status-live) 10%, transparent)` for `bgColor` to keep it token-driven.
+- **`select.tsx`:** Uses `border-input`, `text-muted-foreground`, `bg-popover` — **compliant** for listed primitives.
+- **`tooltip.tsx`:** Uses `bg-foreground text-background` — **token-based** (good contrast inversion pattern).
 
 ---
 
-## 8. Arbitrary Color Classes (`text-[#...]`, `bg-[#...]`)
+## 3. Worst Offenders
 
-~92 occurrences in 14 files, concentrated in:
+Top **10** `.tsx` files by combined count of Module B Tailwind violations (1a + 1b + 1c + arbitrary `-[#` hex utilities):
 
-| File                                                  | Count |
-| ----------------------------------------------------- | ----- |
-| `components/trading/sports/sports-page.tsx`           | 12    |
-| `components/trading/sports/fixtures-detail-panel.tsx` | 10    |
-| `components/trading/sports/arb-stream.tsx`            | 8     |
-| `components/trading/sports/arb-grid.tsx`              | 8     |
-| `components/trading/sports/my-bets-tab.tsx`           | 7     |
-| `components/trading/context-bar.tsx`                  | 5     |
-
-Many of these use the **exact hex values** that match existing tokens (e.g. `text-[#22d3ee]` = `--primary`, `text-[#4ade80]` = `--pnl-positive`). Replacing with token utilities is a direct find-and-replace.
-
----
-
-## 9. Inline Styles with Hardcoded Colors
-
-Generally rare except in:
-
-- **Chart components** — numeric color values required by Recharts/canvas APIs
-- **`arb-grid.tsx` line 346:** `style={{ background: locked ? "#3f3f46" : … }}` → should use `var(--muted)`
-
-**Good examples (to replicate):**
-
-- `reports/overview/page.tsx` uses `var(--pnl-positive)`, `var(--status-warning)` in inline styles ✅
+| Rank | Matches | File                                                            |
+| ---: | ------: | --------------------------------------------------------------- |
+|    1 |      83 | `components/trading/options-futures-panel.tsx`                  |
+|    2 |      63 | `components/trading/sports/my-bets-tab.tsx`                     |
+|    3 |      61 | `components/trading/sports/fixtures-match-card.tsx`             |
+|    4 |      56 | `components/trading/sports/fixtures-detail-panel.tsx`           |
+|    5 |      50 | `app/(public)/services/regulatory/page.tsx`                     |
+|    6 |      48 | `app/(platform)/investor-relations/board-presentation/page.tsx` |
+|    7 |      42 | `components/trading/sports/arb-grid.tsx`                        |
+|    8 |      37 | `components/trading/predictions/arb-stream-tab.tsx`             |
+|    9 |      36 | `components/trading/manual-trading-panel.tsx`                   |
+|   10 |      36 | `app/(public)/services/backtesting/page.tsx`                    |
 
 ---
 
-## 10. Remediation Priority
+## 4. Part 2 — Token coverage (`globals.css` vs usage)
 
-### Phase 1 — Fix Token Sources (Day 1)
+| Token family                                                            | `:root` | `.dark` | `@theme` mapping               | Used in components?                                                                                                                                      |
+| ----------------------------------------------------------------------- | ------- | ------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core (background, foreground, card, popover, primary, muted, border, …) | Yes     | Yes     | Yes                            | **Yes** — widespread (`text-foreground`, `bg-background`, `bg-card`, …)                                                                                  |
+| P&amp;L (`pnl-positive` / `pnl-negative`)                               | Yes     | Yes     | Yes                            | **Underused as Tailwind utilities** — ~0 `text-pnl-positive` / `text-pnl-negative`; heavy use of `text-emerald-*` / `text-rose-*` / `text-red-*` instead |
+| Status (`status-live`, `warning`, `critical`, `idle`, `running`)        | Yes     | Yes     | Yes                            | **Sparse** as utilities; `StatusBadge` uses CSS vars for text but **rgba backgrounds** bypass theme                                                      |
+| Surface nav (`surface-trading`, … `surface-reports`)                    | Yes     | Yes     | Yes                            | **Low** direct utility usage; marketing/trading often uses raw greens/blues                                                                              |
+| Risk (`risk-healthy`, `warning`, `critical`)                            | Yes     | Yes     | Yes                            | **Very low** — `risk-*` utilities rarely appear; risk UI often uses emerald/amber/red                                                                    |
+| Chart (`chart-1` … `chart-6`)                                           | Yes     | Yes     | Yes                            | **Low** — many charts pass **hardcoded hex** in config objects                                                                                           |
+| Surface hierarchy (`surface-1` … `surface-4`)                           | Yes     | Yes     | Yes                            | **Moderate** — some `bg-surface-*`; many files still use `bg-zinc-*` / `bg-slate-*`                                                                      |
+| Sidebar                                                                 | Yes     | Yes     | Yes                            | **Yes** (`bg-sidebar`, related)                                                                                                                          |
+| Shadows (`shadow-sm` / `md` / `lg`)                                     | Yes     | Yes     | Yes (`--shadow-*` in `@theme`) | **Some** usage (`shadow-sm` ~21 matches); verify consistency vs raw `shadow-*` on colored backgrounds                                                    |
 
-1. Align `branding.ts` with `globals.css` (or delete `BRAND_COLORS`)
-2. Fix `Badge` component variants to use design tokens
-3. Fix `StatusBadge` rgba values to use `color-mix`
+**SSOT note (outside Part 1 scope but affects theming):** `react-grid-layout` overrides in `globals.css` use `hsl(var(--primary) / 0.15)` while `--primary` is defined as **hex** (e.g. `#22d3ee`), not HSL components — placeholders/handles may not resolve as intended. Track as a **separate CSS fix** in `globals.css` (convert to OKLCH/HSL tokens or use `color-mix` with `var(--primary)`).
 
-### Phase 2 — Registry/Config Files (Days 2–3)
+---
 
-1. `lib/strategy-registry.ts` — extract color assignments to token-based palette
-2. `lib/taxonomy.ts` — same treatment
-3. `lib/lifecycle-mapping.ts` — replace `text-green-400` etc. with `text-pnl-positive` etc.
+## 5. Part 3 — `lib/config/branding.ts` cross-reference
 
-### Phase 3 — Component Sweep (Days 4–8)
+| Check                         | Result                                                                                                                                                                                                                                   |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Color values vs `globals.css` | **`BRAND_COLORS` uses HSL strings** (e.g. primary `hsl(142, 76%, 36%)`) that **do not match** the cyan-forward institutional palette in `globals.css` (light primary `#0891b2`, dark `#22d3ee`).                                         |
+| Used in UI?                   | **`BRAND_COLORS` is not referenced** in `app/` or `components/` (only exported from `lib/config/index.ts` and asserted in `__tests__/lib/config/config.test.ts`).                                                                        |
+| Recommendation                | Either **delete `BRAND_COLORS`** until a real consumer exists, or **regenerate from the same SSOT** as `globals.css` and use only for non-CSS contexts (e.g. OG images) with a documented pipeline — **do not** let it diverge silently. |
 
-1. Sports components (highest density of violations)
-2. Trading chart components (where CSS vars can replace hardcodes)
-3. Finder config files
-4. Promote components
-5. Research chart components
+---
 
-### Phase 4 — Enforcement
+## 6. Part 4 — Component primitive compliance
 
-1. Add ESLint `no-restricted-syntax` rules for `text-zinc-*`, `bg-zinc-*`, `text-green-*`, etc.
-2. Add to PR review checklist
-3. Consider `eslint-plugin-tailwindcss` with allowlist
+| Component       | Token compliance     | Notes                                                                                                                                     |
+| --------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Badge**       | **Non-compliant**    | Raw palette for `success`/`error`/`warning`/`running`/`pending`; destructive uses `text-white` (`16:24:components/ui/badge.tsx`)          |
+| **Button**      | **Mostly compliant** | Destructive uses `text-white` (`13:14:components/ui/button.tsx`)                                                                          |
+| **StatusBadge** | **Mixed**            | Text colors use `var(--status-*)`; **backgrounds use hardcoded `rgba`** (`41:88:components/trading/status-badge.tsx`) — light theme drift |
+| **Select**      | **Compliant**        | Semantic borders/backgrounds                                                                                                              |
+| **Dialog**      | **Mostly compliant** | Overlay `bg-black/50` breaks strict token rule (`41:41:components/ui/dialog.tsx`)                                                         |
+| **Tooltip**     | **Compliant**        | Inverted `foreground`/`background` pattern                                                                                                |
+
+---
+
+## 7. Recommended fixes (concrete)
+
+1. **Extend `@theme` / utilities** where needed (e.g. `bg-pnl-positive/10` if opacity variants are missing) so authors do not reach for `emerald-*`.
+2. **Refactor `components/ui/badge.tsx` variants** to semantic tokens; same for **Button destructive** text color.
+3. **Replace `StatusBadge` `rgba(...)`** with `color-mix(in srgb, var(--status-*) …)` or dedicated classes in `globals.css` per status.
+4. **Codemod-style pass** on `components/trading/**` and top public pages: map emerald→pnl-positive, rose/red→pnl-negative or destructive, amber→status-warning, cyan/blue→primary or status-running.
+5. **Charts:** centralize series colors in a helper that reads `getComputedStyle` or passes `var(--chart-n)` so Recharts / custom SVG respects theme.
+6. **Dialog overlay:** add `--overlay` or use `bg-background` with opacity in tokens.
+7. **branding.ts:** align or remove `BRAND_COLORS`.
+
+---
+
+## 8. Remediation priority & effort
+
+| Phase  | Scope                                                                     | Goal                                                     | Effort (indicative) |
+| ------ | ------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------- |
+| **P0** | `components/ui/badge.tsx`, `button.tsx`, `dialog.tsx`, `status-badge.tsx` | Fix **shared primitives** so new code defaults to tokens | **0.5–1 dev-day**   |
+| **P1** | Top 15 offender files (~60% of raw matches if clustered)                  | Cut worst trading + sports surfaces                      | **3–5 dev-days**    |
+| **P2** | Remaining `app/(platform)` + `components/trading`                         | Platform parity in light/dark                            | **1–2 dev-weeks**   |
+| **P3** | `app/(public)` marketing art, SVGs, inline HTML                           | Decide exceptions vs tokenization                        | **3–5 dev-days**    |
+| **P4** | `branding.ts`, chart helpers, `react-grid-layout` CSS                     | SSOT + CSS correctness                                   | **1–2 dev-days**    |
+
+**Total to ~100% theme-readiness (all 262 files + tests + visual QA):** **~4–6 engineer-weeks** (assuming one primary owner + design sign-off on marketing exceptions).
+
+---
+
+## 9. Summary counts (executive)
+
+| Metric                                                       |                       Value |
+| ------------------------------------------------------------ | --------------------------: |
+| **1a** neutral palette matches                               |                         462 |
+| **1b** semantic palette matches                              |                       3,109 |
+| **1c** absolute black/white utilities                        | 121 (+ 18 opacity variants) |
+| **1d** arbitrary `-[#` utilities                             |                         141 |
+| **1e** rgb/hsl in `.tsx` lines                               |                         117 |
+| **Files with Tailwind palette violations (1a–1d composite)** |                         262 |
+
+**Overall severity:** 🔴 **Critical** — raw **1b** semantic Tailwind usage alone exceeds **3k** occurrences across **most** feature areas, so **light theme and dark theme cannot be considered visually unified** until remediation proceeds.
