@@ -21,7 +21,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useWorkspaceStore, useActiveWorkspace } from "@/lib/stores/workspace-store";
 import { WidgetCatalogDrawer } from "./widget-catalog-drawer";
-import { Plus, Save, RotateCcw, Download, Upload, Lock, Unlock, MoreHorizontal, Copy, Trash2 } from "lucide-react";
+import {
+  Plus, Save, RotateCcw, Download, Upload, Lock, Unlock, MoreHorizontal,
+  Copy, Trash2, Undo2, Camera, Cloud, CloudOff, Loader2, History,
+} from "lucide-react";
+import type { WorkspaceSnapshot, SyncStatus } from "@/lib/stores/workspace-store";
 
 interface WorkspaceToolbarProps {
   tab: string;
@@ -43,10 +47,22 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   const exportWorkspace = useWorkspaceStore((s) => s.exportWorkspace);
   const importWorkspace = useWorkspaceStore((s) => s.importWorkspace);
 
+  const saveSnapshot = useWorkspaceStore((s) => s.saveSnapshot);
+  const restoreSnapshot = useWorkspaceStore((s) => s.restoreSnapshot);
+  const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot);
+  const undo = useWorkspaceStore((s) => s.undo);
+  const pushUndo = useWorkspaceStore((s) => s.pushUndo);
+  const undoStack = useWorkspaceStore((s) => s.undoStack[tab] ?? []);
+  const snapshots = useWorkspaceStore((s) => s.snapshots[tab] ?? []);
+  const syncStatus = useWorkspaceStore((s) => s.syncStatus);
+
   const activeWs = useActiveWorkspace(tab);
   const [catalogOpen, setCatalogOpen] = React.useState(false);
   const [saveAsOpen, setSaveAsOpen] = React.useState(false);
   const [saveAsName, setSaveAsName] = React.useState("");
+  const [snapshotOpen, setSnapshotOpen] = React.useState(false);
+  const [snapshotName, setSnapshotName] = React.useState("");
+  const [historyOpen, setHistoryOpen] = React.useState(false);
   const importRef = React.useRef<HTMLInputElement>(null);
 
   const handleExport = React.useCallback(() => {
@@ -88,6 +104,38 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
     setActiveWorkspace(tab, activeId);
   }, [activeWs, activeId, setActiveWorkspace, tab]);
 
+  const handleSaveSnapshot = React.useCallback(() => {
+    if (!snapshotName.trim()) return;
+    pushUndo(tab);
+    saveSnapshot(tab, snapshotName.trim());
+    setSnapshotOpen(false);
+    setSnapshotName("");
+  }, [snapshotName, saveSnapshot, pushUndo, tab]);
+
+  const handleUndo = React.useCallback(() => {
+    undo(tab);
+  }, [undo, tab]);
+
+  const syncIcon = React.useMemo(() => {
+    const icons: Record<SyncStatus, React.ReactNode> = {
+      local: <CloudOff className="size-3 text-muted-foreground" />,
+      syncing: <Loader2 className="size-3 text-blue-400 animate-spin" />,
+      synced: <Cloud className="size-3 text-emerald-400" />,
+      error: <CloudOff className="size-3 text-rose-400" />,
+    };
+    const labels: Record<SyncStatus, string> = {
+      local: "Local only (not signed in)",
+      syncing: "Saving to cloud...",
+      synced: "Saved to cloud",
+      error: "Cloud sync failed",
+    };
+    return (
+      <span title={labels[syncStatus]} className="flex items-center">
+        {icons[syncStatus]}
+      </span>
+    );
+  }, [syncStatus]);
+
   return (
     <>
       <div className="flex items-center gap-2 px-2 py-0.5 border-b border-border bg-card/50 shrink-0">
@@ -126,7 +174,59 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
           {editMode ? "Editing" : "Locked"}
         </Button>
 
+        {/* Undo */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 gap-1 text-xs"
+          onClick={handleUndo}
+          disabled={undoStack.length === 0}
+          title={`Undo (${undoStack.length} steps)`}
+        >
+          <Undo2 className="size-3.5" />
+        </Button>
+
+        {/* Save snapshot */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 gap-1 text-xs"
+          onClick={() => { setSnapshotName(`Snapshot ${snapshots.length + 1}`); setSnapshotOpen(true); }}
+          title="Save snapshot"
+        >
+          <Camera className="size-3.5" />
+        </Button>
+
+        {/* Version history */}
+        {snapshots.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" title="Version history">
+                <History className="size-3.5" />
+                <span className="text-[10px] text-muted-foreground">{snapshots.length}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 max-h-64 overflow-y-auto">
+              {snapshots.slice().reverse().map((snap) => (
+                <DropdownMenuItem
+                  key={snap.id}
+                  className="flex items-center justify-between text-xs"
+                  onClick={() => restoreSnapshot(tab, snap.id)}
+                >
+                  <span className="truncate">{snap.name}</span>
+                  <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
+                    {new Date(snap.createdAt).toLocaleTimeString()}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
         <div className="flex-1" />
+
+        {/* Sync indicator */}
+        {syncIcon}
 
         {/* Actions */}
         <DropdownMenu>
@@ -180,6 +280,34 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
 
       {/* Widget catalog drawer */}
       <WidgetCatalogDrawer tab={tab} open={catalogOpen} onOpenChange={setCatalogOpen} />
+
+      {/* Save Snapshot dialog */}
+      <Dialog open={snapshotOpen} onOpenChange={setSnapshotOpen}>
+        <DialogContent className="sm:max-w-[340px]">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Save Snapshot</DialogTitle>
+            <DialogDescription className="text-xs">
+              Save a named version of the current layout. You can restore it later.
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            value={snapshotName}
+            onChange={(e) => setSnapshotName(e.target.value)}
+            placeholder="Snapshot name"
+            className="text-sm"
+            onKeyDown={(e) => e.key === "Enter" && handleSaveSnapshot()}
+          />
+          <DialogFooter>
+            <Button variant="ghost" size="sm" onClick={() => setSnapshotOpen(false)}>
+              Cancel
+            </Button>
+            <Button size="sm" onClick={handleSaveSnapshot} disabled={!snapshotName.trim()}>
+              <Camera className="size-3.5 mr-1.5" />
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Save As dialog */}
       <Dialog open={saveAsOpen} onOpenChange={setSaveAsOpen}>

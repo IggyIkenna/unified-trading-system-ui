@@ -5,7 +5,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import type { Firestore } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/auth/firebase-config";
 import { useWorkspaceStore } from "./workspace-store";
-import type { Workspace, CustomPanel } from "./workspace-store";
+import type { Workspace, CustomPanel, WorkspaceSnapshot } from "./workspace-store";
 import { useAuth } from "@/hooks/use-auth";
 
 /** Shape of the Firestore document at workspaces/{userId}. */
@@ -13,6 +13,7 @@ interface WorkspaceDoc {
   workspaces: Record<string, Workspace[]>;
   activeWorkspaceId: Record<string, string>;
   customPanels: CustomPanel[];
+  snapshots: Record<string, WorkspaceSnapshot[]>;
   updatedAt: ReturnType<typeof serverTimestamp>;
 }
 
@@ -72,6 +73,7 @@ export function useWorkspaceSync(): void {
             suppressNextSave.current = true;
 
             const store = useWorkspaceStore.getState();
+            const remoteSnapshots = data.snapshots;
 
             // Overwrite local state with remote data.
             useWorkspaceStore.setState({
@@ -80,6 +82,10 @@ export function useWorkspaceSync(): void {
               customPanels: Array.isArray(remoteCustomPanels)
                 ? remoteCustomPanels
                 : store.customPanels,
+              snapshots: remoteSnapshots && typeof remoteSnapshots === "object"
+                ? remoteSnapshots
+                : store.snapshots,
+              syncStatus: "synced",
             });
           }
         }
@@ -110,13 +116,16 @@ export function useWorkspaceSync(): void {
       workspaces: state.workspaces,
       activeWorkspaceId: state.activeWorkspaceId,
       customPanels: state.customPanels,
+      snapshots: state.snapshots,
       updatedAt: serverTimestamp(),
     };
 
+    useWorkspaceStore.getState().setSyncStatus("syncing");
+
     // Fire-and-forget — never block the UI.
-    void setDoc(ref, payload, { merge: true }).catch(() => {
-      // Silently swallow — localStorage still has the data.
-    });
+    void setDoc(ref, payload, { merge: true })
+      .then(() => useWorkspaceStore.getState().setSyncStatus("synced"))
+      .catch(() => useWorkspaceStore.getState().setSyncStatus("error"));
   }, [db, userId]);
 
   useEffect(() => {

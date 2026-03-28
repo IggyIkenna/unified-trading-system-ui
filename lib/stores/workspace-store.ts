@@ -20,11 +20,26 @@ export interface CustomPanel {
   icon?: string;
 }
 
+export interface WorkspaceSnapshot {
+  id: string;
+  name: string;
+  workspace: Workspace;
+  createdAt: string;
+}
+
+export type SyncStatus = "local" | "syncing" | "synced" | "error";
+
+const MAX_UNDO_STACK = 30;
+const MAX_SNAPSHOTS_PER_WORKSPACE = 20;
+
 interface WorkspaceState {
   workspaces: Record<string, Workspace[]>;
   activeWorkspaceId: Record<string, string>;
   editMode: boolean;
   customPanels: CustomPanel[];
+  snapshots: Record<string, WorkspaceSnapshot[]>;
+  undoStack: Record<string, Workspace[]>;
+  syncStatus: SyncStatus;
 }
 
 interface WorkspaceActions extends WorkspaceState {
@@ -45,6 +60,12 @@ interface WorkspaceActions extends WorkspaceState {
   createCustomPanel: (name: string) => string;
   deleteCustomPanel: (id: string) => void;
   renameCustomPanel: (id: string, name: string) => void;
+  saveSnapshot: (tab: string, name: string) => string | null;
+  restoreSnapshot: (tab: string, snapshotId: string) => boolean;
+  deleteSnapshot: (tab: string, snapshotId: string) => void;
+  undo: (tab: string) => boolean;
+  pushUndo: (tab: string) => void;
+  setSyncStatus: (status: SyncStatus) => void;
   reset: () => void;
 }
 
@@ -56,6 +77,9 @@ function buildInitialState(): WorkspaceState {
     activeWorkspaceId: {},
     editMode: true,
     customPanels: [],
+    snapshots: {},
+    undoStack: {},
+    syncStatus: "local",
   };
 }
 
@@ -318,6 +342,88 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
           customPanels: s.customPanels.map((p) => (p.id === id ? { ...p, name } : p)),
         })),
 
+      saveSnapshot: (tab, name) => {
+        const state = get();
+        const activeId = state.activeWorkspaceId[tab];
+        const ws = state.workspaces[tab]?.find((w) => w.id === activeId);
+        if (!ws) return null;
+        const snapshotId = `snap-${Date.now()}`;
+        const snapshot: WorkspaceSnapshot = {
+          id: snapshotId,
+          name,
+          workspace: JSON.parse(JSON.stringify(ws)),
+          createdAt: new Date().toISOString(),
+        };
+        set((s) => {
+          const existing = s.snapshots[tab] ?? [];
+          const trimmed = existing.length >= MAX_SNAPSHOTS_PER_WORKSPACE
+            ? existing.slice(existing.length - MAX_SNAPSHOTS_PER_WORKSPACE + 1)
+            : existing;
+          return { snapshots: { ...s.snapshots, [tab]: [...trimmed, snapshot] } };
+        });
+        return snapshotId;
+      },
+
+      restoreSnapshot: (tab, snapshotId) => {
+        const state = get();
+        const snapshot = state.snapshots[tab]?.find((s) => s.id === snapshotId);
+        if (!snapshot) return false;
+        const activeId = state.activeWorkspaceId[tab];
+        // Push current state to undo before restoring
+        get().pushUndo(tab);
+        set((s) => {
+          const tabWorkspaces = (s.workspaces[tab] ?? []).map((w) =>
+            w.id === activeId
+              ? { ...snapshot.workspace, id: w.id, name: w.name, updatedAt: new Date().toISOString() }
+              : w,
+          );
+          return { workspaces: { ...s.workspaces, [tab]: tabWorkspaces } };
+        });
+        return true;
+      },
+
+      deleteSnapshot: (tab, snapshotId) =>
+        set((s) => ({
+          snapshots: {
+            ...s.snapshots,
+            [tab]: (s.snapshots[tab] ?? []).filter((snap) => snap.id !== snapshotId),
+          },
+        })),
+
+      pushUndo: (tab) => {
+        const state = get();
+        const activeId = state.activeWorkspaceId[tab];
+        const ws = state.workspaces[tab]?.find((w) => w.id === activeId);
+        if (!ws) return;
+        const clone: Workspace = JSON.parse(JSON.stringify(ws));
+        set((s) => {
+          const stack = s.undoStack[tab] ?? [];
+          const trimmed = stack.length >= MAX_UNDO_STACK ? stack.slice(1) : stack;
+          return { undoStack: { ...s.undoStack, [tab]: [...trimmed, clone] } };
+        });
+      },
+
+      undo: (tab) => {
+        const state = get();
+        const stack = state.undoStack[tab] ?? [];
+        if (stack.length === 0) return false;
+        const previous = stack[stack.length - 1];
+        const activeId = state.activeWorkspaceId[tab];
+        set((s) => {
+          const newStack = (s.undoStack[tab] ?? []).slice(0, -1);
+          const tabWorkspaces = (s.workspaces[tab] ?? []).map((w) =>
+            w.id === activeId ? { ...previous, id: w.id, updatedAt: new Date().toISOString() } : w,
+          );
+          return {
+            undoStack: { ...s.undoStack, [tab]: newStack },
+            workspaces: { ...s.workspaces, [tab]: tabWorkspaces },
+          };
+        });
+        return true;
+      },
+
+      setSyncStatus: (status) => set({ syncStatus: status }),
+
       reset: () => set(buildInitialState()),
     }),
     {
@@ -327,6 +433,7 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
         activeWorkspaceId: s.activeWorkspaceId,
         editMode: s.editMode,
         customPanels: s.customPanels,
+        snapshots: s.snapshots,
       }),
     },
   ),
