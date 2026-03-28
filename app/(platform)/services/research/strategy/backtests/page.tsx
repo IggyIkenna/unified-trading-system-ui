@@ -1261,6 +1261,52 @@ export default function BacktestsPage() {
                         </p>
                       </div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Max Leverage</Label>
+                        <Input
+                          type="number"
+                          step="0.1"
+                          defaultValue="3.0"
+                          min={1}
+                          max={20}
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          Maximum leverage ratio (DeFiStrategyConfigDict.max_leverage)
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Rebalance Trigger</Label>
+                        <Select defaultValue="threshold">
+                          <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="threshold">Threshold-based</SelectItem>
+                            <SelectItem value="periodic">Periodic</SelectItem>
+                            <SelectItem value="health_factor">Health Factor</SelectItem>
+                            <SelectItem value="manual">Manual Only</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[11px] text-muted-foreground">
+                          When to trigger rebalancing (rebalancing_config.trigger_type)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>LTV Max (%)</Label>
+                        <Input type="number" step="1" defaultValue="75" min={0} max={100} />
+                        <p className="text-[11px] text-muted-foreground">
+                          Maximum loan-to-value ratio (risk_limits.ltv_max)
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Margin Usage Max (%)</Label>
+                        <Input type="number" step="1" defaultValue="80" min={0} max={100} />
+                        <p className="text-[11px] text-muted-foreground">
+                          Maximum margin utilisation (risk_limits.margin_usage_max)
+                        </p>
+                      </div>
+                    </div>
                     <div className="flex items-center gap-3">
                       <Switch
                         id="smart-order-routing"
@@ -1273,7 +1319,7 @@ export default function BacktestsPage() {
                         Smart Order Routing
                       </Label>
                       <p className="text-[11px] text-muted-foreground">
-                        Route across DEX aggregators for best execution
+                        Route across DEX aggregators for best execution (DeFiSORConfigDict)
                       </p>
                     </div>
                   </CollapsibleConfigSection>
