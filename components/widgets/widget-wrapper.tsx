@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { UpgradeCard } from "@/components/platform/upgrade-card";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { type WidgetDefinition, type WidgetPlacement, getWidget, getWidgetsForTab } from "./widget-registry";
+import { type WidgetDefinition, type WidgetPlacement, getWidget, getAllWidgets } from "./widget-registry";
 import { useWorkspaceStore, useActiveLayouts } from "@/lib/stores/workspace-store";
 import {
   DropdownMenu,
@@ -98,26 +98,6 @@ function WidgetBody({
   );
 }
 
-function categorizeWidget(w: WidgetDefinition): string {
-  const desc = (w.description + " " + w.label).toLowerCase();
-  if (desc.includes("chart") || desc.includes("graph") || desc.includes("series") || desc.includes("heatmap"))
-    return "Charts & Visualizations";
-  if (
-    desc.includes("table") ||
-    desc.includes("book") ||
-    desc.includes("list") ||
-    desc.includes("feed") ||
-    desc.includes("fills")
-  )
-    return "Tables & Data";
-  if (desc.includes("kpi") || desc.includes("metric") || desc.includes("summary") || desc.includes("strip"))
-    return "Metrics & KPIs";
-  if (desc.includes("filter") || desc.includes("control") || desc.includes("scope") || desc.includes("selector"))
-    return "Controls & Filters";
-  if (desc.includes("entry") || desc.includes("order") || desc.includes("trade") || desc.includes("form"))
-    return "Trading & Execution";
-  return "Other";
-}
 
 function AddCoTabButton({
   pageTab,
@@ -130,15 +110,14 @@ function AddCoTabButton({
 }) {
   const mergeWidget = useWorkspaceStore((s) => s.mergeWidget);
   const addWidget = useWorkspaceStore((s) => s.addWidget);
-  const available = getWidgetsForTab(pageTab).filter(
+  const available = getAllWidgets().filter(
     (w) => w.id !== placement.widgetId && !(placement.coTabs ?? []).includes(w.id),
   );
 
   if (available.length === 0) return null;
 
   const grouped = available.reduce<Record<string, WidgetDefinition[]>>((acc, w) => {
-    const cat = categorizeWidget(w);
-    (acc[cat] ??= []).push(w);
+    (acc[w.category] ??= []).push(w);
     return acc;
   }, {});
   const categories = Object.keys(grouped).sort();

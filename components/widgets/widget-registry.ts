@@ -11,6 +11,8 @@ export interface WidgetDefinition {
   label: string;
   description: string;
   icon: LucideIcon;
+  /** Display category for grouping in the widget catalogue (e.g. "Positions", "Risk") */
+  category: string;
 
   minW: number;
   minH: number;
@@ -55,4 +57,13 @@ export function getWidgetsForTab(tab: string): WidgetDefinition[] {
 
 export function getAllWidgets(): WidgetDefinition[] {
   return Array.from(registry.values());
+}
+
+/** Returns all widgets grouped by their category field, sorted alphabetically by category. */
+export function getAllWidgetsByCategory(): Record<string, WidgetDefinition[]> {
+  const grouped: Record<string, WidgetDefinition[]> = {};
+  for (const w of registry.values()) {
+    (grouped[w.category] ??= []).push(w);
+  }
+  return grouped;
 }

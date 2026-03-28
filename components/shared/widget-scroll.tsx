@@ -3,12 +3,18 @@
 import * as React from "react";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 import { cn } from "@/lib/utils";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 /**
  * WidgetScroll — shared scroll container for widgets and all other UI surfaces.
  *
- * Supports vertical, horizontal, or both axes simultaneously.
- * Uses Radix ScrollArea for accessible, cross-browser custom scrollbars.
+ * Extends the base ScrollArea/ScrollBar from components/ui/scroll-area with:
+ *   - Multi-axis support (vertical, horizontal, both)
+ *   - Scrollbar size variants (default, thin)
+ *   - Viewport className passthrough
+ *
+ * For simple single-axis scrolling without size variants, prefer the base
+ * ScrollArea from @/components/ui/scroll-area directly.
  *
  * Usage:
  *   <WidgetScroll>…content…</WidgetScroll>                    // vertical only
@@ -16,6 +22,9 @@ import { cn } from "@/lib/utils";
  *   <WidgetScroll axes="both">…</WidgetScroll>                 // both axes
  *   <WidgetScroll scrollbarSize="thin">…</WidgetScroll>        // thinner thumb
  */
+
+// Re-export base scroll primitives for consumers that only need the simple version
+export { ScrollArea, ScrollBar };
 
 type ScrollAxes = "vertical" | "horizontal" | "both";
 type ScrollbarSize = "default" | "thin";

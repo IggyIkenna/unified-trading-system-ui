@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 import type { ExportColumn } from "@/lib/utils/export";
-import { ArrowUpRight, ArrowDownRight, XCircle, Pencil, Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, XCircle, Pencil, Loader2, AlertCircle, RefreshCw, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useOrdersData, classifyInstrument, type OrderRecord } from "./orders-data-context";
+import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar";
+import { useOrdersData, classifyInstrument, type OrderRecord, type InstrumentType } from "./orders-data-context";
+
+const INSTRUMENT_TYPES: InstrumentType[] = ["All", "Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
 
 const STATUS_COLORS: Record<string, string> = {
   FILLED: "border-[var(--status-live)] text-[var(--status-live)]",
@@ -278,7 +281,77 @@ const ORDER_EXPORT_COLUMNS: ExportColumn[] = [
 ];
 
 export function OrdersTableWidget(_props: WidgetComponentProps) {
-  const { filteredOrders, isLoading, error, refetch, cancelOrder, openAmendDialog } = useOrdersData();
+  const {
+    filteredOrders,
+    isLoading,
+    error,
+    refetch,
+    cancelOrder,
+    openAmendDialog,
+    searchQuery,
+    setSearchQuery,
+    venueFilter,
+    setVenueFilter,
+    statusFilter,
+    setStatusFilter,
+    instrumentTypeFilter,
+    setInstrumentTypeFilter,
+    resetFilters,
+    uniqueVenues,
+    uniqueStatuses,
+  } = useOrdersData();
+
+  const [showFilters, setShowFilters] = React.useState(true);
+
+  const filterDefs: FilterDefinition[] = React.useMemo(
+    () => [
+      {
+        key: "search",
+        label: "Search",
+        type: "search" as const,
+        placeholder: "Search by order ID, instrument, venue...",
+      },
+      {
+        key: "venue",
+        label: "Venue",
+        type: "select" as const,
+        options: uniqueVenues.map((v) => ({ value: v, label: v })),
+      },
+      {
+        key: "status",
+        label: "Status",
+        type: "select" as const,
+        options: uniqueStatuses.map((s) => ({ value: s, label: s })),
+      },
+    ],
+    [uniqueVenues, uniqueStatuses],
+  );
+
+  const filterValues = React.useMemo(
+    () => ({
+      search: searchQuery || undefined,
+      venue: venueFilter !== "all" ? venueFilter : undefined,
+      status: statusFilter !== "all" ? statusFilter : undefined,
+    }),
+    [searchQuery, venueFilter, statusFilter],
+  );
+
+  const handleFilterChange = React.useCallback(
+    (key: string, value: unknown) => {
+      switch (key) {
+        case "search":
+          setSearchQuery((value as string) || "");
+          break;
+        case "venue":
+          setVenueFilter((value as string) || "all");
+          break;
+        case "status":
+          setStatusFilter((value as string) || "all");
+          break;
+      }
+    },
+    [setSearchQuery, setVenueFilter, setStatusFilter],
+  );
 
   const columns = React.useMemo(() => buildColumns(cancelOrder, openAmendDialog), [cancelOrder, openAmendDialog]);
 
@@ -306,17 +379,47 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="flex items-center justify-end gap-2 px-3 py-1.5 border-b border-border/40">
-        <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => refetch()}>
-          <RefreshCw className="size-3" />
-          Refresh
-        </Button>
-        <ExportDropdown
-          data={filteredOrders as unknown as Record<string, unknown>[]}
-          columns={ORDER_EXPORT_COLUMNS}
-          filename="orders"
-        />
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
+        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+          <Filter className="size-3" />
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => refetch()}>
+            <RefreshCw className="size-3" />
+            Refresh
+          </Button>
+          <ExportDropdown
+            data={filteredOrders as unknown as Record<string, unknown>[]}
+            columns={ORDER_EXPORT_COLUMNS}
+            filename="orders"
+          />
+        </div>
       </div>
+      {showFilters && (
+        <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
+          <FilterBar
+            filters={filterDefs}
+            values={filterValues}
+            onChange={handleFilterChange}
+            onReset={resetFilters}
+            className="border-b-0"
+          />
+          <div className="flex items-center gap-1 flex-wrap mt-1.5">
+            {INSTRUMENT_TYPES.map((type) => (
+              <Button
+                key={type}
+                variant={instrumentTypeFilter === type ? "default" : "outline"}
+                size="sm"
+                className="h-7 px-3 text-xs"
+                onClick={() => setInstrumentTypeFilter(type)}
+              >
+                {type}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex-1 overflow-auto">
         <Card className="border-0 rounded-none">
           <CardContent className="p-0">

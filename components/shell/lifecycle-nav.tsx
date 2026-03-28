@@ -180,7 +180,7 @@ export function LifecycleNav({
   return (
     <nav
       className={cn(
-        "sticky top-0 z-40 flex shrink-0 items-center justify-between gap-2 overflow-x-auto border-b border-border bg-card/95 px-3 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/90",
+        "flex shrink-0 items-center justify-between gap-2 overflow-x-auto border-b border-border bg-card/95 px-3 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/90",
         className,
       )}
     >

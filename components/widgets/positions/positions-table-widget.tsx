@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { FilterBar } from "@/components/platform/filter-bar";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DataFreshness } from "@/components/ui/data-freshness";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 import type { ExportColumn } from "@/lib/utils/export";
 import { formatCurrency } from "@/lib/reference-data";
-import { RefreshCw, ArrowUpRight, ArrowDownRight, Loader2, AlertCircle } from "lucide-react";
+import { RefreshCw, ArrowUpRight, ArrowDownRight, Loader2, AlertCircle, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePositionsData, type PositionRecord } from "./positions-data-context";
@@ -35,7 +36,17 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
     classifyInstrument,
     getInstrumentRoute,
     isDeFiVenue,
+    filterDefs,
+    filterValues,
+    handleFilterChange,
+    resetFilters,
+    instrumentTypeFilter,
+    setInstrumentTypeFilter,
+    instrumentTypes,
+    strategyFilter,
   } = usePositionsData();
+
+  const [showFilters, setShowFilters] = React.useState(true);
 
   const columns: DataTableColumn<PositionRecord>[] = React.useMemo(
     () => [
@@ -195,9 +206,13 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-2 py-1 border-b border-border/30">
-        <DataFreshness lastUpdated={new Date()} isWebSocket={isLive} isBatch={!isLive} />
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
+        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+          <Filter className="size-3" />
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
         <div className="flex items-center gap-1.5">
+          <DataFreshness lastUpdated={new Date()} isWebSocket={isLive} isBatch={!isLive} />
           <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => refetchPositions()}>
             <RefreshCw className="size-3 mr-1" />
             Refresh
@@ -209,6 +224,37 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
           />
         </div>
       </div>
+      {showFilters && (
+        <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
+          <FilterBar
+            filters={filterDefs}
+            values={filterValues}
+            onChange={handleFilterChange}
+            onReset={resetFilters}
+            className="border-b-0 px-0 py-0"
+          />
+          <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+            {instrumentTypes.map((type) => (
+              <Button
+                key={type}
+                variant={instrumentTypeFilter === type ? "default" : "outline"}
+                size="sm"
+                className="h-7 px-3 text-xs"
+                onClick={() => setInstrumentTypeFilter(type)}
+              >
+                {type}
+              </Button>
+            ))}
+            {strategyFilter !== "all" && (
+              <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
+                <Button variant="outline" size="sm" className="h-7 text-xs">
+                  View Strategy Details
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
       <DataTableWidget<PositionRecord>
         columns={columns}
         data={filteredPositions}

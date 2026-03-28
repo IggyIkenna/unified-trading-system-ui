@@ -9,11 +9,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 
 // ── Page descriptions ────────────────────────────────────────────────────────
 // Keyed by pathname prefix. First match wins.
 
-const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> = {
+const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; internalNotes?: string }> = {
   "/services/trading/overview": {
     title: "Trading Overview",
     description: "Portfolio snapshot with key metrics, positions summary, and quick actions. Customise the layout with widgets.",
@@ -21,22 +22,27 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> 
   "/services/trading/positions": {
     title: "Positions",
     description: "Real-time view of all open positions across venues and asset classes. Filter by strategy, venue, or asset class. P&L is shown per-position and aggregated.",
+    internalNotes: "Backend: position-balance-monitor-service. Data via Redis pub/sub from execution-service fills. Reconciliation runs every 5min against venue APIs.",
   },
   "/services/trading/orders": {
     title: "Orders",
     description: "All open, filled, and cancelled orders. Click an order to see fill detail. Use filters to narrow by venue, status, or instrument.",
+    internalNotes: "Backend: execution-service order management. Smart routing via algo_library. Fill events published to unified-events-interface.",
   },
   "/services/trading/pnl": {
     title: "P&L",
     description: "Full P&L attribution by strategy, venue, and asset class. Includes waterfall charts, daily bars, and cumulative return curves.",
+    internalNotes: "Backend: pnl-attribution-service. Realised P&L from fill pairs, unrealised from MTDS mark prices. Gas costs from execution-service DeFi events.",
   },
   "/services/trading/defi": {
     title: "DeFi",
     description: "Execute DeFi operations — swaps (Uniswap), flash loans (Aave), and cross-chain bridges. All trades are pre-simulated before broadcast.",
+    internalNotes: "Backend: execution-service DeFi connectors (Aave, Uniswap). Pre-simulation via Tenderly fork. RPC URLs from UAC CHAIN_RPC_TEMPLATES.",
   },
   "/services/trading/sports": {
     title: "Sports",
     description: "Browse fixtures, view odds across bookmakers, and place bets. The Arb tab highlights cross-venue arbitrage opportunities.",
+    internalNotes: "Backend: execution-service sports adapters. Odds from URDI sports/ sub-package. API-Football for reference data.",
   },
   "/services/trading/predictions": {
     title: "Predictions",
@@ -85,10 +91,12 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> 
   "/services/data/overview": {
     title: "Data Overview",
     description: "Instrument catalogues, market data coverage, venue status, and data freshness monitoring across all asset classes.",
+    internalNotes: "Backend: instruments-service (URDI adapters) + market-tick-data-service (UMI feeds). Coverage computed from GCS manifest files.",
   },
   "/services/data/instruments": {
     title: "Instruments",
     description: "Full instrument catalogue — search by name, symbol, venue, or asset class. Each entry shows listing date, data coverage, and trading status.",
+    internalNotes: "Backend: instruments-service with URDI adapters per venue. Instrument registry in UAC. DeFi instruments from The Graph subgraphs.",
   },
   "/services/data/coverage": {
     title: "Coverage",
@@ -109,10 +117,12 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> 
   "/services/research/strategy/backtests": {
     title: "Backtests",
     description: "Configure and run strategy backtests. Select instruments, date range, and parameters. Results show P&L curves, drawdown, and fill detail.",
+    internalNotes: "Backend: strategy-service backtesting engine. Features from unified-features-interface. Results stored in GCS.",
   },
   "/services/research/ml": {
     title: "ML Pipeline",
     description: "Model training runs, feature importance, and live inference metrics. Train, validate, and promote models to production.",
+    internalNotes: "Backend: ml-training-service (training), ml-inference-service (inference). Models in ONNX format. Feature orchestration via UTL feature_service_base.",
   },
   "/services/research/features": {
     title: "Features",
@@ -125,10 +135,12 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> 
   "/services/reports/executive": {
     title: "Executive Report",
     description: "Portfolio-level P&L attribution, risk metrics, and performance charts. Configurable date ranges (daily, weekly, monthly).",
+    internalNotes: "Backend: pnl-attribution-service + client-reporting-api. Settlement from execution-service fill ledger.",
   },
   "/services/observe/health": {
     title: "System Health",
     description: "Real-time health status of all services, data pipelines, and venue connections. Latency metrics and uptime tracking.",
+    internalNotes: "Backend: each service exposes /health via make_health_router (UTL). Aggregated by unified-trading-api service-status endpoints.",
   },
   "/services/observe/risk": {
     title: "Risk Dashboard",
@@ -137,6 +149,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> 
   "/services/observe/alerts": {
     title: "Alert Management",
     description: "All triggered alerts with severity, trigger condition, and recommended action. Configure alert rules and thresholds.",
+    internalNotes: "Backend: alerting-service. Rules in unified-config-interface. Events via unified-events-interface. 50+ alert types across all services.",
   },
   "/services/promote": {
     title: "Promote",
@@ -145,6 +158,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> 
   "/dashboard": {
     title: "Dashboard",
     description: "Your platform home — all services, KPIs, and quick actions at a glance. Scope adjusts to your subscription tier.",
+    internalNotes: "Backend: unified-trading-api aggregates service health, position summaries, and KPIs from downstream services.",
   },
   "/settings": {
     title: "Settings",
@@ -156,7 +170,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string }> 
   },
 };
 
-function getPageInfo(pathname: string): { title: string; description: string } | null {
+function getPageInfo(pathname: string): { title: string; description: string; internalNotes?: string } | null {
   // Try exact match first, then prefix match (longest first)
   if (PAGE_DESCRIPTIONS[pathname]) return PAGE_DESCRIPTIONS[pathname];
 
@@ -176,6 +190,7 @@ interface PageHelpProps {
 
 export function PageHelp({ pathname, className }: PageHelpProps) {
   const info = getPageInfo(pathname);
+  const { isInternal } = useAuth();
   const [feedbackOpen, setFeedbackOpen] = React.useState(false);
   const [feedbackText, setFeedbackText] = React.useState("");
   const [feedbackSent, setFeedbackSent] = React.useState(false);
@@ -213,6 +228,14 @@ export function PageHelp({ pathname, className }: PageHelpProps) {
             <p className="text-xs text-muted-foreground leading-relaxed">
               {info.description}
             </p>
+            {isInternal() && info.internalNotes && (
+              <div className="mt-2 pt-2 border-t border-border/40">
+                <p className="text-[10px] font-semibold text-amber-500 mb-1">Internal Notes</p>
+                <p className="text-[10px] text-muted-foreground/70 leading-relaxed font-mono">
+                  {info.internalNotes}
+                </p>
+              </div>
+            )}
           </div>
         </PopoverContent>
       </Popover>

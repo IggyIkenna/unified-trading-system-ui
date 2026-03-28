@@ -55,14 +55,16 @@ export function UnifiedShell({
       )}
     >
       <CommandPalette open={cmdkOpen} onOpenChange={setCmdkOpen} />
-      <LifecycleNav
-        orgName={orgName}
-        orgId={orgId}
-        userName={userName}
-        userRole={userRole}
-      />
-      <RuntimeModeStrip />
-      <Breadcrumbs />
+      <div className="sticky top-0 z-40">
+        <LifecycleNav
+          orgName={orgName}
+          orgId={orgId}
+          userName={userName}
+          userRole={userRole}
+        />
+        <RuntimeModeStrip />
+        <Breadcrumbs />
+      </div>
       {/* flex-1 + min-h-0 so pages that use h-full get a proper bounded height.
           overflow-auto lets normal pages still scroll; pages that manage their own
           scroll (like the feature finder) set overflow-hidden on their root. */}

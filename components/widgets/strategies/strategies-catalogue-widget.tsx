@@ -13,7 +13,17 @@ import { CollapsibleSection } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { ASSET_CLASS_COLORS } from "@/lib/config/services/strategies.config";
 import type { Strategy } from "@/lib/strategy-registry";
-import { BarChart2, Play, Settings, Loader2 } from "lucide-react";
+import { BarChart2, Play, Settings, Loader2, Filter, Search, ChevronDown, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ARCHETYPES, STATUSES } from "@/lib/config/services/strategies.config";
 import { cn } from "@/lib/utils";
 import { useStrategiesData } from "./strategies-data-context";
 
@@ -25,9 +35,24 @@ function executionModeShort(s: Strategy): { code: string; title: string } {
 }
 
 export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
-  const { isLoading, filteredStrategies, groupedStrategies } = useStrategiesData();
+  const {
+    isLoading,
+    filteredStrategies,
+    groupedStrategies,
+    searchQuery,
+    setSearchQuery,
+    selectedAssetClasses,
+    toggleAssetClass,
+    selectedArchetypes,
+    toggleArchetype,
+    selectedStatuses,
+    toggleStatus,
+    hasFilters,
+    clearFilters,
+  } = useStrategiesData();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [narrow, setNarrow] = React.useState(false);
+  const [showFilters, setShowFilters] = React.useState(true);
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -50,6 +75,160 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
 
   return (
     <div ref={containerRef} className="space-y-4">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
+        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+          <Filter className="size-3" />
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
+      </div>
+      {showFilters && (
+        <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
+          <div className="flex items-center gap-2 flex-wrap py-0.5">
+            <div className="relative flex-1 min-w-[160px] max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                placeholder="Search strategies, venues..."
+                className="pl-9 h-8 text-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn("h-8 gap-1.5", selectedAssetClasses.length > 0 && "border-primary")}
+                >
+                  <Filter className="size-3.5" />
+                  Asset Class
+                  {selectedAssetClasses.length > 0 && (
+                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                      {selectedAssetClasses.length}
+                    </Badge>
+                  )}
+                  <ChevronDown className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel className="text-xs">Asset Classes</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {Object.keys(ASSET_CLASS_COLORS).map((ac) => (
+                  <DropdownMenuCheckboxItem
+                    key={ac}
+                    checked={selectedAssetClasses.includes(ac)}
+                    onCheckedChange={() => toggleAssetClass(ac)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="size-2 rounded-full" style={{ backgroundColor: ASSET_CLASS_COLORS[ac] }} />
+                      {ac}
+                    </span>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn("h-8 gap-1.5", selectedArchetypes.length > 0 && "border-primary")}
+                >
+                  Archetype
+                  {selectedArchetypes.length > 0 && (
+                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                      {selectedArchetypes.length}
+                    </Badge>
+                  )}
+                  <ChevronDown className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel className="text-xs">Strategy Types</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {ARCHETYPES.map((arch) => (
+                  <DropdownMenuCheckboxItem
+                    key={arch.id}
+                    checked={selectedArchetypes.includes(arch.id)}
+                    onCheckedChange={() => toggleArchetype(arch.id)}
+                  >
+                    {arch.label}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn("h-8 gap-1.5", selectedStatuses.length > 0 && "border-primary")}
+                >
+                  Status
+                  {selectedStatuses.length > 0 && (
+                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                      {selectedStatuses.length}
+                    </Badge>
+                  )}
+                  <ChevronDown className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuLabel className="text-xs">Status</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {STATUSES.map((status) => (
+                  <DropdownMenuCheckboxItem
+                    key={status.id}
+                    checked={selectedStatuses.includes(status.id)}
+                    onCheckedChange={() => toggleStatus(status.id)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="size-2 rounded-full" style={{ backgroundColor: status.color }} />
+                      {status.label}
+                    </span>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {selectedAssetClasses.map((ac) => (
+              <Badge
+                key={ac}
+                variant="secondary"
+                className="h-6 gap-1 pl-2 pr-1"
+                style={{ borderColor: ASSET_CLASS_COLORS[ac], borderWidth: 1 }}
+              >
+                <span className="size-1.5 rounded-full" style={{ backgroundColor: ASSET_CLASS_COLORS[ac] }} />
+                {ac}
+                <button type="button" onClick={() => toggleAssetClass(ac)} className="hover:bg-secondary rounded p-0.5">
+                  <X className="size-3" />
+                </button>
+              </Badge>
+            ))}
+
+            {selectedArchetypes.map((arch) => {
+              const label = ARCHETYPES.find((a) => a.id === arch)?.label ?? arch;
+              return (
+                <Badge key={arch} variant="secondary" className="h-6 gap-1 pl-2 pr-1">
+                  {label}
+                  <button type="button" onClick={() => toggleArchetype(arch)} className="hover:bg-secondary rounded p-0.5">
+                    <X className="size-3" />
+                  </button>
+                </Badge>
+              );
+            })}
+
+            {hasFilters && (
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="h-6 px-2 text-xs">
+                Clear all
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
       {Object.entries(groupedStrategies).map(([assetClass, strategies]) => (
         <div
           key={assetClass}

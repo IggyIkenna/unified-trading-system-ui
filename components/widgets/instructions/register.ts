@@ -1,7 +1,6 @@
 import { registerWidget } from "../widget-registry";
 import { registerPresets } from "../preset-registry";
-import { BarChart3, FileText, Filter, Zap } from "lucide-react";
-import { InstructionsFilterWidget } from "./instructions-filter-widget";
+import { BarChart3, FileText, Zap } from "lucide-react";
 import { InstructionsSummaryWidget } from "./instructions-summary-widget";
 import { InstructionsPipelineTableWidget } from "./instructions-pipeline-table-widget";
 import { InstructionsDetailPanelWidget } from "./instructions-detail-panel-widget";
@@ -13,9 +12,8 @@ registerPresets("instructions", [
     tab: "instructions",
     isPreset: true,
     layouts: [
-      { widgetId: "instr-filter-bar", instanceId: "instr-filter-bar-1", x: 0, y: 0, w: 12, h: 1 },
-      { widgetId: "instr-summary", instanceId: "instr-summary-1", x: 0, y: 1, w: 12, h: 1 },
-      { widgetId: "instr-pipeline-table", instanceId: "instr-pipeline-table-1", x: 0, y: 2, w: 12, h: 10 },
+      { widgetId: "instr-summary", instanceId: "instr-summary-1", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "instr-pipeline-table", instanceId: "instr-pipeline-table-1", x: 0, y: 1, w: 12, h: 11 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -26,30 +24,14 @@ registerPresets("instructions", [
     tab: "instructions",
     isPreset: true,
     layouts: [
-      { widgetId: "instr-filter-bar", instanceId: "instr-filter-bar-2", x: 0, y: 0, w: 12, h: 1 },
-      { widgetId: "instr-summary", instanceId: "instr-summary-2", x: 0, y: 1, w: 12, h: 1 },
-      { widgetId: "instr-pipeline-table", instanceId: "instr-pipeline-table-2", x: 0, y: 2, w: 8, h: 10 },
-      { widgetId: "instr-detail-panel", instanceId: "instr-detail-panel-1", x: 8, y: 2, w: 4, h: 10 },
+      { widgetId: "instr-summary", instanceId: "instr-summary-2", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "instr-pipeline-table", instanceId: "instr-pipeline-table-2", x: 0, y: 1, w: 8, h: 11 },
+      { widgetId: "instr-detail-panel", instanceId: "instr-detail-panel-1", x: 8, y: 1, w: 4, h: 11 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
   },
 ]);
-
-registerWidget({
-  id: "instr-filter-bar",
-  label: "Instruction Filters",
-  description: "Strategy type and operation type filter dropdowns.",
-  icon: Filter,
-  minW: 4,
-  minH: 1,
-  defaultW: 12,
-  defaultH: 1,
-  requiredEntitlements: ["execution-basic", "execution-full"],
-  availableOn: ["instructions"],
-  singleton: true,
-  component: InstructionsFilterWidget,
-});
 
 registerWidget({
   id: "instr-summary",
@@ -61,6 +43,7 @@ registerWidget({
   defaultW: 12,
   defaultH: 1,
   requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Instructions",
   availableOn: ["instructions"],
   singleton: true,
   component: InstructionsSummaryWidget,
@@ -69,13 +52,14 @@ registerWidget({
 registerWidget({
   id: "instr-pipeline-table",
   label: "Instruction Pipeline",
-  description: "Signal, instruction, and fill columns with expandable discrepancy detail.",
+  description: "Signal, instruction, and fill columns with integrated filters and expandable discrepancy detail.",
   icon: Zap,
   minW: 6,
-  minH: 4,
+  minH: 6,
   defaultW: 12,
-  defaultH: 8,
+  defaultH: 11,
   requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Instructions",
   availableOn: ["instructions"],
   singleton: true,
   component: InstructionsPipelineTableWidget,
@@ -84,13 +68,14 @@ registerWidget({
 registerWidget({
   id: "instr-detail-panel",
   label: "Instruction Detail",
-  description: "Persistent detail for the selected instruction (master–detail).",
+  description: "Persistent detail for the selected instruction (master-detail).",
   icon: FileText,
   minW: 4,
   minH: 3,
   defaultW: 12,
   defaultH: 3,
   requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Instructions",
   availableOn: ["instructions"],
   singleton: false,
   component: InstructionsDetailPanelWidget,
