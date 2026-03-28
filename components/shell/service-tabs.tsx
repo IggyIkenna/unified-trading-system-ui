@@ -298,8 +298,6 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: Layers,
     group: "DeFi",
     familyGroup: "DeFi",
-    navDisabled: true,
-    navDisabledTitle: "Coming soon",
   },
   // ── Sports family ─────────────────────────────────────────────────────────
   {
