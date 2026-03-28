@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, GitCompare, Info } from "lucide-react";
+import { Plus, GitCompare, Grid3X3, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EXECUTION_BACKTESTS } from "@/lib/build-mock-data";
 import type { ExecutionBacktest } from "@/lib/build-mock-data";
@@ -25,6 +25,7 @@ import {
   CandidateBasket,
   useCandidateBasket,
 } from "@/components/platform/candidate-basket";
+import { GridSearchDialog } from "@/components/research/shared";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ export default function ExecutionResearchPage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [newBtOpen, setNewBtOpen] = React.useState(false);
+  const [gridSearchOpen, setGridSearchOpen] = React.useState(false);
   const [selectedBt, setSelectedBt] = React.useState<ExecutionBacktest | null>(
     EXECUTION_BACKTESTS.find((b) => b.status === "complete") ?? null,
   );
@@ -148,6 +150,10 @@ export default function ExecutionResearchPage() {
               Compare ({compareSelected.length})
             </Button>
           )}
+          <Button variant="outline" size="sm" onClick={() => setGridSearchOpen(true)}>
+            <Grid3X3 className="size-4 mr-1" />
+            Grid Search
+          </Button>
           <Button size="sm" onClick={() => setNewBtOpen(true)}>
             <Plus className="size-4 mr-2" />
             New Backtest
@@ -227,6 +233,11 @@ export default function ExecutionResearchPage() {
       <NewExecutionBacktestDialog
         open={newBtOpen}
         onClose={() => setNewBtOpen(false)}
+      />
+      <GridSearchDialog
+        open={gridSearchOpen}
+        onClose={() => setGridSearchOpen(false)}
+        defaultTab="execution"
       />
       {candidateDialogBt && (
         <CandidateDialog

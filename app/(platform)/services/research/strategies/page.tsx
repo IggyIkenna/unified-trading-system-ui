@@ -32,7 +32,7 @@ import {
   BACKTEST_RUNS as MOCK_BACKTEST_RUNS,
   STRATEGY_TEMPLATES,
 } from "@/lib/strategy-platform-mock-data";
-import { FlaskConical, GitCompare, Plus, Search } from "lucide-react";
+import { FlaskConical, GitCompare, Grid3X3, Plus, Search } from "lucide-react";
 
 import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
 import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
@@ -44,6 +44,7 @@ import {
   ResearchListDetailLayout,
   ResearchToolbar,
   useCompareMode,
+  GridSearchDialog,
 } from "@/components/research/shared";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -58,6 +59,7 @@ export default function StrategiesPage() {
   const [strategyKindFilter, setStrategyKindFilter] = React.useState("all");
   const [sortKey, setSortKey] = React.useState<SortKey>("recent");
   const [newBacktestOpen, setNewBacktestOpen] = React.useState(false);
+  const [gridSearchOpen, setGridSearchOpen] = React.useState(false);
   const { compareSelected, toggleCompare, clearCompare, compareCount } = useCompareMode(3);
   const [selectedBt, setSelectedBt] = React.useState<string | null>(null);
 
@@ -191,6 +193,10 @@ export default function StrategiesPage() {
                 Compare ({compareCount})
               </Button>
             )}
+            <Button variant="outline" size="sm" onClick={() => setGridSearchOpen(true)}>
+              <Grid3X3 className="size-4 mr-1" />
+              Grid Search
+            </Button>
             <Button size="sm" onClick={() => setNewBacktestOpen(true)}>
               <Plus className="size-4 mr-1" />
               New Backtest
@@ -338,6 +344,12 @@ export default function StrategiesPage() {
         templates={templates}
         open={newBacktestOpen}
         onClose={() => setNewBacktestOpen(false)}
+      />
+
+      <GridSearchDialog
+        open={gridSearchOpen}
+        onClose={() => setGridSearchOpen(false)}
+        defaultTab="strategy"
       />
     </div>
   );
