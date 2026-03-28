@@ -175,9 +175,9 @@ export default function StrategiesPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Toolbar: search, filters, actions */}
-      <div className="flex flex-col gap-3 px-6 pt-6 pb-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+      {/* Toolbar: search + new backtest button on first row, filters below */}
+      <div className="flex flex-col gap-3 px-6 pt-6 pb-4">
+        <div className="flex items-center justify-between gap-3">
           <div className="relative min-w-[200px] max-w-md flex-1">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
@@ -187,6 +187,20 @@ export default function StrategiesPage() {
               className="pl-9"
             />
           </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {compareSelected.length >= 2 && (
+              <Button variant="outline" size="sm" className="gap-1" onClick={() => setSelectedBt(null)}>
+                <GitCompare className="size-4" />
+                Compare ({compareSelected.length})
+              </Button>
+            )}
+            <Button size="sm" onClick={() => setNewBacktestOpen(true)}>
+              <Plus className="size-4 mr-1" />
+              New Backtest
+            </Button>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
           <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Archetype" />
@@ -257,23 +271,6 @@ export default function StrategiesPage() {
               {compareSelected.length} selected for compare
             </Badge>
           )}
-        </div>
-        <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
-          {compareSelected.length >= 2 && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1"
-              onClick={() => setSelectedBt(null)}
-            >
-              <GitCompare className="size-4" />
-              Compare ({compareSelected.length})
-            </Button>
-          )}
-          <Button size="sm" onClick={() => setNewBacktestOpen(true)}>
-            <Plus className="size-4 mr-1" />
-            New Backtest
-          </Button>
         </div>
       </div>
 

@@ -9,8 +9,16 @@ import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
 import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
-import { DEFI_CHAINS, MOCK_TOKEN_BALANCES } from "@/lib/mocks/fixtures/defi-transfer";
+import {
+  DEFI_CHAINS,
+  GAS_TOKEN_MIN_THRESHOLDS,
+  MOCK_CHAIN_PORTFOLIOS,
+  MOCK_TOKEN_BALANCES,
+  getMockBridgeRoutes,
+} from "@/lib/mocks/fixtures/defi-transfer";
 import type {
+  BridgeRouteQuote,
+  ChainPortfolio,
   DeFiFlashPnl,
   DeFiOrderParams,
   FlashLoanStep,

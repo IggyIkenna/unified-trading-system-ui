@@ -62,6 +62,26 @@ export interface DeFiOrderParams {
   lane: "defi";
 }
 
+/** Bridge route quote from a single protocol (e.g. Across, Stargate). */
+export interface BridgeRouteQuote {
+  protocol: string;
+  feePct: number;
+  feeUsd: number;
+  estimatedTimeMin: number;
+  outputAmount: number;
+  isBestReturn: boolean;
+  isFastest: boolean;
+}
+
+/** Per-chain portfolio breakdown for wallet summary. */
+export interface ChainPortfolio {
+  chain: string;
+  totalUsd: number;
+  tokenBreakdown: Record<string, number>;
+  gasTokenBalance: number;
+  gasTokenSymbol: string;
+}
+
 export interface DeFiRatesRow {
   id: string;
   protocol: string;
