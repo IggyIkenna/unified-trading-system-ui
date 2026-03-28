@@ -32,6 +32,7 @@ interface WorkspaceToolbarProps {
 }
 
 const EMPTY_WORKSPACES: readonly never[] = [];
+const EMPTY_ARR: readonly never[] = [];
 
 export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   const ensureTab = useWorkspaceStore((s) => s.ensureTab);
@@ -52,8 +53,8 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot);
   const undo = useWorkspaceStore((s) => s.undo);
   const pushUndo = useWorkspaceStore((s) => s.pushUndo);
-  const undoStack = useWorkspaceStore((s) => s.undoStack[tab] ?? []);
-  const snapshots = useWorkspaceStore((s) => s.snapshots[tab] ?? []);
+  const undoStack = useWorkspaceStore((s) => s.undoStack[tab] ?? EMPTY_ARR);
+  const snapshots = useWorkspaceStore((s) => s.snapshots[tab] ?? EMPTY_ARR);
   const syncStatus = useWorkspaceStore((s) => s.syncStatus);
 
   const activeWs = useActiveWorkspace(tab);
