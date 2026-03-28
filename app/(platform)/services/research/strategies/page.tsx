@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import {
   useStrategyBacktests,
   useStrategyTemplates,
@@ -31,7 +32,6 @@ import {
   BACKTEST_RUNS as MOCK_BACKTEST_RUNS,
   STRATEGY_TEMPLATES,
 } from "@/lib/strategy-platform-mock-data";
-import { cn } from "@/lib/utils";
 import { FlaskConical, GitCompare, Plus, Search } from "lucide-react";
 
 import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
@@ -40,6 +40,11 @@ import {
   DetailPanel,
   ComparePanel,
 } from "@/components/research/strategies/strategy-detail-panel";
+import {
+  ResearchListDetailLayout,
+  ResearchToolbar,
+  useCompareMode,
+} from "@/components/research/shared";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -53,7 +58,7 @@ export default function StrategiesPage() {
   const [strategyKindFilter, setStrategyKindFilter] = React.useState("all");
   const [sortKey, setSortKey] = React.useState<SortKey>("recent");
   const [newBacktestOpen, setNewBacktestOpen] = React.useState(false);
-  const [compareSelected, setCompareSelected] = React.useState<string[]>([]);
+  const { compareSelected, toggleCompare, clearCompare, compareCount } = useCompareMode(3);
   const [selectedBt, setSelectedBt] = React.useState<string | null>(null);
 
   const { data: backtestsData, isLoading: btLoading } = useStrategyBacktests();
@@ -147,21 +152,13 @@ export default function StrategiesPage() {
     sortKey,
   ]);
 
-  const toggleCompare = (id: string) => {
-    setCompareSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : prev.length < 3
-          ? [...prev, id]
-          : prev,
-    );
-  };
+  // toggleCompare and compareSelected from useCompareMode hook
 
   const selectedBacktest = selectedBt
     ? (backtests.find((b) => b.id === selectedBt) ?? null)
     : null;
 
-  const showCompare = compareSelected.length >= 2 && !selectedBt;
+  const showCompare = compareCount >= 2 && !selectedBt;
   const showDetail = selectedBacktest && !showCompare;
 
   const detailAnalytics: BacktestAnalytics | null =
@@ -188,10 +185,10 @@ export default function StrategiesPage() {
             />
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            {compareSelected.length >= 2 && (
+            {compareCount >= 2 && (
               <Button variant="outline" size="sm" className="gap-1" onClick={() => setSelectedBt(null)}>
                 <GitCompare className="size-4" />
-                Compare ({compareSelected.length})
+                Compare ({compareCount})
               </Button>
             )}
             <Button size="sm" onClick={() => setNewBacktestOpen(true)}>
@@ -266,9 +263,9 @@ export default function StrategiesPage() {
               <SelectItem value="name">Name (A-Z)</SelectItem>
             </SelectContent>
           </Select>
-          {compareSelected.length > 0 && (
+          {compareCount > 0 && (
             <Badge variant="outline" className="text-xs">
-              {compareSelected.length} selected for compare
+              {compareCount} selected for compare
             </Badge>
           )}
         </div>
@@ -330,7 +327,7 @@ export default function StrategiesPage() {
               <ComparePanel
                 selected={compareSelected}
                 backtests={backtests}
-                onClose={() => setCompareSelected([])}
+                onClose={clearCompare}
               />
             ) : null}
           </div>
