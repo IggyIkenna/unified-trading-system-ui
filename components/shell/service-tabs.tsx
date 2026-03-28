@@ -34,6 +34,7 @@ import {
   DollarSign,
   Building2,
   FileText,
+  Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -334,6 +335,13 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "Sports",
     familyGroup: "Sports",
     familyIcon: "Trophy",
+  },
+  {
+    label: "Place Bets",
+    href: "/services/trading/sports/bet",
+    icon: Zap,
+    group: "Sports",
+    familyGroup: "Sports",
   },
   {
     label: "Accumulators",

@@ -31,14 +31,75 @@ export type OddsMarket =
   | "HT Result"
   | "DNB";
 
-// Aligned with backend bookmaker keys in FTOdds / ODOdds
+// Aligned with backend bookmaker_registry.py — execution-capable bookmakers
 export type Bookmaker =
-  | "bet365"
+  // Exchanges (API execution)
+  | "betfair_exchange"
+  | "smarkets"
+  | "matchbook"
+  | "betdaq"
+  | "kalshi"
+  | "polymarket"
+  // Bookmaker APIs (API execution)
   | "pinnacle"
+  | "onexbet"
+  // Odds API / scraper bookmakers (browser execution or odds-only)
+  | "bet365"
   | "unibet"
   | "marathon"
-  | "betfair_exchange"
-  | "polymarket";
+  | "williamhill"
+  | "paddypower"
+  | "ladbrokes"
+  | "coral"
+  | "skybet"
+  | "betway"
+  | "betfred"
+  | "betvictor"
+  | "boylesports"
+  | "bwin"
+  // US sportsbooks
+  | "draftkings"
+  | "fanduel"
+  | "betmgm"
+  | "caesars"
+  | "bovada";
+
+/** Bookmakers that can execute bets (not just odds) */
+export const EXECUTION_CAPABLE_BOOKMAKERS: Bookmaker[] = [
+  "betfair_exchange", "smarkets", "matchbook", "betdaq", "kalshi", "polymarket",
+  "pinnacle", "onexbet",
+  "bet365", "williamhill", "paddypower", "ladbrokes", "coral", "skybet", "betway",
+  "betfred", "betvictor", "boylesports",
+];
+
+export const BOOKMAKER_DISPLAY_NAMES: Record<Bookmaker, string> = {
+  betfair_exchange: "Betfair Exchange",
+  smarkets: "Smarkets",
+  matchbook: "Matchbook",
+  betdaq: "Betdaq",
+  kalshi: "Kalshi",
+  polymarket: "Polymarket",
+  pinnacle: "Pinnacle",
+  onexbet: "1xBet",
+  bet365: "bet365",
+  unibet: "Unibet",
+  marathon: "Marathon Bet",
+  williamhill: "William Hill",
+  paddypower: "Paddy Power",
+  ladbrokes: "Ladbrokes",
+  coral: "Coral",
+  skybet: "Sky Bet",
+  betway: "Betway",
+  betfred: "Betfred",
+  betvictor: "BetVictor",
+  boylesports: "BoyleSports",
+  bwin: "bwin",
+  draftkings: "DraftKings",
+  fanduel: "FanDuel",
+  betmgm: "BetMGM",
+  caesars: "Caesars",
+  bovada: "Bovada",
+};
 
 export type OddsMovement = "UP" | "DOWN" | "STABLE";
 
