@@ -249,8 +249,22 @@ function TradingSidebar() {
   );
 }
 
+/** Standalone sub-pages that render their own layout (no widget grid toolbar). */
+const STANDALONE_PAGES = new Set([
+  "/services/trading/sports/bet",
+  "/services/trading/sports/accumulators",
+  "/services/trading/options/combos",
+  "/services/trading/options/pricing",
+  "/services/trading/predictions/aggregators",
+  "/services/trading/defi/staking",
+  "/services/trading/strategies/model-portfolios",
+  "/services/trading/accounts/saft",
+]);
+
 function useWidgetTab(): string | null {
   const pathname = usePathname();
+  // Standalone pages opt out of the widget toolbar
+  if (STANDALONE_PAGES.has(pathname)) return null;
   // Custom panels: /trading/custom/<panelId> → tab = "custom-<panelId>"
   const customMatch = pathname.match(/\/trading\/custom\/([^/]+)/);
   if (customMatch?.[1]) return `custom-${customMatch[1]}`;
