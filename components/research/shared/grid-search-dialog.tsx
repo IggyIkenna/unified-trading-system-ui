@@ -232,6 +232,31 @@ export function GridSearchDialog({
     { title: "Venues", items: VENUE_ITEMS.map((i) => ({ ...i })), onToggle: (_id: string) => {} },
   ]);
   const [isRunning, setIsRunning] = React.useState(false);
+  const [configSuffix, setConfigSuffix] = React.useState("");
+
+  // Auto-generated config name from fixed selections
+  const autoConfigName = React.useMemo(() => {
+    const typeName = config.selectorOptions.find((o) => o.value === selectedType)?.label ?? selectedType;
+    const selectedInstruments = subs
+      .find((s) => s.title === "Instruments")?.items
+      .filter((i) => i.selected)
+      .map((i) => i.label) ?? [];
+    const selectedVenues = subs
+      .find((s) => s.title === "Venues")?.items
+      .filter((i) => i.selected)
+      .map((i) => i.label) ?? [];
+    const instrPart = selectedInstruments.length <= 2
+      ? selectedInstruments.join("+")
+      : `${selectedInstruments.length} instruments`;
+    const venuePart = selectedVenues.length <= 2
+      ? selectedVenues.join("+")
+      : `${selectedVenues.length} venues`;
+    return `${typeName} — ${instrPart} — ${venuePart}`;
+  }, [selectedType, subs, config.selectorOptions]);
+
+  const fullConfigName = configSuffix
+    ? `${autoConfigName} — ${configSuffix}`
+    : autoConfigName;
 
   // When archetype/algo/model changes, load that type's params + filter venues
   React.useEffect(() => {
@@ -293,6 +318,7 @@ export function GridSearchDialog({
     }
 
     const payload = {
+      config_name: fullConfigName,
       domain,
       type: selectedType,
       subscriptions: selectedSubs,
@@ -364,6 +390,27 @@ export function GridSearchDialog({
           <p className="text-[10px] text-muted-foreground">
             Grid parameters below will change based on your {config.selectorLabel.toLowerCase()} selection
           </p>
+
+          {/* Config name — auto-generated from fixed params + user suffix */}
+          <div className="mt-2 space-y-1">
+            <Label className="text-[10px] text-muted-foreground">Config Name</Label>
+            <div className="flex gap-2 items-center">
+              <span className="text-xs text-muted-foreground truncate flex-1 bg-muted/20 rounded px-2 py-1 border border-border/30 font-mono">
+                {autoConfigName}
+              </span>
+              <span className="text-muted-foreground/40 text-xs">—</span>
+              <input
+                type="text"
+                placeholder="your label"
+                value={configSuffix}
+                onChange={(e) => setConfigSuffix(e.target.value)}
+                className="flex-1 bg-muted/20 rounded px-2 py-1 border border-border/30 text-xs font-mono placeholder:text-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/40"
+              />
+            </div>
+            <p className="text-[9px] text-muted-foreground/50">
+              Saved as: <span className="font-mono">{fullConfigName}</span>
+            </p>
+          </div>
         </div>
 
         <ScrollArea className="flex-1 min-h-0" style={{ maxHeight: "calc(85vh - 180px)" }}>

@@ -37,6 +37,18 @@ export function useCreateBacktest() {
   });
 }
 
+export function useGridConfigs(domain?: string) {
+  const { user, token } = useAuth();
+  const domainParam = domain ? `?domain=${domain}` : "";
+
+  return useQuery({
+    queryKey: ["grid-configs", user?.id, domain],
+    queryFn: () =>
+      apiFetch(`/api/execution/grid-configs${domainParam}`, token),
+    enabled: !!user,
+  });
+}
+
 export function useStrategyPerformance() {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
