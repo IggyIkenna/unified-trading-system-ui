@@ -21,14 +21,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
+  ChevronDown,
+  ChevronRight,
   Filter,
   FlaskConical,
   Play,
   Plus,
   Search,
+  Shield,
+  Signal,
   Star,
+  Wallet,
   X,
 } from "lucide-react";
 import * as React from "react";
@@ -121,6 +128,46 @@ const EMPTY_FILTERS: FilterState = {
 };
 
 // ---------------------------------------------------------------------------
+// Collapsible Config Section (matches ML Training ConfigSection pattern)
+// ---------------------------------------------------------------------------
+
+function CollapsibleConfigSection({
+  title,
+  icon,
+  defaultOpen = true,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = React.useState(defaultOpen);
+  return (
+    <Card className="border-border/50">
+      <button
+        type="button"
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/30 transition-colors rounded-t-lg"
+        onClick={() => setOpen((o) => !o)}
+      >
+        <div className="flex items-center gap-2">
+          {icon}
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            {title}
+          </h4>
+        </div>
+        {open ? (
+          <ChevronDown className="size-4 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="size-4 text-muted-foreground" />
+        )}
+      </button>
+      {open && <CardContent className="pt-0 pb-4 space-y-4">{children}</CardContent>}
+    </Card>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // New Backtest Form
 // ---------------------------------------------------------------------------
 
@@ -133,6 +180,26 @@ interface BacktestFormState {
   entryThreshold: string;
   exitThreshold: string;
   maxLeverage: string;
+  // Risk Config
+  maxPositionSize: string;
+  stopLossPct: string;
+  takeProfitPct: string;
+  maxDrawdownPct: string;
+  positionSizing: string;
+  // Signal Config
+  signalSource: string;
+  confidenceThreshold: number;
+  directionMapping: string;
+  featureSets: string[];
+  lookbackWindow: string;
+  rebalanceFrequency: string;
+  // DeFi Config
+  protocol: string;
+  chain: string;
+  minSpreadBps: string;
+  healthFactorThreshold: string;
+  smartOrderRouting: boolean;
+  gasBudgetUsd: string;
 }
 
 const INITIAL_FORM: BacktestFormState = {
@@ -144,7 +211,43 @@ const INITIAL_FORM: BacktestFormState = {
   entryThreshold: "0.05",
   exitThreshold: "0.02",
   maxLeverage: "3.0",
+  // Risk Config
+  maxPositionSize: "100000",
+  stopLossPct: "0.05",
+  takeProfitPct: "0.10",
+  maxDrawdownPct: "0.15",
+  positionSizing: "fixed",
+  // Signal Config
+  signalSource: "rule-based",
+  confidenceThreshold: 65,
+  directionMapping: "binary",
+  featureSets: ["momentum", "volatility"],
+  lookbackWindow: "1d",
+  rebalanceFrequency: "1h",
+  // DeFi Config
+  protocol: "Aave",
+  chain: "Ethereum",
+  minSpreadBps: "10",
+  healthFactorThreshold: "1.3",
+  smartOrderRouting: true,
+  gasBudgetUsd: "50",
 };
+
+const FEATURE_SET_OPTIONS = [
+  "momentum",
+  "volatility",
+  "on-chain",
+  "macro",
+  "calendar",
+] as const;
+
+const DEFI_ARCHETYPES = [
+  "DEFI_YIELD",
+  "DEFI_BASIS",
+  "DEFI_LENDING",
+  "RECURSIVE_BASIS",
+  "STAKED_BASIS",
+] as const;
 
 // ---------------------------------------------------------------------------
 // Page
@@ -651,166 +754,530 @@ export default function BacktestsPage() {
         {/* New Strategy Wizard */}
         <StrategyWizard open={wizardOpen} onOpenChange={setWizardOpen} />
 
-        {/* New Backtest Dialog */}
+        {/* New Backtest Dialog — expanded config matching ML Training style */}
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="sm:max-w-lg">
+          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Run New Backtest</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <FlaskConical className="size-5 text-primary" />
+                Run New Backtest
+              </DialogTitle>
               <DialogDescription>
-                Configure strategy template, parameters, and test window.
+                Configure strategy template, risk parameters, signal config, and test window.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
-              <div className="space-y-2">
-                <Label>Strategy Template</Label>
-                <Select
-                  value={form.templateId}
-                  onValueChange={(v) =>
-                    setForm((f) => ({
-                      ...f,
-                      templateId: v,
-                      instrument: "",
-                      venue: "",
-                    }))
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select template..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STRATEGY_TEMPLATES.map((tpl) => (
-                      <SelectItem key={tpl.id} value={tpl.id}>
-                        <span className="flex items-center gap-2">
-                          {tpl.name}
-                          <span className="text-muted-foreground text-xs">
-                            {tpl.archetype.replace(/_/g, " ")}
+              {/* Section A: Core Config */}
+              <CollapsibleConfigSection
+                title="Core Config"
+                icon={<FlaskConical className="size-3.5 text-muted-foreground" />}
+                defaultOpen={true}
+              >
+                <div className="space-y-2">
+                  <Label>Strategy Template</Label>
+                  <Select
+                    value={form.templateId}
+                    onValueChange={(v) =>
+                      setForm((f) => ({
+                        ...f,
+                        templateId: v,
+                        instrument: "",
+                        venue: "",
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select template..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STRATEGY_TEMPLATES.map((tpl) => (
+                        <SelectItem key={tpl.id} value={tpl.id}>
+                          <span className="flex items-center gap-2">
+                            {tpl.name}
+                            <span className="text-muted-foreground text-xs">
+                              {tpl.archetype.replace(/_/g, " ")}
+                            </span>
                           </span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[11px] text-muted-foreground">
+                    Select the strategy archetype to backtest
+                  </p>
+                </div>
 
-              {selectedTemplate && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Instrument</Label>
-                      <Select
-                        value={form.instrument}
-                        onValueChange={(v) =>
-                          setForm((f) => ({ ...f, instrument: v }))
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {selectedTemplate.instruments.map((inst) => (
-                            <SelectItem key={inst} value={inst}>
-                              {inst}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                {selectedTemplate && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Instrument</Label>
+                        <Select
+                          value={form.instrument}
+                          onValueChange={(v) =>
+                            setForm((f) => ({ ...f, instrument: v }))
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {selectedTemplate.instruments.map((inst) => (
+                              <SelectItem key={inst} value={inst}>
+                                {inst}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Venue</Label>
+                        <Select
+                          value={form.venue}
+                          onValueChange={(v) =>
+                            setForm((f) => ({ ...f, venue: v }))
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {selectedTemplate.venues.map((v) => (
+                              <SelectItem key={v} value={v}>
+                                {v}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label>Venue</Label>
-                      <Select
-                        value={form.venue}
-                        onValueChange={(v) =>
-                          setForm((f) => ({ ...f, venue: v }))
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {selectedTemplate.venues.map((v) => (
-                            <SelectItem key={v} value={v}>
-                              {v}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Start Date</Label>
-                      <Input
-                        type="date"
-                        value={form.dateStart}
-                        onChange={(e) =>
-                          setForm((f) => ({ ...f, dateStart: e.target.value }))
-                        }
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Start Date</Label>
+                        <Input
+                          type="date"
+                          value={form.dateStart}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, dateStart: e.target.value }))
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>End Date</Label>
+                        <Input
+                          type="date"
+                          value={form.dateEnd}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, dateEnd: e.target.value }))
+                          }
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label>End Date</Label>
-                      <Input
-                        type="date"
-                        value={form.dateEnd}
-                        onChange={(e) =>
-                          setForm((f) => ({ ...f, dateEnd: e.target.value }))
-                        }
-                      />
-                    </div>
-                  </div>
 
-                  <div className="rounded-lg border border-border/50 p-3 space-y-3">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Parameters
+                    <div className="rounded-lg border border-border/50 p-3 space-y-3">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Parameters
+                      </p>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Entry Threshold</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={form.entryThreshold}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                entryThreshold: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Exit Threshold</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={form.exitThreshold}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                exitThreshold: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Max Leverage</Label>
+                          <Input
+                            type="number"
+                            step="0.5"
+                            value={form.maxLeverage}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                maxLeverage: e.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </CollapsibleConfigSection>
+
+              {/* Section B: Risk Config */}
+              <CollapsibleConfigSection
+                title="Risk Parameters"
+                icon={<Shield className="size-3.5 text-muted-foreground" />}
+                defaultOpen={false}
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Max Position Size ($)</Label>
+                    <Input
+                      type="number"
+                      value={form.maxPositionSize}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, maxPositionSize: e.target.value }))
+                      }
+                    />
+                    <p className="text-[11px] text-muted-foreground">
+                      Maximum notional per position
                     </p>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="space-y-1">
-                        <Label className="text-xs">Entry Threshold</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          value={form.entryThreshold}
-                          onChange={(e) =>
-                            setForm((f) => ({
-                              ...f,
-                              entryThreshold: e.target.value,
-                            }))
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Position Sizing</Label>
+                    <Select
+                      value={form.positionSizing}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, positionSizing: v }))
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fixed">Fixed</SelectItem>
+                        <SelectItem value="kelly">Kelly Criterion</SelectItem>
+                        <SelectItem value="risk-parity">Risk Parity</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[11px] text-muted-foreground">
+                      Method for determining trade size
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label>Stop Loss %</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      max="0.50"
+                      value={form.stopLossPct}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, stopLossPct: e.target.value }))
+                      }
+                    />
+                    <p className="text-[11px] text-muted-foreground">0.01 - 0.50</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Take Profit %</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      max="1.00"
+                      value={form.takeProfitPct}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, takeProfitPct: e.target.value }))
+                      }
+                    />
+                    <p className="text-[11px] text-muted-foreground">0.01 - 1.00</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Max Drawdown %</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={form.maxDrawdownPct}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, maxDrawdownPct: e.target.value }))
+                      }
+                    />
+                    <p className="text-[11px] text-muted-foreground">
+                      Circuit breaker threshold
+                    </p>
+                  </div>
+                </div>
+              </CollapsibleConfigSection>
+
+              {/* Section C: Signal Config */}
+              <CollapsibleConfigSection
+                title="Signal & ML Config"
+                icon={<Signal className="size-3.5 text-muted-foreground" />}
+                defaultOpen={false}
+              >
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Signal Source</Label>
+                    <Select
+                      value={form.signalSource}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, signalSource: v }))
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="rule-based">Rule-Based</SelectItem>
+                        <SelectItem value="ml-model">ML Model</SelectItem>
+                        <SelectItem value="hybrid">Hybrid</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[11px] text-muted-foreground">
+                      How trading signals are generated
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Direction Mapping</Label>
+                    <Select
+                      value={form.directionMapping}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, directionMapping: v }))
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="binary">Binary (Long/Short)</SelectItem>
+                        <SelectItem value="ternary">Ternary (Long/Short/Flat)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[11px] text-muted-foreground">
+                      Signal output classification
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>
+                    Confidence Threshold:{" "}
+                    <span className="font-mono text-primary">
+                      {form.confidenceThreshold}%
+                    </span>
+                  </Label>
+                  <Slider
+                    value={[form.confidenceThreshold]}
+                    onValueChange={(v) =>
+                      setForm((f) => ({ ...f, confidenceThreshold: v[0] }))
+                    }
+                    min={0}
+                    max={100}
+                    step={1}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Minimum prediction confidence to trigger a trade
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Feature Sets</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {FEATURE_SET_OPTIONS.map((feat) => (
+                      <Badge
+                        key={feat}
+                        variant="outline"
+                        onClick={() =>
+                          setForm((f) => ({
+                            ...f,
+                            featureSets: f.featureSets.includes(feat)
+                              ? f.featureSets.filter((x) => x !== feat)
+                              : [...f.featureSets, feat],
+                          }))
+                        }
+                        className={`cursor-pointer text-xs transition-colors capitalize ${
+                          form.featureSets.includes(feat)
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "hover:border-border"
+                        }`}
+                      >
+                        {feat}
+                      </Badge>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    Select which feature groups to include
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Lookback Window</Label>
+                    <Select
+                      value={form.lookbackWindow}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, lookbackWindow: v }))
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1h">1 Hour</SelectItem>
+                        <SelectItem value="4h">4 Hours</SelectItem>
+                        <SelectItem value="1d">1 Day</SelectItem>
+                        <SelectItem value="1w">1 Week</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Rebalance Frequency</Label>
+                    <Select
+                      value={form.rebalanceFrequency}
+                      onValueChange={(v) =>
+                        setForm((f) => ({ ...f, rebalanceFrequency: v }))
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1min">1 Minute</SelectItem>
+                        <SelectItem value="5min">5 Minutes</SelectItem>
+                        <SelectItem value="1h">1 Hour</SelectItem>
+                        <SelectItem value="4h">4 Hours</SelectItem>
+                        <SelectItem value="1d">1 Day</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CollapsibleConfigSection>
+
+              {/* Section D: DeFi Config — only visible for DeFi archetypes */}
+              {selectedTemplate &&
+                (DEFI_ARCHETYPES as readonly string[]).includes(
+                  selectedTemplate.archetype,
+                ) && (
+                  <CollapsibleConfigSection
+                    title="DeFi Config"
+                    icon={<Wallet className="size-3.5 text-muted-foreground" />}
+                    defaultOpen={false}
+                  >
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Protocol</Label>
+                        <Select
+                          value={form.protocol}
+                          onValueChange={(v) =>
+                            setForm((f) => ({ ...f, protocol: v }))
                           }
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Aave">Aave</SelectItem>
+                            <SelectItem value="Uniswap">Uniswap</SelectItem>
+                            <SelectItem value="Compound">Compound</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[11px] text-muted-foreground">
+                          Target DeFi protocol
+                        </p>
                       </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Exit Threshold</Label>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          value={form.exitThreshold}
-                          onChange={(e) =>
-                            setForm((f) => ({
-                              ...f,
-                              exitThreshold: e.target.value,
-                            }))
+                      <div className="space-y-2">
+                        <Label>Chain</Label>
+                        <Select
+                          value={form.chain}
+                          onValueChange={(v) =>
+                            setForm((f) => ({ ...f, chain: v }))
                           }
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Max Leverage</Label>
-                        <Input
-                          type="number"
-                          step="0.5"
-                          value={form.maxLeverage}
-                          onChange={(e) =>
-                            setForm((f) => ({
-                              ...f,
-                              maxLeverage: e.target.value,
-                            }))
-                          }
-                        />
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Ethereum">Ethereum</SelectItem>
+                            <SelectItem value="Arbitrum">Arbitrum</SelectItem>
+                            <SelectItem value="Optimism">Optimism</SelectItem>
+                            <SelectItem value="Polygon">Polygon</SelectItem>
+                            <SelectItem value="Base">Base</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-[11px] text-muted-foreground">
+                          Deployment chain for execution
+                        </p>
                       </div>
                     </div>
-                  </div>
-                </>
-              )}
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label>Min Spread (BPS)</Label>
+                        <Input
+                          type="number"
+                          value={form.minSpreadBps}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, minSpreadBps: e.target.value }))
+                          }
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          Minimum spread to enter
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Health Factor</Label>
+                        <Input
+                          type="number"
+                          step="0.1"
+                          value={form.healthFactorThreshold}
+                          onChange={(e) =>
+                            setForm((f) => ({
+                              ...f,
+                              healthFactorThreshold: e.target.value,
+                            }))
+                          }
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          Min health factor threshold
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Gas Budget (USD)</Label>
+                        <Input
+                          type="number"
+                          value={form.gasBudgetUsd}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, gasBudgetUsd: e.target.value }))
+                          }
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          Max gas spend per cycle
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Switch
+                        id="smart-order-routing"
+                        checked={form.smartOrderRouting}
+                        onCheckedChange={(v) =>
+                          setForm((f) => ({ ...f, smartOrderRouting: v }))
+                        }
+                      />
+                      <Label htmlFor="smart-order-routing" className="cursor-pointer">
+                        Smart Order Routing
+                      </Label>
+                      <p className="text-[11px] text-muted-foreground">
+                        Route across DEX aggregators for best execution
+                      </p>
+                    </div>
+                  </CollapsibleConfigSection>
+                )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
