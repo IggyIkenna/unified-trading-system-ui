@@ -55,12 +55,44 @@ export default function ReportsPage() {
     refetch: refetchSettlements,
   } = useSettlements();
 
-  const allReports: Array<any> = (reportsApiData as any)?.data ?? [];
+  const SEED_REPORTS = [
+    { id: "RPT-001", name: "Daily P&L Summary", type: "pnl", status: "complete", date: "2026-03-28", client: "Trading Desk Alpha", format: "PDF" },
+    { id: "RPT-002", name: "Risk Exposure Report", type: "risk", status: "complete", date: "2026-03-28", client: "All Clients", format: "PDF" },
+    { id: "RPT-003", name: "Execution Quality Report", type: "execution", status: "complete", date: "2026-03-28", client: "Trading Desk Beta", format: "XLSX" },
+    { id: "RPT-004", name: "Monthly NAV Statement", type: "nav", status: "complete", date: "2026-03-01", client: "Apex Capital", format: "PDF" },
+    { id: "RPT-005", name: "Position Reconciliation", type: "recon", status: "pending", date: "2026-03-28", client: "All Clients", format: "PDF" },
+    { id: "RPT-006", name: "Fee Schedule Summary", type: "fees", status: "complete", date: "2026-03-28", client: "Zenith Partners", format: "XLSX" },
+  ];
+  const SEED_SETTLEMENTS = [
+    { id: "STL-001", instrument: "BTC-USDT", venue: "Binance", quantity: 2.5, value: 168125, status: "settled", date: "2026-03-28", counterparty: "Binance" },
+    { id: "STL-002", instrument: "ETH-PERP", venue: "Hyperliquid", quantity: 15, value: 51300, status: "settled", date: "2026-03-28", counterparty: "Hyperliquid" },
+    { id: "STL-003", instrument: "SOL-USDT", venue: "Binance", quantity: 120, value: 17400, status: "pending", date: "2026-03-28", counterparty: "Binance" },
+    { id: "STL-004", instrument: "BTC-28MAR-68000-C", venue: "Deribit", quantity: 5, value: 9250, status: "settled", date: "2026-03-27", counterparty: "Deribit" },
+  ];
+  const SEED_PORTFOLIO = [
+    { client: "Trading Desk Alpha", aum: 13300000, pnl: 245000, pnlPct: 1.84, positions: 12 },
+    { client: "Trading Desk Beta", aum: 9600000, pnl: 178000, pnlPct: 1.85, positions: 8 },
+    { client: "DeFi Ops", aum: 6000000, pnl: 92000, pnlPct: 1.53, positions: 6 },
+    { client: "Global Macro Fund", aum: 20500000, pnl: 312000, pnlPct: 1.52, positions: 5 },
+    { client: "Core Strategy", aum: 12300000, pnl: -48000, pnlPct: -0.39, positions: 4 },
+  ];
+  const SEED_BALANCES = [
+    { venue: "Binance", currency: "USDT", free: 2_450_000, locked: 820_000, total: 3_270_000 },
+    { venue: "Hyperliquid", currency: "USDC", free: 1_800_000, locked: 450_000, total: 2_250_000 },
+    { venue: "Deribit", currency: "BTC", free: 12.5, locked: 5.2, total: 17.7 },
+    { venue: "Aave V3", currency: "WETH", free: 45, locked: 0, total: 45 },
+  ];
+  const SEED_TRANSFERS: Array<{ time: string; from: string; to: string; amount: string; status: TransferStatus; confirmations?: string; txHash?: string }> = [
+    { time: "2026-03-28T13:22:00Z", from: "Binance", to: "Hyperliquid", amount: "$500,000", status: "confirmed", confirmations: "12/12" },
+    { time: "2026-03-28T10:15:00Z", from: "Deribit", to: "Binance", amount: "2.5 BTC", status: "settled" },
+    { time: "2026-03-27T18:42:00Z", from: "Uniswap", to: "Aave V3", amount: "10 WETH", status: "confirmed", confirmations: "35/35" },
+  ];
+  const allReports: Array<any> = (reportsApiData as any)?.data ?? SEED_REPORTS;
   const allSettlements: Array<any> =
-    (settlementsApiData as any)?.settlements ?? (settlementsApiData as any)?.data ?? [];
-  const allPortfolioSummary: Array<any> = (reportsApiData as any)?.portfolioSummary ?? [];
+    (settlementsApiData as any)?.settlements ?? (settlementsApiData as any)?.data ?? SEED_SETTLEMENTS;
+  const allPortfolioSummary: Array<any> = (reportsApiData as any)?.portfolioSummary ?? SEED_PORTFOLIO;
   const allInvoices: Array<any> = (reportsApiData as any)?.invoices ?? [];
-  const accountBalances: Array<any> = (settlementsApiData as any)?.accountBalances ?? [];
+  const accountBalances: Array<any> = (settlementsApiData as any)?.accountBalances ?? SEED_BALANCES;
   const recentTransfers: Array<{
     time: string;
     from: string;
@@ -69,7 +101,7 @@ export default function ReportsPage() {
     status: TransferStatus;
     confirmations?: string;
     txHash?: string;
-  }> = (settlementsApiData as any)?.recentTransfers ?? [];
+  }> = (settlementsApiData as any)?.recentTransfers ?? SEED_TRANSFERS;
 
   const isApiLoading = reportsLoading || settlementsLoading;
   const { context, setContext } = useContextState();
