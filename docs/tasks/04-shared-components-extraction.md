@@ -1,4 +1,4 @@
-# Task 04 — Shared Component Extraction & Centralization
+# Task 04 — Shared Component Extraction & Universal Adoption
 
 **Source:** Audit `04-SHARED-COMPONENT-REUSE-AUDIT.md`
 **WORK_TRACKER:** §3 (Component Centralization), §4.x (Widget Merging prereqs)
@@ -6,19 +6,123 @@
 
 ---
 
+## Agent Execution Model
+
+| Phase | What | Model | Output |
+|-------|------|-------|--------|
+| **Phase 1 — Discovery** | Run audit module D (`docs/UI-shared-components-Issues/audit-scripts/D-shared-components.md`). For each component pattern, count adopters and bypasses. Read each shared component to understand its current API. Identify what needs to be created vs extended vs adopted. | **Smart** (claude-4-opus or claude-3.7-sonnet) | Concrete bypass list: per-component file + line + what it does wrong + what it should use |
+| **Phase 2 — Execution** | Take the Phase 1 bypass list and mechanically: create missing components/utilities, migrate each bypass, delete old code, run typecheck. | **Medium** (claude-3.7-sonnet) | Code changes + passing typecheck |
+
+**Phase 1 is the audit doc.** Give the agent `docs/UI-shared-components-Issues/audit-scripts/D-shared-components.md` and tell it to execute it. The audit doc has all the `rg` commands ready to run. Phase 1 output is the audit report with exact files/lines.
+
+**Phase 2 takes the audit report** and does the work. It does NOT need to re-discover anything — it gets a list and executes it.
+
+**Splitting across sessions:** This task is large (12 parts). You can split it:
+- **Session A (create):** Parts 1, 2, 10, 11 — create new components/utilities (independent)
+- **Session B (enforce):** Parts 3, 4, 5, 7, 8 — migrate bypasses to existing components
+- **Session C (assess):** Parts 6, 9, 12 — Tooltip migration, DataTable assessment, unused cleanup
+
+Each session runs its own Phase 1 (discovery for its parts only) then Phase 2.
+
+### Discovery Commands (Phase 1 — run BEFORE starting any part)
+
+The audit doc `D-shared-components.md` has all commands. Here's the quick summary:
+
+```bash
+cd unified-trading-system-ui
+
+# MetricCard bypasses
+rg -l "MetricCard" app/ components/ | wc -l
+rg -n "text-2xl.*font-mono|text-xl.*font-bold|text-3xl.*font-semibold" app/ components/ --glob '*.tsx'
+
+# StatusBadge bypasses
+rg -l "StatusBadge" app/ components/ | wc -l
+rg -n "rounded-full.*bg-green|rounded-full.*bg-red|rounded-full.*bg-amber" app/ components/ --glob '*.tsx'
+
+# Spinner bypasses
+rg -l "from.*@/components/ui/spinner" app/ components/ | wc -l
+rg -l "Loader2" app/ components/ | wc -l
+rg -l "animate-spin" app/ components/ | wc -l
+
+# Tooltip bypasses
+rg -l "TooltipContent" app/ components/ | wc -l
+rg -c 'title="' app/ components/ --glob '*.tsx' | sort -t: -k2 -rn | head -20
+
+# Skeleton bypasses
+rg -l "from.*@/components/ui/skeleton" app/ components/ | wc -l
+rg -l "animate-pulse" app/ components/ | wc -l
+
+# EmptyState bypasses
+rg -l "EmptyState" app/ components/ | wc -l
+rg -n '"No data"|"No results"|"Nothing to"|"No .* found"' app/ components/ --glob '*.tsx'
+
+# Value formatting gaps
+rg -c "\.toFixed(" app/ components/ --glob '*.tsx' | sort -t: -k2 -rn | head -20
+rg -c "\.toLocaleString(" app/ components/ --glob '*.tsx' | sort -t: -k2 -rn | head -20
+
+# PnL coloring gaps
+rg -l "pnl-positive|pnl-negative" app/ components/ | wc -l
+rg -l "text-emerald" app/ components/ | wc -l
+rg -l "text-red" app/ components/ | wc -l
+
+# Unused ui components
+for f in components/ui/*.tsx; do
+  name=$(basename "$f" .tsx)
+  count=$(rg -l "from.*@/components/ui/$name" app/ components/ hooks/ lib/ 2>/dev/null | wc -l)
+  [ "$count" -eq 0 ] && echo "UNUSED: $f"
+done
+```
+
+> **The bypass counts in the Mandate table below are historical snapshots from 2026-03-28.**
+> Always run the discovery commands to get current numbers before starting work.
+
+---
+
 ## Goal
 
-Create missing shared components that are currently reimplemented ad-hoc across dozens of files. After this task, there is exactly ONE way to render a page header, one way to show an empty state, one shared nav-active helper, and unused UI primitives are cleaned up.
+Three things, equally important:
+
+1. **Create missing shared components and utilities** (PageHeader, nav helper, value formatters, PnL helper) that don't exist yet.
+2. **Enforce universal adoption of existing shared components** (MetricCard, StatusBadge, Spinner, Tooltip, Skeleton, EmptyState, DataTable) — find every ad-hoc reimplementation and replace it with the shared version.
+3. **Enforce consistent value formatting and coloring** — every number, currency, percentage, and PnL value goes through shared formatters and uses design system color tokens.
+
+After this task: if you want to render a metric, you use `MetricCard`. If you want a status indicator, you use `StatusBadge`. If you want a loading spinner, you use `Spinner`. If you want to format a dollar amount, you use `formatCurrency()`. If you want to color a PnL value, you use `text-pnl-positive` / `text-pnl-negative`. **No exceptions. No "it's just a quick toFixed(2)". No "I'll just use text-emerald-500 for green".**
+
+This is critical because agents write most of the frontend code. Without strict shared components and utilities, they drift — every agent invents a slightly different Card + number layout, slightly different spinner, slightly different number format, slightly different shade of green for "positive". Centralizing means one place to change, one place to audit, zero drift. The result should look like an expert team of senior developers curated every pixel — not like 50 independent agents each made their own choices.
+
+---
+
+## The Shared Component Mandate
+
+Every component below is the ONLY way to render its pattern. Ad-hoc alternatives must be migrated.
+
+| Pattern | Shared Component | Location | Adopters | Bypasses | Status |
+|---------|-----------------|----------|----------|----------|--------|
+| Page title + description + actions | `PageHeader` | `components/platform/page-header.tsx` | 0 | ~89 ad-hoc `<h1>` | **NEW — create** |
+| Metric / KPI number display | `MetricCard` | `components/shared/metric-card.tsx` | ~10 | ~30+ ad-hoc Card+number | **EXISTS — enforce** |
+| Row of metrics | `KpiStrip` | `components/widgets/shared/kpi-strip.tsx` | 13 | some ad-hoc flex rows | **EXISTS — enforce** |
+| Status indicator | `StatusBadge` | `components/trading/status-badge.tsx` | 26 | ~23 ad-hoc dots/pills | **EXISTS — enforce** |
+| Loading spinner | `Spinner` | `components/ui/spinner.tsx` | **1** | **51** files use `Loader2`+`animate-spin` | **EXISTS — enforce** |
+| Tooltip | `Tooltip` | `components/ui/tooltip.tsx` | 15 | **69** files use raw `title="..."` | **EXISTS — enforce** |
+| Search/filter input | `FilterBar` | `components/platform/filter-bar.tsx` | 30 | **42** ad-hoc search inputs | **EXISTS — enforce** |
+| Skeleton loading | `Skeleton` | `components/ui/skeleton.tsx` | 32 | **34** raw `animate-pulse` divs | **EXISTS — enforce** |
+| Empty / no-data state | `EmptyState` | `components/ui/empty-state.tsx` | 4 | ~10 inline "No data" + duplicate | **EXISTS — consolidate** |
+| Standard data table | `DataTable` | `components/ui/data-table.tsx` | 9 | 43 raw `<table>` | **EXISTS — promote** |
+| Progress bar | `Progress` | `components/ui/progress.tsx` | 34 | some inline `div` with width% | **EXISTS — check** |
+| Export/download | `ExportButton` | `components/ui/export-button.tsx` | **0** | component unused | **EXISTS — wire or delete** |
+| Divider/separator | `Separator` | `components/ui/separator.tsx` | 20 | **110** raw `border-b` | **EXISTS — assess** |
+| Number formatting | `formatNumber` | `lib/utils/formatters.ts` | **0** | **173** ad-hoc `.toFixed()` | **NEW — create** |
+| Currency formatting | `formatCurrency` | `lib/utils/formatters.ts` | **0** | **97** ad-hoc `.toLocaleString()` | **NEW — create** |
+| PnL coloring | `pnlColorClass` | `lib/utils/pnl.ts` | 39 via tokens | **179** raw `text-emerald-*`, **94** raw `text-red-*` | **NEW — create** |
+| Nav active-tab logic | `isServiceTabActive` | `lib/utils/nav-helpers.ts` | 0 | 3 copy-pasted blocks | **NEW — extract** |
 
 ---
 
 ## Part 1 — Extract `isServiceTabActive` nav helper
 
-**Problem:** Identical active-tab logic is duplicated byte-for-byte in 3 places:
-- `components/shell/service-tabs.tsx` lines 150-153
-- `components/shell/trading-vertical-nav.tsx` lines 141-147 (isFamilyActive)
-- `components/shell/trading-vertical-nav.tsx` lines 160-163 (renderTabItem)
-- Custom panel active check at lines 313-314 (partial duplicate)
+**Problem:** Identical active-tab logic is duplicated byte-for-byte in 3 places.
+
+**Discovery:** `rg -n "isActive|isFamilyActive|matchPrefix|tab\.exact|tab\.href" components/shell/service-tabs.tsx components/shell/trading-vertical-nav.tsx`
 
 **Deliverable:**
 
@@ -39,121 +143,188 @@ export function isPathActive(pathname: string, href: string): boolean {
 }
 ```
 
-Then update:
-- `components/shell/service-tabs.tsx` — replace inline logic with `isServiceTabActive(pathname, tab)`
-- `components/shell/trading-vertical-nav.tsx` — replace all 3 duplicated blocks with the shared helpers
-- Verify: `pnpm typecheck`, test in browser that active tab highlighting still works for lifecycle nav, service tabs, family groups, and custom panels.
-
-**Files:** `lib/utils/nav-helpers.ts` (new), `components/shell/service-tabs.tsx`, `components/shell/trading-vertical-nav.tsx`
+Then update `service-tabs.tsx` and `trading-vertical-nav.tsx` to use the shared helpers.
 
 ---
 
 ## Part 2 — Create `PageHeader` component
 
-**Problem:** ~89 ad-hoc `<h1>` elements across `app/` pages. No consistent page header pattern. Some pages have title + description + actions, others have just a bare `<h1>`, and they all use different text sizes, padding, and layout.
+**Problem:** Ad-hoc `<h1>` elements across `app/` pages with inconsistent sizes, padding, layout.
 
-**Deliverable:**
+**Discovery:** `rg -n "<h1" app/ --glob '*.tsx' | wc -l`
 
-Create `components/platform/page-header.tsx`:
+**Deliverable:** Create `components/platform/page-header.tsx` with `title`, `description`, `children` (actions slot), `className` props. Use `text-page-title` and `text-body` tokens. Migrate 10+ platform pages.
 
-```typescript
-interface PageHeaderProps {
-  title: string;
-  description?: string;
-  children?: React.ReactNode;  // actions slot (buttons, filters, etc.)
-  className?: string;
-}
+**Do NOT migrate:** `app/(public)/` marketing pages or headings inside Cards (those are section titles).
 
-export function PageHeader({ title, description, children, className }: PageHeaderProps) {
-  return (
-    <div className={cn("flex items-start justify-between gap-4", className)}>
-      <div>
-        <h1 className="text-page-title font-semibold tracking-tight">{title}</h1>
-        {description && (
-          <p className="text-body text-muted-foreground mt-1">{description}</p>
-        )}
-      </div>
-      {children && <div className="flex items-center gap-2 shrink-0">{children}</div>}
-    </div>
-  );
-}
+---
+
+## Part 3 — Enforce `MetricCard` universal adoption
+
+**Problem:** `MetricCard` already supports 5 tones, 6 densities, 3 variants. But many pages bypass it with their own `<Card>` + number + label.
+
+**Discovery:**
+```bash
+rg -l "MetricCard" app/ components/ | wc -l   # adopters
+rg -n "text-2xl.*font-mono|text-xl.*font-bold|text-3xl.*font-semibold" app/ components/ --glob '*.tsx'  # bypasses
 ```
 
-**Migration priority (highest ad-hoc count first):**
+**Deliverable:** Find every ad-hoc metric pattern. Migrate each to `MetricCard`. If `MetricCard` doesn't support a use case, **extend it** — don't create a parallel component. Migrate inline metric rows to `KpiStrip`.
 
-| Priority | Files to Migrate | Notes |
-|----------|-----------------|-------|
-| First 10 | Platform pages with simple `<h1>` + description pattern | Straightforward replacement |
-| Next 10 | Pages with `<h1>` + action buttons | Use `children` slot for buttons |
-| Remaining | Pages with complex headers | May need `PageHeader` variants or just `title` + `children` |
-
-**Do NOT migrate:**
-- `app/(public)/` marketing pages — they have intentionally different, branded headers
-- Pages where the heading is inside a Card or other container (those are section titles, not page titles)
-
-**Files:** `components/platform/page-header.tsx` (new), then 20+ `page.tsx` files across `app/(platform)/` and `app/(ops)/`
+**Focus areas:** Research pages, promote lifecycle tabs, dashboard pages, trading overview.
 
 ---
 
-## Part 3 — Consolidate `EmptyState`
+## Part 4 — Enforce `StatusBadge` universal adoption
 
-**Problem:** Two `EmptyState` implementations exist:
-- `components/ui/empty-state.tsx` — the canonical shared version (4 adopters)
-- `components/trading/sports/shared.tsx` — exports its own `EmptyState` (used by sports components)
+**Problem:** `StatusBadge` exists but ~23 files build ad-hoc status indicators.
 
-Plus ~10 files with inline "No data" / "No results" text that don't use either.
+**Discovery:**
+```bash
+rg -l "StatusBadge" app/ components/ | wc -l   # adopters
+rg -n "rounded-full.*bg-green|rounded-full.*bg-red|rounded-full.*bg-amber" app/ components/ --glob '*.tsx'  # bypasses
+rg -n "case.*live|case.*active|case.*paused|case.*error|case.*critical" app/ components/ --glob '*.tsx'  # status→color switches
+```
 
-**Deliverable:**
-
-1. Read both `EmptyState` implementations. Merge any missing features from the sports version into `components/ui/empty-state.tsx`.
-2. Update all sports component imports to use `@/components/ui/empty-state`.
-3. Delete the `EmptyState` export from `components/trading/sports/shared.tsx` (keep other exports if any).
-4. Find all inline "No data" / "No results" patterns and replace with `<EmptyState>`.
-5. Verify no duplicate `EmptyState` exists anywhere.
-
-**Files:** `components/ui/empty-state.tsx`, `components/trading/sports/shared.tsx`, ~14 consumer files
+**Deliverable:** Migrate each to `StatusBadge`. If it doesn't support a status value, extend it. After migration, same status = identical appearance everywhere.
 
 ---
 
-## Part 4 — Promote `DataTable` adoption
+## Part 5 — Enforce `Spinner` universal adoption
 
-**Problem:** 43 files use raw `<table>` elements. Only 9 import `DataTable`. Raw tables miss sorting, pagination, column resize, and consistent styling.
+**Problem:** `Spinner` exists but only **1 file** uses it. **51 files** use `<Loader2 className="...animate-spin..." />` directly.
 
-**Deliverable:**
+**Discovery:**
+```bash
+rg -l "from.*@/components/ui/spinner" app/ components/ | wc -l   # adopters
+rg -l "Loader2" app/ components/ | wc -l   # bypasses
+```
 
-This is a larger effort. For this task, do the **assessment only**:
-
-1. List all 43 files with raw `<table>`.
-2. For each, classify: (a) should use `DataTable` — standard tabular data with sortable columns, (b) should stay as raw `<table>` — intentionally custom (e.g., options chain grid, comparison matrix), (c) ambiguous.
-3. Migrate the top 5 most straightforward cases to `DataTable`.
-4. Document the remaining candidates for a follow-up task.
-
-**Files:** `components/ui/data-table.tsx` (reference), 43 files with raw `<table>`
+**Deliverable:** Extend `Spinner` with size variants (sm/md/lg) if needed. Replace every `Loader2` + `animate-spin` with `<Spinner />`. After migration, `Loader2` only appears inside `spinner.tsx`.
 
 ---
 
-## Part 5 — Clean up unused `components/ui/` files
+## Part 6 — Enforce `Tooltip` adoption over `title="..."`
 
-**Problem:** ~28 `components/ui/*.tsx` files have zero imports. They were scaffolded from shadcn but never wired up. They add confusion and bundle noise.
+**Problem:** `Tooltip` (Radix-based, styled) used in 15 files. **69 files** use native `title="..."` which is unstyled and inconsistent.
 
-**Deliverable:**
+**Discovery:**
+```bash
+rg -l "TooltipContent" app/ components/ | wc -l   # adopters
+rg -c 'title="' app/ components/ --glob '*.tsx' | sort -t: -k2 -rn | head -20  # bypasses
+```
 
-1. For each of the ~28 files, verify it truly has zero imports: `rg "from.*@/components/ui/<filename>" app/ components/ hooks/ lib/`
-2. Classify each: (a) delete — we don't use it and don't plan to, (b) keep — we'll need it soon for a planned feature, (c) wire up — it should be used but isn't.
-3. Delete category (a) files.
-4. Document category (b) and (c) with a one-line justification.
+**Deliverable:** Migrate interactive `title=` to `<Tooltip>`. Keep `title` on `<img>`, `<svg>`, `<abbr>` (accessibility). Focus on platform pages first. This is a large migration.
 
-**Files:** ~28 files in `components/ui/`
+---
+
+## Part 7 — Enforce `Skeleton` over raw `animate-pulse`
+
+**Problem:** `Skeleton` exists and 32 files use it. **34 files** use raw `animate-pulse` divs.
+
+**Discovery:**
+```bash
+rg -l "from.*@/components/ui/skeleton" app/ components/ | wc -l   # adopters
+rg -l "animate-pulse" app/ components/ | wc -l   # bypasses (that don't import Skeleton)
+```
+
+**Deliverable:** Replace ad-hoc `animate-pulse` divs with `<Skeleton>`. Keep complex skeleton compositions but use `<Skeleton>` for each individual element.
+
+---
+
+## Part 8 — Consolidate `EmptyState`
+
+**Problem:** Two implementations exist: `components/ui/empty-state.tsx` (canonical) and `components/trading/sports/shared.tsx` (duplicate). Plus ~10 files with inline "No data" text.
+
+**Discovery:**
+```bash
+rg -n "function EmptyState|const EmptyState" components/ --glob '*.tsx'  # duplicates
+rg -n '"No data"|"No results"|"Nothing to"' app/ components/ --glob '*.tsx'  # inline bypasses
+```
+
+**Deliverable:** Merge missing features into canonical `EmptyState`. Update all imports. Delete duplicate. Replace inline "No data" patterns.
+
+---
+
+## Part 9 — Promote `DataTable` adoption
+
+**Problem:** 43 files use raw `<table>`. Only 9 import `DataTable`.
+
+**Discovery:**
+```bash
+rg -l "from.*@/components/ui/data-table|DataTable" app/ components/ | wc -l   # adopters
+rg -l "<table|<Table " app/ components/ --glob '*.tsx' | wc -l   # raw tables
+```
+
+**Deliverable:** Assessment only for this task. List all raw `<table>` files. Classify each (should use DataTable / intentionally custom / ambiguous). Migrate top 5 straightforward cases.
+
+---
+
+## Part 10 — Create centralized value formatters
+
+**Problem:** **Zero** shared formatting utilities. 173 files use `.toFixed()` with varying decimals. 97 files use `.toLocaleString()` with different options. The same dollar amount shows differently on different pages.
+
+**Discovery:**
+```bash
+rg -c "\.toFixed(" app/ components/ --glob '*.tsx' | sort -t: -k2 -rn | head -20
+rg -c "\.toLocaleString(" app/ components/ --glob '*.tsx' | sort -t: -k2 -rn | head -20
+rg "function formatNumber|function formatCurrency|function formatPercent" lib/
+```
+
+**Deliverable:** Create `lib/utils/formatters.ts`:
+
+```typescript
+export function formatNumber(value: number, decimals = 2): string { ... }
+export function formatCurrency(value: number, currency = "USD", decimals = 2): string { ... }
+export function formatPercent(value: number, decimals = 2): string { ... }
+export function formatPnl(value: number, decimals = 2): string { ... }
+export function formatCompact(value: number): string { ... }  // 1.2M, 340K
+export function formatDate(date: Date | string, format?: "short" | "long" | "relative" | "time"): string { ... }
+```
+
+Migrate top 20 files with most `.toFixed()` / `.toLocaleString()` calls.
+
+---
+
+## Part 11 — Enforce PnL color tokens
+
+**Problem:** 39 files correctly use `text-pnl-positive` / `text-pnl-negative`. But **94 files** use `text-red-*` and **179 files** use `text-emerald-*` for positive/negative values.
+
+**Discovery:**
+```bash
+rg -l "pnl-positive|pnl-negative" app/ components/ | wc -l
+rg -l "text-emerald" app/ components/ | wc -l
+rg -l "text-red" app/ components/ | wc -l
+```
+
+**Deliverable:** Create `lib/utils/pnl.ts` with `pnlColorClass(value)` returning `text-pnl-positive` / `text-pnl-negative`. Migrate PnL-related green/red to tokens. **Not every green/red is PnL** — status indicators use different tokens.
+
+---
+
+## Part 12 — Clean up unused `components/ui/` files
+
+**Problem:** ~28 scaffolded shadcn files with zero imports.
+
+**Discovery:**
+```bash
+for f in components/ui/*.tsx; do
+  name=$(basename "$f" .tsx)
+  count=$(rg -l "from.*@/components/ui/$name" app/ components/ hooks/ lib/ 2>/dev/null | wc -l)
+  [ "$count" -eq 0 ] && echo "UNUSED: $f"
+done
+```
+
+**Deliverable:** Classify each: delete / keep (planned feature) / wire up. Delete dead files.
 
 ---
 
 ## Rules
 
-1. **One canonical implementation per pattern.** After this task, there must be exactly ONE `PageHeader`, ONE `EmptyState`, ONE `isServiceTabActive`. No duplicates, no "V2", no shims.
-2. **Use the new semantic tokens.** `PageHeader` should use `text-page-title`, `text-body`, etc. from `globals.css`. Not raw `text-xl`, `text-sm`.
-3. **Update all consumers.** After creating a shared component, find every file that has the ad-hoc version and migrate it. Don't leave half the codebase on the old pattern.
-4. **Delete the old code.** No `// deprecated` comments. No re-export wrappers. The old implementation is gone.
-5. **Test in browser.** Load at least 3 different platform pages to verify `PageHeader` renders correctly. Check the trading tabs to verify `isServiceTabActive` works. Check sports page to verify `EmptyState` works.
+1. **One canonical implementation per pattern.** No duplicates, no "V2", no shims.
+2. **Use the new semantic tokens.** `text-page-title`, `text-body`, etc. from `globals.css`. Not raw `text-xl`.
+3. **Update all consumers.** Don't leave half the codebase on the old pattern.
+4. **Delete the old code.** No `// deprecated` comments. No re-export wrappers.
+5. **Test in browser.** Load at least 3 different platform pages per component change.
 
 ---
 
@@ -163,9 +334,19 @@ This is a larger effort. For this task, do the **assessment only**:
 - [ ] `service-tabs.tsx` and `trading-vertical-nav.tsx` use the shared helpers (zero inline active logic)
 - [ ] `components/platform/page-header.tsx` exists and is used by 10+ platform pages
 - [ ] No duplicate `<h1>` + description patterns in migrated pages
+- [ ] Every metric/KPI display in platform pages goes through `MetricCard` — zero ad-hoc Card + number patterns
+- [ ] Every horizontal metric row uses `KpiStrip` — zero ad-hoc flex/grid metric rows
+- [ ] Every status indicator goes through `StatusBadge` — zero ad-hoc colored dots/pills
+- [ ] `Loader2` + `animate-spin` only appears inside `spinner.tsx` — zero ad-hoc spinners elsewhere
+- [ ] Majority of `title="..."` on interactive elements migrated to `Tooltip` component
+- [ ] All raw `animate-pulse` loading placeholders use `Skeleton` component
 - [ ] Single `EmptyState` in `components/ui/empty-state.tsx` — zero duplicates
 - [ ] All inline "No data" / "No results" in platform pages use `EmptyState`
 - [ ] Top 5 raw `<table>` files migrated to `DataTable`
+- [ ] `lib/utils/formatters.ts` exists with `formatNumber`, `formatCurrency`, `formatPercent`, `formatPnl`, `formatDate`
+- [ ] Top 20 files with `.toFixed()` / `.toLocaleString()` migrated to shared formatters
+- [ ] `lib/utils/pnl.ts` exists with `pnlColorClass` utility
+- [ ] PnL-related `text-emerald-*` / `text-red-*` in financial contexts migrated to `text-pnl-positive` / `text-pnl-negative`
 - [ ] Unused `components/ui/` files deleted (with justification for any kept)
 - [ ] `pnpm typecheck` passes
 - [ ] App loads and renders correctly
@@ -180,12 +361,20 @@ When you finish, stop and honestly answer these before claiming done:
 
 2. **Did I migrate enough consumers to prove the pattern?** Creating `PageHeader` and using it in 2 pages proves nothing. If you migrated 10+ pages and they all look right, the pattern is validated. If you stopped at 3 because "the others are more complex", go back and handle the complex ones — that's where the real value is.
 
-3. **Is the nav helper actually correct?** Did you test it with: (a) exact match tabs, (b) prefix match tabs, (c) family group tabs with `exact: true`, (d) custom panels? All four cases must work. If you only tested case (a), the others might be broken.
+3. **Is the nav helper actually correct?** Did you test it with: (a) exact match tabs, (b) prefix match tabs, (c) family group tabs with `exact: true`, (d) custom panels? All four cases must work.
 
-4. **Did I actually delete the duplicate code?** Check: `rg "EmptyState" components/trading/sports/` should return zero after migration. Check: the inline active-tab logic in `service-tabs.tsx` is gone, not commented out. If you left "just in case" code, delete it now.
+4. **Did I actually delete the duplicate code?** `rg "EmptyState" components/trading/sports/` should return zero. The inline active-tab logic in `service-tabs.tsx` should be gone, not commented out.
 
-5. **Would I be proud to show this to a senior engineer?** Not "does it work" but "is it well-crafted". Are the component props intuitive? Is the API flexible enough for future use cases but not over-engineered? Are the file names clear? Is the code clean?
+5. **Would I be proud to show this to a senior engineer?** Not "does it work" but "is it well-crafted". Are the component props intuitive? Is the API flexible enough for future use cases but not over-engineered?
 
-6. **Did I create future debt?** Examples of debt: `PageHeader` that doesn't support breadcrumbs (when we'll clearly need it). `isServiceTabActive` that doesn't handle nested routes (when we clearly have them). `EmptyState` that can't show a CTA button (when half the "No data" screens need one). Think about what the NEXT developer will need, not just what you need right now.
+6. **Did I create future debt?** `PageHeader` that doesn't support breadcrumbs. `EmptyState` that can't show a CTA button. Think about what the NEXT developer will need.
+
+7. **Are the formatters actually correct for a trading platform?** `formatCurrency(1234.5)` should produce `$1,234.50`. `formatPnl(-340.2)` should produce `-$340.20`. Test edge cases: zero, negative, very large (1B+), very small (0.00001 for crypto).
+
+8. **Is the PnL coloring migration correct?** Did you check context? Green badge meaning "active" is NOT PnL — that's status. Green number next to a dollar sign IS PnL. If you blindly replaced every `text-emerald` with `text-pnl-positive`, you've broken status indicators.
+
+9. **Does every page look like it was designed by the same team?** Open 5 random platform pages side by side. Do metrics look identical in size/spacing? Do status badges use the same colors for the same states? Do spinners look the same?
+
+10. **Am I proud of this work?** You're building the foundation every future agent will build on. Blackrock/Jane Street-grade consistency. Does your work meet that bar?
 
 **If the answer to any of these is "no" — go fix it before marking done.**

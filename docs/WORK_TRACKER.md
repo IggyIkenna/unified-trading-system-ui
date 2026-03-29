@@ -453,6 +453,43 @@
 
 ---
 
+## 12. Error Handling & Resilience
+
+### 12.1 Add error.tsx to route groups
+
+- [ ] doc
+- [ ] done
+- **What:** Create `error.tsx` in `app/`, `app/(platform)/`, `app/(platform)/services/`, `app/(ops)/`, `app/(public)/`
+- **Current:** ZERO error.tsx files exist across 138 pages
+
+### 12.2 Add loading.tsx to route groups
+
+- [ ] doc
+- [ ] done
+- **What:** Create `loading.tsx` with Skeleton placeholders in `app/(platform)/services/` and `app/(ops)/`
+- **Current:** ZERO loading.tsx files
+
+### 12.3 Add not-found.tsx
+
+- [ ] doc
+- [ ] done
+- **What:** Create styled 404 page in `app/not-found.tsx`
+
+### 12.4 Enforce tristate in data-fetching pages
+
+- [ ] doc
+- [ ] done
+- **What:** Add loading/error/empty handling to 45 pages that have no error handling at all
+- **Priority:** Trading pages first, then dashboard, research, ops
+
+### 12.5 Extend ErrorBoundary coverage
+
+- [ ] doc
+- [ ] done
+- **What:** Add ErrorBoundary to execution layout, settings layout, ops layout
+
+---
+
 ## Summary — Status Counts
 
 | Section                       | Total Tasks | Docs Created | Implemented |
@@ -461,18 +498,21 @@
 | 2. UI-UX Enhancements         | 7           | 0            | 0           |
 | 3. Component Centralization   | 6           | 1            | 0           |
 | 4. Widget Merging             | 10          | 0            | 0           |
-| 5. Mock Data Centralization   | 6           | 0            | 0           |
-| 6. Mock Data Alignment        | 5           | 0            | 0           |
+| 5. Mock Data Centralization   | 6           | 1            | 0           |
+| 6. Mock Data Alignment        | 5           | 1            | 0           |
 | 7. Cross-Page Filter Cohesion | 2           | 0            | 0           |
 | 8. Research Config Parity     | 3           | 0            | 0           |
 | 9. Algo-Instruction Binding   | 1           | 0            | 0           |
 | 10. Platform Review Remaining | 10          | 0            | 0           |
-| 11. Code Org (file splits)    | 6 groups    | 1            | 0           |
-| **TOTAL**                     | **59**      | **5**        | **3**       |
+| 11. Code Org (file splits)    | 6 groups    | 1            | 1           |
+| 12. Error Handling            | 5           | 1            | 0           |
+| **TOTAL**                     | **64**      | **8**        | **4**       |
 
 > **Phased out (later):** §8 (all), §9.1, §10.10, §2.6 (cross-tab widgets — depends on §4)
 >
 > **Task docs location:** `docs/tasks/`
 >
 > - `11-code-org-split-oversized-files.md` — 37 files over 900 lines, split into 6 agent groups (A-F)
-> - `04-shared-components-extraction.md` — PageHeader, EmptyState, nav helper, DataTable, unused UI cleanup
+> - `04-shared-components-extraction.md` — 12 parts: PageHeader, MetricCard, StatusBadge, Spinner, Tooltip, Skeleton, EmptyState, DataTable, formatters, PnL tokens, unused UI cleanup
+> - `05-mock-data-centralization.md` — 10 parts: move mock data to lib/mocks/, set up MSW handlers, schema audit, persona scoping
+> - `12-error-handling.md` — 5 parts: error.tsx, loading.tsx, not-found.tsx, tristate enforcement, ErrorBoundary coverage
