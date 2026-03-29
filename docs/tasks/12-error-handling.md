@@ -350,16 +350,16 @@ Add `<ErrorBoundary>` wrapping in these layouts:
 
 ## Acceptance Criteria
 
-- [ ] `error.tsx` exists in `app/`, `app/(platform)/`, `app/(platform)/services/`, `app/(ops)/`, `app/(public)/`
-- [ ] `loading.tsx` exists in `app/(platform)/services/` and `app/(ops)/`
-- [ ] `not-found.tsx` exists in `app/`
-- [ ] All 45 unprotected pages assessed — data-fetching ones have tristate handling
-- [ ] `ErrorBoundary` covers all platform service layouts + ops layout
-- [ ] `ApiError` component used for all API error displays (no new error components)
-- [ ] `EmptyState` component used for all "no data" displays (no inline "No data" text)
-- [ ] `Spinner` used for all loading indicators (no inline `Loader2 + animate-spin`)
-- [ ] `pnpm typecheck` passes
-- [ ] App loads correctly; navigating to an invalid URL shows the 404 page
+- [x] `error.tsx` exists in `app/`, `app/(platform)/`, `app/(platform)/services/`, `app/(ops)/`, `app/(public)/`
+- [x] `loading.tsx` exists in `app/(platform)/services/` and `app/(ops)/`
+- [x] `not-found.tsx` exists in `app/`
+- [x] All 45 unprotected pages assessed — 32 pages now use ApiError, 13 use EmptyState, 16 use Spinner
+- [x] `ErrorBoundary` covers all platform service layouts + ops layout (10 layouts)
+- [x] `ApiError` component used for all API error displays (no new error components)
+- [x] `EmptyState` component used for all "no data" displays (no inline "No data" text)
+- [x] `Spinner` used for all loading indicators (no inline `Loader2 + animate-spin`)
+- [x] `pnpm typecheck` passes
+- [ ] App loads correctly; navigating to an invalid URL shows the 404 page — needs manual verification
 
 ---
 

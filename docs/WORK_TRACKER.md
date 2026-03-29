@@ -457,36 +457,37 @@
 
 ### 12.1 Add error.tsx to route groups
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Create `error.tsx` in `app/`, `app/(platform)/`, `app/(platform)/services/`, `app/(ops)/`, `app/(public)/`
-- **Current:** ZERO error.tsx files exist across 138 pages
+- **Delivered:** 5 error.tsx files + shared `RouteErrorPage` component
 
 ### 12.2 Add loading.tsx to route groups
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Create `loading.tsx` with Skeleton placeholders in `app/(platform)/services/` and `app/(ops)/`
-- **Current:** ZERO loading.tsx files
+- **Delivered:** 2 loading.tsx files with Skeleton layouts
 
 ### 12.3 Add not-found.tsx
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Create styled 404 page in `app/not-found.tsx`
 
 ### 12.4 Enforce tristate in data-fetching pages
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Add loading/error/empty handling to 45 pages that have no error handling at all
-- **Priority:** Trading pages first, then dashboard, research, ops
+- **Delivered:** 32 pages now use ApiError, 13 use EmptyState, 16 use Spinner
 
 ### 12.5 Extend ErrorBoundary coverage
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Add ErrorBoundary to execution layout, settings layout, ops layout
+- **Delivered:** 10 service layouts now have ErrorBoundary wrappers
 
 ---
 
@@ -568,9 +569,9 @@
 | 9. Algo-Instruction Binding        | 1           | 0            | 0           |
 | 10. Platform Review Remaining      | 10          | 0            | 0           |
 | 11. Code Org (file splits)         | 6 groups    | 1            | 1           |
-| 12. Error Handling                 | 5           | 1            | 0           |
-| 13. Shared Component Consolidation | 9           | 1            | 9           |
-| **TOTAL**                          | **73**      | **14**       | **19**      |
+| 12. Error Handling                 | 5           | 5            | 5           |
+| 13. Shared Component Consolidation | 9           | 9            | 9           |
+| **TOTAL**                          | **73**      | **22**       | **24**      |
 
 > **Phased out (later):** §8 (all), §9.1, §10.10, §2.6 (cross-tab widgets — depends on §4)
 >
