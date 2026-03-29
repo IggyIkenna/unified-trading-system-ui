@@ -8,7 +8,7 @@ import { DeployFormDimensionFields } from "@/components/ops/deployment/form/depl
 import { DeployFormModeCloudLive } from "@/components/ops/deployment/form/deploy-form-mode-cloud-live";
 import { DeployFormPreviewSubmit } from "@/components/ops/deployment/form/deploy-form-preview-submit";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { Play } from "lucide-react";
 
 export function DeployFormContent() {

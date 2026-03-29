@@ -1,19 +1,19 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { GenerateReportModal } from "@/components/reports/generate-report-modal";
 import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
 import { useContextState } from "@/components/trading/context-bar";
 import { EntityLink } from "@/components/trading/entity-link";
 import { PnLChange, PnLValue } from "@/components/trading/pnl-value";
-import { ApiError } from "@/components/ui/api-error";
+import { ApiError } from "@/components/shared/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReports, useSettlements } from "@/hooks/api/use-reports";

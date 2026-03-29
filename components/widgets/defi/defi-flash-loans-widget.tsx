@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Fuel, Plus, Trash2, Zap } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { FLASH_OPERATION_TYPES, FLASH_VENUES } from "@/lib/config/services/defi.config";
 import { SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";

@@ -4,7 +4,7 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { useBookTradeData } from "./book-data-context";
 
 export function BookRecordDetailsWidget(_props: WidgetComponentProps) {

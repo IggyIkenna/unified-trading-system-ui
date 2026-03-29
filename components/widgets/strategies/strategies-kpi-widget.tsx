@@ -1,7 +1,7 @@
 "use client";
 
-import { Spinner } from "@/components/ui/spinner";
-import { KpiStrip, type KpiMetric } from "@/components/widgets/shared";
+import { Spinner } from "@/components/shared/spinner";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { useStrategiesData } from "./strategies-data-context";

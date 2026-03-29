@@ -1,7 +1,7 @@
 "use client";
 
 import { PnLValue } from "@/components/trading/pnl-value";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { usePnLData } from "./pnl-data-context";
 import { formatPercent } from "@/lib/utils/formatters";

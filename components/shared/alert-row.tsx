@@ -10,7 +10,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
-import { StatusDot } from "@/components/trading/status-badge";
+import { StatusDot } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 
 export type AlertRowSeverity = "critical" | "warning" | "info" | "success";

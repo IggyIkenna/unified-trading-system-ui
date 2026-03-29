@@ -5,10 +5,10 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { cn } from "@/lib/utils";
 import { useRegulatoryReports } from "@/hooks/api/use-reports";
 import {

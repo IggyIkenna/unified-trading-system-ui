@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { FilterBar, useFilterState, type FilterDefinition } from "@/components/platform/filter-bar";
+import { FilterBar, useFilterState, type FilterDefinition } from "@/components/shared/filter-bar";
 import { cn } from "@/lib/utils";
 
 interface FilterBarWidgetProps {

@@ -5,7 +5,7 @@ import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-fo
 import { DeployFormQuotaDialog } from "@/components/ops/deployment/form/deploy-form-quota-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { HelpCircle, Play } from "lucide-react";
 
 export function DeployFormPreviewSubmit() {

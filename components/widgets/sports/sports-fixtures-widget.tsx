@@ -1,12 +1,12 @@
 "use client";
 
-import type { FilterDefinition } from "@/components/platform/filter-bar";
-import { FilterBar } from "@/components/platform/filter-bar";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
+import { FilterBar } from "@/components/shared/filter-bar";
 import { FixtureSection, groupFixtures } from "@/components/trading/sports/fixtures-tab";
 import { FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
 import { LeagueBadge } from "@/components/trading/sports/shared";
 import type { Fixture, FootballLeague } from "@/components/trading/sports/types";
-import { EmptyState } from "@/components/ui/empty-state";
+import { EmptyState } from "@/components/shared/empty-state";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { cn } from "@/lib/utils";
 import { Filter } from "lucide-react";

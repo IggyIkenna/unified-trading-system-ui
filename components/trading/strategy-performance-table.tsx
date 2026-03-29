@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EntityLink } from "./entity-link";
-import { StatusDot } from "./status-badge";
+import { StatusDot } from "@/components/shared/status-badge";
 import { PnLValue } from "./pnl-value";
 import { SparklineCell } from "./kpi-card";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";

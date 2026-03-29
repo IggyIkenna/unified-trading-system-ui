@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { AlertCircle, RefreshCw, X } from "lucide-react";
 import { DeploymentDetailsProvider } from "./details/deployment-details-context";
 import { DeploymentDetailsLoaded } from "./details/deployment-details-loaded";

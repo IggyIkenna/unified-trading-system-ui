@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { StatusBadge } from "@/components/trading/status-badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { Activity, AlertTriangle, AlertOctagon, Info, RefreshCw, Filter, Clock } from "lucide-react";
 import { MOCK_EVENTS, type EventSeverity } from "@/lib/mocks/fixtures/ops-event-stream";

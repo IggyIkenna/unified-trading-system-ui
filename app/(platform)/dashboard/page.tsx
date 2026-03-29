@@ -3,9 +3,9 @@
 import { ActivityFeed } from "@/components/platform/activity-feed";
 import { HealthBar } from "@/components/platform/health-bar";
 import { QuickActions } from "@/components/platform/quick-actions";
-import { StatusDot } from "@/components/trading/status-badge";
+import { StatusDot } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";

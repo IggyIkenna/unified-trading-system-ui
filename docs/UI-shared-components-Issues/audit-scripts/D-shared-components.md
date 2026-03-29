@@ -19,20 +19,21 @@ one way to color PnL — and the audit must catch every single deviation.
 
 ## Pre-Read (required before running this audit)
 
-| File                                      | Why                                                              |
-| ----------------------------------------- | ---------------------------------------------------------------- |
-| `app/globals.css`                         | SSOT for tokens — colors, surfaces, shadows, typography, spacing |
-| `components/shared/metric-card.tsx`       | Understand props: tone, variant, density, layout                 |
-| `components/trading/status-badge.tsx`     | Understand supported statuses and colors                         |
-| `components/ui/spinner.tsx`               | Current Spinner API                                              |
-| `components/ui/skeleton.tsx`              | Current Skeleton API                                             |
-| `components/ui/tooltip.tsx`               | Radix Tooltip wrapper                                            |
-| `components/ui/empty-state.tsx`           | Empty state component                                            |
-| `components/ui/data-table.tsx`            | DataTable component                                              |
-| `components/platform/filter-bar.tsx`      | FilterBar component                                              |
-| `components/ui/progress.tsx`              | Progress bar component                                           |
-| `components/ui/separator.tsx`             | Separator component                                              |
-| `components/widgets/shared/kpi-strip.tsx` | KpiStrip component                                               |
+| File                                 | Why                                                              |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `app/globals.css`                    | SSOT for tokens — colors, surfaces, shadows, typography, spacing |
+| `components/shared/metric-card.tsx`  | Understand props: tone, variant, density, layout                 |
+| `components/shared/status-badge.tsx` | Understand supported statuses and colors                         |
+| `components/shared/spinner.tsx`      | Current Spinner API                                              |
+| `components/ui/skeleton.tsx`         | Current Skeleton API                                             |
+| `components/ui/tooltip.tsx`          | Radix Tooltip wrapper                                            |
+| `components/shared/empty-state.tsx`  | Empty state component                                            |
+| `components/shared/data-table.tsx`   | DataTable component                                              |
+| `components/shared/filter-bar.tsx`   | FilterBar component                                              |
+| `components/ui/progress.tsx`         | Progress bar component                                           |
+| `components/ui/separator.tsx`        | Separator component                                              |
+| `components/shared/kpi-strip.tsx`    | KpiStrip component                                               |
+| `components/shared/index.ts`         | Barrel — cross-domain exports after Task 13                      |
 
 ---
 
@@ -46,7 +47,7 @@ Report both counts. List the top 5 bypass files (with line numbers) for each.
 ### 1A. MetricCard / KpiStrip
 
 **Shared component:** `components/shared/metric-card.tsx`
-**Shared layout:** `components/widgets/shared/kpi-strip.tsx`
+**Shared layout:** `components/shared/kpi-strip.tsx` (widgets import via `@/components/shared` or direct path)
 
 **Find adopters:**
 
@@ -70,7 +71,7 @@ the file, line, and what `MetricCard` props would replace it (tone, variant, den
 
 ### 1B. StatusBadge
 
-**Shared component:** `components/trading/status-badge.tsx`
+**Shared component:** `components/shared/status-badge.tsx`
 
 **Find adopters:**
 
@@ -94,12 +95,12 @@ logic should live in `StatusBadge`, not in every page.
 
 ### 1C. Spinner
 
-**Shared component:** `components/ui/spinner.tsx`
+**Shared component:** `components/shared/spinner.tsx` (import `from "@/components/shared/spinner"`)
 
 **Find adopters:**
 
 ```bash
-rg -l "from.*@/components/ui/spinner|from.*spinner" app/ components/ | wc -l
+rg -l "from.*@/components/shared/spinner|from.*spinner" app/ components/ | wc -l
 ```
 
 **Find bypasses — ad-hoc loading spinners:**
@@ -159,7 +160,7 @@ indicate the `Skeleton` component may need size presets.
 
 ### 1F. EmptyState
 
-**Shared component:** `components/ui/empty-state.tsx`
+**Shared component:** `components/shared/empty-state.tsx`
 
 **Find adopters:**
 
@@ -198,7 +199,7 @@ rg -n 'style=.*width.*%|w-\[.*%\]' app/ components/ --glob '*.tsx'
 
 ### 1H. FilterBar / Search Input
 
-**Shared component:** `components/platform/filter-bar.tsx`
+**Shared component:** `components/shared/filter-bar.tsx`
 
 **Find adopters:**
 
@@ -240,12 +241,12 @@ rg -n "<hr" app/ components/ --glob '*.tsx'
 
 ### 1J. DataTable
 
-**Shared component:** `components/ui/data-table.tsx`
+**Shared component:** `components/shared/data-table.tsx`
 
 **Find adopters:**
 
 ```bash
-rg -l "from.*@/components/ui/data-table|DataTable" app/ components/ | wc -l
+rg -l "from.*@/components/shared/data-table|DataTable" app/ components/ | wc -l
 ```
 
 **Find bypasses — raw tables:**
@@ -263,7 +264,7 @@ rg -l "<table|<Table " app/ components/ --glob '*.tsx'
 
 ### 1K. ExportButton / ExportDropdown
 
-**Shared components:** `components/ui/export-button.tsx`, `components/ui/export-dropdown.tsx`
+**Shared components:** `components/ui/export-button.tsx` (if present), `components/shared/export-dropdown.tsx`
 
 **Find adopters:**
 
@@ -275,7 +276,7 @@ If zero, these are dead components. Flag for either wiring up or deletion.
 
 ### 1L. PageHeader
 
-**Does NOT exist yet.** Count all ad-hoc page headers:
+**Shared component:** `components/shared/page-header.tsx` (post–Task 13). Count remaining ad-hoc page headers:
 
 ```bash
 rg -n "<h1" app/ --glob '*.tsx' | wc -l
@@ -284,7 +285,7 @@ rg -n "<h1" app/ --glob '*.tsx'
 
 ### 1M. ErrorBoundary
 
-**Shared component:** `components/ui/error-boundary.tsx`
+**Shared component:** `components/shared/error-boundary.tsx`
 
 **Find adopters:**
 

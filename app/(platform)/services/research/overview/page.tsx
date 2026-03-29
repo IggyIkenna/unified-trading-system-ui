@@ -1,7 +1,7 @@
 "use client";
 
-import { AlertRow } from "@/components/platform/alert-row";
-import { PageHeader } from "@/components/platform/page-header";
+import { AlertRow } from "@/components/shared/alert-row";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

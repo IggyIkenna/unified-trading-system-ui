@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { CollapsibleSection } from "../shared";
+import { CollapsibleSection } from "@/components/shared";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function RiskMarginWidget(_props: WidgetComponentProps) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 /**
  * RequireAuth — Auth boundary for the platform and ops route groups.
  *

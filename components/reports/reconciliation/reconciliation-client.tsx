@@ -7,10 +7,10 @@ import { MetricCard } from "@/components/shared/metric-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel";
 import { useReconciliation } from "@/hooks/api/use-reports";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { AlertTriangle, Scale, DollarSign, Receipt, RefreshCw, TrendingDown, PackageX } from "lucide-react";
 import {
   Dialog,

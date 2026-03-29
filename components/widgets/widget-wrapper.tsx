@@ -4,7 +4,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { GripHorizontal, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { useAuth } from "@/hooks/use-auth";
 import { UpgradeCard } from "@/components/platform/upgrade-card";
 import { WidgetScroll } from "@/components/shared/widget-scroll";

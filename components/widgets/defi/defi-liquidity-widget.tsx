@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Droplets, Plus, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_FEE_TIERS } from "@/lib/config/services/defi.config";
 import { useDeFiData } from "./defi-data-context";

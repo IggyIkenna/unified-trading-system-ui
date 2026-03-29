@@ -9,7 +9,7 @@ import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { MetricCard } from "@/components/shared/metric-card";
-import { StatusDot } from "@/components/trading/status-badge";
+import { StatusDot } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";

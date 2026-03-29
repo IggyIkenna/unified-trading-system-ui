@@ -6,10 +6,10 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import {
   Shield,
   Building2,
@@ -21,7 +21,7 @@ import {
   ClipboardList,
   Clock,
 } from "lucide-react";
-import { StatusDot } from "@/components/trading/status-badge";
+import { StatusDot } from "@/components/shared/status-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import {

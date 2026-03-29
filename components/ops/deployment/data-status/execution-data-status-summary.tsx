@@ -4,7 +4,7 @@ import { useExecutionDataStatusContext } from "@/components/ops/deployment/data-
 import { getCompletionColor } from "@/components/ops/deployment/data-status/execution-data-status-utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { CheckCircle2, Database, Rocket, XCircle } from "lucide-react";
 import { formatPercent } from "@/lib/utils/formatters";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-import { ApiError } from "@/components/ui/api-error";
+import { ApiError } from "@/components/shared/api-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnifiedTrainingRuns } from "@/hooks/api/use-ml-models";
 import type { RunAnalysis, UnifiedTrainingRun } from "@/lib/types/ml";

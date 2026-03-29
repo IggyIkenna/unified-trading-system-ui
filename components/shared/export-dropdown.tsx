@@ -8,11 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Download, FileSpreadsheet, FileText } from "lucide-react";
-import {
-  exportTableToCsv,
-  exportTableToXlsx,
-  type ExportColumn,
-} from "@/lib/utils/export";
+import { exportTableToCsv, exportTableToXlsx, type ExportColumn } from "@/lib/utils/export";
 
 interface ExportDropdownProps {
   data: readonly object[];
@@ -21,12 +17,7 @@ interface ExportDropdownProps {
   className?: string;
 }
 
-export function ExportDropdown({
-  data,
-  columns,
-  filename,
-  className,
-}: ExportDropdownProps) {
+export function ExportDropdown({ data, columns, filename, className }: ExportDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -36,15 +27,11 @@ export function ExportDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={() => exportTableToCsv(data, columns, filename)}
-        >
+        <DropdownMenuItem onClick={() => exportTableToCsv(data, columns, filename)}>
           <FileText className="mr-2 size-4" />
           Export CSV
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => exportTableToXlsx(data, columns, filename)}
-        >
+        <DropdownMenuItem onClick={() => exportTableToXlsx(data, columns, filename)}>
           <FileSpreadsheet className="mr-2 size-4" />
           Export Excel
         </DropdownMenuItem>

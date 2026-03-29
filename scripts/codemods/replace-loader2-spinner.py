@@ -16,12 +16,12 @@ def strip_animate_spin(class_name: str) -> str:
 
 
 def add_spinner_import(text: str) -> str:
-    if 'from "@/components/ui/spinner"' in text or "from '@/components/ui/spinner'" in text:
+    if 'from "@/components/shared/spinner"' in text or "from '@/components/shared/spinner'" in text:
         return text
     # After first "use client" or first import
     m = re.search(r"^(?:\"use client\";[\s\n]+)?", text, re.MULTILINE)
     insert_at = m.end() if m else 0
-    line = 'import { Spinner } from "@/components/ui/spinner";\n'
+    line = 'import { Spinner } from "@/components/shared/spinner";\n'
     return text[:insert_at] + line + text[insert_at:]
 
 

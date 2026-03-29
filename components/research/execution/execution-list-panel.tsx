@@ -6,7 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { EXECUTION_BACKTESTS } from "@/lib/mocks/fixtures/build-data";
 import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
-import { StatusBadge, ALGO_COLORS } from "@/components/research/execution/status-helpers";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { ALGO_COLORS } from "@/components/research/execution/status-helpers";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Execution List Panel ───────────────────────────────────────────────────

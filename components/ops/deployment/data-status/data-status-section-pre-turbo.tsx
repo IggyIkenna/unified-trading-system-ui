@@ -4,7 +4,7 @@ import { HeatmapCalendar } from "@/components/ops/deployment/HeatmapCalendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import {
   AlertCircle,

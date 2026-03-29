@@ -11,8 +11,8 @@
  */
 
 import * as React from "react";
-import { PageHeader } from "@/components/platform/page-header";
-import { StatusDot } from "@/components/trading/status-badge";
+import { PageHeader } from "@/components/shared/page-header";
+import { StatusDot } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

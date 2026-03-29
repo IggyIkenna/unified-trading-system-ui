@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
@@ -22,16 +22,14 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
   const [showAll, setShowAll] = React.useState(false);
   const [collapsedGroups, setCollapsedGroups] = React.useState<Set<string> | null>(null);
 
-  if (!ctx)
-    return (
-      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
-        Navigate to Overview tab
-      </div>
-    );
-  const { strategyPerformance, filteredSortedStrategies: allFiltered, realtimePnl, perfLoading, formatDollar } = ctx;
+  const strategiesFromCtx = ctx?.filteredSortedStrategies;
+  const allFiltered = React.useMemo(
+    () => (Array.isArray(strategiesFromCtx) ? strategiesFromCtx : []) as Array<Record<string, unknown>>,
+    [strategiesFromCtx],
+  );
 
   const filtered = React.useMemo(() => {
-    let result = [...(allFiltered as Array<Record<string, unknown>>)];
+    let result = [...allFiltered];
     if (strategySearch) {
       const q = strategySearch.toLowerCase();
       result = result.filter(
@@ -76,6 +74,16 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
       setCollapsedGroups(new Set(Object.keys(grouped)));
     }
   }, [grouped, collapsedGroups]);
+
+  if (!ctx) {
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
+  }
+
+  const { strategyPerformance, realtimePnl, perfLoading, formatDollar } = ctx;
 
   const toggleGroup = (g: string) => {
     setCollapsedGroups((prev) => {

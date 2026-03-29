@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BOOK_ALGO_OPTIONS } from "@/lib/config/services/trading.config";
 import type { BookAlgoType } from "./book-data-context";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { useBookTradeData } from "./book-data-context";
 
 export function BookAlgoConfigWidget(_props: WidgetComponentProps) {

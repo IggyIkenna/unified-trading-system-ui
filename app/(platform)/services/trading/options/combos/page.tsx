@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -286,7 +286,7 @@ export default function ComboBuilderPage() {
           <CardContent className="px-4">
             {legs.length === 0 ? (
               <div className="text-center text-sm text-muted-foreground py-8">
-                Select a template above or click "Add Leg" to start building
+                Select a template above or click &quot;Add Leg&quot; to start building
               </div>
             ) : (
               <Table>

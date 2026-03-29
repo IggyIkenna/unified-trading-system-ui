@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { AlertCircle, CheckSquare, RotateCcw, XCircle } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
 import { StatBox } from "./stat-box";

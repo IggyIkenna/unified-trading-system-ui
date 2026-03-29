@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { TabsContent } from "@/components/ui/tabs";
 import { VM_EVENT_TYPES } from "@/lib/types/deployment";
-import { formatDateTime } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/formatters";
 import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
 
@@ -126,7 +126,7 @@ export function DeploymentDetailsEventsTabPanel() {
                   className="flex items-start gap-3 p-2 rounded text-xs bg-[var(--color-bg-tertiary)] hover:bg-[var(--color-bg-secondary)]"
                 >
                   <span className="text-[var(--color-text-muted)] font-mono whitespace-nowrap shrink-0">
-                    {formatDateTime(ev.timestamp)}
+                    {formatDate(ev.timestamp, "long")}
                   </span>
                   <code className="text-[var(--color-text-muted)] truncate shrink-0 max-w-[180px]">{ev.shard_id}</code>
                   <span

@@ -1,9 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { KpiStrip } from "@/components/widgets/shared";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { KpiStrip } from "@/components/shared/kpi-strip";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { Bet } from "@/components/trading/sports/types";
 import { fmtCurrency, fmtOdds, fmtRelativeTime } from "@/components/trading/sports/helpers";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 
 import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-form-context";
 import { Button } from "@/components/ui/button";

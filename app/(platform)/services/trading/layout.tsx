@@ -4,7 +4,7 @@ import { TRADING_TABS } from "@/components/shell/service-tabs";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Card, CardContent } from "@/components/ui/card";

@@ -20,7 +20,7 @@ import {
   Settings,
   TrendingUp,
 } from "lucide-react";
-import { StatusDot } from "@/components/trading/status-badge";
+import { StatusDot } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { auditStats, recentEvents } from "./audit-dashboard-data";
 import { getEventIcon, getStatusColor } from "./audit-helpers";

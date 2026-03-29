@@ -3,7 +3,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CollapsibleSection, KpiStrip, type KpiMetric } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, MOCK_CHAIN_PORTFOLIOS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/mocks/fixtures/defi-transfer";
 import { AlertTriangle } from "lucide-react";

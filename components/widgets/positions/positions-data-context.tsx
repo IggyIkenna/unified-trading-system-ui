@@ -9,7 +9,7 @@ import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useQueryClient } from "@tanstack/react-query";
-import type { FilterDefinition } from "@/components/platform/filter-bar";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
 
 const DEFI_VENUES = new Set(["AAVE_V3", "COMPOUND_V3", "AAVE", "COMPOUND", "MORPHO", "EULER"]);
 

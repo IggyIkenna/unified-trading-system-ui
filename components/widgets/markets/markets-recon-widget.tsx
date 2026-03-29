@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle } from "lucide-react";
 import { useMarketsData, type ReconRun } from "./markets-data-context";

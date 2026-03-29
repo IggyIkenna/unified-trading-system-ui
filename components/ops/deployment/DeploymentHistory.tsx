@@ -4,14 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import {
   bulkDeleteDeployments,
   cancelDeployment,
   getDeployments,
   updateDeploymentTag,
 } from "@/hooks/deployment/_api-stub";
-import { cn, formatDateTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/formatters";
 import {
   AlertCircle,
   Check,
@@ -501,7 +502,7 @@ export function DeploymentHistory({ serviceName = "all", onViewDetails }: Deploy
                 <div className="flex items-center gap-4 text-xs text-[var(--color-text-muted)]">
                   <span>
                     <Clock className="h-3 w-3 inline mr-1" />
-                    {deployment.created_at ? formatDateTime(deployment.created_at) : "Unknown"}
+                    {deployment.created_at ? formatDate(deployment.created_at, "long") : "Unknown"}
                   </span>
                   <span>{deployment.total_shards} shards</span>
                   <span className="font-mono">{deployment.progress}</span>

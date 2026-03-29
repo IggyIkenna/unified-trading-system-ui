@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";

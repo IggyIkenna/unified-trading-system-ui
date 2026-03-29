@@ -4,7 +4,7 @@ import { useExecutionDataStatusContext } from "@/components/ops/deployment/data-
 import { inferCloudProvider } from "@/components/ops/deployment/data-status/execution-data-status-utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { AlertCircle, FolderOpen } from "lucide-react";
 
 export function ExecutionDataStatusLoadingCard() {

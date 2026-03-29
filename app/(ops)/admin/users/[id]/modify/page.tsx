@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { ArrowLeft, Save } from "lucide-react";
 import { useProvisionedUser, useModifyUser, useAccessTemplates } from "@/hooks/api/use-user-management";
 import type { ProvisioningRole } from "@/lib/types/user-management";

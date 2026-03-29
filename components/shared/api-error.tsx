@@ -10,19 +10,12 @@ interface ApiErrorProps {
   title?: string;
 }
 
-function ApiError({
-  error,
-  onRetry,
-  title = "Failed to load data",
-}: ApiErrorProps) {
+function ApiError({ error, onRetry, title = "Failed to load data" }: ApiErrorProps) {
   if (!error) {
     return null;
   }
 
-  const message =
-    error instanceof Error
-      ? error.message
-      : (error.message ?? "An unknown error occurred.");
+  const message = error instanceof Error ? error.message : (error.message ?? "An unknown error occurred.");
 
   return (
     <div

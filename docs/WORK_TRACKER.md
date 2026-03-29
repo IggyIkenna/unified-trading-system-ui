@@ -235,8 +235,8 @@
 
 ### 5.1 Move promote mock data to lib/
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **Source files:**
   - `components/promote/mock-data.ts` (~1,685 lines — candidate strategies)
   - `components/promote/mock-fixtures.ts` (~674 lines — regime/walk-forward/features)
@@ -245,8 +245,8 @@
 
 ### 5.2 Move sports mock data to lib/
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **Source files:**
   - `components/trading/sports/mock-data.ts` (~1,556 lines — fixtures, odds, arbs, bets)
   - `components/trading/sports/mock-fixtures.ts` (~46 lines — leagues, bookmakers)
@@ -254,16 +254,16 @@
 
 ### 5.3 Move predictions mock data to lib/
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **Source files:**
   - `components/trading/predictions/mock-data.ts` (~798 lines — markets, positions, arbs, fills)
 - **Target:** `lib/mocks/fixtures/predictions-data.ts`
 
 ### 5.4 Move risk mock data to lib/
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **Source files:**
   - `components/widgets/risk/risk-data-context.tsx` (inline `MOCK_STRATEGIES`, `STRATEGY_RISK_MAP`, `COMPONENT_TO_RISK_TYPE` — ~50 lines)
 - **Target:** `lib/mocks/fixtures/risk-data.ts`
@@ -271,15 +271,15 @@
 
 ### 5.5 Move order-book mock generator to lib/
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **Source:** `components/trading/order-book.tsx` — `generateMockOrderBook()` (~50 lines)
 - **Target:** `lib/mocks/generators/order-book.ts`
 
 ### 5.6 Move app/ inline fallback data to lib/
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **Source files:**
   - `app/(platform)/services/trading/strategies/grid/page.tsx` — `DEFAULT_BACKTEST_RESULTS` (~~114 lines), `METRICS` (~~8 lines)
   - `app/(platform)/services/trading/terminal/page.tsx` — `DEFAULT_INSTRUMENTS` (~~14 lines), `strategyInstruments` (~~5 lines), `generateCandleData()` (~20 lines)
@@ -492,61 +492,63 @@
 
 ## 13. Shared Component & Utility Consolidation
 
+**Status (2026-03-29):** Implemented — cross-domain UI is under `components/shared/`, shadcn primitives under `components/ui/`, `components/widgets/shared/` removed. See `docs/tasks/13-shared-component-consolidation.md` and `UI_STRUCTURE_MANIFEST.json` (`changes_task_13_shared_components`).
+
 ### 13.1 Delete dead code (0-importer files)
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Delete `components/shared/data-card.tsx`, `components/platform/batch-live-comparison-frame.tsx`, `components/platform/service-hub.tsx`
 - **Current:** 3 files, 669 lines, zero importers
 
 ### 13.2 Delete duplicate component definitions
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Remove duplicate StatusBadge (2 extra defs), MetricCard (1 extra def), CatStatusBadge (1 extra def). Migrate the 2 consumers of research/execution/status-helpers.tsx to canonical imports.
 - **Current:** 3 StatusBadge definitions, 2 MetricCard definitions, 2 CatStatusBadge definitions
 
 ### 13.3 Move `formatDateTime` from `lib/utils.ts` to `lib/utils/formatters.ts`
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** `lib/utils.ts` should export only `cn()`. Move `formatDateTime` → `formatDate` in formatters.ts, update all importers.
 
 ### 13.4 Move StatusBadge + StatusDot to `components/shared/`
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Move from `components/trading/status-badge.tsx` → `components/shared/status-badge.tsx`. Update 47 importers.
 - **Why:** Cross-cutting component used by trading, ops, data, research, dashboards — not trading-specific.
 
 ### 13.5 Move PageHeader, AlertRow, FilterBar to `components/shared/`
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Move 3 files from `components/platform/` → `components/shared/`. Update ~93 importers.
 
 ### 13.6 Move KpiStrip + widgets/shared to `components/shared/`
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Move 5 files from `components/widgets/shared/` → `components/shared/`. Delete empty `widgets/shared/` dir. Update ~42 importers.
 
 ### 13.7 Move custom components out of `components/ui/`
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Move 8 custom components (Spinner, EmptyState, ErrorBoundary, DataTable, etc.) from `components/ui/` → `components/shared/`. `components/ui/` becomes shadcn-only. Update ~121 importers.
 
 ### 13.8 Merge `empty.tsx` and `empty-state.tsx`
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Two empty-state components exist. Merge into one canonical `EmptyState` in `components/shared/`.
 
 ### 13.9 Create barrel + update .cursorrules
 
 - [x] doc
-- [ ] done
+- [x] done
 - **What:** Create `components/shared/index.ts` barrel exporting all shared components. Update `.cursorrules` with new architecture.
 
 ---
@@ -559,7 +561,7 @@
 | 2. UI-UX Enhancements              | 7           | 0            | 0           |
 | 3. Component Centralization        | 6           | 1            | 0           |
 | 4. Widget Merging                  | 10          | 0            | 0           |
-| 5. Mock Data Centralization        | 6           | 1            | 0           |
+| 5. Mock Data Centralization        | 6           | 6            | 6           |
 | 6. Mock Data Alignment             | 5           | 1            | 0           |
 | 7. Cross-Page Filter Cohesion      | 2           | 0            | 0           |
 | 8. Research Config Parity          | 3           | 0            | 0           |
@@ -567,8 +569,8 @@
 | 10. Platform Review Remaining      | 10          | 0            | 0           |
 | 11. Code Org (file splits)         | 6 groups    | 1            | 1           |
 | 12. Error Handling                 | 5           | 1            | 0           |
-| 13. Shared Component Consolidation | 9           | 1            | 0           |
-| **TOTAL**                          | **73**      | **9**        | **4**       |
+| 13. Shared Component Consolidation | 9           | 1            | 9           |
+| **TOTAL**                          | **73**      | **14**       | **19**      |
 
 > **Phased out (later):** §8 (all), §9.1, §10.10, §2.6 (cross-tab widgets — depends on §4)
 >
@@ -576,6 +578,6 @@
 >
 > - `11-code-org-split-oversized-files.md` — 37 files over 900 lines, split into 6 agent groups (A-F)
 > - `04-shared-components-extraction.md` — 12 parts: PageHeader, MetricCard, StatusBadge, Spinner, Tooltip, Skeleton, EmptyState, DataTable, formatters, PnL tokens, unused UI cleanup
-> - `05-mock-data-centralization.md` — 10 parts: move mock data to lib/mocks/, set up MSW handlers, schema audit, persona scoping
+> - `05-mock-data-centralization.md` — 13 parts: move mock data to lib/mocks/, relocate lib/ root modules, fix ID collisions, deterministic generators, hook cleanup, schema audit, persona scoping (MSW deferred)
 > - `12-error-handling.md` — 5 parts: error.tsx, loading.tsx, not-found.tsx, tristate enforcement, ErrorBoundary coverage
 > - `13-shared-component-consolidation.md` — 9 parts: delete dead code, remove duplicates, consolidate all shared components into `components/shared/`, make `components/ui/` shadcn-only, create barrel, update .cursorrules

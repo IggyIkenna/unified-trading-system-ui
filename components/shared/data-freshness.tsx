@@ -1,7 +1,7 @@
 "use client";
 
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
-import { StatusDot } from "@/components/trading/status-badge";
+import { StatusDot } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 
 interface DataFreshnessProps {

@@ -1,7 +1,7 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
-import { ApiError } from "@/components/ui/api-error";
+import { PageHeader } from "@/components/shared/page-header";
+import { ApiError } from "@/components/shared/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

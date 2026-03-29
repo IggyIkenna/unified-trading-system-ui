@@ -3,7 +3,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { CollapsibleSection, KpiStrip, type KpiMetric } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { AlertTriangle } from "lucide-react";
 import { useBundlesData } from "./bundles-data-context";

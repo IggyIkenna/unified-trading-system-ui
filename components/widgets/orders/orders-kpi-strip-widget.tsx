@@ -1,7 +1,7 @@
 "use client";
 
 import type { WidgetComponentProps } from "../widget-registry";
-import { KpiStrip, type KpiMetric } from "../shared";
+import { KpiStrip, type KpiMetric } from "@/components/shared";
 import { useOrdersData } from "./orders-data-context";
 
 export function OrdersKpiStripWidget(_props: WidgetComponentProps) {

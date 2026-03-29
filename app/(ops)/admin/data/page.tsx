@@ -26,7 +26,7 @@ import {
   Lock,
   FlaskConical,
 } from "lucide-react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { SiteHeader } from "@/components/shell/site-header";
 import { ShardCatalogue } from "@/components/data/shard-catalogue";
 import { FreshnessHeatmap } from "@/components/data/freshness-heatmap";

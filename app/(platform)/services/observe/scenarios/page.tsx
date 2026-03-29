@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 /**
  * /services/observe/scenarios — What-If / Scenario Analysis.
  * Scenario builder with shock parameters, historical replay,

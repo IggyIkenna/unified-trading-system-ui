@@ -3,7 +3,7 @@
 import { EntityLink } from "@/components/trading/entity-link";
 import { SparklineCell } from "@/components/trading/kpi-card";
 import { PnLValue } from "@/components/trading/pnl-value";
-import { StatusBadge } from "@/components/trading/status-badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -16,8 +16,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { Spinner } from "@/components/shared/spinner";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { ARCHETYPES, ASSET_CLASS_COLORS, STATUSES } from "@/lib/config/services/strategies.config";
 import type { Strategy } from "@/lib/strategy-registry";

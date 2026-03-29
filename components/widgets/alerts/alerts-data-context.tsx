@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { FilterDefinition } from "@/components/platform/filter-bar";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
 
 export type AlertFilterBarValues = Record<string, string | string[] | Date | { start: Date; end: Date } | undefined>;
 import { useAcknowledgeAlert, useAlerts, useEscalateAlert, useResolveAlert } from "@/hooks/api/use-alerts";

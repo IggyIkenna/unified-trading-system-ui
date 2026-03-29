@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import { AlertCircle, Calendar, Database, Eye, Rocket } from "lucide-react";
 import { getCompletionBadgeClass, getCompletionColor } from "./category-metrics";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { WidgetComponentProps } from "../widget-registry";
-import { KpiStrip, type KpiMetric } from "../shared";
+import { KpiStrip, type KpiMetric } from "@/components/shared";
 import { useRiskData, formatCurrency } from "./risk-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
 

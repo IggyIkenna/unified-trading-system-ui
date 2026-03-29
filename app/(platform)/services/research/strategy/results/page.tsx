@@ -37,8 +37,8 @@ import {
 } from "lucide-react";
 import { useStrategyBacktests } from "@/hooks/api/use-strategies";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError } from "@/components/ui/api-error";
-import { EmptyState } from "@/components/ui/empty-state";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import type { BacktestRun } from "@/lib/types/strategy-platform";

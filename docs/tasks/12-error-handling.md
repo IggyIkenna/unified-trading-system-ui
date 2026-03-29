@@ -31,7 +31,7 @@ rg -l "ErrorBoundary" app/ components/
 
 # Existing error/loading components (use these, don't create new ones)
 echo "=== Shared components ===" 
-ls -la components/ui/error-boundary.tsx components/ui/api-error.tsx components/ui/spinner.tsx components/ui/empty-state.tsx components/ui/skeleton.tsx
+ls -la components/shared/error-boundary.tsx components/shared/api-error.tsx components/shared/spinner.tsx components/shared/empty-state.tsx components/ui/skeleton.tsx
 
 # Pages that fetch data (need tristate handling)
 rg -l "useQuery|useMutation|isLoading|isFetching" app/ --glob '*.tsx' | wc -l
@@ -245,10 +245,10 @@ but only handle the success case — they don't check `isLoading`, `isError`, or
    - Ops/admin pages — less critical but still need basic handling
 
 **Existing components to use:**
-- `<Spinner />` — `components/ui/spinner.tsx`
-- `<ApiError />` — `components/ui/api-error.tsx` (accepts `error` + `onRetry`)
-- `<EmptyState />` — `components/ui/empty-state.tsx` (accepts `icon`, `title`, `description`, `action`)
-- `<ErrorBoundary />` — `components/ui/error-boundary.tsx` (wraps sections that might throw)
+- `<Spinner />` — `components/shared/spinner.tsx` — import `from "@/components/shared/spinner"`
+- `<ApiError />` — `components/shared/api-error.tsx` (accepts `error` + `onRetry`)
+- `<EmptyState />` — `components/shared/empty-state.tsx` (accepts `icon`, `title`, `description`, `action`)
+- `<ErrorBoundary />` — `components/shared/error-boundary.tsx` (wraps sections that might throw)
 
 **Do NOT create new loading/error components.** Use the existing shared ones. This is the
 whole point of Task 04 — shared components exist, use them.

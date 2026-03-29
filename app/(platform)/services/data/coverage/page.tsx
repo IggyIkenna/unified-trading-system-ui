@@ -1,7 +1,7 @@
 "use client";
 
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 /**
  * /services/data/coverage — Cross-stage coverage matrix.
  * User can select row/column dimensions to compare Instruments, Raw, Processed.

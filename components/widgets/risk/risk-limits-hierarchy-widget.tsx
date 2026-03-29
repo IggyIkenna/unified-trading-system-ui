@@ -3,13 +3,13 @@
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData, getUtilization, getStatusFromUtil, formatCurrency } from "./risk-data-context";
-import { StatusBadge } from "@/components/trading/status-badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { CollapsibleSection } from "../shared";
+import { CollapsibleSection } from "@/components/shared";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {

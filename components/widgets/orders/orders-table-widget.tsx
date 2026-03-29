@@ -1,12 +1,12 @@
 "use client";
 
-import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar";
+import { FilterBar, type FilterDefinition } from "@/components/shared/filter-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
-import { Spinner } from "@/components/ui/spinner";
+import { DataTable } from "@/components/shared/data-table";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
 import type { ColumnDef } from "@tanstack/react-table";

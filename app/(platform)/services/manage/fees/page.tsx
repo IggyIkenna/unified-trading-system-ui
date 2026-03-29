@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DollarSign, Pencil, Check, X, Calculator } from "lucide-react";
 import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import { useSubscriptions } from "@/hooks/api/use-organizations";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { formatNumber } from "@/lib/utils/formatters";
 
 interface FeeRow {

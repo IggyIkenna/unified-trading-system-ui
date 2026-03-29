@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { EntityLink } from "@/components/trading/entity-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

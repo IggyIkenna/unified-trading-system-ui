@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import type { ShardEvent } from "@/lib/types/deployment";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, CheckSquare, Clock, FileText, RotateCcw, Square, StopCircle, XCircle } from "lucide-react";

@@ -5,6 +5,8 @@
 **Priority:** P0 — every agent that writes UI code needs to know where shared components live.
 Without this, agents scatter new components across 6 locations and create duplicates.
 
+> **Layout note:** Sections **Problem**, **Target Architecture** (file trees), and **Execution Plan** describe the **migration narrative** (before → after). **Implemented 2026-03-29.** On disk today: shared custom UI is under `components/shared/`, shadcn primitives under `components/ui/`, and `components/widgets/shared/` no longer exists. If a line still shows `Move X → X`, read it as “completed; file now lives under `components/shared/`.”
+
 ---
 
 ## Agent Execution Model
@@ -33,12 +35,12 @@ goes where. This causes:
 ### Current state (6 locations)
 
 ```
-components/ui/           ← 38 files. Mix of shadcn primitives + custom shared components
-components/shared/       ← 12 files. MetricCard + finder + gates + 1 dead file
-components/platform/     ← 18 files. PageHeader + FilterBar + AlertRow + domain things + 2 dead files
-components/widgets/shared/ ← 5 files. KpiStrip + DataTableWidget + FilterBarWidget
-components/trading/      ← StatusBadge + StatusDot (cross-cutting, misplaced in domain folder)
-lib/utils.ts             ← cn() + stray formatDateTime() (should be in lib/utils/formatters.ts)
+components/ui/           ← (pre-task) mix of shadcn + custom; now shadcn-only
+components/shared/       ← (pre-task) MetricCard + finder + gates; now all cross-domain custom UI
+components/platform/     ← (pre-task) PageHeader + FilterBar + AlertRow + infra; those three since moved to shared/
+components/widgets/shared/ ← (pre-task) KpiStrip + DataTableWidget + FilterBarWidget — directory removed
+components/trading/      ← (pre-task) StatusBadge + StatusDot — since moved to shared/
+lib/utils.ts             ← (pre-task) cn() + formatDateTime — now cn() only
 lib/utils/               ← formatters.ts, pnl.ts, nav-helpers.ts, export.ts, etc.
 ```
 
@@ -46,7 +48,7 @@ lib/utils/               ← formatters.ts, pnl.ts, nav-helpers.ts, export.ts, e
 
 | Component | Canonical | Duplicates | Consumers of duplicates |
 |-----------|-----------|------------|------------------------|
-| `StatusBadge` | `components/trading/status-badge.tsx` (47 importers) | `components/research/strategies/status-helpers.tsx` (0 importers), `components/research/execution/status-helpers.tsx` (2 importers) | `execution-detail-view.tsx`, `execution-list-panel.tsx` |
+| `StatusBadge` | `components/shared/status-badge.tsx` (canonical; was `components/trading/status-badge.tsx`) | `strategies/status-helpers.tsx` (removed), `execution/status-helpers.tsx` (deduped) | `execution-detail-view.tsx`, `execution-list-panel.tsx` |
 | `MetricCard` | `components/shared/metric-card.tsx` (14 importers) | `components/research/execution/status-helpers.tsx` (2 importers) | same 2 files as above |
 | `CatStatusBadge` | `components/research/features/cat-status-badge.tsx` (1 importer) | `components/research/features/feature-helpers.tsx` (7 importers, but for other exports too) | `features/page.tsx` imports from `cat-status-badge.tsx` |
 | `DeploymentStatusBadge` | `components/ops/deployment/details/deployment-status-badge.tsx` | Not a duplicate — domain-specific, acceptable | `deployment-details-header.tsx` only |
@@ -66,16 +68,16 @@ lib/utils/               ← formatters.ts, pnl.ts, nav-helpers.ts, export.ts, e
 `components/ui/` should be shadcn primitives only. These are custom shared components that
 happen to be in `ui/`:
 
-| File | Importers | What it is |
+| File (was under `ui/`, now `shared/`) | Importers (at audit) | What it is |
 |------|-----------|-----------|
-| `components/ui/spinner.tsx` | 59 | Custom loading spinner with size variants |
-| `components/ui/empty-state.tsx` | 7 | Custom empty/no-data state |
-| `components/ui/empty.tsx` | 7 | Another empty state component (!) |
-| `components/ui/error-boundary.tsx` | 8 | Custom React error boundary |
-| `components/ui/data-table.tsx` | 17 | Custom data table with sorting/filtering |
-| `components/ui/data-freshness.tsx` | 3 | Custom data freshness indicator |
-| `components/ui/api-error.tsx` | 9 | Custom API error display |
-| `components/ui/export-dropdown.tsx` | 11 | Custom export/download button |
+| `spinner.tsx` | 59 | Custom loading spinner with size variants |
+| `empty-state.tsx` | 7 | Custom empty/no-data state |
+| `empty.tsx` | 0 at merge — **deleted** | Compound empty layout (unused) |
+| `error-boundary.tsx` | 8 | Custom React error boundary |
+| `data-table.tsx` | 17 | Custom data table with sorting/filtering |
+| `data-freshness.tsx` | 3 | Custom data freshness indicator |
+| `api-error.tsx` | 9 | Custom API error display |
+| `export-dropdown.tsx` | 11 | Custom export/download button |
 
 ---
 
@@ -125,26 +127,26 @@ components/ui/
 
 ```
 components/shared/
-├── metric-card.tsx          ← from components/shared/ (stays)
-├── kpi-strip.tsx            ← from components/widgets/shared/kpi-strip.tsx (MOVE)
-├── status-badge.tsx         ← from components/trading/status-badge.tsx (MOVE)
-├── page-header.tsx          ← from components/platform/page-header.tsx (MOVE)
-├── alert-row.tsx            ← from components/platform/alert-row.tsx (MOVE)
-├── filter-bar.tsx           ← from components/platform/filter-bar.tsx (MOVE)
-├── spinner.tsx              ← from components/ui/spinner.tsx (MOVE)
-├── empty-state.tsx          ← from components/ui/empty-state.tsx (MOVE)
-├── error-boundary.tsx       ← from components/ui/error-boundary.tsx (MOVE)
-├── data-table.tsx           ← from components/ui/data-table.tsx (MOVE)
-├── data-table-widget.tsx    ← from components/widgets/shared/data-table-widget.tsx (MOVE)
-├── data-freshness.tsx       ← from components/ui/data-freshness.tsx (MOVE)
-├── api-error.tsx            ← from components/ui/api-error.tsx (MOVE)
-├── export-dropdown.tsx      ← from components/ui/export-dropdown.tsx (MOVE)
-├── widget-scroll.tsx        ← from components/shared/ (stays)
-├── gate-check-row.tsx       ← from components/shared/ (stays)
-├── gate-status.tsx          ← from components/shared/ (stays)
-├── collapsible-section.tsx  ← from components/widgets/shared/ (MOVE)
-├── filter-bar-widget.tsx    ← from components/widgets/shared/ (MOVE)
-└── finder/                  ← from components/shared/finder/ (stays)
+├── metric-card.tsx          ← was already here
+├── kpi-strip.tsx            ← was components/widgets/shared/
+├── status-badge.tsx         ← was components/trading/
+├── page-header.tsx          ← was components/platform/
+├── alert-row.tsx            ← was components/platform/
+├── filter-bar.tsx           ← was components/platform/
+├── spinner.tsx              ← was components/ui/
+├── empty-state.tsx          ← was components/ui/
+├── error-boundary.tsx       ← was components/ui/
+├── data-table.tsx           ← was components/ui/
+├── data-table-widget.tsx    ← was components/widgets/shared/
+├── data-freshness.tsx       ← was components/ui/
+├── api-error.tsx            ← was components/ui/
+├── export-dropdown.tsx      ← was components/ui/
+├── widget-scroll.tsx        ← unchanged
+├── gate-check-row.tsx       ← unchanged
+├── gate-status.tsx          ← unchanged
+├── collapsible-section.tsx  ← was components/widgets/shared/
+├── filter-bar-widget.tsx    ← was components/widgets/shared/
+└── finder/                  ← unchanged
     ├── finder-browser.tsx
     ├── finder-breadcrumb.tsx
     ├── finder-column.tsx
@@ -163,7 +165,7 @@ Import path: `@/components/shared/<name>`.
 ```
 lib/utils.ts              ← cn() ONLY (remove formatDateTime)
 lib/utils/
-├── formatters.ts         ← formatNumber, formatCurrency, formatPercent, formatPnl, formatDate, formatCompact, formatDateTime (MOVED from lib/utils.ts)
+├── formatters.ts         ← formatNumber, formatCurrency, formatPercent, formatPnl, formatDate, formatCompact (callers use `formatDate(..., "long")` where `formatDateTime` was)
 ├── pnl.ts                ← pnlColorClass, pnlClassName
 ├── nav-helpers.ts        ← isServiceTabActive, isPathActive
 ├── export.ts             ← export/download utilities
@@ -240,6 +242,8 @@ rg -l "from.*@/components/widgets/shared" app/ components/ --glob '*.tsx' | wc -
 
 ## Execution Plan — Part by Part
 
+**Implementation status (2026-03-29):** Parts 1–9 completed (see Acceptance Criteria and Self-Evaluation Checklist).
+
 ### Part 1 — Delete dead code
 
 **Files to delete (0 importers, verified):**
@@ -292,11 +296,11 @@ rg -l "from.*@/components/widgets/shared" app/ components/ --glob '*.tsx' | wc -
 
 **This is the highest-impact move — 47 importers across all domains.**
 
-**Steps:**
-1. Move `components/trading/status-badge.tsx` → `components/shared/status-badge.tsx`
-2. Update every import: `from "@/components/trading/status-badge"` → `from "@/components/shared/status-badge"`
-3. Also update relative imports: `from "./status-badge"` in files like `health-status-grid.tsx`, `strategy-performance-table.tsx` → `from "@/components/shared/status-badge"`
-4. If `components/trading/index.ts` re-exports StatusBadge, update or remove the re-export
+**Steps (done):**
+1. `status-badge.tsx` now lives in `components/shared/` (moved from `components/trading/`).
+2. Imports use `from "@/components/shared/status-badge"` (or barrel `@/components/shared`).
+3. Relative `./status-badge` in trading files → `@/components/shared/status-badge`.
+4. `components/trading/index.ts` re-exports `StatusBadge` / `StatusDot` from shared.
 
 **Discovery (exact import list):**
 ```bash
@@ -310,16 +314,16 @@ rg -n "from.*trading/status-badge|from.*trading.*StatusBadge|from.*\./status-bad
 ### Part 5 — Move PageHeader, AlertRow, FilterBar from `components/platform/` to `components/shared/`
 
 **PageHeader** — 77 importers:
-1. Move `components/platform/page-header.tsx` → `components/shared/page-header.tsx`
-2. Update all: `from "@/components/platform/page-header"` → `from "@/components/shared/page-header"`
+1. **Done:** `page-header.tsx` is in `components/shared/` (was `components/platform/`).
+2. Imports: `from "@/components/shared/page-header"`.
 
 **AlertRow** — 3 importers:
-1. Move `components/platform/alert-row.tsx` → `components/shared/alert-row.tsx`
-2. Update all: `from "@/components/platform/alert-row"` → `from "@/components/shared/alert-row"`
+1. **Done:** `alert-row.tsx` is in `components/shared/`.
+2. Imports: `from "@/components/shared/alert-row"`.
 
 **FilterBar** — 13 importers:
-1. Move `components/platform/filter-bar.tsx` → `components/shared/filter-bar.tsx`
-2. Update all: `from "@/components/platform/filter-bar"` → `from "@/components/shared/filter-bar"`
+1. **Done:** `filter-bar.tsx` is in `components/shared/`.
+2. Imports: `from "@/components/shared/filter-bar"`.
 
 **Discovery:**
 ```bash
@@ -340,14 +344,10 @@ components that are NOT cross-domain shared primitives: `context-bar`, `batch-li
 
 ### Part 6 — Move KpiStrip + widgets/shared contents to `components/shared/`
 
-**KpiStrip** — 43 importers (via barrel `components/widgets/shared/index.ts`):
+**KpiStrip** — 43 importers (formerly via `components/widgets/shared/index.ts`):
 
-1. Move `components/widgets/shared/kpi-strip.tsx` → `components/shared/kpi-strip.tsx`
-2. Move `components/widgets/shared/data-table-widget.tsx` → `components/shared/data-table-widget.tsx`
-3. Move `components/widgets/shared/filter-bar-widget.tsx` → `components/shared/filter-bar-widget.tsx`
-4. Move `components/widgets/shared/collapsible-section.tsx` → `components/shared/collapsible-section.tsx`
-5. Update or delete `components/widgets/shared/index.ts` barrel
-6. Update all imports: `from "@/components/widgets/shared"` and `from "@/components/widgets/shared/kpi-strip"` → `from "@/components/shared/kpi-strip"`
+1. **Done:** `kpi-strip.tsx`, `data-table-widget.tsx`, `filter-bar-widget.tsx`, `collapsible-section.tsx` live in `components/shared/`.
+2. **Done:** `components/widgets/shared/` removed; use `from "@/components/shared/kpi-strip"` (or `@/components/shared` barrel).
 
 **Discovery:**
 ```bash
@@ -355,22 +355,22 @@ rg -n "from.*@/components/widgets/shared" app/ components/ --glob '*.tsx'
 rg -n "from.*widgets/shared/kpi-strip" app/ components/ --glob '*.tsx'
 ```
 
-**Verification:** `pnpm typecheck` passes. `components/widgets/shared/` directory is empty → delete it.
+**Verification:** `pnpm typecheck` passes. `components/widgets/shared/` directory removed.
 
 ---
 
 ### Part 7 — Move custom components out of `components/ui/` to `components/shared/`
 
-| Source | Destination | Importers to update |
+| Was (`components/ui/` or similar) | Now | Importers (at audit) |
 |--------|------------|-------------------|
-| `components/ui/spinner.tsx` | `components/shared/spinner.tsx` | 59 |
-| `components/ui/empty-state.tsx` | `components/shared/empty-state.tsx` | 7 |
-| `components/ui/empty.tsx` | `components/shared/empty.tsx` | 7 |
-| `components/ui/error-boundary.tsx` | `components/shared/error-boundary.tsx` | 8 |
-| `components/ui/data-table.tsx` | `components/shared/data-table.tsx` | 17 |
-| `components/ui/data-freshness.tsx` | `components/shared/data-freshness.tsx` | 3 |
-| `components/ui/api-error.tsx` | `components/shared/api-error.tsx` | 9 |
-| `components/ui/export-dropdown.tsx` | `components/shared/export-dropdown.tsx` | 11 |
+| `spinner.tsx` | `components/shared/spinner.tsx` | 59 |
+| `empty-state.tsx` | `components/shared/empty-state.tsx` | 7 |
+| `empty.tsx` | *(removed — zero importers)* | — |
+| `error-boundary.tsx` | `components/shared/error-boundary.tsx` | 8 |
+| `data-table.tsx` | `components/shared/data-table.tsx` | 17 |
+| `data-freshness.tsx` | `components/shared/data-freshness.tsx` | 3 |
+| `api-error.tsx` | `components/shared/api-error.tsx` | 9 |
+| `export-dropdown.tsx` | `components/shared/export-dropdown.tsx` | 11 |
 
 **For each file:**
 1. Move file to `components/shared/`
@@ -391,9 +391,11 @@ done
 
 ### Part 8 — Merge `empty.tsx` and `empty-state.tsx`
 
-Two "empty" components exist — both in `components/ui/`:
-- `empty-state.tsx` (7 importers) — the Task 04 canonical EmptyState
-- `empty.tsx` (7 importers) — another empty state variant
+Two "empty" components existed — both were under `components/ui/`:
+- `empty-state.tsx` — canonical `EmptyState` (moved to `components/shared/empty-state.tsx`)
+- `empty.tsx` — compound `Empty` / `EmptyHeader` / … (shadcn-style)
+
+**Resolution (2026-03-29):** At consolidation time `empty.tsx` had **zero** importers (verify with `rg`). It was **deleted** as dead code. **`EmptyState`** remains the single supported “no data” pattern for pages; if compound empty layout is needed later, reintroduce intentionally under `components/shared/` with a distinct name.
 
 **Steps:**
 1. Read both files. Determine if `empty.tsx` is a simpler version or has unique features.
@@ -472,19 +474,19 @@ different files). G runs last (needs all moves complete).
 
 ## Acceptance Criteria
 
-- [ ] `components/ui/` contains ONLY shadcn primitives — zero custom components
-- [ ] `components/shared/` contains ALL cross-domain shared components
-- [ ] `components/shared/index.ts` barrel exports every shared component
-- [ ] Zero duplicate component definitions (StatusBadge, MetricCard, CatStatusBadge)
-- [ ] Zero dead code files (data-card, batch-live-comparison-frame, service-hub)
-- [ ] `lib/utils.ts` exports only `cn()` — `formatDateTime` removed
-- [ ] `components/widgets/shared/` directory deleted (contents moved to `components/shared/`)
-- [ ] `components/platform/` contains only platform infrastructure, not shared primitives
-- [ ] `components/trading/` contains only trading-specific components, not cross-cutting shared
-- [ ] `.cursorrules` updated with new component architecture
-- [ ] `pnpm typecheck` passes
-- [ ] `pnpm build` succeeds
-- [ ] All existing imports updated — zero references to old paths
+- [x] `components/ui/` contains ONLY shadcn primitives — zero custom components
+- [x] `components/shared/` contains ALL cross-domain shared components
+- [x] `components/shared/index.ts` barrel exports every shared component
+- [x] Zero duplicate component definitions (StatusBadge, MetricCard, CatStatusBadge)
+- [x] Zero dead code files (data-card, batch-live-comparison-frame, service-hub)
+- [x] `lib/utils.ts` exports only `cn()` — `formatDateTime` removed
+- [x] `components/shared/` directory deleted (contents moved to `components/shared/`)
+- [x] `components/platform/` contains only platform infrastructure, not shared primitives
+- [x] `components/trading/` contains only trading-specific components, not cross-cutting shared
+- [x] `.cursorrules` updated with new component architecture
+- [x] `pnpm typecheck` passes
+- [x] `pnpm build` succeeds
+- [x] All existing imports updated — zero references to old paths (app/components/hooks/lib/archive; docs may still mention historical paths)
 
 **Verification commands:**
 ```bash
@@ -499,9 +501,9 @@ rg "from.*@/components/platform/page-header" app/ components/ | wc -l  # should 
 rg "from.*@/components/platform/alert-row" app/ components/ | wc -l    # should be 0
 rg "from.*@/components/platform/filter-bar" app/ components/ | wc -l   # should be 0
 rg "from.*@/components/widgets/shared" app/ components/ | wc -l        # should be 0
-rg "from.*@/components/ui/spinner" app/ components/ | wc -l            # should be 0
+rg "from.*@/components/shared/spinner" app/ components/ | wc -l            # should be 0
 rg "from.*@/components/ui/empty-state" app/ components/ | wc -l        # should be 0
-rg "from.*@/components/ui/data-table" app/ components/ | wc -l         # should be 0
+rg "from.*@/components/shared/data-table" app/ components/ | wc -l         # should be 0
 rg "formatDateTime" lib/utils.ts | wc -l                                # should be 0
 
 # Dead code gone
@@ -516,6 +518,24 @@ rg "formatDateTime" lib/utils.ts | wc -l                                # should
 ---
 
 ## Self-Evaluation Checklist
+
+**Completed 2026-03-29** — self-audit results:
+
+1. **Can an agent find every shared component by looking in ONE folder?** Yes. `components/shared/index.ts` re-exports shared UI plus `export * from "./finder"`. Primary import path: `@/components/shared/<name>` or barrel `@/components/shared`.
+
+2. **Is `components/ui/` pure shadcn?** Yes. Custom files (spinner, empty-state, error-boundary, data-table, data-freshness, api-error, export-dropdown) were moved to `components/shared/`. **`empty.tsx`:** had **zero** importers at consolidation time — **deleted** as dead code (single empty pattern: `EmptyState` in `components/shared/empty-state.tsx`).
+
+3. **Are there zero duplicates?** Yes. `rg "export function StatusBadge" components/` → `components/shared/status-badge.tsx` only. `MetricCard` → `components/shared/metric-card.tsx` only. `CatStatusBadge` → `components/research/features/cat-status-badge.tsx` only; duplicate removed from `feature-helpers.tsx`.
+
+4. **Did you update EVERY import?** Yes for compilable code; `pnpm typecheck` green. Follow-ups: relative `../shared` in some widgets retargeted to `@/components/shared`; `strategy-list-panel` now imports `StatusBadge` from shared. **Status keys:** shared `StatusBadge` extended with `complete`, `queued`, `completed`, `cancelled` for execution + strategy backtest UIs.
+
+5. **Did you delete the old files?** Yes — old paths removed; `components/shared/status-badge.tsx` and dead files deleted.
+
+6. **Does the app still work?** `pnpm build` succeeded (Next.js 16.2.1, 139 static pages generated).
+
+---
+
+## Self-Evaluation Checklist (original prompts)
 
 1. **Can an agent find every shared component by looking in ONE folder?** Open `components/shared/index.ts` — is every shared component listed? If someone asks "where's the spinner?", is the answer always `components/shared/spinner.tsx`?
 

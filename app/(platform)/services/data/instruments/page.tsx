@@ -6,7 +6,7 @@
  */
 
 import { INSTRUMENTS_COLUMNS, getInstrumentsContextStats } from "@/components/data/instruments-finder-config";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import type { FinderSelections } from "@/components/shared/finder";
 import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";

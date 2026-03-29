@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { DataTableWidget, KpiStrip, type DataTableColumn, type KpiMetric } from "@/components/widgets/shared";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { DeFiRatesRow } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";

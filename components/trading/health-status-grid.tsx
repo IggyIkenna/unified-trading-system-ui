@@ -2,15 +2,8 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { StatusDot } from "./status-badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { StatusDot } from "@/components/shared/status-badge";
 
 type HealthStatus = "live" | "warning" | "critical" | "idle";
 
@@ -41,25 +34,14 @@ function formatFreshness(seconds: number): string {
   return `${Math.floor(seconds / 3600)}h`;
 }
 
-export function HealthStatusGrid({
-  services,
-  onServiceClick,
-  className,
-}: HealthStatusGridProps) {
+export function HealthStatusGrid({ services, onServiceClick, className }: HealthStatusGridProps) {
   return (
-    <div
-      className={cn(
-        "border border-border rounded-lg overflow-hidden",
-        className,
-      )}
-    >
+    <div className={cn("border border-border rounded-lg overflow-hidden", className)}>
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
             <TableHead className="font-semibold">Service</TableHead>
-            <TableHead className="font-semibold text-right">
-              Freshness
-            </TableHead>
+            <TableHead className="font-semibold text-right">Freshness</TableHead>
             <TableHead className="font-semibold text-right">SLA</TableHead>
             <TableHead className="font-semibold text-center">Status</TableHead>
           </TableRow>
@@ -67,8 +49,7 @@ export function HealthStatusGrid({
         <TableBody>
           {services.map((service) => {
             const status = getStatus(service.freshness, service.sla);
-            const isOverSLA =
-              service.freshness > service.sla && service.freshness > 0;
+            const isOverSLA = service.freshness > service.sla && service.freshness > 0;
 
             return (
               <TableRow
@@ -80,12 +61,7 @@ export function HealthStatusGrid({
                 onClick={() => onServiceClick?.(service.name)}
               >
                 <TableCell className="font-medium">{service.name}</TableCell>
-                <TableCell
-                  className={cn(
-                    "text-right font-mono tabular-nums",
-                    isOverSLA && "status-warning",
-                  )}
-                >
+                <TableCell className={cn("text-right font-mono tabular-nums", isOverSLA && "status-warning")}>
                   {formatFreshness(service.freshness)}
                 </TableCell>
                 <TableCell className="text-right font-mono tabular-nums text-muted-foreground">

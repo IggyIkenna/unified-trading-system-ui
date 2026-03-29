@@ -1,10 +1,10 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataFreshness } from "@/components/ui/data-freshness";
+import { DataFreshness } from "@/components/shared/data-freshness";
 import {
   DropdownMenu,
   DropdownMenuContent,

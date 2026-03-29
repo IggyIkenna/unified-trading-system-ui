@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, UserPlus, Mail, Shield, Briefcase, ChevronRight, ChevronDown, Lock } from "lucide-react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { useOnboardUser, usePermissionCatalogue } from "@/hooks/api/use-user-management";
 import type { ProvisioningRole } from "@/lib/types/user-management";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 /**
  * PipelineStatusView — Reusable ETL pipeline status component.
  * Used by Raw Data, Processing tabs (and future Build tab: Feature ETL, Model Training).

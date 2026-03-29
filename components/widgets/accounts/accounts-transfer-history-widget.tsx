@@ -1,8 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { Spinner } from "@/components/shared/spinner";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { TransferHistoryEntry } from "@/lib/types/accounts";
 import { cn } from "@/lib/utils";

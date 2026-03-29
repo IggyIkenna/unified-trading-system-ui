@@ -3,9 +3,9 @@
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData, MOCK_STRATEGIES } from "./risk-data-context";
-import { CollapsibleSection } from "../shared";
+import { CollapsibleSection } from "@/components/shared";
 import { PnLValue } from "@/components/trading/pnl-value";
-import { StatusBadge } from "@/components/trading/status-badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";

@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import type { CreateDeploymentResponse, GroupedShards, ShardPreviewInfo } from "@/lib/types/deployment";
 import { cn } from "@/lib/utils";
 import { Check, CheckCircle2, ChevronDown, ChevronUp, Clock, Copy, FolderOpen, Layers, Terminal } from "lucide-react";

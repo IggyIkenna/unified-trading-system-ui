@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DataTableWidget, type DataTableColumn } from "../shared";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
@@ -36,28 +36,30 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
     {
       key: "multiplier",
       label: "Multiplier",
-      accessor: (row) => `${row.multiplier}x`,
+      accessor: (row: StressRow) => `${row.multiplier}x`,
       align: "right",
       sortable: true,
     },
     {
       key: "pnlImpact",
       label: "P&L Impact",
-      accessor: (row) => <span className="text-rose-400 font-semibold">{formatCurrency(row.pnlImpact)}</span>,
+      accessor: (row: StressRow) => (
+        <span className="text-rose-400 font-semibold">{formatCurrency(row.pnlImpact)}</span>
+      ),
       align: "right",
       sortable: true,
     },
     {
       key: "varImpact",
       label: "VaR Impact",
-      accessor: (row) => formatCurrency(row.varImpact),
+      accessor: (row: StressRow) => formatCurrency(row.varImpact),
       align: "right",
       sortable: true,
     },
     {
       key: "positionsBreaching",
       label: "Breaches",
-      accessor: (row) => (
+      accessor: (row: StressRow) => (
         <Badge
           variant={row.positionsBreaching > 10 ? "destructive" : row.positionsBreaching > 5 ? "secondary" : "outline"}
         >
@@ -151,7 +153,7 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
         <DataTableWidget
           columns={columns}
           data={stressScenarios as unknown as StressRow[]}
-          rowKey={(row) => row.name}
+          rowKey={(row: StressRow) => row.name}
           compact
         />
       </div>

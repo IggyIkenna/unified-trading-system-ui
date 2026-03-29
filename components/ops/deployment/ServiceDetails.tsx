@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { ArrowRight, ArrowDown, AlertTriangle, Info, Calendar, List, Cloud, GitFork, AlertCircle } from "lucide-react";
 import { useServiceDimensions, useServiceDependencies } from "@/hooks/deployment/useServices";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";

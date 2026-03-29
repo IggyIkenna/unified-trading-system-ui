@@ -1,6 +1,6 @@
 "use client";
 
-import { KpiStrip, type KpiMetric } from "@/components/widgets/shared";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useInstructionsData } from "./instructions-data-context";
 import { formatNumber } from "@/lib/utils/formatters";

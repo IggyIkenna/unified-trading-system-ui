@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
-import { formatDateTime } from "@/lib/utils";
+import { Spinner } from "@/components/shared/spinner";
+import { formatDate } from "@/lib/utils/formatters";
 import {
   AlertCircle,
   Check,
@@ -135,11 +135,11 @@ export function DeploymentDetailsHeader() {
             {status.region && ` • ${status.region}`}
             {status.zone && ` (${status.zone})`}
             {" • "}
-            {formatDateTime(status.created_at || "")}
+            {formatDate(status.created_at || "", "long")}
             {status.updated_at && (
               <span className="text-[var(--color-text-muted)]" title="Status refreshes every few seconds">
                 {" • Updated "}
-                {formatDateTime(status.updated_at)}
+                {formatDate(status.updated_at, "long")}
               </span>
             )}
           </CardDescription>

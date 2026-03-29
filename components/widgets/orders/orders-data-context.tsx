@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { useAmendOrder, useCancelOrder, useOrders } from "@/hooks/api/use-orders";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getOrdersForScope } from "@/lib/mocks/fixtures/mock-data-index";

@@ -43,7 +43,7 @@ rg -l "StatusBadge" app/ components/ | wc -l
 rg -n "rounded-full.*bg-green|rounded-full.*bg-red|rounded-full.*bg-amber" app/ components/ --glob '*.tsx'
 
 # Spinner bypasses
-rg -l "from.*@/components/ui/spinner" app/ components/ | wc -l
+rg -l "from.*@/components/shared/spinner" app/ components/ | wc -l
 rg -l "Loader2" app/ components/ | wc -l
 rg -l "animate-spin" app/ components/ | wc -l
 
@@ -85,7 +85,7 @@ done
 
 Three things, equally important:
 
-1. **Create missing shared components and utilities** (PageHeader, nav helper, value formatters, PnL helper) that don't exist yet.
+1. **Create missing shared components and utilities** (nav helper, value formatters, PnL helper — `PageHeader` now lives in `components/shared/` per Task 13) where still absent.
 2. **Enforce universal adoption of existing shared components** (MetricCard, StatusBadge, Spinner, Tooltip, Skeleton, EmptyState, DataTable, **AlertRow**) — find every ad-hoc reimplementation and replace it with the shared version.
 3. **Enforce consistent value formatting and coloring** — every number, currency, percentage, and PnL value goes through shared formatters and uses design system color tokens.
 
@@ -102,16 +102,16 @@ Every component below is the ONLY way to render its pattern. Ad-hoc alternatives
 
 | Pattern | Shared Component | Location | Pre-Agent | Pass 1 (2026-03-29 AM) | Pass 2 (2026-03-29 PM verified) | Status |
 |---------|-----------------|----------|-----------|------------------------|--------------------------------|--------|
-| Page title | `PageHeader` | `components/platform/page-header.tsx` | 0, ~89 `<h1>` | 12 adopters, 90 `<h1>` | **79 adopters, 22 `<h1>`** (all `(public)` + 1 ops layout) | **DONE** |
+| Page title | `PageHeader` | `components/shared/page-header.tsx` | 0, ~89 `<h1>` | 12 adopters, 90 `<h1>` | **79 adopters, 22 `<h1>`** (all `(public)` + 1 ops layout) | **DONE** |
 | Metric/KPI | `MetricCard` | `components/shared/metric-card.tsx` | ~10, ~30 bypasses | 14 adopters, 151 bypasses | **17 adopters, 71 bypass regex hits** | **PARTIAL** |
-| Metric row | `KpiStrip` | `components/widgets/shared/kpi-strip.tsx` | 13 | 43 | **43** | **GOOD** |
-| Status | `StatusBadge` | `components/trading/status-badge.tsx` | 26, ~23 bypasses | 32, 42 bypasses | **47 adopters, 20 dots + 18 switches** | **PARTIAL** |
-| Spinner | `Spinner` | `components/ui/spinner.tsx` | 1, 51 bypasses | 55, 0 Loader2 | **59 adopters, 13 animate-spin** (icon motion) | **DONE** |
+| Metric row | `KpiStrip` | `components/shared/kpi-strip.tsx` | 13 | 43 | **43** | **GOOD** |
+| Status | `StatusBadge` | `components/shared/status-badge.tsx` | 26, ~23 bypasses | 32, 42 bypasses | **47 adopters, 20 dots + 18 switches** | **PARTIAL** |
+| Spinner | `Spinner` | `components/shared/spinner.tsx` | 1, 51 bypasses | 55, 0 Loader2 | **59 adopters, 13 animate-spin** (icon motion) | **DONE** |
 | Tooltip | `Tooltip` | `components/ui/tooltip.tsx` | 15, 69 `title=` | 24, 86 `title=` | **24 adopters, 115 `title=`** | **PARTIAL** — count grew |
-| FilterBar | `FilterBar` | `components/platform/filter-bar.tsx` | 30, 42 bypasses | — | — | not audited |
+| FilterBar | `FilterBar` | `components/shared/filter-bar.tsx` | 30, 42 bypasses | — | — | not audited |
 | Skeleton | `Skeleton` | `components/ui/skeleton.tsx` | 32, 34 bypasses | 34, 34 bypasses | **31 adopters, 32 animate-pulse** | **NOT DONE** |
-| EmptyState | `EmptyState` | `components/ui/empty-state.tsx` | 4, duplicates | 8, 3 inline | **8, 3 inline** | **MOSTLY DONE** |
-| DataTable | `DataTable` | `components/ui/data-table.tsx` | 9, 43 raw | 55, 60 raw | **55, 60 raw** | **PARTIAL** |
+| EmptyState | `EmptyState` | `components/shared/empty-state.tsx` | 4, duplicates | 8, 3 inline | **8, 3 inline** | **MOSTLY DONE** |
+| DataTable | `DataTable` | `components/shared/data-table.tsx` | 9, 43 raw | 55, 60 raw | **55, 60 raw** | **PARTIAL** |
 | Progress | `Progress` | `components/ui/progress.tsx` | 34 | — | — | not audited |
 | ExportButton | `ExportButton` | `components/ui/export-button.tsx` | 0 | — | — | not audited |
 | Separator | `Separator` | `components/ui/separator.tsx` | 20, 110 `border-b` | — | — | not audited |
@@ -119,12 +119,12 @@ Every component below is the ONLY way to render its pattern. Ad-hoc alternatives
 | `.toLocaleString` | (same module) | `lib/utils/formatters.ts` | 0, 102 files | 8 | **194 import, 100 `.toLocaleString()` remain** | **PARTIAL** |
 | PnL coloring | `pnlColorClass` | `lib/utils/pnl.ts` | 39 tokens only | 2 adopters | **2 adopters, 196 `text-emerald`, 99 `text-red`** | **NOT DONE** |
 | Nav helpers | `isServiceTabActive` | `lib/utils/nav-helpers.ts` | 0, 3 dupes | 2 consumers | **2 consumers** | **DONE** |
-| AlertRow | `AlertRow` | `components/platform/alert-row.tsx` | 3 | — | — | not audited |
+| AlertRow | `AlertRow` | `components/shared/alert-row.tsx` | 3 | — | — | not audited |
 | animate-spin | (Spinner) | — | ~51 external | 18 | **13 files** | **DONE** (exceptions are icon motion) |
 | Unused ui/ | — | `components/ui/*.tsx` | ~28 unused | 26 unused | **0 unused** (38 total, all imported) | **DONE** |
 
 
-`**AlertRow` pointer (2026-03-29):** Single component for stacked list rows: severity dot (via `StatusDot`; `info` added to `components/trading/status-badge.tsx`), optional unread marker, title / description / detail, absolute or relative `timestamp`, footer vs trailing icon actions, optional `end` column (e.g. actor + time). `**variant="inline"`** for bordered-bottom lists; `**variant="card"**` for bordered tiles (e.g. research alerts with Lucide `leading`). **Current adopters:** `app/(platform)/services/data/overview/page.tsx` (Alerts), `app/(platform)/services/data/gaps/page.tsx` (Recent Alerts), `app/(platform)/services/research/overview/page.tsx` (Alerts + Recent Activity). Prefer `AlertRow` for new UI; migrate other duplicate alert/activity rows when touching those files.
+`**AlertRow` pointer (2026-03-29):** Single component for stacked list rows: severity dot (via `StatusDot`; `info` added to `components/shared/status-badge.tsx`), optional unread marker, title / description / detail, absolute or relative `timestamp`, footer vs trailing icon actions, optional `end` column (e.g. actor + time). `**variant="inline"`** for bordered-bottom lists; `**variant="card"**` for bordered tiles (e.g. research alerts with Lucide `leading`). **Current adopters:** `app/(platform)/services/data/overview/page.tsx` (Alerts), `app/(platform)/services/data/gaps/page.tsx` (Recent Alerts), `app/(platform)/services/research/overview/page.tsx` (Alerts + Recent Activity). Prefer `AlertRow` for new UI; migrate other duplicate alert/activity rows when touching those files.
 
 ---
 
@@ -157,13 +157,13 @@ Then update `service-tabs.tsx` and `trading-vertical-nav.tsx` to use the shared 
 
 ---
 
-## Part 2 — Create `PageHeader` component
+## Part 2 — `PageHeader` component
 
 **Problem:** Ad-hoc `<h1>` elements across `app/` pages with inconsistent sizes, padding, layout.
 
 **Discovery:** `rg -n "<h1" app/ --glob '*.tsx' | wc -l`
 
-**Deliverable:** Create `components/platform/page-header.tsx` with `title`, `description`, `children` (actions slot), `className` props. Use `text-page-title` and `text-body` tokens. Migrate 10+ platform pages.
+**Deliverable:** `PageHeader` is implemented at `components/shared/page-header.tsx` (Task 13). Continue migrating remaining ad-hoc title stacks using `text-page-title` / `text-body` tokens. Prioritize platform pages; do not churn marketing `(public)` headings without need.
 
 **Do NOT migrate:** `app/(public)/` marketing pages or headings inside Cards (those are section titles).
 
@@ -209,11 +209,11 @@ rg -n "case.*live|case.*active|case.*paused|case.*error|case.*critical" app/ com
 **Discovery:**
 
 ```bash
-rg -l "from.*@/components/ui/spinner" app/ components/ | wc -l   # adopters
+rg -l "from.*@/components/shared/spinner" app/ components/ | wc -l   # adopters
 rg -l "Loader2" app/ components/ | wc -l   # bypasses
 ```
 
-**Deliverable:** Extend `Spinner` with size variants (sm/md/lg) if needed. Replace every `Loader2` + `animate-spin` with `<Spinner />`. After migration, `Loader2` only appears inside `spinner.tsx`.
+**Deliverable:** Extend `Spinner` with size variants (sm/md/lg) if needed. Replace every `Loader2` + `animate-spin` with `<Spinner />`. After migration, `Loader2` only appears inside `components/shared/spinner.tsx`.
 
 ---
 
@@ -249,7 +249,7 @@ rg -l "animate-pulse" app/ components/ | wc -l   # bypasses (that don't import S
 
 ## Part 8 — Consolidate `EmptyState`
 
-**Problem:** Two implementations exist: `components/ui/empty-state.tsx` (canonical) and `components/trading/sports/shared.tsx` (duplicate). Plus ~10 files with inline "No data" text.
+**Problem:** Two implementations exist: `components/shared/empty-state.tsx` (canonical) and `components/trading/sports/shared.tsx` (duplicate). Plus ~10 files with inline "No data" text.
 
 **Discovery:**
 
@@ -269,7 +269,7 @@ rg -n '"No data"|"No results"|"Nothing to"' app/ components/ --glob '*.tsx'  # i
 **Discovery:**
 
 ```bash
-rg -l "from.*@/components/ui/data-table|DataTable" app/ components/ | wc -l   # adopters
+rg -l "from.*@/components/shared/data-table|DataTable" app/ components/ | wc -l   # adopters
 rg -l "<table|<Table " app/ components/ --glob '*.tsx' | wc -l   # raw tables
 ```
 

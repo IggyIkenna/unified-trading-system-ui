@@ -4,7 +4,7 @@ import { HealthStatusGrid } from "@/components/trading/health-status-grid";
 import { PnLAttributionPanel } from "@/components/trading/pnl-attribution-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import type { WidgetComponentProps } from "../widget-registry";
 
 import { cn } from "@/lib/utils";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import * as React from "react";
 
 import { useAppAccess } from "@/hooks/use-app-access";

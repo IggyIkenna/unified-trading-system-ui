@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 
 import {
   useExperiments,
@@ -28,9 +28,9 @@ import {
 } from "@/hooks/api/use-ml-models";
 import type { Experiment, ModelFamily, FeatureSetVersion, DatasetSnapshot } from "@/lib/types/ml";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError } from "@/components/ui/api-error";
-import { EmptyState } from "@/components/ui/empty-state";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import type { ExportColumn } from "@/lib/utils/export";
 
 // ---------------------------------------------------------------------------

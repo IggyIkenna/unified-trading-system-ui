@@ -14,7 +14,7 @@ import {
   Archive,
 } from "lucide-react";
 import { useEpics, useEpicDetail } from "@/hooks/deployment/useEpics";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

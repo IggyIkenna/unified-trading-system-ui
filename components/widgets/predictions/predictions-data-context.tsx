@@ -6,7 +6,7 @@ import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import type { FilterDefinition } from "@/components/platform/filter-bar";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
 import type {
   PredictionMarket,
   MarketCategory,

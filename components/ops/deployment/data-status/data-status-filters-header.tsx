@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle } from "@/components/ui/card";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { Filter, RefreshCw, Trash2 } from "lucide-react";
 import { useDataStatusTabCtx } from "./data-status-context";
 

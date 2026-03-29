@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import * as api from "@/hooks/deployment/_api-stub";
 import { useHealth } from "@/hooks/deployment/useHealth";
 import { Activity, AlertCircle, CheckCircle2, Server, Trash2 } from "lucide-react";

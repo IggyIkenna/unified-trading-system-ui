@@ -29,7 +29,7 @@ Overall: the UI is **English-only by construction**, with **no message catalog**
 | 🔴 Critical | Entire product surface     | No i18n library; **574** TSX files under `app/` + `components/` alone                                                                     | Adopt a single strategy (e.g. `next-intl` for App Router) with namespaces per route group; externalize strings |
 | 🔴 Critical | Sports / predictions UX    | `getStatusLabel`, `fmtRelativeTime` — `components/trading/sports/helpers.ts`                                                              | Move strings to messages; use `Intl.RelativeTimeFormat` or `date-fns` with `locale`                            |
 | 🟡 High     | Research / execution lists | `formatDistanceToNow(…, { addSuffix: true })` without locale — e.g. `components/research/execution/execution-list-panel.tsx` **L128–130** | Pass `locale` from `date-fns/locale` tied to user locale                                                       |
-| 🟡 High     | Filter bar / calendars     | `format` from `date-fns` in `components/platform/filter-bar.tsx` **L33**; `components/ui/date-picker.tsx` **PPP** pattern                 | Same: locale-aware `format`; consider `Intl.DateTimeFormat` wrapper                                            |
+| 🟡 High     | Filter bar / calendars     | `format` from `date-fns` in `components/shared/filter-bar.tsx` **L33**; `components/ui/date-picker.tsx` **PPP** pattern                   | Same: locale-aware `format`; consider `Intl.DateTimeFormat` wrapper                                            |
 
 ### 2.2 Date/time formatting
 

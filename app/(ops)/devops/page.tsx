@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 /**
  * /devops — Deployment control center.
  * Tabbed interface with components ported from unified-trading-deployment-ui.

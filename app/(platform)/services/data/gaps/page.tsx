@@ -6,8 +6,8 @@
  */
 
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
-import { AlertRow } from "@/components/platform/alert-row";
-import { PageHeader } from "@/components/platform/page-header";
+import { AlertRow } from "@/components/shared/alert-row";
+import { PageHeader } from "@/components/shared/page-header";
 import { MetricCard } from "@/components/shared/metric-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

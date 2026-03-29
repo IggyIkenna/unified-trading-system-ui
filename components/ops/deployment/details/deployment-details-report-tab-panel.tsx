@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { TabsContent } from "@/components/ui/tabs";
 import { RefreshCw } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";

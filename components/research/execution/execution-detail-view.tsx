@@ -34,14 +34,28 @@ import { TradesAnalysisSection } from "@/components/research/trades-analysis-sec
 import { CapitalEfficiencySection } from "@/components/research/capital-efficiency-section";
 import { RunupsDrawdownsSection } from "@/components/research/runups-drawdowns-section";
 import { MonthlyReturnsHeatmap } from "@/components/research/monthly-returns-heatmap";
+import { MetricCard } from "@/components/shared/metric-card";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
-  MetricCard,
-  StatusBadge,
   TOOLTIP_STYLE,
   TICK_STYLE,
   ALGO_COLORS,
   downloadExecutionTradesCsv,
 } from "@/components/research/execution/status-helpers";
+
+function ExecSummaryMetric({ label, value, isGood }: { label: string; value: string; isGood?: boolean }) {
+  return (
+    <MetricCard
+      label={label}
+      primary={value}
+      primaryClassName={isGood === true ? "text-emerald-400" : isGood === false ? "text-red-400" : undefined}
+      variant="bordered"
+      tone="panel"
+      density="panelSm"
+      className="min-w-0"
+    />
+  );
+}
 
 // ─── Results View ───────────────────────────────────────────────────────────
 
@@ -147,10 +161,18 @@ function ResultsView({
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MetricCard label="Sortino Ratio" value={formatNumber(r.sortino_ratio, 2)} isGood={r.sortino_ratio > 2} />
-            <MetricCard label="Profit Factor" value={formatNumber(r.profit_factor, 2)} isGood={r.profit_factor > 1.5} />
-            <MetricCard label="Total Trades" value={r.total_trades.toString()} />
-            <MetricCard label="Avg Duration" value={`${formatNumber(r.avg_trade_duration_hours, 1)}h`} />
+            <ExecSummaryMetric
+              label="Sortino Ratio"
+              value={formatNumber(r.sortino_ratio, 2)}
+              isGood={r.sortino_ratio > 2}
+            />
+            <ExecSummaryMetric
+              label="Profit Factor"
+              value={formatNumber(r.profit_factor, 2)}
+              isGood={r.profit_factor > 1.5}
+            />
+            <ExecSummaryMetric label="Total Trades" value={r.total_trades.toString()} />
+            <ExecSummaryMetric label="Avg Duration" value={`${formatNumber(r.avg_trade_duration_hours, 1)}h`} />
           </div>
         </TabsContent>
 
@@ -282,32 +304,36 @@ function ResultsView({
         <TabsContent value="execution" className="space-y-4">
           {/* Summary stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MetricCard
+            <ExecSummaryMetric
               label="Avg Slippage"
               value={`${formatNumber(r.avg_slippage_bps, 1)} bps`}
               isGood={r.avg_slippage_bps < 3}
             />
-            <MetricCard
+            <ExecSummaryMetric
               label="Avg Fill Time"
               value={`${formatNumber(r.avg_fill_time_seconds, 1)}s`}
               isGood={r.avg_fill_time_seconds < 10}
             />
-            <MetricCard label="Fill Rate" value={formatPercent(r.fill_rate_pct, 1)} isGood={r.fill_rate_pct > 97} />
-            <MetricCard label="Maker %" value={formatPercent(r.maker_pct, 1)} isGood={r.maker_pct > 50} />
+            <ExecSummaryMetric
+              label="Fill Rate"
+              value={formatPercent(r.fill_rate_pct, 1)}
+              isGood={r.fill_rate_pct > 97}
+            />
+            <ExecSummaryMetric label="Maker %" value={formatPercent(r.maker_pct, 1)} isGood={r.maker_pct > 50} />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MetricCard
+            <ExecSummaryMetric
               label="Total Slippage Cost"
               value={`$${r.total_slippage_cost.toLocaleString()}`}
               isGood={false}
             />
-            <MetricCard
+            <ExecSummaryMetric
               label="Impl. Shortfall"
               value={`${formatNumber(r.implementation_shortfall_bps, 1)} bps`}
               isGood={r.implementation_shortfall_bps < 3}
             />
-            <MetricCard label="Commission" value={`$${r.total_commission.toLocaleString()}`} />
-            <MetricCard
+            <ExecSummaryMetric label="Commission" value={`$${r.total_commission.toLocaleString()}`} />
+            <ExecSummaryMetric
               label="Partial Fill %"
               value={formatPercent(r.partial_fill_pct, 1)}
               isGood={r.partial_fill_pct < 15}

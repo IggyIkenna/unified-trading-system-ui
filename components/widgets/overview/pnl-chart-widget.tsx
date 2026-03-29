@@ -4,7 +4,7 @@ import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel";
 import { LiveBatchComparison } from "@/components/trading/live-batch-comparison";
 import { ValueFormatToggle, useValueFormat } from "@/components/trading/value-format-toggle";
 import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { ChevronDown, ChevronUp, Database, Radio } from "lucide-react";

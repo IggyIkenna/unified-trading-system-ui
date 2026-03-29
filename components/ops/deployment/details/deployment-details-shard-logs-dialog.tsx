@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import { RefreshCw, Terminal } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";

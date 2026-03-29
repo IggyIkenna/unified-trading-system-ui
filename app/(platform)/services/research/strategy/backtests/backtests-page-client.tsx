@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import {
   Dialog,
   DialogContent,
@@ -34,12 +34,12 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { StrategyWizard } from "@/components/research/strategy-wizard";
 import { CandidateBasket, useCandidateBasket } from "@/components/platform/candidate-basket";
-import { ApiError } from "@/components/ui/api-error";
-import { EmptyState } from "@/components/ui/empty-state";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCreateBacktest, useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies";
 import { newOptimisticBacktestIds } from "@/lib/demo-ids";

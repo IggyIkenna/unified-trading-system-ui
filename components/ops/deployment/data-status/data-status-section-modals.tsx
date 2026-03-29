@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import { AlertCircle, AlertTriangle, CheckCircle, CheckCircle2, FileText, Rocket, XCircle } from "lucide-react";
 import { useDataStatusTabCtx } from "./data-status-context";

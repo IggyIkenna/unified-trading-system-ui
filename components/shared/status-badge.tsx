@@ -13,6 +13,8 @@ type StatusType =
   | "pending"
   | "running"
   | "done"
+  /** Execution / backtest complete (alias for done-style success) */
+  | "complete"
   | "failed"
   | "idle"
   | "staging"
@@ -22,7 +24,11 @@ type StatusType =
   /** Batch / secondary series (e.g. live vs batch chart legend) */
   | "batch"
   /** Unread / attention marker (e.g. notification rows) */
-  | "unread";
+  | "unread"
+  /** Strategy / backtest queue states */
+  | "queued"
+  | "completed"
+  | "cancelled";
 
 interface StatusBadgeProps {
   status?: StatusType | string | null | undefined;
@@ -82,6 +88,12 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
     bgColor: "rgba(74, 222, 128, 0.1)",
     dotColor: "var(--status-live)",
   },
+  complete: {
+    label: "Complete",
+    color: "var(--status-live)",
+    bgColor: "rgba(74, 222, 128, 0.1)",
+    dotColor: "var(--status-live)",
+  },
   failed: {
     label: "Failed",
     color: "var(--status-critical)",
@@ -135,6 +147,24 @@ const statusConfig: Record<string, { label: string; color: string; bgColor: stri
     color: "var(--primary)",
     bgColor: "color-mix(in oklab, var(--primary) 12%, transparent)",
     dotColor: "var(--primary)",
+  },
+  queued: {
+    label: "Queued",
+    color: "var(--muted-foreground)",
+    bgColor: "rgba(161, 161, 170, 0.1)",
+    dotColor: "var(--muted-foreground)",
+  },
+  completed: {
+    label: "Completed",
+    color: "var(--status-live)",
+    bgColor: "rgba(74, 222, 128, 0.1)",
+    dotColor: "var(--status-live)",
+  },
+  cancelled: {
+    label: "Cancelled",
+    color: "var(--muted-foreground)",
+    bgColor: "rgba(161, 161, 170, 0.1)",
+    dotColor: "var(--muted-foreground)",
   },
 };
 

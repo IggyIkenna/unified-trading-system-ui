@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { KpiStrip, CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { KpiStrip } from "@/components/shared/kpi-strip";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";

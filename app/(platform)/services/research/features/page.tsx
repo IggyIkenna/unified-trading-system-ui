@@ -12,7 +12,7 @@
  *   └──────────┴──────────┴──────────┴────────────────┴──────────────┘
  */
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { CatStatusBadge } from "@/components/research/features/cat-status-badge";
 import { EditConfigDialog } from "@/components/research/features/edit-config-dialog";
 import { FeatureDetailPanel } from "@/components/research/features/feature-detail-panel";

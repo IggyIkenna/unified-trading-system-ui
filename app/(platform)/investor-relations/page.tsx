@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Shield, Presentation, ShieldAlert, ArrowRight } from "lucide-react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 

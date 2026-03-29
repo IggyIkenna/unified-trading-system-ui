@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { BacktestRun, StrategySignal } from "@/lib/types/strategy-platform";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Star } from "lucide-react";
-import { StatusBadge } from "./status-helpers";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Backtest List Item ───────────────────────────────────────────────────────

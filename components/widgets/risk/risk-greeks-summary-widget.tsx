@@ -2,8 +2,7 @@
 
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData } from "./risk-data-context";
-import { CollapsibleSection } from "../shared";
-import { KpiStrip, type KpiMetric } from "../shared";
+import { CollapsibleSection, KpiStrip, type KpiMetric } from "@/components/shared";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ResponsiveContainer,

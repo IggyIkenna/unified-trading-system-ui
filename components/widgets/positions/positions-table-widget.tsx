@@ -1,12 +1,12 @@
 "use client";
 
-import { FilterBar } from "@/components/platform/filter-bar";
+import { FilterBar } from "@/components/shared/filter-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataFreshness } from "@/components/ui/data-freshness";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
-import { Spinner } from "@/components/ui/spinner";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { DataFreshness } from "@/components/shared/data-freshness";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { Spinner } from "@/components/shared/spinner";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
