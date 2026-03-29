@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { use } from "react";
+import { PageHeader } from "@/components/platform/page-header";
 import { StatusBadge } from "@/components/trading/status-badge";
 import { PnLValue } from "@/components/trading/pnl-value";
 import { SparklineCell } from "@/components/trading/kpi-card";
@@ -49,6 +50,7 @@ import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { MODEL_STRATEGY_MAP } from "./components/strategy-detail-constants";
 import { StrategyDetailTabPanels } from "./components/strategy-detail-tab-panels";
 import { StrategyDetailArchetypePanel } from "./components/strategy-detail-archetype-panel";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function StrategyDetailPageClient({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -130,140 +132,136 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
   return (
     <div className="p-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-semibold">{strategy.name}</h1>
+        <PageHeader
+          title={
+            <span className="flex flex-wrap items-center gap-3">
+              {strategy.name}
               <StatusBadge status={strategy.status} />
               <Badge variant="outline" className="font-mono text-xs">
                 {strategy.version}
               </Badge>
               <ExecutionModeIndicator />
-            </div>
-            <p className="text-sm text-muted-foreground max-w-2xl">{strategy.description}</p>
-
-            {/* Instance Identity Panel - Operational metadata per critique 1.1 */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Strategy ID (structured) */}
-              <Badge variant="outline" className="font-mono text-[10px] bg-muted/30">
-                {strategy.strategyIdPattern}
-              </Badge>
-              {/* Config Version */}
-              <Badge variant="outline" className="text-[10px]">
-                v{strategy.version}
-              </Badge>
-              {/* Runtime Mode */}
-              <Badge
-                variant="outline"
-                className={cn(
-                  "text-[10px]",
-                  isLive
-                    ? "border-[var(--status-live)] text-[var(--status-live)]"
-                    : "border-[var(--surface-markets)] text-[var(--surface-markets)]",
-                )}
-              >
-                {isLive ? "LIVE" : "BATCH"}
-              </Badge>
-              {/* Data Mode */}
-              <Badge variant="outline" className="text-[10px]">
-                {isLive ? "REAL" : "HISTORICAL"}
-              </Badge>
-              {/* Testing Stage (current) */}
-              <Badge
-                variant="outline"
-                className={cn(
-                  "text-[10px]",
-                  strategy.status === "live"
-                    ? "border-[var(--status-live)] text-[var(--status-live)]"
-                    : "border-[var(--status-warning)] text-[var(--status-warning)]",
-                )}
-              >
-                {strategy.status === "live" ? "LIVE_REAL" : strategy.status === "warning" ? "STAGING" : "LIVE_TESTNET"}
-              </Badge>
-              {/* Environment */}
-              <Badge variant="secondary" className="text-[10px]">
-                PROD
-              </Badge>
-            </div>
-
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <span
-                  className="size-2 rounded-full"
-                  style={{
-                    backgroundColor:
-                      strategy.assetClass === "DeFi"
-                        ? "#4ade80"
-                        : strategy.assetClass === "CeFi"
-                          ? "#60a5fa"
-                          : strategy.assetClass === "TradFi"
-                            ? "#a78bfa"
-                            : strategy.assetClass === "Sports"
-                              ? "#f59e0b"
-                              : "#ec4899",
-                  }}
-                />
-                {strategy.assetClass}
-              </span>
-              <span>{strategy.strategyType}</span>
-              {/* Execution Mode Tag (SCE/HUF/EVT) */}
-              <Badge variant="outline" className="text-[10px] font-mono">
-                {strategy.dataArchitecture.executionMode === "same_candle_exit"
-                  ? "SCE"
-                  : strategy.dataArchitecture.executionMode === "hold_until_flip"
-                    ? "HUF"
-                    : "EVT"}
-              </Badge>
-              {strategy.deployedAt && (
-                <span className="flex items-center gap-1">
-                  <Clock className="size-3.5" />
-                  Deployed {strategy.deployedAt}
+            </span>
+          }
+          description={
+            <div className="space-y-2">
+              <p className="max-w-2xl text-sm text-muted-foreground">{strategy.description}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline" className="bg-muted/30 font-mono text-[10px]">
+                  {strategy.strategyIdPattern}
+                </Badge>
+                <Badge variant="outline" className="text-[10px]">
+                  v{strategy.version}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-[10px]",
+                    isLive
+                      ? "border-[var(--status-live)] text-[var(--status-live)]"
+                      : "border-[var(--surface-markets)] text-[var(--surface-markets)]",
+                  )}
+                >
+                  {isLive ? "LIVE" : "BATCH"}
+                </Badge>
+                <Badge variant="outline" className="text-[10px]">
+                  {isLive ? "REAL" : "HISTORICAL"}
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-[10px]",
+                    strategy.status === "live"
+                      ? "border-[var(--status-live)] text-[var(--status-live)]"
+                      : "border-[var(--status-warning)] text-[var(--status-warning)]",
+                  )}
+                >
+                  {strategy.status === "live"
+                    ? "LIVE_REAL"
+                    : strategy.status === "warning"
+                      ? "STAGING"
+                      : "LIVE_TESTNET"}
+                </Badge>
+                <Badge variant="secondary" className="text-[10px]">
+                  PROD
+                </Badge>
+              </div>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="size-2 rounded-full"
+                    style={{
+                      backgroundColor:
+                        strategy.assetClass === "DeFi"
+                          ? "#4ade80"
+                          : strategy.assetClass === "CeFi"
+                            ? "#60a5fa"
+                            : strategy.assetClass === "TradFi"
+                              ? "#a78bfa"
+                              : strategy.assetClass === "Sports"
+                                ? "#f59e0b"
+                                : "#ec4899",
+                    }}
+                  />
+                  {strategy.assetClass}
                 </span>
-              )}
+                <span>{strategy.strategyType}</span>
+                <Badge variant="outline" className="font-mono text-[10px]">
+                  {strategy.dataArchitecture.executionMode === "same_candle_exit"
+                    ? "SCE"
+                    : strategy.dataArchitecture.executionMode === "hold_until_flip"
+                      ? "HUF"
+                      : "EVT"}
+                </Badge>
+                {strategy.deployedAt && (
+                  <span className="flex items-center gap-1">
+                    <Clock className="size-3.5" />
+                    Deployed {strategy.deployedAt}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <ExecutionModeToggle size="sm" />
-            {strategy.status === "live" ? (
+          }
+        >
+          <ExecutionModeToggle size="sm" />
+          {strategy.status === "live" ? (
+            <Button variant="outline" size="sm" className="gap-2">
+              <Pause className="size-4" />
+              Pause
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-2">
+              <Play className="size-4" />
+              Resume
+            </Button>
+          )}
+          <PromoteFlowModal
+            strategyId={strategy.id}
+            strategyName={strategy.name}
+            currentStage={strategy.status === "live" ? "LIVE_REAL" : "STAGING"}
+            onPromote={async () => {
+              console.log("Promoting strategy:", strategy.id);
+            }}
+            trigger={
               <Button variant="outline" size="sm" className="gap-2">
-                <Pause className="size-4" />
-                Pause
+                <Rocket className="size-4" />
+                Promote
               </Button>
-            ) : (
-              <Button variant="outline" size="sm" className="gap-2">
-                <Play className="size-4" />
-                Resume
-              </Button>
-            )}
-            <PromoteFlowModal
-              strategyId={strategy.id}
-              strategyName={strategy.name}
-              currentStage={strategy.status === "live" ? "LIVE_REAL" : "STAGING"}
-              onPromote={async () => {
-                console.log("Promoting strategy:", strategy.id);
-              }}
-              trigger={
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Rocket className="size-4" />
-                  Promote
-                </Button>
-              }
-            />
-            <Link href={`/config/strategies/${id}`}>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Settings className="size-4" />
-                Config
-              </Button>
-            </Link>
-            <Link href={`/positions?strategy_id=${id}`}>
-              <Button size="sm" className="gap-2">
-                <Activity className="size-4" />
-                View Positions
-              </Button>
-            </Link>
-          </div>
-        </div>
+            }
+          />
+          <Link href={`/config/strategies/${id}`}>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Settings className="size-4" />
+              Config
+            </Button>
+          </Link>
+          <Link href={`/positions?strategy_id=${id}`}>
+            <Button size="sm" className="gap-2">
+              <Activity className="size-4" />
+              View Positions
+            </Button>
+          </Link>
+        </PageHeader>
 
         {/* ML Model Link - show if strategy has ML model */}
         {mlModel && (
@@ -296,7 +294,7 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
           <Card className="bg-card/50">
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground mb-1">Sharpe</div>
-              <div className="text-2xl font-semibold font-mono">{strategy.performance.sharpe.toFixed(2)}</div>
+              <div className="text-2xl font-semibold font-mono">{formatNumber(strategy.performance.sharpe, 2)}</div>
             </CardContent>
           </Card>
           <Card className="bg-card/50">
@@ -309,7 +307,7 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
                 )}
               >
                 {strategy.performance.returnPct >= 0 ? "+" : ""}
-                {strategy.performance.returnPct.toFixed(1)}%
+                {formatPercent(strategy.performance.returnPct, 1)}
               </div>
             </CardContent>
           </Card>
@@ -317,7 +315,7 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground mb-1">Max Drawdown</div>
               <div className="text-2xl font-semibold font-mono text-muted-foreground">
-                {strategy.performance.maxDrawdown.toFixed(1)}%
+                {formatPercent(strategy.performance.maxDrawdown, 1)}
               </div>
             </CardContent>
           </Card>

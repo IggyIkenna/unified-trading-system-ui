@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { CollapsibleSection } from "../shared";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function RiskMarginWidget(_props: WidgetComponentProps) {
   const { sortedLimits, hfTimeSeries, distanceToLiquidation } = useRiskData();
@@ -105,7 +106,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                       borderRadius: "8px",
                       fontSize: "10px",
                     }}
-                    formatter={(value: number) => [value.toFixed(2), "HF"]}
+                    formatter={(value: number) => [formatNumber(value, 2), "HF"]}
                   />
                   <ReferenceLine y={1.0} stroke="var(--destructive)" strokeDasharray="5 5" />
                   <ReferenceLine y={1.5} stroke="var(--warning)" strokeDasharray="5 5" />
@@ -156,7 +157,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                             "bg-amber-500/20 text-amber-400",
                         )}
                       >
-                        {(row.distToLiq as number).toFixed(1)}%
+                        {formatPercent(row.distToLiq as number, 1)}
                       </Badge>
                     </TableCell>
                     <TableCell>

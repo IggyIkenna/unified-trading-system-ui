@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,7 +97,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
   // Sync price when instrument changes
   React.useEffect(() => {
     if (instrument) {
-      setPrice(instrument.price.toFixed(2));
+      setPrice(formatNumber(instrument.price, 2));
     }
   }, [instrument]);
 
@@ -187,7 +188,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                       )}
                     >
                       {netDelta >= 0 ? "+" : ""}
-                      {netDelta.toFixed(3)}
+                      {formatNumber(netDelta, 3)}
                     </p>
                   </div>
                 </TooltipTrigger>
@@ -201,7 +202,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                 <TooltipTrigger asChild>
                   <div>
                     <p className="text-[10px] text-muted-foreground">&Gamma;</p>
-                    <p className="font-mono text-xs font-medium">{netGamma.toFixed(4)}</p>
+                    <p className="font-mono text-xs font-medium">{formatNumber(netGamma, 4)}</p>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -214,7 +215,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                 <TooltipTrigger asChild>
                   <div>
                     <p className="text-[10px] text-muted-foreground">&nu;</p>
-                    <p className="font-mono text-xs font-medium">{netVega.toFixed(3)}</p>
+                    <p className="font-mono text-xs font-medium">{formatNumber(netVega, 3)}</p>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -227,7 +228,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                 <TooltipTrigger asChild>
                   <div>
                     <p className="text-[10px] text-muted-foreground">&Theta;</p>
-                    <p className="font-mono text-xs font-medium">{netTheta.toFixed(1)}</p>
+                    <p className="font-mono text-xs font-medium">{formatNumber(netTheta, 1)}</p>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -325,7 +326,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
             <span className="text-muted-foreground">Bid</span>
             <span className="font-mono font-medium text-emerald-400">
               {instrument.spreadBid !== undefined
-                ? `${instrument.spreadBid >= 0 ? "+" : ""}${instrument.spreadBid.toFixed(2)}`
+                ? `${instrument.spreadBid >= 0 ? "+" : ""}${formatNumber(instrument.spreadBid, 2)}`
                 : "--"}
             </span>
           </div>
@@ -333,7 +334,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
             <span className="text-muted-foreground">Ask</span>
             <span className="font-mono font-medium">
               {instrument.spreadAsk !== undefined
-                ? `${instrument.spreadAsk >= 0 ? "+" : ""}${instrument.spreadAsk.toFixed(2)}`
+                ? `${instrument.spreadAsk >= 0 ? "+" : ""}${formatNumber(instrument.spreadAsk, 2)}`
                 : "--"}
             </span>
           </div>
@@ -513,7 +514,9 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
         <>
           <div className="space-y-1.5">
             <label className="text-xs text-muted-foreground">Implied Volatility</label>
-            <div className="p-2 rounded-md border bg-muted/30 font-mono text-sm">{instrument.iv?.toFixed(1)}%</div>
+            <div className="p-2 rounded-md border bg-muted/30 font-mono text-sm">
+              {instrument.iv != null ? formatPercent(instrument.iv, 1) : "—"}
+            </div>
           </div>
           <div className="p-3 rounded-lg border bg-muted/30">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Greeks</p>
@@ -523,7 +526,9 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                   <TooltipTrigger asChild>
                     <div>
                       <p className="text-[10px] text-muted-foreground">&Delta;</p>
-                      <p className="font-mono text-xs font-medium">{instrument.delta?.toFixed(3)}</p>
+                      <p className="font-mono text-xs font-medium">
+                        {instrument.delta != null ? formatNumber(instrument.delta, 3) : "—"}
+                      </p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -536,7 +541,9 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                   <TooltipTrigger asChild>
                     <div>
                       <p className="text-[10px] text-muted-foreground">&Gamma;</p>
-                      <p className="font-mono text-xs font-medium">{instrument.gamma?.toFixed(4)}</p>
+                      <p className="font-mono text-xs font-medium">
+                        {instrument.gamma != null ? formatNumber(instrument.gamma, 4) : "—"}
+                      </p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -549,7 +556,9 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                   <TooltipTrigger asChild>
                     <div>
                       <p className="text-[10px] text-muted-foreground">&Theta;</p>
-                      <p className="font-mono text-xs font-medium">{instrument.theta?.toFixed(1)}</p>
+                      <p className="font-mono text-xs font-medium">
+                        {instrument.theta != null ? formatNumber(instrument.theta, 1) : "—"}
+                      </p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -562,7 +571,9 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
                   <TooltipTrigger asChild>
                     <div>
                       <p className="text-[10px] text-muted-foreground">&nu;</p>
-                      <p className="font-mono text-xs font-medium">{instrument.vega?.toFixed(3)}</p>
+                      <p className="font-mono text-xs font-medium">
+                        {instrument.vega != null ? formatNumber(instrument.vega, 3) : "—"}
+                      </p>
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -602,7 +613,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Distance</span>
                 <span className="font-mono text-muted-foreground">
-                  {((Math.abs(priceNum - liqPrice) / priceNum) * 100).toFixed(1)}%
+                  {formatPercent((Math.abs(priceNum - liqPrice) / priceNum) * 100, 1)}
                 </span>
               </div>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/platform/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { CheckCircle2, Clock, AlertTriangle, Receipt, RefreshCw, FileText, ArrowDownCircle } from "lucide-react";
 import { useSettlements } from "@/hooks/api/use-reports";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { formatNumber } from "@/lib/utils/formatters";
 
 type SettlementStatus = "pending" | "matched" | "disputed" | "settled";
 type Side = "buy" | "sell";
@@ -299,8 +301,8 @@ function normalizeSettlementRow(row: unknown): Settlement {
 function formatAmount(amount: number | undefined | null): string {
   const n = typeof amount === "number" && Number.isFinite(amount) ? amount : 0;
   if (n >= 10000) return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  if (n >= 1) return `$${n.toFixed(2)}`;
-  return `$${n.toFixed(4)}`;
+  if (n >= 1) return `$${formatNumber(n, 2)}`;
+  return `$${formatNumber(n, 4)}`;
 }
 
 function statusBadge(status: SettlementStatus) {
@@ -518,22 +520,30 @@ export default function SettlementPage() {
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* Header */}
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Settlement Status</h1>
-          <p className="text-sm text-muted-foreground">
-            Trade settlement tracking, matching, and dispute resolution
-          </p>
-          <p className="text-[10px] text-muted-foreground/60 font-mono">
-            {rawSettlements.length} records &middot; Last updated {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-          </p>
-        </div>
+        <PageHeader
+          title="Settlement Status"
+          description={
+            <>
+              <p>Trade settlement tracking, matching, and dispute resolution</p>
+              <p className="text-[10px] text-muted-foreground/60 font-mono">
+                {rawSettlements.length} records &middot; Last updated{" "}
+                {new Date().toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            </>
+          }
+        />
 
         {/* Summary — premium institutional KPI cards */}
         <div className="grid grid-cols-4 gap-4">
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Settlements</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Total Settlements
+              </p>
               <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{totalCount}</p>
               <p className="text-[10px] text-muted-foreground/60">Across {venues.length} venues</p>
             </CardContent>
@@ -541,21 +551,27 @@ export default function SettlementPage() {
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Pending</p>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-warning)]">{pendingCount}</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-warning)]">
+                {pendingCount}
+              </p>
               <p className="text-[10px] text-muted-foreground/60">Awaiting confirmation</p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Matched</p>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-live)]">{matchedCount}</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-live)]">
+                {matchedCount}
+              </p>
               <p className="text-[10px] text-muted-foreground/60">Successfully reconciled</p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Disputed</p>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-destructive">{disputedCount}</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-destructive">
+                {disputedCount}
+              </p>
               <p className="text-[10px] text-muted-foreground/60">Requires investigation</p>
             </CardContent>
           </Card>

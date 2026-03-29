@@ -28,6 +28,7 @@ import {
   MOCK_RECENT_FILLS,
 } from "@/components/trading/predictions/mock-data";
 import { calcArbStakes } from "@/components/trading/predictions/helpers";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export interface RecentFill {
   id: string;
@@ -161,7 +162,15 @@ function computeFilteredMarkets(
 export function PredictionsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
   const { scope: globalScope } = useGlobalScope();
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
   const { toast } = useToast();
 
   const markets = MOCK_MARKETS;
@@ -378,7 +387,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
       setRecentFills((prev) => [fill, ...prev]);
       toast({
         title: "Position opened",
-        description: `${params.side.toUpperCase()} ${outcome.name} — $${stake.toFixed(2)} @ ${(price * 100).toFixed(0)}¢ (${order.id})`,
+        description: `${params.side.toUpperCase()} ${outcome.name} — $${formatNumber(stake, 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
       });
     },
     [markets, toast],
@@ -408,7 +417,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
       );
       toast({
         title: "Arb executed",
-        description: `${arb.question} — ${arb.arbPct.toFixed(2)}% locked in`,
+        description: `${arb.question} — ${formatPercent(arb.arbPct, 2)} locked in`,
       });
     },
     [arbs, toast],

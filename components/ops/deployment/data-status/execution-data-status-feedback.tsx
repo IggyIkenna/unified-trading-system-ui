@@ -1,10 +1,11 @@
 "use client";
 
-import { FolderOpen, Loader2, AlertCircle } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useExecutionDataStatusContext } from "@/components/ops/deployment/data-status/execution-data-status-context";
 import { inferCloudProvider } from "@/components/ops/deployment/data-status/execution-data-status-utils";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { AlertCircle, FolderOpen } from "lucide-react";
 
 export function ExecutionDataStatusLoadingCard() {
   const { loading, cloudConfigPath } = useExecutionDataStatusContext();
@@ -15,7 +16,7 @@ export function ExecutionDataStatusLoadingCard() {
     <Card>
       <CardContent className="py-12">
         <div className="flex flex-col items-center justify-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-[var(--color-accent-cyan)]" />
+          <Spinner size="lg" className="h-8 w-8 text-[var(--color-accent-cyan)]" />
           <p className="text-sm text-[var(--color-text-muted)]">Checking execution results against configs...</p>
           <div className="flex items-center gap-2">
             {cloudConfigPath && inferCloudProvider(cloudConfigPath) && (

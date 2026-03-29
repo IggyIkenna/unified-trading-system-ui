@@ -1,19 +1,10 @@
 "use client";
 
-import {
-  CheckCircle2,
-  CheckSquare,
-  Clock,
-  FileText,
-  Loader2,
-  RotateCcw,
-  Square,
-  StopCircle,
-  XCircle,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 import type { ShardEvent } from "@/lib/types/deployment";
+import { cn } from "@/lib/utils";
+import { CheckCircle2, CheckSquare, Clock, FileText, RotateCcw, Square, StopCircle, XCircle } from "lucide-react";
 import type { ShardDetail } from "./deployment-details-types";
 
 interface ShardRowProps {
@@ -139,7 +130,7 @@ export function ShardRow({
       case "succeeded":
         return <CheckCircle2 className="h-4 w-4 text-[var(--color-accent-green)]" />;
       case "running":
-        return <Loader2 className="h-4 w-4 text-[var(--color-accent-cyan)] animate-spin" />;
+        return <Spinner className="h-4 w-4 text-[var(--color-accent-cyan)]" />;
       case "failed":
         return <XCircle className="h-4 w-4 text-[var(--color-accent-red)]" />;
       case "pending":
@@ -293,7 +284,7 @@ export function ShardRow({
           title="Cancel this shard"
         >
           {cancelling ? (
-            <Loader2 className="h-3 w-3 animate-spin" />
+            <Spinner size="sm" className="h-3 w-3" />
           ) : (
             <StopCircle className="h-3 w-3 text-[var(--color-accent-red)]" />
           )}

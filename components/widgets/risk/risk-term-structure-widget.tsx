@@ -12,6 +12,7 @@ import {
   Tooltip as RechartsTooltip,
   Legend,
 } from "recharts";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function RiskTermStructureWidget(_props: WidgetComponentProps) {
   const { termStructureData } = useRiskData();
@@ -34,7 +35,7 @@ export function RiskTermStructureWidget(_props: WidgetComponentProps) {
             <YAxis
               stroke="var(--muted-foreground)"
               fontSize={9}
-              tickFormatter={(v) => `$${((v as number) / 1_000_000).toFixed(1)}M`}
+              tickFormatter={(v) => `$${formatNumber((v as number) / 1_000_000, 1)}M`}
             />
             <RechartsTooltip
               contentStyle={{

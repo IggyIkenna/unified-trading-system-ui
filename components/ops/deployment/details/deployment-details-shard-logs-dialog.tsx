@@ -1,45 +1,10 @@
 "use client";
 
-import {
-  X,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Clock,
-  AlertCircle,
-  Terminal,
-  ChevronDown,
-  ChevronUp,
-  RotateCcw,
-  StopCircle,
-  Play,
-  Square,
-  CheckSquare,
-  Edit2,
-  Check,
-  Tag,
-  List,
-  Layers,
-  ChevronRight,
-  FolderOpen,
-  Folder,
-  GitCommit,
-  FileText,
-  Search,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn, formatDateTime } from "@/lib/utils";
-import { VM_EVENT_TYPES } from "@/lib/types/deployment";
-import { StatBox } from "./stat-box";
-import { ShardRow } from "./shard-row";
-import { DeploymentStatusBadge } from "./deployment-status-badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
+import { RefreshCw, Terminal } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
 
 export function DeploymentDetailsShardLogsDialog() {
@@ -139,7 +104,7 @@ export function DeploymentDetailsShardLogsDialog() {
           <div>
             {shardLogsLoading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-[var(--color-accent-cyan)]" />
+                <Spinner className="h-6 w-6 text-[var(--color-accent-cyan)]" />
                 <span className="ml-2 text-sm text-[var(--color-text-muted)]">Loading logs...</span>
               </div>
             ) : shardLogs.length === 0 ? (
@@ -198,11 +163,7 @@ export function DeploymentDetailsShardLogsDialog() {
                   onClick={() => fetchShardLogs(selectedShardForLogs.shard_id)}
                   disabled={shardLogsLoading}
                 >
-                  {shardLogsLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 mr-1" />
-                  )}
+                  {shardLogsLoading ? <Spinner className="h-4 w-4 mr-1" /> : <RefreshCw className="h-4 w-4 mr-1" />}
                   Refresh
                 </Button>
               </div>

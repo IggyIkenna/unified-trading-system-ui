@@ -85,6 +85,7 @@ import {
   SPOT_STEPS,
   VOL_STEPS,
 } from "@/lib/mocks/fixtures/options-futures-mock";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------- Scenario Analysis Tab ----------
 
@@ -252,11 +253,13 @@ export function ScenarioTab({
           <CardContent className="px-4 pb-3 space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Spot →</span>
-              <span className="font-mono">{isCrypto ? formatUsd(scenarioSpot) : `$${scenarioSpot.toFixed(2)}`}</span>
+              <span className="font-mono">
+                {isCrypto ? formatUsd(scenarioSpot) : `$${formatNumber(scenarioSpot, 2)}`}
+              </span>
             </div>
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">IV →</span>
-              <span className="font-mono">{scenarioIv.toFixed(1)}%</span>
+              <span className="font-mono">{formatPercent(scenarioIv, 1)}</span>
             </div>
             <Separator />
             <div className="flex justify-between text-sm font-semibold">
@@ -313,7 +316,9 @@ export function ScenarioTab({
                           : "bg-red-900/30 text-red-400";
                     return (
                       <td key={vi} className={cn("text-center px-2 py-0.5 font-mono rounded-sm", cellClass)}>
-                        {viewMode === "pnl" ? `${val >= 0 ? "+" : ""}${(val / 1000).toFixed(1)}k` : val.toFixed(0)}
+                        {viewMode === "pnl"
+                          ? `${val >= 0 ? "+" : ""}${formatNumber(val / 1000, 1)}k`
+                          : formatNumber(val, 0)}
                       </td>
                     );
                   })}
@@ -343,7 +348,7 @@ export function ScenarioTab({
           },
           {
             label: "Break-even Spot",
-            value: `±${(Math.abs(liqThreshold) / (notional * 0.003)).toFixed(1)}%`,
+            value: `±${formatPercent(Math.abs(liqThreshold) / (notional * 0.003), 1)}`,
             color: "text-foreground",
           },
           {

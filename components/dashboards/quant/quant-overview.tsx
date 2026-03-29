@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import type { BacktestRun } from "./quant-types";
 import { initialBacktestRuns, mlTrainingJobs } from "./quant-data";
 import { getStatusIcon } from "./quant-utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function QuantOverview() {
   const [backtestRuns, setBacktestRuns] = React.useState<BacktestRun[]>(initialBacktestRuns);
@@ -33,10 +34,11 @@ export function QuantOverview() {
   const runningJobs =
     backtestRuns.filter((b) => b.status === "running").length +
     mlTrainingJobs.filter((m) => m.status === "running").length;
-  const avgSharpe = (
+  const avgSharpe = formatNumber(
     backtestRuns.filter((b) => b.sharpe > 0).reduce((sum, b) => sum + b.sharpe, 0) /
-    backtestRuns.filter((b) => b.sharpe > 0).length
-  ).toFixed(2);
+      backtestRuns.filter((b) => b.sharpe > 0).length,
+    2,
+  );
 
   const handlePromote = (bt: BacktestRun) => {
     setPromotingBacktest(bt);
@@ -89,7 +91,7 @@ export function QuantOverview() {
                 <div className="text-center">
                   <div className="text-xs text-muted-foreground">Simulated P&L</div>
                   <div className="font-mono font-medium text-positive">
-                    +${(promotingBacktest.pnl / 1000).toFixed(0)}k
+                    +${formatNumber(promotingBacktest.pnl / 1000, 0)}k
                   </div>
                 </div>
                 <div className="text-center">
@@ -119,7 +121,7 @@ export function QuantOverview() {
                       className="flex-1 text-xs"
                       onClick={() => setAllocationAmount(String(amt))}
                     >
-                      ${(amt / 1000).toFixed(0)}k
+                      ${formatNumber(amt / 1000, 0)}k
                     </Button>
                   ))}
                 </div>
@@ -286,7 +288,7 @@ export function QuantOverview() {
                         {bt.status === "completed"
                           ? `${bt.trades} trades | ${bt.winRate}% win rate`
                           : bt.status === "promoted"
-                            ? `Allocated $${((bt.liveAllocation || 0) / 1000).toFixed(0)}k | ${bt.promotedAt}`
+                            ? `Allocated $${formatNumber((bt.liveAllocation || 0) / 1000, 0)}k | ${bt.promotedAt}`
                             : bt.status === "running"
                               ? `Progress: ${bt.progress}%`
                               : bt.status === "failed"
@@ -300,7 +302,7 @@ export function QuantOverview() {
                       <>
                         <div className="text-right">
                           <div className={cn("font-mono font-medium", bt.pnl >= 0 ? "text-positive" : "text-negative")}>
-                            {bt.pnl >= 0 ? "+" : ""}${(bt.pnl / 1000).toFixed(0)}k
+                            {bt.pnl >= 0 ? "+" : ""}${formatNumber(bt.pnl / 1000, 0)}k
                           </div>
                           <div className="text-xs text-muted-foreground">Sharpe: {bt.sharpe}</div>
                         </div>
@@ -322,7 +324,7 @@ export function QuantOverview() {
                     {bt.status === "promoted" && (
                       <div className="text-right">
                         <div className={cn("font-mono font-medium", bt.pnl >= 0 ? "text-positive" : "text-negative")}>
-                          {bt.pnl >= 0 ? "+" : ""}${(bt.pnl / 1000).toFixed(0)}k
+                          {bt.pnl >= 0 ? "+" : ""}${formatNumber(bt.pnl / 1000, 0)}k
                         </div>
                         <div className="text-xs text-muted-foreground">Sharpe: {bt.sharpe}</div>
                       </div>

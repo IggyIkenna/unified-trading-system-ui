@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MetricCard } from "@/components/shared/metric-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -167,58 +168,70 @@ export function ReconciliationPageClient() {
   return (
     <main className="flex-1 p-6 space-y-4">
       <div className="grid grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
+        <MetricCard
+          tone="grid"
+          density="compact"
+          contentClassName="!items-stretch !justify-center !px-4 !py-3 !text-left"
+          body={
+            <div className="flex w-full items-center gap-3">
+              <div className="rounded-lg bg-[var(--status-warning)]/10 p-2">
                 <Scale className="size-5" style={{ color: "var(--status-warning)" }} />
               </div>
-              <div>
-                <p className="text-2xl font-semibold font-mono">{totalBreaks}</p>
+              <div className="min-w-0">
+                <p className="font-mono text-2xl font-semibold">{totalBreaks}</p>
                 <p className="text-xs text-muted-foreground">Total Breaks</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--pnl-negative)]/10">
+          }
+        />
+        <MetricCard
+          tone="grid"
+          density="compact"
+          contentClassName="!items-stretch !justify-center !px-4 !py-3 !text-left"
+          body={
+            <div className="flex w-full items-center gap-3">
+              <div className="rounded-lg bg-[var(--pnl-negative)]/10 p-2">
                 <TrendingDown className="size-5" style={{ color: "var(--pnl-negative)" }} />
               </div>
-              <div>
-                <p className="text-2xl font-semibold font-mono">{positionBreaks}</p>
+              <div className="min-w-0">
+                <p className="font-mono text-2xl font-semibold">{positionBreaks}</p>
                 <p className="text-xs text-muted-foreground">Position Breaks</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--accent-blue)]/10">
+          }
+        />
+        <MetricCard
+          tone="grid"
+          density="compact"
+          contentClassName="!items-stretch !justify-center !px-4 !py-3 !text-left"
+          body={
+            <div className="flex w-full items-center gap-3">
+              <div className="rounded-lg bg-[var(--accent-blue)]/10 p-2">
                 <DollarSign className="size-5" style={{ color: "var(--accent-blue)" }} />
               </div>
-              <div>
-                <p className="text-2xl font-semibold font-mono">{pnlDiscrepancies}</p>
+              <div className="min-w-0">
+                <p className="font-mono text-2xl font-semibold">{pnlDiscrepancies}</p>
                 <p className="text-xs text-muted-foreground">PnL Discrepancies</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
+          }
+        />
+        <MetricCard
+          tone="grid"
+          density="compact"
+          contentClassName="!items-stretch !justify-center !px-4 !py-3 !text-left"
+          body={
+            <div className="flex w-full items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-2">
                 <Receipt className="size-5 text-primary" />
               </div>
-              <div>
-                <p className="text-2xl font-semibold font-mono">{feeMismatches}</p>
+              <div className="min-w-0">
+                <p className="font-mono text-2xl font-semibold">{feeMismatches}</p>
                 <p className="text-xs text-muted-foreground">Fee Mismatches</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          }
+        />
       </div>
 
       <DriftAnalysisPanel

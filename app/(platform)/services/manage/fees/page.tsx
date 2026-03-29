@@ -1,29 +1,18 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import * as React from "react";
 import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DollarSign, Pencil, Check, X, Calculator } from "lucide-react";
 import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import { useSubscriptions } from "@/hooks/api/use-organizations";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { formatNumber } from "@/lib/utils/formatters";
 
 interface FeeRow {
   orgId: string;
@@ -73,9 +62,7 @@ export default function FeeManagementPage() {
     },
   ]);
   const updateSubscription = (orgId: string, updates: Record<string, number>) =>
-    setSubscriptions((prev) =>
-      prev.map((s) => (s.orgId === orgId ? { ...s, ...updates } : s)),
-    );
+    setSubscriptions((prev) => prev.map((s) => (s.orgId === orgId ? { ...s, ...updates } : s)));
 
   const [editingOrgId, setEditingOrgId] = React.useState<string | null>(null);
   const [editValues, setEditValues] = React.useState({
@@ -168,21 +155,17 @@ export default function FeeManagementPage() {
       <div className="border-b border-border">
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                Fee Management
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Manage fee schedules per client and simulate fee projections
-              </p>
-            </div>
+            <PageHeader
+              title="Fee Management"
+              description="Manage fee schedules per client and simulate fee projections"
+            />
             <div className="flex items-center gap-3">
               <Badge variant="outline" className="text-xs">
                 <DollarSign className="mr-1 size-3" />
                 MRR: ${totalMRR.toLocaleString()}
               </Badge>
               <Badge variant="outline" className="text-xs">
-                Total AUM: ${(totalAUM / 1_000_000).toFixed(1)}M
+                Total AUM: ${formatNumber(totalAUM / 1_000_000, 1)}M
               </Badge>
             </div>
           </div>
@@ -194,12 +177,9 @@ export default function FeeManagementPage() {
         <Card>
           <CardHeader className="flex flex-row items-start justify-between">
             <div>
-              <CardTitle className="text-base">
-                Fee Schedule by Client
-              </CardTitle>
+              <CardTitle className="text-base">Fee Schedule by Client</CardTitle>
               <CardDescription>
-                Click Edit to modify fee percentages for each client. Changes
-                take effect immediately.
+                Click Edit to modify fee percentages for each client. Changes take effect immediately.
               </CardDescription>
             </div>
             <ExportDropdown
@@ -227,13 +207,9 @@ export default function FeeManagementPage() {
                   <TableHead>Client</TableHead>
                   <TableHead className="text-right">AUM</TableHead>
                   <TableHead className="text-right">Management Fee %</TableHead>
-                  <TableHead className="text-right">
-                    Performance Fee %
-                  </TableHead>
+                  <TableHead className="text-right">Performance Fee %</TableHead>
                   <TableHead className="text-right">Data Fee %</TableHead>
-                  <TableHead className="text-right">
-                    Est. Annual Revenue
-                  </TableHead>
+                  <TableHead className="text-right">Est. Annual Revenue</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -247,11 +223,9 @@ export default function FeeManagementPage() {
 
                   return (
                     <TableRow key={row.orgId}>
-                      <TableCell className="font-medium">
-                        {row.orgName}
-                      </TableCell>
+                      <TableCell className="font-medium">{row.orgName}</TableCell>
                       <TableCell className="text-right font-mono">
-                        ${(row.aumUsd / 1_000_000).toFixed(1)}M
+                        ${formatNumber(row.aumUsd / 1_000_000, 1)}M
                       </TableCell>
                       <TableCell className="text-right">
                         {isEditing ? (
@@ -264,16 +238,13 @@ export default function FeeManagementPage() {
                             onChange={(e) =>
                               setEditValues((v) => ({
                                 ...v,
-                                managementFeePct:
-                                  parseFloat(e.target.value) || 0,
+                                managementFeePct: parseFloat(e.target.value) || 0,
                               }))
                             }
                             className="w-20 ml-auto h-7 text-xs text-right"
                           />
                         ) : (
-                          <span className="font-mono">
-                            {row.managementFeePct}%
-                          </span>
+                          <span className="font-mono">{row.managementFeePct}%</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -287,16 +258,13 @@ export default function FeeManagementPage() {
                             onChange={(e) =>
                               setEditValues((v) => ({
                                 ...v,
-                                performanceFeePct:
-                                  parseFloat(e.target.value) || 0,
+                                performanceFeePct: parseFloat(e.target.value) || 0,
                               }))
                             }
                             className="w-20 ml-auto h-7 text-xs text-right"
                           />
                         ) : (
-                          <span className="font-mono">
-                            {row.performanceFeePct}%
-                          </span>
+                          <span className="font-mono">{row.performanceFeePct}%</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -325,28 +293,15 @@ export default function FeeManagementPage() {
                       <TableCell className="text-right">
                         {isEditing ? (
                           <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon-sm"
-                              onClick={saveEditing}
-                            >
+                            <Button variant="ghost" size="icon-sm" onClick={saveEditing}>
                               <Check className="size-4 text-emerald-400" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon-sm"
-                              onClick={cancelEditing}
-                            >
+                            <Button variant="ghost" size="icon-sm" onClick={cancelEditing}>
                               <X className="size-4 text-red-400" />
                             </Button>
                           </div>
                         ) : (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => startEditing(row)}
-                            className="text-xs"
-                          >
+                          <Button variant="ghost" size="sm" onClick={() => startEditing(row)} className="text-xs">
                             <Pencil className="mr-1 size-3" />
                             Edit
                           </Button>
@@ -357,10 +312,7 @@ export default function FeeManagementPage() {
                 })}
                 {feeRows.length === 0 && (
                   <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="text-center py-8 text-muted-foreground"
-                    >
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       No client organizations found.
                     </TableCell>
                   </TableRow>
@@ -377,9 +329,7 @@ export default function FeeManagementPage() {
               <Calculator className="size-5 text-sky-400" />
               Fee Simulator
             </CardTitle>
-            <CardDescription>
-              Estimate fees for a given AUM and return scenario.
-            </CardDescription>
+            <CardDescription>Estimate fees for a given AUM and return scenario.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -421,39 +371,23 @@ export default function FeeManagementPage() {
               <div className="rounded-lg border border-sky-500/20 bg-sky-500/5 p-4">
                 <div className="flex items-center gap-2 mb-4">
                   <DollarSign className="size-4 text-sky-400" />
-                  <p className="text-sm font-medium">
-                    Fee Breakdown for {simResult.orgName}
-                  </p>
+                  <p className="text-sm font-medium">Fee Breakdown for {simResult.orgName}</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      Management ({simResult.managementFeePct}%)
-                    </p>
-                    <p className="text-lg font-bold font-mono">
-                      ${Math.round(simResult.mgmtFee).toLocaleString()}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Management ({simResult.managementFeePct}%)</p>
+                    <p className="text-lg font-bold font-mono">${Math.round(simResult.mgmtFee).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      Performance ({simResult.performanceFeePct}%)
-                    </p>
-                    <p className="text-lg font-bold font-mono">
-                      ${Math.round(simResult.perfFee).toLocaleString()}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Performance ({simResult.performanceFeePct}%)</p>
+                    <p className="text-lg font-bold font-mono">${Math.round(simResult.perfFee).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      Data ({simResult.dataFeePct}%)
-                    </p>
-                    <p className="text-lg font-bold font-mono">
-                      ${Math.round(simResult.dataFee).toLocaleString()}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Data ({simResult.dataFeePct}%)</p>
+                    <p className="text-lg font-bold font-mono">${Math.round(simResult.dataFee).toLocaleString()}</p>
                   </div>
                   <div className="border-l border-sky-500/20 pl-4">
-                    <p className="text-xs text-muted-foreground">
-                      Total Annual Fee
-                    </p>
+                    <p className="text-xs text-muted-foreground">Total Annual Fee</p>
                     <p className="text-lg font-bold font-mono text-sky-400">
                       ${Math.round(simResult.totalFee).toLocaleString()}
                     </p>

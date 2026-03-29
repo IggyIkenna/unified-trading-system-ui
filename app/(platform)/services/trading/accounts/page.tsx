@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense } from "react";
-import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { WidgetGrid } from "@/components/widgets/widget-grid";
+import { Spinner } from "@/components/ui/spinner";
 import { AccountsDataProvider, useAccountsData } from "@/components/widgets/accounts/accounts-data-context";
+import { WidgetGrid } from "@/components/widgets/widget-grid";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { Suspense } from "react";
 
 import "@/components/widgets/accounts/register";
 
@@ -14,7 +15,7 @@ function AccountsWorkspaceBody() {
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center h-64 gap-2 text-muted-foreground">
-        <Loader2 className="size-5 animate-spin" />
+        <Spinner className="size-5" />
         <span>Loading accounts...</span>
       </div>
     );

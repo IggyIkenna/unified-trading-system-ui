@@ -4,6 +4,7 @@ import { PnLValue } from "@/components/trading/pnl-value";
 import { CollapsibleSection } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { usePnLData } from "./pnl-data-context";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function PnlWaterfallWidget(_props: WidgetComponentProps) {
   const { structuralPnL, residualPnL, pnlComponents, netPnL, selectedFactor, setSelectedFactor } = usePnLData();
@@ -29,7 +30,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
                   <span className="text-sm font-medium">{component.name}</span>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-muted-foreground">
-                      {((component.value / totalStruct) * 100).toFixed(1)}%
+                      {formatPercent((component.value / totalStruct) * 100, 1)}
                     </span>
                     <PnLValue value={component.value} size="sm" showSign />
                   </div>
@@ -70,7 +71,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
                 <div className="flex items-center gap-3">
                   <span className="text-xs text-muted-foreground">
                     {component.percentage > 0 ? "+" : ""}
-                    {component.percentage.toFixed(1)}%
+                    {formatPercent(component.percentage, 1)}
                   </span>
                   <PnLValue value={component.value} size="sm" showSign />
                 </div>
@@ -99,7 +100,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
               <span className="text-xs text-muted-foreground">(unexplained)</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground">{residualPnL.percentage.toFixed(1)}%</span>
+              <span className="text-xs text-muted-foreground">{formatPercent(residualPnL.percentage, 1)}</span>
               <PnLValue value={residualPnL.value} size="sm" showSign />
             </div>
           </div>

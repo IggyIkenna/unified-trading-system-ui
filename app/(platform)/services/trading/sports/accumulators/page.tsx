@@ -1,28 +1,16 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { PageHeader } from "@/components/platform/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ExecutionModeIndicator } from "@/components/trading/execution-mode-toggle";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Trophy,
-  Search,
-  X,
-  AlertTriangle,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Trophy, Search, X, AlertTriangle, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,7 +44,7 @@ const MOCK_FIXTURES: Fixture[] = [
     awayTeam: "Manchester City",
     kickoff: "2026-03-29T15:00:00Z",
     oddsHome: 2.45,
-    oddsDraw: 3.30,
+    oddsDraw: 3.3,
     oddsAway: 2.75,
   },
   {
@@ -67,8 +55,8 @@ const MOCK_FIXTURES: Fixture[] = [
     awayTeam: "Chelsea",
     kickoff: "2026-03-29T17:30:00Z",
     oddsHome: 1.85,
-    oddsDraw: 3.60,
-    oddsAway: 4.10,
+    oddsDraw: 3.6,
+    oddsAway: 4.1,
   },
   {
     id: "fix-003",
@@ -77,8 +65,8 @@ const MOCK_FIXTURES: Fixture[] = [
     homeTeam: "Real Madrid",
     awayTeam: "Barcelona",
     kickoff: "2026-03-29T20:00:00Z",
-    oddsHome: 2.10,
-    oddsDraw: 3.40,
+    oddsHome: 2.1,
+    oddsDraw: 3.4,
     oddsAway: 3.25,
   },
   {
@@ -89,8 +77,8 @@ const MOCK_FIXTURES: Fixture[] = [
     awayTeam: "Sevilla",
     kickoff: "2026-03-30T14:00:00Z",
     oddsHome: 1.75,
-    oddsDraw: 3.50,
-    oddsAway: 4.80,
+    oddsDraw: 3.5,
+    oddsAway: 4.8,
   },
   {
     id: "fix-005",
@@ -99,9 +87,9 @@ const MOCK_FIXTURES: Fixture[] = [
     homeTeam: "AC Milan",
     awayTeam: "Inter Milan",
     kickoff: "2026-03-30T17:45:00Z",
-    oddsHome: 2.90,
+    oddsHome: 2.9,
     oddsDraw: 3.15,
-    oddsAway: 2.40,
+    oddsAway: 2.4,
   },
   {
     id: "fix-006",
@@ -111,8 +99,8 @@ const MOCK_FIXTURES: Fixture[] = [
     awayTeam: "Borussia Dortmund",
     kickoff: "2026-03-30T17:30:00Z",
     oddsHome: 1.55,
-    oddsDraw: 4.20,
-    oddsAway: 5.50,
+    oddsDraw: 4.2,
+    oddsAway: 5.5,
   },
   {
     id: "fix-007",
@@ -121,9 +109,9 @@ const MOCK_FIXTURES: Fixture[] = [
     homeTeam: "PSG",
     awayTeam: "Marseille",
     kickoff: "2026-03-30T20:45:00Z",
-    oddsHome: 1.40,
-    oddsDraw: 4.80,
-    oddsAway: 7.00,
+    oddsHome: 1.4,
+    oddsDraw: 4.8,
+    oddsAway: 7.0,
   },
   {
     id: "fix-008",
@@ -132,9 +120,9 @@ const MOCK_FIXTURES: Fixture[] = [
     homeTeam: "Tottenham",
     awayTeam: "Newcastle",
     kickoff: "2026-03-31T14:00:00Z",
-    oddsHome: 2.30,
-    oddsDraw: 3.40,
-    oddsAway: 3.00,
+    oddsHome: 2.3,
+    oddsDraw: 3.4,
+    oddsAway: 3.0,
   },
 ];
 
@@ -166,17 +154,9 @@ export default function AccumulatorBuilderPage() {
     if (legs.length >= MAX_LEGS) return;
     if (selectedFixtureIds.has(fixture.id)) return;
 
-    const odds =
-      selection === "home"
-        ? fixture.oddsHome
-        : selection === "draw"
-          ? fixture.oddsDraw
-          : fixture.oddsAway;
+    const odds = selection === "home" ? fixture.oddsHome : selection === "draw" ? fixture.oddsDraw : fixture.oddsAway;
 
-    setLegs((prev) => [
-      ...prev,
-      { fixtureId: fixture.id, fixture, selection, odds },
-    ]);
+    setLegs((prev) => [...prev, { fixtureId: fixture.id, fixture, selection, odds }]);
   };
 
   const removeLeg = (fixtureId: string) => {
@@ -208,25 +188,20 @@ export default function AccumulatorBuilderPage() {
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="shrink-0 border-b border-border px-4 py-3 bg-background/95">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
+        <PageHeader
+          title={
+            <span className="flex flex-wrap items-center gap-2">
               <Trophy className="size-5 text-amber-400" />
-              <h1 className="text-xl font-semibold tracking-tight">
-                Accumulator Builder
-              </h1>
+              Accumulator Builder
               <ExecutionModeIndicator />
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Combine multiple selections into a single high-odds accumulator bet
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px]">
-              {legs.length} / {MAX_LEGS} legs
-            </Badge>
-          </div>
-        </div>
+            </span>
+          }
+          description="Combine multiple selections into a single high-odds accumulator bet"
+        >
+          <Badge variant="outline" className="text-[10px]">
+            {legs.length} / {MAX_LEGS} legs
+          </Badge>
+        </PageHeader>
       </div>
 
       {/* Main content: two-panel layout */}
@@ -251,10 +226,7 @@ export default function AccumulatorBuilderPage() {
               return (
                 <Card
                   key={fixture.id}
-                  className={cn(
-                    "transition-colors",
-                    alreadySelected && "opacity-50 border-primary/30",
-                  )}
+                  className={cn("transition-colors", alreadySelected && "opacity-50 border-primary/30")}
                 >
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
@@ -262,9 +234,7 @@ export default function AccumulatorBuilderPage() {
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0">
                           {fixture.league}
                         </Badge>
-                        <span className="text-[10px] text-muted-foreground">
-                          {formatKickoff(fixture.kickoff)}
-                        </span>
+                        <span className="text-[10px] text-muted-foreground">{formatKickoff(fixture.kickoff)}</span>
                       </div>
                       {alreadySelected && (
                         <Badge variant="success" className="text-[10px]">
@@ -274,9 +244,7 @@ export default function AccumulatorBuilderPage() {
                     </div>
 
                     <div className="text-sm font-medium mb-3">
-                      {fixture.homeTeam}{" "}
-                      <span className="text-muted-foreground">vs</span>{" "}
-                      {fixture.awayTeam}
+                      {fixture.homeTeam} <span className="text-muted-foreground">vs</span> {fixture.awayTeam}
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
@@ -291,7 +259,7 @@ export default function AccumulatorBuilderPage() {
                       >
                         <span className="text-[10px] text-muted-foreground">Home</span>
                         <span className="font-mono font-semibold text-emerald-400">
-                          {fixture.oddsHome.toFixed(2)}
+                          {formatNumber(fixture.oddsHome, 2)}
                         </span>
                       </button>
                       <button
@@ -305,7 +273,7 @@ export default function AccumulatorBuilderPage() {
                       >
                         <span className="text-[10px] text-muted-foreground">Draw</span>
                         <span className="font-mono font-semibold text-amber-400">
-                          {fixture.oddsDraw.toFixed(2)}
+                          {formatNumber(fixture.oddsDraw, 2)}
                         </span>
                       </button>
                       <button
@@ -319,7 +287,7 @@ export default function AccumulatorBuilderPage() {
                       >
                         <span className="text-[10px] text-muted-foreground">Away</span>
                         <span className="font-mono font-semibold text-sky-400">
-                          {fixture.oddsAway.toFixed(2)}
+                          {formatNumber(fixture.oddsAway, 2)}
                         </span>
                       </button>
                     </div>
@@ -329,9 +297,7 @@ export default function AccumulatorBuilderPage() {
             })}
 
             {filteredFixtures.length === 0 && (
-              <div className="text-center text-sm text-muted-foreground py-12">
-                No fixtures match your search
-              </div>
+              <div className="text-center text-sm text-muted-foreground py-12">No fixtures match your search</div>
             )}
           </div>
         </div>
@@ -341,9 +307,7 @@ export default function AccumulatorBuilderPage() {
           <div className="px-4 py-3 border-b border-border">
             <h2 className="text-sm font-semibold">Accumulator Slip</h2>
             <p className="text-[10px] text-muted-foreground mt-0.5">
-              {legs.length === 0
-                ? "Click odds to add legs"
-                : `${legs.length} selection${legs.length !== 1 ? "s" : ""}`}
+              {legs.length === 0 ? "Click odds to add legs" : `${legs.length} selection${legs.length !== 1 ? "s" : ""}`}
             </p>
           </div>
 
@@ -352,9 +316,7 @@ export default function AccumulatorBuilderPage() {
               <div className="text-center text-sm text-muted-foreground py-8 space-y-2">
                 <Plus className="size-8 mx-auto opacity-30" />
                 <p>No selections yet</p>
-                <p className="text-[10px]">
-                  Click on Home, Draw, or Away odds to add legs
-                </p>
+                <p className="text-[10px]">Click on Home, Draw, or Away odds to add legs</p>
               </div>
             )}
 
@@ -375,7 +337,7 @@ export default function AccumulatorBuilderPage() {
                       {selectionLabel(leg.selection, leg.fixture)}
                     </Badge>
                     <span className="text-xs font-mono font-semibold text-emerald-400">
-                      {leg.odds.toFixed(2)}
+                      {formatNumber(leg.odds, 2)}
                     </span>
                   </div>
                   <div className="text-[10px] text-muted-foreground mt-0.5">
@@ -400,18 +362,14 @@ export default function AccumulatorBuilderPage() {
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Combined Odds</span>
                   <span className="font-mono font-semibold text-lg text-amber-400">
-                    {combinedOdds.toFixed(2)}
+                    {formatNumber(combinedOdds, 2)}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <label className="text-xs text-muted-foreground shrink-0">
-                    Stake
-                  </label>
+                  <label className="text-xs text-muted-foreground shrink-0">Stake</label>
                   <div className="relative flex-1">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                      $
-                    </span>
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">$</span>
                     <Input
                       type="number"
                       min="0"
@@ -431,7 +389,7 @@ export default function AccumulatorBuilderPage() {
                       potentialPayout > 0 ? "text-emerald-400" : "text-muted-foreground",
                     )}
                   >
-                    ${potentialPayout.toFixed(2)}
+                    ${formatNumber(potentialPayout, 2)}
                   </span>
                 </div>
               </div>
@@ -444,10 +402,7 @@ export default function AccumulatorBuilderPage() {
               </div>
             )}
 
-            <Button
-              className="w-full"
-              disabled={legs.length < MIN_LEGS || stakeNum <= 0}
-            >
+            <Button className="w-full" disabled={legs.length < MIN_LEGS || stakeNum <= 0}>
               <Trophy className="size-4" />
               Place Accumulator
             </Button>
@@ -455,8 +410,7 @@ export default function AccumulatorBuilderPage() {
             <div className="flex items-start gap-1.5 text-[10px] text-muted-foreground">
               <AlertTriangle className="size-3 shrink-0 mt-0.5" />
               <span>
-                All selections must win for the accumulator to pay out. If any
-                leg loses, the entire bet is lost.
+                All selections must win for the accumulator to pay out. If any leg loses, the entire bet is lost.
               </span>
             </div>
           </div>

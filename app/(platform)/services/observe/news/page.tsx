@@ -1,24 +1,12 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/platform/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Newspaper,
-  Clock,
-  AlertTriangle,
-  Flame,
-  ArrowUp,
-  Minus,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Newspaper, Clock, AlertTriangle, Flame, ArrowUp, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNewsFeed, type NewsSeverity } from "@/hooks/api/use-news";
 
@@ -46,11 +34,7 @@ function severityBadge(severity: NewsSeverity) {
         </Badge>
       );
     case "low":
-      return (
-        <Badge className="bg-slate-500/15 text-slate-400 border-transparent">
-          Low
-        </Badge>
-      );
+      return <Badge className="bg-slate-500/15 text-slate-400 border-transparent">Low</Badge>;
   }
 }
 
@@ -67,15 +51,7 @@ function formatTimestamp(iso: string): string {
   return `${diffDays}d ago`;
 }
 
-const SOURCES = [
-  "All",
-  "Reuters",
-  "Bloomberg",
-  "CoinDesk",
-  "The Block",
-  "ESPN",
-  "DeFi Llama",
-] as const;
+const SOURCES = ["All", "Reuters", "Bloomberg", "CoinDesk", "The Block", "ESPN", "DeFi Llama"] as const;
 const SEVERITIES = ["All", "breaking", "high", "medium", "low"] as const;
 
 export default function NewsPage() {
@@ -86,8 +62,7 @@ export default function NewsPage() {
   const filtered = React.useMemo(() => {
     if (!news) return [];
     return news.filter((item) => {
-      if (severityFilter !== "All" && item.severity !== severityFilter)
-        return false;
+      if (severityFilter !== "All" && item.severity !== severityFilter) return false;
       if (sourceFilter !== "All" && item.source !== sourceFilter) return false;
       return true;
     });
@@ -107,19 +82,15 @@ export default function NewsPage() {
   return (
     <div className="p-6">
       <div className="max-w-[1000px] mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold flex items-center gap-2">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
               <Newspaper className="size-6 text-cyan-400" />
               News Feed
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Market news filtered by relevance to active strategies and
-              positions
-            </p>
-          </div>
-        </div>
+            </span>
+          }
+          description="Market news filtered by relevance to active strategies and positions"
+        />
 
         {/* Filters */}
         <div className="flex items-center gap-3">
@@ -130,9 +101,7 @@ export default function NewsPage() {
             <SelectContent>
               {SEVERITIES.map((s) => (
                 <SelectItem key={s} value={s}>
-                  {s === "All"
-                    ? "All Severity"
-                    : s.charAt(0).toUpperCase() + s.slice(1)}
+                  {s === "All" ? "All Severity" : s.charAt(0).toUpperCase() + s.slice(1)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -161,18 +130,13 @@ export default function NewsPage() {
           <Card className="bg-card/50">
             <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <AlertTriangle className="size-8 mb-2" />
-              <p className="text-sm">
-                No news items match the current filters.
-              </p>
+              <p className="text-sm">No news items match the current filters.</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-3">
             {filtered.map((item) => (
-              <Card
-                key={item.id}
-                className="bg-card/50 hover:bg-card/80 transition-colors"
-              >
+              <Card key={item.id} className="bg-card/50 hover:bg-card/80 transition-colors">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0 space-y-2">
@@ -183,19 +147,13 @@ export default function NewsPage() {
                       </div>
 
                       {/* Summary */}
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        {item.summary}
-                      </p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{item.summary}</p>
 
                       {/* Instruments */}
                       {item.instruments.length > 0 && (
                         <div className="flex items-center gap-1.5 flex-wrap">
                           {item.instruments.map((inst) => (
-                            <Badge
-                              key={inst}
-                              variant="outline"
-                              className="text-[10px] font-mono px-1.5 py-0"
-                            >
+                            <Badge key={inst} variant="outline" className="text-[10px] font-mono px-1.5 py-0">
                               {inst}
                             </Badge>
                           ))}

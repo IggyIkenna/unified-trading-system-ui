@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { PageHeader } from "@/components/platform/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -39,9 +40,7 @@ export default function RequestAccessPage() {
   const [reason, setReason] = React.useState("");
 
   const toggle = (key: string) => {
-    setSelected((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
+    setSelected((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,11 +53,10 @@ export default function RequestAccessPage() {
 
   return (
     <div className="p-6 max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold">Request Access</h1>
-      <p className="text-muted-foreground">
-        Select the services you need access to. Your request will be reviewed by
-        an admin.
-      </p>
+      <PageHeader
+        title="Request Access"
+        description="Select the services you need access to. Your request will be reviewed by an admin."
+      />
 
       <Card>
         <CardHeader>
@@ -69,11 +67,7 @@ export default function RequestAccessPage() {
             <div className="space-y-3">
               {ENTITLEMENTS.map((ent) => (
                 <div key={ent.key} className="flex items-start gap-3">
-                  <Checkbox
-                    id={ent.key}
-                    checked={selected.includes(ent.key)}
-                    onCheckedChange={() => toggle(ent.key)}
-                  />
+                  <Checkbox id={ent.key} checked={selected.includes(ent.key)} onCheckedChange={() => toggle(ent.key)} />
                   <Label htmlFor={ent.key} className="text-sm cursor-pointer">
                     {ent.label}
                   </Label>
@@ -91,18 +85,13 @@ export default function RequestAccessPage() {
               />
             </div>
 
-            <Button
-              type="submit"
-              disabled={submit.isPending || selected.length === 0}
-            >
+            <Button type="submit" disabled={submit.isPending || selected.length === 0}>
               <Send className="h-4 w-4 mr-2" />
               {submit.isPending ? "Submitting..." : "Submit Request"}
             </Button>
 
             {submit.isSuccess && (
-              <p className="text-sm text-green-600">
-                Request submitted! An admin will review it shortly.
-              </p>
+              <p className="text-sm text-green-600">Request submitted! An admin will review it shortly.</p>
             )}
           </form>
         </CardContent>

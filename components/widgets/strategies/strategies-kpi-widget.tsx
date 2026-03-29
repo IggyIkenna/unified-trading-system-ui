@@ -1,10 +1,10 @@
 "use client";
 
+import { Spinner } from "@/components/ui/spinner";
 import { KpiStrip, type KpiMetric } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { useStrategiesData } from "./strategies-data-context";
-import { Loader2 } from "lucide-react";
 
 export function StrategiesKpiWidget(_props: WidgetComponentProps) {
   const { isLoading, activeCount, strategies, totalAUM, totalPnL, totalMTDPnL } = useStrategiesData();
@@ -12,7 +12,7 @@ export function StrategiesKpiWidget(_props: WidgetComponentProps) {
   if (isLoading) {
     return (
       <div className="flex h-full min-h-[48px] items-center justify-center text-muted-foreground">
-        <Loader2 className="size-5 animate-spin" />
+        <Spinner className="size-5" />
       </div>
     );
   }

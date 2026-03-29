@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -91,8 +92,8 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
               <SelectItem key={a} value={a}>
                 <span className="font-mono">{a}</span>
                 <span className="text-[10px] text-muted-foreground ml-2">
-                  Supply {selectedProtocol.supplyApy[a]?.toFixed(1)}% / Borrow{" "}
-                  {selectedProtocol.borrowApy[a]?.toFixed(1)}%
+                  Supply {formatPercent(selectedProtocol.supplyApy[a] ?? 0, 1)} / Borrow{" "}
+                  {formatPercent(selectedProtocol.borrowApy[a] ?? 0, 1)}
                 </span>
               </SelectItem>
             ))}
@@ -114,11 +115,11 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
       <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Supply APY</span>
-          <span className="font-mono text-emerald-400">{supplyApy.toFixed(2)}%</span>
+          <span className="font-mono text-emerald-400">{formatPercent(supplyApy, 2)}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Borrow APY</span>
-          <span className="font-mono text-rose-400">{borrowApy.toFixed(2)}%</span>
+          <span className="font-mono text-rose-400">{formatPercent(borrowApy, 2)}</span>
         </div>
       </div>
 
@@ -136,7 +137,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                 currentHf >= 1.5 ? "text-emerald-400" : currentHf >= 1.1 ? "text-amber-400" : "text-rose-400",
               )}
             >
-              {currentHf.toFixed(2)}
+              {formatNumber(currentHf, 2)}
             </p>
           </div>
           <ArrowDown className="size-4 text-muted-foreground rotate-[-90deg]" />
@@ -148,7 +149,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                 newHf >= 1.5 ? "text-emerald-400" : newHf >= 1.1 ? "text-amber-400" : "text-rose-400",
               )}
             >
-              {amountNum > 0 ? newHf.toFixed(2) : "—"}
+              {amountNum > 0 ? formatNumber(newHf, 2) : "—"}
             </p>
           </div>
         </div>
@@ -160,7 +161,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
         )}
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Collateral ratio (mock)</span>
-          <span className="font-mono">{(currentHf * 75).toFixed(0)}%</span>
+          <span className="font-mono">{formatPercent(currentHf * 75, 0)}</span>
         </div>
       </div>
 

@@ -2,14 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,14 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import {
-  ChevronDown,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Download,
-  Grid3X3,
-} from "lucide-react";
+import { ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, Download, Grid3X3 } from "lucide-react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export interface DimensionDef {
   key: string;
@@ -74,13 +61,9 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
   rowKey = "id" as keyof T,
   className,
 }: DimensionalGridProps<T>) {
-  const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
-    new Set(),
-  );
+  const [selectedRows, setSelectedRows] = React.useState<Set<string>>(new Set());
   const [sortColumn, setSortColumn] = React.useState<string | null>(null);
-  const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">(
-    "desc",
-  );
+  const [sortDirection, setSortDirection] = React.useState<"asc" | "desc">("desc");
   const [showHeatmap, setShowHeatmap] = React.useState(enableHeatmap);
 
   // Filter data based on pinned dimensions
@@ -104,8 +87,7 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
   }, [filteredData, sortColumn, sortDirection]);
 
   const handleSort = (column: string) => {
-    const newDirection =
-      sortColumn === column && sortDirection === "desc" ? "asc" : "desc";
+    const newDirection = sortColumn === column && sortDirection === "desc" ? "asc" : "desc";
     setSortColumn(column);
     setSortDirection(newDirection);
     onSort?.(column, newDirection);
@@ -139,13 +121,13 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
 
     switch (format) {
       case "currency":
-        if (num >= 1_000_000) return `$${(num / 1_000_000).toFixed(2)}m`;
-        if (num >= 1_000) return `$${(num / 1_000).toFixed(1)}k`;
-        return `$${num.toFixed(2)}`;
+        if (num >= 1_000_000) return `$${formatNumber(num / 1_000_000, 2)}m`;
+        if (num >= 1_000) return `$${formatNumber(num / 1_000, 1)}k`;
+        return `$${formatNumber(num, 2)}`;
       case "percent":
-        return `${num.toFixed(2)}%`;
+        return `${formatPercent(num, 2)}`;
       case "decimal":
-        return num.toFixed(2);
+        return formatNumber(num, 2);
       default:
         return num.toLocaleString();
     }
@@ -155,16 +137,12 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
     if (!showHeatmap || !metric.colorize) return undefined;
     // Simple heatmap: green for positive, red for negative
     if (value > 0) return `rgba(74, 222, 128, ${Math.min(value / 100, 0.3)})`;
-    if (value < 0)
-      return `rgba(248, 113, 113, ${Math.min(Math.abs(value) / 100, 0.3)})`;
+    if (value < 0) return `rgba(248, 113, 113, ${Math.min(Math.abs(value) / 100, 0.3)})`;
     return undefined;
   };
 
   const handleExport = () => {
-    const headers = [
-      ...dimensions.map((d) => d.label),
-      ...metrics.map((m) => m.label),
-    ];
+    const headers = [...dimensions.map((d) => d.label), ...metrics.map((m) => m.label)];
     const rows = sortedData.map((row) => [
       ...dimensions.map((d) => String(row[d.key])),
       ...metrics.map((m) => String(row[m.key])),
@@ -200,19 +178,14 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
                   <ChevronDown className="size-3.5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="start"
-                className="max-h-64 overflow-auto"
-              >
+              <DropdownMenuContent align="start" className="max-h-64 overflow-auto">
                 {dim.values.map((value) => (
                   <DropdownMenuCheckboxItem
                     key={value}
                     checked={pinnedDimensions[dim.key]?.includes(value)}
                     onCheckedChange={(checked) => {
                       const current = pinnedDimensions[dim.key] || [];
-                      const updated = checked
-                        ? [...current, value]
-                        : current.filter((v) => v !== value);
+                      const updated = checked ? [...current, value] : current.filter((v) => v !== value);
                       onDimensionPin?.(dim.key, updated);
                     }}
                   >
@@ -237,12 +210,7 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
             </Button>
           )}
           {enableExport && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1.5"
-              onClick={handleExport}
-            >
+            <Button variant="outline" size="sm" className="h-8 gap-1.5" onClick={handleExport}>
               <Download className="size-3.5" />
               Export
             </Button>
@@ -253,9 +221,7 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
       {/* Selection Toolbar */}
       {selectedRows.size > 0 && selectionToolbar && (
         <div className="flex items-center gap-4 p-3 bg-primary/10 border border-primary/20 rounded-lg">
-          <span className="text-sm font-medium">
-            {selectedRows.size} selected
-          </span>
+          <span className="text-sm font-medium">{selectedRows.size} selected</span>
           {selectionToolbar(Array.from(selectedRows))}
         </div>
       )}
@@ -268,10 +234,7 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
               {enableSelection && (
                 <TableHead className="w-10">
                   <Checkbox
-                    checked={
-                      selectedRows.size === sortedData.length &&
-                      sortedData.length > 0
-                    }
+                    checked={selectedRows.size === sortedData.length && sortedData.length > 0}
                     onCheckedChange={handleSelectAll}
                   />
                 </TableHead>
@@ -311,18 +274,12 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
               return (
                 <TableRow
                   key={id}
-                  className={cn(
-                    "cursor-pointer transition-colors",
-                    isSelected && "bg-primary/5",
-                  )}
+                  className={cn("cursor-pointer transition-colors", isSelected && "bg-primary/5")}
                   onClick={() => onRowClick?.(id)}
                 >
                   {enableSelection && (
                     <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={isSelected}
-                        onCheckedChange={() => handleSelectRow(id)}
-                      />
+                      <Checkbox checked={isSelected} onCheckedChange={() => handleSelectRow(id)} />
                     </TableCell>
                   )}
                   {dimensions.map((dim) => (
@@ -342,12 +299,7 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
                       >
                         <span
                           className={cn(
-                            metric.colorize &&
-                              (value > 0
-                                ? "pnl-positive"
-                                : value < 0
-                                  ? "pnl-negative"
-                                  : ""),
+                            metric.colorize && (value > 0 ? "pnl-positive" : value < 0 ? "pnl-negative" : ""),
                           )}
                         >
                           {formatMetric(row[metric.key], metric.format)}

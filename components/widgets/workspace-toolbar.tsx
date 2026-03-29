@@ -1,15 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -18,14 +9,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useWorkspaceStore, useActiveWorkspace } from "@/lib/stores/workspace-store";
-import { WidgetCatalogDrawer } from "./widget-catalog-drawer";
 import {
-  Plus, Save, RotateCcw, Download, Upload, Lock, Unlock, MoreHorizontal,
-  Copy, Trash2, Undo2, Camera, Cloud, CloudOff, Loader2, History,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import type { SyncStatus } from "@/lib/stores/workspace-store";
+import { useActiveWorkspace, useWorkspaceStore } from "@/lib/stores/workspace-store";
+import {
+  Camera,
+  Cloud,
+  CloudOff,
+  Copy,
+  Download,
+  History,
+  Lock,
+  MoreHorizontal,
+  Plus,
+  RotateCcw,
+  Trash2,
+  Undo2,
+  Unlock,
+  Upload,
 } from "lucide-react";
-import type { WorkspaceSnapshot, SyncStatus } from "@/lib/stores/workspace-store";
+import * as React from "react";
+import { WidgetCatalogDrawer } from "./widget-catalog-drawer";
 
 interface WorkspaceToolbarProps {
   tab: string;
@@ -120,7 +133,7 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   const syncIcon = React.useMemo(() => {
     const icons: Record<SyncStatus, React.ReactNode> = {
       local: <CloudOff className="size-3 text-muted-foreground" />,
-      syncing: <Loader2 className="size-3 text-blue-400 animate-spin" />,
+      syncing: <Spinner size="sm" className="size-3 text-blue-400" />,
       synced: <Cloud className="size-3 text-emerald-400" />,
       error: <CloudOff className="size-3 text-rose-400" />,
     };
@@ -192,7 +205,10 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
           variant="ghost"
           size="sm"
           className="h-7 gap-1 text-xs"
-          onClick={() => { setSnapshotName(`Snapshot ${snapshots.length + 1}`); setSnapshotOpen(true); }}
+          onClick={() => {
+            setSnapshotName(`Snapshot ${snapshots.length + 1}`);
+            setSnapshotOpen(true);
+          }}
           title="Save snapshot"
         >
           <Camera className="size-3.5" />
@@ -208,18 +224,21 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 max-h-64 overflow-y-auto">
-              {snapshots.slice().reverse().map((snap) => (
-                <DropdownMenuItem
-                  key={snap.id}
-                  className="flex items-center justify-between text-xs"
-                  onClick={() => restoreSnapshot(tab, snap.id)}
-                >
-                  <span className="truncate">{snap.name}</span>
-                  <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
-                    {new Date(snap.createdAt).toLocaleTimeString()}
-                  </span>
-                </DropdownMenuItem>
-              ))}
+              {snapshots
+                .slice()
+                .reverse()
+                .map((snap) => (
+                  <DropdownMenuItem
+                    key={snap.id}
+                    className="flex items-center justify-between text-xs"
+                    onClick={() => restoreSnapshot(tab, snap.id)}
+                  >
+                    <span className="truncate">{snap.name}</span>
+                    <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
+                      {new Date(snap.createdAt).toLocaleTimeString()}
+                    </span>
+                  </DropdownMenuItem>
+                ))}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

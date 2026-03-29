@@ -9,6 +9,7 @@ import type {
   PortfolioGreeksResponse,
   VenueCircuitBreakerStatus,
 } from "@/hooks/api/use-risk";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Types used by the risk widgets (kept local until moved to lib/types/risk.ts)
@@ -149,9 +150,9 @@ export function getStatusFromUtil(util: number): "live" | "warning" | "critical"
 }
 
 export function formatCurrency(value: number): string {
-  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (Math.abs(value) >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
+  if (Math.abs(value) >= 1_000_000) return `$${formatNumber(value / 1_000_000, 1)}M`;
+  if (Math.abs(value) >= 1_000) return `$${formatNumber(value / 1_000, 0)}K`;
+  return `$${formatNumber(value, 0)}`;
 }
 
 export function getAssetClassColor(assetClass: string): string {

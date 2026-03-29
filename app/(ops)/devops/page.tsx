@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 /**
  * /devops — Deployment control center.
  * Tabbed interface with components ported from unified-trading-deployment-ui.
@@ -16,14 +17,7 @@ import { DevOpsDashboard } from "@/components/dashboards/devops-dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Cloud,
-  Database,
-  Rocket,
-  Activity,
-  CheckCircle2,
-  History,
-} from "lucide-react";
+import { Cloud, Database, Rocket, Activity, CheckCircle2, History } from "lucide-react";
 
 function TabSkeleton() {
   return (
@@ -37,53 +31,36 @@ function TabSkeleton() {
 }
 
 const DeploymentHistory = dynamic(
-  () =>
-    import("@/components/ops/deployment/DeploymentHistory").then(
-      (m) => m.DeploymentHistory,
-    ),
+  () => import("@/components/ops/deployment/DeploymentHistory").then((m) => m.DeploymentHistory),
   { ssr: false, loading: () => <TabSkeleton /> },
 );
-const DataStatusTab = dynamic(
-  () =>
-    import("@/components/ops/deployment/DataStatusTab").then(
-      (m) => m.DataStatusTab,
-    ),
-  { ssr: false, loading: () => <TabSkeleton /> },
-);
+const DataStatusTab = dynamic(() => import("@/components/ops/deployment/DataStatusTab").then((m) => m.DataStatusTab), {
+  ssr: false,
+  loading: () => <TabSkeleton />,
+});
 const CloudBuildsTab = dynamic(
-  () =>
-    import("@/components/ops/deployment/CloudBuildsTab").then(
-      (m) => m.CloudBuildsTab,
-    ),
+  () => import("@/components/ops/deployment/CloudBuildsTab").then((m) => m.CloudBuildsTab),
   { ssr: false, loading: () => <TabSkeleton /> },
 );
 const ServicesOverviewTab = dynamic(
-  () =>
-    import("@/components/ops/deployment/ServicesOverviewTab").then(
-      (m) => m.ServicesOverviewTab,
-    ),
+  () => import("@/components/ops/deployment/ServicesOverviewTab").then((m) => m.ServicesOverviewTab),
   { ssr: false, loading: () => <TabSkeleton /> },
 );
-const ReadinessTab = dynamic(
-  () =>
-    import("@/components/ops/deployment/ReadinessTab").then(
-      (m) => m.ReadinessTab,
-    ),
-  { ssr: false, loading: () => <TabSkeleton /> },
-);
+const ReadinessTab = dynamic(() => import("@/components/ops/deployment/ReadinessTab").then((m) => m.ReadinessTab), {
+  ssr: false,
+  loading: () => <TabSkeleton />,
+});
 
 export default function DevOpsPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container px-4 py-8 md:px-6">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Deployment Control Center</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Service deployments, data pipelines, cloud builds, and
-              infrastructure readiness.
-            </p>
-          </div>
+          <PageHeader
+            title="Deployment Control Center"
+            description="Service deployments, data pipelines, cloud builds, and
+              infrastructure readiness."
+          />
           <Badge variant="outline" className="text-xs">
             <Activity className="size-3 mr-1" /> All systems operational
           </Badge>

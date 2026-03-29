@@ -1,51 +1,12 @@
 "use client";
 
-import {
-  X,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Clock,
-  AlertCircle,
-  Terminal,
-  ChevronDown,
-  ChevronUp,
-  RotateCcw,
-  StopCircle,
-  Play,
-  Square,
-  CheckSquare,
-  Edit2,
-  Check,
-  Tag,
-  List,
-  Layers,
-  ChevronRight,
-  FolderOpen,
-  Folder,
-  GitCommit,
-  FileText,
-  Search,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn, formatDateTime } from "@/lib/utils";
-import { VM_EVENT_TYPES } from "@/lib/types/deployment";
-import { StatBox } from "./stat-box";
-import { ShardRow } from "./shard-row";
-import { DeploymentStatusBadge } from "./deployment-status-badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
 
-import { DeploymentDetailsShardsTabPanel } from "./deployment-details-shards-tab-panel";
+import { DeploymentDetailsEventsTabPanel } from "./deployment-details-events-tab-panel";
 import { DeploymentDetailsLogsTabPanel } from "./deployment-details-logs-tab-panel";
 import { DeploymentDetailsReportTabPanel } from "./deployment-details-report-tab-panel";
-import { DeploymentDetailsEventsTabPanel } from "./deployment-details-events-tab-panel";
+import { DeploymentDetailsShardsTabPanel } from "./deployment-details-shards-tab-panel";
 
 export function DeploymentDetailsTabs() {
   const dd = useDeploymentDetailsModelContext();

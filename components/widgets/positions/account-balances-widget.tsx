@@ -1,13 +1,15 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Spinner } from "@/components/ui/spinner";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CollapsibleSection } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+
 import { formatCurrency } from "@/lib/reference-data";
 import { usePositionsData } from "./positions-data-context";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function AccountBalancesWidget(_props: WidgetComponentProps) {
   const { balances, balancesLoading } = usePositionsData();
@@ -29,7 +31,7 @@ export function AccountBalancesWidget(_props: WidgetComponentProps) {
     >
       {balancesLoading ? (
         <div className="flex items-center justify-center py-4 gap-2 text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
+          <Spinner size="sm" className="size-3" />
           <span className="text-[11px]">Loading balances...</span>
         </div>
       ) : balances.length === 0 ? (
@@ -63,7 +65,7 @@ export function AccountBalancesWidget(_props: WidgetComponentProps) {
                   <TableCell className="px-2 py-1">
                     <div className="flex items-center gap-1.5">
                       <Progress value={utilization} className="h-1.5 flex-1" />
-                      <span className="text-[10px] font-mono w-8 text-right">{utilization.toFixed(0)}%</span>
+                      <span className="text-[10px] font-mono w-8 text-right">{formatPercent(utilization, 0)}</span>
                     </div>
                   </TableCell>
                 </TableRow>

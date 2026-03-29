@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { type ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2, XCircle, Search, ArrowRight, PenLine } from "lucide-react";
 import type { BreakType, ReconciliationRecord, ReconciliationStatus } from "./reconciliation-types";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function buildHistoryColumns(handlers: {
   onResolveAction: (record: ReconciliationRecord, action: "accept" | "reject" | "investigate") => void;
@@ -154,8 +155,8 @@ function statusBadge(status: ReconciliationStatus) {
 }
 
 function formatNumeric(v: number): string {
-  if (Math.abs(v) >= 1_000_000) return `${(v / 1_000_000).toFixed(2)}M`;
-  if (Math.abs(v) >= 1_000) return `${(v / 1_000).toFixed(2)}k`;
-  if (Math.abs(v) < 1 && v !== 0) return v.toFixed(4);
-  return v.toFixed(2);
+  if (Math.abs(v) >= 1_000_000) return `${formatNumber(v / 1_000_000, 2)}M`;
+  if (Math.abs(v) >= 1_000) return `${formatNumber(v / 1_000, 2)}k`;
+  if (Math.abs(v) < 1 && v !== 0) return formatNumber(v, 4);
+  return formatNumber(v, 2);
 }

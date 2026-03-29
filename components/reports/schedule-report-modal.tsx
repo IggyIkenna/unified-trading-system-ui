@@ -1,27 +1,22 @@
 "use client";
 
-import * as React from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Calendar, Clock, Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { Calendar, Clock } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
 
 const REPORT_TYPES = [
   { value: "pnl-attribution", label: "P&L Attribution" },
@@ -46,10 +41,7 @@ interface ScheduleReportModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ScheduleReportModal({
-  open,
-  onOpenChange,
-}: ScheduleReportModalProps) {
+export function ScheduleReportModal({ open, onOpenChange }: ScheduleReportModalProps) {
   const { token } = useAuth();
   const [reportType, setReportType] = React.useState("pnl-attribution");
   const [frequency, setFrequency] = React.useState("weekly");
@@ -105,8 +97,7 @@ export function ScheduleReportModal({
             Schedule Report
           </DialogTitle>
           <DialogDescription>
-            Configure a recurring report delivery. In mock mode, this saves the
-            configuration but does not send emails.
+            Configure a recurring report delivery. In mock mode, this saves the configuration but does not send emails.
           </DialogDescription>
         </DialogHeader>
 
@@ -160,9 +151,7 @@ export function ScheduleReportModal({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Recipients (comma-separated emails)
-            </label>
+            <label className="text-sm font-medium">Recipients (comma-separated emails)</label>
             <Input
               placeholder="pm@acme.com, ops@acme.com"
               value={recipients}
@@ -178,7 +167,7 @@ export function ScheduleReportModal({
           <Button onClick={handleSubmit} disabled={submitting}>
             {submitting ? (
               <>
-                <Loader2 className="mr-2 size-4 animate-spin" /> Scheduling...
+                <Spinner className="mr-2 size-4" /> Scheduling...
               </>
             ) : (
               <>

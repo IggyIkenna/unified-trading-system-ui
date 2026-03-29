@@ -1,15 +1,10 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import * as React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,17 +32,14 @@ import {
   Inbox,
   Download,
 } from "lucide-react";
-import {
-  exportTableToCsv,
-  exportTableToXlsx,
-  type ExportColumn,
-} from "@/lib/utils/export";
+import { exportTableToCsv, exportTableToXlsx, type ExportColumn } from "@/lib/utils/export";
 import { AuditDashboard } from "@/components/dashboards/audit-dashboard";
 import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import { useAuditEvents } from "@/hooks/api/use-audit";
 import { useServiceHealth } from "@/hooks/api/use-service-status";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { usePositionsSummary } from "@/hooks/api/use-positions";
+import { formatNumber } from "@/lib/utils/formatters";
 
 function formatRelativeTime(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime();
@@ -109,17 +101,10 @@ export default function AdminDashboardPage() {
   const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList();
   const { data: eventsData, isLoading: eventsLoading } = useAuditEvents();
   const { data: healthData, isLoading: healthLoading } = useServiceHealth();
-  const { data: strategyData, isLoading: strategyLoading } =
-    useStrategyPerformance();
-  const { data: positionsData, isLoading: positionsLoading } =
-    usePositionsSummary();
+  const { data: strategyData, isLoading: strategyLoading } = useStrategyPerformance();
+  const { data: positionsData, isLoading: positionsLoading } = usePositionsSummary();
 
-  const isLoading =
-    orgsLoading ||
-    eventsLoading ||
-    healthLoading ||
-    strategyLoading ||
-    positionsLoading;
+  const isLoading = orgsLoading || eventsLoading || healthLoading || strategyLoading || positionsLoading;
 
   const orgs: Array<{
     id: string;
@@ -129,20 +114,14 @@ export default function AdminDashboardPage() {
     memberCount: number;
     subscriptionTier: string;
     monthlyFee?: number;
-  }> =
-    ((orgsData as Record<string, unknown>)?.organizations as typeof orgs) ?? [];
-  const events: AuditEvent[] =
-    ((eventsData as Record<string, unknown>)?.events as AuditEvent[]) ?? [];
+  }> = ((orgsData as Record<string, unknown>)?.organizations as typeof orgs) ?? [];
+  const events: AuditEvent[] = ((eventsData as Record<string, unknown>)?.events as AuditEvent[]) ?? [];
   const services: ServiceHealthEntry[] =
-    ((healthData as Record<string, unknown>)
-      ?.services as ServiceHealthEntry[]) ?? [];
-  const strategies: StrategyEntry[] =
-    ((strategyData as Record<string, unknown>)
-      ?.strategies as StrategyEntry[]) ?? [];
+    ((healthData as Record<string, unknown>)?.services as ServiceHealthEntry[]) ?? [];
+  const strategies: StrategyEntry[] = ((strategyData as Record<string, unknown>)?.strategies as StrategyEntry[]) ?? [];
   const posSummary = positionsData as PositionsSummaryData | undefined;
   const pendingApprovals: PendingApproval[] =
-    ((eventsData as Record<string, unknown>)
-      ?.pendingApprovals as PendingApproval[]) ?? [];
+    ((eventsData as Record<string, unknown>)?.pendingApprovals as PendingApproval[]) ?? [];
 
   const activityExportColumns: ExportColumn[] = [
     { key: "type", header: "Type" },
@@ -153,10 +132,7 @@ export default function AdminDashboardPage() {
     { key: "timestamp", header: "Timestamp", format: "date" },
   ];
 
-  const totalUsers = orgs.reduce(
-    (sum: number, o) => sum + (o.memberCount ?? 0),
-    0,
-  );
+  const totalUsers = orgs.reduce((sum: number, o) => sum + (o.memberCount ?? 0), 0);
   const activeOrgs = orgs.filter((o) => o.status === "active").length;
   const mrr = orgs.reduce((sum: number, o) => sum + (o.monthlyFee ?? 0), 0);
 
@@ -165,34 +141,19 @@ export default function AdminDashboardPage() {
   const totalAum =
     posSummary?.totalAum ??
     posSummary?.total_notional ??
-    ((strategies as unknown as Array<{ nav?: number }>).reduce(
-      (sum, s) => sum + (s.nav ?? 0),
-      0,
-    ) ||
-      (((posSummary as Record<string, unknown>)?.totalExposure as number) ??
-        0));
+    ((strategies as unknown as Array<{ nav?: number }>).reduce((sum, s) => sum + (s.nav ?? 0), 0) ||
+      (((posSummary as Record<string, unknown>)?.totalExposure as number) ?? 0));
   const healthyServices = services.filter((s) => s.status === "healthy").length;
   const totalServices = services.length;
-  const serviceHealthPct =
-    totalServices > 0 ? Math.round((healthyServices / totalServices) * 100) : 0;
+  const serviceHealthPct = totalServices > 0 ? Math.round((healthyServices / totalServices) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b border-border">
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                Admin Dashboard
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Organization management, users, and system overview
-              </p>
-            </div>
-            <Badge
-              variant="outline"
-              className="border-emerald-500/30 text-emerald-400"
-            >
+            <PageHeader title="Admin Dashboard" description="Organization management, users, and system overview" />
+            <Badge variant="outline" className="border-emerald-500/30 text-emerald-400">
               <Shield className="mr-1.5 size-3" />
               Admin
             </Badge>
@@ -228,10 +189,7 @@ export default function AdminDashboardPage() {
               <Card>
                 <CardContent className="pt-4 space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between py-3"
-                    >
+                    <div key={i} className="flex items-center justify-between py-3">
                       <div className="flex items-center gap-3">
                         <Skeleton className="h-4 w-4 rounded-full" />
                         <div className="space-y-1.5">
@@ -273,12 +231,8 @@ export default function AdminDashboardPage() {
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        Total Strategies
-                      </p>
-                      <p className="text-3xl font-bold font-mono text-violet-400">
-                        {totalStrategies}
-                      </p>
+                      <p className="text-sm text-muted-foreground">Total Strategies</p>
+                      <p className="text-3xl font-bold font-mono text-violet-400">{totalStrategies}</p>
                     </div>
                     <div className="rounded-lg bg-violet-500/10 p-3">
                       <BarChart3 className="size-6 text-violet-400" />
@@ -294,7 +248,7 @@ export default function AdminDashboardPage() {
                       <p className="text-3xl font-bold font-mono text-amber-400">
                         $
                         {totalAum >= 1_000_000
-                          ? `${(totalAum / 1_000_000).toFixed(1)}m`
+                          ? `${formatNumber(totalAum / 1_000_000, 1)}m`
                           : totalAum.toLocaleString()}
                       </p>
                     </div>
@@ -308,15 +262,9 @@ export default function AdminDashboardPage() {
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        Active Users
-                      </p>
-                      <p className="text-3xl font-bold font-mono text-sky-400">
-                        {totalUsers}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {activeOrgs} active orgs
-                      </p>
+                      <p className="text-sm text-muted-foreground">Active Users</p>
+                      <p className="text-3xl font-bold font-mono text-sky-400">{totalUsers}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{activeOrgs} active orgs</p>
                     </div>
                     <div className="rounded-lg bg-sky-500/10 p-3">
                       <Users className="size-6 text-sky-400" />
@@ -330,9 +278,7 @@ export default function AdminDashboardPage() {
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        Service Health
-                      </p>
+                      <p className="text-sm text-muted-foreground">Service Health</p>
                       <p
                         className={`text-3xl font-bold font-mono ${serviceHealthPct >= 90 ? "text-emerald-400" : serviceHealthPct >= 70 ? "text-amber-400" : "text-red-400"}`}
                       >
@@ -407,26 +353,19 @@ export default function AdminDashboardPage() {
                           <div className="flex items-center gap-3">
                             <CheckCircle2 className="size-4 text-amber-400" />
                             <div>
-                              <p className="text-sm font-medium">
-                                {approval.description}
-                              </p>
+                              <p className="text-sm font-medium">{approval.description}</p>
                               <p className="text-xs text-muted-foreground">
-                                Requested by {approval.requestedBy} -{" "}
-                                {approval.type}
+                                Requested by {approval.requestedBy} - {approval.type}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">
-                              {approval.requestedAt}
-                            </span>
+                            <span className="text-xs text-muted-foreground">{approval.requestedAt}</span>
                             <Button
                               size="sm"
                               variant="outline"
                               className="h-7 text-xs"
-                              onClick={() =>
-                                toast.info(`Reviewing approval ${approval.id}`)
-                              }
+                              onClick={() => toast.info(`Reviewing approval ${approval.id}`)}
                             >
                               Review
                             </Button>
@@ -437,12 +376,9 @@ export default function AdminDashboardPage() {
                   ) : (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
                       <Inbox className="size-10 text-muted-foreground/50 mb-3" />
-                      <p className="text-sm text-muted-foreground">
-                        No pending approvals
-                      </p>
+                      <p className="text-sm text-muted-foreground">No pending approvals</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Strategy promotions, config changes, and access requests
-                        will appear here.
+                        Strategy promotions, config changes, and access requests will appear here.
                       </p>
                     </div>
                   )}
@@ -456,19 +392,12 @@ export default function AdminDashboardPage() {
               {orgs.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {orgs.map((org) => (
-                    <Card
-                      key={org.id}
-                      className="hover:border-foreground/20 transition-colors"
-                    >
+                    <Card key={org.id} className="hover:border-foreground/20 transition-colors">
                       <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
-                          <CardTitle className="text-base">
-                            {org.name}
-                          </CardTitle>
+                          <CardTitle className="text-base">{org.name}</CardTitle>
                           <Badge
-                            variant={
-                              org.status === "active" ? "default" : "secondary"
-                            }
+                            variant={org.status === "active" ? "default" : "secondary"}
                             className={
                               org.status === "active"
                                 ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30"
@@ -481,46 +410,27 @@ export default function AdminDashboardPage() {
                           </Badge>
                         </div>
                         <CardDescription>
-                          {org.type === "internal"
-                            ? "Internal Team"
-                            : "Client Organization"}
+                          {org.type === "internal" ? "Internal Team" : "Client Organization"}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="grid grid-cols-2 gap-2 text-sm">
                           <div>
-                            <p className="text-muted-foreground text-xs">
-                              Members
-                            </p>
-                            <p className="font-mono font-medium">
-                              {org.memberCount}
-                            </p>
+                            <p className="text-muted-foreground text-xs">Members</p>
+                            <p className="font-mono font-medium">{org.memberCount}</p>
                           </div>
                           <div>
-                            <p className="text-muted-foreground text-xs">
-                              Tier
-                            </p>
-                            <p className="font-medium capitalize">
-                              {org.subscriptionTier}
-                            </p>
+                            <p className="text-muted-foreground text-xs">Tier</p>
+                            <p className="font-medium capitalize">{org.subscriptionTier}</p>
                           </div>
                         </div>
                         {org.monthlyFee !== undefined && (
                           <div className="text-sm">
-                            <p className="text-muted-foreground text-xs">
-                              Monthly Fee
-                            </p>
-                            <p className="font-mono font-medium">
-                              ${org.monthlyFee.toLocaleString()}
-                            </p>
+                            <p className="text-muted-foreground text-xs">Monthly Fee</p>
+                            <p className="font-mono font-medium">${org.monthlyFee.toLocaleString()}</p>
                           </div>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full"
-                          asChild
-                        >
+                        <Button variant="ghost" size="sm" className="w-full" asChild>
                           <Link href="/services/manage/clients">
                             Manage
                             <ArrowRight className="ml-2 size-3" />
@@ -534,9 +444,7 @@ export default function AdminDashboardPage() {
                 <Card>
                   <CardContent className="py-8 text-center">
                     <Building2 className="size-10 text-muted-foreground/50 mx-auto mb-3" />
-                    <p className="text-sm text-muted-foreground">
-                      No organizations loaded
-                    </p>
+                    <p className="text-sm text-muted-foreground">No organizations loaded</p>
                   </CardContent>
                 </Card>
               )}
@@ -549,11 +457,7 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center gap-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 text-xs"
-                      >
+                      <Button variant="outline" size="sm" className="h-7 text-xs">
                         <Download className="mr-1.5 size-3" />
                         Export
                       </Button>
@@ -598,25 +502,17 @@ export default function AdminDashboardPage() {
                           key={event.id}
                           className="flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-accent/30 transition-colors"
                         >
-                          <Badge
-                            variant="secondary"
-                            className="text-[10px] min-w-[3.5rem] justify-center"
-                          >
-                            {ACTION_ICONS[event.type] ??
-                              event.type.split(".")[0]}
+                          <Badge variant="secondary" className="text-[10px] min-w-[3.5rem] justify-center">
+                            {ACTION_ICONS[event.type] ?? event.type.split(".")[0]}
                           </Badge>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm truncate">
                               <span className="font-medium">{event.actor}</span>{" "}
-                              <span className="text-muted-foreground">
-                                {event.details}
-                              </span>
+                              <span className="text-muted-foreground">{event.details}</span>
                             </p>
                             <div className="flex items-center gap-2 mt-0.5">
                               {event.entity && (
-                                <span className="text-xs text-muted-foreground font-mono">
-                                  {event.entity}
-                                </span>
+                                <span className="text-xs text-muted-foreground font-mono">{event.entity}</span>
                               )}
                               {event.org && (
                                 <span className="text-xs text-muted-foreground">
@@ -636,9 +532,7 @@ export default function AdminDashboardPage() {
                   ) : (
                     <div className="py-8 text-center">
                       <Activity className="size-10 text-muted-foreground/50 mx-auto mb-3" />
-                      <p className="text-sm text-muted-foreground">
-                        No audit events recorded
-                      </p>
+                      <p className="text-sm text-muted-foreground">No audit events recorded</p>
                     </div>
                   )}
                 </CardContent>

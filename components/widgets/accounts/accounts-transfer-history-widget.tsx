@@ -1,12 +1,13 @@
 "use client";
 
-import * as React from "react";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { cn } from "@/lib/utils";
 import type { TransferHistoryEntry } from "@/lib/types/accounts";
-import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import * as React from "react";
+
 import { Button } from "@/components/ui/button";
 import { useAccountsData } from "./accounts-data-context";
 
@@ -55,7 +56,7 @@ export function AccountsTransferHistoryWidget(_props: WidgetComponentProps) {
   if (transferHistoryLoading) {
     return (
       <div className="flex items-center justify-center py-6 gap-2 text-muted-foreground text-xs">
-        <Loader2 className="size-3.5 animate-spin" />
+        <Spinner size="sm" className="size-3.5" />
         Loading transfer history…
       </div>
     );

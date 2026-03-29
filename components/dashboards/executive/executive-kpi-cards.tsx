@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, DollarSign, PieChart, BarChart3, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import type { ExecutiveSelectedStrategyData } from "./executive-dashboard-types";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 interface ExecutiveKpiCardsProps {
   selectedStrategyData: ExecutiveSelectedStrategyData;
@@ -17,7 +18,7 @@ export function ExecutiveKpiCards({ selectedStrategyData, strategyCountTotal }: 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wider">Total AUM</p>
-              <p className="text-2xl font-semibold mt-1">${selectedStrategyData.totalAum.toFixed(1)}M</p>
+              <p className="text-2xl font-semibold mt-1">${formatNumber(selectedStrategyData.totalAum, 1)}M</p>
               <div className="flex items-center gap-1 mt-1">
                 <span className="text-xs text-muted-foreground">
                   {selectedStrategyData.count} of {strategyCountTotal} strategies
@@ -50,7 +51,7 @@ export function ExecutiveKpiCards({ selectedStrategyData, strategyCountTotal }: 
                 <span
                   className={`text-xs ${selectedStrategyData.totalPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
                 >
-                  {selectedStrategyData.pnlPct.toFixed(1)}%
+                  {formatPercent(selectedStrategyData.pnlPct, 1)}
                 </span>
                 <span className="text-xs text-muted-foreground">return</span>
               </div>
@@ -84,7 +85,7 @@ export function ExecutiveKpiCards({ selectedStrategyData, strategyCountTotal }: 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-muted-foreground uppercase tracking-wider">Avg Sharpe Ratio</p>
-              <p className="text-2xl font-semibold mt-1">{selectedStrategyData.weightedSharpe.toFixed(2)}</p>
+              <p className="text-2xl font-semibold mt-1">{formatNumber(selectedStrategyData.weightedSharpe, 2)}</p>
               <div className="flex items-center gap-1 mt-1">
                 <span className="text-xs text-muted-foreground">AUM-weighted</span>
               </div>

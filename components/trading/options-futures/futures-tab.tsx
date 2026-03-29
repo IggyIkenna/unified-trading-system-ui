@@ -85,6 +85,7 @@ import {
   SPOT_STEPS,
   VOL_STEPS,
 } from "@/lib/mocks/fixtures/options-futures-mock";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function FuturesTab({
   asset,
@@ -247,7 +248,7 @@ export function FuturesTab({
                     )}
                   >
                     {row.change24h >= 0 ? "+" : ""}
-                    {row.change24h.toFixed(2)}%
+                    {formatPercent(row.change24h, 2)}
                   </td>
                   <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">{formatUsd(row.volume24h)}</td>
                   <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
@@ -264,7 +265,7 @@ export function FuturesTab({
                     )}
                   >
                     {row.fundingRate !== null
-                      ? `${row.fundingRate >= 0 ? "+" : ""}${(row.fundingRate * 100).toFixed(4)}%`
+                      ? `${row.fundingRate >= 0 ? "+" : ""}${formatPercent(row.fundingRate * 100, 4)}`
                       : "--"}
                   </td>
                   <td
@@ -273,7 +274,7 @@ export function FuturesTab({
                       row.basis !== null ? "text-blue-400" : "text-muted-foreground",
                     )}
                   >
-                    {row.basis !== null ? `${row.basis.toFixed(2)}%` : "--"}
+                    {row.basis !== null ? `${formatPercent(row.basis, 2)}` : "--"}
                   </td>
                 </tr>
               ))}

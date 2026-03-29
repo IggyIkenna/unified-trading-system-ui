@@ -25,6 +25,7 @@ import {
   type Timeframe,
 } from "@/lib/data-service-types";
 import { MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/data-service-mock-data";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const ALL_TIMEFRAMES: Timeframe[] = ["1m", "5m", "15m", "1h", "4h", "1d"];
 
@@ -105,7 +106,7 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
               />
             </div>
             <span className={cn(finderText.micro, "text-muted-foreground w-8 text-right")}>
-              {completionPct.toFixed(0)}%
+              {formatPercent(completionPct, 0)}
             </span>
           </div>
         </div>
@@ -295,7 +296,7 @@ export function getProcessingContextStats(selections: FinderSelections): FinderC
     metrics: [
       {
         label: "overall",
-        value: stage?.completionPct?.toFixed(1) ?? "—",
+        value: stage?.completionPct != null ? formatNumber(stage.completionPct, 1) : "—",
       },
       {
         label: "shards complete",

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,7 +72,7 @@ export function TradePanelInner({
     setStakeAmount("");
     toast({
       title: "Position opened",
-      description: `${selectedSide.toUpperCase()} "${outcome.name}" — $${stakeNum.toFixed(2)} @ ${(price * 100).toFixed(0)}¢ (${order.id})`,
+      description: `${selectedSide.toUpperCase()} "${outcome.name}" — ${formatCurrency(stakeNum, "USD", 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
     });
   }
 
@@ -131,12 +132,12 @@ export function TradePanelInner({
       <div className="grid grid-cols-2 gap-3 rounded-lg border border-border/50 p-3">
         <div className="text-center space-y-0.5">
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">YES</p>
-          <p className="text-xl font-bold text-emerald-400 tabular-nums">{(outcome.yesPrice * 100).toFixed(0)}¢</p>
+          <p className="text-xl font-bold text-emerald-400 tabular-nums">{formatNumber(outcome.yesPrice * 100, 0)}¢</p>
           <p className="text-[10px] text-muted-foreground">{fmtVolume(market.volume * outcome.yesPrice)}</p>
         </div>
         <div className="text-center space-y-0.5">
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">NO</p>
-          <p className="text-xl font-bold text-red-400 tabular-nums">{(outcome.noPrice * 100).toFixed(0)}¢</p>
+          <p className="text-xl font-bold text-red-400 tabular-nums">{formatNumber(outcome.noPrice * 100, 0)}¢</p>
           <p className="text-[10px] text-muted-foreground">{fmtVolume(market.volume * outcome.noPrice)}</p>
         </div>
       </div>
@@ -193,16 +194,16 @@ export function TradePanelInner({
               variant="outline"
               size="sm"
               className="text-xs h-6 px-2 border-amber-500/40 text-amber-400 hover:bg-amber-500/10"
-              onClick={() => setStakeAmount(kellySuggestion.toFixed(0))}
+              onClick={() => setStakeAmount(formatNumber(kellySuggestion, 0))}
             >
-              Kelly ${kellySuggestion.toFixed(0)}
+              Kelly {formatCurrency(kellySuggestion, "USD", 0)}
             </Button>
           )}
         </div>
         {kellySuggestion > 0 && (
           <p className="text-[10px] text-muted-foreground">
             Kelly (½ fraction, $10K bankroll):{" "}
-            <span className="text-amber-400 font-medium">${kellySuggestion.toFixed(2)}</span>
+            <span className="text-amber-400 font-medium">{formatCurrency(kellySuggestion, "USD", 2)}</span>
           </p>
         )}
       </div>
@@ -212,11 +213,11 @@ export function TradePanelInner({
         <div className="rounded-lg border border-border/50 bg-muted/30 p-3 space-y-1.5">
           <div className="flex justify-between text-xs">
             <span className="text-muted-foreground">Avg price</span>
-            <span className="tabular-nums">{(price * 100).toFixed(1)}¢</span>
+            <span className="tabular-nums">{formatNumber(price * 100, 1)}¢</span>
           </div>
           <div className="flex justify-between text-xs">
             <span className="text-muted-foreground">Shares</span>
-            <span className="tabular-nums">{(stakeNum / price).toFixed(2)}</span>
+            <span className="tabular-nums">{formatNumber(stakeNum / price, 2)}</span>
           </div>
           <div className="flex justify-between text-xs font-medium">
             <span className="text-muted-foreground">Potential return</span>
@@ -326,7 +327,7 @@ export function TopMarketCard({ market, onSelect }: { market: PredictionMarket; 
                 onSelect(market.id);
               }}
             >
-              {(outcome.yesPrice * 100).toFixed(0)}¢ YES
+              {formatNumber(outcome.yesPrice * 100, 0)}¢ YES
             </button>
             <button
               className="text-[10px] px-2 py-1 rounded border border-red-500/40 text-red-400 hover:bg-red-500/10 font-semibold transition-colors"
@@ -335,7 +336,7 @@ export function TopMarketCard({ market, onSelect }: { market: PredictionMarket; 
                 onSelect(market.id);
               }}
             >
-              {(outcome.noPrice * 100).toFixed(0)}¢ NO
+              {formatNumber(outcome.noPrice * 100, 0)}¢ NO
             </button>
           </div>
         </div>
@@ -375,7 +376,7 @@ function RecentFills() {
                 </div>
               </div>
               <div className="text-right shrink-0 ml-3">
-                <p className="tabular-nums font-semibold">${fill.total.toFixed(0)}</p>
+                <p className="tabular-nums font-semibold">{formatCurrency(fill.total, "USD", 0)}</p>
                 <p className="text-[10px] text-muted-foreground tabular-nums">
                   {fill.pricePerShare}¢ · {fill.shares.toLocaleString()} shares
                 </p>

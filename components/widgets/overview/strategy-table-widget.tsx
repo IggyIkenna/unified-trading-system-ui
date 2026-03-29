@@ -1,15 +1,17 @@
 "use client";
 
-import * as React from "react";
-import type { WidgetComponentProps } from "../widget-registry";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import * as React from "react";
+import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function StrategyTableWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
@@ -20,14 +22,13 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
   const [showAll, setShowAll] = React.useState(false);
   const [collapsedGroups, setCollapsedGroups] = React.useState<Set<string> | null>(null);
 
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
-  const {
-    strategyPerformance,
-    filteredSortedStrategies: allFiltered,
-    realtimePnl,
-    perfLoading,
-    formatDollar,
-  } = ctx;
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
+  const { strategyPerformance, filteredSortedStrategies: allFiltered, realtimePnl, perfLoading, formatDollar } = ctx;
 
   const filtered = React.useMemo(() => {
     let result = [...(allFiltered as Array<Record<string, unknown>>)];
@@ -93,7 +94,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
         <CardHeader className="pb-2 pt-2 px-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
-              {perfLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
+              {perfLoading && <Spinner size="sm" className="size-3.5 text-muted-foreground" />}
               <input
                 type="text"
                 placeholder="Search..."
@@ -235,10 +236,10 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
                               {formatDollar(livePnl)}
                             </TableCell>
                             <TableCell className="text-right font-mono tabular-nums">
-                              {(Number(s.sharpe) || 0).toFixed(2)}
+                              {formatNumber(Number(s.sharpe) || 0, 2)}
                             </TableCell>
                             <TableCell className="text-right font-mono tabular-nums text-rose-400">
-                              {(Number(s.maxDrawdown) || 0).toFixed(1)}%
+                              {formatPercent(Number(s.maxDrawdown) || 0, 1)}
                             </TableCell>
                             <TableCell className="text-right font-mono tabular-nums">
                               {formatDollar(Number(s.exposure) || 0)}

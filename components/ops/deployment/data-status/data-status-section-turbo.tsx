@@ -1,39 +1,14 @@
 "use client";
 
-import {
-  Database,
-  RefreshCw,
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  CheckCircle2,
-  XCircle,
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-  Rocket,
-  Loader2,
-  Filter,
-  Eye,
-  Table2,
-  CalendarDays,
-  Building2,
-  Trash2,
-  FileText,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { HeatmapCalendar } from "@/components/ops/deployment/HeatmapCalendar";
-import { useDataStatusTabCtx } from "./data-status-context";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TurboVenueData } from "@/hooks/deployment/_api-stub";
-import { getCompletionColor, getCompletionBadgeClass } from "./category-metrics";
+import { cn } from "@/lib/utils";
+import { CheckCircle2, Database, Rocket, XCircle } from "lucide-react";
+import { getCompletionColor } from "./category-metrics";
+import { useDataStatusTabCtx } from "./data-status-context";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function DataStatusSectionTurbo() {
   const {
@@ -202,7 +177,7 @@ export function DataStatusSectionTurbo() {
                       color: getCompletionColor(turboData.overall_completion_pct ?? 0),
                     }}
                   >
-                    {(turboData.overall_completion_pct ?? 0).toFixed(1)}%
+                    {formatPercent(turboData.overall_completion_pct ?? 0, 1)}
                   </div>
                   <div className="text-xs text-[var(--color-text-muted)]">
                     {turboData.overall_dates_found} / {turboData.overall_dates_expected} venue-days
@@ -296,7 +271,7 @@ export function DataStatusSectionTurbo() {
                                   color: getCompletionColor(catData.completion_pct ?? 0),
                                 }}
                               >
-                                {(catData.completion_pct ?? 0).toFixed(1)}%
+                                {formatPercent(catData.completion_pct ?? 0, 1)}
                               </span>
                             </>
                           )}
@@ -426,7 +401,7 @@ export function DataStatusSectionTurbo() {
                                           color: getCompletionColor(folderData.completion_pct ?? 0),
                                         }}
                                       >
-                                        {(folderData.completion_pct ?? 0).toFixed(0)}%
+                                        {formatPercent(folderData.completion_pct ?? 0, 0)}
                                       </span>
                                     </div>
                                     <div className="h-1.5 bg-[var(--color-bg-secondary)] rounded-full overflow-hidden mt-1">
@@ -554,7 +529,7 @@ export function DataStatusSectionTurbo() {
                                           color: getCompletionColor(subData.completion_pct ?? 0),
                                         }}
                                       >
-                                        {(subData.completion_pct ?? 0).toFixed(0)}%
+                                        {formatPercent(subData.completion_pct ?? 0, 0)}
                                       </span>
                                     </div>
                                     {/* Progress bar with expected vs actual visualization */}

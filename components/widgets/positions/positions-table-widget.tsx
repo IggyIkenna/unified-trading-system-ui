@@ -1,19 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
 import { FilterBar } from "@/components/platform/filter-bar";
-import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { DataFreshness } from "@/components/ui/data-freshness";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DataFreshness } from "@/components/ui/data-freshness";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
-import type { ExportColumn } from "@/lib/utils/export";
+import { Spinner } from "@/components/ui/spinner";
+import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
-import { RefreshCw, ArrowUpRight, ArrowDownRight, Loader2, AlertCircle, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { ExportColumn } from "@/lib/utils/export";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, Filter, RefreshCw } from "lucide-react";
 import Link from "next/link";
+import * as React from "react";
 import { usePositionsData, type PositionRecord } from "./positions-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "instrument", header: "Instrument" },
@@ -131,7 +133,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
               )}
             >
               {row.pnl_pct >= 0 ? "+" : ""}
-              {row.pnl_pct.toFixed(2)}%
+              {formatPercent(row.pnl_pct, 2)}
             </span>
           </div>
         ),
@@ -161,10 +163,10 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
                   row.health_factor < 1.5 && "text-rose-500",
                 )}
               >
-                {row.health_factor.toFixed(2)}
+                {formatNumber(row.health_factor, 2)}
               </span>
               <span className="text-[9px] text-muted-foreground">
-                {(((row.health_factor - 1.0) / row.health_factor) * 100).toFixed(0)}% to liq
+                {formatPercent(((row.health_factor - 1.0) / row.health_factor) * 100, 0)} to liq
               </span>
             </div>
           );
@@ -185,7 +187,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full gap-2 text-muted-foreground">
-        <Loader2 className="size-4 animate-spin" />
+        <Spinner className="size-4" />
         <span className="text-xs">Loading positions...</span>
       </div>
     );
@@ -207,7 +209,10 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
-        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => setShowFilters((f) => !f)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        >
           <Filter className="size-3" />
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>

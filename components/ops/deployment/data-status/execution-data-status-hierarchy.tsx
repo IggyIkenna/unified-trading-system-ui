@@ -21,6 +21,7 @@ import {
   getCompletionColor,
   renderDatesList,
 } from "@/components/ops/deployment/data-status/execution-data-status-utils";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function ExecutionDataStatusHierarchy() {
   const {
@@ -80,7 +81,7 @@ export function ExecutionDataStatusHierarchy() {
                       </Badge>
                     )}
                     <Badge variant="outline" className={getCompletionBadgeClass(strategy.completion_pct)}>
-                      {strategy.completion_pct.toFixed(0)}%
+                      {formatPercent(strategy.completion_pct, 0)}
                     </Badge>
                     <div className="w-20 h-2 bg-[var(--color-bg-tertiary)] rounded-full overflow-hidden">
                       <div
@@ -130,7 +131,7 @@ export function ExecutionDataStatusHierarchy() {
                                   color: getCompletionColor(mode.completion_pct),
                                 }}
                               >
-                                {mode.completion_pct.toFixed(0)}%
+                                {formatPercent(mode.completion_pct, 0)}
                               </span>
                             </div>
                           </Button>
@@ -179,7 +180,7 @@ export function ExecutionDataStatusHierarchy() {
                                               color: getCompletionColor(tf.completion_pct),
                                             }}
                                           >
-                                            {tf.completion_pct.toFixed(0)}%
+                                            {formatPercent(tf.completion_pct, 0)}
                                           </span>
                                         )}
                                       </div>

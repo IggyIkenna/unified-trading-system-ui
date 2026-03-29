@@ -10,6 +10,7 @@ import { Clock, Plus, RefreshCw, Search, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { initialBacktestRuns } from "./quant-data";
 import { getStatusIcon } from "./quant-utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function BacktestPage() {
   const [selectedBacktest, setSelectedBacktest] = React.useState<string | null>("bt-001");
@@ -62,7 +63,7 @@ export function BacktestPage() {
                             <span>-</span>
                             <span className={bt.pnl >= 0 ? "text-positive" : "text-negative"}>
                               {bt.pnl >= 0 ? "+" : ""}
-                              {(bt.pnl / 1000).toFixed(0)}k
+                              {formatNumber(bt.pnl / 1000, 0)}k
                             </span>
                           </>
                         )}
@@ -114,7 +115,7 @@ export function BacktestPage() {
                       <CardContent className="p-4">
                         <p className="text-xs text-muted-foreground">Total P&L</p>
                         <p className={cn("mt-1 text-2xl font-bold", bt.pnl >= 0 ? "text-positive" : "text-negative")}>
-                          {bt.pnl >= 0 ? "+" : ""}${(bt.pnl / 1000).toFixed(0)}k
+                          {bt.pnl >= 0 ? "+" : ""}${formatNumber(bt.pnl / 1000, 0)}k
                         </p>
                       </CardContent>
                     </Card>

@@ -1,45 +1,11 @@
 "use client";
 
-import {
-  X,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Clock,
-  AlertCircle,
-  Terminal,
-  ChevronDown,
-  ChevronUp,
-  RotateCcw,
-  StopCircle,
-  Play,
-  Square,
-  CheckSquare,
-  Edit2,
-  Check,
-  Tag,
-  List,
-  Layers,
-  ChevronRight,
-  FolderOpen,
-  Folder,
-  GitCommit,
-  FileText,
-  Search,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn, formatDateTime } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+import { TabsContent } from "@/components/ui/tabs";
 import { VM_EVENT_TYPES } from "@/lib/types/deployment";
-import { StatBox } from "./stat-box";
-import { ShardRow } from "./shard-row";
-import { DeploymentStatusBadge } from "./deployment-status-badge";
+import { formatDateTime } from "@/lib/utils";
+import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
 
 export function DeploymentDetailsEventsTabPanel() {
@@ -131,14 +97,14 @@ export function DeploymentDetailsEventsTabPanel() {
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm font-medium text-[var(--color-text-secondary)]">Shard Event Timeline</p>
         <Button size="sm" variant="outline" onClick={fetchEvents} disabled={eventsLoading}>
-          {eventsLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+          {eventsLoading ? <Spinner size="sm" className="h-3 w-3 mr-1" /> : <RefreshCw className="h-3 w-3 mr-1" />}
           Refresh
         </Button>
       </div>
 
       {eventsLoading && events.length === 0 ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-5 w-5 animate-spin text-[var(--color-accent-cyan)]" />
+          <Spinner className="h-5 w-5 text-[var(--color-accent-cyan)]" />
           <span className="ml-2 text-sm text-[var(--color-text-muted)]">Loading events...</span>
         </div>
       ) : events.length === 0 ? (

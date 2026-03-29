@@ -7,6 +7,7 @@ import { CollapsibleSection, KpiStrip, type KpiMetric } from "@/components/widge
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { AlertTriangle } from "lucide-react";
 import { useBundlesData } from "./bundles-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function BundlePnlWidget(_props: WidgetComponentProps) {
   const { steps, totalCost, totalRevenue, estimatedGas, netPnl } = useBundlesData();
@@ -32,7 +33,7 @@ export function BundlePnlWidget(_props: WidgetComponentProps) {
     },
     {
       label: `Gas est. (${steps.length} txns)`,
-      value: `-$${estimatedGas.toFixed(2)}`,
+      value: `-$${formatNumber(estimatedGas, 2)}`,
       sentiment: "negative",
     },
     {
@@ -59,7 +60,7 @@ export function BundlePnlWidget(_props: WidgetComponentProps) {
               {totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </span>
             <span className="text-muted-foreground">Est. gas</span>
-            <span className="font-mono text-rose-400 text-right">-${estimatedGas.toFixed(2)}</span>
+            <span className="font-mono text-rose-400 text-right">-${formatNumber(estimatedGas, 2)}</span>
             <Separator className="col-span-2 my-1" />
             <span className="font-medium">Net P&amp;L</span>
             <span className={cn("font-mono font-bold text-right", netPnl >= 0 ? "text-emerald-400" : "text-rose-400")}>

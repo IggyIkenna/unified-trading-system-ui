@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -347,7 +348,7 @@ export function OptionsChainTab({
                               : "text-muted-foreground",
                         )}
                       >
-                        {row.callDelta.toFixed(2)}
+                        {formatNumber(row.callDelta, 2)}
                       </span>
                     </td>
                     <td
@@ -366,7 +367,7 @@ export function OptionsChainTab({
                       )}
                       onClick={() => handleCellClick(row, "C", false)}
                     >
-                      {row.callIvBid.toFixed(1)}%
+                      {formatPercent(row.callIvBid, 1)}
                     </td>
                     <td
                       className={cn(
@@ -375,13 +376,13 @@ export function OptionsChainTab({
                       )}
                       onClick={() => handleCellClick(row, "C", false)}
                     >
-                      {displayUsd ? formatUsd(row.callBid) : (row.callBid / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.callBid) : formatNumber(row.callBid / coinDivisor, 4)}
                     </td>
                     <td
                       className={cn("py-1 px-1.5 text-right font-mono border-r", callItm && "bg-emerald-500/5")}
                       onClick={() => handleCellClick(row, "C", true)}
                     >
-                      {displayUsd ? formatUsd(row.callMark) : (row.callMark / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.callMark) : formatNumber(row.callMark / coinDivisor, 4)}
                     </td>
 
                     {/* Strike centre */}
@@ -400,7 +401,7 @@ export function OptionsChainTab({
                       className={cn("py-1 px-1.5 text-left font-mono border-l", putItm && "bg-rose-500/5")}
                       onClick={() => handleCellClick(row, "P", false)}
                     >
-                      {displayUsd ? formatUsd(row.putMark) : (row.putMark / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.putMark) : formatNumber(row.putMark / coinDivisor, 4)}
                     </td>
                     <td
                       className={cn(
@@ -409,13 +410,13 @@ export function OptionsChainTab({
                       )}
                       onClick={() => handleCellClick(row, "P", true)}
                     >
-                      {displayUsd ? formatUsd(row.putAsk) : (row.putAsk / coinDivisor).toFixed(4)}
+                      {displayUsd ? formatUsd(row.putAsk) : formatNumber(row.putAsk / coinDivisor, 4)}
                     </td>
                     <td
                       className={cn("py-1 px-1.5 text-left font-mono text-muted-foreground", putItm && "bg-rose-500/5")}
                       onClick={() => handleCellClick(row, "P", true)}
                     >
-                      {row.putIvAsk.toFixed(1)}%
+                      {formatPercent(row.putIvAsk, 1)}
                     </td>
                     <td
                       className={cn("py-1 px-1.5 text-left font-mono", putItm && "bg-rose-500/5")}
@@ -430,7 +431,7 @@ export function OptionsChainTab({
                               : "text-muted-foreground",
                         )}
                       >
-                        {row.putDelta.toFixed(2)}
+                        {formatNumber(row.putDelta, 2)}
                       </span>
                     </td>
                     <td

@@ -7,6 +7,7 @@ import {
   getInstructionConfidenceColor,
   getInstructionSlippageColor,
 } from "@/lib/utils/instructions";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function InstructionDetailGrid({ inst }: { inst: StrategyInstruction }) {
   return (
@@ -20,7 +21,7 @@ export function InstructionDetailGrid({ inst }: { inst: StrategyInstruction }) {
           <span className="font-medium">{inst.signal.direction}</span>
           <span className="text-muted-foreground">Confidence</span>
           <span className={cn("font-mono", getInstructionConfidenceColor(inst.signal.confidence))}>
-            {(inst.signal.confidence * 100).toFixed(1)}%
+            {formatPercent(inst.signal.confidence * 100, 1)}
           </span>
         </div>
       </div>
@@ -46,7 +47,7 @@ export function InstructionDetailGrid({ inst }: { inst: StrategyInstruction }) {
           <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
             <span className="text-muted-foreground">Price Diff</span>
             <span className={cn("font-mono", getInstructionSlippageColor(inst.fill.slippageBps))}>
-              ${(inst.fill.fillPrice - inst.instruction.price).toFixed(2)}
+              ${formatNumber(inst.fill.fillPrice - inst.instruction.price, 2)}
             </span>
             <span className="text-muted-foreground">Qty Diff</span>
             <span
@@ -59,7 +60,7 @@ export function InstructionDetailGrid({ inst }: { inst: StrategyInstruction }) {
             </span>
             <span className="text-muted-foreground">Slippage</span>
             <span className={cn("font-mono", getInstructionSlippageColor(inst.fill.slippageBps))}>
-              {inst.fill.slippageBps.toFixed(1)} bps
+              {formatNumber(inst.fill.slippageBps, 1)} bps
             </span>
           </div>
         ) : (

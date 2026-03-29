@@ -6,27 +6,14 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DataTable } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  FileText,
-  Target,
-  AlertTriangle,
-  ClipboardCheck,
-  ChevronDown,
-  ChevronRight,
-  RefreshCw,
-} from "lucide-react";
+import { FileText, Target, AlertTriangle, ClipboardCheck, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { formatNumber } from "@/lib/utils/formatters";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -340,9 +327,7 @@ function mandateColumns(
     {
       accessorKey: "client",
       header: "Client",
-      cell: ({ getValue }) => (
-        <span className="font-medium">{getValue<string>()}</span>
-      ),
+      cell: ({ getValue }) => <span className="font-medium">{getValue<string>()}</span>,
     },
     {
       accessorKey: "strategy",
@@ -355,20 +340,12 @@ function mandateColumns(
     {
       accessorKey: "allocationTarget",
       header: "Target %",
-      cell: ({ getValue }) => (
-        <span className="text-right font-mono block">
-          {getValue<number>().toFixed(1)}
-        </span>
-      ),
+      cell: ({ getValue }) => <span className="text-right font-mono block">{formatNumber(getValue<number>(), 1)}</span>,
     },
     {
       accessorKey: "currentAllocation",
       header: "Current %",
-      cell: ({ getValue }) => (
-        <span className="text-right font-mono block">
-          {getValue<number>().toFixed(1)}
-        </span>
-      ),
+      cell: ({ getValue }) => <span className="text-right font-mono block">{formatNumber(getValue<number>(), 1)}</span>,
     },
     {
       accessorKey: "drift",
@@ -378,7 +355,7 @@ function mandateColumns(
         return (
           <span className={`text-right font-mono block ${driftColor(drift)}`}>
             {drift > 0 ? "+" : ""}
-            {drift.toFixed(1)}
+            {formatNumber(drift, 1)}
           </span>
         );
       },
@@ -386,30 +363,20 @@ function mandateColumns(
     {
       accessorKey: "maxDrawdownLimit",
       header: "Max DD Limit",
-      cell: ({ getValue }) => (
-        <span className="text-right font-mono block">
-          {getValue<number>()}%
-        </span>
-      ),
+      cell: ({ getValue }) => <span className="text-right font-mono block">{getValue<number>()}%</span>,
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ getValue }) => {
         const status = getValue<Mandate["status"]>();
-        return (
-          <Badge className={STATUS_STYLES[status]}>
-            {status === "under-review" ? "under review" : status}
-          </Badge>
-        );
+        return <Badge className={STATUS_STYLES[status]}>{status === "under-review" ? "under review" : status}</Badge>;
       },
     },
     {
       accessorKey: "lastReviewed",
       header: "Last Reviewed",
-      cell: ({ getValue }) => (
-        <span className="text-muted-foreground">{getValue<string>()}</span>
-      ),
+      cell: ({ getValue }) => <span className="text-muted-foreground">{getValue<string>()}</span>,
     },
   ];
 }
@@ -428,12 +395,8 @@ export default function ManageMandatesPage() {
   });
 
   const mandates: Mandate[] = React.useMemo(() => {
-    const apiRows = (data as Record<string, unknown>)?.data as
-      | Mandate[]
-      | undefined;
-    return Array.isArray(apiRows) && apiRows.length > 0
-      ? apiRows
-      : FALLBACK_MANDATES;
+    const apiRows = (data as Record<string, unknown>)?.data as Mandate[] | undefined;
+    return Array.isArray(apiRows) && apiRows.length > 0 ? apiRows : FALLBACK_MANDATES;
   }, [data]);
 
   // Filters
@@ -444,21 +407,14 @@ export default function ManageMandatesPage() {
   // Expandable row
   const [expandedId, setExpandedId] = React.useState<string | null>(null);
 
-  const clients = React.useMemo(
-    () => [...new Set(mandates.map((m) => m.client))],
-    [mandates],
-  );
-  const assetClasses = React.useMemo(
-    () => [...new Set(mandates.map((m) => m.assetClass))],
-    [mandates],
-  );
+  const clients = React.useMemo(() => [...new Set(mandates.map((m) => m.client))], [mandates]);
+  const assetClasses = React.useMemo(() => [...new Set(mandates.map((m) => m.assetClass))], [mandates]);
 
   const filtered = React.useMemo(() => {
     return mandates.filter((m) => {
       if (clientFilter !== "all" && m.client !== clientFilter) return false;
       if (statusFilter !== "all" && m.status !== statusFilter) return false;
-      if (assetClassFilter !== "all" && m.assetClass !== assetClassFilter)
-        return false;
+      if (assetClassFilter !== "all" && m.assetClass !== assetClassFilter) return false;
       return true;
     });
   }, [mandates, clientFilter, statusFilter, assetClassFilter]);
@@ -472,9 +428,7 @@ export default function ManageMandatesPage() {
   const totalCount = mandates.length;
   const activeCount = mandates.filter((m) => m.status === "active").length;
   const breachedCount = mandates.filter((m) => m.status === "breached").length;
-  const reviewCount = mandates.filter(
-    (m) => m.status === "under-review",
-  ).length;
+  const reviewCount = mandates.filter((m) => m.status === "under-review").length;
 
   /* Loading state */
   if (isLoading) {
@@ -511,9 +465,7 @@ export default function ManageMandatesPage() {
               <AlertTriangle className="size-10 text-destructive" />
               <div>
                 <p className="font-semibold">Failed to load mandates</p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  An error occurred while fetching mandate data.
-                </p>
+                <p className="text-sm text-muted-foreground mt-1">An error occurred while fetching mandate data.</p>
               </div>
               <Button variant="outline" size="sm" onClick={() => refetch()}>
                 <RefreshCw className="mr-2 size-4" />
@@ -636,18 +588,17 @@ export default function ManageMandatesPage() {
             {
               key: "allocationTarget",
               header: "Target %",
-              format: (v: unknown) => Number(v).toFixed(1),
+              format: (v: unknown) => formatNumber(Number(v), 1),
             },
             {
               key: "currentAllocation",
               header: "Current %",
-              format: (v: unknown) => Number(v).toFixed(1),
+              format: (v: unknown) => formatNumber(Number(v), 1),
             },
             {
               key: "drift",
               header: "Drift",
-              format: (v: unknown) =>
-                (Number(v) > 0 ? "+" : "") + Number(v).toFixed(1),
+              format: (v: unknown) => (Number(v) > 0 ? "+" : "") + formatNumber(Number(v), 1),
             },
             {
               key: "maxDrawdownLimit",
@@ -687,19 +638,14 @@ export default function ManageMandatesPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1.5">
-                  {Object.entries(expandedMandate.detail.allocationLimits).map(
-                    ([cls, range]) => (
-                      <div
-                        key={cls}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <span>{cls}</span>
-                        <span className="font-mono text-muted-foreground">
-                          {range.min}% &ndash; {range.max}%
-                        </span>
-                      </div>
-                    ),
-                  )}
+                  {Object.entries(expandedMandate.detail.allocationLimits).map(([cls, range]) => (
+                    <div key={cls} className="flex items-center justify-between text-sm">
+                      <span>{cls}</span>
+                      <span className="font-mono text-muted-foreground">
+                        {range.min}% &ndash; {range.max}%
+                      </span>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
 
@@ -713,15 +659,11 @@ export default function ManageMandatesPage() {
                 <CardContent className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
                     <span>Max Single Position</span>
-                    <span className="font-mono">
-                      {expandedMandate.detail.positionLimits.maxSinglePosition}%
-                    </span>
+                    <span className="font-mono">{expandedMandate.detail.positionLimits.maxSinglePosition}%</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>Max Sector Exposure</span>
-                    <span className="font-mono">
-                      {expandedMandate.detail.positionLimits.maxSectorExposure}%
-                    </span>
+                    <span className="font-mono">{expandedMandate.detail.positionLimits.maxSectorExposure}%</span>
                   </div>
                 </CardContent>
               </Card>
@@ -736,15 +678,11 @@ export default function ManageMandatesPage() {
                 <CardContent className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
                     <span>Soft Limit</span>
-                    <span className="font-mono text-amber-400">
-                      {expandedMandate.detail.drawdownThresholds.soft}%
-                    </span>
+                    <span className="font-mono text-amber-400">{expandedMandate.detail.drawdownThresholds.soft}%</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>Hard Limit</span>
-                    <span className="font-mono text-red-400">
-                      {expandedMandate.detail.drawdownThresholds.hard}%
-                    </span>
+                    <span className="font-mono text-red-400">{expandedMandate.detail.drawdownThresholds.hard}%</span>
                   </div>
                 </CardContent>
               </Card>
@@ -759,21 +697,15 @@ export default function ManageMandatesPage() {
                 <CardContent className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
                     <span>Management Fee</span>
-                    <span className="font-mono">
-                      {expandedMandate.detail.feeStructure.managementFee}%
-                    </span>
+                    <span className="font-mono">{expandedMandate.detail.feeStructure.managementFee}%</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>Performance Fee</span>
-                    <span className="font-mono">
-                      {expandedMandate.detail.feeStructure.performanceFee}%
-                    </span>
+                    <span className="font-mono">{expandedMandate.detail.feeStructure.performanceFee}%</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>Hurdle Rate</span>
-                    <span className="font-mono">
-                      {expandedMandate.detail.feeStructure.hurdleRate}%
-                    </span>
+                    <span className="font-mono">{expandedMandate.detail.feeStructure.hurdleRate}%</span>
                   </div>
                 </CardContent>
               </Card>

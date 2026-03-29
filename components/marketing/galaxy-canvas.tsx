@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 interface AssetGalaxyProps {
   className?: string;
@@ -104,7 +105,7 @@ export function AssetGalaxy({ className, showStats = true }: AssetGalaxyProps) {
         const a = s.alpha * (0.6 + 0.4 * Math.sin(t * 0.0007 + s.phase));
         ctx.beginPath();
         ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${a.toFixed(3)})`;
+        ctx.fillStyle = `rgba(255,255,255,${formatNumber(a, 3)})`;
         ctx.fill();
       }
 
@@ -215,15 +216,10 @@ export function AssetGalaxy({ className, showStats = true }: AssetGalaxyProps) {
         <div className="flex flex-col gap-7 flex-shrink-0">
           {STATS.map((s) => (
             <div key={s.label}>
-              <div
-                className="text-3xl font-bold tabular-nums leading-none"
-                style={{ color: s.color }}
-              >
+              <div className="text-3xl font-bold tabular-nums leading-none" style={{ color: s.color }}>
                 {s.value}
               </div>
-              <div className="text-xs text-muted-foreground mt-1 whitespace-nowrap">
-                {s.label}
-              </div>
+              <div className="text-xs text-muted-foreground mt-1 whitespace-nowrap">{s.label}</div>
             </div>
           ))}
         </div>

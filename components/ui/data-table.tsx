@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import {
   type ColumnDef,
   type SortingState,
@@ -11,17 +10,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { ArrowUpDown, ArrowUp, ArrowDown, Columns } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Columns } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -29,6 +20,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[];
@@ -39,6 +32,8 @@ interface DataTableProps<TData> {
   virtualRowHeight?: number;
   className?: string;
   emptyMessage?: string;
+  /** Rendered after `<tbody>` (e.g. `<TableFooter><TableRow>…</TableRow></TableFooter>`). */
+  tableFooter?: React.ReactNode;
 }
 
 function DataTable<TData>({
@@ -50,10 +45,10 @@ function DataTable<TData>({
   virtualRowHeight = 35,
   className,
   emptyMessage = "No results.",
+  tableFooter,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 
   const table = useReactTable({
     data,
@@ -101,9 +96,7 @@ function DataTable<TData>({
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
@@ -115,10 +108,7 @@ function DataTable<TData>({
 
       <div
         ref={scrollContainerRef}
-        className={cn(
-          "rounded-md border",
-          enableVirtualization && "max-h-[600px] overflow-auto",
-        )}
+        className={cn("rounded-md border", enableVirtualization && "max-h-[600px] overflow-auto")}
       >
         <Table>
           <TableHeader>
@@ -130,15 +120,11 @@ function DataTable<TData>({
                       <div
                         className={cn(
                           "flex items-center gap-1",
-                          header.column.getCanSort() &&
-                            "cursor-pointer select-none",
+                          header.column.getCanSort() && "cursor-pointer select-none",
                         )}
                         onClick={header.column.getToggleSortingHandler()}
                       >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                        {flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getCanSort() && (
                           <span className="ml-1">
                             {header.column.getIsSorted() === "asc" ? (
@@ -161,10 +147,7 @@ function DataTable<TData>({
           <TableBody>
             {rows.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -192,12 +175,7 @@ function DataTable<TData>({
                       data-state={row.getIsSelected() ? "selected" : undefined}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
+                        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                       ))}
                     </TableRow>
                   );
@@ -217,22 +195,15 @@ function DataTable<TData>({
               </>
             ) : (
               rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() ? "selected" : undefined}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
             )}
           </TableBody>
+          {tableFooter}
         </Table>
       </div>
     </div>

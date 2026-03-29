@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/platform/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Plus, Users, Key, Database, CreditCard, BarChart3, Check } from "lucide-react";
 import type { Organization, Subscription } from "./clients-types";
 import { TIERS } from "./clients-types";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function ClientsOrgDetail({
   selectedOrg,
@@ -31,14 +33,10 @@ export function ClientsOrgDetail({
             <ArrowLeft className="mr-2 size-4" />
             Back to Clients
           </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">{selectedOrg.name}</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {selectedOrg.type === "internal" ? "Internal Team" : "Client Organization"} — Created{" "}
-                {selectedOrg.createdAt}
-              </p>
-            </div>
+          <PageHeader
+            title={selectedOrg.name}
+            description={`${selectedOrg.type === "internal" ? "Internal Team" : "Client Organization"} — Created ${selectedOrg.createdAt}`}
+          >
             <Badge
               className={
                 selectedOrg.status === "active"
@@ -50,7 +48,7 @@ export function ClientsOrgDetail({
             >
               {selectedOrg.status}
             </Badge>
-          </div>
+          </PageHeader>
         </div>
       </div>
 
@@ -183,7 +181,7 @@ export function ClientsOrgDetail({
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">AUM</p>
                         <p className="text-lg font-bold font-mono">
-                          ${((selectedSub?.aumUsd ?? 0) / 1_000_000).toFixed(1)}M
+                          ${formatNumber((selectedSub?.aumUsd ?? 0) / 1_000_000, 1)}M
                         </p>
                       </div>
                     </>

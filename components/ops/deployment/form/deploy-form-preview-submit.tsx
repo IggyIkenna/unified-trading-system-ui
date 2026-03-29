@@ -1,11 +1,12 @@
 "use client";
 
-import { Play, Loader2, HelpCircle } from "lucide-react";
 import { CLIPreview } from "@/components/ops/deployment/CLIPreview";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-form-context";
 import { DeployFormQuotaDialog } from "@/components/ops/deployment/form/deploy-form-quota-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { HelpCircle, Play } from "lucide-react";
 
 export function DeployFormPreviewSubmit() {
   const {
@@ -73,13 +74,13 @@ export function DeployFormPreviewSubmit() {
             title="Quota info"
             aria-label="Quota info"
           >
-            {quotaLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <HelpCircle className="h-4 w-4" />}
+            {quotaLoading ? <Spinner className="h-4 w-4" /> : <HelpCircle className="h-4 w-4" />}
           </Button>
 
           <Button onClick={handleSubmit} disabled={!canSubmit} className="min-w-[140px]">
             {isDeploying ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Spinner className="h-4 w-4" />
                 Deploying...
               </>
             ) : dryRun ? (

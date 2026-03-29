@@ -1,14 +1,15 @@
 "use client";
 
-import { FolderOpen, Filter, RefreshCw, Loader2 } from "lucide-react";
 import { CloudConfigBrowser } from "@/components/ops/deployment/CloudConfigBrowser";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { useExecutionDataStatusContext } from "@/components/ops/deployment/data-status/execution-data-status-context";
 import { inferCloudProvider } from "@/components/ops/deployment/data-status/execution-data-status-utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { Filter, FolderOpen, RefreshCw } from "lucide-react";
 
 export function ExecutionDataStatusConfigFilters() {
   const {
@@ -51,7 +52,7 @@ export function ExecutionDataStatusConfigFilters() {
               <CardTitle className="text-base">Date Range Filter (Optional)</CardTitle>
             </div>
             <Button variant="outline" size="sm" onClick={() => void fetchData()} disabled={loading || !cloudConfigPath}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+              {loading ? <Spinner className="h-4 w-4 mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
               Check Status
             </Button>
           </div>

@@ -1,49 +1,24 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 /**
  * /services/observe/scenarios — What-If / Scenario Analysis.
  * Scenario builder with shock parameters, historical replay,
  * and stress test matrix.
  */
 
-import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AlertTriangle,
-  Play,
-  History,
-  Grid3X3,
-  TrendingDown,
-  TrendingUp,
-  ShieldAlert,
-  DollarSign,
-  Zap,
-} from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { pnlColorClass } from "@/lib/utils/pnl";
+import { AlertTriangle, Grid3X3, History, Play, ShieldAlert, Zap } from "lucide-react";
+import * as React from "react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -69,12 +44,7 @@ interface HistoricalPreset {
 
 // ── Mock Data ────────────────────────────────────────────────────────────────
 
-function computePositions(
-  btcPct: number,
-  ethPct: number,
-  ratesBp: number,
-  volPct: number,
-): ScenarioPosition[] {
+function computePositions(btcPct: number, ethPct: number, ratesBp: number, volPct: number): ScenarioPosition[] {
   const base: Array<{
     position: string;
     instrument: string;
@@ -84,16 +54,96 @@ function computePositions(
     ratesSensitivity: number;
     volSensitivity: number;
   }> = [
-    { position: "BTC Spot Long", instrument: "BTC-USD", currentValue: 674320, btcSensitivity: 1.0, ethSensitivity: 0.0, ratesSensitivity: 0.0, volSensitivity: 0.0 },
-    { position: "BTC-PERP Short", instrument: "BTC-PERP", currentValue: -445000, btcSensitivity: -1.0, ethSensitivity: 0.0, ratesSensitivity: -0.1, volSensitivity: 0.15 },
-    { position: "ETH Spot Long", instrument: "ETH-USD", currentValue: 345600, ethSensitivity: 1.0, btcSensitivity: 0.0, ratesSensitivity: 0.0, volSensitivity: 0.0 },
-    { position: "ETH-PERP Short", instrument: "ETH-PERP", currentValue: -230000, ethSensitivity: -1.0, btcSensitivity: 0.0, ratesSensitivity: -0.1, volSensitivity: 0.12 },
-    { position: "SOL Long", instrument: "SOL-USD", currentValue: 178450, btcSensitivity: 0.6, ethSensitivity: 0.3, ratesSensitivity: 0.0, volSensitivity: 0.0 },
-    { position: "BTC Call 70K", instrument: "BTC-28MAR-70000-C", currentValue: 89000, btcSensitivity: 0.65, ethSensitivity: 0.0, ratesSensitivity: 0.02, volSensitivity: 0.35 },
-    { position: "ETH Put 3200", instrument: "ETH-28MAR-3200-P", currentValue: 42000, ethSensitivity: -0.40, btcSensitivity: 0.0, ratesSensitivity: -0.01, volSensitivity: 0.25 },
-    { position: "AAVE Lending", instrument: "AAVE-LEND", currentValue: 156000, btcSensitivity: 0.1, ethSensitivity: 0.2, ratesSensitivity: 0.5, volSensitivity: 0.0 },
-    { position: "UNI LP Position", instrument: "UNI-ETH-LP", currentValue: 98000, btcSensitivity: 0.15, ethSensitivity: 0.7, ratesSensitivity: 0.0, volSensitivity: -0.2 },
-    { position: "LINK Long", instrument: "LINK-USD", currentValue: 56700, btcSensitivity: 0.5, ethSensitivity: 0.3, ratesSensitivity: 0.0, volSensitivity: 0.0 },
+    {
+      position: "BTC Spot Long",
+      instrument: "BTC-USD",
+      currentValue: 674320,
+      btcSensitivity: 1.0,
+      ethSensitivity: 0.0,
+      ratesSensitivity: 0.0,
+      volSensitivity: 0.0,
+    },
+    {
+      position: "BTC-PERP Short",
+      instrument: "BTC-PERP",
+      currentValue: -445000,
+      btcSensitivity: -1.0,
+      ethSensitivity: 0.0,
+      ratesSensitivity: -0.1,
+      volSensitivity: 0.15,
+    },
+    {
+      position: "ETH Spot Long",
+      instrument: "ETH-USD",
+      currentValue: 345600,
+      ethSensitivity: 1.0,
+      btcSensitivity: 0.0,
+      ratesSensitivity: 0.0,
+      volSensitivity: 0.0,
+    },
+    {
+      position: "ETH-PERP Short",
+      instrument: "ETH-PERP",
+      currentValue: -230000,
+      ethSensitivity: -1.0,
+      btcSensitivity: 0.0,
+      ratesSensitivity: -0.1,
+      volSensitivity: 0.12,
+    },
+    {
+      position: "SOL Long",
+      instrument: "SOL-USD",
+      currentValue: 178450,
+      btcSensitivity: 0.6,
+      ethSensitivity: 0.3,
+      ratesSensitivity: 0.0,
+      volSensitivity: 0.0,
+    },
+    {
+      position: "BTC Call 70K",
+      instrument: "BTC-28MAR-70000-C",
+      currentValue: 89000,
+      btcSensitivity: 0.65,
+      ethSensitivity: 0.0,
+      ratesSensitivity: 0.02,
+      volSensitivity: 0.35,
+    },
+    {
+      position: "ETH Put 3200",
+      instrument: "ETH-28MAR-3200-P",
+      currentValue: 42000,
+      ethSensitivity: -0.4,
+      btcSensitivity: 0.0,
+      ratesSensitivity: -0.01,
+      volSensitivity: 0.25,
+    },
+    {
+      position: "AAVE Lending",
+      instrument: "AAVE-LEND",
+      currentValue: 156000,
+      btcSensitivity: 0.1,
+      ethSensitivity: 0.2,
+      ratesSensitivity: 0.5,
+      volSensitivity: 0.0,
+    },
+    {
+      position: "UNI LP Position",
+      instrument: "UNI-ETH-LP",
+      currentValue: 98000,
+      btcSensitivity: 0.15,
+      ethSensitivity: 0.7,
+      ratesSensitivity: 0.0,
+      volSensitivity: -0.2,
+    },
+    {
+      position: "LINK Long",
+      instrument: "LINK-USD",
+      currentValue: 56700,
+      btcSensitivity: 0.5,
+      ethSensitivity: 0.3,
+      ratesSensitivity: 0.0,
+      volSensitivity: 0.0,
+    },
   ];
 
   return base.map((b) => {
@@ -116,11 +166,56 @@ function computePositions(
 }
 
 const HISTORICAL_PRESETS: HistoricalPreset[] = [
-  { id: "covid", name: "COVID Crash", date: "Mar 2020", btcChange: -50, ethChange: -55, ratesChange: -150, volChange: 80, description: "Global pandemic panic — BTC dropped from $9K to $4K in 48 hours, DeFi TVL collapsed 40%" },
-  { id: "ftx", name: "FTX Collapse", date: "Nov 2022", btcChange: -25, ethChange: -30, ratesChange: 0, volChange: 45, description: "Exchange contagion — SOL crashed 60%, lending protocols froze withdrawals" },
-  { id: "luna", name: "Luna/UST Depeg", date: "May 2022", btcChange: -30, ethChange: -35, ratesChange: 50, volChange: 60, description: "Algorithmic stablecoin failure — $40B wiped, cascading DeFi liquidations" },
-  { id: "svb", name: "SVB Bank Run", date: "Mar 2023", btcChange: -10, ethChange: -12, ratesChange: -75, volChange: 25, description: "Banking crisis — USDC briefly depegged to $0.87, flight to BTC" },
-  { id: "china", name: "China Mining Ban", date: "Sep 2021", btcChange: -35, ethChange: -40, ratesChange: 0, volChange: 50, description: "Hash rate dropped 50%, network disruption, miner capitulation" },
+  {
+    id: "covid",
+    name: "COVID Crash",
+    date: "Mar 2020",
+    btcChange: -50,
+    ethChange: -55,
+    ratesChange: -150,
+    volChange: 80,
+    description: "Global pandemic panic — BTC dropped from $9K to $4K in 48 hours, DeFi TVL collapsed 40%",
+  },
+  {
+    id: "ftx",
+    name: "FTX Collapse",
+    date: "Nov 2022",
+    btcChange: -25,
+    ethChange: -30,
+    ratesChange: 0,
+    volChange: 45,
+    description: "Exchange contagion — SOL crashed 60%, lending protocols froze withdrawals",
+  },
+  {
+    id: "luna",
+    name: "Luna/UST Depeg",
+    date: "May 2022",
+    btcChange: -30,
+    ethChange: -35,
+    ratesChange: 50,
+    volChange: 60,
+    description: "Algorithmic stablecoin failure — $40B wiped, cascading DeFi liquidations",
+  },
+  {
+    id: "svb",
+    name: "SVB Bank Run",
+    date: "Mar 2023",
+    btcChange: -10,
+    ethChange: -12,
+    ratesChange: -75,
+    volChange: 25,
+    description: "Banking crisis — USDC briefly depegged to $0.87, flight to BTC",
+  },
+  {
+    id: "china",
+    name: "China Mining Ban",
+    date: "Sep 2021",
+    btcChange: -35,
+    ethChange: -40,
+    ratesChange: 0,
+    volChange: 50,
+    description: "Hash rate dropped 50%, network disruption, miner capitulation",
+  },
 ];
 
 // Stress matrix: 7x7 grid of portfolio PnL
@@ -137,14 +232,20 @@ function computeStressMatrix(): number[][] {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatCurrency(v: number): string {
+/** Compact USD for large notionals (scenario tables). */
+function formatScenarioUsd(v: number): string {
   const abs = Math.abs(v);
-  if (abs >= 1_000_000) return `${v < 0 ? "-" : ""}$${(abs / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000) return `${v < 0 ? "-" : ""}$${(abs / 1_000).toFixed(0)}K`;
-  return `${v < 0 ? "-" : ""}$${abs.toFixed(0)}`;
+  if (abs >= 1_000_000) {
+    return `${v < 0 ? "-" : ""}$${formatNumber(abs / 1_000_000, 1)}M`;
+  }
+  if (abs >= 1_000) {
+    return `${v < 0 ? "-" : ""}$${formatNumber(abs / 1_000, 0)}K`;
+  }
+  return `${v < 0 ? "-" : ""}$${formatNumber(abs, 0)}`;
 }
 
-function pnlColor(v: number): string {
+/** Signed emphasis for shock inputs (% / bp / vol), not dollar PnL. */
+function shockSignedClass(v: number): string {
   if (v > 0) return "text-emerald-400";
   if (v < 0) return "text-red-400";
   return "text-muted-foreground";
@@ -182,10 +283,7 @@ function ScenarioBuilder() {
   );
 
   const totalPnl = positions.reduce((s, p) => s + p.pnlDelta, 0);
-  const worstPos = positions.reduce(
-    (worst, p) => (p.pnlDelta < worst.pnlDelta ? p : worst),
-    positions[0],
-  );
+  const worstPos = positions.reduce((worst, p) => (p.pnlDelta < worst.pnlDelta ? p : worst), positions[0]);
   const marginCallRisk = totalPnl < -500000;
   const liquidationRisk = totalPnl < -800000;
 
@@ -209,17 +307,12 @@ function ScenarioBuilder() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs text-muted-foreground">BTC Price Change</label>
-                <span className={cn("text-sm font-mono font-bold", pnlColor(btcPct))}>
-                  {btcPct > 0 ? "+" : ""}{btcPct}%
+                <span className={cn("text-sm font-mono font-bold", shockSignedClass(btcPct))}>
+                  {btcPct > 0 ? "+" : ""}
+                  {btcPct}%
                 </span>
               </div>
-              <Slider
-                min={-50}
-                max={50}
-                step={1}
-                value={[btcPct]}
-                onValueChange={([v]) => setBtcPct(v)}
-              />
+              <Slider min={-50} max={50} step={1} value={[btcPct]} onValueChange={([v]) => setBtcPct(v)} />
               <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
                 <span>-50%</span>
                 <span>0%</span>
@@ -230,17 +323,12 @@ function ScenarioBuilder() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs text-muted-foreground">ETH Price Change</label>
-                <span className={cn("text-sm font-mono font-bold", pnlColor(ethPct))}>
-                  {ethPct > 0 ? "+" : ""}{ethPct}%
+                <span className={cn("text-sm font-mono font-bold", shockSignedClass(ethPct))}>
+                  {ethPct > 0 ? "+" : ""}
+                  {ethPct}%
                 </span>
               </div>
-              <Slider
-                min={-50}
-                max={50}
-                step={1}
-                value={[ethPct]}
-                onValueChange={([v]) => setEthPct(v)}
-              />
+              <Slider min={-50} max={50} step={1} value={[ethPct]} onValueChange={([v]) => setEthPct(v)} />
               <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
                 <span>-50%</span>
                 <span>0%</span>
@@ -251,17 +339,12 @@ function ScenarioBuilder() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs text-muted-foreground">Interest Rates Change</label>
-                <span className={cn("text-sm font-mono font-bold", pnlColor(ratesBp))}>
-                  {ratesBp > 0 ? "+" : ""}{ratesBp}bp
+                <span className={cn("text-sm font-mono font-bold", shockSignedClass(ratesBp))}>
+                  {ratesBp > 0 ? "+" : ""}
+                  {ratesBp}bp
                 </span>
               </div>
-              <Slider
-                min={-200}
-                max={200}
-                step={5}
-                value={[ratesBp]}
-                onValueChange={([v]) => setRatesBp(v)}
-              />
+              <Slider min={-200} max={200} step={5} value={[ratesBp]} onValueChange={([v]) => setRatesBp(v)} />
               <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
                 <span>-200bp</span>
                 <span>0bp</span>
@@ -272,17 +355,12 @@ function ScenarioBuilder() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs text-muted-foreground">Volatility Change</label>
-                <span className={cn("text-sm font-mono font-bold", pnlColor(volPct))}>
-                  {volPct > 0 ? "+" : ""}{volPct}%
+                <span className={cn("text-sm font-mono font-bold", shockSignedClass(volPct))}>
+                  {volPct > 0 ? "+" : ""}
+                  {volPct}%
                 </span>
               </div>
-              <Slider
-                min={-50}
-                max={100}
-                step={1}
-                value={[volPct]}
-                onValueChange={([v]) => setVolPct(v)}
-              />
+              <Slider min={-50} max={100} step={1} value={[volPct]} onValueChange={([v]) => setVolPct(v)} />
               <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
                 <span>-50%</span>
                 <span>0%</span>
@@ -307,8 +385,8 @@ function ScenarioBuilder() {
             <Card>
               <CardContent className="pt-5 pb-4 px-5">
                 <p className="text-xs text-muted-foreground">Portfolio P&L Impact</p>
-                <p className={cn("text-2xl font-bold font-mono mt-1", pnlColor(totalPnl))}>
-                  {formatCurrency(totalPnl)}
+                <p className={cn("text-2xl font-bold font-mono mt-1", pnlColorClass(totalPnl))}>
+                  {formatScenarioUsd(totalPnl)}
                 </p>
               </CardContent>
             </Card>
@@ -316,8 +394,8 @@ function ScenarioBuilder() {
               <CardContent className="pt-5 pb-4 px-5">
                 <p className="text-xs text-muted-foreground">Worst Position</p>
                 <p className="text-sm font-medium mt-1 truncate">{worstPos.position}</p>
-                <p className={cn("text-lg font-bold font-mono", pnlColor(worstPos.pnlDelta))}>
-                  {formatCurrency(worstPos.pnlDelta)}
+                <p className={cn("text-lg font-bold font-mono", pnlColorClass(worstPos.pnlDelta))}>
+                  {formatScenarioUsd(worstPos.pnlDelta)}
                 </p>
               </CardContent>
             </Card>
@@ -362,30 +440,37 @@ function ScenarioBuilder() {
                       <TableCell className="font-medium text-sm">{p.position}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">{p.instrument}</TableCell>
                       <TableCell className="text-right font-mono text-xs">
-                        {formatCurrency(p.currentValue)}
+                        {formatScenarioUsd(p.currentValue)}
                       </TableCell>
                       <TableCell className="text-right font-mono text-xs">
-                        {formatCurrency(p.scenarioValue)}
+                        {formatScenarioUsd(p.scenarioValue)}
                       </TableCell>
-                      <TableCell className={cn("text-right font-mono text-xs font-semibold", pnlColor(p.pnlDelta))}>
-                        {p.pnlDelta >= 0 ? "+" : ""}{formatCurrency(p.pnlDelta)}
+                      <TableCell
+                        className={cn("text-right font-mono text-xs font-semibold", pnlColorClass(p.pnlDelta))}
+                      >
+                        {p.pnlDelta >= 0 ? "+" : ""}
+                        {formatScenarioUsd(p.pnlDelta)}
                       </TableCell>
-                      <TableCell className={cn("text-right font-mono text-xs", pnlColor(p.pctImpact))}>
-                        {p.pctImpact >= 0 ? "+" : ""}{p.pctImpact.toFixed(1)}%
+                      <TableCell className={cn("text-right font-mono text-xs", pnlColorClass(p.pctImpact))}>
+                        {p.pctImpact >= 0 ? "+" : ""}
+                        {formatPercent(p.pctImpact, 1)}
                       </TableCell>
                     </TableRow>
                   ))}
                   {/* Total row */}
                   <TableRow className="border-t-2">
-                    <TableCell className="font-bold text-sm" colSpan={2}>Total</TableCell>
-                    <TableCell className="text-right font-mono text-xs font-bold">
-                      {formatCurrency(positions.reduce((s, p) => s + p.currentValue, 0))}
+                    <TableCell className="font-bold text-sm" colSpan={2}>
+                      Total
                     </TableCell>
                     <TableCell className="text-right font-mono text-xs font-bold">
-                      {formatCurrency(positions.reduce((s, p) => s + p.scenarioValue, 0))}
+                      {formatScenarioUsd(positions.reduce((s, p) => s + p.currentValue, 0))}
                     </TableCell>
-                    <TableCell className={cn("text-right font-mono text-xs font-bold", pnlColor(totalPnl))}>
-                      {totalPnl >= 0 ? "+" : ""}{formatCurrency(totalPnl)}
+                    <TableCell className="text-right font-mono text-xs font-bold">
+                      {formatScenarioUsd(positions.reduce((s, p) => s + p.scenarioValue, 0))}
+                    </TableCell>
+                    <TableCell className={cn("text-right font-mono text-xs font-bold", pnlColorClass(totalPnl))}>
+                      {totalPnl >= 0 ? "+" : ""}
+                      {formatScenarioUsd(totalPnl)}
                     </TableCell>
                     <TableCell />
                   </TableRow>
@@ -438,18 +523,19 @@ function HistoricalReplay() {
               <p className="text-sm font-medium">{preset.name}</p>
               <p className="text-xs text-muted-foreground mt-1">{preset.description}</p>
               <div className="flex items-center gap-4 mt-3 text-xs">
-                <span className={cn("font-mono", pnlColor(preset.btcChange))}>
-                  BTC: {preset.btcChange > 0 ? "+" : ""}{preset.btcChange}%
+                <span className={cn("font-mono", shockSignedClass(preset.btcChange))}>
+                  BTC: {preset.btcChange > 0 ? "+" : ""}
+                  {preset.btcChange}%
                 </span>
-                <span className={cn("font-mono", pnlColor(preset.ethChange))}>
-                  ETH: {preset.ethChange > 0 ? "+" : ""}{preset.ethChange}%
+                <span className={cn("font-mono", shockSignedClass(preset.ethChange))}>
+                  ETH: {preset.ethChange > 0 ? "+" : ""}
+                  {preset.ethChange}%
                 </span>
-                <span className={cn("font-mono", pnlColor(preset.ratesChange))}>
-                  Rates: {preset.ratesChange > 0 ? "+" : ""}{preset.ratesChange}bp
+                <span className={cn("font-mono", shockSignedClass(preset.ratesChange))}>
+                  Rates: {preset.ratesChange > 0 ? "+" : ""}
+                  {preset.ratesChange}bp
                 </span>
-                <span className={cn("font-mono", pnlColor(preset.volChange))}>
-                  Vol: +{preset.volChange}%
-                </span>
+                <span className={cn("font-mono", shockSignedClass(preset.volChange))}>Vol: +{preset.volChange}%</span>
               </div>
             </div>
           </div>
@@ -461,15 +547,15 @@ function HistoricalReplay() {
         <Card>
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-xs text-muted-foreground">Portfolio P&L Impact</p>
-            <p className={cn("text-2xl font-bold font-mono mt-1", pnlColor(totalPnl))}>
-              {formatCurrency(totalPnl)}
+            <p className={cn("text-2xl font-bold font-mono mt-1", pnlColorClass(totalPnl))}>
+              {formatScenarioUsd(totalPnl)}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-xs text-muted-foreground">BTC Impact</p>
-            <p className={cn("text-2xl font-bold font-mono mt-1", pnlColor(preset.btcChange))}>
+            <p className={cn("text-2xl font-bold font-mono mt-1", shockSignedClass(preset.btcChange))}>
               {preset.btcChange}%
             </p>
           </CardContent>
@@ -477,7 +563,7 @@ function HistoricalReplay() {
         <Card>
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-xs text-muted-foreground">ETH Impact</p>
-            <p className={cn("text-2xl font-bold font-mono mt-1", pnlColor(preset.ethChange))}>
+            <p className={cn("text-2xl font-bold font-mono mt-1", shockSignedClass(preset.ethChange))}>
               {preset.ethChange}%
             </p>
           </CardContent>
@@ -485,9 +571,7 @@ function HistoricalReplay() {
         <Card>
           <CardContent className="pt-5 pb-4 px-5">
             <p className="text-xs text-muted-foreground">Vol Spike</p>
-            <p className="text-2xl font-bold font-mono mt-1 text-amber-400">
-              +{preset.volChange}%
-            </p>
+            <p className="text-2xl font-bold font-mono mt-1 text-amber-400">+{preset.volChange}%</p>
           </CardContent>
         </Card>
       </div>
@@ -514,17 +598,15 @@ function HistoricalReplay() {
                 <TableRow key={p.instrument}>
                   <TableCell className="font-medium text-sm">{p.position}</TableCell>
                   <TableCell className="font-mono text-xs text-muted-foreground">{p.instrument}</TableCell>
-                  <TableCell className="text-right font-mono text-xs">
-                    {formatCurrency(p.currentValue)}
+                  <TableCell className="text-right font-mono text-xs">{formatScenarioUsd(p.currentValue)}</TableCell>
+                  <TableCell className="text-right font-mono text-xs">{formatScenarioUsd(p.scenarioValue)}</TableCell>
+                  <TableCell className={cn("text-right font-mono text-xs font-semibold", pnlColorClass(p.pnlDelta))}>
+                    {p.pnlDelta >= 0 ? "+" : ""}
+                    {formatScenarioUsd(p.pnlDelta)}
                   </TableCell>
-                  <TableCell className="text-right font-mono text-xs">
-                    {formatCurrency(p.scenarioValue)}
-                  </TableCell>
-                  <TableCell className={cn("text-right font-mono text-xs font-semibold", pnlColor(p.pnlDelta))}>
-                    {p.pnlDelta >= 0 ? "+" : ""}{formatCurrency(p.pnlDelta)}
-                  </TableCell>
-                  <TableCell className={cn("text-right font-mono text-xs", pnlColor(p.pctImpact))}>
-                    {p.pctImpact >= 0 ? "+" : ""}{p.pctImpact.toFixed(1)}%
+                  <TableCell className={cn("text-right font-mono text-xs", pnlColorClass(p.pctImpact))}>
+                    {p.pctImpact >= 0 ? "+" : ""}
+                    {formatPercent(p.pctImpact, 1)}
                   </TableCell>
                 </TableRow>
               ))}
@@ -569,7 +651,8 @@ function StressMatrix() {
                         btc === 0 ? "text-primary" : "text-muted-foreground",
                       )}
                     >
-                      {btc > 0 ? "+" : ""}{btc}%
+                      {btc > 0 ? "+" : ""}
+                      {btc}%
                     </th>
                   ))}
                 </tr>
@@ -583,7 +666,8 @@ function StressMatrix() {
                         ethPct === 0 ? "text-primary" : "text-muted-foreground",
                       )}
                     >
-                      {ethPct > 0 ? "+" : ""}{ethPct}%
+                      {ethPct > 0 ? "+" : ""}
+                      {ethPct}%
                     </td>
                     {matrix[ri].map((pnl, ci) => (
                       <td key={`${ri}-${ci}`} className="p-0.5">
@@ -591,10 +675,10 @@ function StressMatrix() {
                           className={cn(
                             "rounded px-1 py-1.5 text-center font-mono text-[11px] font-medium",
                             cellBg(pnl),
-                            pnlColor(pnl),
+                            pnlColorClass(pnl),
                           )}
                         >
-                          {formatCurrency(pnl)}
+                          {formatScenarioUsd(pnl)}
                         </div>
                       </td>
                     ))}
@@ -636,12 +720,10 @@ export default function ScenarioAnalysisPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-2xl font-bold">Scenario Analysis</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                What-if analysis, historical replay, and stress testing
-              </p>
-            </div>
+            <PageHeader
+              title="Scenario Analysis"
+              description="What-if analysis, historical replay, and stress testing"
+            />
           </div>
           <Badge variant="outline" className="text-sky-400 border-sky-500/30">
             <ShieldAlert className="size-3 mr-1.5" />

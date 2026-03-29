@@ -1,46 +1,26 @@
 "use client";
 
-import {
-  X,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Clock,
-  AlertCircle,
-  Terminal,
-  ChevronDown,
-  ChevronUp,
-  RotateCcw,
-  StopCircle,
-  Play,
-  Square,
-  CheckSquare,
-  Edit2,
-  Check,
-  Tag,
-  List,
-  Layers,
-  ChevronRight,
-  FolderOpen,
-  Folder,
-  GitCommit,
-  FileText,
-  Search,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn, formatDateTime } from "@/lib/utils";
-import { VM_EVENT_TYPES } from "@/lib/types/deployment";
-import { StatBox } from "./stat-box";
-import { ShardRow } from "./shard-row";
-import { DeploymentStatusBadge } from "./deployment-status-badge";
+import { Spinner } from "@/components/ui/spinner";
+import { TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import {
+  CheckSquare,
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  Folder,
+  FolderOpen,
+  Layers,
+  List,
+  RefreshCw,
+  Search,
+  Square,
+  StopCircle,
+} from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
+import { ShardRow } from "./shard-row";
 
 export function DeploymentDetailsShardsTabPanel() {
   const dd = useDeploymentDetailsModelContext();
@@ -131,7 +111,7 @@ export function DeploymentDetailsShardsTabPanel() {
       {/* Show provisioning message when all shards are pending */}
       {status.pending_shards === status.total_shards && status.total_shards > 0 && (
         <div className="flex items-center gap-2 p-3 mb-3 rounded-lg bg-[var(--color-status-running-bg)] border border-[var(--color-status-running-border)]">
-          <Loader2 className="h-4 w-4 animate-spin text-[var(--color-accent-cyan)]" />
+          <Spinner className="h-4 w-4 text-[var(--color-accent-cyan)]" />
           <span className="text-sm text-[var(--color-accent-cyan)]">
             {status.compute_type === "vm"
               ? `Provisioning ${status.total_shards} VMs across available zones...`
@@ -157,7 +137,7 @@ export function DeploymentDetailsShardsTabPanel() {
               <Button variant="default" size="sm" onClick={loadAllShards} disabled={shardsLoading}>
                 {shardsLoading ? (
                   <>
-                    <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                    <Spinner size="sm" className="h-3 w-3 mr-1" />
                     Loading…
                   </>
                 ) : (
@@ -246,7 +226,7 @@ export function DeploymentDetailsShardsTabPanel() {
                   disabled={shardsLoading}
                   title="Refresh shard list"
                 >
-                  {shardsLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                  {shardsLoading ? <Spinner size="sm" className="h-3 w-3" /> : <RefreshCw className="h-3 w-3" />}
                 </Button>
               </div>
 
@@ -360,7 +340,7 @@ export function DeploymentDetailsShardsTabPanel() {
             className="h-7 text-xs"
           >
             {actionLoading === "cancel-selected" ? (
-              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+              <Spinner size="sm" className="h-3 w-3 mr-1" />
             ) : (
               <StopCircle className="h-3 w-3 mr-1" />
             )}

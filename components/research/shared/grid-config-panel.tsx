@@ -5,25 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import {
-  CheckCircle2,
-  ChevronDown,
-  ChevronRight,
-  Grid3X3,
-  Lock,
-  Settings2,
-  Zap,
-} from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
+import { CheckCircle2, ChevronDown, ChevronRight, Grid3X3, Lock, Settings2, Zap } from "lucide-react";
 
 // ─── Instruction Constraints (from UAC instruction_constraints.py) ──────────
 
@@ -136,12 +123,14 @@ function Section({
             {step}
           </span>
           {icon}
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            {title}
-          </h4>
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</h4>
           {badge}
         </div>
-        {open ? <ChevronDown className="size-4 text-muted-foreground" /> : <ChevronRight className="size-4 text-muted-foreground" />}
+        {open ? (
+          <ChevronDown className="size-4 text-muted-foreground" />
+        ) : (
+          <ChevronRight className="size-4 text-muted-foreground" />
+        )}
       </button>
       {open && <CardContent className="pt-0 pb-3 px-4 space-y-2">{children}</CardContent>}
     </Card>
@@ -173,31 +162,39 @@ function SubscriptionChips({
           <React.Fragment key={cat}>
             {ci > 0 && <span className="text-border mx-0.5">|</span>}
             <span className="text-[8px] uppercase tracking-wider text-muted-foreground/40 mr-0.5">{cat}</span>
-            {items.filter((i) => i.category === cat).map((item) => (
-              <button
-                key={item.id}
-                onClick={() => item.enabled && onToggle(item.id)}
-                disabled={!item.enabled}
-                className={cn(
-                  "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] transition-all border leading-tight",
-                  !item.enabled
-                    ? "bg-muted/10 text-muted-foreground/30 border-border/20 cursor-not-allowed"
-                    : item.selected
-                      ? "bg-primary/15 text-primary border-primary/30"
-                      : "bg-muted/20 text-muted-foreground border-border/30 hover:border-primary/30 hover:text-foreground",
-                )}
-                title={!item.enabled ? `Upgrade to access ${item.label}` : item.selected ? "Click to deselect" : "Click to select"}
-              >
-                {!item.enabled ? (
-                  <Lock className="size-2.5" />
-                ) : item.selected ? (
-                  <CheckCircle2 className="size-2.5" />
-                ) : (
-                  <span className="size-2.5 rounded-full border border-muted-foreground/40" />
-                )}
-                {item.label}
-              </button>
-            ))}
+            {items
+              .filter((i) => i.category === cat)
+              .map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => item.enabled && onToggle(item.id)}
+                  disabled={!item.enabled}
+                  className={cn(
+                    "inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] transition-all border leading-tight",
+                    !item.enabled
+                      ? "bg-muted/10 text-muted-foreground/30 border-border/20 cursor-not-allowed"
+                      : item.selected
+                        ? "bg-primary/15 text-primary border-primary/30"
+                        : "bg-muted/20 text-muted-foreground border-border/30 hover:border-primary/30 hover:text-foreground",
+                  )}
+                  title={
+                    !item.enabled
+                      ? `Upgrade to access ${item.label}`
+                      : item.selected
+                        ? "Click to deselect"
+                        : "Click to select"
+                  }
+                >
+                  {!item.enabled ? (
+                    <Lock className="size-2.5" />
+                  ) : item.selected ? (
+                    <CheckCircle2 className="size-2.5" />
+                  ) : (
+                    <span className="size-2.5 rounded-full border border-muted-foreground/40" />
+                  )}
+                  {item.label}
+                </button>
+              ))}
           </React.Fragment>
         ))}
       </div>
@@ -234,9 +231,18 @@ function RangeParam({ param, onChange }: { param: GridParameter; onChange: (u: P
             <span className="text-[8px] font-mono text-muted-foreground/40">{param.backendField}</span>
           )}
         </div>
-        <Badge variant="secondary" className="text-[10px] font-mono">{steps} val</Badge>
+        <Badge variant="secondary" className="text-[10px] font-mono">
+          {steps} val
+        </Badge>
       </div>
-      <Slider min={param.min ?? 0} max={param.max ?? 100} step={step} value={[low, high]} onValueChange={([l, h]) => onChange({ rangeValue: [l, h] })} className="py-0.5" />
+      <Slider
+        min={param.min ?? 0}
+        max={param.max ?? 100}
+        step={step}
+        value={[low, high]}
+        onValueChange={([l, h]) => onChange({ rangeValue: [l, h] })}
+        className="py-0.5"
+      />
       <div className="flex items-center justify-between text-[10px] text-muted-foreground font-mono">
         <span>{low}</span>
         <div className="flex items-center gap-1">
@@ -247,12 +253,10 @@ function RangeParam({ param, onChange }: { param: GridParameter; onChange: (u: P
               onClick={() => onChange({ step: s })}
               className={cn(
                 "px-1 py-0 rounded text-[9px] transition-colors",
-                s === step
-                  ? "bg-primary/20 text-primary"
-                  : "hover:bg-muted/40 text-muted-foreground/60",
+                s === step ? "bg-primary/20 text-primary" : "hover:bg-muted/40 text-muted-foreground/60",
               )}
             >
-              {s % 1 === 0 ? s : s.toFixed(s < 0.1 ? 4 : s < 1 ? 2 : 1)}
+              {s % 1 === 0 ? s : formatNumber(s, s < 0.1 ? 4 : s < 1 ? 2 : 1)}
             </button>
           ))}
         </div>
@@ -267,7 +271,8 @@ function SetParam({ param, onChange }: { param: GridParameter; onChange: (u: Par
   const selected = new Set(param.selectedValues ?? []);
   const toggle = (val: string) => {
     const next = new Set(selected);
-    if (next.has(val)) next.delete(val); else next.add(val);
+    if (next.has(val)) next.delete(val);
+    else next.add(val);
     onChange({ selectedValues: [...next] });
   };
 
@@ -276,18 +281,26 @@ function SetParam({ param, onChange }: { param: GridParameter; onChange: (u: Par
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-xs">{param.label}</Label>
-          {param.backendField && <span className="ml-2 text-[9px] font-mono text-muted-foreground/50">{param.backendField}</span>}
+          {param.backendField && (
+            <span className="ml-2 text-[9px] font-mono text-muted-foreground/50">{param.backendField}</span>
+          )}
         </div>
-        <Badge variant="secondary" className="text-[10px] font-mono">{selected.size} selected</Badge>
+        <Badge variant="secondary" className="text-[10px] font-mono">
+          {selected.size} selected
+        </Badge>
       </div>
       <div className="flex flex-wrap gap-1.5">
         {(param.options ?? []).map((opt) => (
-          <button key={opt.value} onClick={() => toggle(opt.value)} className={cn(
-            "px-2.5 py-1 rounded-md text-xs font-medium transition-all border",
-            selected.has(opt.value)
-              ? "bg-primary/10 text-primary border-primary/30"
-              : "bg-muted/20 text-muted-foreground border-border/30 hover:border-border",
-          )}>
+          <button
+            key={opt.value}
+            onClick={() => toggle(opt.value)}
+            className={cn(
+              "px-2.5 py-1 rounded-md text-xs font-medium transition-all border",
+              selected.has(opt.value)
+                ? "bg-primary/10 text-primary border-primary/30"
+                : "bg-muted/20 text-muted-foreground border-border/30 hover:border-border",
+            )}
+          >
             {opt.label}
           </button>
         ))}
@@ -358,7 +371,11 @@ export function GridConfigPanel({
       <Section
         title="Fixed Selections"
         icon={<Settings2 className="size-3.5 text-muted-foreground" />}
-        badge={<Badge variant="outline" className="text-[10px]">{totalSelected} selected</Badge>}
+        badge={
+          <Badge variant="outline" className="text-[10px]">
+            {totalSelected} selected
+          </Badge>
+        }
         step={1}
         defaultOpen={true}
       >
@@ -375,7 +392,14 @@ export function GridConfigPanel({
         title="Grid Parameters"
         icon={<Grid3X3 className="size-3.5 text-muted-foreground" />}
         badge={
-          <Badge variant="secondary" className={cn("text-[10px] font-mono", gridSize > 100 && "text-amber-400", gridSize > 500 && "text-rose-400")}>
+          <Badge
+            variant="secondary"
+            className={cn(
+              "text-[10px] font-mono",
+              gridSize > 100 && "text-amber-400",
+              gridSize > 500 && "text-rose-400",
+            )}
+          >
             {gridSize.toLocaleString()} combinations
           </Badge>
         }
@@ -383,8 +407,8 @@ export function GridConfigPanel({
         defaultOpen={true}
       >
         <p className="text-[11px] text-muted-foreground">
-          Define value ranges to sweep. Parameters shown are specific to your selections above.
-          Each parameter with multiple values multiplies the grid size.
+          Define value ranges to sweep. Parameters shown are specific to your selections above. Each parameter with
+          multiple values multiplies the grid size.
         </p>
         {parameters.length === 0 ? (
           <p className="text-xs text-muted-foreground/60 italic py-3 text-center">
@@ -394,11 +418,15 @@ export function GridConfigPanel({
           [...paramCategories.entries()].map(([cat, params]) => (
             <div key={cat} className="space-y-3">
               {paramCategories.size > 1 && (
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium border-b border-border/30 pb-1">{cat}</p>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium border-b border-border/30 pb-1">
+                  {cat}
+                </p>
               )}
               {params.map((p) => {
-                if (p.type === "range") return <RangeParam key={p.id} param={p} onChange={(u) => onParameterChange(p.id, u)} />;
-                if (p.type === "set") return <SetParam key={p.id} param={p} onChange={(u) => onParameterChange(p.id, u)} />;
+                if (p.type === "range")
+                  return <RangeParam key={p.id} param={p} onChange={(u) => onParameterChange(p.id, u)} />;
+                if (p.type === "set")
+                  return <SetParam key={p.id} param={p} onChange={(u) => onParameterChange(p.id, u)} />;
                 return <ToggleParam key={p.id} param={p} onChange={(u) => onParameterChange(p.id, u)} />;
               })}
             </div>
@@ -410,13 +438,14 @@ export function GridConfigPanel({
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="p-4 space-y-3">
           <div className="flex items-center gap-2 mb-1">
-            <span className="flex items-center justify-center size-5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">3</span>
+            <span className="flex items-center justify-center size-5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
+              3
+            </span>
             <p className="text-sm font-medium">Run Grid Search</p>
           </div>
           <div className="flex items-center justify-between">
             <p className="text-xs text-muted-foreground">
-              {domain} will run{" "}
-              <span className="font-mono font-bold text-primary">{gridSize.toLocaleString()}</span>{" "}
+              {domain} will run <span className="font-mono font-bold text-primary">{gridSize.toLocaleString()}</span>{" "}
               parameter combinations across {totalSelected} selected items
             </p>
             <div className="text-right">
@@ -429,11 +458,18 @@ export function GridConfigPanel({
               Large grid ({gridSize.toLocaleString()} combinations). Consider narrowing parameter ranges.
             </div>
           )}
-          <Button className="w-full gap-2" onClick={onRunGrid} disabled={isRunning || gridSize === 0 || totalSelected === 0}>
-            {isRunning ? <>Running grid search...</> : (
+          <Button
+            className="w-full gap-2"
+            onClick={onRunGrid}
+            disabled={isRunning || gridSize === 0 || totalSelected === 0}
+          >
+            {isRunning ? (
+              <>Running grid search...</>
+            ) : (
               <>
                 <Zap className="size-4" />
-                Run {gridSize > 1 ? "Grid Search" : domain} ({gridSize.toLocaleString()} {gridSize === 1 ? "config" : "configs"})
+                Run {gridSize > 1 ? "Grid Search" : domain} ({gridSize.toLocaleString()}{" "}
+                {gridSize === 1 ? "config" : "configs"})
               </>
             )}
           </Button>

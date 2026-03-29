@@ -85,6 +85,7 @@ import {
   SPOT_STEPS,
   VOL_STEPS,
 } from "@/lib/mocks/fixtures/options-futures-mock";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function VolSurfacePanel({ asset }: { asset: Asset }) {
   const [open, setOpen] = React.useState(false);
@@ -128,7 +129,7 @@ export function VolSurfacePanel({ asset }: { asset: Asset }) {
                           color: iv > 65 ? "#fff" : "#1a1a2e",
                         }}
                       >
-                        {iv.toFixed(1)}%
+                        {formatPercent(iv, 1)}
                       </td>
                     ))}
                   </tr>
@@ -190,13 +191,13 @@ export function GreeksSurfacePanel({ asset }: { asset: Asset }) {
   const formatGreek = (val: number): string => {
     switch (selectedGreek) {
       case "delta":
-        return val.toFixed(2);
+        return formatNumber(val, 2);
       case "gamma":
-        return val.toFixed(5);
+        return formatNumber(val, 5);
       case "vega":
-        return val.toFixed(2);
+        return formatNumber(val, 2);
       case "theta":
-        return val.toFixed(2);
+        return formatNumber(val, 2);
     }
   };
 

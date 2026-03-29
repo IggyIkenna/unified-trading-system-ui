@@ -2,18 +2,12 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EntityLink } from "./entity-link";
 import { StatusDot } from "./status-badge";
 import { PnLValue } from "./pnl-value";
 import { SparklineCell } from "./kpi-card";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export interface StrategyPerformance {
   id: string;
@@ -32,18 +26,9 @@ interface StrategyPerformanceTableProps {
   className?: string;
 }
 
-export function StrategyPerformanceTable({
-  strategies,
-  onRowClick,
-  className,
-}: StrategyPerformanceTableProps) {
+export function StrategyPerformanceTable({ strategies, onRowClick, className }: StrategyPerformanceTableProps) {
   return (
-    <div
-      className={cn(
-        "border border-border rounded-lg overflow-hidden",
-        className,
-      )}
-    >
+    <div className={cn("border border-border rounded-lg overflow-hidden", className)}>
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/50 hover:bg-muted/50">
@@ -64,15 +49,8 @@ export function StrategyPerformanceTable({
             >
               <TableCell>
                 <div className="flex flex-col gap-0.5">
-                  <EntityLink
-                    type="strategy"
-                    id={strategy.id}
-                    label={strategy.name}
-                    className="font-medium"
-                  />
-                  <span className="text-xs text-muted-foreground">
-                    {strategy.assetClass}
-                  </span>
+                  <EntityLink type="strategy" id={strategy.id} label={strategy.name} className="font-medium" />
+                  <span className="text-xs text-muted-foreground">{strategy.assetClass}</span>
                 </div>
               </TableCell>
               <TableCell>
@@ -85,12 +63,10 @@ export function StrategyPerformanceTable({
                 <PnLValue value={strategy.pnl} size="sm" />
               </TableCell>
               <TableCell className="text-right font-mono tabular-nums">
-                {strategy.sharpe?.toFixed(2) ?? "-"}
+                {strategy.sharpe != null ? formatNumber(strategy.sharpe, 2) : "-"}
               </TableCell>
               <TableCell className="text-right font-mono tabular-nums text-muted-foreground">
-                {strategy.maxDrawdown != null
-                  ? `${strategy.maxDrawdown.toFixed(1)}%`
-                  : "-"}
+                {strategy.maxDrawdown != null ? `${formatPercent(strategy.maxDrawdown, 1)}` : "-"}
               </TableCell>
               <TableCell className="text-right">
                 <SparklineCell data={strategy.sparklineData ?? []} />

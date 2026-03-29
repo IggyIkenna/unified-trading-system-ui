@@ -1,37 +1,17 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/platform/page-header";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import {
-  PieChart,
-  ArrowRightLeft,
-  Plus,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Play,
-  X,
-} from "lucide-react";
+import { PieChart, ArrowRightLeft, Plus, TrendingUp, TrendingDown, Minus, Play, X } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Mock data
@@ -105,9 +85,7 @@ interface DriftEvent {
 
 function generateDriftHistory(portfolio: ModelPortfolio): DriftEvent[] {
   const events: DriftEvent[] = [];
-  const breached = portfolio.assets.filter(
-    (a) => Math.abs(a.actualPct - a.targetPct) > 2.0,
-  );
+  const breached = portfolio.assets.filter((a) => Math.abs(a.actualPct - a.targetPct) > 2.0);
 
   events.push({ day: 1, description: "All assets within tolerance after rebalance." });
   events.push({ day: 5, description: "Minor drift detected in major assets (+0.3% BTC)." });
@@ -116,7 +94,7 @@ function generateDriftHistory(portfolio: ModelPortfolio): DriftEvent[] {
   if (breached.length > 0) {
     events.push({
       day: 15,
-      description: `${breached[0].asset} exceeded +2% drift threshold (${(breached[0].actualPct - breached[0].targetPct).toFixed(1)}%).`,
+      description: `${breached[0].asset} exceeded +2% drift threshold (${formatNumber(breached[0].actualPct - breached[0].targetPct, 1)}%).`,
     });
     events.push({ day: 20, description: "Rebalance suggestion generated." });
   } else {
@@ -128,7 +106,7 @@ function generateDriftHistory(portfolio: ModelPortfolio): DriftEvent[] {
     day: 30,
     description:
       breached.length > 0
-        ? `Current drift: ${breached.map((b) => `${b.asset} ${(b.actualPct - b.targetPct) > 0 ? "+" : ""}${(b.actualPct - b.targetPct).toFixed(1)}%`).join(", ")}.`
+        ? `Current drift: ${breached.map((b) => `${b.asset} ${b.actualPct - b.targetPct > 0 ? "+" : ""}${formatNumber(b.actualPct - b.targetPct, 1)}%`).join(", ")}.`
         : "Portfolio remains balanced.",
   });
 
@@ -248,12 +226,10 @@ function NewModelForm({ onClose }: NewModelFormProps) {
             <span
               className={cn(
                 "text-xs font-mono",
-                Math.abs(totalTarget - 100) < 0.01
-                  ? "text-emerald-400"
-                  : "text-rose-400",
+                Math.abs(totalTarget - 100) < 0.01 ? "text-emerald-400" : "text-rose-400",
               )}
             >
-              Total: {totalTarget.toFixed(1)}%
+              Total: {formatPercent(totalTarget, 1)}
             </span>
           </div>
         </div>
@@ -267,11 +243,7 @@ function NewModelForm({ onClose }: NewModelFormProps) {
         </div>
 
         <div className="flex gap-2 pt-2">
-          <Button
-            className="flex-1"
-            size="sm"
-            disabled={!name || totalTarget === 0}
-          >
+          <Button className="flex-1" size="sm" disabled={!name || totalTarget === 0}>
             Create Portfolio
           </Button>
           <Button variant="outline" size="sm" onClick={onClose}>
@@ -308,36 +280,36 @@ export default function ModelPortfoliosPage() {
   return (
     <div className="h-full bg-background overflow-auto">
       <div className="p-6 max-w-[1600px] mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold">Model Portfolios</h1>
-            <Badge
-              variant={mode === "live" ? "success" : mode === "paper" ? "warning" : "secondary"}
-              className="text-xs"
-            >
-              {mode.toUpperCase()}
-            </Badge>
-          </div>
-          <div className="flex items-center gap-3">
-            <Select value={selectedId} onValueChange={setSelectedId}>
-              <SelectTrigger className="w-[220px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {MODEL_PORTFOLIOS.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm" className="gap-2" onClick={() => setShowNewForm(!showNewForm)}>
-              <Plus className="size-4" />
-              Create New Model
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          title={
+            <span className="flex flex-wrap items-center gap-3">
+              Model Portfolios
+              <Badge
+                variant={mode === "live" ? "success" : mode === "paper" ? "warning" : "secondary"}
+                className="text-xs"
+              >
+                {mode.toUpperCase()}
+              </Badge>
+            </span>
+          }
+        >
+          <Select value={selectedId} onValueChange={setSelectedId}>
+            <SelectTrigger className="w-[220px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MODEL_PORTFOLIOS.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setShowNewForm(!showNewForm)}>
+            <Plus className="size-4" />
+            Create New Model
+          </Button>
+        </PageHeader>
 
         {/* New model form */}
         {showNewForm && <NewModelForm onClose={() => setShowNewForm(false)} />}
@@ -351,9 +323,7 @@ export default function ModelPortfoliosPage() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Portfolio Value</p>
-                <p className="text-lg font-bold font-mono">
-                  ${(portfolio.totalValue / 1_000_000).toFixed(2)}M
-                </p>
+                <p className="text-lg font-bold font-mono">${formatNumber(portfolio.totalValue / 1_000_000, 2)}M</p>
               </div>
             </CardContent>
           </Card>
@@ -381,9 +351,7 @@ export default function ModelPortfoliosPage() {
         {/* Target vs Actual allocation */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">
-              Target vs Actual Allocation &mdash; {portfolio.name}
-            </CardTitle>
+            <CardTitle className="text-base">Target vs Actual Allocation &mdash; {portfolio.name}</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -407,18 +375,14 @@ export default function ModelPortfoliosPage() {
                           {a.asset}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-xs text-right font-mono">
-                        {a.targetPct.toFixed(1)}%
-                      </TableCell>
-                      <TableCell className="text-xs text-right font-mono">
-                        {a.actualPct.toFixed(1)}%
-                      </TableCell>
+                      <TableCell className="text-xs text-right font-mono">{formatPercent(a.targetPct, 1)}</TableCell>
+                      <TableCell className="text-xs text-right font-mono">{formatPercent(a.actualPct, 1)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
                           <DriftIcon drift={drift} />
                           <span className={cn("text-xs font-mono font-bold", driftColor(drift))}>
                             {drift > 0 ? "+" : ""}
-                            {drift.toFixed(1)}%
+                            {formatPercent(drift, 1)}
                           </span>
                         </div>
                       </TableCell>
@@ -507,10 +471,7 @@ export default function ModelPortfoliosPage() {
                   {rebalanceTrades.map((t) => (
                     <TableRow key={t.asset}>
                       <TableCell>
-                        <Badge
-                          variant={t.action === "Sell" ? "error" : "success"}
-                          className="text-[10px]"
-                        >
+                        <Badge variant={t.action === "Sell" ? "error" : "success"} className="text-[10px]">
                           {t.action}
                         </Badge>
                       </TableCell>
@@ -518,7 +479,7 @@ export default function ModelPortfoliosPage() {
                       <TableCell className="text-xs text-right font-mono">
                         <span className={driftColor(t.drift)}>
                           {t.drift > 0 ? "+" : ""}
-                          {t.drift.toFixed(1)}% excess
+                          {formatNumber(t.drift, 1)}% excess
                         </span>
                       </TableCell>
                       <TableCell className="text-xs text-right font-mono">
@@ -559,9 +520,7 @@ export default function ModelPortfoliosPage() {
                     {event.day}
                   </div>
                   <div>
-                    <span className="text-[10px] text-muted-foreground font-mono">
-                      Day {event.day}
-                    </span>
+                    <span className="text-[10px] text-muted-foreground font-mono">Day {event.day}</span>
                     <p className="text-xs">{event.description}</p>
                   </div>
                 </div>

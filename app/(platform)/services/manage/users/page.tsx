@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import * as React from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,28 +16,12 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 import { Users, Plus, Search, Shield, Clock, UserPlus } from "lucide-react";
-import {
-  useOrganizationsList,
-  useOrgMembers,
-} from "@/hooks/api/use-organizations";
+import { useOrganizationsList, useOrgMembers } from "@/hooks/api/use-organizations";
 
 interface User {
   id: string;
@@ -52,8 +37,7 @@ const ROLES = ["admin", "internal", "client", "viewer"];
 
 export default function UsersManagementPage() {
   const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList();
-  const orgs: Array<{ id: string; name: string }> =
-    (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? [];
+  const orgs: Array<{ id: string; name: string }> = (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? [];
   const { data: membersData, isLoading: membersLoading } = useOrgMembers("all");
 
   const apiUsers: User[] = ((membersData as any)?.data ?? []).map((m: any) => ({
@@ -124,9 +108,7 @@ export default function UsersManagementPage() {
   }
 
   function handleRoleChange(userId: string, newRole: string) {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)),
-    );
+    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
     const user = users.find((u) => u.id === userId);
     toast.success("Role updated", {
       description: `${user?.name} is now ${newRole}`,
@@ -136,11 +118,7 @@ export default function UsersManagementPage() {
 
   function handleStatusToggle(userId: string) {
     setUsers((prev) =>
-      prev.map((u) =>
-        u.id === userId
-          ? { ...u, status: u.status === "active" ? "suspended" : "active" }
-          : u,
-      ),
+      prev.map((u) => (u.id === userId ? { ...u, status: u.status === "active" ? "suspended" : "active" } : u)),
     );
     const user = users.find((u) => u.id === userId);
     const newStatus = user?.status === "active" ? "suspended" : "active";
@@ -179,14 +157,10 @@ export default function UsersManagementPage() {
       <div className="border-b border-border">
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                User Management
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Manage users, roles, and access across all organizations
-              </p>
-            </div>
+            <PageHeader
+              title="User Management"
+              description="Manage users, roles, and access across all organizations"
+            />
             <div className="flex items-center gap-2">
               <ExportDropdown
                 data={filteredUsers.map((u) => ({
@@ -252,18 +226,13 @@ export default function UsersManagementPage() {
               <DialogHeader>
                 <DialogTitle>Invite User</DialogTitle>
                 <DialogDescription>
-                  Send an invitation to a new user. They will receive access to
-                  the selected organization.
+                  Send an invitation to a new user. They will receive access to the selected organization.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Name</label>
-                  <Input
-                    placeholder="Full name"
-                    value={inviteName}
-                    onChange={(e) => setInviteName(e.target.value)}
-                  />
+                  <Input placeholder="Full name" value={inviteName} onChange={(e) => setInviteName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
@@ -340,9 +309,7 @@ export default function UsersManagementPage() {
                 {filteredUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {user.email}
-                    </TableCell>
+                    <TableCell className="text-muted-foreground">{user.email}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {user.org}
@@ -350,22 +317,13 @@ export default function UsersManagementPage() {
                     </TableCell>
                     <TableCell>
                       {editingRoleId === user.id ? (
-                        <Select
-                          value={user.role}
-                          onValueChange={(val) =>
-                            handleRoleChange(user.id, val)
-                          }
-                        >
+                        <Select value={user.role} onValueChange={(val) => handleRoleChange(user.id, val)}>
                           <SelectTrigger className="w-[120px] h-7 text-xs">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             {ROLES.map((r) => (
-                              <SelectItem
-                                key={r}
-                                value={r}
-                                className="capitalize text-xs"
-                              >
+                              <SelectItem key={r} value={r} className="capitalize text-xs">
                                 {r}
                               </SelectItem>
                             ))}
@@ -400,12 +358,7 @@ export default function UsersManagementPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleStatusToggle(user.id)}
-                        className="text-xs"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleStatusToggle(user.id)} className="text-xs">
                         {user.status === "active" ? "Suspend" : "Activate"}
                       </Button>
                     </TableCell>
@@ -417,9 +370,7 @@ export default function UsersManagementPage() {
                       <div className="flex flex-col items-center gap-3">
                         <UserPlus className="size-8 text-muted-foreground/50" />
                         <div>
-                          <p className="text-sm font-medium text-muted-foreground">
-                            No users found
-                          </p>
+                          <p className="text-sm font-medium text-muted-foreground">No users found</p>
                           <p className="text-xs text-muted-foreground/70 mt-1">
                             {searchQuery || orgFilter !== "all"
                               ? "Try adjusting your filters"
@@ -427,11 +378,7 @@ export default function UsersManagementPage() {
                           </p>
                         </div>
                         {!searchQuery && orgFilter === "all" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setInviteOpen(true)}
-                          >
+                          <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>
                             <Plus className="mr-1 size-3" /> Add User
                           </Button>
                         )}

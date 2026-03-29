@@ -13,27 +13,6 @@
  * etc.) remain top-level.
  */
 
-import { cn } from "@/lib/utils";
-import {
-  PanelLeftClose,
-  PanelLeftOpen,
-  Lock,
-  Plus,
-  LayoutGrid,
-  X,
-  ChevronDown,
-  ChevronRight,
-  Layers,
-  Trophy,
-  BarChart3,
-  TrendingUp,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState, useRef, useEffect, useMemo } from "react";
-import type { ServiceTab } from "./service-tabs";
-import { useWorkspaceStore } from "@/lib/stores/workspace-store";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +23,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useWorkspaceStore } from "@/lib/stores/workspace-store";
+import { cn } from "@/lib/utils";
+import { isPathActive, isServiceTabActive } from "@/lib/utils/nav-helpers";
+import type { LucideIcon } from "lucide-react";
+import {
+  BarChart3,
+  ChevronDown,
+  ChevronRight,
+  Layers,
+  LayoutGrid,
+  Lock,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Plus,
+  TrendingUp,
+  Trophy,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ServiceTab } from "./service-tabs";
 
 /** Map from familyIcon string hint to actual Lucide component */
 const FAMILY_ICON_MAP: Record<string, LucideIcon> = {
@@ -139,12 +140,7 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
 
   // Check if any tab in a family is currently active (used to auto-expand)
   const isFamilyActive = (familyTabs: ServiceTab[]) => {
-    return familyTabs.some((tab) => {
-      const matchPath = tab.matchPrefix || tab.href;
-      return tab.exact
-        ? pathname === tab.href || pathname === `${tab.href}/`
-        : pathname === tab.href || pathname.startsWith(matchPath + "/");
-    });
+    return familyTabs.some((tab) => isServiceTabActive(pathname, tab));
   };
 
   // Check if all tabs in a family are locked
@@ -157,10 +153,7 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
   const navWidth = collapsed ? "w-[52px]" : "w-[200px]";
 
   const renderTabItem = (tab: ServiceTab) => {
-    const matchPath = tab.matchPrefix || tab.href;
-    const isActive = tab.exact
-      ? pathname === tab.href || pathname === `${tab.href}/`
-      : pathname === tab.href || pathname.startsWith(matchPath + "/");
+    const isActive = isServiceTabActive(pathname, tab);
     const isLocked = tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
 
     const Icon = tab.icon;
@@ -311,7 +304,7 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
           )}
           {customPanels.map((panel) => {
             const panelHref = `/services/trading/custom/${panel.id}`;
-            const isActive = pathname === panelHref || pathname.startsWith(panelHref + "/");
+            const isActive = isPathActive(pathname, panelHref);
 
             return (
               <div key={panel.id} className={cn("px-2 group relative", collapsed && "flex justify-center px-1")}>

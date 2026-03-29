@@ -1,11 +1,12 @@
 "use client";
 
-import { Loader2, RefreshCw, X, AlertCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useDeploymentDetailsModel } from "./details/use-deployment-details-model";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { AlertCircle, RefreshCw, X } from "lucide-react";
 import { DeploymentDetailsProvider } from "./details/deployment-details-context";
 import { DeploymentDetailsLoaded } from "./details/deployment-details-loaded";
+import { useDeploymentDetailsModel } from "./details/use-deployment-details-model";
 
 export interface DeploymentDetailsProps {
   deploymentId: string;
@@ -28,7 +29,7 @@ export function DeploymentDetails({ deploymentId, onClose }: DeploymentDetailsPr
         </CardHeader>
         <CardContent className="py-8">
           <div className="flex flex-col items-center gap-4">
-            <Loader2 className="h-8 w-8 animate-spin text-[var(--color-accent-cyan)]" />
+            <Spinner size="lg" className="h-8 w-8 text-[var(--color-accent-cyan)]" />
             <div className="text-center">
               <p className="text-sm text-[var(--color-text-secondary)]">Loading deployment status...</p>
               <p className="text-xs text-[var(--color-text-muted)] mt-1">Checking shard states and VM instances</p>

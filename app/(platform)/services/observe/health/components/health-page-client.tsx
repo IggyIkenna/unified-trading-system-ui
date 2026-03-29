@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -100,29 +101,25 @@ export default function HealthPageClient() {
   return (
     <div className="p-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold flex items-center gap-2">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
               <Activity className="size-6 text-primary" />
               System Health
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Service health grid, feature freshness SLA, and operational logs
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <DataFreshness lastUpdated={healthData ? new Date() : null} isWebSocket={false} />
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleRefresh}>
-              <RefreshCw className="size-3.5" />
-              Refresh
-            </Button>
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <ExternalLink className="size-3.5" />
-              Grafana
-            </Button>
-          </div>
-        </div>
+            </span>
+          }
+          description="Service health grid, feature freshness SLA, and operational logs"
+        >
+          <DataFreshness lastUpdated={healthData ? new Date() : null} isWebSocket={false} />
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={handleRefresh}>
+            <RefreshCw className="size-3.5" />
+            Refresh
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1.5">
+            <ExternalLink className="size-3.5" />
+            Grafana
+          </Button>
+        </PageHeader>
 
         {/* Status Summary */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

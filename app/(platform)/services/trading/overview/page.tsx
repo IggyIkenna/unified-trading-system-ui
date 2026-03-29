@@ -1,8 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import type { ServiceHealth } from "@/components/trading/health-status-grid";
+import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
+import { useValueFormat } from "@/components/trading/value-format-toggle";
+import { OverviewDataProvider, type OverviewData } from "@/components/widgets/overview/overview-data-context";
+import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { useAlerts } from "@/hooks/api/use-alerts";
 import { useOrders } from "@/hooks/api/use-orders";
 import { usePositions } from "@/hooks/api/use-positions";
@@ -14,19 +16,40 @@ import {
   useTradingPerformance,
   useTradingPnl,
   useTradingTimeseries,
+  type StrategyPerformanceRow,
 } from "@/hooks/api/use-trading";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useValueFormat } from "@/components/trading/value-format-toggle";
-import type { VenueMargin } from "@/components/trading/margin-utilization";
-import type { ServiceHealth } from "@/components/trading/health-status-grid";
-import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
+import { getAggregatedPnlForScope, getAlertsForScope, getStrategiesForScope } from "@/lib/mock-data";
+import type { SeedStrategy } from "@/lib/mock-data/seed";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { PnLBreakdown, TimeSeriesPoint, TradingClient, TradingOrganization } from "@/lib/trading-data";
-import { WidgetGrid } from "@/components/widgets/widget-grid";
-import { OverviewDataProvider, type OverviewData } from "@/components/widgets/overview/overview-data-context";
-import { getStrategiesForScope, getAlertsForScope, getAggregatedPnlForScope } from "@/lib/mock-data";
-import { ORGANIZATIONS, CLIENTS } from "@/lib/trading-data";
+import { CLIENTS, ORGANIZATIONS } from "@/lib/trading-data";
+import { formatCurrency as formatUsdCompact, formatNumber } from "@/lib/utils/formatters";
+import { AlertTriangle } from "lucide-react";
+import * as React from "react";
 
 import "@/components/widgets/overview/register";
+
+function seedToStrategyPerformanceRow(s: SeedStrategy): StrategyPerformanceRow {
+  return {
+    id: s.id,
+    name: s.name,
+    assetClass: "Crypto",
+    archetype: s.archetype,
+    clientName: s.clientId,
+    orgName: s.orgId,
+    orgId: s.orgId,
+    clientId: s.clientId,
+    status: s.status,
+    executionMode: "live",
+    pnl: (s.aum * s.mtdReturn) / 100,
+    pnlChange: 0,
+    sharpe: s.sharpe,
+    maxDrawdown: 0,
+    nav: s.aum,
+    exposure: s.aum * 0.8,
+  };
+}
 
 function getToday(): string {
   return new Date().toISOString().split("T")[0];
@@ -97,15 +120,16 @@ export default function OverviewPage() {
     timestamp: string;
     source: string;
   }>;
-  const mockAlerts = apiAlerts.length > 0 ? apiAlerts : getAlertsForScope(
-    wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds,
-  ).map((a) => ({
-    id: a.id,
-    message: a.message,
-    severity: a.severity,
-    timestamp: a.timestamp,
-    source: a.source,
-  }));
+  const mockAlerts =
+    apiAlerts.length > 0
+      ? apiAlerts
+      : getAlertsForScope(wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds).map((a) => ({
+          id: a.id,
+          message: a.message,
+          severity: a.severity,
+          timestamp: a.timestamp,
+          source: a.source,
+        }));
 
   const healthRaw = healthData as Record<string, unknown> | undefined;
   const SEED_SERVICES: ServiceHealth[] = [
@@ -165,42 +189,32 @@ export default function OverviewPage() {
   }, [wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds]);
 
   const emptyTs: TimeSeriesPoint[] = [];
-  const liveTimeSeries = timeseriesData?.timeseries ?? seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
+  const liveTimeSeries = timeseriesData?.timeseries ??
+    seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
   const batchTimeSeries = liveBatchData ?? seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
 
   const apiStrategies = performanceData?.strategies ?? [];
   const { scope: context } = useGlobalScope();
 
   // Fall back to seed strategies when API returns nothing
-  const allStrategies = React.useMemo(() => {
+  const allStrategies = React.useMemo((): StrategyPerformanceRow[] => {
     if (apiStrategies.length > 0) return apiStrategies;
     const seed = getStrategiesForScope(context.organizationIds, context.clientIds, context.strategyIds);
-    return seed.map((s) => ({
-      id: s.id,
-      name: s.name,
-      archetype: s.archetype,
-      status: s.status,
-      nav: s.aum,
-      exposure: s.aum * 0.8,
-      pnl: s.aum * s.mtdReturn / 100,
-      sharpe: s.sharpe,
-      orgId: s.orgId,
-      clientId: s.clientId,
-    }));
+    return seed.map(seedToStrategyPerformanceRow);
   }, [apiStrategies, context.organizationIds, context.clientIds, context.strategyIds]);
 
-  const strategyPerformance = React.useMemo(() => {
-    let result = allStrategies;
+  const strategyPerformance = React.useMemo((): StrategyPerformanceRow[] => {
+    let result = [...allStrategies];
     if (context.organizationIds.length > 0) {
       result = result.filter((s) => {
-        const orgHint = (s as unknown as Record<string, unknown>).orgId as string | undefined;
-        return orgHint ? context.organizationIds.includes(orgHint) : true;
+        const oid = s.orgId ?? s.orgName;
+        return oid ? context.organizationIds.includes(oid) : true;
       });
     }
     if (context.clientIds.length > 0) {
       result = result.filter((s) => {
-        const clientHint = (s as unknown as Record<string, unknown>).clientId as string | undefined;
-        return clientHint ? context.clientIds.includes(clientHint) : true;
+        const cid = s.clientId ?? s.clientName;
+        return cid ? context.clientIds.includes(cid) : true;
       });
     }
     if (context.strategyIds.length > 0) {
@@ -269,19 +283,19 @@ export default function OverviewPage() {
     (v: number) => {
       if (valueFormat === "percent") {
         const pct = totalNav > 0 ? (v / totalNav) * 100 : 0;
-        return `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+        return `${pct >= 0 ? "+" : ""}${formatNumber(pct, 2)}%`;
       }
-      if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(2)}M`;
-      if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-      return `$${v.toFixed(0)}`;
+      if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 2)}M`;
+      if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+      return formatUsdCompact(v, "USD", 0);
     },
     [valueFormat, totalNav],
   );
 
   const formatDollar = React.useCallback((v: number) => {
-    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(2)}M`;
-    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v.toFixed(0)}`;
+    if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 2)}M`;
+    if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+    return formatUsdCompact(v, "USD", 0);
   }, []);
 
   const overviewData: OverviewData = React.useMemo(

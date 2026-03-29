@@ -14,6 +14,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { FLASH_OPERATION_TYPES, FLASH_VENUES } from "@/lib/config/services/defi.config";
 import { SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
   const { flashSteps, addFlashStep, removeFlashStep, updateFlashStep, flashPnl, executeDeFiOrder } = useDeFiData();
@@ -141,15 +142,15 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
         <p className="text-xs font-medium">P&amp;L preview</p>
         <div className="grid grid-cols-2 gap-1 text-xs">
           <span className="text-muted-foreground">Gross profit</span>
-          <span className="font-mono text-emerald-400">${flashPnl.grossProfit.toFixed(2)}</span>
+          <span className="font-mono text-emerald-400">${formatNumber(flashPnl.grossProfit, 2)}</span>
           <span className="text-muted-foreground">Flash fee</span>
-          <span className="font-mono text-rose-400">-${flashPnl.flashFee.toFixed(2)}</span>
+          <span className="font-mono text-rose-400">-${formatNumber(flashPnl.flashFee, 2)}</span>
           <span className="text-muted-foreground">Gas estimate</span>
-          <span className="font-mono text-rose-400">-${flashPnl.gasEstimate.toFixed(2)}</span>
+          <span className="font-mono text-rose-400">-${formatNumber(flashPnl.gasEstimate, 2)}</span>
           <Separator className="col-span-2 my-1" />
           <span className="font-medium">Net P&amp;L</span>
           <span className={cn("font-mono font-bold", netPnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
-            ${netPnl.toFixed(2)}
+            ${formatNumber(netPnl, 2)}
           </span>
         </div>
       </div>
@@ -176,7 +177,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
             });
             toast({
               title: "Flash loan executed",
-              description: `${flashSteps.length}-step bundle — net P&L $${netPnl.toFixed(2)} (mock ledger)`,
+              description: `${flashSteps.length}-step bundle — net P&L $${formatNumber(netPnl, 2)} (mock ledger)`,
             });
           }}
         >

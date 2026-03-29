@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import * as React from "react";
 
+import { PageHeader } from "@/components/platform/page-header";
 import { StrategyWizard } from "@/components/research/strategy-wizard";
 import { CandidateBasket, useCandidateBasket } from "@/components/platform/candidate-basket";
 import { ApiError } from "@/components/ui/api-error";
@@ -347,44 +348,38 @@ export default function BacktestsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="platform-page-width space-y-6 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Backtest Management</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {filtered.length} backtests &middot; {backtests.filter((b) => b.status === "running").length} running
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <ExportDropdown
-              data={filtered.map(
-                (bt) =>
-                  ({
-                    name: bt.templateName,
-                    archetype: bt.archetype,
-                    assetClass: bt.instrument,
-                    status: bt.status,
-                    sharpe: bt.metrics?.sharpe ?? null,
-                    totalReturn: bt.metrics?.totalReturn ?? null,
-                    maxDrawdown: bt.metrics?.maxDrawdown ?? null,
-                    tradesCount: bt.metrics?.turnover ?? null,
-                    sortino: bt.metrics?.sortino ?? null,
-                    hitRate: bt.metrics?.hitRate ?? null,
-                  }) as Record<string, unknown>,
-              )}
-              columns={backtestExportColumns}
-              filename="strategy-backtests"
-            />
-            <Button variant="outline" onClick={() => setWizardOpen(true)}>
-              <Plus className="size-4" />
-              New Strategy
-            </Button>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Play className="size-4" />
-              Run New Backtest
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          title="Backtest Management"
+          description={`${filtered.length} backtests · ${backtests.filter((b) => b.status === "running").length} running`}
+        >
+          <ExportDropdown
+            data={filtered.map(
+              (bt) =>
+                ({
+                  name: bt.templateName,
+                  archetype: bt.archetype,
+                  assetClass: bt.instrument,
+                  status: bt.status,
+                  sharpe: bt.metrics?.sharpe ?? null,
+                  totalReturn: bt.metrics?.totalReturn ?? null,
+                  maxDrawdown: bt.metrics?.maxDrawdown ?? null,
+                  tradesCount: bt.metrics?.turnover ?? null,
+                  sortino: bt.metrics?.sortino ?? null,
+                  hitRate: bt.metrics?.hitRate ?? null,
+                }) as Record<string, unknown>,
+            )}
+            columns={backtestExportColumns}
+            filename="strategy-backtests"
+          />
+          <Button variant="outline" onClick={() => setWizardOpen(true)}>
+            <Plus className="size-4" />
+            New Strategy
+          </Button>
+          <Button onClick={() => setDialogOpen(true)}>
+            <Play className="size-4" />
+            Run New Backtest
+          </Button>
+        </PageHeader>
 
         {/* Filter Bar */}
         <Card className="border-border/50">

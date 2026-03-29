@@ -1,23 +1,19 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/platform/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Inbox, CheckCircle2, XCircle, Clock } from "lucide-react";
-import {
-  useAccessRequests,
-  useReviewRequest,
-} from "@/hooks/api/use-user-management";
+import { useAccessRequests, useReviewRequest } from "@/hooks/api/use-user-management";
 import { toast } from "@/hooks/use-toast";
 import type { AccessRequest } from "@/lib/types/user-management";
 
 function statusIcon(status: string) {
-  if (status === "pending")
-    return <Clock className="h-4 w-4 text-yellow-500" />;
-  if (status === "approved")
-    return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+  if (status === "pending") return <Clock className="h-4 w-4 text-yellow-500" />;
+  if (status === "approved") return <CheckCircle2 className="h-4 w-4 text-green-500" />;
   if (status === "denied") return <XCircle className="h-4 w-4 text-red-500" />;
   return <CheckCircle2 className="h-4 w-4 text-blue-500" />;
 }
@@ -61,46 +57,36 @@ export default function AccessRequestsPage() {
 
   return (
     <div className="px-6 py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
             <Inbox className="h-6 w-6" /> Access Requests
-          </h1>
-          <p className="text-muted-foreground">
-            Review and approve pending access requests from users
-          </p>
-        </div>
-        <div className="flex gap-2">
-          {["", "pending", "approved", "denied"].map((s) => (
-            <Button
-              key={s || "all"}
-              variant={filter === s ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilter(s)}
-            >
-              {s || "All"}
-            </Button>
-          ))}
-        </div>
-      </div>
+          </span>
+        }
+        description="Review and approve pending access requests from users"
+      >
+        {["", "pending", "approved", "denied"].map((s) => (
+          <Button
+            key={s || "all"}
+            variant={filter === s ? "default" : "outline"}
+            size="sm"
+            onClick={() => setFilter(s)}
+          >
+            {s || "All"}
+          </Button>
+        ))}
+      </PageHeader>
 
       {isLoading ? (
         <div className="text-muted-foreground">Loading requests...</div>
       ) : (
         <div className="grid gap-3">
           {(data?.requests ?? []).map((req) => (
-            <RequestCard
-              key={req.id}
-              request={req}
-              onReview={handleReview}
-              isPending={review.isPending}
-            />
+            <RequestCard key={req.id} request={req} onReview={handleReview} isPending={review.isPending} />
           ))}
           {(data?.requests ?? []).length === 0 && (
             <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">
-                No requests found.
-              </CardContent>
+              <CardContent className="py-8 text-center text-muted-foreground">No requests found.</CardContent>
             </Card>
           )}
         </div>
@@ -126,9 +112,7 @@ function RequestCard({
             <div className="flex items-center gap-2">
               {statusIcon(request.status)}
               <span className="font-medium">{request.requester_name}</span>
-              <span className="text-sm text-muted-foreground">
-                {request.requester_email}
-              </span>
+              <span className="text-sm text-muted-foreground">{request.requester_email}</span>
             </div>
             <div className="flex gap-2 flex-wrap">
               {request.requested_entitlements.map((e) => (
@@ -136,15 +120,9 @@ function RequestCard({
                   {ENTITLEMENT_LABELS[e] ?? e}
                 </Badge>
               ))}
-              {request.requested_role && (
-                <Badge variant="secondary">
-                  Role: {request.requested_role}
-                </Badge>
-              )}
+              {request.requested_role && <Badge variant="secondary">Role: {request.requested_role}</Badge>}
             </div>
-            {request.reason && (
-              <p className="text-sm text-muted-foreground">{request.reason}</p>
-            )}
+            {request.reason && <p className="text-sm text-muted-foreground">{request.reason}</p>}
             {request.admin_note && (
               <p className="text-sm italic text-muted-foreground">
                 Admin: {request.admin_note} — {request.reviewed_by}
@@ -152,12 +130,8 @@ function RequestCard({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={statusVariant(request.status)}>
-              {request.status}
-            </Badge>
-            <span className="text-xs text-muted-foreground">
-              {request.created_at.split("T")[0]}
-            </span>
+            <Badge variant={statusVariant(request.status)}>{request.status}</Badge>
+            <span className="text-xs text-muted-foreground">{request.created_at.split("T")[0]}</span>
           </div>
         </div>
 
@@ -171,12 +145,7 @@ function RequestCard({
             >
               <CheckCircle2 className="h-4 w-4 mr-1" /> Approve
             </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => onReview(request.id, "deny")}
-              disabled={isPending}
-            >
+            <Button size="sm" variant="destructive" onClick={() => onReview(request.id, "deny")} disabled={isPending}>
               <XCircle className="h-4 w-4 mr-1" /> Deny
             </Button>
           </div>

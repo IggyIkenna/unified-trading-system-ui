@@ -6,6 +6,7 @@ import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shar
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle } from "lucide-react";
 import { useMarketsData, type ReconRun } from "./markets-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function MarketsReconWidget(_props: WidgetComponentProps) {
   const { reconRuns } = useMarketsData();
@@ -41,7 +42,7 @@ export function MarketsReconWidget(_props: WidgetComponentProps) {
         align: "right",
         accessor: (row) =>
           row.totalValue > 0 ? (
-            <span className="text-muted-foreground">${(row.totalValue / 1000).toFixed(1)}k</span>
+            <span className="text-muted-foreground">${formatNumber(row.totalValue / 1000, 1)}k</span>
           ) : (
             "—"
           ),

@@ -8,6 +8,7 @@ import type { RunComparison, UnifiedTrainingRun } from "@/lib/ml-types";
 import { cn } from "@/lib/utils";
 import { Plus, X } from "lucide-react";
 import * as React from "react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Comparison — baseline (selected run) vs up to 3 other completed runs
@@ -365,8 +366,8 @@ export function RunComparisonView({
               {metricRows.map((row) => {
                 const fmt = (v: number) =>
                   "pct" in row && row.pct
-                    ? `${(v * 100).toFixed(1)}%`
-                    : `${v.toFixed(2)}${"suffix" in row && row.suffix ? row.suffix : ""}`;
+                    ? `${formatPercent(v * 100, 1)}`
+                    : `${formatNumber(v, 2)}${"suffix" in row && row.suffix ? row.suffix : ""}`;
 
                 const baseVal = row.get(fmA);
 
@@ -403,10 +404,12 @@ export function RunComparisonView({
                             className={`px-1 py-1.5 font-mono text-center ${better ? "text-emerald-400" : "text-red-400"}`}
                           >
                             {delta > 0 ? "+" : ""}
-                            {"pct" in row && row.pct ? `${(delta * 100).toFixed(1)}%` : `${delta.toFixed(2)}${suffix}`}
+                            {"pct" in row && row.pct
+                              ? formatPercent(delta * 100, 1)
+                              : `${formatNumber(delta, 2)}${suffix}`}
                           </td>
                           <td className="px-1 py-1.5 font-mono text-muted-foreground text-[9px] text-center">
-                            {compLoading ? "…" : comp ? comp.p_value.toFixed(3) : "—"}
+                            {compLoading ? "…" : comp ? formatNumber(comp.p_value, 3) : "—"}
                           </td>
                           <td className="px-1 py-1.5 text-center">
                             {compLoading ? (

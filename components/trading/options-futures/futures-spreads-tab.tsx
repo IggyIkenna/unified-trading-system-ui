@@ -6,6 +6,7 @@ import { generateSpreadMatrix, SPREAD_EXPIRIES } from "@/lib/mocks/fixtures/opti
 import type { ComboType, SelectedInstrument, SpreadAsset, SpreadCell } from "@/lib/types/options";
 import { cn } from "@/lib/utils";
 import * as React from "react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function FuturesSpreadsTab({ onSelectInstrument }: { onSelectInstrument: (inst: SelectedInstrument) => void }) {
   const [spreadAsset, setSpreadAsset] = React.useState<SpreadAsset>("BTC");
@@ -91,11 +92,11 @@ export function FuturesSpreadsTab({ onSelectInstrument }: { onSelectInstrument: 
                           <div className="flex items-center justify-center gap-2">
                             <span className="font-mono text-emerald-400 font-medium">
                               {cell.bid >= 0 ? "+" : ""}
-                              {cell.bid.toFixed(1)}
+                              {formatNumber(cell.bid, 1)}
                             </span>
                             <span className="font-mono text-muted-foreground">
                               {cell.ask >= 0 ? "+" : ""}
-                              {cell.ask.toFixed(1)}
+                              {formatNumber(cell.ask, 1)}
                             </span>
                           </div>
                           <div className="flex items-center justify-center gap-2 text-[8px] text-muted-foreground/60">

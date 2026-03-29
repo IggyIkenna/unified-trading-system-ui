@@ -1,45 +1,12 @@
 "use client";
 
-import {
-  X,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Clock,
-  AlertCircle,
-  Terminal,
-  ChevronDown,
-  ChevronUp,
-  RotateCcw,
-  StopCircle,
-  Play,
-  Square,
-  CheckSquare,
-  Edit2,
-  Check,
-  Tag,
-  List,
-  Layers,
-  ChevronRight,
-  FolderOpen,
-  Folder,
-  GitCommit,
-  FileText,
-  Search,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn, formatDateTime } from "@/lib/utils";
-import { VM_EVENT_TYPES } from "@/lib/types/deployment";
-import { StatBox } from "./stat-box";
-import { ShardRow } from "./shard-row";
-import { DeploymentStatusBadge } from "./deployment-status-badge";
+import { Spinner } from "@/components/ui/spinner";
+import { TabsContent } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { Play, RefreshCw, Search, Terminal, X } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
 
 export function DeploymentDetailsLogsTabPanel() {
@@ -235,7 +202,7 @@ export function DeploymentDetailsLogsTabPanel() {
           >
             {followLogs ? (
               <>
-                <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                <Spinner size="sm" className="h-3 w-3 mr-1" />
                 Following...
               </>
             ) : (
@@ -253,7 +220,7 @@ export function DeploymentDetailsLogsTabPanel() {
             disabled={logsLoading || followLogs}
             title="Manual refresh"
           >
-            {logsLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            {logsLoading ? <Spinner className="h-4 w-4" /> : <RefreshCw className="h-4 w-4" />}
           </Button>
         </div>
 
@@ -295,7 +262,7 @@ export function DeploymentDetailsLogsTabPanel() {
                       onClick={() => fetchLogs("DEFAULT", false, logsHoursBack)}
                       disabled={logsLoading}
                     >
-                      {logsLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Load all logs"}
+                      {logsLoading ? <Spinner size="sm" className="h-3 w-3" /> : "Load all logs"}
                     </Button>
                   )}
                 </>
@@ -340,7 +307,7 @@ export function DeploymentDetailsLogsTabPanel() {
                       onClick={() => fetchLogs("DEFAULT", false, logsHoursBack)}
                       disabled={logsLoading}
                     >
-                      {logsLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Load all logs"}
+                      {logsLoading ? <Spinner size="sm" className="h-3 w-3" /> : "Load all logs"}
                     </Button>
                   )}
                 </div>

@@ -1,38 +1,15 @@
 "use client";
 
-import {
-  Database,
-  RefreshCw,
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  CheckCircle2,
-  XCircle,
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-  Rocket,
-  Loader2,
-  Filter,
-  Eye,
-  Table2,
-  CalendarDays,
-  Building2,
-  Trash2,
-  FileText,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
-import { HeatmapCalendar } from "@/components/ops/deployment/HeatmapCalendar";
+import { AlertCircle, AlertTriangle, CheckCircle, CheckCircle2, FileText, Rocket, XCircle } from "lucide-react";
 import { useDataStatusTabCtx } from "./data-status-context";
-import { getCompletionColor, getCompletionBadgeClass } from "./category-metrics";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function DataStatusSectionModals() {
   const {
@@ -352,7 +329,7 @@ export function DataStatusSectionModals() {
                 <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
                   {isDeploying ? (
                     <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                      <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                      <Spinner className="h-4 w-4 shrink-0" />
                       Calculating shards for {deployMissingDateGranularity} granularity…
                     </div>
                   ) : deploymentResult?.dry_run && deploymentResult.total_shards !== undefined ? (
@@ -418,7 +395,7 @@ export function DataStatusSectionModals() {
             <div className="max-h-[60vh] overflow-auto">
               {fileListingLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-[var(--color-accent-cyan)]" />
+                  <Spinner size="lg" className="h-8 w-8 text-[var(--color-accent-cyan)]" />
                   <span className="ml-3 text-[var(--color-text-muted)]">Querying GCS for files...</span>
                 </div>
               ) : fileListingError ? (
@@ -505,7 +482,7 @@ export function DataStatusSectionModals() {
                               <td className="px-3 py-2 text-right font-mono">{dayResult.file_count}</td>
                               <td className="px-3 py-2 text-right font-mono text-[var(--color-text-muted)]">
                                 {dayResult.total_size_bytes > 0
-                                  ? (dayResult.total_size_bytes / (1024 * 1024)).toFixed(1) + " MB"
+                                  ? formatNumber(dayResult.total_size_bytes / (1024 * 1024), 1) + " MB"
                                   : "-"}
                               </td>
                               <td className="px-3 py-2 font-mono text-[var(--color-text-muted)] text-xs">

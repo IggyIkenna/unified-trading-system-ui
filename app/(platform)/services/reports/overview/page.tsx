@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import { GenerateReportModal } from "@/components/reports/generate-report-modal";
 import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
 import { useContextState } from "@/components/trading/context-bar";
@@ -12,10 +13,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useReports, useSettlements } from "@/hooks/api/use-reports";
 import { CLIENTS, type FilterContext } from "@/lib/trading-data";
+import { formatCurrency, formatDate, formatNumber, formatPercent } from "@/lib/utils/formatters";
 import {
   AlertCircle,
   ArrowRight,
@@ -24,14 +27,11 @@ import {
   CalendarClock,
   CheckCircle2,
   Clock,
-  DollarSign,
   Download,
   FileText,
-  Loader2,
   Printer,
   Receipt,
   Send,
-  TrendingUp,
   Users,
   Vault,
   Wallet,
@@ -56,18 +56,102 @@ export default function ReportsPage() {
   } = useSettlements();
 
   const SEED_REPORTS = [
-    { id: "RPT-001", name: "Daily P&L Summary", type: "pnl", status: "complete", date: "2026-03-28", client: "Trading Desk Alpha", format: "PDF" },
-    { id: "RPT-002", name: "Risk Exposure Report", type: "risk", status: "complete", date: "2026-03-28", client: "All Clients", format: "PDF" },
-    { id: "RPT-003", name: "Execution Quality Report", type: "execution", status: "complete", date: "2026-03-28", client: "Trading Desk Beta", format: "XLSX" },
-    { id: "RPT-004", name: "Monthly NAV Statement", type: "nav", status: "complete", date: "2026-03-01", client: "Apex Capital", format: "PDF" },
-    { id: "RPT-005", name: "Position Reconciliation", type: "recon", status: "pending", date: "2026-03-28", client: "All Clients", format: "PDF" },
-    { id: "RPT-006", name: "Fee Schedule Summary", type: "fees", status: "complete", date: "2026-03-28", client: "Zenith Partners", format: "XLSX" },
+    {
+      id: "RPT-001",
+      name: "Daily P&L Summary",
+      type: "pnl",
+      status: "complete",
+      date: "2026-03-28",
+      client: "Trading Desk Alpha",
+      format: "PDF",
+    },
+    {
+      id: "RPT-002",
+      name: "Risk Exposure Report",
+      type: "risk",
+      status: "complete",
+      date: "2026-03-28",
+      client: "All Clients",
+      format: "PDF",
+    },
+    {
+      id: "RPT-003",
+      name: "Execution Quality Report",
+      type: "execution",
+      status: "complete",
+      date: "2026-03-28",
+      client: "Trading Desk Beta",
+      format: "XLSX",
+    },
+    {
+      id: "RPT-004",
+      name: "Monthly NAV Statement",
+      type: "nav",
+      status: "complete",
+      date: "2026-03-01",
+      client: "Apex Capital",
+      format: "PDF",
+    },
+    {
+      id: "RPT-005",
+      name: "Position Reconciliation",
+      type: "recon",
+      status: "pending",
+      date: "2026-03-28",
+      client: "All Clients",
+      format: "PDF",
+    },
+    {
+      id: "RPT-006",
+      name: "Fee Schedule Summary",
+      type: "fees",
+      status: "complete",
+      date: "2026-03-28",
+      client: "Zenith Partners",
+      format: "XLSX",
+    },
   ];
   const SEED_SETTLEMENTS = [
-    { id: "STL-001", instrument: "BTC-USDT", venue: "Binance", quantity: 2.5, value: 168125, status: "settled", date: "2026-03-28", counterparty: "Binance" },
-    { id: "STL-002", instrument: "ETH-PERP", venue: "Hyperliquid", quantity: 15, value: 51300, status: "settled", date: "2026-03-28", counterparty: "Hyperliquid" },
-    { id: "STL-003", instrument: "SOL-USDT", venue: "Binance", quantity: 120, value: 17400, status: "pending", date: "2026-03-28", counterparty: "Binance" },
-    { id: "STL-004", instrument: "BTC-28MAR-68000-C", venue: "Deribit", quantity: 5, value: 9250, status: "settled", date: "2026-03-27", counterparty: "Deribit" },
+    {
+      id: "STL-001",
+      instrument: "BTC-USDT",
+      venue: "Binance",
+      quantity: 2.5,
+      value: 168125,
+      status: "settled",
+      date: "2026-03-28",
+      counterparty: "Binance",
+    },
+    {
+      id: "STL-002",
+      instrument: "ETH-PERP",
+      venue: "Hyperliquid",
+      quantity: 15,
+      value: 51300,
+      status: "settled",
+      date: "2026-03-28",
+      counterparty: "Hyperliquid",
+    },
+    {
+      id: "STL-003",
+      instrument: "SOL-USDT",
+      venue: "Binance",
+      quantity: 120,
+      value: 17400,
+      status: "pending",
+      date: "2026-03-28",
+      counterparty: "Binance",
+    },
+    {
+      id: "STL-004",
+      instrument: "BTC-28MAR-68000-C",
+      venue: "Deribit",
+      quantity: 5,
+      value: 9250,
+      status: "settled",
+      date: "2026-03-27",
+      counterparty: "Deribit",
+    },
   ];
   const SEED_PORTFOLIO = [
     { client: "Trading Desk Alpha", aum: 13300000, pnl: 245000, pnlPct: 1.84, positions: 12 },
@@ -82,10 +166,32 @@ export default function ReportsPage() {
     { venue: "Deribit", currency: "BTC", free: 12.5, locked: 5.2, total: 17.7 },
     { venue: "Aave V3", currency: "WETH", free: 45, locked: 0, total: 45 },
   ];
-  const SEED_TRANSFERS: Array<{ time: string; from: string; to: string; amount: string; status: TransferStatus; confirmations?: string; txHash?: string }> = [
-    { time: "2026-03-28T13:22:00Z", from: "Binance", to: "Hyperliquid", amount: "$500,000", status: "confirmed", confirmations: "12/12" },
+  const SEED_TRANSFERS: Array<{
+    time: string;
+    from: string;
+    to: string;
+    amount: string;
+    status: TransferStatus;
+    confirmations?: string;
+    txHash?: string;
+  }> = [
+    {
+      time: "2026-03-28T13:22:00Z",
+      from: "Binance",
+      to: "Hyperliquid",
+      amount: "$500,000",
+      status: "confirmed",
+      confirmations: "12/12",
+    },
     { time: "2026-03-28T10:15:00Z", from: "Deribit", to: "Binance", amount: "2.5 BTC", status: "settled" },
-    { time: "2026-03-27T18:42:00Z", from: "Uniswap", to: "Aave V3", amount: "10 WETH", status: "confirmed", confirmations: "35/35" },
+    {
+      time: "2026-03-27T18:42:00Z",
+      from: "Uniswap",
+      to: "Aave V3",
+      amount: "10 WETH",
+      status: "confirmed",
+      confirmations: "35/35",
+    },
   ];
   const allReports: Array<any> = (reportsApiData as any)?.data ?? SEED_REPORTS;
   const allSettlements: Array<any> =
@@ -207,82 +313,95 @@ export default function ReportsPage() {
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* Header — premium, calm, stewardship feel */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">Investment Reporting</h1>
-            <p className="text-sm text-muted-foreground">
-              Portfolio performance, attribution, settlements, and client statements
-            </p>
-            <p className="text-[10px] text-muted-foreground/60 font-mono">
-              Data as of {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} &middot; Reconciled T+1
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Calendar className="size-4" />
-              March 2026
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => window.print()}>
-              <Printer className="size-4" />
-              Print
-            </Button>
-            <ExportDropdown
-              data={reports.map((r) => ({ ...r }))}
-              columns={[
-                { key: "id", header: "ID" },
-                { key: "name", header: "Report" },
-                { key: "type", header: "Type" },
-                { key: "status", header: "Status" },
-                { key: "date", header: "Date" },
-              ]}
-              filename="reports-pnl"
-            />
-            <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => setScheduleOpen(true)}>
-              <CalendarClock className="size-4" />
-              Schedule
-            </Button>
-            <Button size="sm" className="gap-2" onClick={() => setGenerateOpen(true)}>
-              <FileText className="size-4" />
-              Generate Report
-            </Button>
-          </div>
-        </div>
+        <PageHeader
+          title="Investment Reporting"
+          description={
+            <>
+              <p>Portfolio performance, attribution, settlements, and client statements</p>
+              <p className="text-caption text-muted-foreground/60 font-mono">
+                Data as of {formatDate(new Date(), "calendar")} &middot; Reconciled T+1
+              </p>
+            </>
+          }
+        >
+          <Button variant="outline" size="sm" className="gap-2">
+            <Calendar className="size-4" />
+            March 2026
+          </Button>
+          <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => window.print()}>
+            <Printer className="size-4" />
+            Print
+          </Button>
+          <ExportDropdown
+            data={reports.map((r) => ({ ...r }))}
+            columns={[
+              { key: "id", header: "ID" },
+              { key: "name", header: "Report" },
+              { key: "type", header: "Type" },
+              { key: "status", header: "Status" },
+              { key: "date", header: "Date" },
+            ]}
+            filename="reports-pnl"
+          />
+          <Button variant="outline" size="sm" className="gap-2 no-print" onClick={() => setScheduleOpen(true)}>
+            <CalendarClock className="size-4" />
+            Schedule
+          </Button>
+          <Button size="sm" className="gap-2" onClick={() => setGenerateOpen(true)}>
+            <FileText className="size-4" />
+            Generate Report
+          </Button>
+        </PageHeader>
 
         {/* Summary — premium KPI strip with institutional spacing */}
         <div className="grid grid-cols-4 gap-4">
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Assets Under Management</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Assets Under Management
+              </p>
               <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
-                ${(totalAum / 1_000_000).toFixed(1)}m
+                ${formatNumber(totalAum / 1_000_000, 1)}m
               </p>
               <p className="text-[10px] text-muted-foreground/60">Across {portfolioSummary.length} client mandates</p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Month-to-Date Return</p>
-              <p className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${avgMtdReturn >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}>
-                {avgMtdReturn >= 0 ? "+" : ""}{avgMtdReturn.toFixed(2)}%
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Month-to-Date Return
+              </p>
+              <p
+                className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${avgMtdReturn >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+              >
+                {avgMtdReturn >= 0 ? "+" : ""}
+                {formatPercent(avgMtdReturn, 2)}
               </p>
               <p className="text-[10px] text-muted-foreground/60">Weighted average across all mandates</p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Pending Settlement</p>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
-                ${(pendingSettlement / 1_000).toFixed(1)}k
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Pending Settlement
               </p>
-              <p className="text-[10px] text-muted-foreground/60">{settlements.filter((s) => s.status !== "settled").length} transactions awaiting confirmation</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
+                ${formatNumber(pendingSettlement / 1_000, 1)}k
+              </p>
+              <p className="text-[10px] text-muted-foreground/60">
+                {settlements.filter((s) => s.status !== "settled").length} transactions awaiting confirmation
+              </p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Reports Generated</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Reports Generated
+              </p>
               <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{reportsThisMonth}</p>
-              <p className="text-[10px] text-muted-foreground/60">This period &middot; {reports.filter((r) => r.status === "sent").length} delivered to clients</p>
+              <p className="text-[10px] text-muted-foreground/60">
+                This period &middot; {reports.filter((r) => r.status === "sent").length} delivered to clients
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -348,7 +467,7 @@ export default function ReportsPage() {
                           <div>
                             <EntityLink type="client" id={clientLinkId} label={clientLabel} className="font-semibold" />
                             <p className="text-sm text-muted-foreground">
-                              AUM: ${((row.aum ?? 0) / 1000000).toFixed(1)}m
+                              AUM: ${formatNumber((row.aum ?? 0) / 1_000_000, 1)}m
                             </p>
                           </div>
                         </div>
@@ -568,7 +687,7 @@ export default function ReportsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-6">
-                      <span className="font-mono font-semibold">${invoice.amount.toLocaleString()}</span>
+                      <span className="font-mono font-semibold">{formatCurrency(invoice.amount, "USD", 0)}</span>
                       <Badge
                         variant={invoice.status === "paid" ? "default" : "secondary"}
                         className={
@@ -599,7 +718,7 @@ export default function ReportsPage() {
                   <div className="text-sm text-muted-foreground">
                     Total:{" "}
                     <span className="font-semibold text-foreground">
-                      ${(accountBalances.reduce((s, b) => s + b.total, 0) / 1000000).toFixed(2)}M
+                      {`$${formatNumber(accountBalances.reduce((s, b) => s + b.total, 0) / 1_000_000, 2)}M`}
                     </span>
                   </div>
                 </div>
@@ -622,18 +741,20 @@ export default function ReportsPage() {
                         <TableRow key={bal.venue}>
                           <TableCell className="font-medium">{bal.venue}</TableCell>
                           <TableCell className="text-right font-mono text-[var(--pnl-positive)]">
-                            ${(bal.free / 1000).toFixed(0)}k
+                            ${formatNumber(bal.free / 1000, 0)}k
                           </TableCell>
                           <TableCell className="text-right font-mono text-muted-foreground">
-                            ${(bal.locked / 1000).toFixed(0)}k
+                            ${formatNumber(bal.locked / 1000, 0)}k
                           </TableCell>
                           <TableCell className="text-right font-mono font-medium">
-                            ${(bal.total / 1000).toFixed(0)}k
+                            ${formatNumber(bal.total / 1000, 0)}k
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <Progress value={utilization} className="h-2 flex-1" />
-                              <span className="text-xs text-muted-foreground w-10">{utilization.toFixed(0)}%</span>
+                              <span className="text-xs text-muted-foreground w-10">
+                                {formatPercent(utilization, 0)}
+                              </span>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -655,9 +776,7 @@ export default function ReportsPage() {
                     <div className="flex items-center gap-4">
                       {transfer.status === "settled" && <CheckCircle2 className="size-5 text-[var(--status-live)]" />}
                       {transfer.status === "confirmed" && <CheckCircle2 className="size-5 text-[var(--accent-blue)]" />}
-                      {transfer.status === "confirming" && (
-                        <Loader2 className="size-5 text-[var(--accent-blue)] animate-spin" />
-                      )}
+                      {transfer.status === "confirming" && <Spinner className="size-5 text-[var(--accent-blue)]" />}
                       {transfer.status === "pending" && <Clock className="size-5 text-muted-foreground" />}
                       {transfer.status === "failed" && <AlertCircle className="size-5 text-destructive" />}
                       <div>

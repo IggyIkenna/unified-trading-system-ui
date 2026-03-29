@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import { ApiError } from "@/components/ui/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,19 +14,10 @@ import {
   useUnifiedTrainingRuns,
 } from "@/hooks/api/use-ml-models";
 import type { ModelFamily, UnifiedTrainingRun } from "@/lib/ml-types";
-import {
-  Activity,
-  AlertTriangle,
-  Brain,
-  CheckCircle2,
-  Clock,
-  Cpu,
-  Layers,
-  Play,
-  XCircle,
-} from "lucide-react";
+import { Activity, AlertTriangle, Brain, CheckCircle2, Clock, Cpu, Layers, Play, XCircle } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 function statusIcon(status: string) {
   switch (status) {
@@ -71,19 +63,12 @@ export default function MLOverviewPage() {
     isError: pipelineIsError,
     error: pipelineError,
   } = useMLPipelineStatus();
-  const {
-    data: runsData,
-    isLoading: runsLoading,
-    isError: runsIsError,
-    error: runsError,
-  } = useUnifiedTrainingRuns();
+  const { data: runsData, isLoading: runsLoading, isError: runsIsError, error: runsError } = useUnifiedTrainingRuns();
   const { data: queueData, isLoading: queueLoading } = useTrainingQueue();
   const { data: alertsData } = useMLAlerts();
   const { data: familiesData, isLoading: famLoading } = useModelFamilies();
 
-  const runs = (
-    Array.isArray(runsData) ? runsData : []
-  ) as UnifiedTrainingRun[];
+  const runs = (Array.isArray(runsData) ? runsData : []) as UnifiedTrainingRun[];
   const queue = queueData as {
     gpus: {
       gpu_type: string;
@@ -95,11 +80,8 @@ export default function MLOverviewPage() {
     estimated_wait_minutes: number;
   } | null;
   const rawAlerts = Array.isArray(alertsData) ? alertsData : [];
-  const alerts = rawAlerts.filter(
-    (a: { resolvedAt?: string | null }) => !a.resolvedAt,
-  );
-  const families = ((familiesData as { data?: ModelFamily[] })?.data ??
-    []) as ModelFamily[];
+  const alerts = rawAlerts.filter((a: { resolvedAt?: string | null }) => !a.resolvedAt);
+  const families = ((familiesData as { data?: ModelFamily[] })?.data ?? []) as ModelFamily[];
 
   const stats = {
     total_model_families: 0,
@@ -110,19 +92,13 @@ export default function MLOverviewPage() {
     models_in_production: 0,
     models_in_shadow: 0,
     active_alerts: 0,
-    ...(typeof pipelineData === "object" && pipelineData !== null
-      ? (pipelineData as Record<string, number>)
-      : {}),
+    ...(typeof pipelineData === "object" && pipelineData !== null ? (pipelineData as Record<string, number>) : {}),
   };
 
   const gpuTotalUsed = queue?.gpus?.reduce((s, g) => s + g.in_use, 0) ?? 0;
-  const gpuTotalAll = Math.max(
-    1,
-    queue?.gpus?.reduce((s, g) => s + g.total, 0) ?? 1,
-  );
+  const gpuTotalAll = Math.max(1, queue?.gpus?.reduce((s, g) => s + g.total, 0) ?? 1);
 
-  const pageLoading =
-    pipelineLoading || runsLoading || queueLoading || famLoading;
+  const pageLoading = pipelineLoading || runsLoading || queueLoading || famLoading;
   const pageError = pipelineIsError || runsIsError;
 
   if (pageError) {
@@ -144,14 +120,10 @@ export default function MLOverviewPage() {
       <div className="platform-page-width space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              ML Training Pipeline
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Train, analyze, and register models for systematic trading
-            </p>
-          </div>
+          <PageHeader
+            title="ML Training Pipeline"
+            description="Train, analyze, and register models for systematic trading"
+          />
           <Link href="/services/research/ml/training">
             <Button>
               <Play className="size-4" />
@@ -164,10 +136,7 @@ export default function MLOverviewPage() {
         {pageLoading ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton
-                key={i}
-                className="h-[88px] rounded-lg border border-border/50"
-              />
+              <Skeleton key={i} className="h-[88px] rounded-lg border border-border/50" />
             ))}
           </div>
         ) : (
@@ -253,10 +222,7 @@ export default function MLOverviewPage() {
               {pageLoading ? (
                 <>
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Skeleton
-                      key={i}
-                      className="h-[72px] w-full rounded-lg border border-border/50"
-                    />
+                    <Skeleton key={i} className="h-[72px] w-full rounded-lg border border-border/50" />
                   ))}
                 </>
               ) : (
@@ -268,13 +234,8 @@ export default function MLOverviewPage() {
                           {statusIcon(run.status)}
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-sm truncate">
-                                {run.name}
-                              </span>
-                              <Badge
-                                variant="outline"
-                                className={`${statusBadge(run.status)} text-[10px] shrink-0`}
-                              >
+                              <span className="font-medium text-sm truncate">{run.name}</span>
+                              <Badge variant="outline" className={`${statusBadge(run.status)} text-[10px] shrink-0`}>
                                 {run.status}
                               </Badge>
                             </div>
@@ -297,38 +258,25 @@ export default function MLOverviewPage() {
                               </div>
                             </div>
                           )}
-                          {run.status === "completed" &&
-                            run.financial_metrics && (
-                              <div className="flex items-center gap-3 text-xs">
-                                <span>
-                                  Sharpe:{" "}
-                                  <span className="font-mono font-medium text-emerald-400">
-                                    {run.financial_metrics.sharpe_ratio.toFixed(
-                                      2,
-                                    )}
-                                  </span>
+                          {run.status === "completed" && run.financial_metrics && (
+                            <div className="flex items-center gap-3 text-xs">
+                              <span>
+                                Sharpe:{" "}
+                                <span className="font-mono font-medium text-emerald-400">
+                                  {formatNumber(run.financial_metrics.sharpe_ratio, 2)}
                                 </span>
-                                <span>
-                                  DirAcc:{" "}
-                                  <span className="font-mono font-medium">
-                                    {(
-                                      run.financial_metrics
-                                        .directional_accuracy * 100
-                                    ).toFixed(1)}
-                                    %
-                                  </span>
+                              </span>
+                              <span>
+                                DirAcc:{" "}
+                                <span className="font-mono font-medium">
+                                  {formatPercent(run.financial_metrics.directional_accuracy * 100, 1)}
                                 </span>
-                              </div>
-                            )}
-                          {run.status === "failed" && (
-                            <span className="text-[11px] text-red-400 font-mono">
-                              OOM
-                            </span>
+                              </span>
+                            </div>
                           )}
+                          {run.status === "failed" && <span className="text-[11px] text-red-400 font-mono">OOM</span>}
                           {run.status === "queued" && (
-                            <span className="text-[11px] text-amber-400">
-                              Queue #{queue?.jobs_waiting ?? "—"}
-                            </span>
+                            <span className="text-[11px] text-amber-400">Queue #{queue?.jobs_waiting ?? "—"}</span>
                           )}
                         </div>
                       </div>
@@ -351,9 +299,7 @@ export default function MLOverviewPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">
-                    Total Utilization
-                  </span>
+                  <span className="text-muted-foreground">Total Utilization</span>
                   <span className="font-mono font-medium">
                     {gpuTotalUsed}/{gpuTotalAll} GPUs
                   </span>
@@ -366,28 +312,18 @@ export default function MLOverviewPage() {
                 </div>
                 <div className="space-y-1.5">
                   {(queue?.gpus ?? []).map((g) => (
-                    <div
-                      key={g.gpu_type}
-                      className="flex items-center justify-between text-[11px]"
-                    >
-                      <span className="font-mono text-muted-foreground">
-                        {g.gpu_type}
-                      </span>
+                    <div key={g.gpu_type} className="flex items-center justify-between text-[11px]">
+                      <span className="font-mono text-muted-foreground">{g.gpu_type}</span>
                       <span>
-                        <span className="text-foreground font-medium">
-                          {g.available}
-                        </span>
-                        <span className="text-muted-foreground">
-                          /{g.total} free
-                        </span>
+                        <span className="text-foreground font-medium">{g.available}</span>
+                        <span className="text-muted-foreground">/{g.total} free</span>
                       </span>
                     </div>
                   ))}
                 </div>
                 {(queue?.jobs_waiting ?? 0) > 0 && (
                   <div className="rounded-md bg-amber-500/10 p-2 text-[11px] text-amber-400">
-                    {queue?.jobs_waiting} jobs waiting · ~
-                    {queue?.estimated_wait_minutes}min est.
+                    {queue?.jobs_waiting} jobs waiting · ~{queue?.estimated_wait_minutes}min est.
                   </div>
                 )}
               </CardContent>
@@ -404,10 +340,7 @@ export default function MLOverviewPage() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   {alerts.map((alert) => (
-                    <div
-                      key={alert.id}
-                      className="rounded-md border border-border/50 p-2.5 space-y-1"
-                    >
+                    <div key={alert.id} className="rounded-md border border-border/50 p-2.5 space-y-1">
                       <div className="flex items-center justify-between">
                         <Badge
                           variant="outline"
@@ -419,9 +352,7 @@ export default function MLOverviewPage() {
                           {new Date(alert.triggeredAt).toLocaleTimeString()}
                         </span>
                       </div>
-                      <p className="text-[11px] text-muted-foreground">
-                        {alert.message}
-                      </p>
+                      <p className="text-[11px] text-muted-foreground">{alert.message}</p>
                     </div>
                   ))}
                 </CardContent>
@@ -438,17 +369,11 @@ export default function MLOverviewPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {families.map((f) => (
-                  <div
-                    key={f.id}
-                    className="flex items-center justify-between text-xs"
-                  >
+                  <div key={f.id} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="truncate font-medium">{f.name}</span>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={`${archetypeColor(f.archetype)} text-[9px] shrink-0`}
-                    >
+                    <Badge variant="outline" className={`${archetypeColor(f.archetype)} text-[9px] shrink-0`}>
                       {f.archetype.replace(/_/g, " ")}
                     </Badge>
                   </div>

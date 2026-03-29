@@ -21,6 +21,7 @@ import {
 } from "recharts";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { getStatusFromUtil } from "./risk-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
   const {
@@ -37,9 +38,9 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
 
   const formatExp = (v: number | string) => {
     if (typeof v === "string") return v;
-    if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}m`;
-    if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}k`;
-    return v.toFixed(2);
+    if (v >= 1_000_000) return `$${formatNumber(v / 1_000_000, 1)}m`;
+    if (v >= 1_000) return `$${formatNumber(v / 1_000, 0)}k`;
+    return formatNumber(v, 2);
   };
 
   const slicedTimeSeries = exposureTimeSeries.slice(exposurePeriod === "1W" ? -7 : exposurePeriod === "1M" ? -30 : -90);
@@ -101,7 +102,7 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
                         {formatExp(row.limit)}
                       </TableCell>
                       <TableCell className="text-right font-mono text-[11px] tabular-nums">
-                        {row.utilization.toFixed(0)}%
+                        {formatPercent(row.utilization, 0)}
                       </TableCell>
                       <TableCell>
                         <StatusBadge status={status} showDot={true} />
@@ -140,7 +141,7 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
                   <YAxis
                     stroke="var(--muted-foreground)"
                     fontSize={9}
-                    tickFormatter={(v) => `$${((v as number) / 1_000_000).toFixed(1)}M`}
+                    tickFormatter={(v) => `$${formatNumber((v as number) / 1_000_000, 1)}M`}
                   />
                   <RechartsTooltip
                     contentStyle={{

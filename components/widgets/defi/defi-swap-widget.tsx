@@ -13,6 +13,7 @@ import { CollapsibleSection } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function DeFiSwapWidget(_props: WidgetComponentProps) {
   const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
@@ -55,7 +56,8 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         <div className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs">
           <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
           <span className="text-amber-400">
-            Low {gasSymbol} balance ({gasBalance.toFixed(4)} {gasSymbol}). You may not have enough gas for this swap.
+            Low {gasSymbol} balance ({formatNumber(gasBalance, 4)} {gasSymbol}). You may not have enough gas for this
+            swap.
           </span>
         </div>
       )}
@@ -158,12 +160,12 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
               <div className="grid grid-cols-2 gap-1 text-xs">
                 <span className="text-muted-foreground">Price impact</span>
                 <span className={cn("font-mono", route.priceImpactPct > 0.5 ? "text-rose-400" : "text-emerald-400")}>
-                  {route.priceImpactPct.toFixed(2)}%
+                  {formatPercent(route.priceImpactPct, 2)}
                 </span>
                 <span className="text-muted-foreground">Gas estimate</span>
                 <span className="font-mono">
-                  {route.gasEstimateEth.toFixed(4)} ETH
-                  <span className="text-muted-foreground ml-1">(${route.gasEstimateUsd.toFixed(2)})</span>
+                  {formatNumber(route.gasEstimateEth, 4)} ETH
+                  <span className="text-muted-foreground ml-1">(${formatNumber(route.gasEstimateUsd, 2)})</span>
                 </span>
               </div>
             </div>

@@ -1,20 +1,12 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { StatusBadge } from "@/components/trading/status-badge";
-import { PnLValue } from "@/components/trading/pnl-value";
-import { SparklineCell } from "@/components/trading/kpi-card";
 import { EntityLink } from "@/components/trading/entity-link";
-import { CollapsibleSection } from "@/components/widgets/shared";
-import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { ASSET_CLASS_COLORS } from "@/lib/config/services/strategies.config";
-import type { Strategy } from "@/lib/strategy-registry";
-import { BarChart2, Play, Settings, Loader2, Filter, Search, ChevronDown, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { SparklineCell } from "@/components/trading/kpi-card";
+import { PnLValue } from "@/components/trading/pnl-value";
+import { StatusBadge } from "@/components/trading/status-badge";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -23,9 +15,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ARCHETYPES, STATUSES } from "@/lib/config/services/strategies.config";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { CollapsibleSection } from "@/components/widgets/shared";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { ARCHETYPES, ASSET_CLASS_COLORS, STATUSES } from "@/lib/config/services/strategies.config";
+import type { Strategy } from "@/lib/strategy-registry";
 import { cn } from "@/lib/utils";
+import { BarChart2, ChevronDown, Filter, Play, Search, Settings, X } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 import { useStrategiesData } from "./strategies-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 function executionModeShort(s: Strategy): { code: string; title: string } {
   const m = s.dataArchitecture.executionMode;
@@ -68,7 +69,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
   if (isLoading) {
     return (
       <div className="flex h-full min-h-[120px] items-center justify-center text-muted-foreground">
-        <Loader2 className="size-6 animate-spin" />
+        <Spinner className="size-6" />
       </div>
     );
   }
@@ -76,7 +77,10 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
   return (
     <div ref={containerRef} className="space-y-4">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
-        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => setShowFilters((f) => !f)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        >
           <Filter className="size-3" />
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>
@@ -214,7 +218,11 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
               return (
                 <Badge key={arch} variant="secondary" className="h-6 gap-1 pl-2 pr-1">
                   {label}
-                  <button type="button" onClick={() => toggleArchetype(arch)} className="hover:bg-secondary rounded p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => toggleArchetype(arch)}
+                    className="hover:bg-secondary rounded p-0.5"
+                  >
                     <X className="size-3" />
                   </button>
                 </Badge>
@@ -299,7 +307,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                           <div>
                             <span className="text-xs text-muted-foreground block">Sharpe</span>
                             <span className="text-sm font-mono font-semibold">
-                              {strategy.performance.sharpe.toFixed(2)}
+                              {formatNumber(strategy.performance.sharpe, 2)}
                             </span>
                           </div>
                           <div>
@@ -311,13 +319,13 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                               )}
                             >
                               {strategy.performance.returnPct >= 0 ? "+" : ""}
-                              {strategy.performance.returnPct.toFixed(1)}%
+                              {formatPercent(strategy.performance.returnPct, 1)}
                             </span>
                           </div>
                           <div>
                             <span className="text-xs text-muted-foreground block">Max DD</span>
                             <span className="text-sm font-mono text-muted-foreground">
-                              {strategy.performance.maxDrawdown.toFixed(1)}%
+                              {formatPercent(strategy.performance.maxDrawdown, 1)}
                             </span>
                           </div>
                           <div>

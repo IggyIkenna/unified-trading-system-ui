@@ -1,28 +1,14 @@
 "use client";
 
 import * as React from "react";
+import { StatusDot } from "@/components/trading/status-badge";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import {
   Radio,
   Database,
@@ -34,6 +20,7 @@ import {
   Minus,
 } from "lucide-react";
 import type { TimeSeriesPoint } from "@/lib/trading-data";
+import { formatPercent } from "@/lib/utils/formatters";
 
 type ViewMode = "live" | "batch" | "split" | "delta";
 
@@ -66,8 +53,7 @@ export function LiveBatchComparison({
   const latestLive = liveData[liveData.length - 1]?.value ?? 0;
   const latestBatch = batchData[batchData.length - 1]?.value ?? 0;
   const latestDelta = latestLive - latestBatch;
-  const deltaPercent =
-    latestBatch !== 0 ? (latestDelta / Math.abs(latestBatch)) * 100 : 0;
+  const deltaPercent = latestBatch !== 0 ? (latestDelta / Math.abs(latestBatch)) * 100 : 0;
 
   // Combine data for charts
   const combinedData = liveData.map((point, i) => ({
@@ -91,28 +77,16 @@ export function LiveBatchComparison({
   const allValues = [...liveValues, ...batchValues];
   const deltaValues = combinedData.map((d) => d.delta);
 
-  const renderChart = (
-    data: TimeSeriesPoint[],
-    color: string,
-    label: string,
-    yDomain?: [number, number],
-  ) => (
+  const renderChart = (data: TimeSeriesPoint[], color: string, label: string, yDomain?: [number, number]) => (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart
-        data={data}
-        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-      >
+      <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id={`gradient-${label}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor={color} stopOpacity={0.3} />
             <stop offset="95%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="var(--border)"
-          vertical={false}
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
         <XAxis
           dataKey="timestamp"
           tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
@@ -153,17 +127,10 @@ export function LiveBatchComparison({
 
   const renderSplitChart = () => (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart
-        data={combinedData}
-        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-      >
+      <AreaChart data={combinedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="gradient-live" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor="var(--status-live)"
-              stopOpacity={0.3}
-            />
+            <stop offset="5%" stopColor="var(--status-live)" stopOpacity={0.3} />
             <stop offset="95%" stopColor="var(--status-live)" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradient-batch" x1="0" y1="0" x2="0" y2="1">
@@ -171,11 +138,7 @@ export function LiveBatchComparison({
             <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="var(--border)"
-          vertical={false}
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
         <XAxis
           dataKey="timestamp"
           tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
@@ -198,10 +161,7 @@ export function LiveBatchComparison({
             borderRadius: "6px",
             fontSize: "12px",
           }}
-          formatter={(value: number, name: string) => [
-            valueFormatter(value),
-            name === "live" ? "Live" : "Batch",
-          ]}
+          formatter={(value: number, name: string) => [valueFormatter(value), name === "live" ? "Live" : "Batch"]}
           labelFormatter={(label) => `Time: ${label}`}
         />
         <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="3 3" />
@@ -228,41 +188,18 @@ export function LiveBatchComparison({
 
   const renderDeltaChart = () => (
     <ResponsiveContainer width="100%" height={height}>
-      <AreaChart
-        data={combinedData}
-        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-      >
+      <AreaChart data={combinedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="gradient-delta-pos" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor="var(--pnl-positive)"
-              stopOpacity={0.3}
-            />
-            <stop
-              offset="95%"
-              stopColor="var(--pnl-positive)"
-              stopOpacity={0}
-            />
+            <stop offset="5%" stopColor="var(--pnl-positive)" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="var(--pnl-positive)" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradient-delta-neg" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor="var(--pnl-negative)"
-              stopOpacity={0.3}
-            />
-            <stop
-              offset="95%"
-              stopColor="var(--pnl-negative)"
-              stopOpacity={0}
-            />
+            <stop offset="5%" stopColor="var(--pnl-negative)" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="var(--pnl-negative)" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="var(--border)"
-          vertical={false}
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
         <XAxis
           dataKey="timestamp"
           tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
@@ -293,15 +230,9 @@ export function LiveBatchComparison({
           type="monotone"
           dataKey="delta"
           name="delta"
-          stroke={
-            latestDelta >= 0 ? "var(--pnl-positive)" : "var(--pnl-negative)"
-          }
+          stroke={latestDelta >= 0 ? "var(--pnl-positive)" : "var(--pnl-negative)"}
           strokeWidth={2}
-          fill={
-            latestDelta >= 0
-              ? "url(#gradient-delta-pos)"
-              : "url(#gradient-delta-neg)"
-          }
+          fill={latestDelta >= 0 ? "url(#gradient-delta-pos)" : "url(#gradient-delta-neg)"}
         />
       </AreaChart>
     </ResponsiveContainer>
@@ -317,18 +248,14 @@ export function LiveBatchComparison({
             {/* Legend */}
             <div className="flex items-center gap-4 text-xs">
               <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-[var(--status-live)]" />
+                <StatusDot status="live" className="size-2" />
                 <span className="text-muted-foreground">Live</span>
-                <span className="font-medium">
-                  {valueFormatter(latestLive)}
-                </span>
+                <span className="font-medium">{valueFormatter(latestLive)}</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="size-2 rounded-full bg-primary" />
+                <StatusDot status="batch" className="size-2" />
                 <span className="text-muted-foreground">Batch</span>
-                <span className="font-medium">
-                  {valueFormatter(latestBatch)}
-                </span>
+                <span className="font-medium">{valueFormatter(latestBatch)}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <ArrowLeftRight className="size-3 text-muted-foreground" />
@@ -336,16 +263,14 @@ export function LiveBatchComparison({
                 <span
                   className={cn(
                     "font-medium",
-                    latestDelta >= 0
-                      ? "text-[var(--pnl-positive)]"
-                      : "text-[var(--pnl-negative)]",
+                    latestDelta >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
                   )}
                 >
                   {latestDelta >= 0 ? "+" : ""}
                   {valueFormatter(latestDelta)}
                   <span className="text-muted-foreground ml-1">
                     ({deltaPercent >= 0 ? "+" : ""}
-                    {deltaPercent.toFixed(1)}%)
+                    {formatPercent(deltaPercent, 1)})
                   </span>
                 </span>
               </div>
@@ -360,9 +285,7 @@ export function LiveBatchComparison({
                 type="date"
                 value={selectedDate}
                 onChange={(e) => onDateChange(e.target.value)}
-                max={
-                  new Date(Date.now() - 86400000).toISOString().split("T")[0]
-                } // Yesterday max
+                max={new Date(Date.now() - 86400000).toISOString().split("T")[0]} // Yesterday max
                 className="bg-transparent text-xs border-none focus:outline-none w-28"
               />
             </div>
@@ -385,9 +308,7 @@ export function LiveBatchComparison({
                 onClick={() => setViewMode("batch")}
                 className={cn(
                   "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                  viewMode === "batch"
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  viewMode === "batch" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Database className="size-3" />
@@ -397,9 +318,7 @@ export function LiveBatchComparison({
                 onClick={() => setViewMode("split")}
                 className={cn(
                   "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                  viewMode === "split"
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                  viewMode === "split" ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <SplitSquareVertical className="size-3" />
@@ -409,9 +328,7 @@ export function LiveBatchComparison({
                 onClick={() => setViewMode("delta")}
                 className={cn(
                   "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
-                  viewMode === "delta"
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                  viewMode === "delta" ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Minus className="size-3" />
@@ -422,10 +339,8 @@ export function LiveBatchComparison({
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        {viewMode === "live" &&
-          renderChart(liveData, "var(--status-live)", "Live")}
-        {viewMode === "batch" &&
-          renderChart(batchData, "var(--primary)", "Batch")}
+        {viewMode === "live" && renderChart(liveData, "var(--status-live)", "Live")}
+        {viewMode === "batch" && renderChart(batchData, "var(--primary)", "Batch")}
         {viewMode === "split" && renderSplitChart()}
         {viewMode === "delta" && renderDeltaChart()}
       </CardContent>
@@ -469,7 +384,7 @@ export function LiveBatchDeltaIndicator({
         )}
       >
         {delta >= 0 ? "+" : ""}
-        {percent.toFixed(1)}%
+        {formatPercent(percent, 1)}
       </Badge>
     </div>
   );

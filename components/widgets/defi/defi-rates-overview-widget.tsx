@@ -5,11 +5,12 @@ import { DataTableWidget, KpiStrip, type DataTableColumn, type KpiMetric } from 
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { DeFiRatesRow } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 function formatTvl(usd: number): string {
-  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(1)}B`;
-  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
-  return `$${usd.toFixed(0)}`;
+  if (usd >= 1e9) return `$${formatNumber(usd / 1e9, 1)}B`;
+  if (usd >= 1e6) return `$${formatNumber(usd / 1e6, 0)}M`;
+  return `$${formatNumber(usd, 0)}`;
 }
 
 export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
@@ -71,7 +72,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
 
   const headerMetrics: KpiMetric[] = [
     { label: "Rows", value: String(rows.length), sentiment: "neutral" },
-    { label: "Max APY / APR (mock)", value: `${maxApy.toFixed(1)}%`, sentiment: "positive" },
+    { label: "Max APY / APR (mock)", value: `${formatPercent(maxApy, 1)}`, sentiment: "positive" },
   ];
 
   const columns: DataTableColumn<DeFiRatesRow>[] = [
@@ -81,7 +82,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
     {
       key: "apy",
       label: "APY / APR %",
-      accessor: (r) => <span className="font-mono">{r.apyPct.toFixed(2)}</span>,
+      accessor: (r) => <span className="font-mono">{formatNumber(r.apyPct, 2)}</span>,
       align: "right",
     },
     {

@@ -12,6 +12,7 @@
  *   └──────────┴──────────┴──────────┴────────────────┴──────────────┘
  */
 
+import { PageHeader } from "@/components/platform/page-header";
 import { CatStatusBadge } from "@/components/research/features/cat-status-badge";
 import { EditConfigDialog } from "@/components/research/features/edit-config-dialog";
 import { FeatureDetailPanel } from "@/components/research/features/feature-detail-panel";
@@ -596,36 +597,36 @@ export default function FeaturesPage() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* ── Top bar ──────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-4 px-6 pt-4 pb-3 border-b border-border/50">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight">Feature Catalogue</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {pageMode === "finder"
+      <div className="border-b border-border/50 px-6 pb-3 pt-4">
+        <PageHeader
+          title="Feature Catalogue"
+          description={
+            pageMode === "finder"
               ? "Service → Category → Group → Feature"
-              : `${catalogueMerged.length} features · ${[...new Set(catalogueMerged.map((f) => f.shard))].length} shards`}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+              : `${catalogueMerged.length} features · ${[...new Set(catalogueMerged.map((f) => f.shard))].length} shards`
+          }
+        >
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={pageMode === "finder" ? "Filter services…" : "Search features…"}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 h-7 w-[180px] text-xs"
+              className="h-7 w-[180px] pl-8 text-xs"
             />
           </div>
-          <div className="flex items-center rounded-lg border border-border/50 overflow-hidden">
+          <div className="flex items-center overflow-hidden rounded-lg border border-border/50">
             {(["finder", "catalogue"] as PageMode[]).map((m) => (
               <button
                 key={m}
+                type="button"
                 onClick={() => setPageMode(m)}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors",
                   m !== "finder" && "border-l border-border/50",
                   pageMode === m
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                 )}
               >
                 {m === "finder" ? <Columns className="size-3" /> : <Table2 className="size-3" />}
@@ -634,9 +635,9 @@ export default function FeaturesPage() {
             ))}
           </div>
           <Button size="sm" className="h-7 text-xs" type="button" onClick={() => setNewFeatureOpen(true)}>
-            <Plus className="size-3.5 mr-1" /> New Feature
+            <Plus className="mr-1 size-3.5" /> New Feature
           </Button>
-        </div>
+        </PageHeader>
       </div>
 
       <NewFeatureDialog

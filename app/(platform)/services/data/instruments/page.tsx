@@ -5,19 +5,18 @@
  * FinderBrowser layout: Category → Venue → Instrument Type → Instrument
  */
 
-import * as React from "react";
+import { INSTRUMENTS_COLUMNS, getInstrumentsContextStats } from "@/components/data/instruments-finder-config";
+import { PageHeader } from "@/components/platform/page-header";
+import type { FinderSelections } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Bell } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { FinderBrowser, finderText } from "@/components/shared/finder";
-import type { FinderSelections } from "@/components/shared/finder";
-import { INSTRUMENTS_COLUMNS, getInstrumentsContextStats } from "@/components/data/instruments-finder-config";
+import { MOCK_ALERTS, MOCK_INSTRUMENT_COUNTS } from "@/lib/data-service-mock-data";
 import type { DataCategory, InstrumentEntry } from "@/lib/data-service-types";
 import { DATA_CATEGORY_LABELS, FOLDERS_BY_CATEGORY } from "@/lib/data-service-types";
-import { MOCK_INSTRUMENT_COUNTS, MOCK_ALERTS } from "@/lib/data-service-mock-data";
-import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
+import { Bell, RefreshCw } from "lucide-react";
 
 // ─── Instrument detail panel ──────────────────────────────────────────────────
 
@@ -170,16 +169,11 @@ export default function InstrumentsPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-4 pb-3 border-b border-border/50">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight">Instruments</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {totalAll.toLocaleString()} instruments · {totalActive.toLocaleString()} active ·{" "}
-            {Object.keys(MOCK_INSTRUMENT_COUNTS).length} venues
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="border-b border-border/50 px-6 pt-4 pb-3">
+        <PageHeader
+          title="Instruments"
+          description={`${formatNumber(totalAll, 0)} instruments · ${formatNumber(totalActive, 0)} active · ${Object.keys(MOCK_INSTRUMENT_COUNTS).length} venues`}
+        >
           {newInstrumentAlerts.length > 0 && (
             <Badge variant="outline" className="text-xs gap-1.5 border-sky-400/30 text-sky-400">
               <Bell className="size-3" />
@@ -190,7 +184,7 @@ export default function InstrumentsPage() {
             <RefreshCw className="size-4 mr-2" />
             Refresh
           </Button>
-        </div>
+        </PageHeader>
       </div>
 
       {/* FinderBrowser */}

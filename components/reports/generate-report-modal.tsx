@@ -1,26 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { FileText, Download, Loader2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { useGenerateReport } from "@/hooks/api/use-manage";
+import { Download, FileText } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
 
 const REPORT_TYPES = [
   { value: "pnl-attribution", label: "P&L Attribution" },
@@ -45,23 +40,15 @@ interface GenerateReportModalProps {
   defaultType?: string;
 }
 
-export function GenerateReportModal({
-  open,
-  onOpenChange,
-  defaultType,
-}: GenerateReportModalProps) {
-  const [reportType, setReportType] = React.useState(
-    defaultType ?? "pnl-attribution",
-  );
+export function GenerateReportModal({ open, onOpenChange, defaultType }: GenerateReportModalProps) {
+  const [reportType, setReportType] = React.useState(defaultType ?? "pnl-attribution");
   const [clientId, setClientId] = React.useState("all");
   const [dateFrom, setDateFrom] = React.useState(() => {
     const d = new Date();
     d.setMonth(d.getMonth() - 1);
     return d.toISOString().slice(0, 10);
   });
-  const [dateTo, setDateTo] = React.useState(() =>
-    new Date().toISOString().slice(0, 10),
-  );
+  const [dateTo, setDateTo] = React.useState(() => new Date().toISOString().slice(0, 10));
   const [format, setFormat] = React.useState<"pdf" | "csv" | "xlsx">("pdf");
   const [generating, setGenerating] = React.useState(false);
   const [downloadReady, setDownloadReady] = React.useState(false);
@@ -136,9 +123,7 @@ export function GenerateReportModal({
             <FileText className="size-5" />
             Generate Report
           </DialogTitle>
-          <DialogDescription>
-            Configure and generate a downloadable report
-          </DialogDescription>
+          <DialogDescription>Configure and generate a downloadable report</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
@@ -177,28 +162,17 @@ export function GenerateReportModal({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <label className="text-sm font-medium">From</label>
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
+              <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">To</label>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-              />
+              <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
             </div>
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium">Format</label>
-            <Select
-              value={format}
-              onValueChange={(v) => setFormat(v as "pdf" | "csv" | "xlsx")}
-            >
+            <Select value={format} onValueChange={(v) => setFormat(v as "pdf" | "csv" | "xlsx")}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -218,14 +192,10 @@ export function GenerateReportModal({
               Download Report
             </Button>
           ) : (
-            <Button
-              onClick={handleGenerate}
-              disabled={generating}
-              className="w-full"
-            >
+            <Button onClick={handleGenerate} disabled={generating} className="w-full">
               {generating ? (
                 <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  <Spinner className="mr-2 size-4" />
                   Generating...
                 </>
               ) : (

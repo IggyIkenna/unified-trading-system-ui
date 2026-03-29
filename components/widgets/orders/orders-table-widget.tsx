@@ -1,19 +1,21 @@
 "use client";
 
-import * as React from "react";
-import type { ColumnDef } from "@tanstack/react-table";
-import type { WidgetComponentProps } from "../widget-registry";
-import { Card, CardContent } from "@/components/ui/card";
+import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
-import type { ExportColumn } from "@/lib/utils/export";
-import { ArrowUpRight, ArrowDownRight, XCircle, Pencil, Loader2, AlertCircle, RefreshCw, Filter } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
+import type { ExportColumn } from "@/lib/utils/export";
+import type { ColumnDef } from "@tanstack/react-table";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, Filter, Pencil, RefreshCw, XCircle } from "lucide-react";
 import Link from "next/link";
-import { FilterBar, type FilterDefinition } from "@/components/platform/filter-bar";
-import { useOrdersData, classifyInstrument, type OrderRecord, type InstrumentType } from "./orders-data-context";
+import * as React from "react";
+import type { WidgetComponentProps } from "../widget-registry";
+import { classifyInstrument, useOrdersData, type InstrumentType, type OrderRecord } from "./orders-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const INSTRUMENT_TYPES: InstrumentType[] = ["All", "Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
 
@@ -150,7 +152,7 @@ function buildColumns(
         return (
           <div className={cn("text-right font-mono text-xs", edge >= 0 ? "text-emerald-400" : "text-rose-400")}>
             {edge >= 0 ? "+" : ""}
-            {edge.toFixed(1)} bps
+            {formatNumber(edge, 1)} bps
           </div>
         );
       },
@@ -161,7 +163,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => {
         const pnl = row.getValue<number>("instant_pnl") ?? 0;
-        const fmt = Math.abs(pnl) >= 1000 ? `$${(pnl / 1000).toFixed(1)}K` : `$${pnl.toFixed(0)}`;
+        const fmt = Math.abs(pnl) >= 1000 ? `$${formatNumber(pnl / 1000, 1)}K` : `$${formatNumber(pnl, 0)}`;
         return (
           <div className={cn("text-right font-mono font-medium", pnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
             {pnl >= 0 ? "+" : ""}
@@ -199,7 +201,7 @@ function buildColumns(
         return (
           <div className="flex flex-col items-end">
             <span className="font-mono">{filled.toLocaleString()}</span>
-            <span className="text-[10px] text-muted-foreground">{fillPct.toFixed(0)}%</span>
+            <span className="text-[10px] text-muted-foreground">{formatPercent(fillPct, 0)}</span>
           </div>
         );
       },
@@ -358,7 +360,7 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full gap-2 text-muted-foreground">
-        <Loader2 className="size-5 animate-spin" />
+        <Spinner className="size-5" />
         <span>Loading orders...</span>
       </div>
     );
@@ -380,7 +382,10 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
-        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => setShowFilters((f) => !f)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        >
           <Filter className="size-3" />
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>

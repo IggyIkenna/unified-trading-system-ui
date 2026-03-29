@@ -10,13 +10,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Database,
@@ -32,16 +26,12 @@ import {
   Lock,
   FlaskConical,
 } from "lucide-react";
+import { PageHeader } from "@/components/platform/page-header";
 import { SiteHeader } from "@/components/shell/site-header";
 import { ShardCatalogue } from "@/components/data/shard-catalogue";
 import { FreshnessHeatmap } from "@/components/data/freshness-heatmap";
 import { DATA_PLANS } from "@/lib/data-service-types";
-import {
-  ADMIN_SUMMARY,
-  MOCK_SHARD_AVAILABILITY,
-  DEMO_ORG,
-  MOCK_SUBSCRIPTIONS,
-} from "@/lib/data-service-mock-data";
+import { ADMIN_SUMMARY, MOCK_SHARD_AVAILABILITY, DEMO_ORG, MOCK_SUBSCRIPTIONS } from "@/lib/data-service-mock-data";
 
 const HERO_METRICS = [
   { label: "Venues", value: "128" },
@@ -61,40 +51,29 @@ export default function DataServicePublicPage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-950/40 via-background to-background" />
         <div className="container relative px-4 py-20 md:px-6 md:py-28">
           <div className="mx-auto max-w-3xl text-center">
-            <Badge
-              variant="outline"
-              className="mb-4 border-sky-500/30 text-sky-400 text-xs"
-            >
+            <Badge variant="outline" className="mb-4 border-sky-500/30 text-sky-400 text-xs">
               <Database className="mr-1.5 size-3" />
               Data Provision
             </Badge>
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              Institutional market data.{" "}
-              <span className="text-sky-400">One schema.</span>
-            </h1>
-            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Normalised tick, OHLCV, orderbook, DeFi, and sports data from 128
-              venues — queried in-system or exported to your cloud.
-              Cloud-agnostic. Paywall-free for what you subscribe to.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <PageHeader
+              className="[&>div:first-child]:justify-center [&_.min-w-0]:mx-auto [&_.min-w-0]:text-center [&_.min-w-0]:max-w-2xl"
+              title={
+                <>
+                  Institutional market data. <span className="text-sky-400">One schema.</span>
+                </>
+              }
+              description="Normalised tick, OHLCV, orderbook, DeFi, and sports data from 128 venues — queried in-system or exported to your cloud. Cloud-agnostic. Paywall-free for what you subscribe to."
+            >
               <Button size="lg" variant="outline" asChild>
                 <Link href="/contact">Book a Demo</Link>
               </Button>
-            </div>
+            </PageHeader>
             {/* Metric strip */}
             <div className="mt-12 grid grid-cols-4 gap-4">
               {HERO_METRICS.map((m) => (
-                <div
-                  key={m.label}
-                  className="rounded-lg border border-border bg-card/60 px-4 py-3"
-                >
-                  <div className="text-2xl font-bold font-mono text-sky-400">
-                    {m.value}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    {m.label}
-                  </div>
+                <div key={m.label} className="rounded-lg border border-border bg-card/60 px-4 py-3">
+                  <div className="text-2xl font-bold font-mono text-sky-400">{m.value}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{m.label}</div>
                 </div>
               ))}
             </div>
@@ -125,8 +104,8 @@ export default function DataServicePublicPage() {
             <div className="mb-6">
               <h2 className="text-xl font-semibold">Instrument Registry</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Browse all available instruments by asset class, venue, and data
-                type. Subscribe to unlock date-range queries.
+                Browse all available instruments by asset class, venue, and data type. Subscribe to unlock date-range
+                queries.
               </p>
             </div>
             {/* Browsable but date pickers are locked */}
@@ -135,8 +114,7 @@ export default function DataServicePublicPage() {
               <Lock className="size-5 text-sky-400 shrink-0" />
               <div className="flex-1 text-sm">
                 <span className="font-medium">
-                  Select a date range and data types, then query in-system or
-                  download to your cloud.
+                  Select a date range and data types, then query in-system or download to your cloud.
                 </span>
               </div>
             </div>
@@ -153,16 +131,12 @@ export default function DataServicePublicPage() {
                       <Zap className="size-5" />
                       In-System Query
                     </CardTitle>
-                    <CardDescription>
-                      Data stays in our cloud. Query via API. No egress cost.
-                    </CardDescription>
+                    <CardDescription>Data stays in our cloud. Query via API. No egress cost.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="text-3xl font-bold font-mono text-emerald-400">
                       $0.50
-                      <span className="text-base font-normal text-muted-foreground">
-                        /GB
-                      </span>
+                      <span className="text-base font-normal text-muted-foreground">/GB</span>
                     </div>
                     <ul className="space-y-2 text-sm">
                       {[
@@ -178,9 +152,7 @@ export default function DataServicePublicPage() {
                         </li>
                       ))}
                     </ul>
-                    <Badge className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30">
-                      Recommended
-                    </Badge>
+                    <Badge className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30">Recommended</Badge>
                   </CardContent>
                 </Card>
 
@@ -190,16 +162,12 @@ export default function DataServicePublicPage() {
                       <Download className="size-5" />
                       Download / Egress
                     </CardTitle>
-                    <CardDescription>
-                      Export to your own S3 or GCS bucket. You own the copy.
-                    </CardDescription>
+                    <CardDescription>Export to your own S3 or GCS bucket. You own the copy.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="text-3xl font-bold font-mono text-amber-400">
                       $2.50
-                      <span className="text-base font-normal text-muted-foreground">
-                        /GB
-                      </span>
+                      <span className="text-base font-normal text-muted-foreground">/GB</span>
                     </div>
                     <ul className="space-y-2 text-sm">
                       {[
@@ -225,60 +193,41 @@ export default function DataServicePublicPage() {
 
               {/* Plan tiers */}
               <div>
-                <h3 className="text-lg font-semibold mb-4">
-                  Subscription Plans
-                </h3>
+                <h3 className="text-lg font-semibold mb-4">Subscription Plans</h3>
                 <div className="grid md:grid-cols-4 gap-4">
                   {DATA_PLANS.map((plan) => (
                     <Card
                       key={plan.tier}
-                      className={cn(
-                        plan.tier === "institutional" &&
-                          "border-sky-500/50 ring-1 ring-sky-500/20",
-                      )}
+                      className={cn(plan.tier === "institutional" && "border-sky-500/50 ring-1 ring-sky-500/20")}
                     >
                       <CardHeader className="pb-3">
                         <CardTitle className="text-base">{plan.name}</CardTitle>
                         <CardDescription>
                           {plan.tier === "enterprise" ? (
-                            <span className="text-xl font-bold text-foreground">
-                              Custom
-                            </span>
+                            <span className="text-xl font-bold text-foreground">Custom</span>
                           ) : (
                             <span className="text-xl font-bold text-foreground">
                               ${plan.monthlyPrice.toLocaleString()}
-                              <span className="text-xs font-normal text-muted-foreground">
-                                /mo
-                              </span>
+                              <span className="text-xs font-normal text-muted-foreground">/mo</span>
                             </span>
                           )}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-2">
                         <div className="text-xs text-muted-foreground">
-                          {plan.queryLimitGb < 0
-                            ? "Unlimited"
-                            : `${plan.queryLimitGb} GB`}
+                          {plan.queryLimitGb < 0 ? "Unlimited" : `${plan.queryLimitGb} GB`}
                           /mo · {plan.historyYears}yr history
                         </div>
                         <ul className="space-y-1.5">
                           {plan.features.map((f) => (
-                            <li
-                              key={f}
-                              className="flex items-center gap-2 text-xs"
-                            >
+                            <li key={f} className="flex items-center gap-2 text-xs">
                               <CheckCircle2 className="size-3 text-sky-400 shrink-0" />
                               {f}
                             </li>
                           ))}
                         </ul>
                         {plan.tier === "enterprise" && (
-                          <Button
-                            size="sm"
-                            className="w-full mt-3"
-                            variant="outline"
-                            asChild
-                          >
+                          <Button size="sm" className="w-full mt-3" variant="outline" asChild>
                             <Link href="/contact">Talk to us</Link>
                           </Button>
                         )}
@@ -296,8 +245,7 @@ export default function DataServicePublicPage() {
               {/* Demo banner */}
               <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-4 py-2.5 text-sm text-amber-400">
                 <FlaskConical className="size-4 shrink-0" />
-                Demo Mode — all data is illustrative. Sign in to see real
-                freshness and query real data.
+                Demo Mode — all data is illustrative. Sign in to see real freshness and query real data.
               </div>
 
               {/* Mock freshness heatmaps */}
@@ -319,12 +267,8 @@ export default function DataServicePublicPage() {
               {/* Demo subscriptions preview */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">
-                    Sample Active Subscriptions
-                  </CardTitle>
-                  <CardDescription>
-                    This is what your portal looks like when you sign in.
-                  </CardDescription>
+                  <CardTitle className="text-base">Sample Active Subscriptions</CardTitle>
+                  <CardDescription>This is what your portal looks like when you sign in.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
@@ -336,11 +280,7 @@ export default function DataServicePublicPage() {
                         <span className="font-medium">{sub.label}</span>
                         <div className="flex items-center gap-2">
                           {sub.shardFilters.categories.map((c) => (
-                            <Badge
-                              key={c}
-                              variant="secondary"
-                              className="text-[10px]"
-                            >
+                            <Badge key={c} variant="secondary" className="text-[10px]">
                               {c}
                             </Badge>
                           ))}
@@ -353,9 +293,7 @@ export default function DataServicePublicPage() {
                                 : "border-amber-500/30 text-amber-500",
                             )}
                           >
-                            {sub.accessMode === "in_system"
-                              ? "In-System"
-                              : "Download"}
+                            {sub.accessMode === "in_system" ? "In-System" : "Download"}
                           </Badge>
                         </div>
                       </div>

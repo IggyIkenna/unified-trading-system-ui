@@ -3,13 +3,11 @@
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type {
-  BacktestRun,
-  StrategySignal,
-} from "@/lib/strategy-platform-types";
+import type { BacktestRun, StrategySignal } from "@/lib/strategy-platform-types";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Star } from "lucide-react";
 import { StatusBadge } from "./status-helpers";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Backtest List Item ───────────────────────────────────────────────────────
 
@@ -32,9 +30,7 @@ export function BacktestListItem({
       onClick={onSelect}
       className={cn(
         "flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors",
-        isSelected
-          ? "border-primary bg-primary/5"
-          : "border-border/50 hover:bg-muted/30",
+        isSelected ? "border-primary bg-primary/5" : "border-border/50 hover:bg-muted/30",
       )}
     >
       <button
@@ -55,15 +51,10 @@ export function BacktestListItem({
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-medium truncate">
-            {bt.configName ?? bt.templateName ?? bt.id}
-          </span>
+          <span className="text-sm font-medium truncate">{bt.configName ?? bt.templateName ?? bt.id}</span>
           <StatusBadge status={bt.status} />
           {bt.isCandidate && (
-            <Badge
-              variant="outline"
-              className="text-[10px] h-5 gap-0.5 border-amber-400/40 text-amber-400"
-            >
+            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-amber-400/40 text-amber-400">
               <Star className="size-2.5" />
               Candidate
             </Badge>
@@ -76,9 +67,7 @@ export function BacktestListItem({
           <Badge variant="outline" className="text-[10px] h-4 font-normal">
             {kind === "ml" ? "ML" : "Rule"}
           </Badge>
-          <span className="text-[10px] px-1 rounded bg-muted/30 font-mono">
-            {bt.shard}
-          </span>
+          <span className="text-[10px] px-1 rounded bg-muted/30 font-mono">{bt.shard}</span>
           <span>{bt.instrument ?? "—"}</span>
           <span>·</span>
           <span>{bt.venue}</span>
@@ -88,27 +77,18 @@ export function BacktestListItem({
             <span
               className={cn(
                 "font-mono tabular-nums",
-                bt.metrics.sharpe > 1.5
-                  ? "text-emerald-400"
-                  : "text-muted-foreground",
+                bt.metrics.sharpe > 1.5 ? "text-emerald-400" : "text-muted-foreground",
               )}
             >
-              Sharpe {bt.metrics.sharpe.toFixed(2)}
+              Sharpe {formatNumber(bt.metrics.sharpe, 2)}
             </span>
             <span
-              className={cn(
-                "font-mono tabular-nums",
-                bt.metrics.totalReturn > 0
-                  ? "text-emerald-400"
-                  : "text-red-400",
-              )}
+              className={cn("font-mono tabular-nums", bt.metrics.totalReturn > 0 ? "text-emerald-400" : "text-red-400")}
             >
-              {(bt.metrics.totalReturn * 100).toFixed(1)}%
+              {formatPercent(bt.metrics.totalReturn * 100, 1)}
             </span>
             <span className="font-mono tabular-nums text-muted-foreground">
-              {bt.metrics.hitRate
-                ? `${(bt.metrics.hitRate * 100).toFixed(0)}% hit`
-                : ""}
+              {bt.metrics.hitRate ? `${formatPercent(bt.metrics.hitRate * 100, 0)} hit` : ""}
             </span>
           </div>
         )}
@@ -180,31 +160,22 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
                   </span>
                 </td>
                 <td className="py-1.5 pr-2">{s.instrument}</td>
-                <td className="py-1.5 px-2 text-right font-mono tabular-nums">
-                  {s.confidence.toFixed(2)}
+                <td className="py-1.5 px-2 text-right font-mono tabular-nums">{formatNumber(s.confidence, 2)}</td>
+                <td
+                  className={cn(
+                    "py-1.5 px-2 text-right font-mono tabular-nums",
+                    s.pnl_usd != null && s.pnl_usd >= 0 ? "text-emerald-400" : "text-red-400",
+                  )}
+                >
+                  {s.pnl_usd != null ? `${s.pnl_usd >= 0 ? "+" : ""}$${formatNumber(s.pnl_usd, 0)}` : "—"}
                 </td>
                 <td
                   className={cn(
                     "py-1.5 px-2 text-right font-mono tabular-nums",
-                    s.pnl_usd != null && s.pnl_usd >= 0
-                      ? "text-emerald-400"
-                      : "text-red-400",
+                    cumulativeByIndex[i] >= 0 ? "text-emerald-400/90" : "text-red-400/90",
                   )}
                 >
-                  {s.pnl_usd != null
-                    ? `${s.pnl_usd >= 0 ? "+" : ""}$${s.pnl_usd.toFixed(0)}`
-                    : "—"}
-                </td>
-                <td
-                  className={cn(
-                    "py-1.5 px-2 text-right font-mono tabular-nums",
-                    cumulativeByIndex[i] >= 0
-                      ? "text-emerald-400/90"
-                      : "text-red-400/90",
-                  )}
-                >
-                  {cumulativeByIndex[i] >= 0 ? "+" : ""}$
-                  {cumulativeByIndex[i].toFixed(0)}
+                  {cumulativeByIndex[i] >= 0 ? "+" : ""}${formatNumber(cumulativeByIndex[i], 0)}
                 </td>
                 <td className="py-1.5 px-2 text-right font-mono tabular-nums text-emerald-400/70">
                   {s.mfe_pct != null ? `+${s.mfe_pct}%` : "—"}
@@ -212,22 +183,14 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
                 <td className="py-1.5 px-2 text-right font-mono tabular-nums text-red-400/70">
                   {s.mae_pct != null ? `${s.mae_pct}%` : "—"}
                 </td>
-                <td className="py-1.5 px-2 capitalize text-muted-foreground">
-                  {s.regime_at_signal ?? "—"}
-                </td>
+                <td className="py-1.5 px-2 capitalize text-muted-foreground">{s.regime_at_signal ?? "—"}</td>
                 <td className="py-1.5">
                   {s.outcome === "win" ? (
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] h-4 border-emerald-400/30 text-emerald-400"
-                    >
+                    <Badge variant="outline" className="text-[10px] h-4 border-emerald-400/30 text-emerald-400">
                       Win
                     </Badge>
                   ) : s.outcome === "loss" ? (
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] h-4 border-red-400/30 text-red-400"
-                    >
+                    <Badge variant="outline" className="text-[10px] h-4 border-red-400/30 text-red-400">
                       Loss
                     </Badge>
                   ) : (
@@ -240,12 +203,7 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
         </table>
       </div>
       {displayed.length < signals.length && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          onClick={() => setPage((p) => p + 1)}
-        >
+        <Button variant="outline" size="sm" className="w-full" onClick={() => setPage((p) => p + 1)}>
           Load more ({signals.length - displayed.length} remaining)
         </Button>
       )}

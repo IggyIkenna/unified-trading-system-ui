@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import { MessageSquare, Sparkles, Send } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -42,7 +43,7 @@ export function ExecutiveNaturalLanguageCard({
           <Button onClick={onSubmitNl} disabled={nlLoading}>
             {nlLoading ? (
               <span className="flex items-center gap-2">
-                <span className="size-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                <Spinner size="sm" className="text-current" />
                 Analyzing...
               </span>
             ) : (

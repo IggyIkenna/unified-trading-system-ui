@@ -2,27 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  discoverConfigs,
-  getConfigBuckets,
-  listDirectories,
-} from "@/hooks/deployment/_api-stub";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  ChevronRight,
-  Cloud,
-  FolderOpen,
-  Loader2,
-  RefreshCw,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { discoverConfigs, getConfigBuckets, listDirectories } from "@/hooks/deployment/_api-stub";
+import { AlertTriangle, CheckCircle2, ChevronRight, Cloud, FolderOpen, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 interface CloudConfigBrowserProps {
@@ -35,14 +18,9 @@ interface BreadcrumbLevel {
   path: string;
 }
 
-export function CloudConfigBrowser({
-  serviceName,
-  onPathSelected,
-}: CloudConfigBrowserProps) {
+export function CloudConfigBrowser({ serviceName, onPathSelected }: CloudConfigBrowserProps) {
   // State for bucket selection
-  const [buckets, setBuckets] = useState<Array<{ name: string; path: string }>>(
-    [],
-  );
+  const [buckets, setBuckets] = useState<Array<{ name: string; path: string }>>([]);
   const [selectedBucket, setSelectedBucket] = useState<string>("");
   const [loadingBuckets, setLoadingBuckets] = useState(false);
 
@@ -98,9 +76,7 @@ export function CloudConfigBrowser({
         const result = await listDirectories(serviceName, path);
         setCurrentDirectories(result.directories);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load directories",
-        );
+        setError(err instanceof Error ? err.message : "Failed to load directories");
       } finally {
         setLoadingDirectories(false);
       }
@@ -119,9 +95,7 @@ export function CloudConfigBrowser({
   // Navigate into a directory
   const navigateInto = (dirName: string) => {
     const currentPath = getCurrentPath();
-    const newPath = currentPath.endsWith("/")
-      ? `${currentPath}${dirName}/`
-      : `${currentPath}/${dirName}/`;
+    const newPath = currentPath.endsWith("/") ? `${currentPath}${dirName}/` : `${currentPath}/${dirName}/`;
 
     setBreadcrumbs((prev) => [...prev, { name: dirName, path: newPath }]);
     setSelectedDirectory("");
@@ -152,9 +126,7 @@ export function CloudConfigBrowser({
       setDiscoveredCount(result.total_configs);
       onPathSelected(path, result.total_configs);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to discover configs",
-      );
+      setError(err instanceof Error ? err.message : "Failed to discover configs");
       setDiscoveredCount(null);
       onPathSelected("", 0);
     } finally {
@@ -179,11 +151,7 @@ export function CloudConfigBrowser({
       {/* Bucket Selection */}
       {buckets.length > 0 && (
         <div className="space-y-2">
-          <Select
-            value={selectedBucket}
-            onValueChange={handleBucketSelect}
-            disabled={loadingBuckets}
-          >
+          <Select value={selectedBucket} onValueChange={handleBucketSelect} disabled={loadingBuckets}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select config bucket..." />
             </SelectTrigger>
@@ -228,21 +196,15 @@ export function CloudConfigBrowser({
       {/* Directory Selection - auto-navigates on select */}
       {selectedBucket && currentDirectories.length > 0 && (
         <div className="space-y-1">
-          <Select
-            value=""
-            onValueChange={handleDirectorySelect}
-            disabled={loadingDirectories}
-          >
+          <Select value="" onValueChange={handleDirectorySelect} disabled={loadingDirectories}>
             <SelectTrigger>
               {loadingDirectories ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Spinner className="h-4 w-4" />
                   Loading directories...
                 </span>
               ) : (
-                <SelectValue
-                  placeholder={`Select from ${currentDirectories.length} directories...`}
-                />
+                <SelectValue placeholder={`Select from ${currentDirectories.length} directories...`} />
               )}
             </SelectTrigger>
             <SelectContent>
@@ -256,35 +218,24 @@ export function CloudConfigBrowser({
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs text-[var(--color-text-muted)]">
-            Select a directory to navigate into it
-          </p>
+          <p className="text-xs text-[var(--color-text-muted)]">Select a directory to navigate into it</p>
         </div>
       )}
 
       {/* No subdirectories message */}
-      {selectedBucket &&
-        !loadingDirectories &&
-        currentDirectories.length === 0 && (
-          <div className="text-sm text-[var(--color-text-muted)] p-2 bg-[var(--color-bg-tertiary)] rounded">
-            No subdirectories here — click &quot;Discover Configs&quot; to find
-            config files at this level
-          </div>
-        )}
+      {selectedBucket && !loadingDirectories && currentDirectories.length === 0 && (
+        <div className="text-sm text-[var(--color-text-muted)] p-2 bg-[var(--color-bg-tertiary)] rounded">
+          No subdirectories here — click &quot;Discover Configs&quot; to find config files at this level
+        </div>
+      )}
 
       {/* Discover Button */}
       {selectedBucket && (
         <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleDiscover}
-            disabled={isDiscovering}
-            className="flex-1"
-          >
+          <Button type="button" variant="outline" onClick={handleDiscover} disabled={isDiscovering} className="flex-1">
             {isDiscovering ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Spinner className="h-4 w-4 mr-2" />
                 Discovering...
               </>
             ) : (
@@ -306,29 +257,21 @@ export function CloudConfigBrowser({
         >
           <CheckCircle2
             className={`h-4 w-4 ${
-              discoveredCount >= 10000
-                ? "text-[var(--color-accent-amber)]"
-                : "text-[var(--color-accent-green)]"
+              discoveredCount >= 10000 ? "text-[var(--color-accent-amber)]" : "text-[var(--color-accent-green)]"
             }`}
           />
           <span className="text-sm text-[var(--color-text-secondary)]">
             Found{" "}
             <span
               className={`font-bold ${
-                discoveredCount >= 10000
-                  ? "text-[var(--color-accent-amber)]"
-                  : "text-[var(--color-accent-green)]"
+                discoveredCount >= 10000 ? "text-[var(--color-accent-amber)]" : "text-[var(--color-accent-green)]"
               }`}
             >
-              {discoveredCount >= 10000
-                ? `${discoveredCount}+`
-                : discoveredCount}
+              {discoveredCount >= 10000 ? `${discoveredCount}+` : discoveredCount}
             </span>{" "}
             config files
             {discoveredCount >= 10000 && (
-              <span className="text-[var(--color-accent-amber)] ml-1">
-                (hit page limit - there may be more)
-              </span>
+              <span className="text-[var(--color-accent-amber)] ml-1">(hit page limit - there may be more)</span>
             )}
           </span>
         </div>
@@ -338,17 +281,13 @@ export function CloudConfigBrowser({
       {error && (
         <div className="flex items-center gap-2 p-2 rounded status-error">
           <AlertTriangle className="h-4 w-4 text-[var(--color-accent-red)]" />
-          <span className="text-sm text-[var(--color-accent-red)]">
-            {error}
-          </span>
+          <span className="text-sm text-[var(--color-accent-red)]">{error}</span>
         </div>
       )}
 
       {/* Current Path Display */}
       {selectedBucket && (
-        <p className="text-xs text-[var(--color-text-muted)] font-mono break-all">
-          Path: {getCurrentPath()}
-        </p>
+        <p className="text-xs text-[var(--color-text-muted)] font-mono break-all">Path: {getCurrentPath()}</p>
       )}
     </div>
   );

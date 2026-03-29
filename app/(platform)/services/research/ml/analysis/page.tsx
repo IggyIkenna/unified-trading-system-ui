@@ -1,34 +1,14 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  ArrowLeft,
-  BarChart3,
-  GitCompareArrows,
-  Layers,
-  Shield,
-  TrendingUp,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, BarChart3, GitCompareArrows, Layers, Shield, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { ApiError } from "@/components/ui/api-error";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -51,11 +31,7 @@ import {
 
 export default function AnalysisPage() {
   return (
-    <React.Suspense
-      fallback={
-        <div className="p-6 text-muted-foreground">Loading analysis...</div>
-      }
-    >
+    <React.Suspense fallback={<div className="p-6 text-muted-foreground">Loading analysis...</div>}>
       <AnalysisContent />
     </React.Suspense>
   );
@@ -65,21 +41,10 @@ function AnalysisContent() {
   const searchParams = useSearchParams();
   const preselectedRun = searchParams.get("run");
 
-  const {
-    data: runsData,
-    isLoading: runsLoading,
-    isError: runsIsError,
-    error: runsError,
-  } = useUnifiedTrainingRuns();
+  const { data: runsData, isLoading: runsLoading, isError: runsIsError, error: runsError } = useUnifiedTrainingRuns();
 
-  const runs = React.useMemo(
-    () => (Array.isArray(runsData) ? runsData : []) as UnifiedTrainingRun[],
-    [runsData],
-  );
-  const completedRuns = React.useMemo(
-    () => runs.filter((r) => r.status === "completed" && r.analysis),
-    [runs],
-  );
+  const runs = React.useMemo(() => (Array.isArray(runsData) ? runsData : []) as UnifiedTrainingRun[], [runsData]);
+  const completedRuns = React.useMemo(() => runs.filter((r) => r.status === "completed" && r.analysis), [runs]);
 
   const [selectedRunId, setSelectedRunId] = React.useState<string>("");
   const [compareMode, setCompareMode] = React.useState(false);
@@ -89,21 +54,15 @@ function AnalysisContent() {
   React.useEffect(() => {
     if (completedRuns.length === 0) return;
     const pick =
-      preselectedRun && completedRuns.some((r) => r.id === preselectedRun)
-        ? preselectedRun
-        : completedRuns[0].id;
-    setSelectedRunId((cur) =>
-      cur && completedRuns.some((r) => r.id === cur) ? cur : pick,
-    );
+      preselectedRun && completedRuns.some((r) => r.id === preselectedRun) ? preselectedRun : completedRuns[0].id;
+    setSelectedRunId((cur) => (cur && completedRuns.some((r) => r.id === cur) ? cur : pick));
   }, [completedRuns, preselectedRun]);
 
   React.useEffect(() => {
     if (!compareMode) return;
     const others = completedRuns.filter((r) => r.id !== selectedRunId);
     setCompareSlots((prev) =>
-      prev
-        .map((id) => (id && others.some((o) => o.id === id) ? id : null))
-        .slice(0, ML_COMPARE_MAX_OTHER_RUNS),
+      prev.map((id) => (id && others.some((o) => o.id === id) ? id : null)).slice(0, ML_COMPARE_MAX_OTHER_RUNS),
     );
   }, [compareMode, selectedRunId, completedRuns]);
 
@@ -135,11 +94,7 @@ function AnalysisContent() {
     return (
       <div className="min-h-screen bg-background p-6">
         <ApiError
-          error={
-            runsError instanceof Error
-              ? runsError
-              : new Error("Failed to load runs")
-          }
+          error={runsError instanceof Error ? runsError : new Error("Failed to load runs")}
           title="Could not load analysis"
         />
       </div>
@@ -151,12 +106,8 @@ function AnalysisContent() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-2">
           <BarChart3 className="size-10 text-muted-foreground mx-auto" />
-          <h2 className="text-lg font-semibold">
-            No completed runs to analyze
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Complete a training run first, then return here for analysis.
-          </p>
+          <h2 className="text-lg font-semibold">No completed runs to analyze</h2>
+          <p className="text-sm text-muted-foreground">Complete a training run first, then return here for analysis.</p>
           <Link href="/services/research/ml/training">
             <Button variant="outline" size="sm" className="mt-2">
               Go to Training
@@ -178,12 +129,7 @@ function AnalysisContent() {
                 <ArrowLeft className="size-4" />
               </Button>
             </Link>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">Analysis</h1>
-              <p className="text-xs text-muted-foreground">
-                Post-training research, evaluation, and comparison
-              </p>
-            </div>
+            <PageHeader title="Analysis" description="Post-training research, evaluation, and comparison" />
           </div>
           <div className="flex items-center gap-2">
             <Select value={selectedRunId} onValueChange={setSelectedRunId}>
@@ -230,15 +176,12 @@ function AnalysisContent() {
         )}
 
         {compareMode && compareRuns.length > 0 ? (
-          <RunComparisonView
-            baselineRun={selectedRun!}
-            compareRuns={compareRuns}
-          />
+          <RunComparisonView baselineRun={selectedRun!} compareRuns={compareRuns} />
         ) : compareMode ? (
           <Card className="border-border/50 p-8 text-center text-muted-foreground">
             <p className="text-sm">
-              Use <span className="font-medium">+</span> above and pick a run
-              from the dropdown to compare against the baseline.
+              Use <span className="font-medium">+</span> above and pick a run from the dropdown to compare against the
+              baseline.
             </p>
           </Card>
         ) : analysis ? (
@@ -290,8 +233,7 @@ function SingleRunAnalysis({ analysis }: { analysis: RunAnalysis }) {
         </Card>
       )}
 
-      {(analysis.regime_performance.length > 0 ||
-        analysis.walk_forward_folds.length > 0) && (
+      {(analysis.regime_performance.length > 0 || analysis.walk_forward_folds.length > 0) && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -305,8 +247,7 @@ function SingleRunAnalysis({ analysis }: { analysis: RunAnalysis }) {
         </Card>
       )}
 
-      {(analysis.prediction_distribution ||
-        analysis.data_integrity_checks.length > 0) && (
+      {(analysis.prediction_distribution || analysis.data_integrity_checks.length > 0) && (
         <Card className="border-border/50">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -329,16 +270,9 @@ function SingleRunAnalysis({ analysis }: { analysis: RunAnalysis }) {
             <div className="h-[220px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={analysis.epoch_history.filter(
-                    (_, i) =>
-                      i % 3 === 0 || i === analysis.epoch_history.length - 1,
-                  )}
+                  data={analysis.epoch_history.filter((_, i) => i % 3 === 0 || i === analysis.epoch_history.length - 1)}
                 >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="var(--border)"
-                    opacity={0.3}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.3} />
                   <XAxis
                     dataKey="epoch"
                     tick={{

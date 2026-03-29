@@ -5,30 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
-import {
-  Play,
-  XCircle,
-  Zap,
-  BarChart3,
-  GitCompare,
-  Star,
-  Award,
-} from "lucide-react";
+import { Play, XCircle, Zap, BarChart3, GitCompare, Star, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  EXECUTION_BACKTESTS,
-  EXECUTION_EQUITY_CURVE,
-  EXECUTION_COMPARE_CURVES,
-} from "@/lib/build-mock-data";
+import { formatCurrency, formatNumber, formatPercent, formatPnl } from "@/lib/utils/formatters";
+import { EXECUTION_BACKTESTS, EXECUTION_EQUITY_CURVE, EXECUTION_COMPARE_CURVES } from "@/lib/build-mock-data";
 import type { ExecutionBacktest } from "@/lib/build-mock-data";
 import {
   LineChart,
@@ -76,17 +58,11 @@ function ResultsView({
   const r = bt.results!;
   const equityCurve = EXECUTION_COMPARE_CURVES[bt.id] ?? EXECUTION_EQUITY_CURVE;
 
-  const analytics = React.useMemo(
-    () => executionResultsToAnalytics(r, equityCurve),
-    [r, equityCurve],
-  );
+  const analytics = React.useMemo(() => executionResultsToAnalytics(r, equityCurve), [r, equityCurve]);
   const perf = analytics.performance_by_direction;
 
   const handleExportTradesCsv = () => {
-    downloadExecutionTradesCsv(
-      r.trades,
-      `execution-trades-${bt.id.replace(/[^a-zA-Z0-9_-]/g, "_")}`,
-    );
+    downloadExecutionTradesCsv(r.trades, `execution-trades-${bt.id.replace(/[^a-zA-Z0-9_-]/g, "_")}`);
     toast({
       title: "CSV export",
       description: `Downloaded ${r.trades.length} trade row(s) for ${bt.name}.`,
@@ -138,12 +114,12 @@ function ResultsView({
             {[
               {
                 label: "Avg Slippage",
-                value: `${r.avg_slippage_bps.toFixed(1)} bps`,
+                value: `${formatNumber(r.avg_slippage_bps, 1)} bps`,
                 good: r.avg_slippage_bps < 3,
               },
               {
                 label: "Fill Rate",
-                value: `${r.fill_rate_pct.toFixed(1)}%`,
+                value: formatPercent(r.fill_rate_pct, 1),
                 good: r.fill_rate_pct > 97,
               },
               {
@@ -152,7 +128,7 @@ function ResultsView({
               },
               {
                 label: "Impl. Shortfall",
-                value: `${r.implementation_shortfall_bps.toFixed(1)} bps`,
+                value: `${formatNumber(r.implementation_shortfall_bps, 1)} bps`,
                 good: r.implementation_shortfall_bps < 3,
               },
             ].map((m) => (
@@ -161,11 +137,7 @@ function ResultsView({
                 <p
                   className={cn(
                     "font-bold tabular-nums",
-                    m.good === true
-                      ? "text-emerald-400"
-                      : m.good === false
-                        ? "text-red-400"
-                        : "",
+                    m.good === true ? "text-emerald-400" : m.good === false ? "text-red-400" : "",
                   )}
                 >
                   {m.value}
@@ -175,35 +147,16 @@ function ResultsView({
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MetricCard
-              label="Sortino Ratio"
-              value={r.sortino_ratio.toFixed(2)}
-              isGood={r.sortino_ratio > 2}
-            />
-            <MetricCard
-              label="Profit Factor"
-              value={r.profit_factor.toFixed(2)}
-              isGood={r.profit_factor > 1.5}
-            />
-            <MetricCard
-              label="Total Trades"
-              value={r.total_trades.toString()}
-            />
-            <MetricCard
-              label="Avg Duration"
-              value={`${r.avg_trade_duration_hours.toFixed(1)}h`}
-            />
+            <MetricCard label="Sortino Ratio" value={formatNumber(r.sortino_ratio, 2)} isGood={r.sortino_ratio > 2} />
+            <MetricCard label="Profit Factor" value={formatNumber(r.profit_factor, 2)} isGood={r.profit_factor > 1.5} />
+            <MetricCard label="Total Trades" value={r.total_trades.toString()} />
+            <MetricCard label="Avg Duration" value={`${formatNumber(r.avg_trade_duration_hours, 1)}h`} />
           </div>
         </TabsContent>
 
         {/* ── Performance (shared components) ─────────────────────────────────── */}
         <TabsContent value="performance" className="space-y-6">
-          <PerformanceSection
-            all={perf.all}
-            long={perf.long}
-            short={perf.short}
-            benchmark={analytics.benchmark}
-          />
+          <PerformanceSection all={perf.all} long={perf.long} short={perf.short} benchmark={analytics.benchmark} />
           <MonthlyReturnsHeatmap monthlyReturns={analytics.monthly_returns} />
           <CapitalEfficiencySection data={analytics.capital_efficiency} />
           <RunupsDrawdownsSection data={analytics.runup_drawdown} />
@@ -225,13 +178,7 @@ function ResultsView({
             <p className="text-xs text-muted-foreground">
               Showing {r.trades.length} trades · {r.total_trades} total
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-xs gap-1"
-              type="button"
-              onClick={handleExportTradesCsv}
-            >
+            <Button variant="outline" size="sm" className="text-xs gap-1" type="button" onClick={handleExportTradesCsv}>
               <BarChart3 className="size-3" /> Export CSV
             </Button>
           </div>
@@ -257,9 +204,7 @@ function ResultsView({
                 <TableBody>
                   {r.trades.map((t, idx) => (
                     <TableRow key={t.id}>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {idx + 1}
-                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{idx + 1}</TableCell>
                       <TableCell className="text-xs font-mono">
                         {new Date(t.timestamp).toLocaleString("en-GB", {
                           month: "short",
@@ -293,17 +238,13 @@ function ResultsView({
                       <TableCell
                         className={cn(
                           "text-right text-xs tabular-nums",
-                          t.slippage_bps > 5
-                            ? "text-red-400"
-                            : t.slippage_bps < 2
-                              ? "text-emerald-400"
-                              : "",
+                          t.slippage_bps > 5 ? "text-red-400" : t.slippage_bps < 2 ? "text-emerald-400" : "",
                         )}
                       >
-                        {t.slippage_bps.toFixed(1)} bps
+                        {formatNumber(t.slippage_bps, 1)} bps
                       </TableCell>
                       <TableCell className="text-right text-xs tabular-nums">
-                        {(t.fill_time_ms / 1000).toFixed(1)}s
+                        {formatNumber(t.fill_time_ms / 1000, 1)}s
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="text-xs">
@@ -316,26 +257,18 @@ function ResultsView({
                       <TableCell
                         className={cn(
                           "text-right text-xs tabular-nums font-medium",
-                          t.pnl === null
-                            ? "text-muted-foreground"
-                            : t.pnl > 0
-                              ? "text-emerald-400"
-                              : "text-red-400",
+                          t.pnl === null ? "text-muted-foreground" : t.pnl > 0 ? "text-emerald-400" : "text-red-400",
                         )}
                       >
-                        {t.pnl === null
-                          ? "—"
-                          : `${t.pnl > 0 ? "+" : ""}$${Math.abs(t.pnl).toFixed(0)}`}
+                        {t.pnl === null ? "—" : formatPnl(t.pnl, "USD", 0)}
                       </TableCell>
                       <TableCell
                         className={cn(
                           "text-right text-xs tabular-nums font-mono",
-                          t.cumulative_pnl >= 0
-                            ? "text-emerald-400"
-                            : "text-red-400",
+                          t.cumulative_pnl >= 0 ? "text-emerald-400" : "text-red-400",
                         )}
                       >
-                        ${t.cumulative_pnl.toFixed(0)}
+                        {formatCurrency(t.cumulative_pnl, "USD", 0)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -351,24 +284,16 @@ function ResultsView({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <MetricCard
               label="Avg Slippage"
-              value={`${r.avg_slippage_bps.toFixed(1)} bps`}
+              value={`${formatNumber(r.avg_slippage_bps, 1)} bps`}
               isGood={r.avg_slippage_bps < 3}
             />
             <MetricCard
               label="Avg Fill Time"
-              value={`${r.avg_fill_time_seconds.toFixed(1)}s`}
+              value={`${formatNumber(r.avg_fill_time_seconds, 1)}s`}
               isGood={r.avg_fill_time_seconds < 10}
             />
-            <MetricCard
-              label="Fill Rate"
-              value={`${r.fill_rate_pct.toFixed(1)}%`}
-              isGood={r.fill_rate_pct > 97}
-            />
-            <MetricCard
-              label="Maker %"
-              value={`${r.maker_pct.toFixed(1)}%`}
-              isGood={r.maker_pct > 50}
-            />
+            <MetricCard label="Fill Rate" value={formatPercent(r.fill_rate_pct, 1)} isGood={r.fill_rate_pct > 97} />
+            <MetricCard label="Maker %" value={formatPercent(r.maker_pct, 1)} isGood={r.maker_pct > 50} />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <MetricCard
@@ -378,16 +303,13 @@ function ResultsView({
             />
             <MetricCard
               label="Impl. Shortfall"
-              value={`${r.implementation_shortfall_bps.toFixed(1)} bps`}
+              value={`${formatNumber(r.implementation_shortfall_bps, 1)} bps`}
               isGood={r.implementation_shortfall_bps < 3}
             />
-            <MetricCard
-              label="Commission"
-              value={`$${r.total_commission.toLocaleString()}`}
-            />
+            <MetricCard label="Commission" value={`$${r.total_commission.toLocaleString()}`} />
             <MetricCard
               label="Partial Fill %"
-              value={`${r.partial_fill_pct.toFixed(1)}%`}
+              value={formatPercent(r.partial_fill_pct, 1)}
               isGood={r.partial_fill_pct < 15}
             />
           </div>
@@ -399,22 +321,14 @@ function ResultsView({
                 <CardTitle className="text-sm">Slippage Distribution</CardTitle>
                 <div className="flex gap-4 text-xs text-muted-foreground">
                   <span>
-                    Mean{" "}
-                    <span className="text-foreground font-medium">
-                      {r.slippage_mean_bps.toFixed(1)} bps
-                    </span>
+                    Mean <span className="text-foreground font-medium">{formatNumber(r.slippage_mean_bps, 1)} bps</span>
                   </span>
                   <span>
                     Median{" "}
-                    <span className="text-foreground font-medium">
-                      {r.slippage_median_bps.toFixed(1)} bps
-                    </span>
+                    <span className="text-foreground font-medium">{formatNumber(r.slippage_median_bps, 1)} bps</span>
                   </span>
                   <span>
-                    P95{" "}
-                    <span className="text-foreground font-medium">
-                      {r.slippage_p95_bps.toFixed(1)} bps
-                    </span>
+                    P95 <span className="text-foreground font-medium">{formatNumber(r.slippage_p95_bps, 1)} bps</span>
                   </span>
                 </div>
               </div>
@@ -422,11 +336,7 @@ function ResultsView({
             <CardContent>
               <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={r.slippage_distribution} barCategoryGap="20%">
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.1)"
-                    vertical={false}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                   <XAxis dataKey="label" tick={TICK_STYLE} />
                   <YAxis
                     tick={TICK_STYLE}
@@ -442,10 +352,7 @@ function ResultsView({
                   />
                   <Tooltip
                     contentStyle={TOOLTIP_STYLE}
-                    formatter={(v, _n, p) => [
-                      `${v} trades (${(p.payload as { pct: number }).pct}%)`,
-                      "Count",
-                    ]}
+                    formatter={(v, _n, p) => [`${v} trades (${(p.payload as { pct: number }).pct}%)`, "Count"]}
                   />
                   <Bar dataKey="count" radius={[3, 3, 0, 0]}>
                     {r.slippage_distribution.map((entry, i) => (
@@ -471,15 +378,13 @@ function ResultsView({
           {/* Implementation Shortfall decomposition */}
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">
-                Implementation Shortfall Breakdown
-              </CardTitle>
+              <CardTitle className="text-sm">Implementation Shortfall Breakdown</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between text-sm font-medium">
                 <span>Total shortfall</span>
                 <span className="font-mono text-red-400">
-                  {r.is_breakdown.total_bps.toFixed(1)} bps ($
+                  {formatNumber(r.is_breakdown.total_bps, 1)} bps ($
                   {r.is_breakdown.total_usd.toLocaleString()})
                 </span>
               </div>
@@ -507,18 +412,13 @@ function ResultsView({
                 return (
                   <div key={item.label} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">
-                        {item.label}
-                      </span>
+                      <span className="text-muted-foreground">{item.label}</span>
                       <span className="font-mono text-muted-foreground">
-                        {item.bps.toFixed(1)} bps · ${item.usd.toLocaleString()}
+                        {formatNumber(item.bps, 1)} bps · ${item.usd.toLocaleString()}
                       </span>
                     </div>
                     <div className="h-1.5 rounded-full bg-muted/40 overflow-hidden">
-                      <div
-                        className={cn("h-full rounded-full", item.color)}
-                        style={{ width: `${widthPct}%` }}
-                      />
+                      <div className={cn("h-full rounded-full", item.color)} style={{ width: `${widthPct}%` }} />
                     </div>
                   </div>
                 );
@@ -550,22 +450,20 @@ function ResultsView({
                           {venue}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right tabular-nums text-sm">
-                        {data.fills}
-                      </TableCell>
+                      <TableCell className="text-right tabular-nums text-sm">{data.fills}</TableCell>
                       <TableCell
                         className={cn(
                           "text-right tabular-nums text-sm",
                           data.avg_slippage_bps < 2 ? "text-emerald-400" : "",
                         )}
                       >
-                        {data.avg_slippage_bps.toFixed(1)} bps
+                        {formatNumber(data.avg_slippage_bps, 1)} bps
                       </TableCell>
                       <TableCell className="text-right tabular-nums text-sm">
-                        {data.maker_pct.toFixed(1)}%
+                        {formatPercent(data.maker_pct, 1)}
                       </TableCell>
                       <TableCell className="text-right tabular-nums text-sm">
-                        {data.avg_fill_time_s.toFixed(1)}s
+                        {formatNumber(data.avg_fill_time_s, 1)}s
                       </TableCell>
                     </TableRow>
                   ))}
@@ -607,17 +505,13 @@ function ResultsView({
               ))}
               {Object.entries(bt.algo_params).length > 0 && (
                 <>
-                  <p className="text-xs font-medium text-muted-foreground pt-1">
-                    Algorithm Parameters
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground pt-1">Algorithm Parameters</p>
                   {Object.entries(bt.algo_params).map(([k, v]) => (
                     <div
                       key={k}
                       className="flex items-center justify-between text-sm py-1 border-b border-border/30 last:border-0"
                     >
-                      <span className="text-muted-foreground font-mono text-xs">
-                        {k}
-                      </span>
+                      <span className="text-muted-foreground font-mono text-xs">{k}</span>
                       <span className="font-mono text-xs">{String(v)}</span>
                     </div>
                   ))}
@@ -633,16 +527,8 @@ function ResultsView({
 
 // ─── Compare Panel ──────────────────────────────────────────────────────────
 
-export function ExecutionComparePanel({
-  selected,
-  onClose,
-}: {
-  selected: string[];
-  onClose: () => void;
-}) {
-  const items = EXECUTION_BACKTESTS.filter(
-    (b) => selected.includes(b.id) && b.results,
-  ).slice(0, 3);
+export function ExecutionComparePanel({ selected, onClose }: { selected: string[]; onClose: () => void }) {
+  const items = EXECUTION_BACKTESTS.filter((b) => selected.includes(b.id) && b.results).slice(0, 3);
 
   if (items.length < 2) return null;
 
@@ -663,9 +549,7 @@ export function ExecutionComparePanel({
   ];
 
   // Build combined equity curve for overlay
-  const allDates = (
-    EXECUTION_COMPARE_CURVES[items[0].id] ?? EXECUTION_EQUITY_CURVE
-  ).map((p) => p.date);
+  const allDates = (EXECUTION_COMPARE_CURVES[items[0].id] ?? EXECUTION_EQUITY_CURVE).map((p) => p.date);
   const combinedCurve = allDates.map((date, i) => {
     const point: Record<string, string | number> = { date };
     items.forEach((bt) => {
@@ -683,12 +567,7 @@ export function ExecutionComparePanel({
             <GitCompare className="size-4 text-primary" />
             Comparing {items.length} Execution Backtests
           </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="text-xs"
-          >
+          <Button variant="ghost" size="sm" onClick={onClose} className="text-xs">
             Clear Compare
           </Button>
         </div>
@@ -696,34 +575,17 @@ export function ExecutionComparePanel({
       <CardContent className="space-y-4">
         {/* Equity curves overlay */}
         <div>
-          <p className="text-xs text-muted-foreground mb-2">
-            Equity Curves (same signals, different execution)
-          </p>
+          <p className="text-xs text-muted-foreground mb-2">Equity Curves (same signals, different execution)</p>
           <ResponsiveContainer width="100%" height={160}>
             <LineChart data={combinedCurve}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgba(255,255,255,0.08)"
-              />
-              <XAxis
-                dataKey="date"
-                tick={TICK_STYLE}
-                tickFormatter={(v) => v.slice(5)}
-                interval={14}
-              />
-              <YAxis
-                tick={TICK_STYLE}
-                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-                width={50}
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+              <XAxis dataKey="date" tick={TICK_STYLE} tickFormatter={(v) => v.slice(5)} interval={14} />
+              <YAxis tick={TICK_STYLE} tickFormatter={(v) => `$${formatNumber(v / 1000, 0)}k`} width={50} />
               <Tooltip
                 contentStyle={TOOLTIP_STYLE}
                 formatter={(v, name) => {
                   const bt = items.find((b) => b.id === name);
-                  return [
-                    `$${Number(v).toLocaleString()}`,
-                    bt ? `${bt.algo}` : String(name),
-                  ];
+                  return [`$${Number(v).toLocaleString()}`, bt ? `${bt.algo}` : String(name)];
                 }}
               />
               <Legend
@@ -751,21 +613,12 @@ export function ExecutionComparePanel({
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="text-left text-xs text-muted-foreground font-medium pb-2 w-44">
-                  Metric
-                </th>
+                <th className="text-left text-xs text-muted-foreground font-medium pb-2 w-44">Metric</th>
                 {items.map((b) => (
-                  <th
-                    key={b.id}
-                    className="text-right text-xs font-medium pb-2 px-3"
-                  >
+                  <th key={b.id} className="text-right text-xs font-medium pb-2 px-3">
                     <div>
-                      <div style={{ color: ALGO_COLORS[b.algo] ?? "inherit" }}>
-                        {b.algo}
-                      </div>
-                      <div className="text-muted-foreground font-normal">
-                        {b.order_type}
-                      </div>
+                      <div style={{ color: ALGO_COLORS[b.algo] ?? "inherit" }}>{b.algo}</div>
+                      <div className="text-muted-foreground font-normal">{b.order_type}</div>
                     </div>
                   </th>
                 ))}
@@ -773,23 +626,15 @@ export function ExecutionComparePanel({
             </thead>
             <tbody>
               {METRICS.map((m) => {
-                const values = items.map(
-                  (b) =>
-                    (b.results as unknown as Record<string, number>)?.[m.key] ??
-                    0,
-                );
+                const values = items.map((b) => (b.results as unknown as Record<string, number>)?.[m.key] ?? 0);
                 const best = m.low ? Math.min(...values) : Math.max(...values);
                 return (
                   <tr key={m.key} className="border-t border-border/40">
-                    <td className="text-xs text-muted-foreground py-2">
-                      {m.label}
-                    </td>
+                    <td className="text-xs text-muted-foreground py-2">{m.label}</td>
                     {items.map((b, i) => {
                       const val = values[i];
                       const isBest = val === best;
-                      const display = m.pct
-                        ? `${val.toFixed(1)}%`
-                        : val.toFixed(2);
+                      const display = m.pct ? formatPercent(val, 1) : formatNumber(val, 2);
                       return (
                         <td key={b.id} className="text-right py-2 px-3">
                           <span
@@ -799,9 +644,7 @@ export function ExecutionComparePanel({
                             )}
                           >
                             {display}
-                            {isBest && (
-                              <Star className="inline ml-1 size-2.5 fill-emerald-400 text-emerald-400" />
-                            )}
+                            {isBest && <Star className="inline ml-1 size-2.5 fill-emerald-400 text-emerald-400" />}
                           </span>
                         </td>
                       );
@@ -815,17 +658,13 @@ export function ExecutionComparePanel({
 
         {/* Net profit insight */}
         <div className="rounded-lg bg-muted/30 p-3 text-xs space-y-1">
-          <p className="font-medium text-muted-foreground">
-            Net Profit Comparison
-          </p>
+          <p className="font-medium text-muted-foreground">Net Profit Comparison</p>
           {items.map((b) => (
             <div key={b.id} className="flex items-center justify-between">
-              <span style={{ color: ALGO_COLORS[b.algo] ?? "inherit" }}>
-                {b.algo}
-              </span>
+              <span style={{ color: ALGO_COLORS[b.algo] ?? "inherit" }}>{b.algo}</span>
               <span className="font-mono font-medium">
                 ${b.results!.net_profit.toLocaleString()} (+
-                {b.results!.net_profit_pct.toFixed(1)}%)
+                {formatNumber(b.results!.net_profit_pct, 1)}%)
               </span>
             </div>
           ))}
@@ -851,9 +690,7 @@ export function ExecutionDetailView({
       <Card>
         <CardContent className="py-12 text-center">
           <Zap className="size-8 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            Select a backtest to view results
-          </p>
+          <p className="text-sm text-muted-foreground">Select a backtest to view results</p>
         </CardContent>
       </Card>
     );

@@ -3,14 +3,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePlaceOrder } from "@/hooks/api/use-orders";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, CheckCircle2, LayoutGrid, Loader2, XCircle } from "lucide-react";
+import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { AlertTriangle, CheckCircle2, LayoutGrid, XCircle } from "lucide-react";
 import * as React from "react";
 import { DEFAULT_QUOTE_INSTRUMENTS } from "./constants";
 import type { QuoteRow, QuoteStatus, RefreshInterval } from "./types";
@@ -20,10 +22,10 @@ function buildInitialQuotes(): QuoteRow[] {
     id: `quote-${idx}`,
     symbol: inst.symbol,
     venue: inst.venue,
-    bidPrice: inst.bidPrice.toFixed(2),
-    bidSize: inst.bidSize.toFixed(4),
-    askPrice: inst.askPrice.toFixed(2),
-    askSize: inst.askSize.toFixed(4),
+    bidPrice: formatNumber(inst.bidPrice, 2),
+    bidSize: formatNumber(inst.bidSize, 4),
+    askPrice: formatNumber(inst.askPrice, 2),
+    askSize: formatNumber(inst.askSize, 4),
     skewBps: 0,
     active: true,
   }));
@@ -35,7 +37,7 @@ function computeSpread(bidPrice: string, askPrice: string): string {
   if (bid <= 0 || ask <= 0) return "—";
   const mid = (bid + ask) / 2;
   const spreadBps = ((ask - bid) / mid) * 10000;
-  return spreadBps.toFixed(1);
+  return formatNumber(spreadBps, 1);
 }
 
 export function MassQuotePanel() {
@@ -75,8 +77,8 @@ export function MassQuotePanel() {
         return {
           ...q,
           skewBps: bps,
-          bidPrice: (bid + adjustment).toFixed(2),
-          askPrice: (ask + adjustment).toFixed(2),
+          bidPrice: formatNumber(bid + adjustment, 2),
+          askPrice: formatNumber(ask + adjustment, 2),
         };
       }),
     );
@@ -162,8 +164,8 @@ export function MassQuotePanel() {
           const jitter = bid * 0.00001 * (Math.random() - 0.5);
           return {
             ...q,
-            bidPrice: (bid + jitter).toFixed(2),
-            askPrice: (ask + jitter).toFixed(2),
+            bidPrice: formatNumber(bid + jitter, 2),
+            askPrice: formatNumber(ask + jitter, 2),
           };
         }),
       );
@@ -186,7 +188,7 @@ export function MassQuotePanel() {
           >
             {submitting ? (
               <>
-                <Loader2 className="size-3.5 mr-1.5 animate-spin" />
+                <Spinner size="sm" className="size-3.5 mr-1.5" />
                 Quoting...
               </>
             ) : (
@@ -344,7 +346,7 @@ export function MassQuotePanel() {
           <span className="text-muted-foreground">Quotes Outstanding</span>
           <span className="font-mono text-right">{quoteStatus.quotesOutstanding}</span>
           <span className="text-muted-foreground">Fill Rate</span>
-          <span className="font-mono text-right">{quoteStatus.fillRate.toFixed(1)}%</span>
+          <span className="font-mono text-right">{formatPercent(quoteStatus.fillRate, 1)}</span>
           <span className="text-muted-foreground">PnL from Spread</span>
           <span
             className={cn(
@@ -352,7 +354,7 @@ export function MassQuotePanel() {
               quoteStatus.pnlFromSpread >= 0 ? "text-emerald-500" : "text-rose-500",
             )}
           >
-            ${quoteStatus.pnlFromSpread.toFixed(2)}
+            {formatCurrency(quoteStatus.pnlFromSpread, "USD", 2)}
           </span>
         </div>
       </div>
@@ -384,7 +386,7 @@ export function MassQuotePanel() {
                     )}
                   >
                     {position > 0 ? "+" : ""}
-                    {position.toFixed(4)}
+                    {formatNumber(position, 4)}
                   </TableCell>
                 </TableRow>
               ))

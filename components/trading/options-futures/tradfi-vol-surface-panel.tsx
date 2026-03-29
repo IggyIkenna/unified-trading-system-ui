@@ -85,6 +85,7 @@ import {
   SPOT_STEPS,
   VOL_STEPS,
 } from "@/lib/mocks/fixtures/options-futures-mock";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------- TradFi Vol Surface ----------
 
@@ -149,7 +150,7 @@ export function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsse
                             : "text-foreground";
                     return (
                       <td key={ti} className={cn("text-center px-2 py-0.5 font-mono rounded-sm", bg)}>
-                        {iv.toFixed(1)}
+                        {formatNumber(iv, 1)}
                       </td>
                     );
                   })}
@@ -158,7 +159,8 @@ export function TradFiVolSurfacePanel({ tradFiAsset }: { tradFiAsset: TradFiAsse
             </tbody>
           </table>
           <p className="px-3 py-1.5 text-[10px] text-muted-foreground">
-            IV (%). Spot: ${spot.toFixed(2)} · Base IV: {baseIv.toFixed(1)}% · Yellow = vol premium above ATM
+            IV (%). Spot: ${formatNumber(spot, 2)} · Base IV: {formatPercent(baseIv, 1)} · Yellow = vol premium above
+            ATM
           </p>
         </div>
       </CollapsibleContent>

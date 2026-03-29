@@ -7,13 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ContextBar } from "@/components/platform/context-bar";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   GitCompare,
   Plus,
@@ -26,24 +20,18 @@ import {
   AlertTriangle,
   ShoppingBasket,
 } from "lucide-react";
-import {
-  useStrategyBacktests,
-  useStrategyTemplates,
-} from "@/hooks/api/use-strategies";
+import { useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
-import type {
-  BacktestRun,
-  StrategyConfig,
-} from "@/lib/strategy-platform-types";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import type { BacktestRun, StrategyConfig } from "@/lib/strategy-platform-types";
 
 // Get backtest metrics for a config
 function getConfigMetrics(configId: string, backtestRuns: BacktestRun[]) {
   const runs = backtestRuns.filter(
-    (r: BacktestRun) =>
-      r.configId === configId && r.status === "completed" && r.metrics,
+    (r: BacktestRun) => r.configId === configId && r.status === "completed" && r.metrics,
   );
   if (runs.length === 0) return null;
 
@@ -111,21 +99,19 @@ function CompareValue({
   let displayValue: string;
   switch (format) {
     case "percent":
-      displayValue = `${(value * 100).toFixed(1)}%`;
+      displayValue = formatPercent(value * 100, 1);
       break;
     case "bps":
-      displayValue = `${(value * 10000).toFixed(1)} bps`;
+      displayValue = `${formatNumber(value * 10000, 1)} bps`;
       break;
     default:
-      displayValue = value.toFixed(2);
+      displayValue = formatNumber(value, 2);
   }
 
   if (isBase || baseValue === undefined) {
     return (
       <div className="text-right">
-        <span className={cn("font-mono", isBase && "font-bold")}>
-          {displayValue}
-        </span>
+        <span className={cn("font-mono", isBase && "font-bold")}>{displayValue}</span>
         {isBase && (
           <Badge variant="outline" className="ml-2 text-[10px]">
             BASE
@@ -162,7 +148,7 @@ function CompareValue({
           )}
         >
           {pctDiff >= 0 ? "+" : ""}
-          {pctDiff.toFixed(1)}%
+          {formatNumber(pctDiff, 1)}%
         </span>
       </div>
     </div>
@@ -184,15 +170,10 @@ function ParamDiffRow({
 
   return (
     <div
-      className={cn(
-        "grid gap-4 py-2 border-b border-border/50 text-xs",
-        !allSame && "bg-[var(--surface-strategy)]/5",
-      )}
+      className={cn("grid gap-4 py-2 border-b border-border/50 text-xs", !allSame && "bg-[var(--surface-strategy)]/5")}
       style={{ gridTemplateColumns: `180px repeat(${values.length}, 1fr)` }}
     >
-      <div className="font-medium text-muted-foreground capitalize">
-        {param.replace(/_/g, " ")}
-      </div>
+      <div className="font-medium text-muted-foreground capitalize">{param.replace(/_/g, " ")}</div>
       {values.map((val, i) => (
         <div
           key={i}
@@ -230,9 +211,7 @@ function ConfigSelector({
   strategyConfigs: StrategyConfig[];
   backtestRuns: BacktestRun[];
 }) {
-  const config = configId
-    ? strategyConfigs.find((c) => c.id === configId)
-    : null;
+  const config = configId ? strategyConfigs.find((c) => c.id === configId) : null;
   const metrics = configId ? getConfigMetrics(configId, backtestRuns) : null;
 
   if (!config) {
@@ -268,11 +247,7 @@ function ConfigSelector({
           <div>
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               {config.name}
-              {isBase && (
-                <Badge className="bg-[var(--surface-strategy)] text-white text-[10px]">
-                  BASE
-                </Badge>
-              )}
+              {isBase && <Badge className="bg-[var(--surface-strategy)] text-white text-[10px]">BASE</Badge>}
             </CardTitle>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline" className="text-[10px]">
@@ -284,12 +259,7 @@ function ConfigSelector({
             </div>
           </div>
           {onRemove && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-6"
-              onClick={onRemove}
-            >
+            <Button variant="ghost" size="icon" className="size-6" onClick={onRemove}>
               <X className="size-3" />
             </Button>
           )}
@@ -300,28 +270,22 @@ function ConfigSelector({
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
               <div className="text-muted-foreground">Sharpe</div>
-              <div className="font-mono font-bold text-lg">
-                {metrics.sharpe.toFixed(2)}
-              </div>
+              <div className="font-mono font-bold text-lg">{formatNumber(metrics.sharpe, 2)}</div>
             </div>
             <div>
               <div className="text-muted-foreground">Return</div>
               <div
                 className={cn(
                   "font-mono font-bold text-lg",
-                  metrics.return >= 0
-                    ? "text-[var(--status-live)]"
-                    : "text-[var(--status-critical)]",
+                  metrics.return >= 0 ? "text-[var(--status-live)]" : "text-[var(--status-critical)]",
                 )}
               >
-                {(metrics.return * 100).toFixed(1)}%
+                {formatPercent(metrics.return * 100, 1)}
               </div>
             </div>
             <div>
               <div className="text-muted-foreground">Max DD</div>
-              <div className="font-mono">
-                {(metrics.maxDrawdown * 100).toFixed(1)}%
-              </div>
+              <div className="font-mono">{formatPercent(metrics.maxDrawdown * 100, 1)}</div>
             </div>
             <div>
               <div className="text-muted-foreground">Runs</div>
@@ -344,18 +308,13 @@ export default function StrategyComparePage() {
     error: backtestsError,
     refetch: backtestsRefetch,
   } = useStrategyBacktests();
-  const { data: templatesData, isLoading: templatesLoading } =
-    useStrategyTemplates();
+  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates();
 
-  const BACKTEST_RUNS: BacktestRun[] =
-    (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
-  const STRATEGY_CONFIGS: StrategyConfig[] =
-    (templatesData as any)?.data ?? (templatesData as any)?.configs ?? [];
+  const BACKTEST_RUNS: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
+  const STRATEGY_CONFIGS: StrategyConfig[] = (templatesData as any)?.data ?? (templatesData as any)?.configs ?? [];
 
   const [context, setContext] = React.useState<"BATCH" | "LIVE">("BATCH");
-  const [selectedConfigs, setSelectedConfigs] = React.useState<
-    (string | null)[]
-  >([null, null, null]);
+  const [selectedConfigs, setSelectedConfigs] = React.useState<(string | null)[]>([null, null, null]);
   const [baseIndex, setBaseIndex] = React.useState(0);
 
   const addSlot = () => {
@@ -385,12 +344,8 @@ export default function StrategyComparePage() {
   const isLoading = backtestsLoading || templatesLoading;
 
   // Get configs and metrics
-  const configs = selectedConfigs.map((id) =>
-    id ? STRATEGY_CONFIGS.find((c) => c.id === id) : null,
-  );
-  const metricsData = selectedConfigs.map((id) =>
-    id ? getConfigMetrics(id, BACKTEST_RUNS) : null,
-  );
+  const configs = selectedConfigs.map((id) => (id ? STRATEGY_CONFIGS.find((c) => c.id === id) : null));
+  const metricsData = selectedConfigs.map((id) => (id ? getConfigMetrics(id, BACKTEST_RUNS) : null));
   const baseMetrics = metricsData[baseIndex];
 
   // Get all parameter keys
@@ -446,12 +401,7 @@ export default function StrategyComparePage() {
       />
 
       {/* Batch/Live Rail */}
-      <BatchLiveRail
-        platform="strategy"
-        currentStage="Backtest"
-        context={context}
-        onContextChange={setContext}
-      />
+      <BatchLiveRail platform="strategy" currentStage="Backtest" context={context} onContextChange={setContext} />
 
       {/* Main Content */}
       <ScrollArea className="flex-1">
@@ -474,9 +424,7 @@ export default function StrategyComparePage() {
                 <ConfigSelector
                   configId={configId}
                   onSelect={(id) => setConfig(i, id)}
-                  onRemove={
-                    selectedConfigs.length > 2 ? () => removeSlot(i) : undefined
-                  }
+                  onRemove={selectedConfigs.length > 2 ? () => removeSlot(i) : undefined}
                   isBase={baseIndex === i}
                   strategyConfigs={STRATEGY_CONFIGS}
                   backtestRuns={BACKTEST_RUNS}
@@ -484,11 +432,7 @@ export default function StrategyComparePage() {
               </div>
             ))}
             {selectedConfigs.length < 5 && (
-              <Button
-                variant="outline"
-                className="h-[180px] w-[180px] border-dashed"
-                onClick={addSlot}
-              >
+              <Button variant="outline" className="h-[180px] w-[180px] border-dashed" onClick={addSlot}>
                 <Plus className="size-5" />
               </Button>
             )}
@@ -507,9 +451,7 @@ export default function StrategyComparePage() {
                 }}
               >
                 {/* Header */}
-                <div className="font-medium text-xs text-muted-foreground">
-                  Metric
-                </div>
+                <div className="font-medium text-xs text-muted-foreground">Metric</div>
                 {configs.map((cfg, i) => (
                   <div key={i} className="text-right text-xs font-medium">
                     {cfg?.name || "—"}
@@ -517,17 +459,11 @@ export default function StrategyComparePage() {
                 ))}
 
                 {/* Sharpe */}
-                <div className="text-xs text-muted-foreground border-t pt-3">
-                  Sharpe
-                </div>
+                <div className="text-xs text-muted-foreground border-t pt-3">Sharpe</div>
                 {metricsData.map((m, i) => (
                   <div key={i} className="border-t pt-3">
                     {m ? (
-                      <CompareValue
-                        value={m.sharpe}
-                        baseValue={baseMetrics?.sharpe}
-                        isBase={i === baseIndex}
-                      />
+                      <CompareValue value={m.sharpe} baseValue={baseMetrics?.sharpe} isBase={i === baseIndex} />
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}
@@ -552,9 +488,7 @@ export default function StrategyComparePage() {
                 ))}
 
                 {/* Max Drawdown */}
-                <div className="text-xs text-muted-foreground">
-                  Max Drawdown
-                </div>
+                <div className="text-xs text-muted-foreground">Max Drawdown</div>
                 {metricsData.map((m, i) => (
                   <div key={i}>
                     {m ? (
@@ -576,11 +510,7 @@ export default function StrategyComparePage() {
                 {metricsData.map((m, i) => (
                   <div key={i}>
                     {m ? (
-                      <CompareValue
-                        value={m.sortino}
-                        baseValue={baseMetrics?.sortino}
-                        isBase={i === baseIndex}
-                      />
+                      <CompareValue value={m.sortino} baseValue={baseMetrics?.sortino} isBase={i === baseIndex} />
                     ) : (
                       <span className="text-muted-foreground">—</span>
                     )}
@@ -622,9 +552,7 @@ export default function StrategyComparePage() {
                 ))}
 
                 {/* Slippage */}
-                <div className="text-xs text-muted-foreground">
-                  Avg Slippage
-                </div>
+                <div className="text-xs text-muted-foreground">Avg Slippage</div>
                 {metricsData.map((m, i) => (
                   <div key={i}>
                     {m ? (
@@ -671,9 +599,7 @@ export default function StrategyComparePage() {
                   <ParamDiffRow
                     key={param}
                     param={param}
-                    values={configs.map(
-                      (cfg) => cfg?.parameters?.[param] ?? "—",
-                    )}
+                    values={configs.map((cfg) => cfg?.parameters?.[param] ?? "—")}
                     baseIndex={baseIndex}
                   />
                 ))}
@@ -686,8 +612,7 @@ export default function StrategyComparePage() {
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Select configs to add to your candidate basket for promotion
-                  review.
+                  Select configs to add to your candidate basket for promotion review.
                 </p>
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" className="gap-2">

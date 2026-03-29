@@ -3,22 +3,11 @@
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { StatusDot } from "@/components/trading/status-badge";
 import { cn } from "@/lib/utils";
-import {
-  Building2,
-  Users,
-  BarChart3,
-  ChevronDown,
-  Wallet,
-  TrendingUp,
-  Radio,
-  Database,
-} from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
+import { Building2, Users, BarChart3, ChevronDown, Wallet, TrendingUp, Radio, Database } from "lucide-react";
 
 interface ScopeSummaryProps {
   organizations: { id: string; name: string }[];
@@ -53,18 +42,14 @@ export function ScopeSummary({
   className,
 }: ScopeSummaryProps) {
   const formatCurrency = (v: number) => {
-    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
-    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v.toFixed(0)}`;
+    if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 1)}M`;
+    if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+    return `$${formatNumber(v, 0)}`;
   };
 
   const liveStrategies = strategies.filter((s) => s.status === "live").length;
-  const warningStrategies = strategies.filter(
-    (s) => s.status === "warning",
-  ).length;
-  const pausedStrategies = strategies.filter(
-    (s) => s.status === "paused" || s.status === "stopped",
-  ).length;
+  const warningStrategies = strategies.filter((s) => s.status === "warning").length;
+  const pausedStrategies = strategies.filter((s) => s.status === "paused" || s.status === "stopped").length;
 
   // Check if any filters are active
   const hasOrgFilter = organizations.length > 0;
@@ -75,8 +60,7 @@ export function ScopeSummary({
   const scopeLabel = React.useMemo(() => {
     if (!hasAnyFilter) {
       const parts: string[] = [];
-      if (totalOrganizations > 0)
-        parts.push(`All Orgs (${totalOrganizations})`);
+      if (totalOrganizations > 0) parts.push(`All Orgs (${totalOrganizations})`);
       if (totalClients > 0) parts.push(`All Clients (${totalClients})`);
       parts.push(`${totalStrategies} Strategies`);
       return parts.join(" / ");
@@ -93,9 +77,7 @@ export function ScopeSummary({
       parts.push(`${clients.length} clients`);
     }
     if (selectedStrategyIds.length === 1) {
-      const selectedStrategy = strategies.find(
-        (s) => s.id === selectedStrategyIds[0],
-      );
+      const selectedStrategy = strategies.find((s) => s.id === selectedStrategyIds[0]);
       parts.push(selectedStrategy?.name || "1 strategy");
     } else if (selectedStrategyIds.length > 1) {
       parts.push(`${selectedStrategyIds.length} strategies`);
@@ -121,9 +103,7 @@ export function ScopeSummary({
         <PopoverTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2 h-8">
             <span className="text-xs font-medium">SCOPE:</span>
-            <span className="font-semibold max-w-[200px] truncate">
-              {scopeLabel}
-            </span>
+            <span className="font-semibold max-w-[200px] truncate">{scopeLabel}</span>
             <ChevronDown className="size-3.5 text-muted-foreground" />
           </Button>
         </PopoverTrigger>
@@ -132,12 +112,7 @@ export function ScopeSummary({
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Current Scope</span>
               {hasFilters && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 text-xs"
-                  onClick={onClearScope}
-                >
+                <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={onClearScope}>
                   Clear All
                 </Button>
               )}
@@ -167,11 +142,7 @@ export function ScopeSummary({
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {clients.map((client) => (
-                    <Badge
-                      key={client.id}
-                      variant="secondary"
-                      className="text-xs"
-                    >
+                    <Badge key={client.id} variant="secondary" className="text-xs">
                       {client.name}
                     </Badge>
                   ))}
@@ -189,9 +160,7 @@ export function ScopeSummary({
                 <div className="flex items-center gap-1.5">
                   <Wallet className="size-3 text-muted-foreground" />
                   <span className="text-muted-foreground">Capital:</span>
-                  <span className="font-medium font-mono">
-                    {formatCurrency(totalCapital)}
-                  </span>
+                  <span className="font-medium font-mono">{formatCurrency(totalCapital)}</span>
                 </div>
               </div>
             </div>
@@ -223,7 +192,7 @@ export function ScopeSummary({
               variant="outline"
               className="gap-1 text-[10px] border-[var(--status-live)] text-[var(--status-live)]"
             >
-              <span className="size-1.5 rounded-full bg-[var(--status-live)] animate-pulse" />
+              <StatusDot status="live" className="size-1.5 animate-pulse" />
               {liveStrategies} live
             </Badge>
           )}

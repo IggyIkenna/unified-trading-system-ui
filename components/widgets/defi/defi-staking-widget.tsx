@@ -9,6 +9,7 @@ import { Coins, TrendingUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function DeFiStakingWidget(_props: WidgetComponentProps) {
   const { stakingProtocols, tokenBalances, executeDeFiOrder } = useDeFiData();
@@ -59,7 +60,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
               <SelectItem key={p.name} value={p.name}>
                 {p.name}
                 <span className="text-[10px] text-muted-foreground ml-2">
-                  APY {p.apy.toFixed(1)}% / TVL ${(p.tvl / 1_000_000_000).toFixed(1)}B
+                  APY {formatPercent(p.apy, 1)} / TVL ${formatNumber(p.tvl / 1_000_000_000, 1)}B
                 </span>
               </SelectItem>
             ))}
@@ -83,7 +84,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
               variant="ghost"
               size="sm"
               className="h-6 px-2 text-[10px] flex-1"
-              onClick={() => setAmount(((balanceForAsset * pct) / 100).toFixed(4))}
+              onClick={() => setAmount(formatNumber((balanceForAsset * pct) / 100, 4))}
             >
               {pct}%
             </Button>
@@ -94,17 +95,17 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
       <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Expected APY</span>
-          <span className="font-mono text-emerald-400 font-bold text-sm">{selected.apy.toFixed(1)}%</span>
+          <span className="font-mono text-emerald-400 font-bold text-sm">{formatPercent(selected.apy, 1)}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Annual yield (mock)</span>
           <span className="font-mono text-emerald-400">
-            {amountNum > 0 ? `${annualYield.toFixed(4)} ${selected.asset}` : "—"}
+            {amountNum > 0 ? `${formatNumber(annualYield, 4)} ${selected.asset}` : "—"}
           </span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">TVL</span>
-          <span className="font-mono">${(selected.tvl / 1_000_000_000).toFixed(1)}B</span>
+          <span className="font-mono">${formatNumber(selected.tvl / 1_000_000_000, 1)}B</span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Min stake</span>

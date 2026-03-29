@@ -8,6 +8,7 @@ import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
 import { Database, Maximize2, Radio, RefreshCw, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTerminalData } from "./terminal-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function InstrumentBarWidget(_props: WidgetComponentProps) {
   const {
@@ -25,8 +26,8 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
 
   const formatPrice = (v: number) => {
     if (v >= 1000) return v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    if (v >= 1) return v.toFixed(4);
-    return v.toFixed(6);
+    if (v >= 1) return formatNumber(v, 4);
+    return formatNumber(v, 6);
   };
 
   return (
@@ -95,7 +96,7 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
           )}
         >
           {priceChange >= 0 ? "+" : ""}
-          {priceChange.toFixed(2)}%
+          {formatPercent(priceChange, 2)}
         </Badge>
         {!isBatchMode && (
           <Badge variant="outline" className="text-[10px] gap-1">

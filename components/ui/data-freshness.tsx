@@ -1,6 +1,7 @@
 "use client";
 
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
+import { StatusDot } from "@/components/trading/status-badge";
 import { cn } from "@/lib/utils";
 
 interface DataFreshnessProps {
@@ -20,29 +21,21 @@ function getStalenessColor(seconds: number): string {
   return "text-red-500";
 }
 
-function getDotColor(seconds: number): string {
-  if (seconds < 5) return "bg-emerald-500";
-  if (seconds <= 30) return "bg-amber-500";
-  return "bg-red-500";
+function stalenessStatus(seconds: number): "live" | "warning" | "critical" {
+  if (seconds < 5) return "live";
+  if (seconds <= 30) return "warning";
+  return "critical";
 }
 
-export function DataFreshness({
-  lastUpdated,
-  isWebSocket = false,
-  isBatch = false,
-  asOfDate,
-}: DataFreshnessProps) {
+export function DataFreshness({ lastUpdated, isWebSocket = false, isBatch = false, asOfDate }: DataFreshnessProps) {
   const nowMs = useTickingNowMs(1000);
-  const secondsAgo =
-    lastUpdated && !isBatch && !isWebSocket
-      ? getSecondsAgo(nowMs, lastUpdated)
-      : 0;
+  const secondsAgo = lastUpdated && !isBatch && !isWebSocket ? getSecondsAgo(nowMs, lastUpdated) : 0;
 
   // Batch mode: show "As of {date}" badge
   if (isBatch) {
     return (
       <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-        <span className="size-2 rounded-full bg-slate-400" />
+        <StatusDot status="idle" className="size-2" />
         As of {asOfDate ?? "unknown"}
       </span>
     );
@@ -52,7 +45,7 @@ export function DataFreshness({
   if (isWebSocket) {
     return (
       <span className="inline-flex items-center gap-1.5 text-xs text-emerald-500">
-        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+        <StatusDot status="live" className="size-2 animate-pulse" />
         Live
       </span>
     );
@@ -62,7 +55,7 @@ export function DataFreshness({
   if (!lastUpdated) {
     return (
       <span className="inline-flex items-center gap-1.5 text-xs text-red-500">
-        <span className="size-2 rounded-full bg-red-500" />
+        <StatusDot status="failed" className="size-2" />
         Disconnected
       </span>
     );
@@ -70,13 +63,8 @@ export function DataFreshness({
 
   // REST-fetched with staleness coloring
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 text-xs",
-        getStalenessColor(secondsAgo),
-      )}
-    >
-      <span className={cn("size-2 rounded-full", getDotColor(secondsAgo))} />
+    <span className={cn("inline-flex items-center gap-1.5 text-xs", getStalenessColor(secondsAgo))}>
+      <StatusDot status={stalenessStatus(secondsAgo)} className="size-2" />
       Updated {secondsAgo}s ago
     </span>
   );

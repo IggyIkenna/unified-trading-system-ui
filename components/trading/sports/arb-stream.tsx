@@ -9,17 +9,12 @@ import { MOCK_ARB_STREAM } from "./mock-data";
 import { fmtOdds, fmtCurrency, fmtRelativeTime } from "./helpers";
 import { ArbBadge, LeagueBadge } from "./shared";
 import { useToast } from "@/hooks/use-toast";
+import { formatPercent } from "@/lib/utils/formatters";
 
 // ─── Decay timer for active arbs ─────────────────────────────────────────────
 // Shows a countdown visual — arbs are time-sensitive
 
-function DecayBar({
-  detectedAt,
-  maxLifetimeMs = 120_000,
-}: {
-  detectedAt: string;
-  maxLifetimeMs?: number;
-}) {
+function DecayBar({ detectedAt, maxLifetimeMs = 120_000 }: { detectedAt: string; maxLifetimeMs?: number }) {
   const [pct, setPct] = React.useState(100);
   React.useEffect(() => {
     const tick = () => {
@@ -45,13 +40,7 @@ function DecayBar({
 
 // ─── Live Arb Card ────────────────────────────────────────────────────────────
 
-function ActiveArbCard({
-  arb,
-  isNew,
-}: {
-  arb: ArbOpportunity;
-  isNew?: boolean;
-}) {
+function ActiveArbCard({ arb, isNew }: { arb: ArbOpportunity; isNew?: boolean }) {
   const { toast } = useToast();
 
   // Profit per £10k total stake
@@ -78,15 +67,11 @@ function ActiveArbCard({
         <div className="flex items-center gap-1.5 flex-wrap">
           <LeagueBadge league={arb.league} />
           <ArbBadge pct={arb.arbPct} className="text-sm" />
-          <span className="ml-auto text-[9px] text-zinc-500">
-            {fmtRelativeTime(arb.detectedAt)}
-          </span>
+          <span className="ml-auto text-[9px] text-zinc-500">{fmtRelativeTime(arb.detectedAt)}</span>
         </div>
 
         <div className="text-xs font-bold text-white">{arb.fixtureName}</div>
-        <div className="text-[10px] text-zinc-500 uppercase tracking-widest">
-          {arb.market}
-        </div>
+        <div className="text-[10px] text-zinc-500 uppercase tracking-widest">{arb.market}</div>
 
         {/* Two legs */}
         <div className="flex flex-col gap-1">
@@ -96,23 +81,13 @@ function ActiveArbCard({
               className="flex items-center justify-between rounded-lg bg-zinc-900/80 border border-zinc-800 px-2.5 py-1.5"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-[9px] text-zinc-500 w-4 shrink-0">
-                  {i + 1}.
-                </span>
-                <span className="text-[11px] text-zinc-200 truncate">
-                  {leg.outcome}
-                </span>
+                <span className="text-[9px] text-zinc-500 w-4 shrink-0">{i + 1}.</span>
+                <span className="text-[11px] text-zinc-200 truncate">{leg.outcome}</span>
               </div>
               <div className="flex items-center gap-2 shrink-0 ml-2">
-                <span className="text-sm font-black text-white tabular-nums">
-                  {fmtOdds(leg.odds)}
-                </span>
-                <span className="text-[9px] text-zinc-500">
-                  {leg.bookmaker}
-                </span>
-                <span className="text-[10px] text-zinc-400 tabular-nums">
-                  {fmtCurrency(leg.suggestedStake)}
-                </span>
+                <span className="text-sm font-black text-white tabular-nums">{fmtOdds(leg.odds)}</span>
+                <span className="text-[9px] text-zinc-500">{leg.bookmaker}</span>
+                <span className="text-[10px] text-zinc-400 tabular-nums">{fmtCurrency(leg.suggestedStake)}</span>
               </div>
             </div>
           ))}
@@ -121,15 +96,9 @@ function ActiveArbCard({
         {/* Profit row + CTA */}
         <div className="flex items-center gap-2 pt-1 border-t border-[#4ade80]/15">
           <div className="flex flex-col">
-            <span className="text-[9px] text-zinc-500 uppercase tracking-widest">
-              Guaranteed profit
-            </span>
-            <span className="text-sm font-black text-[#4ade80] tabular-nums">
-              +{fmtCurrency(profit)}
-            </span>
-            <span className="text-[9px] text-zinc-600">
-              per {fmtCurrency(totalStake)} staked
-            </span>
+            <span className="text-[9px] text-zinc-500 uppercase tracking-widest">Guaranteed profit</span>
+            <span className="text-sm font-black text-[#4ade80] tabular-nums">+{fmtCurrency(profit)}</span>
+            <span className="text-[9px] text-zinc-600">per {fmtCurrency(totalStake)} staked</span>
           </div>
           <Button
             size="sm"
@@ -158,9 +127,7 @@ function ClosedArbCard({ arb }: { arb: ArbOpportunity }) {
     <div className="rounded-lg border border-zinc-800/50 bg-zinc-900/20 p-2.5 flex flex-col gap-1.5 opacity-50">
       <div className="flex items-center gap-1.5">
         <LeagueBadge league={arb.league} />
-        <span className="text-[10px] text-zinc-500 font-bold">
-          {arb.fixtureName}
-        </span>
+        <span className="text-[10px] text-zinc-500 font-bold">{arb.fixtureName}</span>
         <span className="ml-auto inline-flex items-center gap-1 text-[9px] text-zinc-600">
           <TrendingDown className="size-2.5" />
           CLOSED
@@ -168,7 +135,7 @@ function ClosedArbCard({ arb }: { arb: ArbOpportunity }) {
       </div>
       <div className="flex items-center justify-between text-[10px] text-zinc-600">
         <span>{arb.market}</span>
-        <span className="tabular-nums">was +{arb.arbPct.toFixed(2)}%</span>
+        <span className="tabular-nums">was +{formatPercent(arb.arbPct, 2)}</span>
         {arb.decayedAt && <span>{fmtRelativeTime(arb.decayedAt)}</span>}
       </div>
     </div>
@@ -212,15 +179,10 @@ function useArbStream(threshold: number) {
 
   const filtered = arbs.filter((a) => a.arbPct >= threshold);
   return {
-    active: filtered
-      .filter((a) => a.isActive)
-      .sort((a, b) => b.arbPct - a.arbPct),
+    active: filtered.filter((a) => a.isActive).sort((a, b) => b.arbPct - a.arbPct),
     closed: filtered
       .filter((a) => !a.isActive)
-      .sort(
-        (a, b) =>
-          new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime(),
-      ),
+      .sort((a, b) => new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime()),
     newIds,
   };
 }
@@ -238,9 +200,7 @@ export function ArbStream({ arbThreshold }: ArbStreamProps) {
     <div className="flex flex-col h-full overflow-auto p-3 gap-2.5">
       {/* Active section */}
       <div className="flex items-center gap-2">
-        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">
-          Live Opportunities
-        </span>
+        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Live Opportunities</span>
         {active.length > 0 && (
           <span className="flex items-center gap-1 text-[9px] text-[#4ade80]">
             <span className="relative flex size-1.5">
@@ -259,9 +219,7 @@ export function ArbStream({ arbThreshold }: ArbStreamProps) {
             No arbs above {arbThreshold}%<br />
             threshold right now
           </span>
-          <span className="text-[10px] text-zinc-700">
-            Stream re-checks every 8s
-          </span>
+          <span className="text-[10px] text-zinc-700">Stream re-checks every 8s</span>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -275,9 +233,7 @@ export function ArbStream({ arbThreshold }: ArbStreamProps) {
       {closed.length > 0 && (
         <>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">
-              Closed
-            </span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Closed</span>
             <div className="flex-1 h-px bg-zinc-800" />
           </div>
           <div className="flex flex-col gap-1.5">

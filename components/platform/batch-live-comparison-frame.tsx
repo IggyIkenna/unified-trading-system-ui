@@ -29,14 +29,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import {
-  Radio,
-  Database,
-  SplitSquareVertical,
-  ArrowLeftRight,
-  AlertTriangle,
-  Clock,
-} from "lucide-react";
+import { Radio, Database, SplitSquareVertical, ArrowLeftRight, AlertTriangle, Clock } from "lucide-react";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export type ComparisonViewMode = "split" | "batch" | "live" | "delta";
 
@@ -81,9 +75,7 @@ export function BatchLiveComparisonFrame({
   };
 
   const significantDrifts = driftMetrics.filter((m) => {
-    const pct = m.batchValue !== 0
-      ? Math.abs((m.liveValue - m.batchValue) / Math.abs(m.batchValue)) * 100
-      : 0;
+    const pct = m.batchValue !== 0 ? Math.abs((m.liveValue - m.batchValue) / Math.abs(m.batchValue)) * 100 : 0;
     return pct > (m.threshold ?? 5);
   });
 
@@ -153,22 +145,15 @@ export function BatchLiveComparisonFrame({
         <div className="flex items-center gap-4 px-4 py-1.5 border-b bg-muted/10 text-xs overflow-x-auto">
           {driftMetrics.map((m) => {
             const delta = m.liveValue - m.batchValue;
-            const pct = m.batchValue !== 0
-              ? (delta / Math.abs(m.batchValue)) * 100
-              : 0;
+            const pct = m.batchValue !== 0 ? (delta / Math.abs(m.batchValue)) * 100 : 0;
             return (
               <div key={m.label} className="flex items-center gap-1.5 shrink-0">
                 <span className="text-muted-foreground">{m.label}</span>
                 <span
-                  className={cn(
-                    "font-mono",
-                    delta >= 0
-                      ? "text-[var(--pnl-positive)]"
-                      : "text-[var(--pnl-negative)]",
-                  )}
+                  className={cn("font-mono", delta >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}
                 >
                   {delta >= 0 ? "+" : ""}
-                  {pct.toFixed(1)}%
+                  {formatPercent(pct, 1)}
                 </span>
               </div>
             );
@@ -178,12 +163,8 @@ export function BatchLiveComparisonFrame({
 
       {/* Content area */}
       <div className="flex-1 min-h-0 overflow-hidden">
-        {viewMode === "batch" && (
-          <div className="h-full overflow-auto">{batchContent}</div>
-        )}
-        {viewMode === "live" && (
-          <div className="h-full overflow-auto">{liveContent}</div>
-        )}
+        {viewMode === "batch" && <div className="h-full overflow-auto">{batchContent}</div>}
+        {viewMode === "live" && <div className="h-full overflow-auto">{liveContent}</div>}
         {viewMode === "split" && (
           <div className="h-full grid grid-cols-2 divide-x divide-border">
             <div className="overflow-auto">
@@ -202,9 +183,7 @@ export function BatchLiveComparisonFrame({
             </div>
           </div>
         )}
-        {viewMode === "delta" && deltaContent && (
-          <div className="h-full overflow-auto">{deltaContent}</div>
-        )}
+        {viewMode === "delta" && deltaContent && <div className="h-full overflow-auto">{deltaContent}</div>}
       </div>
     </div>
   );

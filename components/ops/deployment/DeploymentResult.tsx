@@ -1,33 +1,13 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import {
-  CheckCircle2,
-  Copy,
-  Check,
-  Terminal,
-  Layers,
-  ChevronDown,
-  ChevronUp,
-  Loader2,
-  FolderOpen,
-  Clock,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import type { CreateDeploymentResponse, GroupedShards, ShardPreviewInfo } from "@/lib/types/deployment";
 import { cn } from "@/lib/utils";
-import type {
-  CreateDeploymentResponse,
-  ShardPreviewInfo,
-  GroupedShards,
-} from "@/lib/types/deployment";
+import { Check, CheckCircle2, ChevronDown, ChevronUp, Clock, Copy, FolderOpen, Layers, Terminal } from "lucide-react";
+import { useMemo, useState } from "react";
 
 interface DeploymentResultProps {
   result: CreateDeploymentResponse;
@@ -87,27 +67,17 @@ function groupShards(shards: ShardPreviewInfo[]): GroupedShards {
   return grouped;
 }
 
-export function DeploymentResult({
-  result,
-  onClose,
-  onDeployLive,
-  onLoadAllShards,
-}: DeploymentResultProps) {
+export function DeploymentResult({ result, onClose, onDeployLive, onLoadAllShards }: DeploymentResultProps) {
   const [copiedCommand, setCopiedCommand] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [showShards, setShowShards] = useState(false);
   const [allShards, setAllShards] = useState<ShardPreviewInfo[] | null>(null);
   const [loadingAllShards, setLoadingAllShards] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(),
-  );
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
 
   // Group shards by category -> date (use all shards if loaded, otherwise preview shards)
-  const groupedShards = useMemo(
-    () => groupShards(allShards ?? result.shards ?? []),
-    [allShards, result.shards],
-  );
+  const groupedShards = useMemo(() => groupShards(allShards ?? result.shards ?? []), [allShards, result.shards]);
 
   const handleLoadAllShards = async () => {
     if (!onLoadAllShards || loadingAllShards) return;
@@ -164,9 +134,7 @@ export function DeploymentResult({
     <Card
       className={cn(
         "border-2",
-        result.dry_run
-          ? "border-[var(--color-accent-amber)]/50"
-          : "border-[var(--color-accent-green)]/50",
+        result.dry_run ? "border-[var(--color-accent-amber)]/50" : "border-[var(--color-accent-green)]/50",
       )}
     >
       <CardHeader>
@@ -182,15 +150,11 @@ export function DeploymentResult({
               </div>
             )}
             <div>
-              <CardTitle className="text-lg">
-                {result.dry_run ? "Dry Run Preview" : "Deployment Started"}
-              </CardTitle>
+              <CardTitle className="text-lg">{result.dry_run ? "Dry Run Preview" : "Deployment Started"}</CardTitle>
               <CardDescription>{result.message}</CardDescription>
             </div>
           </div>
-          <Badge variant={result.dry_run ? "warning" : "success"}>
-            {result.dry_run ? "Preview" : "Live"}
-          </Badge>
+          <Badge variant={result.dry_run ? "warning" : "success"}>{result.dry_run ? "Preview" : "Live"}</Badge>
         </div>
       </CardHeader>
 
@@ -198,28 +162,18 @@ export function DeploymentResult({
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-4">
           <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-            <div className="text-2xl font-mono font-bold text-[var(--color-text-primary)]">
-              {result.total_shards}
-            </div>
-            <div className="text-xs text-[var(--color-text-muted)]">
-              Total Shards
-            </div>
+            <div className="text-2xl font-mono font-bold text-[var(--color-text-primary)]">{result.total_shards}</div>
+            <div className="text-xs text-[var(--color-text-muted)]">Total Shards</div>
           </div>
           <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-            <div className="text-sm font-mono font-medium text-[var(--color-text-primary)]">
-              {result.service}
-            </div>
-            <div className="text-xs text-[var(--color-text-muted)]">
-              Service
-            </div>
+            <div className="text-sm font-mono font-medium text-[var(--color-text-primary)]">{result.service}</div>
+            <div className="text-xs text-[var(--color-text-muted)]">Service</div>
           </div>
           <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
             <div className="text-sm font-mono font-medium text-[var(--color-text-primary)]">
               {result.compute_mode || "cloud_run"}
             </div>
-            <div className="text-xs text-[var(--color-text-muted)]">
-              Compute
-            </div>
+            <div className="text-xs text-[var(--color-text-muted)]">Compute</div>
           </div>
         </div>
 
@@ -228,24 +182,11 @@ export function DeploymentResult({
           <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs text-[var(--color-text-muted)] mb-1">
-                  Deployment ID
-                </div>
-                <code className="text-sm font-mono text-[var(--color-accent-cyan)]">
-                  {result.deployment_id}
-                </code>
+                <div className="text-xs text-[var(--color-text-muted)] mb-1">Deployment ID</div>
+                <code className="text-sm font-mono text-[var(--color-accent-cyan)]">{result.deployment_id}</code>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCopyId}
-                className="h-8"
-              >
-                {copiedId ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
+              <Button variant="ghost" size="sm" onClick={handleCopyId} className="h-8">
+                {copiedId ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
             <div className="mt-2 text-xs text-[var(--color-text-muted)]">
@@ -258,26 +199,16 @@ export function DeploymentResult({
         {/* Summary */}
         {result.summary && (
           <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-            <div className="text-xs font-medium text-[var(--color-text-secondary)] mb-2">
-              Dimension Breakdown
-            </div>
+            <div className="text-xs font-medium text-[var(--color-text-secondary)] mb-2">Dimension Breakdown</div>
             <div className="grid grid-cols-2 gap-2">
-              {Object.entries(result.summary.breakdown || {}).map(
-                ([dim, values]) => (
-                  <div key={dim} className="text-xs">
-                    <span className="text-[var(--color-text-muted)]">
-                      {dim}:
-                    </span>{" "}
-                    <span className="font-mono text-[var(--color-text-secondary)]">
-                      {typeof values === "number"
-                        ? values
-                        : Object.keys(values as Record<string, unknown>)
-                            .length}{" "}
-                      values
-                    </span>
-                  </div>
-                ),
-              )}
+              {Object.entries(result.summary.breakdown || {}).map(([dim, values]) => (
+                <div key={dim} className="text-xs">
+                  <span className="text-[var(--color-text-muted)]">{dim}:</span>{" "}
+                  <span className="font-mono text-[var(--color-text-secondary)]">
+                    {typeof values === "number" ? values : Object.keys(values as Record<string, unknown>).length} values
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -290,53 +221,30 @@ export function DeploymentResult({
             recommended_date_granularity?: string;
             recommended_max_concurrent?: number;
           }
-          const advisor = (result.summary as { advisor?: DryRunAdvisor })
-            ?.advisor;
+          const advisor = (result.summary as { advisor?: DryRunAdvisor })?.advisor;
           if (!advisor) return null;
-          const warnings: string[] = Array.isArray(advisor.warnings)
-            ? advisor.warnings
-            : [];
-          const notes: string[] = Array.isArray(advisor.notes)
-            ? advisor.notes
-            : [];
-          const recGranularity: string | undefined =
-            advisor.recommended_date_granularity;
-          const recMaxConcurrent: number | undefined =
-            advisor.recommended_max_concurrent;
+          const warnings: string[] = Array.isArray(advisor.warnings) ? advisor.warnings : [];
+          const notes: string[] = Array.isArray(advisor.notes) ? advisor.notes : [];
+          const recGranularity: string | undefined = advisor.recommended_date_granularity;
+          const recMaxConcurrent: number | undefined = advisor.recommended_max_concurrent;
 
-          if (
-            !recGranularity &&
-            !recMaxConcurrent &&
-            warnings.length === 0 &&
-            notes.length === 0
-          )
-            return null;
+          if (!recGranularity && !recMaxConcurrent && warnings.length === 0 && notes.length === 0) return null;
 
           return (
             <div className="p-3 rounded-lg bg-[var(--color-bg-tertiary)] border border-[var(--color-border-subtle)]">
-              <div className="text-xs font-medium text-[var(--color-text-secondary)] mb-2">
-                Advisor
-              </div>
+              <div className="text-xs font-medium text-[var(--color-text-secondary)] mb-2">Advisor</div>
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {typeof recMaxConcurrent === "number" && (
                   <div>
-                    <span className="text-[var(--color-text-muted)]">
-                      max_concurrent:
-                    </span>{" "}
-                    <span className="font-mono text-[var(--color-text-secondary)]">
-                      {recMaxConcurrent}
-                    </span>
+                    <span className="text-[var(--color-text-muted)]">max_concurrent:</span>{" "}
+                    <span className="font-mono text-[var(--color-text-secondary)]">{recMaxConcurrent}</span>
                   </div>
                 )}
                 {recGranularity && (
                   <div>
-                    <span className="text-[var(--color-text-muted)]">
-                      date_granularity:
-                    </span>{" "}
-                    <span className="font-mono text-[var(--color-text-secondary)]">
-                      {recGranularity}
-                    </span>
+                    <span className="text-[var(--color-text-muted)]">date_granularity:</span>{" "}
+                    <span className="font-mono text-[var(--color-text-secondary)]">{recGranularity}</span>
                   </div>
                 )}
               </div>
@@ -370,8 +278,7 @@ export function DeploymentResult({
             >
               <span className="text-sm font-medium text-[var(--color-text-secondary)] flex items-center gap-2">
                 <FolderOpen className="h-4 w-4" />
-                View Shards (
-                {allShards ? allShards.length : result.shards.length}
+                View Shards ({allShards ? allShards.length : result.shards.length}
                 {!allShards && result.shards_truncated ? "+" : ""})
               </span>
               {showShards ? (
@@ -394,7 +301,7 @@ export function DeploymentResult({
                     >
                       {loadingAllShards ? (
                         <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          <Spinner className="h-4 w-4 mr-2" />
                           Loading all {result.total_shards} shards...
                         </>
                       ) : (
@@ -408,19 +315,14 @@ export function DeploymentResult({
                 {Object.entries(groupedShards)
                   .sort()
                   .map(([category, dates]) => (
-                    <div
-                      key={category}
-                      className="border-b border-[var(--color-border-subtle)] last:border-b-0"
-                    >
+                    <div key={category} className="border-b border-[var(--color-border-subtle)] last:border-b-0">
                       {/* Category header */}
                       <Button
                         variant="ghost"
                         onClick={() => toggleCategory(category)}
                         className="w-full flex items-center justify-between p-2 px-3 bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-hover)] transition-colors h-auto rounded-none"
                       >
-                        <span className="text-sm font-medium text-[var(--color-accent-cyan)]">
-                          {category}
-                        </span>
+                        <span className="text-sm font-medium text-[var(--color-accent-cyan)]">{category}</span>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline" className="text-xs">
                             {Object.keys(dates).length} dates
@@ -451,9 +353,7 @@ export function DeploymentResult({
                                     onClick={() => toggleDate(dateKey)}
                                     className="w-full flex items-center justify-between p-2 pr-3 bg-[var(--color-bg-primary)] hover:bg-[var(--color-bg-hover)] transition-colors h-auto rounded-none"
                                   >
-                                    <span className="text-xs font-mono text-[var(--color-text-secondary)]">
-                                      {date}
-                                    </span>
+                                    <span className="text-xs font-mono text-[var(--color-text-secondary)]">{date}</span>
                                     <div className="flex items-center gap-2">
                                       <span className="text-xs text-[var(--color-text-muted)]">
                                         {shards.length} shard
@@ -471,10 +371,7 @@ export function DeploymentResult({
                                   {expandedDates.has(dateKey) && (
                                     <div className="pl-3 divide-y divide-[var(--color-border-subtle)]">
                                       {shards.map((shard, idx) => (
-                                        <div
-                                          key={shard.shard_id}
-                                          className="p-2 pr-3 bg-[var(--color-bg-tertiary)]"
-                                        >
+                                        <div key={shard.shard_id} className="p-2 pr-3 bg-[var(--color-bg-tertiary)]">
                                           <div className="flex items-center justify-between mb-1">
                                             <code className="text-[10px] font-mono text-[var(--color-accent-amber)]">
                                               {shard.shard_id}
@@ -518,12 +415,7 @@ export function DeploymentResult({
               <Terminal className="h-4 w-4" />
               Equivalent CLI Command
             </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCopyCommand}
-              className="h-7 px-2"
-            >
+            <Button variant="ghost" size="sm" onClick={handleCopyCommand} className="h-7 px-2">
               {copiedCommand ? (
                 <>
                   <Check className="h-3 w-3 mr-1" />
@@ -539,8 +431,7 @@ export function DeploymentResult({
           </div>
           <div className="bg-[var(--color-bg-primary)] rounded-lg p-3 border border-[var(--color-border-default)]">
             <pre className="text-xs font-mono text-[var(--color-text-secondary)] whitespace-pre-wrap break-all">
-              <span className="text-[var(--color-accent-green)]">$</span>{" "}
-              {result.cli_command}
+              <span className="text-[var(--color-accent-green)]">$</span> {result.cli_command}
             </pre>
           </div>
         </div>
@@ -557,9 +448,7 @@ export function DeploymentResult({
           ) : (
             <>
               <div className="text-xs text-[var(--color-text-muted)]">
-                {result.dry_run
-                  ? "This was a preview. No jobs were started."
-                  : "Jobs are running in the background."}
+                {result.dry_run ? "This was a preview. No jobs were started." : "Jobs are running in the background."}
               </div>
               <Button variant="outline" onClick={onClose}>
                 Close

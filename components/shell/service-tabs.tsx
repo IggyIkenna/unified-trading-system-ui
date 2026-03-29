@@ -11,32 +11,31 @@ import type { ReactNode } from "react";
 import { TabSectionHelp } from "@/components/shell/tab-section-help";
 import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
 import { cn } from "@/lib/utils";
+import { isServiceTabActive } from "@/lib/utils/nav-helpers";
+import type { LucideIcon } from "lucide-react";
 import {
-  Lock,
-  LayoutDashboard,
-  MonitorDot,
-  BookOpen,
-  ClipboardList,
+  BarChart3,
   Bell,
   BookMarked,
-  Wallet,
-  BarChart3,
-  ShieldAlert,
-  LineChart,
-  Layers,
-  GitFork,
-  TrendingUp,
-  Trophy,
-  Lightbulb,
-  Settings2,
+  BookOpen,
+  Building2,
+  ClipboardList,
   Cpu,
   Database,
   DollarSign,
-  Building2,
   FileText,
+  GitFork,
+  Layers,
+  LayoutDashboard,
+  Lightbulb,
+  LineChart,
+  Lock,
+  MonitorDot,
+  TrendingUp,
+  Trophy,
+  Wallet,
   Zap,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -147,10 +146,7 @@ export function ServiceTabs({
           aria-label="Service sections"
         >
           {tabs.map((tab) => {
-            const matchPath = tab.matchPrefix || tab.href;
-            const isActive = tab.exact
-              ? pathname === tab.href || pathname === `${tab.href}/`
-              : pathname === tab.href || pathname.startsWith(matchPath + "/");
+            const isActive = isServiceTabActive(pathname, tab);
             const isLocked =
               tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
 

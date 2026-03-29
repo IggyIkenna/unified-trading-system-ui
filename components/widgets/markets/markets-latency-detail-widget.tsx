@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { useMarketsData } from "./markets-data-context";
 
 /** Deterministic simulated batch per stage (avoids Math.random hydration drift). */
@@ -33,11 +34,11 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
   }
 
   const kpiMetrics = [
-    { label: "p50", value: `${metric.p50.toFixed(1)}ms` },
-    { label: "p95", value: `${metric.p95.toFixed(1)}ms` },
+    { label: "p50", value: `${formatNumber(metric.p50, 1)}ms` },
+    { label: "p95", value: `${formatNumber(metric.p95, 1)}ms` },
     {
       label: "p99",
-      value: `${metric.p99.toFixed(1)}ms`,
+      value: `${formatNumber(metric.p99, 1)}ms`,
       sentiment: (metric.p99 > 30 ? "negative" : "neutral") as "negative" | "neutral",
     },
   ];
@@ -84,10 +85,10 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                       <span className="font-medium truncate">{stage.stage}</span>
                     </div>
                     <div className="flex gap-3 font-mono text-[10px] shrink-0">
-                      <span className="text-muted-foreground w-12 text-right">{stage.p50.toFixed(2)}</span>
-                      <span className="text-muted-foreground w-12 text-right">{stage.p95.toFixed(2)}</span>
+                      <span className="text-muted-foreground w-12 text-right">{formatNumber(stage.p50, 2)}</span>
+                      <span className="text-muted-foreground w-12 text-right">{formatNumber(stage.p95, 2)}</span>
                       <span className={cn("w-12 text-right", stage.p99 > 5 ? "text-[var(--status-warning)]" : "")}>
-                        {stage.p99.toFixed(2)}
+                        {formatNumber(stage.p99, 2)}
                       </span>
                     </div>
                   </div>
@@ -98,7 +99,9 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
-                    <span className="text-[9px] text-muted-foreground w-10 text-right">{percentage.toFixed(0)}%</span>
+                    <span className="text-[9px] text-muted-foreground w-10 text-right">
+                      {formatPercent(percentage, 0)}
+                    </span>
                   </div>
                 </div>
               );
@@ -136,7 +139,7 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                       borderRadius: "8px",
                       fontSize: "11px",
                     }}
-                    formatter={(value: number) => [`${value.toFixed(2)}ms`]}
+                    formatter={(value: number) => [`${formatNumber(value, 2)}ms`]}
                   />
                   <Legend wrapperStyle={{ fontSize: "10px" }} />
                   <Area
@@ -211,19 +214,19 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                   return (
                     <tr key={stage.stage} className="border-b border-border/50 hover:bg-muted/20">
                       <td className="p-1.5 font-medium">{stage.stage}</td>
-                      <td className="p-1.5 font-mono text-center">{stage.p50.toFixed(2)}</td>
-                      <td className="p-1.5 font-mono text-center">{stage.p95.toFixed(2)}</td>
-                      <td className="p-1.5 font-mono text-center">{stage.p99.toFixed(2)}</td>
-                      <td className="p-1.5 font-mono text-center text-muted-foreground">{b50.toFixed(2)}</td>
-                      <td className="p-1.5 font-mono text-center text-muted-foreground">{b95.toFixed(2)}</td>
-                      <td className="p-1.5 font-mono text-center text-muted-foreground">{b99.toFixed(2)}</td>
+                      <td className="p-1.5 font-mono text-center">{formatNumber(stage.p50, 2)}</td>
+                      <td className="p-1.5 font-mono text-center">{formatNumber(stage.p95, 2)}</td>
+                      <td className="p-1.5 font-mono text-center">{formatNumber(stage.p99, 2)}</td>
+                      <td className="p-1.5 font-mono text-center text-muted-foreground">{formatNumber(b50, 2)}</td>
+                      <td className="p-1.5 font-mono text-center text-muted-foreground">{formatNumber(b95, 2)}</td>
+                      <td className="p-1.5 font-mono text-center text-muted-foreground">{formatNumber(b99, 2)}</td>
                       <td
                         className={cn(
                           "p-1.5 font-mono text-center",
                           stage.p50 - b50 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
                         )}
                       >
-                        {(stage.p50 - b50 > 0 ? "+" : "") + (stage.p50 - b50).toFixed(2)}
+                        {(stage.p50 - b50 > 0 ? "+" : "") + formatNumber(stage.p50 - b50, 2)}
                       </td>
                       <td
                         className={cn(
@@ -231,7 +234,7 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                           stage.p95 - b95 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
                         )}
                       >
-                        {(stage.p95 - b95 > 0 ? "+" : "") + (stage.p95 - b95).toFixed(2)}
+                        {(stage.p95 - b95 > 0 ? "+" : "") + formatNumber(stage.p95 - b95, 2)}
                       </td>
                       <td
                         className={cn(
@@ -239,7 +242,7 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                           stage.p99 - b99 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
                         )}
                       >
-                        {(stage.p99 - b99 > 0 ? "+" : "") + (stage.p99 - b99).toFixed(2)}
+                        {(stage.p99 - b99 > 0 ? "+" : "") + formatNumber(stage.p99 - b99, 2)}
                       </td>
                     </tr>
                   );

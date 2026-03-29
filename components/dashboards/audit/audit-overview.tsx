@@ -20,6 +20,7 @@ import {
   Settings,
   TrendingUp,
 } from "lucide-react";
+import { StatusDot } from "@/components/trading/status-badge";
 import { cn } from "@/lib/utils";
 import { auditStats, recentEvents } from "./audit-dashboard-data";
 import { getEventIcon, getStatusColor } from "./audit-helpers";
@@ -159,7 +160,7 @@ export function AuditOverview() {
         <CardHeader className="py-3 px-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-positive animate-pulse" />
+              <StatusDot status="live" className="h-2 w-2 animate-pulse" />
               Live Event Feed
             </CardTitle>
             <span className="text-xs text-muted-foreground">{filteredEvents.length} events</span>

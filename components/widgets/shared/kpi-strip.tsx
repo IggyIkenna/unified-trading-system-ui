@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export interface KpiMetric {
   label: string;
@@ -65,7 +66,7 @@ export function KpiStrip({ metrics, columns, className }: KpiStripProps) {
                   {s === "positive" && <TrendingUp className="size-2.5" />}
                   {s === "negative" && <TrendingDown className="size-2.5" />}
                   {s === "neutral" && <Minus className="size-2.5" />}
-                  {Math.abs(m.changePercent).toFixed(1)}%
+                  {formatPercent(Math.abs(m.changePercent), 1)}
                 </span>
               )}
             </div>

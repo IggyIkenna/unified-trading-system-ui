@@ -1,18 +1,24 @@
 "use client";
 
-import type { WidgetComponentProps } from "../widget-registry";
-import { PnLAttributionPanel } from "@/components/trading/pnl-attribution-panel";
 import { HealthStatusGrid } from "@/components/trading/health-status-grid";
+import { PnLAttributionPanel } from "@/components/trading/pnl-attribution-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
+import type { WidgetComponentProps } from "../widget-registry";
+
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useOverviewDataSafe } from "./overview-data-context";
 
 export function PnLAttributionWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
   const { pnlComponents, totalPnl } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">
@@ -30,7 +36,12 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
 
 export function AlertsPreviewWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
   const { mockAlerts, alertsLoading } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">
@@ -43,7 +54,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
       </div>
       {alertsLoading ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground">
-          <Loader2 className="size-4 animate-spin mr-2" />
+          <Spinner className="size-4 mr-2" />
         </div>
       ) : mockAlerts.length === 0 ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground text-xs">No active alerts</div>
@@ -77,7 +88,12 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
 
 export function RecentFillsWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
   const { ordersData, ordersLoading } = ctx;
   const raw = ordersData as unknown;
   const orders = Array.isArray(raw)
@@ -95,7 +111,7 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
       </div>
       {ordersLoading ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground">
-          <Loader2 className="size-4 animate-spin mr-2" />
+          <Spinner className="size-4 mr-2" />
         </div>
       ) : orders.length === 0 ? (
         <div className="flex items-center justify-center py-6 text-muted-foreground text-xs">No recent fills</div>
@@ -133,7 +149,12 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
 
 export function HealthGridWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
   const { allMockServices } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">

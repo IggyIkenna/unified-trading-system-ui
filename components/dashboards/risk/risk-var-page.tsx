@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { varMetrics } from "./risk-data";
 import { formatCurrency } from "./risk-utils";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function VaRPage() {
   return (
@@ -45,7 +46,7 @@ export function VaRPage() {
             <div className="text-xs text-muted-foreground">VaR Limit</div>
             <div className="text-2xl font-bold mt-1">{formatCurrency(varMetrics.limit)}</div>
             <div className="text-xs text-muted-foreground mt-1">
-              {((varMetrics.current / varMetrics.limit) * 100).toFixed(0)}% utilized
+              {formatPercent((varMetrics.current / varMetrics.limit) * 100, 0)} utilized
             </div>
           </CardContent>
         </Card>

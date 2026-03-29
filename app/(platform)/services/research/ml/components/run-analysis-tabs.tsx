@@ -16,6 +16,7 @@ import {
 } from "recharts";
 
 import type { RunAnalysis } from "@/lib/ml-types";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 /**
  * Recharts sets SVG `fill`/`stroke` directly. Theme vars in globals are hex (#…);
@@ -59,7 +60,7 @@ function FeatureImportanceTooltip({
       <p className="font-mono font-medium leading-snug text-foreground">{label}</p>
       <p className="mt-1.5 text-muted-foreground">
         Importance:{" "}
-        <span className="font-mono font-semibold tabular-nums text-foreground">{(v * 100).toFixed(1)}%</span>
+        <span className="font-mono font-semibold tabular-nums text-foreground">{formatPercent(v * 100, 1)}</span>
       </p>
     </div>
   );
@@ -114,47 +115,47 @@ export function RunAnalysisMetricsTab({ analysis }: { analysis: RunAnalysis }) {
       {[
         {
           label: "Sharpe",
-          value: fm.sharpe_ratio.toFixed(2),
+          value: formatNumber(fm.sharpe_ratio, 2),
           ...thresholds("sharpe"),
         },
         {
           label: "Dir. Acc",
-          value: `${(fm.directional_accuracy * 100).toFixed(1)}%`,
+          value: formatPercent(fm.directional_accuracy * 100, 1),
           ...thresholds("dir_acc"),
         },
         {
           label: "Profit Factor",
-          value: fm.profit_factor.toFixed(2),
+          value: formatNumber(fm.profit_factor, 2),
           ...thresholds("pf"),
         },
         {
           label: "Hit Rate",
-          value: `${(fm.hit_rate * 100).toFixed(1)}%`,
+          value: formatPercent(fm.hit_rate * 100, 1),
           ...thresholds("hit_rate"),
         },
         {
           label: "Sortino",
-          value: fm.sortino_ratio.toFixed(2),
+          value: formatNumber(fm.sortino_ratio, 2),
           ...thresholds("sortino"),
         },
         {
           label: "Info Ratio",
-          value: fm.information_ratio.toFixed(2),
+          value: formatNumber(fm.information_ratio, 2),
           ...thresholds("ir"),
         },
         {
           label: "Max DD",
-          value: `${fm.max_drawdown_pct.toFixed(1)}%`,
+          value: formatPercent(fm.max_drawdown_pct, 1),
           ...thresholds("dd"),
         },
         {
           label: "Calibration",
-          value: fm.calibration_score.toFixed(2),
+          value: formatNumber(fm.calibration_score, 2),
           ...thresholds("cal"),
         },
         {
           label: "Stability",
-          value: fm.stability_score.toFixed(2),
+          value: formatNumber(fm.stability_score, 2),
           ...thresholds("stability"),
         },
       ].map((m) => (
@@ -271,17 +272,17 @@ export function RunAnalysisRegimesTab({ analysis }: { analysis: RunAnalysis }) {
                 <span
                   className={`font-mono ${metricColor(rp.sharpe_ratio, { good: 1.5, warn: 0.5, direction: "higher" })}`}
                 >
-                  {rp.sharpe_ratio.toFixed(2)}
+                  {formatNumber(rp.sharpe_ratio, 2)}
                 </span>
                 <span
                   className={`font-mono ${metricColor(rp.directional_accuracy, { good: 0.6, warn: 0.5, direction: "higher" })}`}
                 >
-                  {(rp.directional_accuracy * 100).toFixed(0)}%
+                  {formatPercent(rp.directional_accuracy * 100, 0)}
                 </span>
                 <span
                   className={`font-mono ${metricColor(rp.max_drawdown_pct, { good: 5, warn: 15, direction: "lower" })}`}
                 >
-                  {rp.max_drawdown_pct.toFixed(1)}%
+                  {formatPercent(rp.max_drawdown_pct, 1)}
                 </span>
                 <span className="font-mono text-muted-foreground">{rp.sample_count}</span>
               </div>
@@ -353,7 +354,7 @@ export function RunAnalysisRegimesTab({ analysis }: { analysis: RunAnalysis }) {
                   {f.train_start}→{f.train_end}
                 </span>
                 <span className="text-right">
-                  SR {f.sharpe_ratio.toFixed(2)} · {(f.directional_accuracy * 100).toFixed(0)}%
+                  SR {formatNumber(f.sharpe_ratio, 2)} · {formatPercent(f.directional_accuracy * 100, 0)}
                 </span>
               </div>
             ))}
@@ -377,7 +378,7 @@ export function RunAnalysisQualityTab({ analysis }: { analysis: RunAnalysis }) {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={analysis.prediction_distribution.buckets.slice(0, -1).map((b, i) => ({
-                    bucket: `${(b * 100).toFixed(0)}-${(analysis.prediction_distribution!.buckets[i + 1] * 100).toFixed(0)}%`,
+                    bucket: `${formatNumber(b * 100, 0)}-${formatNumber(analysis.prediction_distribution!.buckets[i + 1] * 100, 0)}%`,
                     actual: analysis.prediction_distribution!.actual_positive_rate[i] * 100,
                   }))}
                 >

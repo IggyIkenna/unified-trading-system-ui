@@ -1,46 +1,25 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { formatDateTime } from "@/lib/utils";
 import {
-  X,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Clock,
   AlertCircle,
-  Terminal,
-  ChevronDown,
-  ChevronUp,
+  Check,
+  CheckCircle2,
+  Edit2,
+  GitCommit,
+  Play,
+  RefreshCw,
   RotateCcw,
   StopCircle,
-  Play,
-  Square,
-  CheckSquare,
-  Edit2,
-  Check,
   Tag,
-  List,
-  Layers,
-  ChevronRight,
-  FolderOpen,
-  Folder,
-  GitCommit,
-  FileText,
-  Search,
+  X,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn, formatDateTime } from "@/lib/utils";
-import { VM_EVENT_TYPES } from "@/lib/types/deployment";
-import { StatBox } from "./stat-box";
-import { ShardRow } from "./shard-row";
-import { DeploymentStatusBadge } from "./deployment-status-badge";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
+import { DeploymentStatusBadge } from "./deployment-status-badge";
 
 export function DeploymentDetailsHeader() {
   const dd = useDeploymentDetailsModelContext();
@@ -227,7 +206,7 @@ export function DeploymentDetailsHeader() {
                   disabled={actionLoading === "tag"}
                 >
                   {actionLoading === "tag" ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
+                    <Spinner size="sm" className="h-3 w-3" />
                   ) : (
                     <Check className="h-3 w-3 text-[var(--color-accent-green)]" />
                   )}
@@ -283,7 +262,7 @@ export function DeploymentDetailsHeader() {
           )}
           {status.status === "running" && (
             <span className="text-xs text-[var(--color-text-muted)] flex items-center gap-1">
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Spinner size="sm" className="h-3 w-3" />
               Auto-syncing
             </span>
           )}
@@ -302,7 +281,7 @@ export function DeploymentDetailsHeader() {
         {(status.status === "running" || status.status === "pending") && (
           <Button variant="destructive" size="sm" onClick={handleCancelDeployment} disabled={actionLoading !== null}>
             {actionLoading === "cancel" ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              <Spinner className="h-4 w-4 mr-1" />
             ) : (
               <StopCircle className="h-4 w-4 mr-1" />
             )}
@@ -313,11 +292,7 @@ export function DeploymentDetailsHeader() {
         {/* Resume - only for failed */}
         {status.status === "failed" && (
           <Button variant="default" size="sm" onClick={handleResumeDeployment} disabled={actionLoading !== null}>
-            {actionLoading === "resume" ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-1" />
-            ) : (
-              <Play className="h-4 w-4 mr-1" />
-            )}
+            {actionLoading === "resume" ? <Spinner className="h-4 w-4 mr-1" /> : <Play className="h-4 w-4 mr-1" />}
             Resume Deployment
           </Button>
         )}
@@ -327,7 +302,7 @@ export function DeploymentDetailsHeader() {
           <Button variant="outline" size="sm" onClick={handleRetryFailed} disabled={actionLoading !== null}>
             {actionLoading === "retry" ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                <Spinner className="h-4 w-4 mr-1" />
                 Creating VMs...
               </>
             ) : (
@@ -350,7 +325,7 @@ export function DeploymentDetailsHeader() {
           >
             {actionLoading === "rollback" ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                <Spinner className="h-4 w-4 mr-1" />
                 Rolling back...
               </>
             ) : (

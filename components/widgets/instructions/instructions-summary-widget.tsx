@@ -3,6 +3,7 @@
 import { KpiStrip, type KpiMetric } from "@/components/widgets/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useInstructionsData } from "./instructions-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function InstructionsSummaryWidget(_props: WidgetComponentProps) {
   const { summary } = useInstructionsData();
@@ -17,7 +18,7 @@ export function InstructionsSummaryWidget(_props: WidgetComponentProps) {
     { label: "Pending", value: String(summary.pending), sentiment: "neutral" },
     {
       label: "Avg slippage",
-      value: `${summary.avgSlippage.toFixed(1)} bps`,
+      value: `${formatNumber(summary.avgSlippage, 1)} bps`,
       sentiment: slippageSentiment,
     },
   ];

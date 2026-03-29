@@ -1,24 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Lock, Zap, TrendingUp } from "lucide-react";
-import type { Fixture, OddsMarket, Bookmaker } from "./types";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { Lock, TrendingUp, Zap } from "lucide-react";
+import * as React from "react";
+import { calcArbPct, calcArbStakes, fmtCurrency, fmtOdds } from "./helpers";
 import { MOCK_ODDS } from "./mock-data";
 import { BOOKMAKERS, SUBSCRIBED_BOOKMAKERS } from "./mock-fixtures";
-import { calcArbPct, calcArbStakes, fmtOdds, fmtCurrency } from "./helpers";
-import { LeagueBadge, OddsMovementIcon, ArbBadge } from "./shared";
-import { useToast } from "@/hooks/use-toast";
+import { ArbBadge, LeagueBadge } from "./shared";
+import type { Bookmaker, Fixture, OddsMarket } from "./types";
+import { formatPercent } from "@/lib/utils/formatters";
 
 // ─── Bookmaker header abbreviations ──────────────────────────────────────────
 
-const BM_LABEL: Record<Bookmaker, string> = {
+const BM_LABEL_OVERRIDES: Partial<Record<Bookmaker, string>> = {
   bet365: "B365",
   pinnacle: "PINN",
   unibet: "UNI",
@@ -27,7 +24,7 @@ const BM_LABEL: Record<Bookmaker, string> = {
   polymarket: "POLY",
 };
 
-const BM_COLOUR: Record<Bookmaker, string> = {
+const BM_COLOUR_OVERRIDES: Partial<Record<Bookmaker, string>> = {
   bet365: "#00a651",
   pinnacle: "#e31837",
   unibet: "#00b4e5",
@@ -35,6 +32,14 @@ const BM_COLOUR: Record<Bookmaker, string> = {
   betfair_exchange: "#ffb80c",
   polymarket: "#0038ff",
 };
+
+function bookmakerLabel(bm: Bookmaker): string {
+  return BM_LABEL_OVERRIDES[bm] ?? bm.replace(/_/g, " ").slice(0, 4).toUpperCase();
+}
+
+function bookmakerColour(bm: Bookmaker): string {
+  return BM_COLOUR_OVERRIDES[bm] ?? "#71717a";
+}
 
 // ─── Arb Popover ─────────────────────────────────────────────────────────────
 
@@ -82,16 +87,12 @@ function ArbCellPopover({
         {/* Header */}
         <div className="flex items-center gap-2 px-3 py-2 border-b border-[#4ade80]/20">
           <ArbBadge pct={arbPct} />
-          <span className="text-xs font-bold text-white truncate">
-            {fixtureName}
-          </span>
+          <span className="text-xs font-bold text-white truncate">{fixtureName}</span>
         </div>
 
         <div className="p-3 flex flex-col gap-2.5">
           {/* Market */}
-          <p className="text-[10px] text-zinc-400 uppercase tracking-widest">
-            {market}
-          </p>
+          <p className="text-[10px] text-zinc-400 uppercase tracking-widest">{market}</p>
 
           {/* Two legs */}
           <div className="flex flex-col gap-1.5">
@@ -104,21 +105,12 @@ function ArbCellPopover({
                 className="flex items-center justify-between rounded-lg bg-zinc-900/80 border border-zinc-800 px-2.5 py-2"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <div
-                    className="size-2 rounded-full shrink-0"
-                    style={{ background: BM_COLOUR[leg.bm] }}
-                  />
-                  <span className="text-[10px] text-zinc-300 truncate">
-                    {leg.out}
-                  </span>
+                  <div className="size-2 rounded-full shrink-0" style={{ background: bookmakerColour(leg.bm) }} />
+                  <span className="text-[10px] text-zinc-300 truncate">{leg.out}</span>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-xs font-black text-white tabular-nums">
-                    {fmtOdds(leg.od)}
-                  </span>
-                  <span className="text-[9px] text-zinc-500">
-                    {BM_LABEL[leg.bm]}
-                  </span>
+                  <span className="text-xs font-black text-white tabular-nums">{fmtOdds(leg.od)}</span>
+                  <span className="text-[9px] text-zinc-500">{bookmakerLabel(leg.bm)}</span>
                 </div>
               </div>
             ))}
@@ -127,22 +119,16 @@ function ArbCellPopover({
           {/* Stake split */}
           <div className="flex flex-col gap-1 rounded-lg bg-[#4ade80]/5 border border-[#4ade80]/20 px-2.5 py-2">
             <div className="flex justify-between text-[10px]">
-              <span className="text-zinc-400">Stake {BM_LABEL[bookmaker]}</span>
-              <span className="text-white tabular-nums">
-                {fmtCurrency(stake1)}
-              </span>
+              <span className="text-zinc-400">Stake {bookmakerLabel(bookmaker)}</span>
+              <span className="text-white tabular-nums">{fmtCurrency(stake1)}</span>
             </div>
             <div className="flex justify-between text-[10px]">
-              <span className="text-zinc-400">Stake {BM_LABEL[counterBm]}</span>
-              <span className="text-white tabular-nums">
-                {fmtCurrency(stake2)}
-              </span>
+              <span className="text-zinc-400">Stake {bookmakerLabel(counterBm)}</span>
+              <span className="text-white tabular-nums">{fmtCurrency(stake2)}</span>
             </div>
             <div className="flex justify-between text-xs font-black border-t border-[#4ade80]/20 pt-1 mt-0.5">
               <span className="text-[#4ade80]">Guaranteed profit</span>
-              <span className="text-[#4ade80] tabular-nums">
-                +{fmtCurrency(profit)}
-              </span>
+              <span className="text-[#4ade80] tabular-nums">+{fmtCurrency(profit)}</span>
             </div>
           </div>
 
@@ -158,7 +144,7 @@ function ArbCellPopover({
             }}
           >
             <Zap className="size-3 mr-1.5" />
-            Place Arb — {arbPct.toFixed(2)}% locked in
+            Place Arb — {formatPercent(arbPct, 2)} locked in
           </Button>
         </div>
       </PopoverContent>
@@ -180,15 +166,7 @@ interface GridCellProps {
   arbThreshold: number;
 }
 
-function GridCell({
-  fixtureId,
-  fixtureName,
-  bookmaker,
-  market,
-  outcome,
-  outcomesMap,
-  arbThreshold,
-}: GridCellProps) {
+function GridCell({ fixtureId, fixtureName, bookmaker, market, outcome, outcomesMap, arbThreshold }: GridCellProps) {
   const isLocked = !SUBSCRIBED_BOOKMAKERS.includes(bookmaker);
 
   if (isLocked) {
@@ -205,9 +183,7 @@ function GridCell({
   }
 
   // Best odds across unlocked bookmakers for this outcome
-  const allForOutcome = Array.from(
-    outcomesMap.get(outcome)?.entries() ?? [],
-  ).filter(([, e]) => !e.isLocked);
+  const allForOutcome = Array.from(outcomesMap.get(outcome)?.entries() ?? []).filter(([, e]) => !e.isLocked);
   const bestOdds = Math.max(...allForOutcome.map(([, e]) => e.odds));
   const isBest = entry.odds === bestOdds && allForOutcome.length > 1;
 
@@ -250,22 +226,13 @@ function GridCell({
       <span
         className={cn(
           "text-xs font-black tabular-nums",
-          arbInfo
-            ? "text-[#4ade80]"
-            : isBest
-              ? "text-[#22d3ee]"
-              : "text-zinc-300",
+          arbInfo ? "text-[#4ade80]" : isBest ? "text-[#22d3ee]" : "text-zinc-300",
         )}
       >
         {fmtOdds(entry.odds)}
       </span>
       {movement !== "STABLE" && (
-        <span
-          className={cn(
-            "text-[8px] font-bold",
-            movement === "UP" ? "text-[#4ade80]" : "text-red-400",
-          )}
-        >
+        <span className={cn("text-[8px] font-bold", movement === "UP" ? "text-[#4ade80]" : "text-red-400")}>
           {movement === "UP" ? "▲" : "▼"}
         </span>
       )}
@@ -295,11 +262,7 @@ interface ArbGridProps {
   arbThreshold: number;
 }
 
-export function ArbGrid({
-  fixtures,
-  selectedMarket,
-  arbThreshold,
-}: ArbGridProps) {
+export function ArbGrid({ fixtures, selectedMarket, arbThreshold }: ArbGridProps) {
   type OddsEntry2 = { odds: number; movement: string; isLocked: boolean };
   const byFixture = new Map<string, Map<string, Map<Bookmaker, OddsEntry2>>>();
 
@@ -320,9 +283,7 @@ export function ArbGrid({
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-2 text-zinc-600">
         <TrendingUp className="size-8 opacity-30" />
-        <span className="text-sm">
-          No odds available for the selected market
-        </span>
+        <span className="text-sm">No odds available for the selected market</span>
       </div>
     );
   }
@@ -343,7 +304,7 @@ export function ArbGrid({
                   <div className="flex flex-col items-center gap-0.5">
                     <div
                       className="w-1.5 h-1.5 rounded-full"
-                      style={{ background: locked ? "#3f3f46" : BM_COLOUR[bm] }}
+                      style={{ background: locked ? "#3f3f46" : bookmakerColour(bm) }}
                     />
                     <span
                       className={cn(
@@ -351,7 +312,7 @@ export function ArbGrid({
                         locked ? "text-zinc-700" : "text-zinc-400",
                       )}
                     >
-                      {BM_LABEL[bm]}
+                      {bookmakerLabel(bm)}
                     </span>
                     {locked && <Lock className="size-2 text-zinc-700" />}
                   </div>
@@ -377,9 +338,7 @@ export function ArbGrid({
                     <div className="flex items-center gap-2">
                       <LeagueBadge league={fixture.league} />
                       <span className="text-xs font-bold text-white">
-                        {fixture.home.name}{" "}
-                        <span className="text-zinc-600">vs</span>{" "}
-                        {fixture.away.name}
+                        {fixture.home.name} <span className="text-zinc-600">vs</span> {fixture.away.name}
                       </span>
                     </div>
                   </td>
@@ -395,9 +354,7 @@ export function ArbGrid({
                     )}
                   >
                     <td className="px-3 py-1.5 sticky left-0 bg-inherit z-10 max-w-[144px]">
-                      <span className="text-[11px] text-zinc-400 truncate block">
-                        {outcome}
-                      </span>
+                      <span className="text-[11px] text-zinc-400 truncate block">{outcome}</span>
                     </td>
                     {BOOKMAKERS.map((bm) => (
                       <td key={bm} className="px-1 py-1 text-center h-10">

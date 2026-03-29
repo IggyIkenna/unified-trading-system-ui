@@ -1,17 +1,17 @@
 "use client";
 
-import * as React from "react";
-import { useOrders, useCancelOrder, useAmendOrder } from "@/hooks/api/use-orders";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { useAmendOrder, useCancelOrder, useOrders } from "@/hooks/api/use-orders";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getOrdersForScope } from "@/lib/mock-data";
 import { SEED_STRATEGIES } from "@/lib/mock-data/seed";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import * as React from "react";
 
 type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
 
@@ -104,7 +104,7 @@ function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> 
   return "Spot";
 }
 
-export { type OrderRecord, type InstrumentType, classifyInstrument };
+export { classifyInstrument, type InstrumentType, type OrderRecord };
 
 export function OrdersDataProvider({ children }: { children: React.ReactNode }) {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders();
@@ -122,7 +122,15 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [instrumentTypeFilter, setInstrumentTypeFilter] = React.useState<InstrumentType>("All");
 
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
 
   const orders: OrderRecord[] = React.useMemo(() => {
     const raw = ordersRaw as Record<string, unknown> | undefined;
@@ -338,7 +346,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
               Cancel
             </Button>
             <Button onClick={handleDialogSubmit} disabled={amendMutation.isPending}>
-              {amendMutation.isPending ? <Loader2 className="size-3.5 mr-1.5 animate-spin" /> : null}
+              {amendMutation.isPending ? <Spinner size="sm" className="size-3.5 mr-1.5" /> : null}
               Confirm Amend
             </Button>
           </DialogFooter>

@@ -1,14 +1,15 @@
 "use client";
 
-import { Play, Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-form-context";
-import { DeployFormChecklistSection } from "@/components/ops/deployment/form/deploy-form-checklist-section";
-import { DeployFormModeCloudLive } from "@/components/ops/deployment/form/deploy-form-mode-cloud-live";
-import { DeployFormComputeRegion } from "@/components/ops/deployment/form/deploy-form-compute-region";
-import { DeployFormDimensionFields } from "@/components/ops/deployment/form/deploy-form-dimension-fields";
 import { DeployFormAdvancedSection } from "@/components/ops/deployment/form/deploy-form-advanced-section";
+import { DeployFormChecklistSection } from "@/components/ops/deployment/form/deploy-form-checklist-section";
+import { DeployFormComputeRegion } from "@/components/ops/deployment/form/deploy-form-compute-region";
+import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-form-context";
+import { DeployFormDimensionFields } from "@/components/ops/deployment/form/deploy-form-dimension-fields";
+import { DeployFormModeCloudLive } from "@/components/ops/deployment/form/deploy-form-mode-cloud-live";
 import { DeployFormPreviewSubmit } from "@/components/ops/deployment/form/deploy-form-preview-submit";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { Play } from "lucide-react";
 
 export function DeployFormContent() {
   const { serviceName, loadingDims, estimatedShards } = useDeployFormContext();
@@ -17,7 +18,7 @@ export function DeployFormContent() {
     return (
       <Card>
         <CardContent className="py-12 flex justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[var(--color-accent-cyan)]" />
+          <Spinner size="lg" className="h-8 w-8 text-[var(--color-accent-cyan)]" />
         </CardContent>
       </Card>
     );

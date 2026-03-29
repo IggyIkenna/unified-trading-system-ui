@@ -1,45 +1,20 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import * as React from "react";
 import { use } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PnLValue } from "@/components/trading/pnl-value";
 import { EntityLink } from "@/components/trading/entity-link";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  ArrowLeft,
-  TrendingUp,
-  TrendingDown,
-  ChevronRight,
-  Download,
-  Calendar,
-  Filter,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ArrowLeft, TrendingUp, TrendingDown, ChevronRight, Download, Calendar, Filter } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PNL_FACTORS } from "@/lib/reference-data";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 interface FactorBreakdown {
   strategyId: string;
@@ -292,12 +267,7 @@ export default function PnLDetailPage() {
                 Back
               </Button>
             </Link>
-            <div>
-              <h1 className="text-2xl font-semibold">P&L Attribution Detail</h1>
-              <p className="text-sm text-muted-foreground">
-                Drill down into P&L components by strategy
-              </p>
-            </div>
+            <PageHeader title="P&L Attribution Detail" description="Drill down into P&L components by strategy" />
           </div>
           <div className="flex items-center gap-3">
             <Select value={dateRange} onValueChange={setDateRange}>
@@ -338,11 +308,7 @@ export default function PnLDetailPage() {
                     variant={isSelected ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSelectedFactor(factor.id)}
-                    className={cn(
-                      "gap-2",
-                      isSelected &&
-                        "ring-2 ring-primary ring-offset-2 ring-offset-background",
-                    )}
+                    className={cn("gap-2", isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background")}
                   >
                     {isPositive ? (
                       <TrendingUp className="size-3.5 text-[var(--pnl-positive)]" />
@@ -353,13 +319,11 @@ export default function PnLDetailPage() {
                     <span
                       className={cn(
                         "font-mono text-xs",
-                        isPositive
-                          ? "text-[var(--pnl-positive)]"
-                          : "text-[var(--pnl-negative)]",
+                        isPositive ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
                       )}
                     >
                       {isPositive ? "+" : ""}
-                      {(total / 1000).toFixed(0)}k
+                      {formatNumber(total / 1000, 0)}k
                     </span>
                   </Button>
                 );
@@ -381,9 +345,7 @@ export default function PnLDetailPage() {
                       {breakdown.length} strategies
                     </Badge>
                   </CardTitle>
-                  <CardDescription>
-                    {factorInfo?.description || "P&L attribution by strategy"}
-                  </CardDescription>
+                  <CardDescription>{factorInfo?.description || "P&L attribution by strategy"}</CardDescription>
                 </div>
                 <PnLValue value={total} size="lg" showSign />
               </div>
@@ -402,10 +364,7 @@ export default function PnLDetailPage() {
                 </TableHeader>
                 <TableBody>
                   {breakdown.map((row) => (
-                    <TableRow
-                      key={row.strategyId}
-                      className="cursor-pointer hover:bg-muted/30"
-                    >
+                    <TableRow key={row.strategyId} className="cursor-pointer hover:bg-muted/30">
                       <TableCell>
                         <EntityLink
                           type="strategy"
@@ -420,25 +379,19 @@ export default function PnLDetailPage() {
                       <TableCell className="text-right font-mono text-sm">
                         <span
                           className={cn(
-                            row.percentage >= 0
-                              ? "text-[var(--pnl-positive)]"
-                              : "text-[var(--pnl-negative)]",
+                            row.percentage >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
                           )}
                         >
                           {row.percentage >= 0 ? "+" : ""}
-                          {row.percentage.toFixed(1)}%
+                          {formatPercent(row.percentage, 1)}
                         </span>
                       </TableCell>
                       <TableCell className="text-right font-mono text-sm text-muted-foreground">
                         {row.exposure}
                       </TableCell>
-                      <TableCell className="text-right font-mono text-sm text-muted-foreground">
-                        {row.trades}
-                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-muted-foreground">{row.trades}</TableCell>
                       <TableCell>
-                        <Link
-                          href={`/services/trading/strategies/${row.strategyId}`}
-                        >
+                        <Link href={`/services/trading/strategies/${row.strategyId}`}>
                           <Button variant="ghost" size="sm">
                             <ChevronRight className="size-4" />
                           </Button>
@@ -459,34 +412,20 @@ export default function PnLDetailPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-muted-foreground">
-                    Total P&L
-                  </span>
+                  <span className="text-sm text-muted-foreground">Total P&L</span>
                   <PnLValue value={total} size="md" showSign />
                 </div>
                 <div className="flex items-center justify-between py-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">
-                    % of Net P&L
-                  </span>
-                  <span className="font-mono font-medium">
-                    {((total / 933000) * 100).toFixed(1)}%
-                  </span>
+                  <span className="text-sm text-muted-foreground">% of Net P&L</span>
+                  <span className="font-mono font-medium">{formatPercent((total / 933000) * 100, 1)}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">
-                    Strategies
-                  </span>
-                  <span className="font-mono font-medium">
-                    {breakdown.length}
-                  </span>
+                  <span className="text-sm text-muted-foreground">Strategies</span>
+                  <span className="font-mono font-medium">{breakdown.length}</span>
                 </div>
                 <div className="flex items-center justify-between py-2 border-t border-border">
-                  <span className="text-sm text-muted-foreground">
-                    Total Trades
-                  </span>
-                  <span className="font-mono font-medium">
-                    {breakdown.reduce((sum, r) => sum + r.trades, 0)}
-                  </span>
+                  <span className="text-sm text-muted-foreground">Total Trades</span>
+                  <span className="font-mono font-medium">{breakdown.reduce((sum, r) => sum + r.trades, 0)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -511,9 +450,8 @@ export default function PnLDetailPage() {
                   <div>
                     <p className="text-sm font-medium">Filter Tip</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Use the Context Bar above to filter by client, strategy,
-                      or underlying to see factor attribution for specific
-                      segments.
+                      Use the Context Bar above to filter by client, strategy, or underlying to see factor attribution
+                      for specific segments.
                     </p>
                   </div>
                 </div>

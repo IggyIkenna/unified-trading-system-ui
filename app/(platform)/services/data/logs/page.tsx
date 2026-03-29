@@ -4,24 +4,10 @@ import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  FileText,
-  Search,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  AlertTriangle,
-} from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { FileText, Search, RefreshCw, CheckCircle2, XCircle, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 interface PipelineRun {
   id: string;
@@ -229,17 +215,12 @@ export default function ETLLogsPage() {
 
   const filtered = React.useMemo(() => {
     let result = MOCK_RUNS;
-    if (statusFilter !== "all")
-      result = result.filter((r) => r.status === statusFilter);
-    if (dataTypeFilter !== "all")
-      result = result.filter((r) => r.dataType === dataTypeFilter);
+    if (statusFilter !== "all") result = result.filter((r) => r.status === statusFilter);
+    if (dataTypeFilter !== "all") result = result.filter((r) => r.dataType === dataTypeFilter);
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
-        (r) =>
-          r.pipeline.includes(q) ||
-          r.venue.toLowerCase().includes(q) ||
-          r.service.includes(q),
+        (r) => r.pipeline.includes(q) || r.venue.toLowerCase().includes(q) || r.service.includes(q),
       );
     }
     return result;
@@ -258,8 +239,7 @@ export default function ETLLogsPage() {
         <div>
           <h2 className="text-lg font-semibold">ETL Pipeline Logs</h2>
           <p className="text-sm text-muted-foreground">
-            All data pipeline runs across ingestion, processing, and derived
-            computation
+            All data pipeline runs across ingestion, processing, and derived computation
           </p>
         </div>
         <Button variant="outline" size="sm" className="gap-1.5">
@@ -270,33 +250,25 @@ export default function ETLLogsPage() {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-semibold text-emerald-400">
-              {successCount}
-            </p>
+            <p className="text-2xl font-semibold text-emerald-400">{successCount}</p>
             <p className="text-xs text-muted-foreground">Succeeded</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-semibold text-rose-400">
-              {failedCount}
-            </p>
+            <p className="text-2xl font-semibold text-rose-400">{failedCount}</p>
             <p className="text-xs text-muted-foreground">Failed</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-semibold text-sky-400">
-              {runningCount}
-            </p>
+            <p className="text-2xl font-semibold text-sky-400">{runningCount}</p>
             <p className="text-xs text-muted-foreground">Running</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-semibold font-mono">
-              {(totalRows / 1000000).toFixed(1)}M
-            </p>
+            <p className="text-2xl font-semibold font-mono">{formatNumber(totalRows / 1000000, 1)}M</p>
             <p className="text-xs text-muted-foreground">Rows Processed</p>
           </CardContent>
         </Card>
@@ -356,13 +328,7 @@ export default function ETLLogsPage() {
             </TableHeader>
             <TableBody>
               {filtered.map((r) => (
-                <TableRow
-                  key={r.id}
-                  className={cn(
-                    "text-xs",
-                    r.status === "failed" && "bg-rose-500/5",
-                  )}
-                >
+                <TableRow key={r.id} className={cn("text-xs", r.status === "failed" && "bg-rose-500/5")}>
                   <TableCell>
                     {r.status === "success" ? (
                       <CheckCircle2 className="size-4 text-emerald-400" />
@@ -374,33 +340,18 @@ export default function ETLLogsPage() {
                       <AlertTriangle className="size-4 text-amber-400" />
                     )}
                   </TableCell>
-                  <TableCell className="font-mono font-medium">
-                    {r.pipeline}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {r.service}
-                  </TableCell>
+                  <TableCell className="font-mono font-medium">{r.pipeline}</TableCell>
+                  <TableCell className="text-muted-foreground">{r.service}</TableCell>
                   <TableCell>{r.venue}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-[9px]">
                       {r.dataType}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-mono text-muted-foreground">
-                    {r.startTime.split(" ")[1]}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {r.duration}
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {r.rowsProcessed.toLocaleString()}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      "text-right font-mono",
-                      r.errors > 0 && "text-rose-400",
-                    )}
-                  >
+                  <TableCell className="font-mono text-muted-foreground">{r.startTime.split(" ")[1]}</TableCell>
+                  <TableCell className="text-right font-mono">{r.duration}</TableCell>
+                  <TableCell className="text-right font-mono">{r.rowsProcessed.toLocaleString()}</TableCell>
+                  <TableCell className={cn("text-right font-mono", r.errors > 0 && "text-rose-400")}>
                     {r.errors}
                   </TableCell>
                 </TableRow>

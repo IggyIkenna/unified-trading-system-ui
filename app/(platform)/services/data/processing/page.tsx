@@ -6,18 +6,17 @@
  * Shows completion % per timeframe (1m → 5m → 15m → 1h → 4h → 1d).
  */
 
-import * as React from "react";
+import { PROCESSING_COLUMNS, getProcessingContextStats } from "@/components/data/processing-finder-config";
+import { PageHeader } from "@/components/platform/page-header";
+import type { FinderSelections } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { RefreshCw, Cpu, AlertTriangle, CheckCircle2, Clock } from "lucide-react";
-import { FinderBrowser, finderText } from "@/components/shared/finder";
-import type { FinderSelections } from "@/components/shared/finder";
-import { PROCESSING_COLUMNS, getProcessingContextStats } from "@/components/data/processing-finder-config";
 import { MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/data-service-mock-data";
 import type { Timeframe } from "@/lib/data-service-types";
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { AlertTriangle, CheckCircle2, Clock, Cpu, RefreshCw } from "lucide-react";
 
 const TIMEFRAME_LABELS: Record<Timeframe, string> = {
   "1m": "1 min",
@@ -149,17 +148,15 @@ export default function ProcessingPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-4 pb-3 border-b border-border/50">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight">Processing</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {processingStage
-              ? `${processingStage.completionPct.toFixed(1)}% overall · raw ticks → OHLCV candles`
-              : "Processed candle status — raw ticks converted to OHLCV timeframes"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="border-b border-border/50 px-6 pt-4 pb-3">
+        <PageHeader
+          title="Processing"
+          description={
+            processingStage
+              ? `${formatNumber(processingStage.completionPct, 1)}% overall · raw ticks → OHLCV candles`
+              : "Processed candle status — raw ticks converted to OHLCV timeframes"
+          }
+        >
           {processingStage && processingStage.failedShards > 0 && (
             <Badge variant="outline" className="text-xs gap-1.5 border-red-400/30 text-red-400">
               <AlertTriangle className="size-3" />
@@ -175,7 +172,7 @@ export default function ProcessingPage() {
             <RefreshCw className="size-4 mr-2" />
             Refresh
           </Button>
-        </div>
+        </PageHeader>
       </div>
 
       {/* Timeframe summary strip */}
@@ -198,7 +195,7 @@ export default function ProcessingPage() {
                 pct >= 95 ? "text-emerald-400" : pct >= 80 ? "text-yellow-400" : "text-red-400",
               )}
             >
-              {pct.toFixed(0)}%
+              {formatPercent(pct, 0)}
             </span>
           </div>
         ))}

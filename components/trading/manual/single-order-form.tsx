@@ -3,23 +3,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Loader2,
-  ShieldCheck,
-  ShieldX,
-  TrendingDown,
-  TrendingUp,
-  XCircle,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, ShieldCheck, ShieldX, TrendingDown, TrendingUp, XCircle } from "lucide-react";
 import * as React from "react";
 import { ALGOS, VENUES } from "./constants";
 import type { ManualTradingPanelProps, OrderState, PreTradeCheckResponse } from "./types";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export interface SingleOrderFormProps extends Pick<
   ManualTradingPanelProps,
@@ -259,7 +252,7 @@ export function SingleOrderForm({
           <label className="text-xs text-muted-foreground">Price (USD)</label>
           <Input
             type="number"
-            placeholder={currentPrice > 0 ? currentPrice.toFixed(2) : "0.00"}
+            placeholder={currentPrice > 0 ? formatNumber(currentPrice, 2) : "0.00"}
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             className="font-mono"
@@ -283,7 +276,7 @@ export function SingleOrderForm({
               variant="ghost"
               size="sm"
               className="h-6 px-2 text-[10px] flex-1"
-              onClick={() => setQuantity((0.01 * pct).toFixed(4))}
+              onClick={() => setQuantity(formatNumber(0.01 * pct, 4))}
             >
               {pct}%
             </Button>
@@ -387,7 +380,7 @@ export function SingleOrderForm({
       {orderState === "preview" && (
         <div className="p-3 rounded-lg border space-y-2">
           <p className="text-xs font-medium flex items-center gap-1.5">
-            {complianceLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
+            {complianceLoading && <Spinner size="sm" className="size-3.5 text-muted-foreground" />}
             {!complianceLoading && complianceResult?.passed && <ShieldCheck className="size-3.5 text-emerald-500" />}
             {!complianceLoading && complianceResult && !complianceResult.passed && (
               <ShieldX className="size-3.5 text-rose-500" />
@@ -498,7 +491,7 @@ export function SingleOrderForm({
             >
               {complianceLoading ? (
                 <>
-                  <Loader2 className="size-4 mr-2 animate-spin" />
+                  <Spinner className="size-4 mr-2" />
                   Checking...
                 </>
               ) : (
@@ -509,7 +502,7 @@ export function SingleOrderForm({
         )}
         {orderState === "submitting" && (
           <Button className="flex-1" disabled>
-            <Loader2 className="size-4 mr-2 animate-spin" />
+            <Spinner className="size-4 mr-2" />
             Submitting...
           </Button>
         )}

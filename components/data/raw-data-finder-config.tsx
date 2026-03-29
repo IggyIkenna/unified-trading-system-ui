@@ -25,6 +25,7 @@ import {
   type DataType,
 } from "@/lib/data-service-types";
 import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // Data types available per folder (derived from instrument data types)
 function getDataTypesForFolderVenue(venue: string, folder: DataFolder, cat: DataCategory): DataType[] {
@@ -137,7 +138,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
               />
             </div>
             <span className={cn(finderText.micro, "text-muted-foreground w-8 text-right")}>
-              {completionPct.toFixed(0)}%
+              {formatPercent(completionPct, 0)}
             </span>
           </div>
         </div>
@@ -329,7 +330,7 @@ export function getRawDataContextStats(selections: FinderSelections): FinderCont
     metrics: [
       {
         label: "overall completion",
-        value: rawStage?.completionPct?.toFixed(1) ?? "—",
+        value: rawStage?.completionPct != null ? formatNumber(rawStage.completionPct, 1) : "—",
       },
       {
         label: "shards complete",

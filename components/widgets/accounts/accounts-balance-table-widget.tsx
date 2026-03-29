@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
 import type { BalanceRecord } from "@/lib/types/accounts";
 import { useAccountsData } from "./accounts-data-context";
+import { formatPercent } from "@/lib/utils/formatters";
 
 interface BalanceRow extends BalanceRecord {
   marginUsed: number;
@@ -77,7 +78,7 @@ export function AccountsBalanceTableWidget(_props: WidgetComponentProps) {
                   : "border-[var(--status-live)] text-[var(--status-live)]",
             )}
           >
-            {r.utilization.toFixed(0)}%
+            {formatPercent(r.utilization, 0)}
           </Badge>
         ),
         align: "right",

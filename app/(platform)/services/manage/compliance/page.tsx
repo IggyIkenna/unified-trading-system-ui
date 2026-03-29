@@ -7,11 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExportDropdown } from "@/components/ui/export-dropdown";
 import {
@@ -25,6 +21,7 @@ import {
   ClipboardList,
   Clock,
 } from "lucide-react";
+import { StatusDot } from "@/components/trading/status-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 
@@ -164,8 +161,7 @@ const FALLBACK_VIOLATIONS: Violation[] = [
   {
     date: "2026-03-20",
     ruleId: "RPT-002",
-    detail:
-      "Unusual transfer pattern flagged for client ACC-4412 — pending SAR review",
+    detail: "Unusual transfer pattern flagged for client ACC-4412 — pending SAR review",
     severity: "high",
     resolution: "investigating",
     assignedTo: "M. Okafor",
@@ -173,8 +169,7 @@ const FALLBACK_VIOLATIONS: Violation[] = [
   {
     date: "2026-03-18",
     ruleId: "RISK-001",
-    detail:
-      "Pinnacle Investments credit allocation drift exceeded 3% threshold",
+    detail: "Pinnacle Investments credit allocation drift exceeded 3% threshold",
     severity: "high",
     resolution: "resolved",
     assignedTo: "J. Harper",
@@ -190,8 +185,7 @@ const FALLBACK_VIOLATIONS: Violation[] = [
   {
     date: "2026-03-12",
     ruleId: "FCA-002",
-    detail:
-      "Best execution review missed quarterly deadline — completed 2 days late",
+    detail: "Best execution review missed quarterly deadline — completed 2 days late",
     severity: "critical",
     resolution: "resolved",
     assignedTo: "S. Chen",
@@ -293,11 +287,7 @@ const rulesColumns: ColumnDef<ComplianceRule, unknown>[] = [
   {
     accessorKey: "ruleId",
     header: "Rule ID",
-    cell: ({ row }) => (
-      <span className="font-mono font-medium">
-        {row.getValue<string>("ruleId")}
-      </span>
-    ),
+    cell: ({ row }) => <span className="font-mono font-medium">{row.getValue<string>("ruleId")}</span>,
   },
   { accessorKey: "description", header: "Description" },
   {
@@ -332,9 +322,7 @@ const rulesColumns: ColumnDef<ComplianceRule, unknown>[] = [
     accessorKey: "lastCheck",
     header: "Last Check",
     cell: ({ row }) => (
-      <span className="text-muted-foreground text-sm">
-        {formatTimestamp(row.getValue<string>("lastCheck"))}
-      </span>
+      <span className="text-muted-foreground text-sm">{formatTimestamp(row.getValue<string>("lastCheck"))}</span>
     ),
   },
 ];
@@ -343,27 +331,17 @@ const violationsColumns: ColumnDef<Violation, unknown>[] = [
   {
     accessorKey: "date",
     header: "Date",
-    cell: ({ row }) => (
-      <span className="font-mono text-sm">{row.getValue<string>("date")}</span>
-    ),
+    cell: ({ row }) => <span className="font-mono text-sm">{row.getValue<string>("date")}</span>,
   },
   {
     accessorKey: "ruleId",
     header: "Rule",
-    cell: ({ row }) => (
-      <span className="font-mono font-medium">
-        {row.getValue<string>("ruleId")}
-      </span>
-    ),
+    cell: ({ row }) => <span className="font-mono font-medium">{row.getValue<string>("ruleId")}</span>,
   },
   {
     accessorKey: "detail",
     header: "Violation Detail",
-    cell: ({ row }) => (
-      <span className="max-w-[300px] truncate block">
-        {row.getValue<string>("detail")}
-      </span>
-    ),
+    cell: ({ row }) => <span className="max-w-[300px] truncate block">{row.getValue<string>("detail")}</span>,
   },
   {
     accessorKey: "severity",
@@ -384,11 +362,7 @@ const violationsColumns: ColumnDef<Violation, unknown>[] = [
   {
     accessorKey: "assignedTo",
     header: "Assigned To",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground">
-        {row.getValue<string>("assignedTo")}
-      </span>
-    ),
+    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue<string>("assignedTo")}</span>,
   },
 ];
 
@@ -406,30 +380,18 @@ export default function CompliancePage() {
   });
 
   const rules: ComplianceRule[] = React.useMemo(() => {
-    const apiRules = (data as Record<string, unknown>)?.rules as
-      | ComplianceRule[]
-      | undefined;
-    return Array.isArray(apiRules) && apiRules.length > 0
-      ? apiRules
-      : FALLBACK_RULES;
+    const apiRules = (data as Record<string, unknown>)?.rules as ComplianceRule[] | undefined;
+    return Array.isArray(apiRules) && apiRules.length > 0 ? apiRules : FALLBACK_RULES;
   }, [data]);
 
   const violations: Violation[] = React.useMemo(() => {
-    const apiViolations = (data as Record<string, unknown>)?.violations as
-      | Violation[]
-      | undefined;
-    return Array.isArray(apiViolations) && apiViolations.length > 0
-      ? apiViolations
-      : FALLBACK_VIOLATIONS;
+    const apiViolations = (data as Record<string, unknown>)?.violations as Violation[] | undefined;
+    return Array.isArray(apiViolations) && apiViolations.length > 0 ? apiViolations : FALLBACK_VIOLATIONS;
   }, [data]);
 
   const auditEvents: AuditEvent[] = React.useMemo(() => {
-    const apiEvents = (data as Record<string, unknown>)?.audit_trail as
-      | AuditEvent[]
-      | undefined;
-    return Array.isArray(apiEvents) && apiEvents.length > 0
-      ? apiEvents
-      : FALLBACK_AUDIT;
+    const apiEvents = (data as Record<string, unknown>)?.audit_trail as AuditEvent[] | undefined;
+    return Array.isArray(apiEvents) && apiEvents.length > 0 ? apiEvents : FALLBACK_AUDIT;
   }, [data]);
 
   const [fcaOpen, setFcaOpen] = React.useState(false);
@@ -497,12 +459,8 @@ export default function CompliancePage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Shield className="size-5 text-primary" />
-                  <CardTitle className="text-base">
-                    FCA Authorisation &mdash; Odum Research Ltd
-                  </CardTitle>
-                  <Badge className="bg-emerald-500/20 text-emerald-400">
-                    Active
-                  </Badge>
+                  <CardTitle className="text-base">FCA Authorisation &mdash; Odum Research Ltd</CardTitle>
+                  <Badge className="bg-emerald-500/20 text-emerald-400">Active</Badge>
                 </div>
                 <ChevronDown
                   className={`size-4 text-muted-foreground transition-transform ${fcaOpen ? "rotate-180" : ""}`}
@@ -519,9 +477,7 @@ export default function CompliancePage() {
                     <span className="font-semibold">FCA Registration</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      Reference Number
-                    </span>
+                    <span className="text-muted-foreground">Reference Number</span>
                     <span className="font-mono font-semibold">975797</span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -540,11 +496,8 @@ export default function CompliancePage() {
                         "Advising on investments",
                         "Dealing in investments as agent",
                       ].map((activity) => (
-                        <div
-                          key={activity}
-                          className="flex items-center gap-2 text-sm"
-                        >
-                          <div className="size-1.5 rounded-full bg-emerald-400" />
+                        <div key={activity} className="flex items-center gap-2 text-sm">
+                          <StatusDot status="live" className="size-1.5" />
                           <span>{activity}</span>
                         </div>
                       ))}
@@ -561,41 +514,29 @@ export default function CompliancePage() {
                     <p>9 Appold Street</p>
                     <p>London EC2A 2AP</p>
                     <p>United Kingdom</p>
-                    <p className="pt-2 text-foreground font-medium">
-                      Registered in England and Wales
-                    </p>
+                    <p className="pt-2 text-foreground font-medium">Registered in England and Wales</p>
                   </div>
                   <div className="mt-4 space-y-2">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
-                      Key Documents
-                    </p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Key Documents</p>
                     {[
                       "Client Agreement",
                       "Best Execution Policy",
                       "Conflicts of Interest Policy",
                       "Complaints Procedure",
                     ].map((doc) => (
-                      <div
-                        key={doc}
-                        className="flex items-center justify-between p-2 rounded bg-muted/50 text-sm"
-                      >
+                      <div key={doc} className="flex items-center justify-between p-2 rounded bg-muted/50 text-sm">
                         <div className="flex items-center gap-2">
                           <FileText className="size-3.5 text-muted-foreground" />
                           <span>{doc}</span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          Available on request
-                        </span>
+                        <span className="text-xs text-muted-foreground">Available on request</span>
                       </div>
                     ))}
                   </div>
                   <div className="pt-2 text-xs text-muted-foreground">
                     <p>
                       Contact:{" "}
-                      <a
-                        href="mailto:compliance@odum-research.com"
-                        className="text-primary hover:underline"
-                      >
+                      <a href="mailto:compliance@odum-research.com" className="text-primary hover:underline">
                         compliance@odum-research.com
                       </a>
                     </p>
@@ -630,9 +571,7 @@ export default function CompliancePage() {
                 <p className="text-xs text-muted-foreground">Compliant</p>
                 <p className="text-2xl font-bold font-mono">
                   {compliantCount}
-                  <span className="text-sm text-muted-foreground font-normal">
-                    /{rules.length}
-                  </span>
+                  <span className="text-sm text-muted-foreground font-normal">/{rules.length}</span>
                 </p>
               </div>
             </div>
@@ -709,8 +648,7 @@ export default function CompliancePage() {
             <AlertTriangle className="size-5 text-red-400" />
             <CardTitle className="text-base">Violations Log</CardTitle>
             <Badge variant="outline" className="ml-auto">
-              {violations.filter((v) => v.resolution !== "resolved").length}{" "}
-              open
+              {violations.filter((v) => v.resolution !== "resolved").length} open
             </Badge>
           </div>
         </CardHeader>
@@ -742,16 +680,12 @@ export default function CompliancePage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium">{evt.event}</span>
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {formatTimestamp(evt.timestamp)}
-                    </span>
+                    <span className="text-xs text-muted-foreground font-mono">{formatTimestamp(evt.timestamp)}</span>
                     <Badge variant="outline" className="text-xs">
                       {evt.user}
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground mt-0.5 truncate">
-                    {evt.detail}
-                  </p>
+                  <p className="text-muted-foreground mt-0.5 truncate">{evt.detail}</p>
                 </div>
               </div>
             ))}

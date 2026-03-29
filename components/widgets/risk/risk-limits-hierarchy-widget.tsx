@@ -10,6 +10,7 @@ import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { CollapsibleSection } from "../shared";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
   const { riskLimits, sortedLimits, selectedNode, setSelectedNode } = useRiskData();
@@ -87,7 +88,9 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
                   <TableCell className="text-[11px] text-right font-mono tabular-nums text-muted-foreground">
                     {limit.var95 ? formatCurrency(limit.var95) : "—"}
                   </TableCell>
-                  <TableCell className="text-[11px] text-right font-mono tabular-nums">{util.toFixed(0)}%</TableCell>
+                  <TableCell className="text-[11px] text-right font-mono tabular-nums">
+                    {formatPercent(util, 0)}
+                  </TableCell>
                   <TableCell>
                     <StatusBadge status={status} showDot={true} />
                   </TableCell>
@@ -115,10 +118,10 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
                 const util = getUtilization(limit.value, limit.limit);
                 const status = getStatusFromUtil(util);
                 const fmtVal = (v: number, u: string) => {
-                  if (u === "$") return `$${(v / 1_000_000).toFixed(2)}m`;
+                  if (u === "$") return `$${formatNumber(v / 1_000_000, 2)}m`;
                   if (u === "%") return `${v}%`;
                   if (u === "x") return `${v}x`;
-                  return v.toFixed(2);
+                  return formatNumber(v, 2);
                 };
                 return (
                   <TableRow key={limit.id}>
@@ -131,7 +134,9 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
                     <TableCell className="text-[11px] text-right font-mono tabular-nums text-muted-foreground">
                       {fmtVal(limit.limit, limit.unit)}
                     </TableCell>
-                    <TableCell className="text-[11px] text-right font-mono tabular-nums">{util.toFixed(0)}%</TableCell>
+                    <TableCell className="text-[11px] text-right font-mono tabular-nums">
+                      {formatPercent(util, 0)}
+                    </TableCell>
                     <TableCell>
                       <StatusBadge status={status} showDot={true} />
                     </TableCell>

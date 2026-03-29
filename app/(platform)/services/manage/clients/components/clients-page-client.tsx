@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import * as React from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -38,6 +39,7 @@ import { useOrganizationsList, useSubscriptions } from "@/hooks/api/use-organiza
 import { ClientsOrgDetail } from "./clients-org-detail";
 import type { Organization, Subscription } from "./clients-types";
 import { TIERS } from "./clients-types";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export default function ClientsManagementPage() {
   const { data: orgsApiData, isLoading: orgsLoading } = useOrganizationsList();
@@ -298,12 +300,10 @@ export default function ClientsManagementPage() {
       <div className="border-b border-border">
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">Client Management</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Manage client organizations, subscriptions, and access
-              </p>
-            </div>
+            <PageHeader
+              title="Client Management"
+              description="Manage client organizations, subscriptions, and access"
+            />
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={() => setOnboardOpen(true)}>
                 <Plus className="mr-2 size-4" />
@@ -422,7 +422,7 @@ export default function ClientsManagementPage() {
                   </div>
                   {sub && (sub.aumUsd ?? 0) > 0 && (
                     <div className="text-xs text-muted-foreground">
-                      AUM: ${((sub.aumUsd ?? 0) / 1_000_000).toFixed(1)}M — Mgmt: {sub.managementFeePct}% — Perf:{" "}
+                      AUM: ${formatNumber((sub.aumUsd ?? 0) / 1_000_000, 1)}M — Mgmt: {sub.managementFeePct}% — Perf:{" "}
                       {sub.performanceFeePct}%
                     </div>
                   )}

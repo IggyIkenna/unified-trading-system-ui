@@ -4,17 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import type {
-  BacktestRun,
-  StrategySignal,
-  SignalQualityMetrics,
-} from "@/lib/strategy-platform-types";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import type { BacktestRun, StrategySignal, SignalQualityMetrics } from "@/lib/strategy-platform-types";
 import type { BacktestAnalytics } from "@/lib/backtest-analytics-types";
 import {
   BACKTEST_ANALYTICS,
@@ -25,6 +16,7 @@ import {
   generateSyntheticPriceSeries,
 } from "@/lib/strategy-platform-mock-data";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { ChevronLeft, GitCompare, Star, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -37,10 +29,7 @@ import { RunupsDrawdownsSection } from "@/components/research/runups-drawdowns-s
 import { MonthlyReturnsHeatmap } from "@/components/research/monthly-returns-heatmap";
 import { SignalConfidenceHistogram } from "@/components/research/signal-confidence-histogram";
 import { RegimePerformanceMini } from "@/components/research/regime-performance-mini";
-import {
-  OverlaidEquityCurves,
-  type EquityCurveSeries,
-} from "@/components/research/overlaid-equity-curves";
+import { OverlaidEquityCurves, type EquityCurveSeries } from "@/components/research/overlaid-equity-curves";
 import { SignalOverlayChart } from "@/components/research/signal-overlay-chart";
 import { SignalOverlapPanel } from "@/components/research/signal-overlap-panel";
 
@@ -62,9 +51,7 @@ export function DetailPanel({
   onClose: () => void;
 }) {
   const { toast } = useToast();
-  const [viewMode, setViewMode] = React.useState<"metrics" | "signals">(
-    "metrics",
-  );
+  const [viewMode, setViewMode] = React.useState<"metrics" | "signals">("metrics");
   const perf = analytics.performance_by_direction;
 
   const executionHandoffHref = `/services/research/execution?from=strategies&strategyBacktestId=${encodeURIComponent(bt.id)}`;
@@ -73,29 +60,16 @@ export function DetailPanel({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="size-7 p-0"
-          onClick={onClose}
-        >
+        <Button variant="ghost" size="sm" className="size-7 p-0" onClick={onClose}>
           <ChevronLeft className="size-4" />
         </Button>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold truncate">
-            {bt.configName ?? bt.templateName ?? bt.id}
-          </h3>
+          <h3 className="text-sm font-semibold truncate">{bt.configName ?? bt.templateName ?? bt.id}</h3>
           <p className="text-xs text-muted-foreground">
-            {bt.instrument} · {bt.venue} · {bt.dateWindow.start} →{" "}
-            {bt.dateWindow.end}
+            {bt.instrument} · {bt.venue} · {bt.dateWindow.start} → {bt.dateWindow.end}
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1 text-xs h-7"
-          asChild
-        >
+        <Button variant="outline" size="sm" className="gap-1 text-xs h-7" asChild>
           <Link href={executionHandoffHref}>
             <Zap className="size-3" />
             Send to Execution
@@ -154,16 +128,9 @@ export function DetailPanel({
             />
 
             {/* Accordion Sections */}
-            <Accordion
-              type="multiple"
-              defaultValue={["performance", "signals-analysis"]}
-              className="space-y-1"
-            >
+            <Accordion type="multiple" defaultValue={["performance", "signals-analysis"]} className="space-y-1">
               {/* Performance */}
-              <AccordionItem
-                value="performance"
-                className="border rounded-lg px-3"
-              >
+              <AccordionItem value="performance" className="border rounded-lg px-3">
                 <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider">
                   Performance
                 </AccordionTrigger>
@@ -175,18 +142,13 @@ export function DetailPanel({
                       short={perf.short}
                       benchmark={analytics.benchmark}
                     />
-                    <MonthlyReturnsHeatmap
-                      monthlyReturns={analytics.monthly_returns}
-                    />
+                    <MonthlyReturnsHeatmap monthlyReturns={analytics.monthly_returns} />
                   </div>
                 </AccordionContent>
               </AccordionItem>
 
               {/* Signals Analysis */}
-              <AccordionItem
-                value="signals-analysis"
-                className="border rounded-lg px-3"
-              >
+              <AccordionItem value="signals-analysis" className="border rounded-lg px-3">
                 <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider">
                   Signals Analysis
                 </AccordionTrigger>
@@ -206,33 +168,23 @@ export function DetailPanel({
                       highConfidenceHitRate={quality.high_confidence_hit_rate}
                       overallHitRate={quality.hit_rate}
                     />
-                    <RegimePerformanceMini
-                      regimeSharpe={quality.regime_sharpe}
-                    />
+                    <RegimePerformanceMini regimeSharpe={quality.regime_sharpe} />
                   </div>
                 </AccordionContent>
               </AccordionItem>
 
               {/* Capital Efficiency */}
-              <AccordionItem
-                value="capital-efficiency"
-                className="border rounded-lg px-3"
-              >
+              <AccordionItem value="capital-efficiency" className="border rounded-lg px-3">
                 <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider">
                   Capital Efficiency
                 </AccordionTrigger>
                 <AccordionContent>
-                  <CapitalEfficiencySection
-                    data={analytics.capital_efficiency}
-                  />
+                  <CapitalEfficiencySection data={analytics.capital_efficiency} />
                 </AccordionContent>
               </AccordionItem>
 
               {/* Run-ups & Drawdowns */}
-              <AccordionItem
-                value="runups-drawdowns"
-                className="border rounded-lg px-3"
-              >
+              <AccordionItem value="runups-drawdowns" className="border rounded-lg px-3">
                 <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider">
                   Run-ups & Drawdowns
                 </AccordionTrigger>
@@ -242,10 +194,7 @@ export function DetailPanel({
               </AccordionItem>
 
               {/* Configuration */}
-              <AccordionItem
-                value="configuration"
-                className="border rounded-lg px-3"
-              >
+              <AccordionItem value="configuration" className="border rounded-lg px-3">
                 <AccordionTrigger className="text-xs font-semibold uppercase tracking-wider">
                   Configuration
                 </AccordionTrigger>
@@ -253,43 +202,29 @@ export function DetailPanel({
                   <div className="space-y-2 text-xs">
                     <div className="grid grid-cols-2 gap-2">
                       <div className="rounded-lg border bg-muted/20 p-2.5">
-                        <span className="text-muted-foreground block text-[10px]">
-                          Config Version
-                        </span>
+                        <span className="text-muted-foreground block text-[10px]">Config Version</span>
                         <span className="font-mono">{bt.configVersion}</span>
                       </div>
                       <div className="rounded-lg border bg-muted/20 p-2.5">
-                        <span className="text-muted-foreground block text-[10px]">
-                          Code Commit
-                        </span>
+                        <span className="text-muted-foreground block text-[10px]">Code Commit</span>
                         <span className="font-mono">{bt.codeCommitHash}</span>
                       </div>
                       <div className="rounded-lg border bg-muted/20 p-2.5">
-                        <span className="text-muted-foreground block text-[10px]">
-                          Data Source
-                        </span>
+                        <span className="text-muted-foreground block text-[10px]">Data Source</span>
                         <span className="font-mono">{bt.dataSource}</span>
                       </div>
                       <div className="rounded-lg border bg-muted/20 p-2.5">
-                        <span className="text-muted-foreground block text-[10px]">
-                          As-of Date
-                        </span>
+                        <span className="text-muted-foreground block text-[10px]">As-of Date</span>
                         <span className="font-mono">{bt.asOfDate}</span>
                       </div>
                       <div className="rounded-lg border bg-muted/20 p-2.5">
-                        <span className="text-muted-foreground block text-[10px]">
-                          Testing Stage
-                        </span>
+                        <span className="text-muted-foreground block text-[10px]">Testing Stage</span>
                         <span className="font-mono">{bt.testingStage}</span>
                       </div>
                       <div className="rounded-lg border bg-muted/20 p-2.5">
-                        <span className="text-muted-foreground block text-[10px]">
-                          Duration
-                        </span>
+                        <span className="text-muted-foreground block text-[10px]">Duration</span>
                         <span className="font-mono">
-                          {bt.durationMs
-                            ? `${(bt.durationMs / 60000).toFixed(1)}m`
-                            : "—"}
+                          {bt.durationMs ? `${formatNumber(bt.durationMs / 60000, 1)}m` : "—"}
                         </span>
                       </div>
                     </div>
@@ -360,9 +295,7 @@ export function ComparePanel({
     signals: BACKTEST_SIGNALS[b.id] ?? [],
   }));
 
-  const priceSeed =
-    items.reduce((acc, b) => acc + b.id.charCodeAt(0), 0) +
-    (items[0]?.instrument?.length ?? 0);
+  const priceSeed = items.reduce((acc, b) => acc + b.id.charCodeAt(0), 0) + (items[0]?.instrument?.length ?? 0);
   const priceSeries = generateSyntheticPriceSeries(priceSeed, 720, 65200);
 
   const overlapPairs: { a: BacktestRun; b: BacktestRun; pct: number }[] = [];
@@ -411,19 +344,19 @@ export function ComparePanel({
     {
       label: "Signals / day",
       get: (b) => BACKTEST_SIGNAL_QUALITY[b.id]?.signals_per_day ?? 0,
-      fmt: (n) => n.toFixed(2),
+      fmt: (n) => formatNumber(n, 2),
       good: "high",
     },
     {
       label: "Hit rate",
       get: (b) => BACKTEST_SIGNAL_QUALITY[b.id]?.hit_rate ?? 0,
-      fmt: (n) => `${(n * 100).toFixed(1)}%`,
+      fmt: (n) => formatPercent(n * 100, 1),
       good: "high",
     },
     {
       label: "Avg confidence",
       get: (b) => BACKTEST_SIGNAL_QUALITY[b.id]?.avg_confidence ?? 0,
-      fmt: (n) => n.toFixed(2),
+      fmt: (n) => formatNumber(n, 2),
       good: "high",
     },
   ];
@@ -441,9 +374,7 @@ export function ComparePanel({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {equityCurves.length >= 2 && (
-          <OverlaidEquityCurves curves={equityCurves} height={260} normalize />
-        )}
+        {equityCurves.length >= 2 && <OverlaidEquityCurves curves={equityCurves} height={260} normalize />}
 
         <SignalOverlayChart
           priceSeries={priceSeries}
@@ -460,12 +391,9 @@ export function ComparePanel({
                 className="rounded-lg border border-border/50 bg-muted/10 px-2 py-2 text-center"
               >
                 <p className="text-[10px] text-muted-foreground truncate">
-                  {p.a.configName ?? p.a.id.slice(0, 8)} vs{" "}
-                  {p.b.configName ?? p.b.id.slice(0, 8)}
+                  {p.a.configName ?? p.a.id.slice(0, 8)} vs {p.b.configName ?? p.b.id.slice(0, 8)}
                 </p>
-                <p className="text-lg font-bold tabular-nums text-primary">
-                  {p.pct}%
-                </p>
+                <p className="text-lg font-bold tabular-nums text-primary">{p.pct}%</p>
                 <p className="text-[10px] text-muted-foreground">overlap</p>
               </div>
             ))}
@@ -484,13 +412,9 @@ export function ComparePanel({
           <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-3 py-2.5 text-sm">
             <p className="font-medium text-emerald-400">Full confluence</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {fullConfluence.all_agree_pct.toFixed(1)}% of directional signals
-              in{" "}
-              <span className="text-foreground font-medium">
-                {items[0].configName ?? items[0].id}
-              </span>{" "}
-              align with every other strategy (same instrument & direction
-              within 48h).
+              {formatNumber(fullConfluence.all_agree_pct, 1)}% of directional signals in{" "}
+              <span className="text-foreground font-medium">{items[0].configName ?? items[0].id}</span> align with every
+              other strategy (same instrument & direction within 48h).
             </p>
           </div>
         )}
@@ -499,14 +423,9 @@ export function ComparePanel({
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="text-left text-xs text-muted-foreground font-medium pb-2 w-32">
-                  Metric
-                </th>
+                <th className="text-left text-xs text-muted-foreground font-medium pb-2 w-32">Metric</th>
                 {items.map((b) => (
-                  <th
-                    key={b.id}
-                    className="text-right text-xs font-medium pb-2 px-3 max-w-[140px]"
-                  >
+                  <th key={b.id} className="text-right text-xs font-medium pb-2 px-3 max-w-[140px]">
                     <div className="truncate">{b.configName ?? b.id}</div>
                   </th>
                 ))}
@@ -515,19 +434,13 @@ export function ComparePanel({
             <tbody>
               {SIGNAL_METRICS.map((row) => {
                 const values = items.map((b) => row.get(b));
-                const best =
-                  row.good === "high"
-                    ? Math.max(...values)
-                    : Math.min(...values);
+                const best = row.good === "high" ? Math.max(...values) : Math.min(...values);
                 return (
                   <tr key={row.label} className="border-t border-border/40">
-                    <td className="text-xs text-muted-foreground py-2">
-                      {row.label}
-                    </td>
+                    <td className="text-xs text-muted-foreground py-2">{row.label}</td>
                     {items.map((b, i) => {
                       const val = values[i];
-                      const isBest =
-                        val === best && values.some((v) => v !== 0);
+                      const isBest = val === best && values.some((v) => v !== 0);
                       return (
                         <td key={b.id} className="text-right py-2 px-3">
                           <span
@@ -546,27 +459,15 @@ export function ComparePanel({
                 );
               })}
               {METRICS.map((metric) => {
-                const values = items.map(
-                  (b) =>
-                    (b.metrics as unknown as Record<string, number>)?.[
-                      metric.key
-                    ] ?? 0,
-                );
-                const best =
-                  metric.good === "high"
-                    ? Math.max(...values)
-                    : Math.min(...values);
+                const values = items.map((b) => (b.metrics as unknown as Record<string, number>)?.[metric.key] ?? 0);
+                const best = metric.good === "high" ? Math.max(...values) : Math.min(...values);
                 return (
                   <tr key={metric.key} className="border-t border-border/40">
-                    <td className="text-xs text-muted-foreground py-2">
-                      {metric.label}
-                    </td>
+                    <td className="text-xs text-muted-foreground py-2">{metric.label}</td>
                     {items.map((b, i) => {
                       const val = values[i];
                       const isBest = val === best;
-                      const display = metric.pct
-                        ? `${(val * 100).toFixed(1)}%`
-                        : val.toFixed(2);
+                      const display = metric.pct ? formatPercent(val * 100, 1) : formatNumber(val, 2);
                       return (
                         <td key={b.id} className="text-right py-2 px-3">
                           <span
@@ -588,16 +489,10 @@ export function ComparePanel({
           </table>
         </div>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full gap-1 text-xs"
-          asChild
-        >
+        <Button variant="outline" size="sm" className="w-full gap-1 text-xs" asChild>
           <Link href={compareExecutionHref}>
             <Zap className="size-3" />
-            Send best ({bestBySharpe.configName ?? bestBySharpe.id.slice(0, 8)})
-            to Execution
+            Send best ({bestBySharpe.configName ?? bestBySharpe.id.slice(0, 8)}) to Execution
           </Link>
         </Button>
       </div>

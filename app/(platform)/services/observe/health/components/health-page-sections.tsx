@@ -26,6 +26,7 @@ import {
   XCircle,
 } from "lucide-react";
 import * as React from "react";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export type ServiceStatus = "healthy" | "degraded" | "unhealthy" | "idle";
 
@@ -217,7 +218,9 @@ export function ServiceCard({ service }: { service: Service }) {
               </div>
             </div>
             {service.errorRate > 0 && (
-              <div className="mt-1 text-xs text-[var(--status-error)]">Error rate: {service.errorRate.toFixed(1)}%</div>
+              <div className="mt-1 text-xs text-[var(--status-error)]">
+                Error rate: {formatPercent(service.errorRate, 1)}
+              </div>
             )}
           </div>
         </TooltipTrigger>

@@ -5,6 +5,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { BacktestRun } from "@/lib/strategy-platform-types";
 import type { ExportColumn } from "@/lib/utils/export";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Export columns
@@ -45,11 +46,11 @@ export function backtestStatusColor(status: BacktestRun["status"]) {
 }
 
 export function fmtPct(v: number) {
-  return `${(v * 100).toFixed(1)}%`;
+  return `${formatPercent(v * 100, 1)}`;
 }
 
 export function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals);
+  return formatNumber(v, decimals);
 }
 
 // ---------------------------------------------------------------------------

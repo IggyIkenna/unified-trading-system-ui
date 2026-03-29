@@ -5,6 +5,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { PNL_FACTOR_CHART_COLORS } from "@/lib/config/services/pnl.config";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { usePnLData } from "./pnl-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function PnlTimeSeriesWidget(_props: WidgetComponentProps) {
   const { timeSeriesData, timeSeriesNetPnL } = usePnLData();
@@ -23,7 +24,7 @@ export function PnlTimeSeriesWidget(_props: WidgetComponentProps) {
             <XAxis dataKey="time" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
             <YAxis
               tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-              tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+              tickFormatter={(v) => `$${formatNumber(v / 1000, 0)}k`}
               width={70}
             />
             <Tooltip

@@ -7,13 +7,26 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, ArrowRight, Clock, Fuel, Globe, Send, Trophy, Wallet } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
+import {
+  DEFI_CHAINS,
+  DEFI_TOKENS,
+  GAS_TOKEN_MIN_THRESHOLDS,
+  MOCK_CHAIN_PORTFOLIOS,
+} from "@/lib/mocks/fixtures/defi-transfer";
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function DeFiTransferWidget(_props: WidgetComponentProps) {
-  const { connectedWallet, tokenBalances, transferMode, setTransferMode, selectedChain, setSelectedChain, getBridgeRoutes } =
-    useDeFiData();
+  const {
+    connectedWallet,
+    tokenBalances,
+    transferMode,
+    setTransferMode,
+    selectedChain,
+    setSelectedChain,
+    getBridgeRoutes,
+  } = useDeFiData();
 
   const [toAddress, setToAddress] = React.useState("");
   const [fromChain, setFromChain] = React.useState<string>(DEFI_CHAINS[0]);
@@ -165,7 +178,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 <div className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs">
                   <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
                   <span className="text-amber-400">
-                    Low {gs} balance ({gb.toFixed(4)} {gs}). Transfer may fail due to insufficient gas.
+                    Low {gs} balance ({formatNumber(gb, 4)} {gs}). Transfer may fail due to insufficient gas.
                   </span>
                 </div>
               );
@@ -277,9 +290,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                             selectedRoute === route.protocol ? "border-primary" : "border-muted-foreground/40",
                           )}
                         >
-                          {selectedRoute === route.protocol && (
-                            <div className="size-1.5 rounded-full bg-primary" />
-                          )}
+                          {selectedRoute === route.protocol && <div className="size-1.5 rounded-full bg-primary" />}
                         </div>
                         <span className="text-xs font-medium">{route.protocol}</span>
                         {route.isBestReturn && (
@@ -307,11 +318,10 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                     </div>
                     <div className="flex items-center justify-between mt-1.5 pl-5">
                       <span className="text-[10px] text-muted-foreground">
-                        Fee: {route.feePct}% (${route.feeUsd.toFixed(2)})
+                        Fee: {route.feePct}% (${formatNumber(route.feeUsd, 2)})
                       </span>
                       <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                        <Clock className="size-2.5" />
-                        ~{route.estimatedTimeMin} min
+                        <Clock className="size-2.5" />~{route.estimatedTimeMin} min
                       </span>
                     </div>
                   </button>
@@ -320,7 +330,10 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             </div>
           )}
 
-          <Button className="w-full" disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain || !selectedRoute}>
+          <Button
+            className="w-full"
+            disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain || !selectedRoute}
+          >
             <Globe className="size-3.5 mr-1.5" />
             Bridge {token} via {selectedRoute || "..."}
           </Button>

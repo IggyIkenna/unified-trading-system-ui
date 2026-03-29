@@ -1,43 +1,16 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FileText,
-  Clock,
-  DollarSign,
-  TrendingUp,
-  Calendar,
-  Plus,
-  Lock,
-  Unlock,
-  CheckCircle2,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, Clock, DollarSign, TrendingUp, Calendar, Plus, Lock, Unlock, CheckCircle2 } from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -96,7 +69,7 @@ const MOCK_SAFTS: SAFTRecord[] = [
     token: "DeFi Chain (DFC)",
     round: "Strategic",
     committedAmount: 400000,
-    tokenPrice: 1.20,
+    tokenPrice: 1.2,
     tokensAllocated: 333333,
     vestedPct: 65,
     cliffDate: "2025-06-01",
@@ -124,7 +97,7 @@ const MOCK_SAFTS: SAFTRecord[] = [
     token: "Cross Bridge (XBR)",
     round: "Private",
     committedAmount: 400000,
-    tokenPrice: 0.50,
+    tokenPrice: 0.5,
     tokensAllocated: 800000,
     vestedPct: 55,
     cliffDate: "2025-07-15",
@@ -140,8 +113,7 @@ const TOTAL_VESTED_VALUE = MOCK_SAFTS.reduce((acc, s) => acc + (s.currentValue *
 
 // Next unlock calculation — find the SAFT with nearest cliff that hasn't fully vested
 const now = new Date("2026-03-28");
-const nextUnlock = MOCK_SAFTS
-  .filter((s) => s.vestedPct < 100)
+const nextUnlock = MOCK_SAFTS.filter((s) => s.vestedPct < 100)
   .map((s) => {
     const cliff = new Date(s.cliffDate);
     const diffDays = Math.ceil((cliff.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -156,15 +128,15 @@ const nextUnlock = MOCK_SAFTS
 
 function formatCurrency(v: number): string {
   const abs = Math.abs(v);
-  if (abs >= 1_000_000) return `$${(v / 1_000_000).toFixed(2)}M`;
+  if (abs >= 1_000_000) return `$${formatNumber(v / 1_000_000, 2)}M`;
   if (abs >= 1_000) return `$${v.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  return `$${v.toFixed(2)}`;
+  return `$${formatNumber(v, 2)}`;
 }
 
 function formatTokens(v: number): string {
-  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(2)}M`;
-  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}K`;
-  return v.toFixed(0);
+  if (v >= 1_000_000) return `${formatNumber(v / 1_000_000, 2)}M`;
+  if (v >= 1_000) return `${formatNumber(v / 1_000, 0)}K`;
+  return formatNumber(v, 0);
 }
 
 function roundBadge(round: SAFTRecord["round"]) {
@@ -211,12 +183,7 @@ export default function SAFTPage() {
     <main className="flex-1 p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">SAFT & Token Warrants</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Simple Agreement for Future Tokens tracking
-          </p>
-        </div>
+        <PageHeader title="SAFT & Token Warrants" description="Simple Agreement for Future Tokens tracking" />
         <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setAddDialogOpen(true)}>
           <Plus className="size-3.5" />
           Add SAFT
@@ -271,9 +238,7 @@ export default function SAFTPage() {
                 <Clock className="size-5" style={{ color: "var(--status-warning)" }} />
               </div>
               <div>
-                <p className="text-2xl font-semibold font-mono">
-                  {nextUnlock ? `${nextUnlock.daysToUnlock}d` : "--"}
-                </p>
+                <p className="text-2xl font-semibold font-mono">{nextUnlock ? `${nextUnlock.daysToUnlock}d` : "--"}</p>
                 <p className="text-xs text-muted-foreground">Next Unlock</p>
               </div>
             </div>
@@ -308,7 +273,7 @@ export default function SAFTPage() {
                   <TableCell className="text-sm font-medium">{saft.token}</TableCell>
                   <TableCell>{roundBadge(saft.round)}</TableCell>
                   <TableCell className="text-right font-mono text-sm">{formatCurrency(saft.committedAmount)}</TableCell>
-                  <TableCell className="text-right font-mono text-sm">${saft.tokenPrice.toFixed(3)}</TableCell>
+                  <TableCell className="text-right font-mono text-sm">${formatNumber(saft.tokenPrice, 3)}</TableCell>
                   <TableCell className="text-right font-mono text-sm">{formatTokens(saft.tokensAllocated)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 justify-center">
@@ -399,11 +364,7 @@ export default function SAFTPage() {
                       style={{ left: `${vestPct}%` }}
                     />
                     {/* Now marker */}
-                    <div
-                      className="absolute h-full w-0.5 bg-primary"
-                      style={{ left: `${nowPct}%` }}
-                      title="Now"
-                    />
+                    <div className="absolute h-full w-0.5 bg-primary" style={{ left: `${nowPct}%` }} title="Now" />
                   </div>
                 </div>
               );
@@ -436,9 +397,7 @@ export default function SAFTPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add SAFT Agreement</DialogTitle>
-            <DialogDescription>
-              Record a new Simple Agreement for Future Tokens.
-            </DialogDescription>
+            <DialogDescription>Record a new Simple Agreement for Future Tokens.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
@@ -480,7 +439,9 @@ export default function SAFTPage() {
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <Button variant="outline" onClick={() => setAddDialogOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
+                Cancel
+              </Button>
               <Button disabled>Save SAFT</Button>
             </div>
           </div>

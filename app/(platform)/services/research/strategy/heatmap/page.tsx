@@ -1,29 +1,13 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { StrategyPlatformNav } from "@/components/strategy-platform/strategy-nav";
@@ -38,6 +22,7 @@ import {
   BarChart3,
   Target,
 } from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // Heatmap cell component
 function HeatmapCell({
@@ -72,8 +57,7 @@ function HeatmapCell({
   };
 
   const bgColor = getColor(normalized);
-  const textColor =
-    normalized > 0.3 && normalized < 0.7 ? "rgb(0,0,0)" : "rgb(255,255,255)";
+  const textColor = normalized > 0.3 && normalized < 0.7 ? "rgb(0,0,0)" : "rgb(255,255,255)";
 
   return (
     <TooltipProvider>
@@ -87,14 +71,12 @@ function HeatmapCell({
             )}
             style={{ backgroundColor: bgColor, color: textColor }}
           >
-            {value.toFixed(2)}
+            {formatNumber(value, 2)}
           </button>
         </TooltipTrigger>
         <TooltipContent>
           <p className="font-medium">{label}</p>
-          <p className="text-xs text-muted-foreground">
-            Value: {value.toFixed(4)}
-          </p>
+          <p className="text-xs text-muted-foreground">Value: {formatNumber(value, 4)}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -102,11 +84,7 @@ function HeatmapCell({
 }
 
 // Generate mock heatmap data
-function generateHeatmapData(
-  rows: string[],
-  cols: string[],
-  seed: number = 42,
-) {
+function generateHeatmapData(rows: string[], cols: string[], seed: number = 42) {
   let s = seed;
   const random = () => {
     s = (s * 9301 + 49297) % 233280;
@@ -135,14 +113,7 @@ const DIMENSIONS = {
     {
       value: "strategy",
       label: "Strategy",
-      items: [
-        "ETH_BASIS_1",
-        "ETH_BASIS_2",
-        "BTC_MM_1",
-        "BTC_MM_2",
-        "SOL_ARB_1",
-        "DOGE_MOM_1",
-      ],
+      items: ["ETH_BASIS_1", "ETH_BASIS_2", "BTC_MM_1", "BTC_MM_2", "SOL_ARB_1", "DOGE_MOM_1"],
     },
     {
       value: "regime",
@@ -164,14 +135,7 @@ const DIMENSIONS = {
     {
       value: "metric",
       label: "Metric",
-      items: [
-        "Sharpe",
-        "Sortino",
-        "MaxDD",
-        "Win Rate",
-        "Profit Factor",
-        "Calmar",
-      ],
+      items: ["Sharpe", "Sortino", "MaxDD", "Win Rate", "Profit Factor", "Calmar"],
     },
     {
       value: "month",
@@ -186,14 +150,7 @@ const DIMENSIONS = {
     {
       value: "instrument",
       label: "Instrument",
-      items: [
-        "ETH-PERP",
-        "BTC-PERP",
-        "SOL-PERP",
-        "DOGE-PERP",
-        "ARB-PERP",
-        "OP-PERP",
-      ],
+      items: ["ETH-PERP", "BTC-PERP", "SOL-PERP", "DOGE-PERP", "ARB-PERP", "OP-PERP"],
     },
   ],
 };
@@ -208,25 +165,17 @@ export default function StrategyHeatmapPage() {
   } | null>(null);
   const [colorMetric, setColorMetric] = React.useState("sharpe");
 
-  const rowConfig =
-    DIMENSIONS.rows.find((d) => d.value === rowDimension) || DIMENSIONS.rows[0];
-  const colConfig =
-    DIMENSIONS.cols.find((d) => d.value === colDimension) || DIMENSIONS.cols[0];
+  const rowConfig = DIMENSIONS.rows.find((d) => d.value === rowDimension) || DIMENSIONS.rows[0];
+  const colConfig = DIMENSIONS.cols.find((d) => d.value === colDimension) || DIMENSIONS.cols[0];
 
   const heatmapData = React.useMemo(
     () =>
-      generateHeatmapData(
-        rowConfig.items,
-        colConfig.items,
-        rowDimension.charCodeAt(0) * colDimension.charCodeAt(0),
-      ),
+      generateHeatmapData(rowConfig.items, colConfig.items, rowDimension.charCodeAt(0) * colDimension.charCodeAt(0)),
     [rowDimension, colDimension, rowConfig.items, colConfig.items],
   );
 
   // Calculate min/max for color scaling
-  const allValues = heatmapData.flatMap((row) =>
-    row.values.map((v) => v.value),
-  );
+  const allValues = heatmapData.flatMap((row) => row.values.map((v) => v.value));
   const minValue = Math.min(...allValues);
   const maxValue = Math.max(...allValues);
 
@@ -238,19 +187,14 @@ export default function StrategyHeatmapPage() {
 
   const colAverages = colConfig.items.map((col, colIdx) => ({
     label: col,
-    avg:
-      heatmapData.reduce((sum, row) => sum + row.values[colIdx].value, 0) /
-      heatmapData.length,
+    avg: heatmapData.reduce((sum, row) => sum + row.values[colIdx].value, 0) / heatmapData.length,
   }));
 
   const handleExportHeatmapCsv = () => {
     const colLabels = colConfig.items.map((c) => escapeCsvCell(c));
     const header = ["row", ...colLabels].join(",");
     const body = heatmapData.map((row) =>
-      [
-        escapeCsvCell(row.label),
-        ...row.values.map((v) => escapeCsvCell(v.value)),
-      ].join(","),
+      [escapeCsvCell(row.label), ...row.values.map((v) => escapeCsvCell(v.value))].join(","),
     );
     const csv = [header, ...body].join("\r\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -301,31 +245,17 @@ export default function StrategyHeatmapPage() {
       <div className="platform-page-width p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Strategy Heatmap
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Multi-dimensional performance analysis across strategies, regimes,
-              and metrics
-            </p>
-          </div>
+          <PageHeader
+            title="Strategy Heatmap"
+            description="Multi-dimensional performance analysis across strategies, regimes,
+              and metrics"
+          />
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={handleExportHeatmapCsv}
-            >
+            <Button variant="outline" size="sm" type="button" onClick={handleExportHeatmapCsv}>
               <Download className="size-4 mr-2" />
               Export
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={handleToggleFullscreen}
-            >
+            <Button variant="outline" size="sm" type="button" onClick={handleToggleFullscreen}>
               <Maximize2 className="size-4 mr-2" />
               Fullscreen
             </Button>
@@ -339,9 +269,7 @@ export default function StrategyHeatmapPage() {
               <Layers className="size-4" />
               Dimension Selection
             </CardTitle>
-            <CardDescription>
-              Choose which dimensions to display on rows and columns
-            </CardDescription>
+            <CardDescription>Choose which dimensions to display on rows and columns</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-6">
@@ -401,7 +329,7 @@ export default function StrategyHeatmapPage() {
                     <div className="w-4 h-3 bg-green-500 rounded-r" />
                   </div>
                   <span className="font-mono">
-                    {minValue.toFixed(2)} — {maxValue.toFixed(2)}
+                    {formatNumber(minValue, 2)} — {formatNumber(maxValue, 2)}
                   </span>
                 </div>
               </div>
@@ -420,10 +348,7 @@ export default function StrategyHeatmapPage() {
                       {rowConfig.label} / {colConfig.label}
                     </th>
                     {colConfig.items.map((col) => (
-                      <th
-                        key={col}
-                        className="text-center text-xs font-medium p-2 border-b min-w-[80px]"
-                      >
+                      <th key={col} className="text-center text-xs font-medium p-2 border-b min-w-[80px]">
                         {col}
                       </th>
                     ))}
@@ -435,9 +360,7 @@ export default function StrategyHeatmapPage() {
                 <tbody>
                   {heatmapData.map((row, rowIdx) => (
                     <tr key={row.label}>
-                      <td className="text-sm font-medium p-2 border-b whitespace-nowrap">
-                        {row.label}
-                      </td>
+                      <td className="text-sm font-medium p-2 border-b whitespace-nowrap">{row.label}</td>
                       {row.values.map((cell, colIdx) => (
                         <td key={cell.col} className="p-0.5 border-b">
                           <HeatmapCell
@@ -445,13 +368,8 @@ export default function StrategyHeatmapPage() {
                             min={minValue}
                             max={maxValue}
                             label={`${row.label} × ${cell.col}`}
-                            onClick={() =>
-                              setSelectedCell({ row: row.label, col: cell.col })
-                            }
-                            isSelected={
-                              selectedCell?.row === row.label &&
-                              selectedCell?.col === cell.col
-                            }
+                            onClick={() => setSelectedCell({ row: row.label, col: cell.col })}
+                            isSelected={selectedCell?.row === row.label && selectedCell?.col === cell.col}
                           />
                         </td>
                       ))}
@@ -470,20 +388,12 @@ export default function StrategyHeatmapPage() {
                     <td className="text-sm font-medium p-2 border-t">Avg</td>
                     {colAverages.map((col) => (
                       <td key={col.label} className="p-0.5 border-t">
-                        <HeatmapCell
-                          value={col.avg}
-                          min={minValue}
-                          max={maxValue}
-                          label={`${col.label} Average`}
-                        />
+                        <HeatmapCell value={col.avg} min={minValue} max={maxValue} label={`${col.label} Average`} />
                       </td>
                     ))}
                     <td className="p-0.5 border-t border-l bg-muted/50">
                       <HeatmapCell
-                        value={
-                          allValues.reduce((a, b) => a + b, 0) /
-                          allValues.length
-                        }
+                        value={allValues.reduce((a, b) => a + b, 0) / allValues.length}
                         min={minValue}
                         max={maxValue}
                         label="Grand Average"
@@ -508,26 +418,16 @@ export default function StrategyHeatmapPage() {
             <CardContent>
               <div className="grid grid-cols-4 gap-4">
                 <div className="p-4 rounded-lg bg-muted/50">
-                  <div className="text-xs text-muted-foreground">
-                    Sharpe Ratio
-                  </div>
+                  <div className="text-xs text-muted-foreground">Sharpe Ratio</div>
                   <div className="text-xl font-bold font-mono mt-1">1.24</div>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50">
-                  <div className="text-xs text-muted-foreground">
-                    Total Return
-                  </div>
-                  <div className="text-xl font-bold font-mono mt-1 text-emerald-500">
-                    +18.4%
-                  </div>
+                  <div className="text-xs text-muted-foreground">Total Return</div>
+                  <div className="text-xl font-bold font-mono mt-1 text-emerald-500">+18.4%</div>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50">
-                  <div className="text-xs text-muted-foreground">
-                    Max Drawdown
-                  </div>
-                  <div className="text-xl font-bold font-mono mt-1 text-red-500">
-                    -8.2%
-                  </div>
+                  <div className="text-xs text-muted-foreground">Max Drawdown</div>
+                  <div className="text-xl font-bold font-mono mt-1 text-red-500">-8.2%</div>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50">
                   <div className="text-xs text-muted-foreground">Win Rate</div>
@@ -556,17 +456,10 @@ export default function StrategyHeatmapPage() {
                   <TrendingUp className="size-5 text-emerald-500" />
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground">
-                    Best Performing
-                  </div>
-                  <div className="font-medium">
-                    {rowAverages.sort((a, b) => b.avg - a.avg)[0]?.label}
-                  </div>
+                  <div className="text-xs text-muted-foreground">Best Performing</div>
+                  <div className="font-medium">{rowAverages.sort((a, b) => b.avg - a.avg)[0]?.label}</div>
                   <div className="text-sm text-emerald-500 font-mono">
-                    Avg:{" "}
-                    {rowAverages
-                      .sort((a, b) => b.avg - a.avg)[0]
-                      ?.avg.toFixed(2)}
+                    Avg: {formatNumber(rowAverages.sort((a, b) => b.avg - a.avg)[0]?.avg ?? 0, 2)}
                   </div>
                 </div>
               </div>
@@ -580,17 +473,10 @@ export default function StrategyHeatmapPage() {
                   <TrendingDown className="size-5 text-red-500" />
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground">
-                    Worst Performing
-                  </div>
-                  <div className="font-medium">
-                    {rowAverages.sort((a, b) => a.avg - b.avg)[0]?.label}
-                  </div>
+                  <div className="text-xs text-muted-foreground">Worst Performing</div>
+                  <div className="font-medium">{rowAverages.sort((a, b) => a.avg - b.avg)[0]?.label}</div>
                   <div className="text-sm text-red-500 font-mono">
-                    Avg:{" "}
-                    {rowAverages
-                      .sort((a, b) => a.avg - b.avg)[0]
-                      ?.avg.toFixed(2)}
+                    Avg: {formatNumber(rowAverages.sort((a, b) => a.avg - b.avg)[0]?.avg ?? 0, 2)}
                   </div>
                 </div>
               </div>
@@ -604,13 +490,9 @@ export default function StrategyHeatmapPage() {
                   <BarChart3 className="size-5 text-blue-500" />
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground">
-                    Grand Average
-                  </div>
+                  <div className="text-xs text-muted-foreground">Grand Average</div>
                   <div className="text-xl font-bold font-mono">
-                    {(
-                      allValues.reduce((a, b) => a + b, 0) / allValues.length
-                    ).toFixed(3)}
+                    {formatNumber(allValues.reduce((a, b) => a + b, 0) / allValues.length, 3)}
                   </div>
                 </div>
               </div>
@@ -624,12 +506,8 @@ export default function StrategyHeatmapPage() {
                   <Grid3X3 className="size-5 text-violet-500" />
                 </div>
                 <div>
-                  <div className="text-xs text-muted-foreground">
-                    Cells Analyzed
-                  </div>
-                  <div className="text-xl font-bold font-mono">
-                    {rowConfig.items.length * colConfig.items.length}
-                  </div>
+                  <div className="text-xs text-muted-foreground">Cells Analyzed</div>
+                  <div className="text-xl font-bold font-mono">{rowConfig.items.length * colConfig.items.length}</div>
                 </div>
               </div>
             </CardContent>

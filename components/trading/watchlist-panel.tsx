@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Star, StarOff, ChevronRight, Plus, X } from "lucide-react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------- Types ----------
 
@@ -48,8 +49,8 @@ interface WatchlistPanelProps {
 
 function formatPrice(price: number, symbol: string): string {
   if (price >= 1000) return price.toLocaleString("en-US", { maximumFractionDigits: 0 });
-  if (price >= 10) return price.toFixed(2);
-  return price.toFixed(4);
+  if (price >= 10) return formatNumber(price, 2);
+  return formatNumber(price, 4);
 }
 
 function changeColor(chg: number): string {
@@ -184,7 +185,7 @@ export function WatchlistPanel({
                     </span>
                     {sym.iv !== undefined && (
                       <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-amber-500/30 text-amber-400">
-                        IV {sym.iv.toFixed(0)}%
+                        IV {formatPercent(sym.iv, 0)}
                       </Badge>
                     )}
                   </div>
@@ -196,7 +197,7 @@ export function WatchlistPanel({
                   <div className="text-xs font-mono font-medium">{formatPrice(sym.price, sym.symbol)}</div>
                   <div className={cn("text-[10px] font-mono", changeColor(sym.change24h))}>
                     {sym.change24h > 0 ? "+" : ""}
-                    {sym.change24h.toFixed(2)}%
+                    {formatPercent(sym.change24h, 2)}
                   </div>
                 </div>
 

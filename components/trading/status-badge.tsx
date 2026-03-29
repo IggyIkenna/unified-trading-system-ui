@@ -1,15 +1,15 @@
 "use client";
 
 // StatusBadge v3.0 - fully hardened with safe fallbacks
-import * as React from "react";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type StatusType =
   | "live"
   | "paused"
   | "warning"
   | "critical"
+  | "info"
   | "pending"
   | "running"
   | "done"
@@ -18,7 +18,11 @@ type StatusType =
   | "staging"
   | "development"
   | "blocked"
-  | "in_progress";
+  | "in_progress"
+  /** Batch / secondary series (e.g. live vs batch chart legend) */
+  | "batch"
+  /** Unread / attention marker (e.g. notification rows) */
+  | "unread";
 
 interface StatusBadgeProps {
   status?: StatusType | string | null | undefined;
@@ -34,10 +38,7 @@ const DEFAULT_CONFIG = {
   dotColor: "var(--muted-foreground)",
 };
 
-const statusConfig: Record<
-  string,
-  { label: string; color: string; bgColor: string; dotColor: string }
-> = {
+const statusConfig: Record<string, { label: string; color: string; bgColor: string; dotColor: string }> = {
   live: {
     label: "Live",
     color: "var(--status-live)",
@@ -61,6 +62,12 @@ const statusConfig: Record<
     color: "var(--status-critical)",
     bgColor: "rgba(248, 113, 113, 0.1)",
     dotColor: "var(--status-critical)",
+  },
+  info: {
+    label: "Info",
+    color: "#38bdf8",
+    bgColor: "rgba(14, 165, 233, 0.12)",
+    dotColor: "#0ea5e9",
   },
   pending: DEFAULT_CONFIG,
   running: {
@@ -93,6 +100,12 @@ const statusConfig: Record<
     bgColor: "rgba(251, 191, 36, 0.1)",
     dotColor: "var(--status-warning)",
   },
+  testing: {
+    label: "Testing",
+    color: "var(--status-warning)",
+    bgColor: "rgba(251, 191, 36, 0.1)",
+    dotColor: "var(--status-warning)",
+  },
   development: {
     label: "Development",
     color: "var(--muted-foreground)",
@@ -111,18 +124,23 @@ const statusConfig: Record<
     bgColor: "rgba(251, 191, 36, 0.1)",
     dotColor: "var(--status-warning)",
   },
+  batch: {
+    label: "Batch",
+    color: "var(--primary)",
+    bgColor: "color-mix(in oklab, var(--primary) 12%, transparent)",
+    dotColor: "var(--primary)",
+  },
+  unread: {
+    label: "Unread",
+    color: "var(--primary)",
+    bgColor: "color-mix(in oklab, var(--primary) 12%, transparent)",
+    dotColor: "var(--primary)",
+  },
 };
 
-export function StatusBadge({
-  status,
-  label,
-  showDot = true,
-  className,
-}: StatusBadgeProps) {
+export function StatusBadge({ status, label, showDot = true, className }: StatusBadgeProps) {
   // SAFE: Always returns a valid config object, never undefined
-  const config =
-    (status && typeof status === "string" && statusConfig[status]) ||
-    DEFAULT_CONFIG;
+  const config = (status && typeof status === "string" && statusConfig[status]) || DEFAULT_CONFIG;
 
   return (
     <Badge
@@ -133,12 +151,7 @@ export function StatusBadge({
         backgroundColor: config.bgColor,
       }}
     >
-      {showDot && (
-        <span
-          className="size-1.5 rounded-full animate-pulse"
-          style={{ backgroundColor: config.dotColor }}
-        />
-      )}
+      {showDot && <span className="size-1.5 rounded-full animate-pulse" style={{ backgroundColor: config.dotColor }} />}
       {label || config.label}
     </Badge>
   );
@@ -152,9 +165,7 @@ export function StatusDot({
   className?: string;
 }) {
   // SAFE: Always returns a valid config object, never undefined
-  const config =
-    (status && typeof status === "string" && statusConfig[status]) ||
-    DEFAULT_CONFIG;
+  const config = (status && typeof status === "string" && statusConfig[status]) || DEFAULT_CONFIG;
 
   return (
     <span

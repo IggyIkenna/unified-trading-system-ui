@@ -1,38 +1,11 @@
 "use client";
 
-import {
-  Database,
-  RefreshCw,
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  CheckCircle2,
-  XCircle,
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-  Rocket,
-  Loader2,
-  Filter,
-  Eye,
-  Table2,
-  CalendarDays,
-  Building2,
-  Trash2,
-  FileText,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { HeatmapCalendar } from "@/components/ops/deployment/HeatmapCalendar";
+import { Spinner } from "@/components/ui/spinner";
+import { Building2, FileText, Filter } from "lucide-react";
 import { useDataStatusTabCtx } from "./data-status-context";
-import { getCompletionColor, getCompletionBadgeClass } from "./category-metrics";
 import { getTodayAt8am } from "./get-today-at-8am";
 
 export function DataStatusFiltersUpper() {
@@ -267,7 +240,7 @@ export function DataStatusFiltersUpper() {
           <div className="flex gap-2 flex-wrap">
             {categoriesLoading ? (
               <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-                <Loader2 className="h-3 w-3 animate-spin" />
+                <Spinner size="sm" className="h-3 w-3" />
                 Loading categories...
               </div>
             ) : (
@@ -310,7 +283,7 @@ export function DataStatusFiltersUpper() {
           </div>
           {venuesLoading ? (
             <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Spinner size="sm" className="h-3 w-3" />
               Loading venues...
             </div>
           ) : availableVenues.length > 0 ? (
@@ -345,7 +318,7 @@ export function DataStatusFiltersUpper() {
         <div className="mt-4 pt-4 border-t border-[var(--color-border-default)]">
           {venueFiltersLoading ? (
             <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Spinner size="sm" className="h-3 w-3" />
               Loading filters for {selectedVenues[0]}...
             </div>
           ) : (
@@ -463,7 +436,7 @@ export function DataStatusFiltersUpper() {
                   >
                     {fileListingLoading ? (
                       <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Spinner className="h-4 w-4" />
                         Listing files...
                       </>
                     ) : (

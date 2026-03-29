@@ -8,6 +8,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { DEFI_CHAINS, MOCK_CHAIN_PORTFOLIOS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/mocks/fixtures/defi-transfer";
 import { AlertTriangle } from "lucide-react";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 function truncateAddr(addr: string): string {
   if (addr.length < 12) return addr;
@@ -41,7 +42,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
       },
       {
         label: "Portfolio (mock USD)",
-        value: `$${(portfolio / 1000).toFixed(1)}K`,
+        value: `$${formatNumber(portfolio / 1000, 1)}K`,
         sentiment: "neutral",
       },
       {
@@ -53,10 +54,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     [connectedWallet, portfolio, tokenBalances],
   );
 
-  const sortedPortfolios = React.useMemo(
-    () => [...MOCK_CHAIN_PORTFOLIOS].sort((a, b) => b.totalUsd - a.totalUsd),
-    [],
-  );
+  const sortedPortfolios = React.useMemo(() => [...MOCK_CHAIN_PORTFOLIOS].sort((a, b) => b.totalUsd - a.totalUsd), []);
 
   const totalPortfolioUsd = React.useMemo(
     () => sortedPortfolios.reduce((sum, cp) => sum + cp.totalUsd, 0),
@@ -107,7 +105,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
                     <td className="py-1 text-right">
                       <span className="inline-flex items-center gap-1 justify-end">
                         <span className={cn("font-mono tabular-nums", gasLow ? "text-amber-500" : "text-foreground")}>
-                          {cp.gasTokenBalance.toFixed(4)}
+                          {formatNumber(cp.gasTokenBalance, 4)}
                         </span>
                         {gasLow && <AlertTriangle className="size-3 text-amber-500 shrink-0" />}
                       </span>

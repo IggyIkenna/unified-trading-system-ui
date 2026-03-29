@@ -13,6 +13,7 @@ import {
 import type { Asset, ComboLeg, ComboType, OptionRow, SelectedInstrument } from "@/lib/types/options";
 import { cn } from "@/lib/utils";
 import * as React from "react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------- Options Combos ----------
 
@@ -262,7 +263,7 @@ export function OptionsCombosPanel({
                         {formatUsd(netCost)}
                       </td>
                       <td className="py-1.5 px-2 text-right font-mono text-muted-foreground">
-                        {combinedIv.toFixed(1)}%
+                        {formatPercent(combinedIv, 1)}
                       </td>
                       <td
                         className={cn(
@@ -271,7 +272,7 @@ export function OptionsCombosPanel({
                         )}
                       >
                         {netDelta >= 0 ? "+" : ""}
-                        {netDelta.toFixed(3)}
+                        {formatNumber(netDelta, 3)}
                       </td>
                     </tr>
                   );

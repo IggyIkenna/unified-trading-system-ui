@@ -1,10 +1,12 @@
 "use client";
 
-import { Database, XCircle, CheckCircle2, Rocket, Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useExecutionDataStatusContext } from "@/components/ops/deployment/data-status/execution-data-status-context";
 import { getCompletionColor } from "@/components/ops/deployment/data-status/execution-data-status-utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { CheckCircle2, Database, Rocket, XCircle } from "lucide-react";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function ExecutionDataStatusSummary() {
   const { data, fetchMissingShards, loadingMissingShards } = useExecutionDataStatusContext();
@@ -26,7 +28,7 @@ export function ExecutionDataStatusSummary() {
           </div>
           <div className="text-right">
             <div className="text-3xl font-mono font-bold" style={{ color: getCompletionColor(data.completion_pct) }}>
-              {data.completion_pct.toFixed(1)}%
+              {formatPercent(data.completion_pct, 1)}
             </div>
             <div className="text-xs text-[var(--color-text-muted)]">
               {data.configs_with_results} / {data.total_configs} configs have results
@@ -65,11 +67,7 @@ export function ExecutionDataStatusSummary() {
               disabled={loadingMissingShards}
               className="border-[var(--color-accent-red)] text-[var(--color-accent-red)] hover:bg-[var(--color-status-error-bg)]"
             >
-              {loadingMissingShards ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <Rocket className="h-4 w-4 mr-2" />
-              )}
+              {loadingMissingShards ? <Spinner className="h-4 w-4 mr-2" /> : <Rocket className="h-4 w-4 mr-2" />}
               Deploy Missing
             </Button>
           </div>

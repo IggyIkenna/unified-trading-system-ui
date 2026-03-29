@@ -1,9 +1,10 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
+
+import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-form-context";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-form-context";
 
 export function DeployFormQuotaDialog() {
   const { quotaOpen, setQuotaOpen, quotaLoading, quotaError, quotaInfo, setMaxConcurrent } = useDeployFormContext();
@@ -22,7 +23,7 @@ export function DeployFormQuotaDialog() {
         <div>
           {quotaLoading && (
             <div className="flex items-center gap-2 text-[var(--color-text-muted)]">
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Spinner className="h-4 w-4" />
               Loading quota info...
             </div>
           )}

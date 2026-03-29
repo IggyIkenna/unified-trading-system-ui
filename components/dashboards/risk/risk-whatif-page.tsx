@@ -8,6 +8,7 @@ import { Calculator } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { varMetrics } from "./risk-data";
 import { formatCurrency } from "./risk-utils";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function WhatIfPage() {
   const [btcMove, setBtcMove] = React.useState([0]);
@@ -96,7 +97,7 @@ export function WhatIfPage() {
                     className={cn("text-lg font-bold mt-1", estimatedImpact < 0 ? "text-negative" : "text-positive")}
                   >
                     {estimatedImpact >= 0 ? "+" : ""}
-                    {((estimatedImpact / 24500000) * 100).toFixed(2)}%
+                    {formatPercent((estimatedImpact / 24500000) * 100, 2)}
                   </div>
                 </div>
               </div>

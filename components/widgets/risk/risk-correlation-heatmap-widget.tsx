@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { WidgetComponentProps } from "../widget-registry";
 
 const DynamicCorrelationHeatmap = dynamic(
@@ -10,7 +11,7 @@ const DynamicCorrelationHeatmap = dynamic(
     loading: () => (
       <div className="space-y-1.5 p-2">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-6 w-full bg-accent animate-pulse rounded-md" />
+          <Skeleton key={i} className="h-6 w-full rounded-md" />
         ))}
       </div>
     ),

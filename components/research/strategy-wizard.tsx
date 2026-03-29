@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { Check, ChevronRight, Loader2, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,26 +12,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { useCreateBacktest, useStrategyTemplates } from "@/hooks/api/use-strategies";
 import {
-  useStrategyTemplates,
-  useCreateBacktest,
-} from "@/hooks/api/use-strategies";
-import {
-  STRATEGY_ARCHETYPES,
   ASSET_CLASSES,
-  type StrategyArchetype,
   type AssetClass,
+  type StrategyArchetype,
   type StrategyTemplate,
 } from "@/lib/strategy-platform-types";
+import { Check, ChevronRight, Upload } from "lucide-react";
+import * as React from "react";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -93,13 +84,7 @@ const STEPS = [
 // Step Indicator
 // ---------------------------------------------------------------------------
 
-function StepIndicator({
-  steps,
-  currentStep,
-}: {
-  steps: typeof STEPS;
-  currentStep: number;
-}) {
+function StepIndicator({ steps, currentStep }: { steps: typeof STEPS; currentStep: number }) {
   return (
     <div className="flex items-center justify-center gap-0 py-4">
       {steps.map((step, index) => {
@@ -124,20 +109,14 @@ function StepIndicator({
               </div>
               <span
                 className={`text-[10px] font-medium leading-tight ${
-                  isCurrent || isCompleted
-                    ? "text-foreground"
-                    : "text-muted-foreground"
+                  isCurrent || isCompleted ? "text-foreground" : "text-muted-foreground"
                 }`}
               >
                 {step.title}
               </span>
             </div>
             {index < steps.length - 1 && (
-              <div
-                className={`mx-2 mb-5 h-px w-8 transition-colors ${
-                  isCompleted ? "bg-emerald-500" : "bg-border"
-                }`}
-              />
+              <div className={`mx-2 mb-5 h-px w-8 transition-colors ${isCompleted ? "bg-emerald-500" : "bg-border"}`} />
             )}
           </React.Fragment>
         );
@@ -230,9 +209,7 @@ function StrategySelectionStep({
 }) {
   // Filter templates by selected asset class if set
   const filtered = form.assetClass
-    ? templates.filter((t) =>
-        t.assetClasses.some((ac) => ac === form.assetClass),
-      )
+    ? templates.filter((t) => t.assetClasses.some((ac) => ac === form.assetClass))
     : templates;
 
   // Group by archetype for display
@@ -249,7 +226,7 @@ function StrategySelectionStep({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12 text-muted-foreground">
-        <Loader2 className="mr-2 size-4 animate-spin" />
+        <Spinner className="mr-2 size-4" />
         Loading strategy templates...
       </div>
     );
@@ -294,9 +271,7 @@ function StrategySelectionStep({
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="text-sm font-medium">{tpl.name}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">
-                        {tpl.description}
-                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground line-clamp-2">{tpl.description}</p>
                     </div>
                     {isSelected && (
                       <div className="ml-2 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary">
@@ -309,11 +284,7 @@ function StrategySelectionStep({
                       {tpl.archetype.replace(/_/g, " ")}
                     </Badge>
                     {tpl.venues.slice(0, 2).map((v) => (
-                      <Badge
-                        key={v}
-                        variant="secondary"
-                        className="text-[10px]"
-                      >
+                      <Badge key={v} variant="secondary" className="text-[10px]">
                         {v}
                       </Badge>
                     ))}
@@ -352,10 +323,7 @@ function ParametersStep({
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Instrument</Label>
-            <Select
-              value={form.instrument}
-              onValueChange={(v) => onChange({ instrument: v })}
-            >
+            <Select value={form.instrument} onValueChange={(v) => onChange({ instrument: v })}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
@@ -370,10 +338,7 @@ function ParametersStep({
           </div>
           <div className="space-y-2">
             <Label>Venue</Label>
-            <Select
-              value={form.venue}
-              onValueChange={(v) => onChange({ venue: v })}
-            >
+            <Select value={form.venue} onValueChange={(v) => onChange({ venue: v })}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
@@ -392,19 +357,11 @@ function ParametersStep({
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>Start Date</Label>
-          <Input
-            type="date"
-            value={form.dateStart}
-            onChange={(e) => onChange({ dateStart: e.target.value })}
-          />
+          <Input type="date" value={form.dateStart} onChange={(e) => onChange({ dateStart: e.target.value })} />
         </div>
         <div className="space-y-2">
           <Label>End Date</Label>
-          <Input
-            type="date"
-            value={form.dateEnd}
-            onChange={(e) => onChange({ dateEnd: e.target.value })}
-          />
+          <Input type="date" value={form.dateEnd} onChange={(e) => onChange({ dateEnd: e.target.value })} />
         </div>
       </div>
 
@@ -418,17 +375,13 @@ function ParametersStep({
           value={form.initialCapital}
           onChange={(e) => onChange({ initialCapital: e.target.value })}
         />
-        <p className="text-[10px] text-muted-foreground">
-          Min: 1,000 | Max: 10,000,000
-        </p>
+        <p className="text-[10px] text-muted-foreground">Min: 1,000 | Max: 10,000,000</p>
       </div>
 
       <Separator />
 
       <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Trading Parameters
-        </p>
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Trading Parameters</p>
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
             <Label className="text-xs">Entry Threshold</Label>
@@ -468,8 +421,7 @@ function ParametersStep({
           Upload Parameters (CSV)
         </Label>
         <p className="text-[10px] text-muted-foreground">
-          Upload a CSV file with columns: parameter_name, value. Overrides
-          manual fields above.
+          Upload a CSV file with columns: parameter_name, value. Overrides manual fields above.
         </p>
         <Input
           type="file"
@@ -484,9 +436,7 @@ function ParametersStep({
               const lines = text.trim().split("\n").slice(1);
               const updates: Partial<WizardFormState> = {};
               for (const line of lines) {
-                const [key, val] = line
-                  .split(",")
-                  .map((s) => s.trim().replace(/^"|"$/g, ""));
+                const [key, val] = line.split(",").map((s) => s.trim().replace(/^"|"$/g, ""));
                 if (!key || !val) continue;
                 if (key === "entry_threshold") updates.entryThreshold = val;
                 if (key === "exit_threshold") updates.exitThreshold = val;
@@ -562,10 +512,7 @@ function ReviewStep({
   return (
     <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
       {rows.map((row) => (
-        <div
-          key={row.label}
-          className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2"
-        >
+        <div key={row.label} className="flex items-center justify-between rounded-md bg-muted/50 px-3 py-2">
           <span className="text-xs text-muted-foreground">{row.label}</span>
           <span className="text-sm font-medium">{row.value}</span>
         </div>
@@ -583,8 +530,7 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
   const [form, setForm] = React.useState<WizardFormState>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const { data: templatesData, isLoading: templatesLoading } =
-    useStrategyTemplates();
+  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates();
   const createBacktest = useCreateBacktest();
 
   const templates: StrategyTemplate[] = React.useMemo(() => {
@@ -619,8 +565,7 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
         return form.templateId !== "";
       case 2: {
         const capital = Number(form.initialCapital);
-        if (isNaN(capital) || capital < 1000 || capital > 10_000_000)
-          return false;
+        if (isNaN(capital) || capital < 1000 || capital > 10_000_000) return false;
         if (!form.dateStart || !form.dateEnd) return false;
         const start = new Date(form.dateStart + "T00:00:00");
         const end = new Date(form.dateEnd + "T00:00:00");
@@ -680,17 +625,14 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
         <DialogHeader>
           <DialogTitle>New Strategy</DialogTitle>
           <DialogDescription>
-            Step {currentStep + 1} of {STEPS.length} &mdash;{" "}
-            {STEPS[currentStep].description}
+            Step {currentStep + 1} of {STEPS.length} &mdash; {STEPS[currentStep].description}
           </DialogDescription>
         </DialogHeader>
 
         <StepIndicator steps={STEPS} currentStep={currentStep} />
 
         <div className="min-h-[280px]">
-          {currentStep === 0 && (
-            <BasicConfigStep form={form} onChange={updateForm} />
-          )}
+          {currentStep === 0 && <BasicConfigStep form={form} onChange={updateForm} />}
           {currentStep === 1 && (
             <StrategySelectionStep
               form={form}
@@ -700,22 +642,13 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
             />
           )}
           {currentStep === 2 && (
-            <ParametersStep
-              form={form}
-              onChange={updateForm}
-              selectedTemplate={selectedTemplate}
-            />
+            <ParametersStep form={form} onChange={updateForm} selectedTemplate={selectedTemplate} />
           )}
-          {currentStep === 3 && (
-            <ReviewStep form={form} selectedTemplate={selectedTemplate} />
-          )}
+          {currentStep === 3 && <ReviewStep form={form} selectedTemplate={selectedTemplate} />}
         </div>
 
         <DialogFooter className="flex-row justify-between sm:justify-between">
-          <Button
-            variant="outline"
-            onClick={currentStep === 0 ? () => onOpenChange(false) : handleBack}
-          >
+          <Button variant="outline" onClick={currentStep === 0 ? () => onOpenChange(false) : handleBack}>
             {currentStep === 0 ? "Cancel" : "Back"}
           </Button>
 
@@ -726,7 +659,7 @@ export function StrategyWizard({ open, onOpenChange }: StrategyWizardProps) {
             </Button>
           ) : (
             <Button onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {isSubmitting && <Spinner className="mr-2 size-4" />}
               Create Strategy
             </Button>
           )}

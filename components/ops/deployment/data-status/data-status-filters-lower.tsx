@@ -1,38 +1,16 @@
 "use client";
 
-import {
-  Database,
-  RefreshCw,
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  CheckCircle2,
-  XCircle,
-  Calendar,
-  ChevronDown,
-  ChevronRight,
-  Rocket,
-  Loader2,
-  Filter,
-  Eye,
-  Table2,
-  CalendarDays,
-  Building2,
-  Trash2,
-  FileText,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
-import { HeatmapCalendar } from "@/components/ops/deployment/HeatmapCalendar";
+import { AlertCircle, Calendar, Database, Eye, Rocket } from "lucide-react";
+import { getCompletionBadgeClass, getCompletionColor } from "./category-metrics";
 import { useDataStatusTabCtx } from "./data-status-context";
-import { getCompletionColor, getCompletionBadgeClass } from "./category-metrics";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function DataStatusFiltersLower() {
   const {
@@ -246,7 +224,7 @@ export function DataStatusFiltersLower() {
                     className="w-full"
                   />
                   {instrumentSearchLoading && (
-                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-[var(--color-text-muted)]" />
+                    <Spinner className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
                   )}
 
                   {/* Dropdown Results */}
@@ -325,7 +303,7 @@ export function DataStatusFiltersLower() {
                       >
                         {instrumentAvailabilityLoading ? (
                           <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            <Spinner className="h-4 w-4 mr-2" />
                             Checking...
                           </>
                         ) : (
@@ -354,7 +332,7 @@ export function DataStatusFiltersLower() {
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm font-medium">Overall Availability</span>
                         <Badge className={getCompletionBadgeClass(instrumentAvailability.overall?.completion_pct ?? 0)}>
-                          {(instrumentAvailability.overall?.completion_pct ?? 0).toFixed(1)}%
+                          {formatPercent(instrumentAvailability.overall?.completion_pct ?? 0, 1)}
                         </Badge>
                       </div>
                       <div className="w-full bg-[var(--color-bg-secondary)] rounded-full h-2 mb-2">
@@ -460,7 +438,7 @@ export function DataStatusFiltersLower() {
                                     : "text-[var(--color-accent-red)]",
                               )}
                             >
-                              {stats.completion_pct.toFixed(1)}% ({stats.dates_found}/
+                              {formatPercent(stats.completion_pct, 1)} ({stats.dates_found}/
                               {stats.dates_found + stats.dates_missing})
                             </span>
                           </div>

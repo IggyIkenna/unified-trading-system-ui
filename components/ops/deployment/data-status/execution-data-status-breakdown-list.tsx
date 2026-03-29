@@ -9,6 +9,7 @@ import {
   getCompletionBadgeClass,
   getCompletionColor,
 } from "@/components/ops/deployment/data-status/execution-data-status-utils";
+import { formatPercent } from "@/lib/utils/formatters";
 
 interface ExecutionDataStatusBreakdownListProps {
   breakdown: Record<string, BreakdownItem>;
@@ -58,7 +59,7 @@ export function ExecutionDataStatusBreakdownList({
                   </Badge>
                 )}
                 <Badge variant="outline" className={getCompletionBadgeClass(item.completion_pct)}>
-                  {item.completion_pct.toFixed(0)}%
+                  {formatPercent(item.completion_pct, 0)}
                 </Badge>
                 <div className="w-20 h-2 bg-[var(--color-bg-tertiary)] rounded-full overflow-hidden">
                   <div

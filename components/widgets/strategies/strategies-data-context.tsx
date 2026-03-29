@@ -1,19 +1,18 @@
 "use client";
 
-import * as React from "react";
-import {
-  STRATEGIES as DEFAULT_STRATEGIES,
-  type Strategy,
-  getTotalAUM,
-  getTotalPnL,
-  getTotalMTDPnL,
-} from "@/lib/strategy-registry";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { getStrategyIdsForScope, getClientIdsForOrgs } from "@/lib/stores/scope-helpers";
 import { getStrategiesForScope, type SeedStrategy } from "@/lib/mock-data";
-import { CLIENTS } from "@/lib/trading-data";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
+import {
+  STRATEGIES as DEFAULT_STRATEGIES,
+  getTotalAUM,
+  getTotalMTDPnL,
+  getTotalPnL,
+  type Strategy,
+} from "@/lib/strategy-registry";
+import * as React from "react";
 
 export interface StrategiesData {
   strategies: Strategy[];
@@ -60,7 +59,10 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
       globalScope.clientIds,
       globalScope.strategyIds,
     );
-    if (seedStrats.length > 0 && (globalScope.organizationIds.length > 0 || globalScope.clientIds.length > 0 || globalScope.strategyIds.length > 0)) {
+    if (
+      seedStrats.length > 0 &&
+      (globalScope.organizationIds.length > 0 || globalScope.clientIds.length > 0 || globalScope.strategyIds.length > 0)
+    ) {
       // When scope filters are active, use seed data which has org/client/strategy relationships
       return seedStrats.map((s: SeedStrategy) => {
         const existing = DEFAULT_STRATEGIES.find((d) => d.id === s.id);
@@ -70,7 +72,12 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
           name: s.name,
           description: `${s.archetype} strategy`,
           archetype: s.archetype,
-          assetClass: s.archetype.includes("defi") || s.archetype.includes("yield") ? "DeFi" : s.archetype.includes("sport") ? "Sports" : "Crypto",
+          assetClass:
+            s.archetype.includes("defi") || s.archetype.includes("yield")
+              ? "DeFi"
+              : s.archetype.includes("sport")
+                ? "Sports"
+                : "Crypto",
           status: s.status,
           venues: [],
           sharpe: s.sharpe,
@@ -79,14 +86,22 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
           clientId: s.clientId,
           pnl: 0,
           maxDrawdown: 0,
-        } as Strategy;
+        } as unknown as Strategy;
       });
     }
     return DEFAULT_STRATEGIES;
   }, [perfRaw, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   // Apply global scope filtering: org -> client -> strategy cascade
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
   const scopeClientIds = React.useMemo(() => {
     if (globalScope.clientIds.length > 0) return globalScope.clientIds;
     if (globalScope.organizationIds.length > 0) return getClientIdsForOrgs(globalScope.organizationIds);

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { mlTrainingJobs } from "./quant-data";
 import { getStatusIcon } from "./quant-utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function TrainingPage() {
   return (
@@ -51,7 +52,7 @@ export function TrainingPage() {
                   </td>
                   <td className="px-4 py-3 text-center">{getStatusIcon(job.status)}</td>
                   <td className="px-4 py-3 text-right font-mono">{job.accuracy > 0 ? `${job.accuracy}%` : "-"}</td>
-                  <td className="px-4 py-3 text-right font-mono">{job.loss > 0 ? job.loss.toFixed(4) : "-"}</td>
+                  <td className="px-4 py-3 text-right font-mono">{job.loss > 0 ? formatNumber(job.loss, 4) : "-"}</td>
                   <td className="px-4 py-3 text-right font-mono">{job.epochs > 0 ? job.epochs : "-"}</td>
                   <td className="px-4 py-3 text-right">{job.duration}</td>
                 </tr>

@@ -1,8 +1,9 @@
 "use client";
 
-import { RefreshCw, Loader2, Filter, Trash2 } from "lucide-react";
-import { CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { Filter, RefreshCw, Trash2 } from "lucide-react";
 import { useDataStatusTabCtx } from "./data-status-context";
 
 export function DataStatusFiltersHeader() {
@@ -156,11 +157,11 @@ export function DataStatusFiltersHeader() {
             disabled={loading || clearingCache}
             title="Clear data status cache and re-fetch (does not affect deployment state)"
           >
-            {clearingCache ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
+            {clearingCache ? <Spinner className="h-4 w-4 mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
             Clear Cache
           </Button>
           <Button variant="outline" size="sm" onClick={() => fetchData(startDate, endDate)} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            {loading ? <Spinner className="h-4 w-4 mr-2" /> : <RefreshCw className="h-4 w-4 mr-2" />}
             Check Status
           </Button>
         </div>

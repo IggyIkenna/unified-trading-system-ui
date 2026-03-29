@@ -1,38 +1,27 @@
 "use client";
 
+import { HeatmapCalendar } from "@/components/ops/deployment/HeatmapCalendar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 import {
-  Database,
-  RefreshCw,
   AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  CheckCircle2,
-  XCircle,
   Calendar,
+  CalendarDays,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
-  Rocket,
-  Loader2,
-  Filter,
+  Database,
   Eye,
+  Rocket,
   Table2,
-  CalendarDays,
-  Building2,
-  Trash2,
-  FileText,
+  XCircle,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogHeader, DialogTitle, DialogContent } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { HeatmapCalendar } from "@/components/ops/deployment/HeatmapCalendar";
+import { getCompletionColor } from "./category-metrics";
 import { useDataStatusTabCtx } from "./data-status-context";
-import { getCompletionColor, getCompletionBadgeClass } from "./category-metrics";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function DataStatusSectionPreTurbo() {
   const {
@@ -216,7 +205,7 @@ export function DataStatusSectionPreTurbo() {
         <Card>
           <CardContent className="py-12">
             <div className="flex flex-col items-center justify-center gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-[var(--color-accent-cyan)]" />
+              <Spinner size="lg" className="h-8 w-8 text-[var(--color-accent-cyan)]" />
               <p className="text-sm text-[var(--color-text-muted)]">
                 {checkVenues
                   ? "Deep scanning parquet files for venue coverage..."
@@ -508,7 +497,7 @@ export function DataStatusSectionPreTurbo() {
                         color: getCompletionColor(dataTypeCheckData.overall_completion ?? 0),
                       }}
                     >
-                      {(dataTypeCheckData.overall_completion ?? 0).toFixed(1)}%
+                      {formatPercent(dataTypeCheckData.overall_completion ?? 0, 1)}
                     </div>
                     <div className="text-xs text-[var(--color-text-muted)]">
                       {dataTypeCheckData.overall_complete} / {dataTypeCheckData.overall_total} data_type × date
@@ -568,11 +557,13 @@ export function DataStatusSectionPreTurbo() {
                               >
                                 {isComplete ? (
                                   <>
-                                    <CheckCircle2 className="h-3 w-3 mr-1" /> {venueData.completion_percent.toFixed(0)}%
+                                    <CheckCircle2 className="h-3 w-3 mr-1" />{" "}
+                                    {formatPercent(venueData.completion_percent, 0)}
                                   </>
                                 ) : (
                                   <>
-                                    <AlertCircle className="h-3 w-3 mr-1" /> {venueData.completion_percent.toFixed(0)}%
+                                    <AlertCircle className="h-3 w-3 mr-1" />{" "}
+                                    {formatPercent(venueData.completion_percent, 0)}
                                   </>
                                 )}
                               </Badge>
@@ -608,7 +599,7 @@ export function DataStatusSectionPreTurbo() {
                                             color: getCompletionColor(typeData.completion_percent),
                                           }}
                                         >
-                                          {typeData.completion_percent.toFixed(0)}%
+                                          {formatPercent(typeData.completion_percent, 0)}
                                         </span>
                                         <span className="text-xs text-[var(--color-text-muted)] font-mono">
                                           {typeData.found}/{typeData.expected}

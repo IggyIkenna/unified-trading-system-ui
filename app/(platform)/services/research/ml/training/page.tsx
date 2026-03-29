@@ -46,6 +46,7 @@ import type { UnifiedTrainingRun } from "@/lib/ml-types";
 import { cn } from "@/lib/utils";
 
 import { RunDetail } from "./components/training-run-detail";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -423,13 +424,13 @@ export default function TrainingPage() {
                         <span>
                           Sharpe:{" "}
                           <span className="font-mono font-medium text-emerald-400">
-                            {run.financial_metrics.sharpe_ratio.toFixed(2)}
+                            {formatNumber(run.financial_metrics.sharpe_ratio, 2)}
                           </span>
                         </span>
                         <span>
                           DirAcc:{" "}
                           <span className="font-mono font-medium">
-                            {(run.financial_metrics.directional_accuracy * 100).toFixed(1)}%
+                            {formatPercent(run.financial_metrics.directional_accuracy * 100, 1)}
                           </span>
                         </span>
                       </div>

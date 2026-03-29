@@ -7,6 +7,7 @@ import { AlertTriangle, CheckCircle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { riskLimits } from "./risk-data";
 import { formatCurrency } from "./risk-utils";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function LimitsPage() {
   return (
@@ -41,7 +42,7 @@ export function LimitsPage() {
                         {limit.unit === "$" ? formatCurrency(limit.limit) : `${limit.limit}${limit.unit || ""}`}
                       </span>
                       <span className={cn("text-sm", utilization > 80 ? "text-warning" : "text-muted-foreground")}>
-                        ({utilization.toFixed(0)}%)
+                        ({formatPercent(utilization, 0)})
                       </span>
                       {limit.status === "ok" ? (
                         <CheckCircle className="h-4 w-4 text-positive" />

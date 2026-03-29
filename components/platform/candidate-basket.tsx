@@ -9,20 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
   ShoppingBasket,
@@ -36,6 +24,7 @@ import {
   Plus,
   CheckCircle2,
 } from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export interface CandidateItem {
   id: string;
@@ -86,9 +75,7 @@ function CandidateCard({
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-medium truncate">
-              {candidate.name}
-            </span>
+            <span className="font-mono text-sm font-medium truncate">{candidate.name}</span>
             <Badge variant="outline" className="text-[10px] font-mono">
               v{candidate.version}
             </Badge>
@@ -100,7 +87,7 @@ function CandidateCard({
                 <span key={key} className="text-[10px] text-muted-foreground">
                   <span className="capitalize">{key.replace(/_/g, " ")}:</span>{" "}
                   <span className="font-mono font-medium text-foreground">
-                    {typeof value === "number" ? value.toFixed(2) : value}
+                    {typeof value === "number" ? formatNumber(value, 2) : value}
                   </span>
                 </span>
               ))}
@@ -195,11 +182,7 @@ export function CandidateBasket({
               <Button
                 variant={isEmpty ? "outline" : "secondary"}
                 size="sm"
-                className={cn(
-                  "gap-2 relative",
-                  !isEmpty && "bg-primary/10 border-primary/20 text-primary",
-                  className,
-                )}
+                className={cn("gap-2 relative", !isEmpty && "bg-primary/10 border-primary/20 text-primary", className)}
               >
                 <ShoppingBasket className="size-4" />
                 Candidates
@@ -234,8 +217,8 @@ export function CandidateBasket({
             )}
           </SheetTitle>
           <SheetDescription>
-            Shortlisted {labels.item.toLowerCase()}s for promotion review. Add
-            notes and rationale before sending to review.
+            Shortlisted {labels.item.toLowerCase()}s for promotion review. Add notes and rationale before sending to
+            review.
           </SheetDescription>
         </SheetHeader>
 
@@ -246,8 +229,8 @@ export function CandidateBasket({
             </div>
             <h3 className="font-medium mb-1">No candidates selected</h3>
             <p className="text-sm text-muted-foreground max-w-[280px]">
-              Select {labels.item.toLowerCase()}s from the grid or comparison
-              view to add them to your basket for review.
+              Select {labels.item.toLowerCase()}s from the grid or comparison view to add them to your basket for
+              review.
             </p>
           </div>
         ) : (
@@ -288,21 +271,13 @@ export function CandidateBasket({
                   <ChevronRight className="size-4 ml-auto" />
                 </Button>
 
-                <Button
-                  variant="secondary"
-                  className="w-full gap-2"
-                  onClick={onPreparePackage}
-                >
+                <Button variant="secondary" className="w-full gap-2" onClick={onPreparePackage}>
                   <Package className="size-4" />
                   Prepare Promotion Package
                 </Button>
 
                 {onOpenDeploymentReview && (
-                  <Button
-                    variant="outline"
-                    className="w-full gap-2"
-                    onClick={onOpenDeploymentReview}
-                  >
+                  <Button variant="outline" className="w-full gap-2" onClick={onOpenDeploymentReview}>
                     <ExternalLink className="size-4" />
                     Open in Deployment Review
                   </Button>
@@ -310,8 +285,7 @@ export function CandidateBasket({
               </div>
 
               <p className="text-[10px] text-muted-foreground text-center">
-                Candidates are handed off for review. Direct deployment is not
-                available from this workspace.
+                Candidates are handed off for review. Direct deployment is not available from this workspace.
               </p>
             </div>
           </>
@@ -323,39 +297,30 @@ export function CandidateBasket({
 
 // Hook for managing candidate basket state
 export function useCandidateBasket(initialCandidates: CandidateItem[] = []) {
-  const [candidates, setCandidates] =
-    React.useState<CandidateItem[]>(initialCandidates);
+  const [candidates, setCandidates] = React.useState<CandidateItem[]>(initialCandidates);
 
-  const addCandidate = React.useCallback(
-    (candidate: Omit<CandidateItem, "addedAt">) => {
-      setCandidates((prev) => {
-        if (prev.some((c) => c.id === candidate.id)) {
-          return prev; // Already exists
-        }
-        return [...prev, { ...candidate, addedAt: new Date().toISOString() }];
-      });
-    },
-    [],
-  );
+  const addCandidate = React.useCallback((candidate: Omit<CandidateItem, "addedAt">) => {
+    setCandidates((prev) => {
+      if (prev.some((c) => c.id === candidate.id)) {
+        return prev; // Already exists
+      }
+      return [...prev, { ...candidate, addedAt: new Date().toISOString() }];
+    });
+  }, []);
 
   const removeCandidate = React.useCallback((id: string) => {
     setCandidates((prev) => prev.filter((c) => c.id !== id));
   }, []);
 
   const updateNote = React.useCallback((id: string, note: string) => {
-    setCandidates((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, note } : c)),
-    );
+    setCandidates((prev) => prev.map((c) => (c.id === id ? { ...c, note } : c)));
   }, []);
 
   const clearAll = React.useCallback(() => {
     setCandidates([]);
   }, []);
 
-  const isSelected = React.useCallback(
-    (id: string) => candidates.some((c) => c.id === id),
-    [candidates],
-  );
+  const isSelected = React.useCallback((id: string) => candidates.some((c) => c.id === id), [candidates]);
 
   return {
     candidates,

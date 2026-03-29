@@ -1,24 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { useAuth } from "@/hooks/use-auth";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/platform/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -27,24 +13,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/use-auth";
 import {
-  CheckCircle2,
-  XCircle,
-  Clock,
-  FileText,
-  Loader2,
-} from "lucide-react";
-import {
-  fetchOnboardingRequests,
   approveRequest,
-  rejectRequest,
+  fetchOnboardingRequests,
   fetchRegisteredApps,
   fetchUserDocuments,
-  type OnboardingRequest,
+  rejectRequest,
   type AppGrant,
+  type OnboardingRequest,
 } from "@/lib/api/approvals-client";
+import { CheckCircle2, Clock, FileText, XCircle } from "lucide-react";
+import * as React from "react";
 
 interface RegisteredApp {
   app_id: string;
@@ -65,17 +49,12 @@ export default function ApprovalsPage() {
   const [requests, setRequests] = React.useState<OnboardingRequest[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [filter, setFilter] = React.useState("pending");
-  const [selectedRequest, setSelectedRequest] =
-    React.useState<OnboardingRequest | null>(null);
-  const [actionType, setActionType] = React.useState<
-    "approve" | "reject" | null
-  >(null);
+  const [selectedRequest, setSelectedRequest] = React.useState<OnboardingRequest | null>(null);
+  const [actionType, setActionType] = React.useState<"approve" | "reject" | null>(null);
   const [note, setNote] = React.useState("");
   const [processing, setProcessing] = React.useState(false);
   const [apps, setApps] = React.useState<RegisteredApp[]>([]);
-  const [selectedApps, setSelectedApps] = React.useState<
-    Record<string, { selected: boolean; role: string }>
-  >({});
+  const [selectedApps, setSelectedApps] = React.useState<Record<string, { selected: boolean; role: string }>>({});
   const [docs, setDocs] = React.useState<UserDoc[]>([]);
 
   const loadRequests = React.useCallback(async () => {
@@ -101,10 +80,7 @@ export default function ApprovalsPage() {
       .catch(() => setApps([]));
   }, [token]);
 
-  const openDialog = async (
-    req: OnboardingRequest,
-    type: "approve" | "reject",
-  ) => {
+  const openDialog = async (req: OnboardingRequest, type: "approve" | "reject") => {
     setSelectedRequest(req);
     setActionType(type);
     setNote("");
@@ -180,13 +156,7 @@ export default function ApprovalsPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">User Approvals</h1>
-          <p className="text-sm text-muted-foreground">
-            Review and manage onboarding requests
-          </p>
-        </div>
+      <PageHeader title="User Approvals" description="Review and manage onboarding requests">
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-[140px]">
             <SelectValue />
@@ -197,17 +167,15 @@ export default function ApprovalsPage() {
             <SelectItem value="rejected">Rejected</SelectItem>
           </SelectContent>
         </Select>
-      </div>
+      </PageHeader>
 
       {loading ? (
         <div className="flex items-center justify-center p-12">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <Spinner size="lg" className="h-8 w-8 text-muted-foreground" />
         </div>
       ) : requests.length === 0 ? (
         <Card>
-          <CardContent className="p-6 text-center text-muted-foreground">
-            No {filter} requests found.
-          </CardContent>
+          <CardContent className="p-6 text-center text-muted-foreground">No {filter} requests found.</CardContent>
         </Card>
       ) : (
         <div className="grid gap-4">
@@ -216,29 +184,17 @@ export default function ApprovalsPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base">
-                      {req.applicant_name}
-                    </CardTitle>
+                    <CardTitle className="text-base">{req.applicant_name}</CardTitle>
                     <CardDescription>{req.applicant_email}</CardDescription>
                   </div>
                   <Badge
                     variant={
-                      req.status === "pending"
-                        ? "outline"
-                        : req.status === "approved"
-                          ? "default"
-                          : "destructive"
+                      req.status === "pending" ? "outline" : req.status === "approved" ? "default" : "destructive"
                     }
                   >
-                    {req.status === "pending" && (
-                      <Clock className="mr-1 h-3 w-3" />
-                    )}
-                    {req.status === "approved" && (
-                      <CheckCircle2 className="mr-1 h-3 w-3" />
-                    )}
-                    {req.status === "rejected" && (
-                      <XCircle className="mr-1 h-3 w-3" />
-                    )}
+                    {req.status === "pending" && <Clock className="mr-1 h-3 w-3" />}
+                    {req.status === "approved" && <CheckCircle2 className="mr-1 h-3 w-3" />}
+                    {req.status === "rejected" && <XCircle className="mr-1 h-3 w-3" />}
                     {req.status}
                   </Badge>
                 </div>
@@ -248,25 +204,15 @@ export default function ApprovalsPage() {
                   <div className="text-sm text-muted-foreground space-x-4">
                     <span>Company: {req.company || "N/A"}</span>
                     <span>Service: {req.service_type || "general"}</span>
-                    <span>
-                      Applied:{" "}
-                      {new Date(req.created_at).toLocaleDateString()}
-                    </span>
+                    <span>Applied: {new Date(req.created_at).toLocaleDateString()}</span>
                   </div>
                   {req.status === "pending" && (
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => openDialog(req, "approve")}
-                      >
+                      <Button size="sm" onClick={() => openDialog(req, "approve")}>
                         <CheckCircle2 className="mr-1 h-4 w-4" />
                         Approve
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => openDialog(req, "reject")}
-                      >
+                      <Button size="sm" variant="destructive" onClick={() => openDialog(req, "reject")}>
                         <XCircle className="mr-1 h-4 w-4" />
                         Reject
                       </Button>
@@ -288,12 +234,9 @@ export default function ApprovalsPage() {
       >
         <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {actionType === "approve" ? "Approve" : "Reject"} Request
-            </DialogTitle>
+            <DialogTitle>{actionType === "approve" ? "Approve" : "Reject"} Request</DialogTitle>
             <DialogDescription>
-              {selectedRequest?.applicant_name} (
-              {selectedRequest?.applicant_email})
+              {selectedRequest?.applicant_name} ({selectedRequest?.applicant_email})
             </DialogDescription>
           </DialogHeader>
 
@@ -301,15 +244,10 @@ export default function ApprovalsPage() {
             <>
               {docs.length > 0 && (
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">
-                    Uploaded Documents
-                  </Label>
+                  <Label className="text-sm font-medium">Uploaded Documents</Label>
                   <div className="space-y-1">
                     {docs.map((doc) => (
-                      <div
-                        key={doc.id}
-                        className="flex items-center gap-2 text-sm p-2 rounded border"
-                      >
+                      <div key={doc.id} className="flex items-center gap-2 text-sm p-2 rounded border">
                         <FileText className="h-4 w-4 text-muted-foreground" />
                         <span className="flex-1">{doc.file_name}</span>
                         <Badge variant="outline" className="text-xs">
@@ -322,24 +260,16 @@ export default function ApprovalsPage() {
               )}
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">
-                  Grant Application Access
-                </Label>
+                <Label className="text-sm font-medium">Grant Application Access</Label>
                 <div className="space-y-2 max-h-48 overflow-y-auto border rounded p-2">
                   {apps.map((app) => (
-                    <div
-                      key={app.app_id}
-                      className="flex items-center gap-3 py-1"
-                    >
+                    <div key={app.app_id} className="flex items-center gap-3 py-1">
                       <Checkbox
                         id={`app-${app.app_id}`}
                         checked={selectedApps[app.app_id]?.selected || false}
                         onCheckedChange={() => toggleApp(app.app_id)}
                       />
-                      <label
-                        htmlFor={`app-${app.app_id}`}
-                        className="flex-1 text-sm cursor-pointer"
-                      >
+                      <label htmlFor={`app-${app.app_id}`} className="flex-1 text-sm cursor-pointer">
                         {app.name}
                       </label>
                       {selectedApps[app.app_id]?.selected && (
@@ -370,11 +300,7 @@ export default function ApprovalsPage() {
               id="review-note"
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder={
-                actionType === "approve"
-                  ? "Welcome message or notes..."
-                  : "Reason for rejection..."
-              }
+              placeholder={actionType === "approve" ? "Welcome message or notes..." : "Reason for rejection..."}
               rows={3}
             />
           </div>
@@ -394,7 +320,7 @@ export default function ApprovalsPage() {
               onClick={handleAction}
               disabled={processing}
             >
-              {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {processing && <Spinner className="mr-2 h-4 w-4" />}
               {actionType === "approve" ? "Approve" : "Reject"}
             </Button>
           </DialogFooter>

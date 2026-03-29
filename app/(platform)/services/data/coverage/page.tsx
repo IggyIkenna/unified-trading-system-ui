@@ -1,5 +1,7 @@
 "use client";
 
+
+import { PageHeader } from "@/components/platform/page-header";
 /**
  * /services/data/coverage — Cross-stage coverage matrix.
  * User can select row/column dimensions to compare Instruments, Raw, Processed.
@@ -30,6 +32,7 @@ import { MOCK_COVERAGE_ROWS } from "@/lib/data-service-mock-data";
 import { useScopedCategories } from "@/hooks/use-scoped-categories";
 import { Lock } from "lucide-react";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
+import { formatPercent } from "@/lib/utils/formatters";
 
 const STATUS_COLORS: Record<CoverageStatus, string> = {
   complete: "bg-emerald-500/80 text-emerald-900",
@@ -68,7 +71,7 @@ function CoverageCell({
     >
       <span>
         {completionPct != null
-          ? `${completionPct.toFixed(0)}%`
+          ? `${formatPercent(completionPct, 0)}`
           : STATUS_LABELS[status]}
       </span>
       {readOnly && <span className="text-[9px] opacity-70">Build</span>}
@@ -160,13 +163,11 @@ export default function CoveragePage() {
       <div className="container px-4 py-8 md:px-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Coverage</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Cross-stage completeness — Instruments → Raw → Processing →
-              Features
-            </p>
-          </div>
+          <PageHeader
+        title="Coverage"
+        description="Cross-stage completeness — Instruments → Raw → Processing →
+              Features"
+      />
           <div className="flex items-center gap-2">
             <Button
               variant="outline"

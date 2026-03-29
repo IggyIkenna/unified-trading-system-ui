@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { mock01 } from "@/lib/deterministic-mock";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import { DollarSign } from "lucide-react";
 import * as React from "react";
 
@@ -100,15 +101,11 @@ export function OrderBook({
   const maxVolume = Math.max(maxBidVolume, maxAskVolume);
 
   // Format price based on symbol
-  const formatPrice = (price: number) => {
-    if (symbol.includes("BTC")) return price.toFixed(decimals);
-    if (symbol.includes("ETH")) return price.toFixed(decimals);
-    return price.toFixed(decimals);
-  };
+  const formatPrice = (price: number) => formatNumber(price, decimals);
 
   // Format size - show in native or USD
   const formatSize = (size: number, price: number) => {
-    if (showNative) return size.toFixed(4);
+    if (showNative) return formatNumber(size, 4);
     return `$${(size * price).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
   };
 
@@ -150,8 +147,8 @@ export function OrderBook({
           {/* Spread indicator */}
           <div className="flex items-center justify-center gap-4 py-2 bg-muted/30 rounded mt-2">
             <span className="text-xs text-muted-foreground">
-              Spread: <span className="font-mono text-foreground">${spread.toFixed(2)}</span>
-              <span className="text-muted-foreground ml-1">({spreadBps.toFixed(1)} bps)</span>
+              Spread: <span className="font-mono text-foreground">{formatCurrency(spread, "USD", 2)}</span>
+              <span className="text-muted-foreground ml-1">({formatNumber(spreadBps, 1)} bps)</span>
             </span>
             <span className="text-xs text-muted-foreground">
               Mid:{" "}
@@ -197,7 +194,7 @@ export function OrderBook({
                     <div className="absolute left-full ml-2 hidden group-hover:block px-2 py-1 bg-popover border border-border rounded text-[10px] shadow-lg whitespace-nowrap z-20">
                       <div>Cumulative: {formatSize(bid.total, bid.price)}</div>
                       <div>
-                        Size: {bid.size.toFixed(4)} {symbol.split("/")[0]}
+                        Size: {formatNumber(bid.size, 4)} {symbol.split("/")[0]}
                       </div>
                     </div>
                   </div>
@@ -233,7 +230,7 @@ export function OrderBook({
                     <div className="absolute right-full mr-2 hidden group-hover:block px-2 py-1 bg-popover border border-border rounded text-[10px] shadow-lg whitespace-nowrap z-20">
                       <div>Cumulative: {formatSize(ask.total, ask.price)}</div>
                       <div>
-                        Size: {ask.size.toFixed(4)} {symbol.split("/")[0]}
+                        Size: {formatNumber(ask.size, 4)} {symbol.split("/")[0]}
                       </div>
                     </div>
                   </div>

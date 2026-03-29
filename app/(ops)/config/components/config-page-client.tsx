@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/platform/page-header";
 import { EntityLink } from "@/components/trading/entity-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ import {
 import * as React from "react";
 import { toast } from "sonner";
 import { clients, riskLimits, strategyConfigs, strategySchemas, venues } from "./config-page-schema";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export default function ConfigPageClient() {
   const { token } = useAuth();
@@ -112,10 +114,10 @@ export default function ConfigPageClient() {
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Config & Onboarding</h1>
-            <p className="text-sm text-muted-foreground">Manage clients, strategies, venues, and risk configuration</p>
-          </div>
+          <PageHeader
+            title="Config & Onboarding"
+            description="Manage clients, strategies, venues, and risk configuration"
+          />
           <div className="flex items-center gap-3">
             <Button size="sm" variant="outline" className="gap-2" disabled={reloading} onClick={handleConfigReload}>
               <RefreshCw className={`size-4 ${reloading ? "animate-spin" : ""}`} />
@@ -205,7 +207,7 @@ export default function ConfigPageClient() {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
                         <p className="text-xs text-muted-foreground">AUM</p>
-                        <p className="text-lg font-semibold font-mono">${(client.aum / 1000000).toFixed(1)}m</p>
+                        <p className="text-lg font-semibold font-mono">${formatNumber(client.aum / 1000000, 1)}m</p>
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground">Venues</p>
@@ -472,7 +474,9 @@ export default function ConfigPageClient() {
                         <span className="text-sm font-mono text-muted-foreground">
                           {(() => {
                             const val = editedParams[param.key];
-                            return typeof val === "number" ? val.toFixed(param.step && param.step < 0.01 ? 4 : 2) : val;
+                            return typeof val === "number"
+                              ? formatNumber(val, param.step && param.step < 0.01 ? 4 : 2)
+                              : val;
                           })()}
                         </span>
                       )}

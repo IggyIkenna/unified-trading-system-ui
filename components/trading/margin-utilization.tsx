@@ -4,14 +4,10 @@ import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Clock, TrendingUp, TrendingDown } from "lucide-react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export interface VenueMargin {
   venue: string;
@@ -30,14 +26,11 @@ interface MarginUtilizationProps {
   className?: string;
 }
 
-export function MarginUtilization({
-  venues,
-  className,
-}: MarginUtilizationProps) {
+export function MarginUtilization({ venues, className }: MarginUtilizationProps) {
   const formatCurrency = (v: number) => {
-    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
-    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v.toFixed(0)}`;
+    if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 1)}M`;
+    if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+    return `$${formatNumber(v, 0)}`;
   };
 
   const getUtilizationColor = (utilization: number) => {
@@ -88,18 +81,13 @@ export function MarginUtilization({
       ...g,
       utilization: g.total > 0 ? Math.round((g.used / g.total) * 100) : 0,
       trend: "stable" as "up" | "down" | "stable",
-      marginCallDistance:
-        g.total > 0
-          ? Math.max(5, 30 - Math.round((g.used / g.total) * 30))
-          : 30,
+      marginCallDistance: g.total > 0 ? Math.max(5, 30 - Math.round((g.used / g.total) * 30)) : 30,
       lastUpdate: new Date().toISOString(),
     }));
   }, [venues]);
 
   // Sort by utilization descending
-  const sortedVenues = [...aggregatedVenues].sort(
-    (a, b) => b.utilization - a.utilization,
-  );
+  const sortedVenues = [...aggregatedVenues].sort((a, b) => b.utilization - a.utilization);
 
   return (
     <Card className={className}>
@@ -137,32 +125,22 @@ export function MarginUtilization({
                           color: getUtilizationColor(venue.utilization),
                         }}
                       >
-                        {venue.utilization.toFixed(0)}%
+                        {formatPercent(venue.utilization, 0)}
                       </span>
                       <span className="text-[10px] text-muted-foreground">
-                        {formatCurrency(venue.used)} /{" "}
-                        {formatCurrency(venue.total)}
+                        {formatCurrency(venue.used)} / {formatCurrency(venue.total)}
                       </span>
                     </div>
                   </div>
                   <div className="relative h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                      className={cn(
-                        "h-full transition-all",
-                        getUtilizationBg(venue.utilization),
-                      )}
+                      className={cn("h-full transition-all", getUtilizationBg(venue.utilization))}
                       style={{ width: `${venue.utilization}%` }}
                     />
                     {/* Warning threshold line at 75% */}
-                    <div
-                      className="absolute top-0 bottom-0 w-px bg-[var(--status-warning)]"
-                      style={{ left: "75%" }}
-                    />
+                    <div className="absolute top-0 bottom-0 w-px bg-[var(--status-warning)]" style={{ left: "75%" }} />
                     {/* Critical threshold line at 90% */}
-                    <div
-                      className="absolute top-0 bottom-0 w-px bg-[var(--status-error)]"
-                      style={{ left: "90%" }}
-                    />
+                    <div className="absolute top-0 bottom-0 w-px bg-[var(--status-error)]" style={{ left: "90%" }} />
                   </div>
                 </div>
               </TooltipTrigger>
@@ -171,31 +149,21 @@ export function MarginUtilization({
                   <div className="font-medium">{venue.venueLabel}</div>
                   <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                     <span className="text-muted-foreground">Margin Used:</span>
-                    <span className="font-mono">
-                      {formatCurrency(venue.used)}
-                    </span>
+                    <span className="font-mono">{formatCurrency(venue.used)}</span>
                     <span className="text-muted-foreground">Available:</span>
-                    <span className="font-mono">
-                      {formatCurrency(venue.available)}
-                    </span>
+                    <span className="font-mono">{formatCurrency(venue.available)}</span>
                     <span className="text-muted-foreground">Total Limit:</span>
-                    <span className="font-mono">
-                      {formatCurrency(venue.total)}
-                    </span>
+                    <span className="font-mono">{formatCurrency(venue.total)}</span>
                     {venue.marginCallDistance !== undefined && (
                       <>
-                        <span className="text-muted-foreground">
-                          Margin Call:
-                        </span>
+                        <span className="text-muted-foreground">Margin Call:</span>
                         <span
                           className={cn(
                             "font-mono",
-                            venue.marginCallDistance < 10
-                              ? "text-[var(--status-error)]"
-                              : "text-muted-foreground",
+                            venue.marginCallDistance < 10 ? "text-[var(--status-error)]" : "text-muted-foreground",
                           )}
                         >
-                          {venue.marginCallDistance.toFixed(1)}% away
+                          {formatPercent(venue.marginCallDistance, 1)} away
                         </span>
                       </>
                     )}
@@ -216,16 +184,10 @@ export function MarginUtilization({
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Total Across Venues</span>
             <div className="flex items-center gap-2">
-              <span className="font-mono">
-                {formatCurrency(
-                  sortedVenues.reduce((sum, v) => sum + v.used, 0),
-                )}
-              </span>
+              <span className="font-mono">{formatCurrency(sortedVenues.reduce((sum, v) => sum + v.used, 0))}</span>
               <span className="text-muted-foreground">/</span>
               <span className="font-mono text-muted-foreground">
-                {formatCurrency(
-                  sortedVenues.reduce((sum, v) => sum + v.total, 0),
-                )}
+                {formatCurrency(sortedVenues.reduce((sum, v) => sum + v.total, 0))}
               </span>
             </div>
           </div>
@@ -236,11 +198,7 @@ export function MarginUtilization({
 }
 
 // Compact inline version for the command center header
-export function MarginUtilizationCompact({
-  venues,
-}: {
-  venues: VenueMargin[];
-}) {
+export function MarginUtilizationCompact({ venues }: { venues: VenueMargin[] }) {
   // Aggregate by venue to avoid counting per-position rows
   const aggregated = React.useMemo(() => {
     const grouped: Record<string, { used: number; total: number }> = {};
@@ -257,42 +215,29 @@ export function MarginUtilizationCompact({
 
   const maxUtilization = Math.max(...aggregated.map((v) => v.utilization), 0);
   const criticalCount = aggregated.filter((v) => v.utilization >= 90).length;
-  const warningCount = aggregated.filter(
-    (v) => v.utilization >= 75 && v.utilization < 90,
-  ).length;
+  const warningCount = aggregated.filter((v) => v.utilization >= 75 && v.utilization < 90).length;
 
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs text-muted-foreground">Margin:</span>
       <div className="flex items-center gap-1">
         {criticalCount > 0 && (
-          <Badge
-            variant="outline"
-            className="text-[10px] border-[var(--status-error)] text-[var(--status-error)]"
-          >
+          <Badge variant="outline" className="text-[10px] border-[var(--status-error)] text-[var(--status-error)]">
             {criticalCount} critical
           </Badge>
         )}
         {warningCount > 0 && (
-          <Badge
-            variant="outline"
-            className="text-[10px] border-[var(--status-warning)] text-[var(--status-warning)]"
-          >
+          <Badge variant="outline" className="text-[10px] border-[var(--status-warning)] text-[var(--status-warning)]">
             {warningCount} warning
           </Badge>
         )}
         {criticalCount === 0 && warningCount === 0 && (
-          <Badge
-            variant="outline"
-            className="text-[10px] border-[var(--status-live)] text-[var(--status-live)]"
-          >
+          <Badge variant="outline" className="text-[10px] border-[var(--status-live)] text-[var(--status-live)]">
             All healthy
           </Badge>
         )}
       </div>
-      <span className="text-[10px] font-mono text-muted-foreground">
-        (max {maxUtilization.toFixed(0)}%)
-      </span>
+      <span className="text-[10px] font-mono text-muted-foreground">(max {formatPercent(maxUtilization, 0)})</span>
     </div>
   );
 }

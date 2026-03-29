@@ -1,31 +1,13 @@
 "use client";
 
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { PageHeader } from "@/components/platform/page-header";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
 import { useVenues } from "@/hooks/api/use-orders";
@@ -41,20 +23,14 @@ import {
   Globe,
   RefreshCw,
 } from "lucide-react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export default function ExecutionVenuesPage() {
-  const {
-    data: venuesData,
-    isLoading,
-    error: venuesError,
-    refetch: refetchVenues,
-  } = useVenues();
+  const { data: venuesData, isLoading, error: venuesError, refetch: refetchVenues } = useVenues();
   const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? [];
 
   // Venue routing matrix derived from API response or fallback
-  const VENUE_MATRIX: { instrument: string; venues: Array<any> } = (
-    venuesData as any
-  )?.routingMatrix ?? {
+  const VENUE_MATRIX: { instrument: string; venues: Array<any> } = (venuesData as any)?.routingMatrix ?? {
     instrument: "ETH-PERP",
     venues: MOCK_VENUES.slice(0, 5).map((v: any) => ({
       venueId: v.id ?? "",
@@ -66,13 +42,9 @@ export default function ExecutionVenuesPage() {
     })),
   };
 
-  const [selectedInstrument, setSelectedInstrument] =
-    React.useState("ETH-PERP");
+  const [selectedInstrument, setSelectedInstrument] = React.useState("ETH-PERP");
 
-  if (isLoading)
-    return (
-      <div className="p-8 text-center text-muted-foreground">Loading...</div>
-    );
+  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
 
   if (venuesError) {
     return (
@@ -96,45 +68,37 @@ export default function ExecutionVenuesPage() {
       </div>
 
       <div className="platform-page-width p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-3">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-3">
               <Building2 className="size-6" />
               Venue Matrix
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Real-time venue comparison for optimal order routing
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Select
-              value={selectedInstrument}
-              onValueChange={setSelectedInstrument}
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ETH-PERP">ETH-PERP</SelectItem>
-                <SelectItem value="BTC-PERP">BTC-PERP</SelectItem>
-                <SelectItem value="SOL-PERP">SOL-PERP</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="sm">
-              <RefreshCw className="size-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
-        </div>
+            </span>
+          }
+          description="Real-time venue comparison for optimal order routing"
+        >
+          <Select value={selectedInstrument} onValueChange={setSelectedInstrument}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ETH-PERP">ETH-PERP</SelectItem>
+              <SelectItem value="BTC-PERP">BTC-PERP</SelectItem>
+              <SelectItem value="SOL-PERP">SOL-PERP</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm">
+            <RefreshCw className="mr-2 size-4" />
+            Refresh
+          </Button>
+        </PageHeader>
 
         {/* Venue Status Grid */}
         {MOCK_VENUES.length === 0 && (
           <Card>
             <CardContent className="py-12">
               <p className="text-sm text-muted-foreground text-center">
-                No venues available. Venue connections will appear here once
-                configured.
+                No venues available. Venue connections will appear here once configured.
               </p>
             </CardContent>
           </Card>
@@ -148,12 +112,9 @@ export default function ExecutionVenuesPage() {
                     <div
                       className={cn(
                         "size-2 rounded-full",
-                        venue.connectivity.status === "connected" &&
-                          "bg-emerald-500",
-                        venue.connectivity.status === "degraded" &&
-                          "bg-amber-500",
-                        venue.connectivity.status === "disconnected" &&
-                          "bg-red-500",
+                        venue.connectivity.status === "connected" && "bg-emerald-500",
+                        venue.connectivity.status === "degraded" && "bg-amber-500",
+                        venue.connectivity.status === "disconnected" && "bg-red-500",
                       )}
                     />
                     <span className="font-medium">{venue.name}</span>
@@ -166,9 +127,7 @@ export default function ExecutionVenuesPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Latency</span>
-                    <span className="font-mono">
-                      {venue.connectivity.latency}ms
-                    </span>
+                    <span className="font-mono">{venue.connectivity.latency}ms</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Fill Rate</span>
@@ -176,15 +135,11 @@ export default function ExecutionVenuesPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Slippage</span>
-                    <span className="font-mono">
-                      {venue.quality.avgSlippage} bps
-                    </span>
+                    <span className="font-mono">{venue.quality.avgSlippage} bps</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Maker Fee</span>
-                    <span className="font-mono">
-                      {venue.capabilities.makerFee} bps
-                    </span>
+                    <span className="font-mono">{venue.capabilities.makerFee} bps</span>
                   </div>
                 </div>
               </CardContent>
@@ -195,12 +150,8 @@ export default function ExecutionVenuesPage() {
         {/* Venue Comparison Matrix */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">
-              Routing Matrix: {VENUE_MATRIX.instrument}
-            </CardTitle>
-            <CardDescription>
-              Best execution venue selection based on current market conditions
-            </CardDescription>
+            <CardTitle className="text-base">Routing Matrix: {VENUE_MATRIX.instrument}</CardTitle>
+            <CardDescription>Best execution venue selection based on current market conditions</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -227,27 +178,17 @@ export default function ExecutionVenuesPage() {
                             <div
                               className={cn(
                                 "size-2 rounded-full",
-                                venue?.connectivity.status === "connected" &&
-                                  "bg-emerald-500",
-                                venue?.connectivity.status === "degraded" &&
-                                  "bg-amber-500",
+                                venue?.connectivity.status === "connected" && "bg-emerald-500",
+                                venue?.connectivity.status === "degraded" && "bg-amber-500",
                               )}
                             />
                             <span className="font-medium">{venue?.name}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-right font-mono">
-                          {v.spread.toFixed(3)}%
-                        </TableCell>
-                        <TableCell className="text-right font-mono">
-                          ${(v.bidDepth / 1e6).toFixed(2)}M
-                        </TableCell>
-                        <TableCell className="text-right font-mono">
-                          ${(v.askDepth / 1e6).toFixed(2)}M
-                        </TableCell>
-                        <TableCell className="text-right font-mono">
-                          {v.fillProb}%
-                        </TableCell>
+                        <TableCell className="text-right font-mono">{formatPercent(v.spread, 3)}</TableCell>
+                        <TableCell className="text-right font-mono">${formatNumber(v.bidDepth / 1e6, 2)}M</TableCell>
+                        <TableCell className="text-right font-mono">${formatNumber(v.askDepth / 1e6, 2)}M</TableCell>
+                        <TableCell className="text-right font-mono">{v.fillProb}%</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Progress value={v.score} className="h-2 w-16" />
@@ -262,9 +203,7 @@ export default function ExecutionVenuesPage() {
                               Secondary
                             </Badge>
                           ) : (
-                            <span className="text-muted-foreground text-sm">
-                              Backup
-                            </span>
+                            <span className="text-muted-foreground text-sm">Backup</span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -281,9 +220,7 @@ export default function ExecutionVenuesPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Quality Metrics</CardTitle>
-              <CardDescription>
-                Historical execution quality by venue
-              </CardDescription>
+              <CardDescription>Historical execution quality by venue</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -298,21 +235,13 @@ export default function ExecutionVenuesPage() {
                 <TableBody>
                   {MOCK_VENUES.map((venue) => (
                     <TableRow key={venue.id}>
-                      <TableCell className="font-medium">
-                        {venue.name}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {venue.quality.latencyP50}ms
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {venue.quality.latencyP99}ms
-                      </TableCell>
+                      <TableCell className="font-medium">{venue.name}</TableCell>
+                      <TableCell className="text-right font-mono">{venue.quality.latencyP50}ms</TableCell>
+                      <TableCell className="text-right font-mono">{venue.quality.latencyP99}ms</TableCell>
                       <TableCell
                         className={cn(
                           "text-right font-mono",
-                          venue.quality.rejectRate > 0.5
-                            ? "text-amber-500"
-                            : "text-emerald-500",
+                          venue.quality.rejectRate > 0.5 ? "text-amber-500" : "text-emerald-500",
                         )}
                       >
                         {venue.quality.rejectRate}%
@@ -343,23 +272,15 @@ export default function ExecutionVenuesPage() {
                 <TableBody>
                   {MOCK_VENUES.map((venue) => (
                     <TableRow key={venue.id}>
-                      <TableCell className="font-medium">
-                        {venue.name}
-                      </TableCell>
+                      <TableCell className="font-medium">{venue.name}</TableCell>
                       <TableCell
-                        className={cn(
-                          "text-right font-mono",
-                          venue.capabilities.makerFee === 0 &&
-                            "text-emerald-500",
-                        )}
+                        className={cn("text-right font-mono", venue.capabilities.makerFee === 0 && "text-emerald-500")}
                       >
                         {venue.capabilities.makerFee} bps
                       </TableCell>
+                      <TableCell className="text-right font-mono">{venue.capabilities.takerFee} bps</TableCell>
                       <TableCell className="text-right font-mono">
-                        {venue.capabilities.takerFee} bps
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        ${(venue.capabilities.maxOrderSize / 1e6).toFixed(0)}M
+                        ${formatNumber(venue.capabilities.maxOrderSize / 1e6, 0)}M
                       </TableCell>
                     </TableRow>
                   ))}
@@ -373,23 +294,13 @@ export default function ExecutionVenuesPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Market Share</CardTitle>
-            <CardDescription>
-              Volume distribution across connected venues
-            </CardDescription>
+            <CardDescription>Volume distribution across connected venues</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4">
               <div className="flex-1 h-8 rounded-lg overflow-hidden flex">
-                {MOCK_VENUES.sort(
-                  (a, b) => b.volume.marketShare - a.volume.marketShare,
-                ).map((venue, i) => {
-                  const colors = [
-                    "bg-blue-500",
-                    "bg-emerald-500",
-                    "bg-violet-500",
-                    "bg-amber-500",
-                    "bg-red-500",
-                  ];
+                {MOCK_VENUES.sort((a, b) => b.volume.marketShare - a.volume.marketShare).map((venue, i) => {
+                  const colors = ["bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500", "bg-red-500"];
                   return (
                     <div
                       key={venue.id}
@@ -402,28 +313,13 @@ export default function ExecutionVenuesPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-4 mt-4">
-              {MOCK_VENUES.sort(
-                (a, b) => b.volume.marketShare - a.volume.marketShare,
-              ).map((venue, i) => {
-                const colors = [
-                  "bg-blue-500",
-                  "bg-emerald-500",
-                  "bg-violet-500",
-                  "bg-amber-500",
-                  "bg-red-500",
-                ];
+              {MOCK_VENUES.sort((a, b) => b.volume.marketShare - a.volume.marketShare).map((venue, i) => {
+                const colors = ["bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500", "bg-red-500"];
                 return (
                   <div key={venue.id} className="flex items-center gap-2">
-                    <div
-                      className={cn(
-                        "size-3 rounded",
-                        colors[i % colors.length],
-                      )}
-                    />
+                    <div className={cn("size-3 rounded", colors[i % colors.length])} />
                     <span className="text-sm">{venue.name}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {venue.volume.marketShare}%
-                    </span>
+                    <span className="text-sm text-muted-foreground">{venue.volume.marketShare}%</span>
                   </div>
                 );
               })}

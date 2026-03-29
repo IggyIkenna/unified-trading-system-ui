@@ -2,26 +2,12 @@
 
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { StatusBadge } from "@/components/trading/status-badge";
 import { cn } from "@/lib/utils";
-import {
-  Activity,
-  AlertTriangle,
-  AlertOctagon,
-  Info,
-  RefreshCw,
-  Filter,
-  Clock,
-} from "lucide-react";
+import { Activity, AlertTriangle, AlertOctagon, Info, RefreshCw, Filter, Clock } from "lucide-react";
 
 type EventSeverity = "INFO" | "WARNING" | "ERROR" | "CRITICAL";
 
@@ -321,12 +307,9 @@ export function EventStreamViewer({ className }: EventStreamViewerProps) {
   // Filter events
   const filteredEvents = React.useMemo(() => {
     return MOCK_EVENTS.filter((event) => {
-      if (eventTypeFilter !== "all" && event.eventType !== eventTypeFilter)
-        return false;
-      if (serviceFilter !== "all" && event.service !== serviceFilter)
-        return false;
-      if (severityFilter !== "all" && event.severity !== severityFilter)
-        return false;
+      if (eventTypeFilter !== "all" && event.eventType !== eventTypeFilter) return false;
+      if (serviceFilter !== "all" && event.service !== serviceFilter) return false;
+      if (severityFilter !== "all" && event.severity !== severityFilter) return false;
       if (venueFilter !== "all" && event.venue !== venueFilter) return false;
       return true;
     });
@@ -340,22 +323,15 @@ export function EventStreamViewer({ className }: EventStreamViewerProps) {
             <Activity className="size-4" />
             Event Stream
             {isLive && (
-              <Badge
-                variant="outline"
-                className="gap-1 text-[var(--status-live)] border-[var(--status-live)]"
-              >
-                <span className="size-1.5 rounded-full bg-[var(--status-live)] animate-pulse" />
-                Live
-              </Badge>
+              <StatusBadge
+                status="live"
+                label="Live"
+                className="h-6 gap-1 border-[var(--status-live)] text-[var(--status-live)]"
+              />
             )}
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 gap-1.5"
-              onClick={() => setIsLive(!isLive)}
-            >
+            <Button variant="ghost" size="sm" className="h-7 gap-1.5" onClick={() => setIsLive(!isLive)}>
               {isLive ? (
                 <>
                   <RefreshCw className="size-3 animate-spin" />
@@ -437,9 +413,7 @@ export function EventStreamViewer({ className }: EventStreamViewerProps) {
                 onClick={() => setTimeRange(range)}
                 className={cn(
                   "px-2 py-0.5 text-xs rounded transition-colors",
-                  timeRange === range
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                  timeRange === range ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {range}
@@ -454,21 +428,11 @@ export function EventStreamViewer({ className }: EventStreamViewerProps) {
           <table className="w-full text-xs">
             <thead className="sticky top-0 bg-background">
               <tr className="border-b">
-                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-20">
-                  Time
-                </th>
-                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-48">
-                  Event Type
-                </th>
-                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-40">
-                  Service
-                </th>
-                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-20">
-                  Severity
-                </th>
-                <th className="text-left py-2 px-2 font-medium text-muted-foreground">
-                  Details
-                </th>
+                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-20">Time</th>
+                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-48">Event Type</th>
+                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-40">Service</th>
+                <th className="text-left py-2 px-2 font-medium text-muted-foreground w-20">Severity</th>
+                <th className="text-left py-2 px-2 font-medium text-muted-foreground">Details</th>
               </tr>
             </thead>
             <tbody>
@@ -479,29 +443,18 @@ export function EventStreamViewer({ className }: EventStreamViewerProps) {
                 return (
                   <tr
                     key={event.id}
-                    className={cn(
-                      "border-b border-border/50 hover:bg-secondary/30 transition-colors",
-                      config.bg,
-                    )}
+                    className={cn("border-b border-border/50 hover:bg-secondary/30 transition-colors", config.bg)}
                   >
-                    <td className="py-2 px-2 font-mono text-muted-foreground">
-                      {event.timestamp}
-                    </td>
+                    <td className="py-2 px-2 font-mono text-muted-foreground">{event.timestamp}</td>
                     <td className="py-2 px-2 font-mono">{event.eventType}</td>
-                    <td className="py-2 px-2 text-muted-foreground truncate">
-                      {event.service}
-                    </td>
+                    <td className="py-2 px-2 text-muted-foreground truncate">{event.service}</td>
                     <td className="py-2 px-2">
-                      <div
-                        className={cn("flex items-center gap-1", config.color)}
-                      >
+                      <div className={cn("flex items-center gap-1", config.color)}>
                         <Icon className="size-3" />
                         {event.severity}
                       </div>
                     </td>
-                    <td className="py-2 px-2 text-muted-foreground truncate max-w-[300px]">
-                      {event.details}
-                    </td>
+                    <td className="py-2 px-2 text-muted-foreground truncate max-w-[300px]">{event.details}</td>
                   </tr>
                 );
               })}

@@ -3,6 +3,7 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { KpiStrip, type KpiMetric } from "../shared";
 import { useRiskData, formatCurrency } from "./risk-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function RiskKpiStripWidget(_props: WidgetComponentProps) {
   const {
@@ -22,12 +23,12 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
     { label: "Net Exposure", value: "$5.2M", sentiment: "neutral" },
     { label: "Margin Used", value: "47%", sentiment: "neutral" },
     {
-      label: `VaR 95%${regimeMultiplier !== 1 ? ` (×${regimeMultiplier.toFixed(1)})` : ""}`,
+      label: `VaR 95%${regimeMultiplier !== 1 ? ` (×${formatNumber(regimeMultiplier, 1)})` : ""}`,
       value: formatCurrency(-totalVar95),
       sentiment: "negative",
     },
     {
-      label: `ES 95%${regimeMultiplier !== 1 ? ` (×${regimeMultiplier.toFixed(1)})` : ""}`,
+      label: `ES 95%${regimeMultiplier !== 1 ? ` (×${formatNumber(regimeMultiplier, 1)})` : ""}`,
       value: formatCurrency(-totalES95),
       sentiment: "negative",
     },
@@ -37,12 +38,12 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
       sentiment: warningCount > 0 ? "negative" : "neutral",
     },
     {
-      label: `VaR 99%${regimeMultiplier !== 1 ? ` (×${regimeMultiplier.toFixed(1)})` : ""}`,
+      label: `VaR 99%${regimeMultiplier !== 1 ? ` (×${formatNumber(regimeMultiplier, 1)})` : ""}`,
       value: formatCurrency(-totalVar99),
       sentiment: "negative",
     },
     {
-      label: `ES 99%${regimeMultiplier !== 1 ? ` (×${regimeMultiplier.toFixed(1)})` : ""}`,
+      label: `ES 99%${regimeMultiplier !== 1 ? ` (×${formatNumber(regimeMultiplier, 1)})` : ""}`,
       value: formatCurrency(-totalES99),
       sentiment: "negative",
     },

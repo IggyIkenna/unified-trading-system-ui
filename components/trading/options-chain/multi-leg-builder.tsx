@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { DollarSign, Layers, Plus, Send, Trash2 } from "lucide-react";
 import * as React from "react";
 import type { OptionLeg, OptionsChainResponse, SpreadLeg, SpreadTemplate } from "./types";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const SPREAD_TEMPLATES: SpreadTemplate[] = [
   {
@@ -415,11 +416,11 @@ export function MultiLegBuilder({
                   {opt && (
                     <div className="flex items-center justify-between text-[9px] text-muted-foreground">
                       <span>
-                        Mid: {((opt.bid + opt.ask) / 2).toFixed(2)} | IV: {(opt.iv * 100).toFixed(1)}%
+                        Mid: {formatNumber((opt.bid + opt.ask) / 2, 2)} | IV: {formatPercent(opt.iv * 100, 1)}
                       </span>
                       <span className={leg.direction === "buy" ? "text-rose-400" : "text-emerald-400"}>
                         {leg.direction === "buy" ? "-" : "+"}
-                        {(((opt.bid + opt.ask) / 2) * leg.quantity).toFixed(2)}
+                        {formatNumber(((opt.bid + opt.ask) / 2) * leg.quantity, 2)}
                       </span>
                     </div>
                   )}
@@ -443,19 +444,19 @@ export function MultiLegBuilder({
                 <div className="grid grid-cols-4 gap-2 text-[10px]">
                   <div className="text-center">
                     <span className="text-muted-foreground block">Delta</span>
-                    <span className="font-mono font-medium">{combinedGreeks.delta.toFixed(3)}</span>
+                    <span className="font-mono font-medium">{formatNumber(combinedGreeks.delta, 3)}</span>
                   </div>
                   <div className="text-center">
                     <span className="text-muted-foreground block">Gamma</span>
-                    <span className="font-mono font-medium">{combinedGreeks.gamma.toFixed(4)}</span>
+                    <span className="font-mono font-medium">{formatNumber(combinedGreeks.gamma, 4)}</span>
                   </div>
                   <div className="text-center">
                     <span className="text-muted-foreground block">Theta</span>
-                    <span className="font-mono font-medium">{combinedGreeks.theta.toFixed(2)}</span>
+                    <span className="font-mono font-medium">{formatNumber(combinedGreeks.theta, 2)}</span>
                   </div>
                   <div className="text-center">
                     <span className="text-muted-foreground block">Vega</span>
-                    <span className="font-mono font-medium">{combinedGreeks.vega.toFixed(2)}</span>
+                    <span className="font-mono font-medium">{formatNumber(combinedGreeks.vega, 2)}</span>
                   </div>
                 </div>
               </div>

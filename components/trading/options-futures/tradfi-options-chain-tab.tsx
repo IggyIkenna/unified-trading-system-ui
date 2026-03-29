@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -165,8 +166,8 @@ export function TradFiOptionsChainTab({
         <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
           <span>Exp. move:</span>
           <span className="font-mono font-medium text-foreground">
-            ±${expectedMoveExpiry.toFixed(2)} (±
-            {((expectedMoveExpiry / spot) * 100).toFixed(1)}%)
+            ±{formatCurrency(expectedMoveExpiry, "USD", 2)} (±
+            {formatPercent((expectedMoveExpiry / spot) * 100, 1)})
           </span>
         </div>
 
@@ -256,15 +257,15 @@ export function TradFiOptionsChainTab({
                   }
                 >
                   <td className="text-right pr-1 py-0.5 font-mono text-emerald-400">
-                    {displayUsd ? `$${row.callBid.toFixed(2)}` : row.callBid.toFixed(2)}
+                    {displayUsd ? formatCurrency(row.callBid, "USD", 2) : formatNumber(row.callBid, 2)}
                   </td>
                   <td className="text-right pr-1 py-0.5 font-mono text-red-400">
-                    {displayUsd ? `$${row.callAsk.toFixed(2)}` : row.callAsk.toFixed(2)}
+                    {displayUsd ? formatCurrency(row.callAsk, "USD", 2) : formatNumber(row.callAsk, 2)}
                   </td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">{row.callIvAsk.toFixed(1)}</td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-blue-400">{row.callDelta.toFixed(2)}</td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">{formatNumber(row.callIvAsk, 1)}</td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-blue-400">{formatNumber(row.callDelta, 2)}</td>
                   <td className="text-right pr-2 py-0.5 text-muted-foreground border-r">
-                    {(row.callOi / 1000).toFixed(0)}k
+                    {formatNumber(row.callOi / 1000, 0)}k
                   </td>
                   <td
                     className={cn(
@@ -275,15 +276,15 @@ export function TradFiOptionsChainTab({
                     {row.strike}
                   </td>
                   <td className="text-right pr-1 py-0.5 text-muted-foreground border-l">
-                    {(row.putOi / 1000).toFixed(0)}k
+                    {formatNumber(row.putOi / 1000, 0)}k
                   </td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-red-400">{row.putDelta.toFixed(2)}</td>
-                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">{row.putIvAsk.toFixed(1)}</td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-red-400">{formatNumber(row.putDelta, 2)}</td>
+                  <td className="text-right pr-1 py-0.5 font-mono text-amber-400">{formatNumber(row.putIvAsk, 1)}</td>
                   <td className="text-right pr-1 py-0.5 font-mono text-emerald-400">
-                    {displayUsd ? `$${row.putBid.toFixed(2)}` : row.putBid.toFixed(2)}
+                    {displayUsd ? formatCurrency(row.putBid, "USD", 2) : formatNumber(row.putBid, 2)}
                   </td>
                   <td className="text-right pr-1 py-0.5 font-mono text-red-400">
-                    {displayUsd ? `$${row.putAsk.toFixed(2)}` : row.putAsk.toFixed(2)}
+                    {displayUsd ? formatCurrency(row.putAsk, "USD", 2) : formatNumber(row.putAsk, 2)}
                   </td>
                 </tr>
               );

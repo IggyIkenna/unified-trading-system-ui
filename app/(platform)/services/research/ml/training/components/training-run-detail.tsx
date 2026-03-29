@@ -48,6 +48,7 @@ import {
   RunAnalysisRegimesTab,
   RunComparisonView,
 } from "../../components/run-analysis-sections";
+import { formatNumber } from "@/lib/utils/formatters";
 
 const STATUS_COLORS: Record<string, string> = {
   running: "bg-blue-500/15 text-blue-400 border-blue-500/30",
@@ -198,11 +199,11 @@ export function RunDetail({
                 label: "Epoch",
                 value: `${run.current_epoch}/${run.total_epochs}`,
               },
-              { label: "Train Loss", value: run.train_loss.toFixed(4) },
-              { label: "Val Loss", value: run.val_loss.toFixed(4) },
+              { label: "Train Loss", value: formatNumber(run.train_loss, 4) },
+              { label: "Val Loss", value: formatNumber(run.val_loss, 4) },
               {
                 label: "Best Val",
-                value: `${run.best_val_loss.toFixed(4)} @${run.best_epoch}`,
+                value: `${formatNumber(run.best_val_loss, 4)} @${run.best_epoch}`,
               },
               {
                 label: run.status === "running" ? "ETA" : "Duration",
@@ -574,7 +575,7 @@ export function RunDetail({
                       }}
                     >
                       <Download className="size-3 shrink-0" />
-                      {a.type} · {(a.size / 1_000_000).toFixed(0)}MB
+                      {a.type} · {formatNumber(a.size / 1_000_000, 0)}MB
                     </Button>
                   ))}
                 </div>

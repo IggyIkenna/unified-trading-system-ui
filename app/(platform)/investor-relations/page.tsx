@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Shield, Presentation, ShieldAlert, ArrowRight } from "lucide-react";
+import { PageHeader } from "@/components/platform/page-header";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -30,12 +31,7 @@ const PRESENTATIONS = [
     color: "from-cyan-500/20 to-cyan-600/5",
     border: "border-cyan-500/30 hover:border-cyan-500/60",
     iconColor: "text-cyan-500",
-    tags: [
-      "Circuit Breaker",
-      "Access Matrix",
-      "Client Alerts",
-      "FCA Compliant",
-    ],
+    tags: ["Circuit Breaker", "Access Matrix", "Client Alerts", "FCA Compliant"],
   },
 ];
 
@@ -46,11 +42,7 @@ export default function InvestorRelationsPage() {
       <header className="border-b border-border bg-card/50 px-6 py-4">
         <div className="mx-auto max-w-5xl flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <img
-              src="/images/odum-logo.png"
-              alt="Odum Research"
-              className="size-7"
-            />
+            <img src="/images/odum-logo.png" alt="Odum Research" className="size-7" />
             <span className="font-bold text-lg tracking-tight">
               ODUM<span className="text-primary">.</span>
             </span>
@@ -64,15 +56,16 @@ export default function InvestorRelationsPage() {
 
       {/* Content */}
       <main className="mx-auto max-w-5xl px-6 py-16">
-        <div className="mb-12">
-          <h1 className="text-4xl font-black tracking-tight">
-            Investor Relations
-          </h1>
-          <p className="mt-3 text-lg text-muted-foreground max-w-2xl">
-            Board-level presentations covering platform capabilities,
-            operational resilience, and regulatory compliance.
-          </p>
-        </div>
+        <PageHeader
+          className="mb-12"
+          title="Investor Relations"
+          description={
+            <p className="text-lg">
+              Board-level presentations covering platform capabilities, operational resilience, and regulatory
+              compliance.
+            </p>
+          }
+        />
 
         <div className="grid gap-6 md:grid-cols-2">
           {PRESENTATIONS.map((p) => (
@@ -98,20 +91,12 @@ export default function InvestorRelationsPage() {
               </div>
 
               <h2 className="text-xl font-bold tracking-tight">{p.title}</h2>
-              <p className="mt-1 text-sm font-medium text-primary">
-                {p.subtitle}
-              </p>
-              <p className="mt-3 text-sm text-muted-foreground leading-relaxed flex-1">
-                {p.description}
-              </p>
+              <p className="mt-1 text-sm font-medium text-primary">{p.subtitle}</p>
+              <p className="mt-3 text-sm text-muted-foreground leading-relaxed flex-1">{p.description}</p>
 
               <div className="mt-5 flex flex-wrap gap-2">
                 {p.tags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="secondary"
-                    className="text-[10px] font-medium"
-                  >
+                  <Badge key={tag} variant="secondary" className="text-[10px] font-medium">
                     {tag}
                   </Badge>
                 ))}
@@ -121,8 +106,7 @@ export default function InvestorRelationsPage() {
         </div>
 
         <p className="mt-12 text-xs text-muted-foreground text-center">
-          Odum Research Ltd &middot; FCA Authorised &amp; Regulated &middot; Ref
-          975797 &middot; Confidential
+          Odum Research Ltd &middot; FCA Authorised &amp; Regulated &middot; Ref 975797 &middot; Confidential
         </p>
       </main>
     </div>

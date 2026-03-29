@@ -1,12 +1,13 @@
 "use client";
 
-import { Rocket, Loader2, X, AlertTriangle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useExecutionDataStatusContext } from "@/components/ops/deployment/data-status/execution-data-status-context";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useExecutionDataStatusContext } from "@/components/ops/deployment/data-status/execution-data-status-context";
+import { Spinner } from "@/components/ui/spinner";
+import { AlertTriangle, Rocket, X } from "lucide-react";
 
 const DEPLOY_REGIONS = [
   { value: "asia-northeast1", label: "asia-northeast1 (Tokyo)" },
@@ -193,7 +194,7 @@ export function ExecutionDataStatusDeployModal() {
             disabled={deployingMissing || missingShardsData.total_missing === 0}
             className="bg-[var(--color-accent-cyan)] hover:bg-[var(--color-accent-cyan)]/90"
           >
-            {deployingMissing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Rocket className="h-4 w-4 mr-2" />}
+            {deployingMissing ? <Spinner className="h-4 w-4 mr-2" /> : <Rocket className="h-4 w-4 mr-2" />}
             Deploy {missingShardsData.total_missing} Shards
           </Button>
         </div>

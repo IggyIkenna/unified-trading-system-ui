@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDeployFormContext } from "@/components/ops/deployment/form/deploy-form-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function DeployFormAdvancedSection() {
   const {
@@ -255,7 +256,7 @@ export function DeployFormAdvancedSection() {
 
               const factors: string[] = [];
               if (containerMaxWorkers && parseInt(containerMaxWorkers, 10) > baseWorkers) {
-                factors.push(`${maxWorkers}/${baseWorkers} workers = ${(maxWorkers / baseWorkers).toFixed(1)}x`);
+                factors.push(`${maxWorkers}/${baseWorkers} workers = ${formatNumber(maxWorkers / baseWorkers, 1)}x`);
               }
               if (skipVenueSharding) {
                 factors.push("venue consolidation = 2x");
@@ -266,7 +267,9 @@ export function DeployFormAdvancedSection() {
                   <>
                     <p>
                       Machine resources will be scaled up by{" "}
-                      <span className="text-[var(--color-accent-yellow)] font-semibold">{scaleFactor.toFixed(1)}x</span>
+                      <span className="text-[var(--color-accent-yellow)] font-semibold">
+                        {formatNumber(scaleFactor, 1)}x
+                      </span>
                     </p>
                     {factors.length > 0 && (
                       <p className="text-[var(--color-text-muted)]">Factors: {factors.join(" × ")}</p>
