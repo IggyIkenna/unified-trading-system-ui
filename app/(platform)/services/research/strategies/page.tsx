@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ApiError } from "@/components/shared/api-error";
 import { cn } from "@/lib/utils";
 import { useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies";
 import type {
@@ -51,8 +52,20 @@ export default function StrategiesPage() {
   const { compareSelected, toggleCompare, clearCompare, compareCount } = useCompareMode(3);
   const [selectedBt, setSelectedBt] = React.useState<string | null>(null);
 
-  const { data: backtestsData, isLoading: btLoading } = useStrategyBacktests();
-  const { data: templatesData } = useStrategyTemplates();
+  const {
+    data: backtestsData,
+    isLoading: btLoading,
+    isError: btIsError,
+    error: btError,
+    refetch: refetchBt,
+  } = useStrategyBacktests();
+  const {
+    data: templatesData,
+    isLoading: tplLoading,
+    isError: tplIsError,
+    error: tplError,
+    refetch: refetchTpl,
+  } = useStrategyTemplates();
 
   const backtests: BacktestRun[] = React.useMemo(() => {
     const raw =
@@ -128,6 +141,21 @@ export default function StrategiesPage() {
   const detailSignals: StrategySignal[] = showDetail && selectedBt ? (BACKTEST_SIGNALS[selectedBt] ?? []) : [];
   const detailQuality: SignalQualityMetrics | null =
     showDetail && selectedBt ? (BACKTEST_SIGNAL_QUALITY[selectedBt] ?? null) : null;
+
+  if (!btLoading && !tplLoading && (btIsError || tplIsError)) {
+    return (
+      <div className="p-6">
+        <ApiError
+          error={(btError ?? tplError) as Error}
+          onRetry={() => {
+            void refetchBt();
+            void refetchTpl();
+          }}
+          title="Failed to load strategies"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">

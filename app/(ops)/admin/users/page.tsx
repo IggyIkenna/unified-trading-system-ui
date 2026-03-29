@@ -2,12 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UserPlus, Search } from "lucide-react";
 import { useProvisionedUsers, useAccessRequests } from "@/hooks/api/use-user-management";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Spinner } from "@/components/shared/spinner";
 import type { ProvisionedPerson } from "@/lib/types/user-management";
 
 const ENTITLEMENT_SHORT: Record<string, string> = {
@@ -21,7 +24,7 @@ const ENTITLEMENT_SHORT: Record<string, string> = {
 };
 
 export default function AdminUsersPage() {
-  const { data, isLoading } = useProvisionedUsers();
+  const { data, isLoading, isError, error, refetch } = useProvisionedUsers();
   const pendingRequests = useAccessRequests("pending");
   const [search, setSearch] = React.useState("");
 
@@ -44,6 +47,22 @@ export default function AdminUsersPage() {
 
   const internal = users.filter((u) => ["admin", "collaborator", "operations", "accounting"].includes(u.role));
   const external = users.filter((u) => !["admin", "collaborator", "operations", "accounting"].includes(u.role));
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center px-6 py-12">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="px-6 py-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load users" />
+      </div>
+    );
+  }
 
   return (
     <div className="px-6 py-6 space-y-6">
@@ -72,14 +91,13 @@ export default function AdminUsersPage() {
         />
       </div>
 
-      {isLoading ? (
-        <div className="text-muted-foreground text-sm">Loading...</div>
-      ) : (
-        <div className="space-y-8">
-          {internal.length > 0 && <UserSection title="Internal" users={internal} pendingByEmail={pendingByEmail} />}
-          {external.length > 0 && <UserSection title="External" users={external} pendingByEmail={pendingByEmail} />}
-        </div>
-      )}
+      <div className="space-y-8">
+        {internal.length > 0 && <UserSection title="Internal" users={internal} pendingByEmail={pendingByEmail} />}
+        {external.length > 0 && <UserSection title="External" users={external} pendingByEmail={pendingByEmail} />}
+        {internal.length === 0 && external.length === 0 ? (
+          <EmptyState title="No users" description="No provisioned users match your search." />
+        ) : null}
+      </div>
     </div>
   );
 }

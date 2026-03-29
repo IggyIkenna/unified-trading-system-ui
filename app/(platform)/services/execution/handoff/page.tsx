@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { cn } from "@/lib/utils";
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
 import { useExecutionHandoff } from "@/hooks/api/use-orders";
@@ -25,6 +25,8 @@ import {
   Settings,
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 
 const impactColors: Record<string, string> = {
   high: "text-red-500 bg-red-500/10",
@@ -59,7 +61,7 @@ const HANDOFF_DEFAULTS = {
 };
 
 export default function ExecutionHandoffPage() {
-  const { data: handoffData, isLoading } = useExecutionHandoff();
+  const { data: handoffData, isLoading, isError, error, refetch } = useExecutionHandoff();
   const mockHandoff: typeof HANDOFF_DEFAULTS = (handoffData as any)?.data ?? HANDOFF_DEFAULTS;
 
   const [notes, setNotes] = React.useState("");
@@ -70,7 +72,28 @@ export default function ExecutionHandoffPage() {
     setChecklist((prev) => prev.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
   };
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-4">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load handoff" />
+        </div>
+      </div>
+    );
+  }
 
   const allApprovalsComplete = Object.values(mockHandoff.approvals).every((a: any) => a.approved);
   const allChecklistComplete = checklist.every((item: any) => item.done);

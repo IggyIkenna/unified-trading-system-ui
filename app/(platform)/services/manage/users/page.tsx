@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,9 +19,11 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { Users, Plus, Search, Shield, Clock, UserPlus } from "lucide-react";
 import { useOrganizationsList, useOrgMembers } from "@/hooks/api/use-organizations";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
 
 interface User {
   id: string;
@@ -36,9 +38,21 @@ interface User {
 const ROLES = ["admin", "internal", "client", "viewer"];
 
 export default function UsersManagementPage() {
-  const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList();
+  const {
+    data: orgsData,
+    isLoading: orgsLoading,
+    isError: orgsIsError,
+    error: orgsError,
+    refetch: refetchOrgs,
+  } = useOrganizationsList();
   const orgs: Array<{ id: string; name: string }> = (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? [];
-  const { data: membersData, isLoading: membersLoading } = useOrgMembers("all");
+  const {
+    data: membersData,
+    isLoading: membersLoading,
+    isError: membersIsError,
+    error: membersError,
+    refetch: refetchMembers,
+  } = useOrgMembers("all");
 
   const apiUsers: User[] = ((membersData as any)?.data ?? []).map((m: any) => ({
     id: m.id ?? "",
@@ -151,6 +165,22 @@ export default function UsersManagementPage() {
         </Card>
       </main>
     );
+
+  const listError = (orgsError ?? membersError) as Error | null;
+  if ((orgsIsError || membersIsError) && listError) {
+    return (
+      <div className="p-6">
+        <ApiError
+          error={listError}
+          onRetry={() => {
+            void refetchOrgs();
+            void refetchMembers();
+          }}
+          title="Failed to load users"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -366,23 +396,21 @@ export default function UsersManagementPage() {
                 ))}
                 {filteredUsers.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12">
-                      <div className="flex flex-col items-center gap-3">
-                        <UserPlus className="size-8 text-muted-foreground/50" />
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">No users found</p>
-                          <p className="text-xs text-muted-foreground/70 mt-1">
-                            {searchQuery || orgFilter !== "all"
-                              ? "Try adjusting your filters"
-                              : "Add your first team member to get started"}
-                          </p>
-                        </div>
-                        {!searchQuery && orgFilter === "all" && (
-                          <Button size="sm" variant="outline" onClick={() => setInviteOpen(true)}>
-                            <Plus className="mr-1 size-3" /> Add User
-                          </Button>
-                        )}
-                      </div>
+                    <TableCell colSpan={7} className="p-6">
+                      <EmptyState
+                        icon={UserPlus}
+                        title="No users found"
+                        description={
+                          searchQuery || orgFilter !== "all"
+                            ? "Try adjusting your filters."
+                            : "Add your first team member to get started."
+                        }
+                        action={
+                          !searchQuery && orgFilter === "all"
+                            ? { label: "Add user", onClick: () => setInviteOpen(true) }
+                            : undefined
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 )}

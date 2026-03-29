@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,8 @@ import {
   Lock,
 } from "lucide-react";
 import { usePermissionCatalogue, useSearchPermissions } from "@/hooks/api/use-user-management";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import type { PermissionDomain } from "@/lib/types/user-management";
 
 const DOMAIN_ICONS: Record<string, React.ReactNode> = {
@@ -32,7 +34,7 @@ const DOMAIN_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function CataloguePage() {
-  const { data, isLoading } = usePermissionCatalogue();
+  const { data, isLoading, isError, error, refetch } = usePermissionCatalogue();
   const [search, setSearch] = React.useState("");
   const [expandedDomains, setExpandedDomains] = React.useState<Set<string>>(new Set());
   const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(new Set());
@@ -73,6 +75,22 @@ export default function CataloguePage() {
     (sum, d) => sum + d.categories.reduce((s, c) => s + c.permissions.length, 0),
     0,
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center px-6 py-12">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="px-6 py-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load permission catalogue" />
+      </div>
+    );
+  }
 
   return (
     <div className="px-6 py-6 space-y-6">
@@ -123,22 +141,18 @@ export default function CataloguePage() {
       )}
 
       {/* Domain tree */}
-      {isLoading ? (
-        <div className="text-muted-foreground text-sm">Loading catalogue...</div>
-      ) : (
-        <div className="space-y-2">
-          {(data?.domains ?? []).map((domain) => (
-            <DomainSection
-              key={domain.key}
-              domain={domain}
-              isExpanded={expandedDomains.has(domain.key)}
-              expandedCategories={expandedCategories}
-              onToggleDomain={() => toggleDomain(domain.key)}
-              onToggleCategory={(catKey) => toggleCategory(`${domain.key}:${catKey}`)}
-            />
-          ))}
-        </div>
-      )}
+      <div className="space-y-2">
+        {(data?.domains ?? []).map((domain) => (
+          <DomainSection
+            key={domain.key}
+            domain={domain}
+            isExpanded={expandedDomains.has(domain.key)}
+            expandedCategories={expandedCategories}
+            onToggleDomain={() => toggleDomain(domain.key)}
+            onToggleCategory={(catKey) => toggleCategory(`${domain.key}:${catKey}`)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

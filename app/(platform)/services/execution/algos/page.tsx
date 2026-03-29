@@ -1,20 +1,22 @@
 "use client";
 
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
-import { PageHeader } from "@/components/platform/page-header";
-import { StatusBadge } from "@/components/trading/status-badge";
+import { PageHeader } from "@/components/shared/page-header";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAlgos, useExecutionBacktests } from "@/hooks/api/use-orders";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { pnlColorClass } from "@/lib/utils/pnl";
 import type { ColumnDef } from "@tanstack/react-table";
-import { AlertCircle, Cpu, GitCompare, RefreshCw } from "lucide-react";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Cpu, GitCompare } from "lucide-react";
 import * as React from "react";
 
 type AlgoListRow = {
@@ -37,7 +39,10 @@ type AlgoListRow = {
 export default function ExecutionAlgosPage() {
   const { data: algosData, isLoading: algosLoading, error: algosError, refetch: refetchAlgos } = useAlgos();
   const { data: backtestsData, isLoading: btLoading, error: btError, refetch: refetchBt } = useExecutionBacktests();
-  const MOCK_EXECUTION_ALGOS: AlgoListRow[] = ((algosData as { data?: AlgoListRow[] })?.data ?? []) as AlgoListRow[];
+  const mockExecutionAlgos = React.useMemo(
+    () => ((algosData as { data?: AlgoListRow[] })?.data ?? []) as AlgoListRow[],
+    [algosData],
+  );
   const MOCK_ALGO_BACKTESTS: Array<any> = (backtestsData as any)?.data ?? [];
 
   const [selectedAlgos, setSelectedAlgos] = React.useState<string[]>([]);
@@ -49,12 +54,12 @@ export default function ExecutionAlgosPage() {
     setSelectedAlgos((prev) => (prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]));
   }, []);
 
-  const selectedAlgoData = MOCK_EXECUTION_ALGOS.filter((a: any) => selectedAlgos.includes(a.id));
+  const selectedAlgoData = mockExecutionAlgos.filter((a: AlgoListRow) => selectedAlgos.includes(a.id));
 
   const hasError = algosError || btError;
   const refetchAll = () => {
-    refetchAlgos();
-    refetchBt();
+    void refetchAlgos();
+    void refetchBt();
   };
 
   const algoColumns = React.useMemo<ColumnDef<AlgoListRow>[]>(
@@ -63,8 +68,8 @@ export default function ExecutionAlgosPage() {
         id: "select",
         header: () => (
           <Checkbox
-            checked={MOCK_EXECUTION_ALGOS.length > 0 && selectedAlgos.length === MOCK_EXECUTION_ALGOS.length}
-            onCheckedChange={(checked) => setSelectedAlgos(checked ? MOCK_EXECUTION_ALGOS.map((a) => a.id) : [])}
+            checked={mockExecutionAlgos.length > 0 && selectedAlgos.length === mockExecutionAlgos.length}
+            onCheckedChange={(checked) => setSelectedAlgos(checked ? mockExecutionAlgos.map((a) => a.id) : [])}
           />
         ),
         cell: ({ row }) => (
@@ -142,7 +147,7 @@ export default function ExecutionAlgosPage() {
         },
       },
     ],
-    [MOCK_EXECUTION_ALGOS, selectedAlgos, toggleAlgo],
+    [mockExecutionAlgos, selectedAlgos, toggleAlgo],
   );
 
   if (isLoading)
@@ -155,13 +160,34 @@ export default function ExecutionAlgosPage() {
 
   if (hasError) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-        <AlertCircle className="size-8 text-destructive" />
-        <p>Failed to load algorithm data</p>
-        <Button variant="outline" size="sm" onClick={refetchAll}>
-          <RefreshCw className="size-3.5 mr-1.5" />
-          Retry
-        </Button>
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-3">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <ApiError
+            error={(algosError ?? btError) as Error}
+            onRetry={refetchAll}
+            title="Failed to load algorithm data"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoading && mockExecutionAlgos.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-3">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <EmptyState title="No algorithms" description="No execution algorithms are registered yet." />
+        </div>
       </div>
     );
   }
@@ -315,7 +341,7 @@ export default function ExecutionAlgosPage() {
           <CardContent>
             <DataTable
               columns={algoColumns}
-              data={MOCK_EXECUTION_ALGOS}
+              data={mockExecutionAlgos}
               enableColumnVisibility={false}
               emptyMessage="No execution algorithms configured. Algorithms will appear here once deployed."
             />
@@ -334,7 +360,7 @@ export default function ExecutionAlgosPage() {
             )}
             <div className="grid grid-cols-2 gap-4">
               {MOCK_ALGO_BACKTESTS.map((bt) => {
-                const algo = MOCK_EXECUTION_ALGOS.find((a) => a.id === bt.algoId);
+                const algo = mockExecutionAlgos.find((a) => a.id === bt.algoId);
                 return (
                   <div key={bt.id} className="p-4 rounded-lg border">
                     <div className="flex items-center justify-between mb-4">

@@ -35,8 +35,9 @@ import type {
 } from "@/lib/mocks/fixtures/trading-data";
 import { CLIENTS, ORGANIZATIONS } from "@/lib/mocks/fixtures/trading-data";
 import { formatCurrency as formatUsdCompact, formatNumber } from "@/lib/utils/formatters";
-import { AlertTriangle } from "lucide-react";
 import * as React from "react";
+
+import { ApiError } from "@/components/shared/api-error";
 
 import "@/components/widgets/overview/register";
 
@@ -65,29 +66,37 @@ function getToday(): string {
   return new Date().toISOString().split("T")[0];
 }
 
-function ErrorBanner({ message }: { message: string }) {
-  return (
-    <div className="mx-4 my-4 p-4 rounded-lg border border-destructive/50 bg-destructive/10 flex items-center gap-3">
-      <AlertTriangle className="size-5 text-destructive flex-shrink-0" />
-      <div>
-        <p className="text-sm font-medium text-destructive">Failed to load dashboard data</p>
-        <p className="text-xs text-muted-foreground mt-1">{message}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function OverviewPage() {
-  const { data: orgsData, isLoading: orgsLoading, error: orgsError } = useTradingOrgs();
-  const { data: clientsData, isLoading: clientsLoading, error: clientsError } = useTradingClients();
-  const { data: pnlData, isLoading: pnlLoading, error: pnlError } = useTradingPnl();
-  const { data: timeseriesData, isLoading: timeseriesLoading, error: timeseriesError } = useTradingTimeseries();
-  const { data: performanceData, isLoading: perfLoading, error: perfError } = useTradingPerformance();
-  const { data: liveBatchData, isLoading: liveBatchLoading, error: liveBatchError } = useTradingLiveBatchDelta();
-  const { data: alertsData, isLoading: alertsLoading, error: alertsError } = useAlerts();
-  const { data: ordersData, isLoading: ordersLoading } = useOrders();
-  const { data: positionsData, error: positionsError } = usePositions();
-  const { data: healthData, error: healthError } = useServiceHealth();
+  const { data: orgsData, isLoading: orgsLoading, error: orgsError, refetch: refetchOrgs } = useTradingOrgs();
+  const {
+    data: clientsData,
+    isLoading: clientsLoading,
+    error: clientsError,
+    refetch: refetchClients,
+  } = useTradingClients();
+  const { data: pnlData, isLoading: pnlLoading, error: pnlError, refetch: refetchPnl } = useTradingPnl();
+  const {
+    data: timeseriesData,
+    isLoading: timeseriesLoading,
+    error: timeseriesError,
+    refetch: refetchTimeseries,
+  } = useTradingTimeseries();
+  const {
+    data: performanceData,
+    isLoading: perfLoading,
+    error: perfError,
+    refetch: refetchPerformance,
+  } = useTradingPerformance();
+  const {
+    data: liveBatchData,
+    isLoading: liveBatchLoading,
+    error: liveBatchError,
+    refetch: refetchLiveBatch,
+  } = useTradingLiveBatchDelta();
+  const { data: alertsData, isLoading: alertsLoading, error: alertsError, refetch: refetchAlerts } = useAlerts();
+  const { data: ordersData, isLoading: ordersLoading, refetch: refetchOrders } = useOrders();
+  const { data: positionsData, error: positionsError, refetch: refetchPositions } = usePositions();
+  const { data: healthData, error: healthError, refetch: refetchHealth } = useServiceHealth();
 
   const [realtimePnl, setRealtimePnl] = React.useState<Record<string, number>>({});
   const [realtimePnlPoints, setRealtimePnlPoints] = React.useState<TimeSeriesPoint[]>([]);
@@ -237,6 +246,30 @@ export default function OverviewPage() {
     healthError ??
     liveBatchError;
 
+  const refetchOverview = React.useCallback(() => {
+    void refetchOrgs();
+    void refetchClients();
+    void refetchPnl();
+    void refetchTimeseries();
+    void refetchPerformance();
+    void refetchLiveBatch();
+    void refetchAlerts();
+    void refetchOrders();
+    void refetchPositions();
+    void refetchHealth();
+  }, [
+    refetchOrgs,
+    refetchClients,
+    refetchPnl,
+    refetchTimeseries,
+    refetchPerformance,
+    refetchLiveBatch,
+    refetchAlerts,
+    refetchOrders,
+    refetchPositions,
+    refetchHealth,
+  ]);
+
   const hasRealtimePnl = Object.keys(realtimePnl).length > 0;
   const totalPnl = hasRealtimePnl ? Object.values(realtimePnl).reduce((sum, v) => sum + v, 0) : aggregatedPnL.total;
   const kpiStrategies = strategyPerformance;
@@ -362,7 +395,11 @@ export default function OverviewPage() {
 
   return (
     <div className="h-full bg-background flex flex-col">
-      {firstError && <ErrorBanner message={(firstError as Error).message ?? "Unknown error"} />}
+      {firstError ? (
+        <div className="p-4">
+          <ApiError error={firstError as Error} onRetry={refetchOverview} title="Failed to load dashboard data" />
+        </div>
+      ) : null}
       <div className="flex-1 overflow-auto p-2">
         <OverviewDataProvider value={overviewData}>
           <WidgetGrid tab="overview" />

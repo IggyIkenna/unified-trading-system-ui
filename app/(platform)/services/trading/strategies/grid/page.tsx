@@ -1,11 +1,13 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { DimensionalGrid, type DimensionDef, type MetricDef } from "@/components/trading/dimensional-grid";
 import { PromoteFlowModal } from "@/components/promote/promote-flow-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import { Download, Grid3X3, Rocket } from "lucide-react";
 import * as React from "react";
 
@@ -135,7 +137,7 @@ const METRICS: MetricDef[] = [
 ];
 
 export default function StrategyGridPage() {
-  const { data: perfData, isLoading } = useStrategyPerformance();
+  const { data: perfData, isLoading, isError, error, refetch } = useStrategyPerformance();
   const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.backtests ?? [];
   const mockBacktestResults = perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RESULTS;
 
@@ -183,7 +185,21 @@ export default function StrategyGridPage() {
     setPromoteModalOpen(true);
   };
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load strategy performance" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">

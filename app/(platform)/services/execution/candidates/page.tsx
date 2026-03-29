@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,9 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Spinner } from "@/components/shared/spinner";
 
 const statusConfig: Record<string, { label: string; color: string }> = {
   ready: { label: "Ready", color: "text-emerald-500" },
@@ -30,7 +33,7 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 };
 
 export default function ExecutionCandidatesPage() {
-  const { data: candidatesData, isLoading } = useExecutionCandidates();
+  const { data: candidatesData, isLoading, isError, error, refetch } = useExecutionCandidates();
   const mockCandidates: Array<any> = (candidatesData as any)?.data ?? [];
 
   const [selectedCandidates, setSelectedCandidates] = React.useState<string[]>([]);
@@ -39,7 +42,43 @@ export default function ExecutionCandidatesPage() {
     setSelectedCandidates((prev) => (prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]));
   };
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-4">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load candidates" />
+        </div>
+      </div>
+    );
+  }
+
+  if (mockCandidates.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-4">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <EmptyState title="No promotion candidates" description="There are no algorithms pending promotion review." />
+        </div>
+      </div>
+    );
+  }
 
   const readyCandidates = mockCandidates.filter((c: any) => c.status === "ready");
   const pendingCandidates = mockCandidates.filter((c: any) => c.status !== "ready");

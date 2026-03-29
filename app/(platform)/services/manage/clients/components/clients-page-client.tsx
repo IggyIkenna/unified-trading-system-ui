@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -35,6 +35,7 @@ import {
   Check,
 } from "lucide-react";
 import { useOrganizationsList, useSubscriptions } from "@/hooks/api/use-organizations";
+import { ApiError } from "@/components/shared/api-error";
 
 import { ClientsOrgDetail } from "./clients-org-detail";
 import type { Organization, Subscription } from "./clients-types";
@@ -42,8 +43,20 @@ import { TIERS } from "./clients-types";
 import { formatNumber } from "@/lib/utils/formatters";
 
 export default function ClientsManagementPage() {
-  const { data: orgsApiData, isLoading: orgsLoading } = useOrganizationsList();
-  const { data: subsApiData, isLoading: subsLoading } = useSubscriptions();
+  const {
+    data: orgsApiData,
+    isLoading: orgsLoading,
+    isError: orgsIsError,
+    error: orgsError,
+    refetch: refetchOrgs,
+  } = useOrganizationsList();
+  const {
+    data: subsApiData,
+    isLoading: subsLoading,
+    isError: subsIsError,
+    error: subsError,
+    refetch: refetchSubs,
+  } = useSubscriptions();
 
   const INITIAL_ORGS: Organization[] = ((orgsApiData as any)?.data ?? []).map((o: any) => ({
     id: o.id ?? "",
@@ -281,6 +294,22 @@ export default function ClientsManagementPage() {
         </div>
       </main>
     );
+
+  const clientsError = (orgsError ?? subsError) as Error | null;
+  if ((orgsIsError || subsIsError) && clientsError) {
+    return (
+      <div className="p-6">
+        <ApiError
+          error={clientsError}
+          onRetry={() => {
+            void refetchOrgs();
+            void refetchSubs();
+          }}
+          title="Failed to load clients"
+        />
+      </div>
+    );
+  }
 
   // Detail view
   if (selectedOrg) {

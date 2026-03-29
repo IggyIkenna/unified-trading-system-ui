@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -40,6 +40,7 @@ import { useServiceHealth } from "@/hooks/api/use-service-status";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { usePositionsSummary } from "@/hooks/api/use-positions";
 import { formatNumber } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
 
 function formatRelativeTime(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime();
@@ -98,13 +99,53 @@ interface PendingApproval {
 }
 
 export default function AdminDashboardPage() {
-  const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList();
-  const { data: eventsData, isLoading: eventsLoading } = useAuditEvents();
-  const { data: healthData, isLoading: healthLoading } = useServiceHealth();
-  const { data: strategyData, isLoading: strategyLoading } = useStrategyPerformance();
-  const { data: positionsData, isLoading: positionsLoading } = usePositionsSummary();
+  const {
+    data: orgsData,
+    isLoading: orgsLoading,
+    isError: orgsIsError,
+    error: orgsError,
+    refetch: refetchOrgs,
+  } = useOrganizationsList();
+  const {
+    data: eventsData,
+    isLoading: eventsLoading,
+    isError: eventsIsError,
+    error: eventsError,
+    refetch: refetchEvents,
+  } = useAuditEvents();
+  const {
+    data: healthData,
+    isLoading: healthLoading,
+    isError: healthIsError,
+    error: healthError,
+    refetch: refetchHealth,
+  } = useServiceHealth();
+  const {
+    data: strategyData,
+    isLoading: strategyLoading,
+    isError: strategyIsError,
+    error: strategyError,
+    refetch: refetchStrategy,
+  } = useStrategyPerformance();
+  const {
+    data: positionsData,
+    isLoading: positionsLoading,
+    isError: positionsIsError,
+    error: positionsError,
+    refetch: refetchPositions,
+  } = usePositionsSummary();
 
   const isLoading = orgsLoading || eventsLoading || healthLoading || strategyLoading || positionsLoading;
+  const dashboardError = (orgsError ?? eventsError ?? healthError ?? strategyError ?? positionsError) as Error | null;
+  const hasDashboardError = orgsIsError || eventsIsError || healthIsError || strategyIsError || positionsIsError;
+
+  const refetchDashboard = () => {
+    void refetchOrgs();
+    void refetchEvents();
+    void refetchHealth();
+    void refetchStrategy();
+    void refetchPositions();
+  };
 
   const orgs: Array<{
     id: string;
@@ -162,6 +203,9 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="container px-4 py-8 md:px-6 space-y-8">
+        {!isLoading && hasDashboardError && dashboardError ? (
+          <ApiError error={dashboardError} onRetry={refetchDashboard} title="Failed to load admin dashboard" />
+        ) : null}
         {/* Skeleton Loading State */}
         {isLoading && (
           <>

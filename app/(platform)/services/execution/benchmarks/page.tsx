@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,9 @@ import {
   Info,
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Spinner } from "@/components/shared/spinner";
 
 // Benchmark definitions (static reference data, not mock)
 const BENCHMARKS = [
@@ -58,8 +61,14 @@ const getPerformanceColor = (value: number) => {
 };
 
 export default function ExecutionBenchmarksPage() {
-  const { data: algosData, isLoading: algosLoading } = useAlgos();
-  const { data: ordersData, isLoading: ordersLoading } = useOrders();
+  const {
+    data: algosData,
+    isLoading: algosLoading,
+    isError: algosIsError,
+    error: algosError,
+    refetch: refetchAlgos,
+  } = useAlgos();
+  const { isLoading: ordersLoading, isError: ordersIsError, error: ordersError, refetch: refetchOrders } = useOrders();
 
   const mockBenchmarkPerformance: Array<any> =
     (algosData as any)?.benchmarkPerformance ??
@@ -76,6 +85,8 @@ export default function ExecutionBenchmarksPage() {
     [];
 
   const isLoading = algosLoading || ordersLoading;
+  const isError = algosIsError || ordersIsError;
+  const queryError = (algosError ?? ordersError) as Error | null;
 
   const [selectedBenchmark, setSelectedBenchmark] = React.useState("arrival");
   const [timeRange, setTimeRange] = React.useState("30d");
@@ -95,7 +106,50 @@ export default function ExecutionBenchmarksPage() {
       ? mockBenchmarkPerformance.reduce((worst, p) => (p.arrival < worst.arrival ? p : worst))
       : null;
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError && queryError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-4">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <ApiError
+            error={queryError}
+            onRetry={() => {
+              void refetchAlgos();
+              void refetchOrders();
+            }}
+            title="Failed to load benchmarks"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (mockBenchmarkPerformance.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-4">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <EmptyState title="No benchmark data" description="No algorithm benchmark rows are available yet." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,14 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Newspaper, Clock, AlertTriangle, Flame, ArrowUp, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Newspaper, Clock, Flame, ArrowUp, Minus } from "lucide-react";
 import { useNewsFeed, type NewsSeverity } from "@/hooks/api/use-news";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
 
 function severityBadge(severity: NewsSeverity) {
   switch (severity) {
@@ -55,7 +56,7 @@ const SOURCES = ["All", "Reuters", "Bloomberg", "CoinDesk", "The Block", "ESPN",
 const SEVERITIES = ["All", "breaking", "high", "medium", "low"] as const;
 
 export default function NewsPage() {
-  const { data: news, isLoading } = useNewsFeed();
+  const { data: news, isLoading, isError, error, refetch } = useNewsFeed();
   const [severityFilter, setSeverityFilter] = React.useState<string>("All");
   const [sourceFilter, setSourceFilter] = React.useState<string>("All");
 
@@ -75,6 +76,31 @@ export default function NewsPage() {
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-28 w-full" />
         ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load news" />
+      </div>
+    );
+  }
+
+  if (!news || news.length === 0) {
+    return (
+      <div className="p-6">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
+              <Newspaper className="size-6 text-cyan-400" />
+              News Feed
+            </span>
+          }
+          description="Market news filtered by relevance to active strategies and positions"
+        />
+        <EmptyState title="No news items" description="There is no news in the feed for your scope." />
       </div>
     );
   }
@@ -127,12 +153,7 @@ export default function NewsPage() {
 
         {/* News List */}
         {filtered.length === 0 ? (
-          <Card className="bg-card/50">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertTriangle className="size-8 mb-2" />
-              <p className="text-sm">No news items match the current filters.</p>
-            </CardContent>
-          </Card>
+          <EmptyState title="No matching news" description="No news items match the current filters." />
         ) : (
           <div className="space-y-3">
             {filtered.map((item) => (

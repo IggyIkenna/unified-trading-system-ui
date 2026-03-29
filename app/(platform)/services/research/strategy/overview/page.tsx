@@ -1,6 +1,6 @@
 "use client";
 
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +46,7 @@ import type {
   StrategyTemplate,
 } from "@/lib/types/strategy-platform";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -150,9 +151,27 @@ const INITIAL_FORM: BacktestFormState = {
 // ---------------------------------------------------------------------------
 
 export default function StrategyOverviewPage() {
-  const { data: backtestsData, isLoading: backtestsLoading } = useStrategyBacktests();
-  const { data: templatesData, isLoading: templatesLoading } = useStrategyTemplates();
-  const { data: candidatesData, isLoading: candidatesLoading } = useStrategyCandidates();
+  const {
+    data: backtestsData,
+    isLoading: backtestsLoading,
+    isError: backtestsIsError,
+    error: backtestsError,
+    refetch: refetchBacktests,
+  } = useStrategyBacktests();
+  const {
+    data: templatesData,
+    isLoading: templatesLoading,
+    isError: templatesIsError,
+    error: templatesError,
+    refetch: refetchTemplates,
+  } = useStrategyTemplates();
+  const {
+    data: candidatesData,
+    isLoading: candidatesLoading,
+    isError: candidatesIsError,
+    error: candidatesError,
+    refetch: refetchCandidates,
+  } = useStrategyCandidates();
   const createBacktest = useCreateBacktest();
 
   const backtestsFromApi: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
@@ -164,6 +183,14 @@ export default function StrategyOverviewPage() {
   const STRATEGY_ALERTS: StrategyAlert[] = (templatesData as any)?.alerts ?? [];
 
   const isLoading = backtestsLoading || templatesLoading || candidatesLoading;
+  const overviewError = (backtestsError ?? templatesError ?? candidatesError) as Error | null;
+  const overviewHasError = backtestsIsError || templatesIsError || candidatesIsError;
+
+  const refetchOverview = React.useCallback(() => {
+    void refetchBacktests();
+    void refetchTemplates();
+    void refetchCandidates();
+  }, [refetchBacktests, refetchTemplates, refetchCandidates]);
 
   const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([]);
   const backtests = [...localBacktests, ...backtestsFromApi];
@@ -267,6 +294,14 @@ export default function StrategyOverviewPage() {
       <div className="space-y-4 p-6">
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  if (overviewHasError && overviewError) {
+    return (
+      <div className="p-6">
+        <ApiError error={overviewError} onRetry={refetchOverview} title="Failed to load strategy overview" />
       </div>
     );
   }

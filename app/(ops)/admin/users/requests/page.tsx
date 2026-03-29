@@ -1,13 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Inbox, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { useAccessRequests, useReviewRequest } from "@/hooks/api/use-user-management";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Spinner } from "@/components/shared/spinner";
 import { toast } from "@/hooks/use-toast";
 import type { AccessRequest } from "@/lib/types/user-management";
 
@@ -37,7 +40,7 @@ const ENTITLEMENT_LABELS: Record<string, string> = {
 
 export default function AccessRequestsPage() {
   const [filter, setFilter] = React.useState<string>("");
-  const { data, isLoading } = useAccessRequests(filter || undefined);
+  const { data, isLoading, isError, error, refetch } = useAccessRequests(filter || undefined);
   const review = useReviewRequest();
 
   const handleReview = (id: string, action: "approve" | "deny") => {
@@ -54,6 +57,22 @@ export default function AccessRequestsPage() {
       });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center px-6 py-12">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="px-6 py-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load access requests" />
+      </div>
+    );
+  }
 
   return (
     <div className="px-6 py-6 space-y-6">
@@ -77,20 +96,14 @@ export default function AccessRequestsPage() {
         ))}
       </PageHeader>
 
-      {isLoading ? (
-        <div className="text-muted-foreground">Loading requests...</div>
-      ) : (
-        <div className="grid gap-3">
-          {(data?.requests ?? []).map((req) => (
-            <RequestCard key={req.id} request={req} onReview={handleReview} isPending={review.isPending} />
-          ))}
-          {(data?.requests ?? []).length === 0 && (
-            <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">No requests found.</CardContent>
-            </Card>
-          )}
-        </div>
-      )}
+      <div className="grid gap-3">
+        {(data?.requests ?? []).map((req) => (
+          <RequestCard key={req.id} request={req} onReview={handleReview} isPending={review.isPending} />
+        ))}
+        {(data?.requests ?? []).length === 0 && (
+          <EmptyState title="No requests" description="There are no access requests for this filter." icon={Inbox} />
+        )}
+      </div>
     </div>
   );
 }

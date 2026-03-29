@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { ArrowLeft, Edit, UserMinus, RefreshCw, CheckCircle2, XCircle, Clock, Mail, Github } from "lucide-react";
 import {
   useProvisionedUser,
@@ -16,6 +16,9 @@ import {
   useReviewRequest,
 } from "@/hooks/api/use-user-management";
 import type { ProvisioningStatus, AccessRequest } from "@/lib/types/user-management";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Spinner } from "@/components/shared/spinner";
 
 const SERVICE_LABELS: Record<string, string> = {
   github: "GitHub",
@@ -46,15 +49,36 @@ function statusBadge(s: ProvisioningStatus) {
 export default function UserDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { data, isLoading } = useProvisionedUser(params.id);
+  const { data, isLoading, isError, error, refetch } = useProvisionedUser(params.id);
   const workflows = useUserWorkflows(params.id);
   const reprovision = useReprovisionUser();
   const allRequests = useAccessRequests();
   const review = useReviewRequest();
 
-  if (isLoading) return <div className="p-6 text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center p-6">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load user" />
+      </div>
+    );
+  }
+
   const user = data?.user;
-  if (!user) return <div className="p-6">User not found.</div>;
+  if (!user) {
+    return (
+      <div className="p-6">
+        <EmptyState title="User not found" description="This user ID does not exist or you do not have access." />
+      </div>
+    );
+  }
 
   const isInternal = ["admin", "collaborator", "operations", "accounting"].includes(user.role);
   const userRequests = (allRequests.data?.requests ?? []).filter((r) => r.requester_email === user.email);

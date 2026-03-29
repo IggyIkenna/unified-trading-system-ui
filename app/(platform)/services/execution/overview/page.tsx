@@ -1,12 +1,14 @@
 "use client";
 
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { MetricCard } from "@/components/shared/metric-card";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAlgos, useExecutionMetrics, useOrders, useVenues } from "@/hooks/api/use-orders";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import {
@@ -49,15 +51,37 @@ export default function ExecutionOverviewPage() {
   const MOCK_RECENT_ORDERS: Array<any> = (ordersData as any)?.data ?? SEED_RECENT_ORDERS;
   const MOCK_EXECUTION_ALGOS: Array<any> = (algosData as any)?.data ?? SEED_ALGOS;
 
-  const hasError = false; // Always show data with seed fallbacks
+  const hasError = !!(metricsError || venuesError || ordersError || algosError);
   const refetchAll = () => {
-    refetchMetrics();
-    refetchVenues();
-    refetchOrders();
-    refetchAlgos();
+    void refetchMetrics();
+    void refetchVenues();
+    void refetchOrders();
+    void refetchAlgos();
   };
 
-  if (isLoading && !MOCK_VENUES.length) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="bg-background flex min-h-screen items-center justify-center">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    const err = (metricsError ?? venuesError ?? ordersError ?? algosError) as Error;
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-3">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <ApiError error={err} onRetry={refetchAll} title="Failed to load execution overview" />
+        </div>
+      </div>
+    );
+  }
 
   // Calculate some aggregate stats
   const venueHealth = MOCK_VENUES.filter((v: any) => v.connectivity?.status === "connected").length;

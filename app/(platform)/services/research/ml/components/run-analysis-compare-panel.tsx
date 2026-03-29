@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMLRunComparison } from "@/hooks/api/use-ml-models";
+import { ApiError } from "@/components/shared/api-error";
 import type { RunComparison, UnifiedTrainingRun } from "@/lib/types/ml";
 import { cn } from "@/lib/utils";
 import { Plus, X } from "lucide-react";
@@ -274,7 +275,13 @@ export function RunComparisonView({
 
   const compareIds = React.useMemo(() => runs.map((r) => r.id), [runs]);
 
-  const { data: compData, isLoading: compLoading } = useMLRunComparison(baselineRun.id, compareIds);
+  const {
+    data: compData,
+    isLoading: compLoading,
+    isError: compIsError,
+    error: compError,
+    refetch: refetchComp,
+  } = useMLRunComparison(baselineRun.id, compareIds);
   const comparisons = (Array.isArray(compData) ? compData : []) as RunComparison[];
 
   const fmA = baselineRun.analysis?.financial_metrics;
@@ -327,6 +334,9 @@ export function RunComparisonView({
 
   return (
     <div className="space-y-3 max-h-[min(70vh,560px)] overflow-y-auto pr-1">
+      {compIsError && compareIds.length > 0 ? (
+        <ApiError error={compError as Error} onRetry={() => void refetchComp()} title="Failed to load run comparison" />
+      ) : null}
       {fmA && runs.length > 0 && (
         <div className="rounded-lg border border-border/50 overflow-x-auto">
           <table className="w-full min-w-[520px] text-[10px] border-collapse">

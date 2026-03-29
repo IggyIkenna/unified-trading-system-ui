@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { use } from "react";
-import { PageHeader } from "@/components/platform/page-header";
-import { StatusBadge } from "@/components/trading/status-badge";
+import { PageHeader } from "@/components/shared/page-header";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { PnLValue } from "@/components/trading/pnl-value";
 import { SparklineCell } from "@/components/trading/kpi-card";
 import { LimitBar } from "@/components/trading/limit-bar";
@@ -47,6 +47,8 @@ import {
   type PnLBreakdownData,
 } from "@/lib/strategy-registry";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import { MODEL_STRATEGY_MAP } from "./components/strategy-detail-constants";
 import { StrategyDetailTabPanels } from "./components/strategy-detail-tab-panels";
 import { StrategyDetailArchetypePanel } from "./components/strategy-detail-archetype-panel";
@@ -55,7 +57,7 @@ import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 export function StrategyDetailPageClient({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { mode, isLive, isBatch } = useExecutionMode();
-  const { data: perfData, isLoading } = useStrategyPerformance();
+  const { data: perfData, isLoading, isError, error, refetch } = useStrategyPerformance();
   const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.strategies ?? [];
   const STRATEGIES: Strategy[] = perfRaw.length > 0 ? (perfRaw as Strategy[]) : DEFAULT_STRATEGIES;
 
@@ -125,7 +127,21 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
     ];
   }, [strategy]);
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-8">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load strategy" />
+      </div>
+    );
+  }
 
   const arch = strategy.archetype as string;
 

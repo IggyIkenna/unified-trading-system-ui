@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { cn } from "@/lib/utils";
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
 import { useVenues } from "@/hooks/api/use-orders";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import {
   Building2,
   CheckCircle2,
   AlertTriangle,
-  AlertCircle,
   XCircle,
   Zap,
   TrendingUp,
@@ -44,17 +45,29 @@ export default function ExecutionVenuesPage() {
 
   const [selectedInstrument, setSelectedInstrument] = React.useState("ETH-PERP");
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
 
   if (venuesError) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-        <AlertCircle className="size-8 text-destructive" />
-        <p>Failed to load venue data</p>
-        <Button variant="outline" size="sm" onClick={() => refetchVenues()}>
-          <RefreshCw className="size-3.5 mr-1.5" />
-          Retry
-        </Button>
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-3">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <ApiError
+            error={venuesError as Error}
+            onRetry={() => void refetchVenues()}
+            title="Failed to load venue data"
+          />
+        </div>
       </div>
     );
   }

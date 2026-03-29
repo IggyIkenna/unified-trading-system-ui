@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { PageHeader } from "@/components/platform/page-header";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -27,6 +27,8 @@ import {
   type ExecutionQuality,
 } from "@/hooks/api/use-strategies";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -152,7 +154,7 @@ function getHealthBucket(score: number): string {
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function StrategyHealthPage() {
-  const { data: strategies, isLoading } = useStrategyHealth();
+  const { data: strategies, isLoading, isError, error, refetch } = useStrategyHealth();
   const [assetClassFilter, setAssetClassFilter] = React.useState<string>("All");
   const [healthFilter, setHealthFilter] = React.useState<string>("All");
   const [sortBy, setSortBy] = React.useState<SortKey>("health-desc");
@@ -201,6 +203,31 @@ export default function StrategyHealthPage() {
             <Skeleton key={i} className="h-56 w-full" />
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load strategy health" />
+      </div>
+    );
+  }
+
+  if (!strategies || strategies.length === 0) {
+    return (
+      <div className="p-6">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
+              <HeartPulse className="size-6 text-emerald-400" />
+              Strategy Health
+            </span>
+          }
+          description="Live health monitoring across all active strategies"
+        />
+        <EmptyState title="No strategies" description="No strategy health records are available." />
       </div>
     );
   }
@@ -303,12 +330,7 @@ export default function StrategyHealthPage() {
 
         {/* Strategy Cards Grid */}
         {filtered.length === 0 ? (
-          <Card className="bg-card/50">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertTriangle className="size-8 mb-2" />
-              <p className="text-sm">No strategies match the current filters.</p>
-            </CardContent>
-          </Card>
+          <EmptyState title="No matching strategies" description="No strategies match the current filters." />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((strategy) => (
