@@ -18,9 +18,9 @@ import {
   StrategySignal,
   SignalQualityMetrics,
   SignalOverlapMetrics,
-} from "./strategy-platform-types";
-import { generateBacktestAnalytics } from "./backtest-analytics-mock";
-import type { BacktestAnalytics } from "./backtest-analytics-types";
+} from "@/lib/types/strategy-platform";
+import { generateBacktestAnalytics } from "@/lib/mocks/fixtures/backtest-analytics";
+import type { BacktestAnalytics } from "@/lib/types/backtest-analytics";
 
 // =============================================================================
 // Strategy Templates
@@ -30,8 +30,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-eth-basis",
     name: "ETH Basis Trade",
-    description:
-      "Captures funding rate differential between spot and perpetual futures",
+    description: "Captures funding rate differential between spot and perpetual futures",
     archetype: "BASIS_TRADE",
     assetClasses: ["CeFi", "DeFi"],
     signals: ["funding_rate", "basis_spread", "liquidity_score"],
@@ -46,8 +45,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-btc-mm",
     name: "BTC Market Making",
-    description:
-      "Provides liquidity on BTC perpetual markets with inventory management",
+    description: "Provides liquidity on BTC perpetual markets with inventory management",
     archetype: "MARKET_MAKING",
     assetClasses: ["CeFi"],
     signals: ["order_imbalance", "volatility_regime", "spread_pred"],
@@ -62,8 +60,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-stat-arb",
     name: "Cross-Exchange Statistical Arb",
-    description:
-      "Exploits mean-reversion in price differentials across exchanges",
+    description: "Exploits mean-reversion in price differentials across exchanges",
     archetype: "STATISTICAL_ARB",
     assetClasses: ["CeFi"],
     signals: ["price_deviation", "cointegration_score", "execution_prob"],
@@ -78,8 +75,7 @@ export const STRATEGY_TEMPLATES: StrategyTemplate[] = [
   {
     id: "tpl-options-mm",
     name: "ETH Options Market Making",
-    description:
-      "Delta-neutral options market making with volatility surface management",
+    description: "Delta-neutral options market making with volatility surface management",
     archetype: "OPTIONS",
     assetClasses: ["CeFi"],
     signals: ["iv_surface", "skew_signal", "vol_regime"],
@@ -301,25 +297,11 @@ export const STRATEGY_CONFIGS: StrategyConfig[] = [
 // Backtest Runs
 // =============================================================================
 
-function generateMetrics(
-  seed: number,
-  archetype: StrategyArchetype,
-): BacktestMetrics {
-  const r = (base: number, variance: number) =>
-    base + (((seed * 9301 + 49297) % 233280) / 233280 - 0.5) * variance;
+function generateMetrics(seed: number, archetype: StrategyArchetype): BacktestMetrics {
+  const r = (base: number, variance: number) => base + (((seed * 9301 + 49297) % 233280) / 233280 - 0.5) * variance;
 
-  const sharpeBase =
-    archetype === "MARKET_MAKING"
-      ? 2.5
-      : archetype === "BASIS_TRADE"
-        ? 1.8
-        : 1.2;
-  const returnBase =
-    archetype === "MARKET_MAKING"
-      ? 0.35
-      : archetype === "BASIS_TRADE"
-        ? 0.25
-        : 0.2;
+  const sharpeBase = archetype === "MARKET_MAKING" ? 2.5 : archetype === "BASIS_TRADE" ? 1.8 : 1.2;
+  const returnBase = archetype === "MARKET_MAKING" ? 0.35 : archetype === "BASIS_TRADE" ? 0.25 : 0.2;
 
   return {
     totalReturn: r(returnBase, 0.15),
@@ -712,14 +694,11 @@ export function generateSignals(
       instrument,
       size_usd: 10000,
       confidence: Math.round(confidence * 100) / 100,
-      model_prediction:
-        Math.round((confidence + (rng() - 0.5) * 0.1) * 100) / 100,
+      model_prediction: Math.round((confidence + (rng() - 0.5) * 0.1) * 100) / 100,
       outcome: isClose ? null : isWin ? "win" : "loss",
       pnl_usd: isClose ? null : Math.round(pnl * 100) / 100,
       pnl_pct: isClose ? null : Math.round((pnl / 10000) * 10000) / 100,
-      hold_duration_hours: isClose
-        ? null
-        : Math.round((1 + rng() * 24) * 10) / 10,
+      hold_duration_hours: isClose ? null : Math.round((1 + rng() * 24) * 10) / 10,
       bars_held: isClose ? null : Math.round(2 + rng() * 16),
       mfe_pct: isClose ? null : Math.round((rng() * 5 + 0.5) * 100) / 100,
       mae_pct: isClose ? null : Math.round((-rng() * 3 - 0.2) * 100) / 100,
@@ -727,15 +706,10 @@ export function generateSignals(
     });
   }
 
-  return signals.sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
+  return signals.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 }
 
-export function generateSignalQuality(
-  seed: number,
-  totalSignals: number = 130,
-): SignalQualityMetrics {
+export function generateSignalQuality(seed: number, totalSignals: number = 130): SignalQualityMetrics {
   const rng = seededRng(seed);
 
   return {
@@ -798,8 +772,7 @@ export function computeSignalOverlap(
 ): SignalOverlapMetrics {
   const tolMs = toleranceHours * 3600000;
 
-  const directional = (s: StrategySignal) =>
-    s.direction === "LONG" || s.direction === "SHORT";
+  const directional = (s: StrategySignal) => s.direction === "LONG" || s.direction === "SHORT";
 
   const listA = signalsA.filter(directional);
   const listB = signalsB.filter(directional);
@@ -812,11 +785,7 @@ export function computeSignalOverlap(
       if (usedB.has(bi)) continue;
       const b = listB[bi];
       const tb = new Date(b.timestamp).getTime();
-      if (
-        Math.abs(ta - tb) <= tolMs &&
-        a.direction === b.direction &&
-        a.instrument === b.instrument
-      ) {
+      if (Math.abs(ta - tb) <= tolMs && a.direction === b.direction && a.instrument === b.instrument) {
         overlapCount++;
         usedB.add(bi);
         break;
@@ -824,10 +793,7 @@ export function computeSignalOverlap(
     }
   }
 
-  const denom = Math.max(
-    1,
-    Math.min(listA.filter((s) => s.direction !== "CLOSE").length, listB.length),
-  );
+  const denom = Math.max(1, Math.min(listA.filter((s) => s.direction !== "CLOSE").length, listB.length));
   const overlapPct = Math.round((overlapCount / denom) * 10000) / 100;
 
   return {
@@ -871,8 +837,7 @@ export function computeFullConfluenceAllStrategies(
   }
 
   const tolMs = toleranceHours * 3600000;
-  const directional = (s: StrategySignal) =>
-    s.direction === "LONG" || s.direction === "SHORT";
+  const directional = (s: StrategySignal) => s.direction === "LONG" || s.direction === "SHORT";
 
   const anchorList = items[0].signals.filter(directional);
   let matched = 0;
@@ -884,11 +849,7 @@ export function computeFullConfluenceAllStrategies(
       const others = items[si].signals.filter(directional);
       const found = others.some((b) => {
         const tb = new Date(b.timestamp).getTime();
-        return (
-          Math.abs(ta - tb) <= tolMs &&
-          a.direction === b.direction &&
-          a.instrument === b.instrument
-        );
+        return Math.abs(ta - tb) <= tolMs && a.direction === b.direction && a.instrument === b.instrument;
       });
       if (!found) {
         allMatch = false;
@@ -924,14 +885,6 @@ for (const bt of BACKTEST_RUNS) {
     netProfit,
   });
 
-  BACKTEST_SIGNALS[bt.id] = generateSignals(
-    bt.id,
-    seedBase + 100,
-    totalSignals,
-    bt.instrument,
-  );
-  BACKTEST_SIGNAL_QUALITY[bt.id] = generateSignalQuality(
-    seedBase + 200,
-    totalSignals,
-  );
+  BACKTEST_SIGNALS[bt.id] = generateSignals(bt.id, seedBase + 100, totalSignals, bt.instrument);
+  BACKTEST_SIGNAL_QUALITY[bt.id] = generateSignalQuality(seedBase + 200, totalSignals);
 }

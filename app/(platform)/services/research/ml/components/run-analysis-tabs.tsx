@@ -15,7 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
-import type { RunAnalysis } from "@/lib/ml-types";
+import type { RunAnalysis } from "@/lib/types/ml";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 /**

@@ -19,6 +19,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { Calendar, TrendingUp, TrendingDown, ArrowRight, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatPercent } from "@/lib/utils/formatters";
 
 // Time range presets
@@ -325,7 +326,13 @@ export function generateTimeSeriesData(
   const pointVol = effectiveVol / Math.sqrt(numPoints);
   const drift = baseValue * 0.0003; // Small positive drift per point
 
-  let value = baseValue * (0.95 + Math.random() * 0.1); // Start near but not exactly at base
+  const seriesSalt =
+    range.charCodeAt(0) * 17 +
+    granularity.charCodeAt(0) * 31 +
+    Math.round(baseValue * 100) +
+    Math.round(volatility * 10000);
+
+  let value = baseValue * (0.95 + mock01(0, seriesSalt) * 0.1); // Start near but not exactly at base
 
   for (let i = 0; i < numPoints; i++) {
     // Add realistic intraday patterns for 1d view
@@ -336,7 +343,10 @@ export function generateTimeSeriesData(
     const meanReversionForce = (baseValue - value) * 0.05;
 
     // Random walk with drift and mean reversion
-    const change = drift + meanReversionForce + (Math.random() - 0.48) * baseValue * pointVol * volatilityMultiplier;
+    const change =
+      drift +
+      meanReversionForce +
+      (mock01(i + 1, seriesSalt + 1000) - 0.48) * baseValue * pointVol * volatilityMultiplier;
     value = Math.max(baseValue * 0.7, value + change); // Floor at 70% of base
 
     const timestamp = new Date(now.getTime() - (numPoints - i) * getGranularityMs(granularity, range));

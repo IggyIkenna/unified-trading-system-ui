@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { BacktestRun, StrategySignal } from "@/lib/strategy-platform-types";
+import type { BacktestRun, StrategySignal } from "@/lib/types/strategy-platform";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Star } from "lucide-react";
 import { StatusBadge } from "./status-helpers";

@@ -7,12 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Zap, Clock, TrendingDown, Info } from "lucide-react";
 import type { PredictionArbOpportunity, PredictionArbMarketType, ArbVenue } from "./types";
-import { MOCK_PREDICTION_ARBS } from "./mock-data";
-import { ARB_THRESHOLD_OPTIONS } from "@/components/trading/sports/mock-fixtures";
+import { MOCK_PREDICTION_ARBS } from "@/lib/mocks/fixtures/predictions-data";
+import { ARB_THRESHOLD_OPTIONS } from "@/lib/mocks/fixtures/sports-fixtures";
 import { fmtRelativeTime, calcArbStakes } from "./helpers";
 import { VenueChip } from "./shared";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Decay Bar ────────────────────────────────────────────────────────────────
@@ -193,16 +194,19 @@ function ClosedArbCard({ arb }: { arb: PredictionArbOpportunity }) {
 function usePredictionArbStream(threshold: number) {
   const [arbs, setArbs] = React.useState<PredictionArbOpportunity[]>(MOCK_PREDICTION_ARBS);
   const [newIds, setNewIds] = React.useState<Set<string>>(new Set());
+  const streamTickRef = React.useRef(0);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
+      streamTickRef.current += 1;
+      const t = streamTickRef.current;
       setArbs((prev) => {
         // Age out active ones probabilistically
         const updated = prev.map((a) =>
-          a.isActive && Math.random() < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a,
+          a.isActive && mock01(t, 301) < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a,
         );
         // Occasionally inject a new one
-        if (Math.random() < 0.15) {
+        if (mock01(t, 302) < 0.15) {
           const templates: PredictionArbOpportunity[] = [
             {
               id: `parb-live-${Date.now()}`,

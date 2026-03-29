@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useValidationResults } from "@/hooks/api/use-ml-models";
-import { mock01 } from "@/lib/deterministic-mock";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import {
   Activity,
   AlertTriangle,

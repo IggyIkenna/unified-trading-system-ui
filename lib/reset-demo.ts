@@ -8,7 +8,7 @@ import { getQueryClient } from "./query-client";
 /**
  * Reset all client-side state — Zustand stores, React Query cache, localStorage.
  *
- * Static seed data (lib/mock-data/) is committed and unaffected.
+ * Static seed data (lib/mocks/fixtures/mock-data-seed) is committed and unaffected.
  * This only clears interactive/runtime state:
  *   - Workspace layouts and custom panels
  *   - Filter selections (org, client, strategy)

@@ -28,8 +28,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { FeatureCatalogueEntry, FeatureServiceNode, IndividualFeature } from "@/lib/build-mock-data";
-import { FEATURE_CATALOGUE, FEATURE_VERSIONS } from "@/lib/build-mock-data";
+import type { FeatureCatalogueEntry, FeatureServiceNode, IndividualFeature } from "@/lib/mocks/fixtures/build-data";
+import { FEATURE_CATALOGUE, FEATURE_VERSIONS } from "@/lib/mocks/fixtures/build-data";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import {

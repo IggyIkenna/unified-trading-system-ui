@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import type { RunComparison } from "@/lib/ml-types";
+import type { RunComparison } from "@/lib/types/ml";
 
 function withMode(base: string, mode: string): string {
   const sep = base.includes("?") ? "&" : "?";
@@ -15,8 +15,7 @@ export function useModelFamilies() {
 
   return useQuery({
     queryKey: ["model-families", user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode("/api/ml/model-families", scope.mode), token),
+    queryFn: () => apiFetch(withMode("/api/ml/model-families", scope.mode), token),
     enabled: !!user,
   });
 }
@@ -38,8 +37,7 @@ export function useExperimentDetail(id: string) {
 
   return useQuery({
     queryKey: ["experiment-detail", id, user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode(`/api/ml/experiments/${id}`, scope.mode), token),
+    queryFn: () => apiFetch(withMode(`/api/ml/experiments/${id}`, scope.mode), token),
     enabled: !!user && !!id,
   });
 }
@@ -50,8 +48,7 @@ export function useTrainingRuns() {
 
   return useQuery({
     queryKey: ["training-runs", user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode("/api/ml/training-runs", scope.mode), token),
+    queryFn: () => apiFetch(withMode("/api/ml/training-runs", scope.mode), token),
     enabled: !!user,
   });
 }
@@ -89,8 +86,7 @@ export function usePromoteModel() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) =>
-      apiFetch(`/api/ml/models/${id}/promote`, token, { method: "POST" }),
+    mutationFn: (id: string) => apiFetch(`/api/ml/models/${id}/promote`, token, { method: "POST" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["model-versions"] });
       queryClient.invalidateQueries({ queryKey: ["model-families"] });
@@ -137,8 +133,7 @@ export function useValidationResults() {
 
   return useQuery({
     queryKey: ["validation-results", user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode("/api/ml/validation-results", scope.mode), token),
+    queryFn: () => apiFetch(withMode("/api/ml/validation-results", scope.mode), token),
     enabled: !!user,
   });
 }
@@ -177,27 +172,16 @@ export function useMLConfig() {
 }
 
 /** Unified training runs (4-page ML architecture). GET /api/ml/training/runs */
-export function useUnifiedTrainingRuns(filters?: {
-  status?: string;
-  family?: string;
-}) {
+export function useUnifiedTrainingRuns(filters?: { status?: string; family?: string }) {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
   const qs = new URLSearchParams();
   if (filters?.status) qs.set("status", filters.status);
   if (filters?.family) qs.set("family", filters.family);
-  const path = qs.toString()
-    ? `/api/ml/training/runs?${qs.toString()}`
-    : "/api/ml/training/runs";
+  const path = qs.toString() ? `/api/ml/training/runs?${qs.toString()}` : "/api/ml/training/runs";
 
   return useQuery({
-    queryKey: [
-      "ml-unified-runs",
-      user?.id,
-      scope.mode,
-      filters?.status,
-      filters?.family,
-    ],
+    queryKey: ["ml-unified-runs", user?.id, scope.mode, filters?.status, filters?.family],
     queryFn: () => apiFetch(withMode(path, scope.mode), token),
     enabled: !!user,
   });
@@ -210,8 +194,7 @@ export function useUnifiedTrainingRunDetail(id: string | null) {
 
   return useQuery({
     queryKey: ["ml-unified-run", id, user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode(`/api/ml/training/runs/${id}`, scope.mode), token),
+    queryFn: () => apiFetch(withMode(`/api/ml/training/runs/${id}`, scope.mode), token),
     enabled: !!user && !!id,
   });
 }
@@ -223,8 +206,7 @@ export function useTrainingQueue() {
 
   return useQuery({
     queryKey: ["ml-training-queue", user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode("/api/ml/training/queue", scope.mode), token),
+    queryFn: () => apiFetch(withMode("/api/ml/training/queue", scope.mode), token),
     enabled: !!user,
   });
 }
@@ -236,8 +218,7 @@ export function useMLPipelineStatus() {
 
   return useQuery({
     queryKey: ["ml-pipeline-status", user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode("/api/ml/pipeline/status", scope.mode), token),
+    queryFn: () => apiFetch(withMode("/api/ml/pipeline/status", scope.mode), token),
     enabled: !!user,
   });
 }
@@ -261,23 +242,17 @@ export function useRunAnalysisBundle(runId: string | null) {
 
   return useQuery({
     queryKey: ["ml-run-analysis", runId, user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode(`/api/ml/analysis/runs/${runId}`, scope.mode), token),
+    queryFn: () => apiFetch(withMode(`/api/ml/analysis/runs/${runId}`, scope.mode), token),
     enabled: !!user && !!runId,
   });
 }
 
 /** POST /api/ml/analysis/compare — baseline vs up to 3 other runs */
-export function useMLRunComparison(
-  baselineId: string | null,
-  compareIds: string[],
-) {
+export function useMLRunComparison(baselineId: string | null, compareIds: string[]) {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
-  const uniqueCompare = Array.from(
-    new Set(compareIds.filter((id) => id && id !== baselineId)),
-  )
+  const uniqueCompare = Array.from(new Set(compareIds.filter((id) => id && id !== baselineId)))
     .sort()
     .slice(0, 3);
   const compareKey = uniqueCompare.join(",");
@@ -293,11 +268,7 @@ export function useMLRunComparison(
           run_b_ids: uniqueCompare,
         }),
       }) as Promise<RunComparison[]>,
-    enabled:
-      !!user &&
-      !!baselineId &&
-      baselineId.length > 0 &&
-      uniqueCompare.length > 0,
+    enabled: !!user && !!baselineId && baselineId.length > 0 && uniqueCompare.length > 0,
   });
 }
 
@@ -330,11 +301,7 @@ export function useCancelUnifiedTrainingRun() {
 
   return useMutation({
     mutationFn: (id: string) =>
-      apiFetch(
-        withMode(`/api/ml/training/runs/${id}/cancel`, scope.mode),
-        token,
-        { method: "POST" },
-      ),
+      apiFetch(withMode(`/api/ml/training/runs/${id}/cancel`, scope.mode), token, { method: "POST" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ml-unified-runs"] });
       queryClient.invalidateQueries({ queryKey: ["ml-pipeline-status"] });
@@ -349,8 +316,7 @@ export function useRegistryModels() {
 
   return useQuery({
     queryKey: ["ml-registry-models", user?.id, scope.mode],
-    queryFn: () =>
-      apiFetch(withMode("/api/ml/registry/models", scope.mode), token),
+    queryFn: () => apiFetch(withMode("/api/ml/registry/models", scope.mode), token),
     enabled: !!user,
   });
 }

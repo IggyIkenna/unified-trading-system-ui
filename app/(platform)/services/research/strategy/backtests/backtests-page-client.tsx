@@ -43,7 +43,7 @@ import { ExportDropdown } from "@/components/ui/export-dropdown";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCreateBacktest, useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies";
 import { newOptimisticBacktestIds } from "@/lib/demo-ids";
-import type { BacktestRun, StrategyTemplate } from "@/lib/strategy-platform-types";
+import type { BacktestRun, StrategyTemplate } from "@/lib/types/strategy-platform";
 import type { ExportColumn } from "@/lib/utils/export";
 
 import {

@@ -12,18 +12,11 @@ import { ArrowDownRight, Building2, Calendar, FileText, Scale, Shield, Users, Wa
 import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
 
+import { MOCK_INVESTORS_FUND_OPERATIONS, type InvestorRegister } from "@/lib/mocks/fixtures/reports-pages";
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-interface InvestorRegister {
-  name: string;
-  type: "LP" | "GP" | "Seed";
-  commitment: number;
-  drawn: number;
-  remaining: number;
-  status: "Active" | "Fully Drawn" | "Suspended";
-}
 
 interface CapitalAccount {
   label: string;
@@ -41,16 +34,7 @@ interface DistributionWaterfallStep {
 // Mock data
 // ---------------------------------------------------------------------------
 
-const MOCK_INVESTORS: InvestorRegister[] = [
-  { name: "Odum Fund I", type: "GP", commitment: 5000000, drawn: 4800000, remaining: 200000, status: "Active" },
-  { name: "Odum Fund II", type: "GP", commitment: 4000000, drawn: 3500000, remaining: 500000, status: "Active" },
-  { name: "Seed LP", type: "Seed", commitment: 3000000, drawn: 3000000, remaining: 0, status: "Fully Drawn" },
-  { name: "Meridian Fund", type: "LP", commitment: 3500000, drawn: 2800000, remaining: 700000, status: "Active" },
-  { name: "Apex Capital", type: "LP", commitment: 2500000, drawn: 2200000, remaining: 300000, status: "Active" },
-  { name: "Quantum Strategies", type: "LP", commitment: 2000000, drawn: 1500000, remaining: 500000, status: "Active" },
-  { name: "Vertex Partners", type: "LP", commitment: 1500000, drawn: 1200000, remaining: 300000, status: "Active" },
-  { name: "Nova Investments", type: "LP", commitment: 1200000, drawn: 1000000, remaining: 200000, status: "Suspended" },
-];
+const MOCK_INVESTORS = MOCK_INVESTORS_FUND_OPERATIONS;
 
 const CAPITAL_ACCOUNTS: Record<string, CapitalAccount[]> = {
   "Odum Fund I": [

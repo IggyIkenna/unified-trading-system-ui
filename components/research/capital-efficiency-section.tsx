@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { CapitalEfficiency } from "@/lib/backtest-analytics-types";
+import type { CapitalEfficiency } from "@/lib/types/backtest-analytics";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 interface CapitalEfficiencySectionProps {

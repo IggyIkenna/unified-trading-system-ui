@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 import { Code2, Cpu, GitBranch, Tag, ArrowRight, Settings2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import type { IndividualFeature, FeatureServiceNode } from "@/lib/build-mock-data";
-import { FEATURE_VERSIONS } from "@/lib/build-mock-data";
+import type { IndividualFeature, FeatureServiceNode } from "@/lib/mocks/fixtures/build-data";
+import { FEATURE_VERSIONS } from "@/lib/mocks/fixtures/build-data";
 import { FEAT_STATUS_CFG, SERVICE_COLORS } from "./feature-helpers";
 import { EditConfigDialog } from "./edit-config-dialog";
 

@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Play, XCircle } from "lucide-react";
-import type { ExecutionBacktest, ExecutionTrade } from "@/lib/build-mock-data";
+import type { ExecutionBacktest, ExecutionTrade } from "@/lib/mocks/fixtures/build-data";
 
 // ─── Status config & badge ──────────────────────────────────────────────────
 
@@ -23,11 +23,7 @@ export const STATUS_CONFIG = {
   },
 } as const;
 
-export function StatusBadge({
-  status,
-}: {
-  status: ExecutionBacktest["status"];
-}) {
+export function StatusBadge({ status }: { status: ExecutionBacktest["status"] }) {
   const cfg = STATUS_CONFIG[status];
   const Icon = cfg.icon;
   return (
@@ -57,11 +53,7 @@ export function MetricCard({
       <p
         className={cn(
           "text-lg font-bold tabular-nums",
-          isGood === true
-            ? "text-emerald-400"
-            : isGood === false
-              ? "text-red-400"
-              : "",
+          isGood === true ? "text-emerald-400" : isGood === false ? "text-red-400" : "",
         )}
       >
         {value}
@@ -104,10 +96,7 @@ function escapeCsvCell(value: unknown): string {
 }
 
 /** Client-side CSV download for the visible trade log (mock-friendly). */
-export function downloadExecutionTradesCsv(
-  trades: ExecutionTrade[],
-  filenameBase: string,
-) {
+export function downloadExecutionTradesCsv(trades: ExecutionTrade[], filenameBase: string) {
   const headers: (keyof ExecutionTrade)[] = [
     "id",
     "timestamp",
@@ -128,10 +117,7 @@ export function downloadExecutionTradesCsv(
     "cumulative_pnl",
     "model_confidence",
   ];
-  const lines = [
-    headers.join(","),
-    ...trades.map((t) => headers.map((h) => escapeCsvCell(t[h])).join(",")),
-  ];
+  const lines = [headers.join(","), ...trades.map((t) => headers.map((h) => escapeCsvCell(t[h])).join(","))];
   const csv = lines.join("\r\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);

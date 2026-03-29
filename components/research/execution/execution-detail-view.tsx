@@ -10,8 +10,8 @@ import { Progress } from "@/components/ui/progress";
 import { Play, XCircle, Zap, BarChart3, GitCompare, Star, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber, formatPercent, formatPnl } from "@/lib/utils/formatters";
-import { EXECUTION_BACKTESTS, EXECUTION_EQUITY_CURVE, EXECUTION_COMPARE_CURVES } from "@/lib/build-mock-data";
-import type { ExecutionBacktest } from "@/lib/build-mock-data";
+import { EXECUTION_BACKTESTS, EXECUTION_EQUITY_CURVE, EXECUTION_COMPARE_CURVES } from "@/lib/mocks/fixtures/build-data";
+import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
 import {
   LineChart,
   Line,

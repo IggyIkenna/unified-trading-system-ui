@@ -4,8 +4,8 @@ import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { EXECUTION_BACKTESTS } from "@/lib/build-mock-data";
-import type { ExecutionBacktest } from "@/lib/build-mock-data";
+import { EXECUTION_BACKTESTS } from "@/lib/mocks/fixtures/build-data";
+import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
 import { StatusBadge, ALGO_COLORS } from "@/components/research/execution/status-helpers";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 

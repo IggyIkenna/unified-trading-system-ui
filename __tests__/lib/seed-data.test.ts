@@ -12,7 +12,7 @@ import {
   SEED_TRADES,
   SEED_ALERTS,
   SEED_STRATEGIES,
-} from "@/lib/mock-data";
+} from "@/lib/mocks/fixtures/mock-data-index";
 
 describe("Seed Data", () => {
   it("has positions for multiple orgs", () => {
@@ -29,8 +29,8 @@ describe("Seed Data", () => {
     expect(orgs.has("atlas-ventures")).toBe(true);
   });
 
-  it("uses org IDs that match trading-data.ts", () => {
-    // These are the IDs from trading-data.ts ORGANIZATIONS
+  it("uses org IDs that match trading-data fixtures", () => {
+    // These are the IDs from lib/mocks/fixtures/trading-data ORGANIZATIONS
     const validOrgIds = ["odum", "alpha-capital", "vertex-partners", "meridian-fund", "atlas-ventures"];
     for (const s of SEED_STRATEGIES) {
       expect(validOrgIds).toContain(s.orgId);

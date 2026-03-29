@@ -26,8 +26,9 @@ import {
   MOCK_PREDICTION_ARBS,
   ODUM_INSTRUMENTS,
   MOCK_RECENT_FILLS,
-} from "@/components/trading/predictions/mock-data";
+} from "@/lib/mocks/fixtures/predictions-data";
 import { calcArbStakes } from "@/components/trading/predictions/helpers";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export interface RecentFill {
@@ -192,15 +193,19 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
   const [recentFills, setRecentFills] = React.useState<RecentFill[]>(() => MOCK_RECENT_FILLS.map((f) => ({ ...f })));
   const [quickTradeMarketId, setQuickTradeMarketId] = React.useState(() => MOCK_MARKETS[0]?.id ?? "");
 
+  const arbStreamTickRef = React.useRef(0);
+
   // Batch mode: stop the 8-second arb generation interval
   React.useEffect(() => {
     if (isBatch) return;
     const timer = setInterval(() => {
+      arbStreamTickRef.current += 1;
+      const t = arbStreamTickRef.current;
       setArbs((prev) => {
         const updated = prev.map((a) =>
-          a.isActive && Math.random() < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a,
+          a.isActive && mock01(t, 501) < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a,
         );
-        if (Math.random() < 0.15) {
+        if (mock01(t, 502) < 0.15) {
           const newArb: PredictionArbOpportunity = {
             id: `parb-live-${Date.now()}`,
             marketType: "crypto",

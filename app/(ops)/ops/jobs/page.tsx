@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBatchJobs } from "@/hooks/api/use-audit";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { DATA_FLOWS } from "@/lib/reference-data";
 import { StatusDot } from "@/components/trading/status-badge";
 import { cn } from "@/lib/utils";
@@ -49,10 +50,10 @@ const fallbackJobs: BatchJob[] = DATA_FLOWS.filter((f) => f.mode === "batch").ma
       ? "2m 14s"
       : idx === 1
         ? "-"
-        : `${Math.floor(Math.random() * 10) + 1}m ${Math.floor(Math.random() * 60)}s`,
+        : `${Math.floor(mock01(idx, 11) * 10) + 1}m ${Math.floor(mock01(idx, 12) * 60)}s`,
   runDate: "2026-03-17",
-  records: Math.floor(Math.random() * 100000) + 10000,
-  errors: idx % 5 === 0 ? Math.floor(Math.random() * 100) : 0,
+  records: Math.floor(mock01(idx, 13) * 100000) + 10000,
+  errors: idx % 5 === 0 ? Math.floor(mock01(idx, 14) * 100) : 0,
   lastSuccess: idx % 5 === 0 ? "2d ago" : "1h ago",
   schedule: "Every hour",
 }));

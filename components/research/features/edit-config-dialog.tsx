@@ -17,8 +17,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Plus, Save, Settings2, Trash2 } from "lucide-react";
-import type { FeatureCatalogueEntry, IndividualFeature } from "@/lib/build-mock-data";
-import { FEATURE_SERVICES } from "@/lib/build-mock-data";
+import type { FeatureCatalogueEntry, IndividualFeature } from "@/lib/mocks/fixtures/build-data";
+import { FEATURE_SERVICES } from "@/lib/mocks/fixtures/build-data";
 import { FEAT_STATUS_CFG } from "./feature-helpers";
 import {
   categoryIdToShard,

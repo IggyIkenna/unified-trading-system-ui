@@ -30,8 +30,13 @@ import { PageHeader } from "@/components/platform/page-header";
 import { SiteHeader } from "@/components/shell/site-header";
 import { ShardCatalogue } from "@/components/data/shard-catalogue";
 import { FreshnessHeatmap } from "@/components/data/freshness-heatmap";
-import { DATA_PLANS } from "@/lib/data-service-types";
-import { ADMIN_SUMMARY, MOCK_SHARD_AVAILABILITY, DEMO_ORG, MOCK_SUBSCRIPTIONS } from "@/lib/data-service-mock-data";
+import { DATA_PLANS } from "@/lib/types/data-service";
+import {
+  ADMIN_SUMMARY,
+  MOCK_SHARD_AVAILABILITY,
+  DEMO_ORG,
+  MOCK_SUBSCRIPTIONS,
+} from "@/lib/mocks/fixtures/data-service";
 
 const HERO_METRICS = [
   { label: "Venues", value: "128" },

@@ -1,6 +1,11 @@
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
-import type { PnLBreakdown, TimeSeriesPoint, TradingClient, TradingOrganization } from "@/lib/trading-data";
+import type {
+  PnLBreakdown,
+  TimeSeriesPoint,
+  TradingClient,
+  TradingOrganization,
+} from "@/lib/mocks/fixtures/trading-data";
 import { useQuery } from "@tanstack/react-query";
 
 // ---- Response shapes ----

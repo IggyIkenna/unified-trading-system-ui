@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import type { FeatureCatalogueEntry } from "@/lib/build-mock-data";
+import type { FeatureCatalogueEntry } from "@/lib/mocks/fixtures/build-data";
 import { FEAT_STATUS_CFG } from "./feature-helpers";
 
 export function CatStatusBadge({ status }: { status: FeatureCatalogueEntry["status"] }) {

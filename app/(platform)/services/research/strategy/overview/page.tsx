@@ -44,7 +44,7 @@ import type {
   StrategyCandidate,
   StrategyConfig,
   StrategyTemplate,
-} from "@/lib/strategy-platform-types";
+} from "@/lib/types/strategy-platform";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------

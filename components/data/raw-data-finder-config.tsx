@@ -23,8 +23,8 @@ import {
   type DataCategory,
   type DataFolder,
   type DataType,
-} from "@/lib/data-service-types";
-import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
+} from "@/lib/types/data-service";
+import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // Data types available per folder (derived from instrument data types)

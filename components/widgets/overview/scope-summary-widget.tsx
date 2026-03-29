@@ -8,12 +8,17 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { useOverviewDataSafe } from "./overview-data-context";
-import type { TradingOrganization, TradingClient } from "@/lib/trading-data";
+import type { TradingOrganization, TradingClient } from "@/lib/mocks/fixtures/trading-data";
 
 export function ScopeSummaryWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
   const { scope: context, setOrganizationIds, setClientIds, setStrategyIds } = useGlobalScope();
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
   const { organizations, clients, filteredSortedStrategies, totalNav, totalExposure } = ctx;
 
   const scopeOrgs = context.organizationIds

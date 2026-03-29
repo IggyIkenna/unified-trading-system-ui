@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import type { BacktestRun } from "@/lib/strategy-platform-types";
+import type { BacktestRun } from "@/lib/types/strategy-platform";
 import type { ExportColumn } from "@/lib/utils/export";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 

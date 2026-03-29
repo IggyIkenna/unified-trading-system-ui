@@ -19,11 +19,21 @@ import {
   type StrategyPerformanceRow,
 } from "@/hooks/api/use-trading";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { getAggregatedPnlForScope, getAlertsForScope, getStrategiesForScope } from "@/lib/mock-data";
-import type { SeedStrategy } from "@/lib/mock-data/seed";
+import {
+  getAggregatedPnlForScope,
+  getAlertsForScope,
+  getStrategiesForScope,
+} from "@/lib/mocks/fixtures/mock-data-index";
+import { SEED_SERVICES } from "@/lib/mocks/fixtures/trading-pages";
+import type { SeedStrategy } from "@/lib/mocks/fixtures/mock-data-seed";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import type { PnLBreakdown, TimeSeriesPoint, TradingClient, TradingOrganization } from "@/lib/trading-data";
-import { CLIENTS, ORGANIZATIONS } from "@/lib/trading-data";
+import type {
+  PnLBreakdown,
+  TimeSeriesPoint,
+  TradingClient,
+  TradingOrganization,
+} from "@/lib/mocks/fixtures/trading-data";
+import { CLIENTS, ORGANIZATIONS } from "@/lib/mocks/fixtures/trading-data";
 import { formatCurrency as formatUsdCompact, formatNumber } from "@/lib/utils/formatters";
 import { AlertTriangle } from "lucide-react";
 import * as React from "react";
@@ -132,16 +142,6 @@ export default function OverviewPage() {
         }));
 
   const healthRaw = healthData as Record<string, unknown> | undefined;
-  const SEED_SERVICES: ServiceHealth[] = [
-    { name: "Market Data", freshness: 2, sla: 10, status: "live" },
-    { name: "Execution", freshness: 1, sla: 5, status: "live" },
-    { name: "Risk Engine", freshness: 5, sla: 15, status: "live" },
-    { name: "P&L Attribution", freshness: 8, sla: 30, status: "live" },
-    { name: "Position Monitor", freshness: 3, sla: 10, status: "live" },
-    { name: "Strategy Service", freshness: 4, sla: 10, status: "live" },
-    { name: "Features Pipeline", freshness: 12, sla: 60, status: "live" },
-    { name: "ML Inference", freshness: 45, sla: 60, status: "warning" },
-  ];
   const allMockServices: ServiceHealth[] = (healthRaw?.data ?? healthRaw?.services ?? SEED_SERVICES) as ServiceHealth[];
 
   // Fall back to seed PnL when API returns nothing

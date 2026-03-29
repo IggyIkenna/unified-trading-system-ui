@@ -13,7 +13,7 @@ import {
   useTrainingQueue,
   useUnifiedTrainingRuns,
 } from "@/hooks/api/use-ml-models";
-import type { ModelFamily, UnifiedTrainingRun } from "@/lib/ml-types";
+import type { ModelFamily, UnifiedTrainingRun } from "@/lib/types/ml";
 import { Activity, AlertTriangle, Brain, CheckCircle2, Clock, Cpu, Layers, Play, XCircle } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";

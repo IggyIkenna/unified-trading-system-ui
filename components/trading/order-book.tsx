@@ -4,10 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mock01 } from "@/lib/deterministic-mock";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import { DollarSign } from "lucide-react";
+import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
 import * as React from "react";
 
 interface OrderBookLevel {
@@ -27,57 +28,6 @@ interface OrderBookProps {
   venue?: string;
   hideTitle?: boolean;
   className?: string;
-}
-
-// Generate mock order book data with realistic spreads
-// tick parameter allows for live updates - changing tick = new random values
-function generateMockOrderBook(
-  symbol: string,
-  midPrice: number,
-  tick: number = 0,
-): { bids: OrderBookLevel[]; asks: OrderBookLevel[] } {
-  const levels = 15;
-  const bids: OrderBookLevel[] = [];
-  const asks: OrderBookLevel[] = [];
-
-  // Realistic tick sizes and spreads by symbol
-  // BTC/USDT on Binance: ~$0.10 tick, spread ~$0.20-0.50
-  // ETH/USDT: ~$0.01 tick, spread ~$0.05-0.20
-  const tickSize = symbol.includes("BTC") ? 0.1 : symbol.includes("ETH") ? 0.01 : 0.01;
-  const baseSpread = symbol.includes("BTC") ? 0.2 : symbol.includes("ETH") ? 0.05 : 0.02;
-
-  // Seed incorporates tick for variation over time
-  const baseSeed = symbol.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  let seedState = baseSeed + tick * 7919; // Prime multiplier for good distribution
-  const rand = () => {
-    seedState = (seedState * 1103515245 + 12345) & 0x7fffffff;
-    return (seedState % 1000) / 1000;
-  };
-
-  let bidCumulative = 0;
-  let askCumulative = 0;
-
-  // Best bid is just below mid by half spread
-  const bestBid = midPrice - baseSpread / 2;
-  const bestAsk = midPrice + baseSpread / 2;
-
-  for (let i = 0; i < levels; i++) {
-    // Bids (descending from best bid)
-    // Price steps down by tick size + small random
-    const bidPrice = bestBid - tickSize * i - rand() * tickSize * 0.5;
-    // Size increases as we go deeper (more liquidity at worse prices)
-    const bidSize = (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10);
-    bidCumulative += bidSize;
-    bids.push({ price: bidPrice, size: bidSize, total: bidCumulative });
-
-    // Asks (ascending from best ask)
-    const askPrice = bestAsk + tickSize * i + rand() * tickSize * 0.5;
-    const askSize = (0.1 + rand() * 0.3) * (1 + i * 0.3) * (symbol.includes("BTC") ? 1 : 10);
-    askCumulative += askSize;
-    asks.push({ price: askPrice, size: askSize, total: askCumulative });
-  }
-
-  return { bids, asks };
 }
 
 export function OrderBook({
@@ -409,4 +359,4 @@ export function OrderBookWithDepth({
   );
 }
 
-export { generateMockOrderBook };
+export { generateMockOrderBook } from "@/lib/mocks/generators/order-book";

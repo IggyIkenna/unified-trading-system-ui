@@ -3,7 +3,7 @@
 import { CalendarEventFeed } from "@/components/trading/calendar-event-feed";
 import type { IndicatorOverlay } from "@/components/trading/candlestick-chart";
 import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
-import { generateMockOrderBook } from "@/components/trading/order-book";
+import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAlerts } from "@/hooks/api/use-alerts";
@@ -13,7 +13,7 @@ import { useBalances, usePositions } from "@/hooks/api/use-positions";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { mock01, mockRange } from "@/lib/deterministic-mock";
+import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { Strategy } from "@/lib/strategy-registry";
 import { STRATEGIES } from "@/lib/strategy-registry";

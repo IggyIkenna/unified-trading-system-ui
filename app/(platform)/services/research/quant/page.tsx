@@ -28,6 +28,7 @@ import {
 import Link from "next/link";
 import * as React from "react";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { MOCK_INSTRUMENTS } from "@/lib/mocks/fixtures/research-pages";
 
 // ---------------------------------------------------------------------------
 // Mock Data
@@ -119,109 +120,6 @@ const CORRELATION_DATA = [
   { asset: "SOL-USD", btc: "0.714", eth: "0.768", sol: "1.000", avax: "0.812", matic: "0.756" },
   { asset: "AVAX-USD", btc: "0.681", eth: "0.729", sol: "0.812", avax: "1.000", matic: "0.834" },
   { asset: "MATIC-USD", btc: "0.623", eth: "0.694", sol: "0.756", avax: "0.834", matic: "1.000" },
-];
-
-const MOCK_INSTRUMENTS = [
-  {
-    symbol: "BTC-USD",
-    venue: "BINANCE",
-    date: "2026-03-28",
-    open: "84521.30",
-    high: "85102.40",
-    low: "83980.10",
-    close: "84890.50",
-    volume: "24,312",
-  },
-  {
-    symbol: "ETH-USD",
-    venue: "BINANCE",
-    date: "2026-03-28",
-    open: "2041.80",
-    high: "2078.20",
-    low: "2028.40",
-    close: "2065.90",
-    volume: "182,401",
-  },
-  {
-    symbol: "SOL-USD",
-    venue: "BINANCE",
-    date: "2026-03-28",
-    open: "138.42",
-    high: "141.10",
-    low: "137.20",
-    close: "140.30",
-    volume: "98,214",
-  },
-  {
-    symbol: "AVAX-USD",
-    venue: "COINBASE",
-    date: "2026-03-28",
-    open: "24.12",
-    high: "24.80",
-    low: "23.94",
-    close: "24.65",
-    volume: "312,105",
-  },
-  {
-    symbol: "MATIC-USD",
-    venue: "COINBASE",
-    date: "2026-03-28",
-    open: "0.5812",
-    high: "0.5940",
-    low: "0.5780",
-    close: "0.5901",
-    volume: "1,204,510",
-  },
-  {
-    symbol: "BTC-USD",
-    venue: "BINANCE",
-    date: "2026-03-27",
-    open: "83812.20",
-    high: "84680.10",
-    low: "83420.30",
-    close: "84521.30",
-    volume: "21,892",
-  },
-  {
-    symbol: "ETH-USD",
-    venue: "BINANCE",
-    date: "2026-03-27",
-    open: "2018.40",
-    high: "2052.80",
-    low: "2010.20",
-    close: "2041.80",
-    volume: "168,320",
-  },
-  {
-    symbol: "SOL-USD",
-    venue: "BINANCE",
-    date: "2026-03-27",
-    open: "135.80",
-    high: "139.20",
-    low: "135.10",
-    close: "138.42",
-    volume: "87,412",
-  },
-  {
-    symbol: "AVAX-USD",
-    venue: "COINBASE",
-    date: "2026-03-27",
-    open: "23.84",
-    high: "24.30",
-    low: "23.62",
-    close: "24.12",
-    volume: "298,410",
-  },
-  {
-    symbol: "MATIC-USD",
-    venue: "COINBASE",
-    date: "2026-03-27",
-    open: "0.5724",
-    high: "0.5830",
-    low: "0.5698",
-    close: "0.5812",
-    volume: "1,102,840",
-  },
 ];
 
 const BACKTEST_STRATEGIES = [

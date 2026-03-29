@@ -6,7 +6,7 @@ import type {
   RegimePerformanceRow,
   StrategyMetrics,
   WalkForwardWindow,
-} from "./types";
+} from "@/components/promote/types";
 
 /** SR 11-7 documentation rows — shared by compliance UI and mock checklist data. */
 export const SR_11_7_ITEMS: { id: string; label: string }[] = [
@@ -21,16 +21,13 @@ export const SR_11_7_ITEMS: { id: string; label: string }[] = [
   { id: "change", label: "Model change management process defined" },
 ];
 
-export function buildDocumentationChecklist(
-  mode: "all" | "none" | "partial",
-): DocumentationChecklistItem[] {
+export function buildDocumentationChecklist(mode: "all" | "none" | "partial"): DocumentationChecklistItem[] {
   const base = new Date("2026-02-15T12:00:00Z");
   return SR_11_7_ITEMS.map((item, i) => {
     const d = new Date(base);
     d.setDate(d.getDate() - (SR_11_7_ITEMS.length - i));
     const dateStr = d.toISOString().slice(0, 10);
-    if (mode === "all")
-      return { label: item.label, complete: true, lastUpdated: dateStr };
+    if (mode === "all") return { label: item.label, complete: true, lastUpdated: dateStr };
     if (mode === "none") return { label: item.label, complete: false };
     return {
       label: item.label,

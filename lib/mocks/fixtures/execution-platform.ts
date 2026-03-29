@@ -7,7 +7,7 @@ import type {
   VenueMatrix,
   ExecutionCandidate,
   ExecutionMetricsSnapshot,
-} from "./execution-platform-types";
+} from "@/lib/types/execution-platform";
 
 // ============================================================================
 // Execution Algos
@@ -42,8 +42,7 @@ export const MOCK_EXECUTION_ALGOS: ExecutionAlgo[] = [
     name: "VWAP Adaptive",
     type: "VWAP",
     version: "3.0.1",
-    description:
-      "Volume-weighted average price with real-time volume prediction",
+    description: "Volume-weighted average price with real-time volume prediction",
     params: {
       aggressiveness: 0.6,
       minFillRate: 0.92,
@@ -66,8 +65,7 @@ export const MOCK_EXECUTION_ALGOS: ExecutionAlgo[] = [
     name: "Implementation Shortfall",
     type: "IS",
     version: "1.2.0",
-    description:
-      "Minimizes implementation shortfall with urgency-aware scheduling",
+    description: "Minimizes implementation shortfall with urgency-aware scheduling",
     params: {
       aggressiveness: 0.7,
       minFillRate: 0.9,

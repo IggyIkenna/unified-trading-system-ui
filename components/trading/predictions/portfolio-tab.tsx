@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, TrendingUp, TrendingDown, DollarSign, Target } from "lucide-react";
 import type { PredictionPosition, SettlementOutcome } from "./types";
-import { MOCK_POSITIONS } from "./mock-data";
+import { MOCK_POSITIONS } from "@/lib/mocks/fixtures/predictions-data";
 import { fmtUsdPrecise, fmtRelativeTime } from "./helpers";
 import { VenueChip } from "./shared";
 import { formatPercent } from "@/lib/utils/formatters";

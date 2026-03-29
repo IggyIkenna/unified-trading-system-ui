@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import type { BacktestRun, StrategySignal, SignalQualityMetrics } from "@/lib/strategy-platform-types";
-import type { BacktestAnalytics } from "@/lib/backtest-analytics-types";
+import type { BacktestRun, StrategySignal, SignalQualityMetrics } from "@/lib/types/strategy-platform";
+import type { BacktestAnalytics } from "@/lib/types/backtest-analytics";
 import {
   BACKTEST_ANALYTICS,
   BACKTEST_SIGNALS,
@@ -14,7 +14,7 @@ import {
   computeFullConfluenceAllStrategies,
   computeSignalOverlap,
   generateSyntheticPriceSeries,
-} from "@/lib/strategy-platform-mock-data";
+} from "@/lib/mocks/fixtures/strategy-platform";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { ChevronLeft, GitCompare, Star, Zap } from "lucide-react";

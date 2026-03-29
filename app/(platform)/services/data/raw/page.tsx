@@ -12,7 +12,7 @@ import type { FinderSelections } from "@/components/shared/finder";
 import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
+import { MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { AlertTriangle, CheckCircle2, Download, RefreshCw } from "lucide-react";

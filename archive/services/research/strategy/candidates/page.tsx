@@ -3,16 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Clock,
-  MessageSquare,
-  Rocket,
-  Shield,
-  Target,
-  XCircle,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock, MessageSquare, Rocket, Shield, Target, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -38,14 +29,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
-import {
-  CandidateBasket,
-  useCandidateBasket,
-} from "@/components/platform/candidate-basket";
-import type {
-  StrategyCandidate,
-  BacktestRun,
-} from "@/lib/strategy-platform-types";
+import { CandidateBasket, useCandidateBasket } from "@/components/platform/candidate-basket";
+import type { StrategyCandidate, BacktestRun } from "@/lib/types/strategy-platform";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -97,8 +82,7 @@ export default function CandidatesPage() {
     error: candidatesError,
     refetch: candidatesRefetch,
   } = useStrategyCandidates();
-  const { data: backtestsData, isLoading: backtestsLoading } =
-    useStrategyBacktests();
+  const { data: backtestsData, isLoading: backtestsLoading } = useStrategyBacktests();
   const promoteStrategy = usePromoteStrategy();
   const rejectStrategy = useRejectStrategy();
 
@@ -129,9 +113,7 @@ export default function CandidatesPage() {
     }
   }, [candidatesFromApi]);
 
-  const [promotionTargets, setPromotionTargets] = React.useState<
-    Record<string, PromotionTarget | null>
-  >({});
+  const [promotionTargets, setPromotionTargets] = React.useState<Record<string, PromotionTarget | null>>({});
   const [commentDialog, setCommentDialog] = React.useState<string | null>(null);
   const [commentText, setCommentText] = React.useState("");
 
@@ -211,111 +193,85 @@ export default function CandidatesPage() {
     }
   }
 
-  const pendingCandidates = candidates.filter(
-    (c) => c.reviewState === "pending" || c.reviewState === "in_review",
-  );
-  const resolvedCandidates = candidates.filter(
-    (c) => c.reviewState === "approved" || c.reviewState === "rejected",
-  );
+  const pendingCandidates = candidates.filter((c) => c.reviewState === "pending" || c.reviewState === "in_review");
+  const resolvedCandidates = candidates.filter((c) => c.reviewState === "approved" || c.reviewState === "rejected");
 
-  const resolvedColumns: ColumnDef<StrategyCandidate, unknown>[] =
-    React.useMemo(
-      () => [
-        {
-          id: "strategy",
-          header: "Strategy",
-          enableSorting: false,
-          cell: ({ row }) => {
-            const bt = BACKTEST_RUNS.find(
-              (b) => b.id === row.original.backtestRunId,
-            );
+  const resolvedColumns: ColumnDef<StrategyCandidate, unknown>[] = React.useMemo(
+    () => [
+      {
+        id: "strategy",
+        header: "Strategy",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const bt = BACKTEST_RUNS.find((b) => b.id === row.original.backtestRunId);
+          return <span className="font-medium">{bt?.templateName ?? row.original.configId}</span>;
+        },
+      },
+      {
+        accessorKey: "configVersion",
+        header: "Version",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="text-muted-foreground font-mono text-xs">v{row.original.configVersion}</span>
+        ),
+      },
+      {
+        accessorKey: "reviewState",
+        header: "Status",
+        enableSorting: false,
+        cell: ({ row }) => (
+          <Badge variant="outline" className={reviewStateColor(row.original.reviewState)}>
+            {row.original.reviewState}
+          </Badge>
+        ),
+      },
+      {
+        id: "promotedTo",
+        header: "Promoted To",
+        enableSorting: false,
+        cell: ({ row }) => {
+          const target = promotionTargets[row.original.id];
+          if (target) {
             return (
-              <span className="font-medium">
-                {bt?.templateName ?? row.original.configId}
-              </span>
+              <Badge
+                variant="outline"
+                className={
+                  target === "live"
+                    ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                    : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
+                }
+              >
+                {target}
+              </Badge>
             );
-          },
+          }
+          return <span className="text-muted-foreground text-xs">--</span>;
         },
-        {
-          accessorKey: "configVersion",
-          header: "Version",
-          enableSorting: false,
-          cell: ({ row }) => (
-            <span className="text-muted-foreground font-mono text-xs">
-              v{row.original.configVersion}
-            </span>
-          ),
-        },
-        {
-          accessorKey: "reviewState",
-          header: "Status",
-          enableSorting: false,
-          cell: ({ row }) => (
-            <Badge
-              variant="outline"
-              className={reviewStateColor(row.original.reviewState)}
-            >
-              {row.original.reviewState}
-            </Badge>
-          ),
-        },
-        {
-          id: "promotedTo",
-          header: "Promoted To",
-          enableSorting: false,
-          cell: ({ row }) => {
-            const target = promotionTargets[row.original.id];
-            if (target) {
-              return (
-                <Badge
-                  variant="outline"
-                  className={
-                    target === "live"
-                      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                      : "bg-cyan-500/15 text-cyan-400 border-cyan-500/30"
-                  }
-                >
-                  {target}
-                </Badge>
-              );
-            }
-            return <span className="text-muted-foreground text-xs">--</span>;
-          },
-        },
-        {
-          id: "sharpe",
-          header: "Sharpe",
-          accessorFn: (row) => row.metricsSnapshot.sharpe,
-          cell: ({ row }) => (
-            <span className="font-mono text-sm">
-              {fmtNum(row.original.metricsSnapshot.sharpe)}
-            </span>
-          ),
-        },
-        {
-          id: "return",
-          header: "Return",
-          accessorFn: (row) => row.metricsSnapshot.totalReturn,
-          cell: ({ row }) => (
-            <span className="font-mono text-sm">
-              {fmtPct(row.original.metricsSnapshot.totalReturn)}
-            </span>
-          ),
-        },
-        {
-          accessorKey: "selectedBy",
-          header: "Selected By",
-          enableSorting: false,
-          cell: ({ row }) => (
-            <span className="text-muted-foreground text-xs">
-              {row.original.selectedBy}
-            </span>
-          ),
-        },
-      ],
+      },
+      {
+        id: "sharpe",
+        header: "Sharpe",
+        accessorFn: (row) => row.metricsSnapshot.sharpe,
+        cell: ({ row }) => <span className="font-mono text-sm">{fmtNum(row.original.metricsSnapshot.sharpe)}</span>,
+      },
+      {
+        id: "return",
+        header: "Return",
+        accessorFn: (row) => row.metricsSnapshot.totalReturn,
+        cell: ({ row }) => (
+          <span className="font-mono text-sm">{fmtPct(row.original.metricsSnapshot.totalReturn)}</span>
+        ),
+      },
+      {
+        accessorKey: "selectedBy",
+        header: "Selected By",
+        enableSorting: false,
+        cell: ({ row }) => <span className="text-muted-foreground text-xs">{row.original.selectedBy}</span>,
+      },
+    ],
 
-      [BACKTEST_RUNS, promotionTargets],
-    );
+    [BACKTEST_RUNS, promotionTargets],
+  );
 
   if (isLoading) {
     return (
@@ -340,12 +296,9 @@ export default function CandidatesPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              Promotion Pipeline
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight">Promotion Pipeline</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {pendingCandidates.length} pending &middot;{" "}
-              {resolvedCandidates.length} resolved
+              {pendingCandidates.length} pending &middot; {resolvedCandidates.length} resolved
             </p>
           </div>
           <CandidateBasket
@@ -356,29 +309,19 @@ export default function CandidatesPage() {
             onUpdateNote={basket.updateNote}
             onSendToReview={() => {
               if (basket.candidates.length === 0) {
-                toast.message(
-                  "Add at least one candidate to the basket first.",
-                );
+                toast.message("Add at least one candidate to the basket first.");
                 return;
               }
               toast.success("Opening strategy handoff.");
-              router.push(
-                "/services/research/strategy/handoff?source=candidates&action=review",
-              );
+              router.push("/services/research/strategy/handoff?source=candidates&action=review");
             }}
             onPreparePackage={() => {
               if (basket.candidates.length === 0) {
-                toast.message(
-                  "Add at least one candidate to the basket first.",
-                );
+                toast.message("Add at least one candidate to the basket first.");
                 return;
               }
-              toast.success(
-                "Opening handoff to prepare your promotion package.",
-              );
-              router.push(
-                "/services/research/strategy/handoff?source=candidates&action=package",
-              );
+              toast.success("Opening handoff to prepare your promotion package.");
+              router.push("/services/research/strategy/handoff?source=candidates&action=package");
             }}
           />
         </div>
@@ -391,9 +334,7 @@ export default function CandidatesPage() {
               Awaiting Review
             </h2>
             {pendingCandidates.map((candidate) => {
-              const bt = BACKTEST_RUNS.find(
-                (b) => b.id === candidate.backtestRunId,
-              );
+              const bt = BACKTEST_RUNS.find((b) => b.id === candidate.backtestRunId);
               const m = candidate.metricsSnapshot;
               const stageIdx = getWorkflowStageIndex(candidate);
 
@@ -405,37 +346,19 @@ export default function CandidatesPage() {
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold">
-                              {bt?.templateName ?? candidate.configId}
-                            </span>
-                            <Badge
-                              variant="outline"
-                              className={reviewStateColor(
-                                candidate.reviewState,
-                              )}
-                            >
+                            <span className="font-semibold">{bt?.templateName ?? candidate.configId}</span>
+                            <Badge variant="outline" className={reviewStateColor(candidate.reviewState)}>
                               {candidate.reviewState.replace(/_/g, " ")}
                             </Badge>
-                            <span className="text-xs text-muted-foreground font-mono">
-                              v{candidate.configVersion}
-                            </span>
+                            <span className="text-xs text-muted-foreground font-mono">v{candidate.configVersion}</span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {candidate.rationale}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{candidate.rationale}</p>
                           <p className="text-xs text-muted-foreground">
-                            Selected by {candidate.selectedBy} on{" "}
-                            {new Date(
-                              candidate.selectedAt,
-                            ).toLocaleDateString()}
+                            Selected by {candidate.selectedBy} on {new Date(candidate.selectedAt).toLocaleDateString()}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => setCommentDialog(candidate.id)}
-                          >
+                          <Button size="sm" variant="ghost" onClick={() => setCommentDialog(candidate.id)}>
                             <MessageSquare className="size-3.5" />
                             Comment
                           </Button>
@@ -452,18 +375,14 @@ export default function CandidatesPage() {
                             size="sm"
                             variant="outline"
                             className="border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10"
-                            onClick={() =>
-                              promoteCandidate(candidate.id, "paper")
-                            }
+                            onClick={() => promoteCandidate(candidate.id, "paper")}
                           >
                             Promote to Paper
                           </Button>
                           <Button
                             size="sm"
                             className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                            onClick={() =>
-                              promoteCandidate(candidate.id, "live")
-                            }
+                            onClick={() => promoteCandidate(candidate.id, "live")}
                           >
                             <Rocket className="size-3.5" />
                             Promote to Live
@@ -474,52 +393,28 @@ export default function CandidatesPage() {
                       {/* Metrics row */}
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 rounded-lg border border-border/30 p-3">
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            Sharpe
-                          </p>
-                          <p className="text-lg font-bold font-mono">
-                            {fmtNum(m.sharpe)}
-                          </p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sharpe</p>
+                          <p className="text-lg font-bold font-mono">{fmtNum(m.sharpe)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            Return
-                          </p>
-                          <p className="text-lg font-bold font-mono">
-                            {fmtPct(m.totalReturn)}
-                          </p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Return</p>
+                          <p className="text-lg font-bold font-mono">{fmtPct(m.totalReturn)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            Max DD
-                          </p>
-                          <p className="text-lg font-bold font-mono text-red-400">
-                            {fmtPct(m.maxDrawdown)}
-                          </p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Max DD</p>
+                          <p className="text-lg font-bold font-mono text-red-400">{fmtPct(m.maxDrawdown)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            Sortino
-                          </p>
-                          <p className="text-lg font-bold font-mono">
-                            {fmtNum(m.sortino)}
-                          </p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Sortino</p>
+                          <p className="text-lg font-bold font-mono">{fmtNum(m.sortino)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            Hit Rate
-                          </p>
-                          <p className="text-lg font-bold font-mono">
-                            {fmtPct(m.hitRate)}
-                          </p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Hit Rate</p>
+                          <p className="text-lg font-bold font-mono">{fmtPct(m.hitRate)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                            Profit Factor
-                          </p>
-                          <p className="text-lg font-bold font-mono">
-                            {fmtNum(m.profitFactor)}
-                          </p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Profit Factor</p>
+                          <p className="text-lg font-bold font-mono">{fmtNum(m.profitFactor)}</p>
                         </div>
                       </div>
 
@@ -556,17 +451,10 @@ export default function CandidatesPage() {
                       {/* Review Comments */}
                       {candidate.reviewComments.length > 0 && (
                         <div className="space-y-2 border-t border-border/30 pt-3">
-                          <p className="text-xs font-medium text-muted-foreground">
-                            Comments
-                          </p>
+                          <p className="text-xs font-medium text-muted-foreground">Comments</p>
                           {candidate.reviewComments.map((rc) => (
-                            <div
-                              key={rc.id}
-                              className="flex items-start gap-2 text-sm"
-                            >
-                              <div className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
-                                {rc.userName}
-                              </div>
+                            <div key={rc.id} className="flex items-start gap-2 text-sm">
+                              <div className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">{rc.userName}</div>
                               <div>
                                 <p>{rc.comment}</p>
                                 <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -595,11 +483,7 @@ export default function CandidatesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable
-                columns={resolvedColumns}
-                data={resolvedCandidates}
-                emptyMessage="No resolved candidates"
-              />
+              <DataTable columns={resolvedColumns} data={resolvedCandidates} emptyMessage="No resolved candidates" />
             </CardContent>
           </Card>
         )}
@@ -626,9 +510,7 @@ export default function CandidatesPage() {
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Add Review Comment</DialogTitle>
-              <DialogDescription>
-                Add a comment to the candidate review.
-              </DialogDescription>
+              <DialogDescription>Add a comment to the candidate review.</DialogDescription>
             </DialogHeader>
             <div className="space-y-2">
               <Label>Comment</Label>
@@ -653,10 +535,7 @@ export default function CandidatesPage() {
               >
                 Cancel
               </Button>
-              <Button
-                onClick={() => commentDialog && addComment(commentDialog)}
-                disabled={!commentText.trim()}
-              >
+              <Button onClick={() => commentDialog && addComment(commentDialog)} disabled={!commentText.trim()}>
                 <MessageSquare className="size-4" />
                 Add Comment
               </Button>

@@ -3,7 +3,7 @@
 import type { FilterDefinition } from "@/components/platform/filter-bar";
 import { FilterBar } from "@/components/platform/filter-bar";
 import { FixtureSection, groupFixtures } from "@/components/trading/sports/fixtures-tab";
-import { FOOTBALL_LEAGUES } from "@/components/trading/sports/mock-fixtures";
+import { FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
 import { LeagueBadge } from "@/components/trading/sports/shared";
 import type { Fixture, FootballLeague } from "@/components/trading/sports/types";
 import { EmptyState } from "@/components/ui/empty-state";

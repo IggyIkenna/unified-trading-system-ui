@@ -22,7 +22,7 @@ import {
   type AssetClass,
   type StrategyArchetype,
   type StrategyTemplate,
-} from "@/lib/strategy-platform-types";
+} from "@/lib/types/strategy-platform";
 import { Check, ChevronRight, Upload } from "lucide-react";
 import * as React from "react";
 

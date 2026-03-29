@@ -39,11 +39,7 @@ export interface BuildOverviewStats {
 
 export interface BuildActiveJob {
   id: string;
-  type:
-    | "feature_computation"
-    | "model_training"
-    | "strategy_backtest"
-    | "execution_backtest";
+  type: "feature_computation" | "model_training" | "strategy_backtest" | "execution_backtest";
   name: string;
   description: string;
   progress_pct: number;
@@ -86,13 +82,7 @@ export interface FeatureCatalogueEntry {
     | "Cross-Instrument"
     | "Commodity"
     | "Microstructure";
-  feature_group:
-    | "Technical"
-    | "Fundamental"
-    | "Sentiment"
-    | "Microstructure"
-    | "Risk"
-    | "ML-Derived";
+  feature_group: "Technical" | "Fundamental" | "Sentiment" | "Microstructure" | "Risk" | "ML-Derived";
   source_service: string;
   current_version: string;
   status: "active" | "stale" | "not_computed" | "deprecated";
@@ -262,13 +252,7 @@ export interface ExecutionBacktest {
   name: string;
   strategy_backtest_id: string;
   strategy_name: string;
-  algo:
-    | "TWAP"
-    | "VWAP"
-    | "Iceberg"
-    | "Aggressive Limit"
-    | "Passive Limit"
-    | "Market Only";
+  algo: "TWAP" | "VWAP" | "Iceberg" | "Aggressive Limit" | "Passive Limit" | "Market Only";
   algo_params: Record<string, unknown>;
   order_type: "Limit" | "Market" | "Limit-then-Market";
   venues: string[];
@@ -384,8 +368,7 @@ export const BUILD_ALERTS: BuildAlert[] = [
     id: "alert-002",
     severity: "warning",
     message: "14 features are stale (>24h since last computation)",
-    detail:
-      "Volatility features for TradFi shard not updated since market close",
+    detail: "Volatility features for TradFi shard not updated since market close",
     timestamp: new Date(Date.now() - 7200000).toISOString(),
     source: "features",
     action_href: "/services/research/features",
@@ -393,10 +376,8 @@ export const BUILD_ALERTS: BuildAlert[] = [
   {
     id: "alert-003",
     severity: "warning",
-    message:
-      "Model validation: ETH Volatility Surface challenger below champion threshold",
-    detail:
-      "Challenger Sharpe 1.82 vs Champion 2.31 — insufficient improvement",
+    message: "Model validation: ETH Volatility Surface challenger below champion threshold",
+    detail: "Challenger Sharpe 1.82 vs Champion 2.31 — insufficient improvement",
     timestamp: new Date(Date.now() - 14400000).toISOString(),
     source: "models",
     action_href: "/services/research/ml/validation",
@@ -404,8 +385,7 @@ export const BUILD_ALERTS: BuildAlert[] = [
   {
     id: "alert-004",
     severity: "info",
-    message:
-      "Feature version update: ema_50 upgraded to v2.1 (window parameter change)",
+    message: "Feature version update: ema_50 upgraded to v2.1 (window parameter change)",
     detail: "3 models pinned to v2.0 — retrain recommended",
     timestamp: new Date(Date.now() - 28800000).toISOString(),
     source: "features",
@@ -453,8 +433,7 @@ export const BUILD_RECENT_ACTIVITY: BuildActivity[] = [
   },
   {
     id: "act-005",
-    action:
-      "Feature catalogue: 3 new Sports features added (match_form_5, odds_movement_1h, …)",
+    action: "Feature catalogue: 3 new Sports features added (match_form_5, odds_movement_1h, …)",
     actor: "sports_team",
     timestamp: new Date(Date.now() - 21600000).toISOString(),
     href: "/services/research/features",
@@ -468,8 +447,7 @@ export const BUILD_RECENT_ACTIVITY: BuildActivity[] = [
   },
   {
     id: "act-007",
-    action:
-      "Experiment created: ETH Vol Surface — 3 hyperparameter configurations",
+    action: "Experiment created: ETH Vol Surface — 3 hyperparameter configurations",
     actor: "ml_engineer",
     timestamp: new Date(Date.now() - 36000000).toISOString(),
     href: "/services/research/ml/experiments",
@@ -532,17 +510,9 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     source_service: "features-delta-one-service",
     current_version: "v1.3",
     status: "active",
-    symbols: [
-      "BTC-USDT",
-      "ETH-USDT",
-      "SOL-USDT",
-      "BNB-USDT",
-      "XRP-USDT",
-      "DOGE-USDT",
-    ],
+    symbols: ["BTC-USDT", "ETH-USDT", "SOL-USDT", "BNB-USDT", "XRP-USDT", "DOGE-USDT"],
     last_computed: new Date(Date.now() - 2700000).toISOString(),
-    description:
-      "Relative Strength Index over 14 periods — overbought/oversold indicator",
+    description: "Relative Strength Index over 14 periods — overbought/oversold indicator",
     parameters: { window: 14, price_field: "close" },
     dependencies: [],
     consumed_by_models: ["mf-btc-direction", "mf-multi-momentum"],
@@ -563,8 +533,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "active",
     symbols: ["BTC-USDT", "ETH-USDT", "SOL-USDT"],
     last_computed: new Date(Date.now() - 3600000).toISOString(),
-    description:
-      "MACD signal line — difference between 12 and 26 period EMAs, smoothed by 9-period EMA",
+    description: "MACD signal line — difference between 12 and 26 period EMAs, smoothed by 9-period EMA",
     parameters: { fast: 12, slow: 26, signal: 9, price_field: "close" },
     dependencies: ["feat-ema-12", "feat-ema-26"],
     consumed_by_models: ["mf-btc-direction"],
@@ -585,8 +554,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "active",
     symbols: ["BTC-USDT", "ETH-USDT", "SOL-USDT"],
     last_computed: new Date(Date.now() - 60000).toISOString(),
-    description:
-      "Order book imbalance ratio — (bid_vol - ask_vol) / (bid_vol + ask_vol) at top 5 levels",
+    description: "Order book imbalance ratio — (bid_vol - ask_vol) / (bid_vol + ask_vol) at top 5 levels",
     parameters: { levels: 5, window_seconds: 60 },
     dependencies: [],
     consumed_by_models: ["mf-eth-volatility"],
@@ -608,8 +576,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "stale",
     symbols: ["BTC-USDT", "ETH-USDT", "SOL-USDT", "BNB-USDT"],
     last_computed: new Date(Date.now() - 90000000).toISOString(),
-    description:
-      "HMM-based volatility regime classifier: low / medium / high / extreme",
+    description: "HMM-based volatility regime classifier: low / medium / high / extreme",
     parameters: { lookback: 30, n_states: 4, refit_interval_days: 7 },
     dependencies: ["feat-rsi-14", "feat-atr-14"],
     consumed_by_models: ["mf-eth-volatility", "mf-btc-direction"],
@@ -630,8 +597,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "active",
     symbols: ["BTC-USDT", "ETH-USDT", "SOL-USDT"],
     last_computed: new Date(Date.now() - 3600000).toISOString(),
-    description:
-      "Annualised realised volatility over 30 days using close-to-close returns",
+    description: "Annualised realised volatility over 30 days using close-to-close returns",
     parameters: { window_days: 30, annualise: true, scaling_factor: 365 },
     dependencies: [],
     consumed_by_models: ["mf-eth-volatility"],
@@ -653,8 +619,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "active",
     symbols: ["ETH-PERP", "BTC-PERP", "SOL-PERP"],
     last_computed: new Date(Date.now() - 300000).toISOString(),
-    description:
-      "Perpetual futures funding rate — 8-hour rolling average from Binance, OKX, Hyperliquid",
+    description: "Perpetual futures funding rate — 8-hour rolling average from Binance, OKX, Hyperliquid",
     parameters: {
       exchanges: ["BINANCE", "OKX", "HYPERLIQUID"],
       rolling_window_hours: 8,
@@ -678,8 +643,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "active",
     symbols: ["ETH"],
     last_computed: new Date(Date.now() - 3600000).toISOString(),
-    description:
-      "Total Value Locked across Ethereum DeFi protocols — Aave, Uniswap, Compound",
+    description: "Total Value Locked across Ethereum DeFi protocols — Aave, Uniswap, Compound",
     parameters: {
       protocols: ["aave", "uniswap", "compound", "curve"],
       currency: "USD",
@@ -726,8 +690,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "active",
     symbols: ["EPL/*", "LA_LIGA/*"],
     last_computed: new Date(Date.now() - 86400000).toISOString(),
-    description:
-      "Team form score over last 5 matches — weighted win/draw/loss with recency bias",
+    description: "Team form score over last 5 matches — weighted win/draw/loss with recency bias",
     parameters: {
       window: 5,
       win_weight: 3,
@@ -754,8 +717,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     status: "active",
     symbols: ["EPL/*", "LA_LIGA/*", "NBA/*"],
     last_computed: new Date(Date.now() - 3600000).toISOString(),
-    description:
-      "1-hour price movement in betting odds — sharp money indicator",
+    description: "1-hour price movement in betting odds — sharp money indicator",
     parameters: { window_minutes: 60, exchanges: ["betfair", "betdaq"] },
     dependencies: [],
     consumed_by_models: [],
@@ -783,8 +745,7 @@ export const FEATURE_VERSIONS: Record<string, FeatureVersion[]> = {
       changed_fields: ["parameters.price_field"],
       changed_by: "quant_researcher",
       changed_at: "2025-11-01T09:00:00Z",
-      change_summary:
-        "Changed price field from 'open' to 'close' for consistency",
+      change_summary: "Changed price field from 'open' to 'close' for consistency",
       models_using_this_version: [],
     },
     {
@@ -976,9 +937,7 @@ export const FEATURE_ETL_JOBS: FeatureEtlJob[] = [
 ];
 
 export const FEATURE_ETL_HISTORY: FeatureEtlJob[] = [
-  ...FEATURE_ETL_JOBS.filter(
-    (j) => j.status === "complete" || j.status === "failed",
-  ),
+  ...FEATURE_ETL_JOBS.filter((j) => j.status === "complete" || j.status === "failed"),
   {
     id: "etl-job-history-001",
     service_id: "svc-delta-one",
@@ -998,13 +957,7 @@ export const FEATURE_ETL_HISTORY: FeatureEtlJob[] = [
 // Heatmap: feature group × shard × (week of year) completion
 export const FEATURE_ETL_HEATMAP: FeatureEtlHeatmapCell[] = (() => {
   const shards = ["CeFi", "DeFi", "TradFi", "Sports"];
-  const groups = [
-    "Technical",
-    "Volatility",
-    "Microstructure",
-    "Fundamental",
-    "Risk",
-  ];
+  const groups = ["Technical", "Volatility", "Microstructure", "Fundamental", "Risk"];
   const cells: FeatureEtlHeatmapCell[] = [];
   // Generate last 12 weeks of heatmap data
   for (let w = 11; w >= 0; w--) {
@@ -1012,14 +965,7 @@ export const FEATURE_ETL_HEATMAP: FeatureEtlHeatmapCell[] = (() => {
     const dateStr = d.toISOString().split("T")[0];
     for (const shard of shards) {
       for (const group of groups) {
-        const basePct =
-          shard === "DeFi"
-            ? 92
-            : shard === "Sports"
-              ? 85
-              : shard === "TradFi"
-                ? 30
-                : 70;
+        const basePct = shard === "DeFi" ? 92 : shard === "Sports" ? 85 : shard === "TradFi" ? 30 : 70;
         const variation = Math.floor(Math.random() * 20) - 10;
         const pct = Math.max(0, Math.min(100, basePct + variation - w * 3));
         cells.push({
@@ -1055,16 +1001,11 @@ function generateTrades(
   for (let i = 0; i < count; i++) {
     const ts = new Date(startMs + i * intervalMs);
     const isEntry = i % 2 === 0;
-    const signal: ExecutionTrade["signal"] = isEntry
-      ? Math.random() > 0.45
-        ? "LONG"
-        : "SHORT"
-      : "EXIT";
+    const signal: ExecutionTrade["signal"] = isEntry ? (Math.random() > 0.45 ? "LONG" : "SHORT") : "EXIT";
     const priceVariation = basePrice * (1 + (Math.random() - 0.5) * 0.1);
     const slip = (Math.random() * avgSlippageBps * 2 * priceVariation) / 10000;
     const fillPrice = priceVariation + (signal === "EXIT" ? -slip : slip);
-    const slipBps =
-      Math.abs((fillPrice - priceVariation) / priceVariation) * 10000;
+    const slipBps = Math.abs((fillPrice - priceVariation) / priceVariation) * 10000;
     const pnl = isEntry ? null : (Math.random() - 0.42) * 200;
     if (pnl !== null) cumPnl += pnl;
     const venue = venues[Math.floor(Math.random() * venues.length)];
@@ -1080,23 +1021,13 @@ function generateTrades(
       venue,
       algo,
       quantity: Math.round(0.1 + Math.random() * 0.9),
-      side:
-        signal === "LONG"
-          ? "buy"
-          : signal === "SHORT"
-            ? "sell"
-            : Math.random() > 0.5
-              ? "buy"
-              : "sell",
+      side: signal === "LONG" ? "buy" : signal === "SHORT" ? "sell" : Math.random() > 0.5 ? "buy" : "sell",
       commission: Math.round(2 + Math.random() * 15),
       market_impact_bps: Math.round(Math.random() * avgSlippageBps * 10) / 10,
-      partial_fill_pct:
-        Math.random() > 0.85 ? Math.round(Math.random() * 40) : 0,
+      partial_fill_pct: Math.random() > 0.85 ? Math.round(Math.random() * 40) : 0,
       pnl,
       cumulative_pnl: Math.round(cumPnl * 100) / 100,
-      model_confidence: isEntry
-        ? Math.round((0.55 + Math.random() * 0.3) * 100) / 100
-        : null,
+      model_confidence: isEntry ? Math.round((0.55 + Math.random() * 0.3) * 100) / 100 : null,
     });
   }
   return trades;
@@ -1121,9 +1052,7 @@ function makeDirectionStats(
     win_rate: Math.round(winRate * 10) / 10,
     total_trades: trades,
     avg_winning_trade: Math.round(grossProfit / (trades * (winRate / 100))),
-    avg_losing_trade: -Math.round(
-      Math.abs(grossLoss) / (trades * (1 - winRate / 100)),
-    ),
+    avg_losing_trade: -Math.round(Math.abs(grossLoss) / (trades * (1 - winRate / 100))),
     largest_winner: Math.round(grossProfit * 0.08),
     largest_loser: -Math.round(Math.abs(grossLoss) * 0.11),
     avg_trade_duration_hours: Math.round((2 + Math.random() * 6) * 10) / 10,
@@ -1160,11 +1089,7 @@ function makeSlippageDist(mean: number, totalTrades: number): SlippageBucket[] {
   });
 }
 
-function buildEquityCurve(
-  seed: number,
-  bias: number,
-  days = 90,
-): EquityPoint[] {
+function buildEquityCurve(seed: number, bias: number, days = 90): EquityPoint[] {
   const points: EquityPoint[] = [];
   let equity = 100000;
   let maxEquity = equity;
@@ -1190,10 +1115,7 @@ function buildEquityCurve(
   return points;
 }
 
-export const EXECUTION_EQUITY_CURVE: EquityPoint[] = buildEquityCurve(
-  42,
-  0.055,
-);
+export const EXECUTION_EQUITY_CURVE: EquityPoint[] = buildEquityCurve(42, 0.055);
 
 // Per-algo equity curves for compare panel (same signals, different execution)
 export const EXECUTION_COMPARE_CURVES: Record<string, EquityPoint[]> = {
@@ -1280,10 +1202,7 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
         long: makeDirectionStats(26140, 2.1, 9.8, 65.1, 498),
         short: makeDirectionStats(15680, 1.72, 10.2, 58.4, 349),
       },
-      trades: generateTrades(60, "ETH-PERP", "VWAP", "2025-10-01", 2800, 1.8, [
-        "BINANCE",
-        "OKX",
-      ]),
+      trades: generateTrades(60, "ETH-PERP", "VWAP", "2025-10-01", 2800, 1.8, ["BINANCE", "OKX"]),
     },
   },
   {
@@ -1352,9 +1271,7 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
         long: makeDirectionStats(19800, 1.74, 11.2, 61.8, 501),
         short: makeDirectionStats(12350, 1.41, 12.4, 55.4, 346),
       },
-      trades: generateTrades(60, "ETH-PERP", "TWAP", "2025-10-01", 2800, 2.9, [
-        "BINANCE",
-      ]),
+      trades: generateTrades(60, "ETH-PERP", "TWAP", "2025-10-01", 2800, 2.9, ["BINANCE"]),
     },
   },
   {
@@ -1439,15 +1356,7 @@ export const EXECUTION_BACKTESTS: ExecutionBacktest[] = [
         long: makeDirectionStats(54820, 2.61, 6.9, 71.2, 184),
         short: makeDirectionStats(34520, 2.08, 7.4, 64.5, 128),
       },
-      trades: generateTrades(
-        50,
-        "BTC-USDT",
-        "Aggressive Limit",
-        "2025-10-01",
-        65000,
-        0.9,
-        ["BINANCE", "OKX", "BYBIT"],
-      ),
+      trades: generateTrades(50, "BTC-USDT", "Aggressive Limit", "2025-10-01", 65000, 0.9, ["BINANCE", "OKX", "BYBIT"]),
     },
   },
   {
@@ -1540,8 +1449,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 3600000).toISOString(),
     avg_compute_minutes: 45,
-    description:
-      "RSI, MACD, Bollinger Bands, Stochastic, ATR and 40+ derived indicators",
+    description: "RSI, MACD, Bollinger Bands, Stochastic, ATR and 40+ derived indicators",
   },
   {
     id: "moving_averages",
@@ -1585,8 +1493,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 1800000).toISOString(),
     avg_compute_minutes: 10,
-    description:
-      "Funding rate, OI change, OI-weighted price, rolling annualised funding",
+    description: "Funding rate, OI change, OI-weighted price, rolling annualised funding",
   },
   {
     id: "liquidation_intensity",
@@ -1608,8 +1515,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 12,
-    description:
-      "Spot-perp basis, basis momentum, annualised basis, cross-exchange basis spread",
+    description: "Spot-perp basis, basis momentum, annualised basis, cross-exchange basis spread",
   },
   {
     id: "orderbook_imbalance",
@@ -1631,8 +1537,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 14400000).toISOString(),
     avg_compute_minutes: 35,
-    description:
-      "Parkinson, Garman-Klass, Yang-Zhang volatility estimators; regime labels",
+    description: "Parkinson, Garman-Klass, Yang-Zhang volatility estimators; regime labels",
   },
   {
     id: "correlation_features",
@@ -1643,8 +1548,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "computing",
     last_computed: new Date(Date.now() - 21600000).toISOString(),
     avg_compute_minutes: 40,
-    description:
-      "Rolling pairwise correlations, DCC-GARCH estimates, beta to BTC/ETH",
+    description: "Rolling pairwise correlations, DCC-GARCH estimates, beta to BTC/ETH",
   },
   {
     id: "regime_labels",
@@ -1666,8 +1570,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 3600000).toISOString(),
     avg_compute_minutes: 10,
-    description:
-      "1h, 4h, 24h, 7d, 30d returns, log-returns, excess returns vs BTC",
+    description: "1h, 4h, 24h, 7d, 30d returns, log-returns, excess returns vs BTC",
   },
   {
     id: "price_levels",
@@ -1678,8 +1581,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 18,
-    description:
-      "Support/resistance proximity, ATH/ATL distance, round-number proximity",
+    description: "Support/resistance proximity, ATH/ATL distance, round-number proximity",
   },
   {
     id: "swing_outcome_targets",
@@ -1690,8 +1592,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 14400000).toISOString(),
     avg_compute_minutes: 20,
-    description:
-      "Forward return labels, classification targets, magnitude bins",
+    description: "Forward return labels, classification targets, magnitude bins",
   },
   {
     id: "target_labels",
@@ -1702,8 +1603,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 10800000).toISOString(),
     avg_compute_minutes: 22,
-    description:
-      "Binary classification labels, multi-class labels, regression targets",
+    description: "Binary classification labels, multi-class labels, regression targets",
   },
   {
     id: "time_features",
@@ -1714,8 +1614,7 @@ const DELTA_ONE_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 3600000).toISOString(),
     avg_compute_minutes: 5,
-    description:
-      "Hour of day, day of week, sin/cos encodings, session indicators",
+    description: "Hour of day, day of week, sin/cos encodings, session indicators",
   },
   {
     id: "vwap_features",
@@ -1743,12 +1642,7 @@ const DELTA_ONE_CATEGORIES: FeatureServiceDimension[] = [
     id: "TRADFI",
     name: "TRADFI",
     display_name: "TradFi",
-    groups: DELTA_ONE_GROUPS.filter(
-      (g) =>
-        !["funding_oi", "liquidation_intensity", "premium_basis"].includes(
-          g.id,
-        ),
-    ),
+    groups: DELTA_ONE_GROUPS.filter((g) => !["funding_oi", "liquidation_intensity", "premium_basis"].includes(g.id)),
     total_features: 180,
     computed_pct: 74,
   },
@@ -1774,8 +1668,7 @@ const VOL_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 14400000).toISOString(),
     avg_compute_minutes: 20,
-    description:
-      "Implied volatility surface, skew, term structure, put/call IV spread",
+    description: "Implied volatility surface, skew, term structure, put/call IV spread",
   },
   {
     id: "options_term_structure",
@@ -1786,8 +1679,7 @@ const VOL_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 21600000).toISOString(),
     avg_compute_minutes: 20,
-    description:
-      "VIX-equivalent term structure, forward variance, variance risk premium",
+    description: "VIX-equivalent term structure, forward variance, variance risk premium",
   },
   {
     id: "futures_basis",
@@ -1798,8 +1690,7 @@ const VOL_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 20,
-    description:
-      "Futures cash basis, annualised carry, rolling futures premium/discount",
+    description: "Futures cash basis, annualised carry, rolling futures premium/discount",
   },
   {
     id: "futures_term_structure",
@@ -1845,8 +1736,7 @@ const ONCHAIN_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 3600000).toISOString(),
     avg_compute_minutes: 10,
-    description:
-      "Fear & greed index, crypto market dominance, stablecoin supply growth, exchange flows",
+    description: "Fear & greed index, crypto market dominance, stablecoin supply growth, exchange flows",
   },
   {
     id: "lending_rates",
@@ -1857,8 +1747,7 @@ const ONCHAIN_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 10,
-    description:
-      "Aave/Compound/Morpho borrow/supply rates, utilisation ratio, rate differentials",
+    description: "Aave/Compound/Morpho borrow/supply rates, utilisation ratio, rate differentials",
   },
   {
     id: "lst_yields",
@@ -1904,8 +1793,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "Last 5/10 results, form rating, points per game, goals scored/conceded trend",
+    description: "Last 5/10 results, form rating, points per game, goals scored/conceded trend",
   },
   {
     id: "h2h",
@@ -1927,8 +1815,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 21600000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "League table position, points gap to top/bottom, goals per game",
+    description: "League table position, points gap to top/bottom, goals per game",
   },
   {
     id: "halftime",
@@ -1939,8 +1826,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 28800000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "HT score predictors, comeback rate, first half scoring tendency",
+    description: "HT score predictors, comeback rate, first half scoring tendency",
   },
   {
     id: "goal_timing",
@@ -1951,8 +1837,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 36000000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "Early goal rate, late goal rate, goal distribution by minute bin",
+    description: "Early goal rate, late goal rate, goal distribution by minute bin",
   },
   {
     id: "season_context",
@@ -1963,8 +1848,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 43200000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "Season progress, title/relegation pressure, fixture congestion",
+    description: "Season progress, title/relegation pressure, fixture congestion",
   },
   {
     id: "venue_context",
@@ -1975,8 +1859,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "Home advantage, travel distance, pitch dimensions, crowd capacity",
+    description: "Home advantage, travel distance, pitch dimensions, crowd capacity",
   },
   {
     id: "referee",
@@ -1987,8 +1870,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 14400000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "Referee card rate, penalty rate, home/away bias, minutes added",
+    description: "Referee card rate, penalty rate, home/away bias, minutes added",
   },
   {
     id: "player_lineup",
@@ -2010,8 +1892,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 3600000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "Opening/closing odds, line movement, overround, implied probability features",
+    description: "Opening/closing odds, line movement, overround, implied probability features",
   },
   {
     id: "xg",
@@ -2033,8 +1914,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 36000000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "PPDA, progressive passes, pressing intensity, build-up style metrics",
+    description: "PPDA, progressive passes, pressing intensity, build-up style metrics",
   },
   {
     id: "weather",
@@ -2045,8 +1925,7 @@ const SPORTS_GROUPS: FeatureGroupEntry[] = [
     status: "stale",
     last_computed: new Date(Date.now() - 259200000).toISOString(),
     avg_compute_minutes: 15,
-    description:
-      "Temperature, wind speed, precipitation probability, pitch condition",
+    description: "Temperature, wind speed, precipitation probability, pitch condition",
   },
 ];
 
@@ -2061,16 +1940,16 @@ const SPORTS_LEAGUE_NAMES: Record<string, string> = {
   PRIMEIRA_LIGA: "Primeira Liga",
 };
 
-const SPORTS_CATEGORIES: FeatureServiceDimension[] = Object.entries(
-  SPORTS_LEAGUE_NAMES,
-).map(([id, displayName], i) => ({
-  id,
-  name: id,
-  display_name: displayName,
-  groups: SPORTS_GROUPS,
-  total_features: SPORTS_GROUPS.reduce((s, g) => s + g.feature_count, 0),
-  computed_pct: 78 + ((i * 3) % 18),
-}));
+const SPORTS_CATEGORIES: FeatureServiceDimension[] = Object.entries(SPORTS_LEAGUE_NAMES).map(
+  ([id, displayName], i) => ({
+    id,
+    name: id,
+    display_name: displayName,
+    groups: SPORTS_GROUPS,
+    total_features: SPORTS_GROUPS.reduce((s, g) => s + g.feature_count, 0),
+    computed_pct: 78 + ((i * 3) % 18),
+  }),
+);
 
 // ── Calendar Service ──────────────────────────────────────────────────────────
 
@@ -2084,8 +1963,7 @@ const CALENDAR_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 3600000).toISOString(),
     avg_compute_minutes: 2,
-    description:
-      "One-hot DOW encoding, sin/cos encoding, weekend flag, trading day flag",
+    description: "One-hot DOW encoding, sin/cos encoding, weekend flag, trading day flag",
   },
   {
     id: "fomc_events",
@@ -2096,8 +1974,7 @@ const CALENDAR_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 2,
-    description:
-      "Days to/from FOMC, FOMC decision indicator, rate change magnitude",
+    description: "Days to/from FOMC, FOMC decision indicator, rate change magnitude",
   },
   {
     id: "earnings_calendar",
@@ -2108,8 +1985,7 @@ const CALENDAR_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 14400000).toISOString(),
     avg_compute_minutes: 2,
-    description:
-      "Days to earnings, earnings surprise (prev), pre/post earnings window flags",
+    description: "Days to earnings, earnings surprise (prev), pre/post earnings window flags",
   },
   {
     id: "macro_indicators",
@@ -2120,8 +1996,7 @@ const CALENDAR_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 21600000).toISOString(),
     avg_compute_minutes: 2,
-    description:
-      "CPI release proximity, NFP proximity, PMI flags, yield curve features",
+    description: "CPI release proximity, NFP proximity, PMI flags, yield curve features",
   },
   {
     id: "holiday_calendar",
@@ -2132,8 +2007,7 @@ const CALENDAR_GROUPS: FeatureGroupEntry[] = [
     status: "healthy",
     last_computed: new Date(Date.now() - 7200000).toISOString(),
     avg_compute_minutes: 2,
-    description:
-      "Market holiday flags (US, UK, EU, Asia), thin liquidity period indicator",
+    description: "Market holiday flags (US, UK, EU, Asia), thin liquidity period indicator",
   },
 ];
 
@@ -2159,10 +2033,7 @@ export const FEATURE_SERVICES: FeatureServiceNode[] = [
       "Technical indicators, moving averages, momentum, volume, orderbook, volatility regime and target labels",
     docker_image_suffix: "features/delta-one-service",
     categories: DELTA_ONE_CATEGORIES,
-    total_features: DELTA_ONE_CATEGORIES.reduce(
-      (s, c) => s + c.total_features,
-      0,
-    ),
+    total_features: DELTA_ONE_CATEGORIES.reduce((s, c) => s + c.total_features, 0),
     computed_pct: 82,
     active_jobs: 2,
     color: "blue",
@@ -2183,8 +2054,7 @@ export const FEATURE_SERVICES: FeatureServiceNode[] = [
     id: "onchain",
     name: "features-onchain-service",
     display_name: "On-Chain",
-    description:
-      "DeFi lending rates, LST yields, macro sentiment from on-chain protocol data",
+    description: "DeFi lending rates, LST yields, macro sentiment from on-chain protocol data",
     docker_image_suffix: "features/onchain-service",
     categories: ONCHAIN_CATEGORIES,
     total_features: 108,
@@ -2196,8 +2066,7 @@ export const FEATURE_SERVICES: FeatureServiceNode[] = [
     id: "sports",
     name: "features-sports-service",
     display_name: "Sports",
-    description:
-      "Team form, H2H, odds, xG, lineup, weather and advanced stats for 8 football leagues",
+    description: "Team form, H2H, odds, xG, lineup, weather and advanced stats for 8 football leagues",
     docker_image_suffix: "features/sports-service",
     categories: SPORTS_CATEGORIES,
     total_features: SPORTS_CATEGORIES.reduce((s, c) => s + c.total_features, 0),
@@ -2209,8 +2078,7 @@ export const FEATURE_SERVICES: FeatureServiceNode[] = [
     id: "calendar",
     name: "features-calendar-service",
     display_name: "Calendar",
-    description:
-      "Universal temporal features: day-of-week, FOMC, earnings calendar, macro events, holiday flags",
+    description: "Universal temporal features: day-of-week, FOMC, earnings calendar, macro events, holiday flags",
     docker_image_suffix: "features/calendar-service",
     categories: CALENDAR_CATEGORIES,
     total_features: 54,

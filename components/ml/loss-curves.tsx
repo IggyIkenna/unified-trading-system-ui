@@ -19,6 +19,7 @@ import {
   Legend,
   ReferenceLine,
 } from "recharts";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // Generate mock loss curve data
@@ -33,11 +34,11 @@ function generateLossCurve(
     const progress = i / epochs;
     // Exponential decay for training loss
     const trainBase = startLoss * Math.exp(-3 * progress) + endLoss * (1 - Math.exp(-3 * progress));
-    const trainLoss = trainBase + (Math.random() - 0.5) * noise * trainBase;
+    const trainLoss = trainBase + (mock01(i, 101) - 0.5) * noise * trainBase;
     // Validation loss with potential overfitting
     const overfitFactor = progress > 0.7 ? (progress - 0.7) * 0.5 : 0;
     const valBase = trainBase * (1 + 0.1 + overfitFactor);
-    const valLoss = valBase + (Math.random() - 0.5) * noise * valBase;
+    const valLoss = valBase + (mock01(i, 102) - 0.5) * noise * valBase;
     data.push({
       epoch: i,
       trainLoss: Math.max(endLoss * 0.5, trainLoss),

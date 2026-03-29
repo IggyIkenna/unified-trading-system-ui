@@ -4,7 +4,7 @@ import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { usePositions, useBalances } from "@/hooks/api/use-positions";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { getPositionsForScope } from "@/lib/mock-data";
+import { getPositionsForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useWebSocket } from "@/hooks/use-websocket";
@@ -187,7 +187,15 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     if (strategyIdFilter) setStrategyFilter(strategyIdFilter);
   }, [strategyIdFilter]);
 
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
 
   const positions: PositionRecord[] = React.useMemo(() => {
     const raw = positionsRaw as Record<string, unknown> | undefined;
@@ -196,11 +204,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
 
     // Fall back to seed data when API returns nothing
     if (result.length === 0) {
-      const seed = getPositionsForScope(
-        globalScope.organizationIds,
-        globalScope.clientIds,
-        globalScope.strategyIds,
-      );
+      const seed = getPositionsForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds);
       result = seed.map((s) => ({
         id: s.id,
         strategy_id: s.strategyId,

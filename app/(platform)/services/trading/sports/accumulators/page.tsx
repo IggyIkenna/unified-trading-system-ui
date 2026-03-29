@@ -11,120 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Trophy, Search, X, AlertTriangle, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface Fixture {
-  id: string;
-  league: string;
-  leagueCountry: string;
-  homeTeam: string;
-  awayTeam: string;
-  kickoff: string;
-  oddsHome: number;
-  oddsDraw: number;
-  oddsAway: number;
-}
-
-interface AccumulatorLeg {
-  fixtureId: string;
-  fixture: Fixture;
-  selection: "home" | "draw" | "away";
-  odds: number;
-}
-
-// ── Mock data ────────────────────────────────────────────────────────────────
-
-const MOCK_FIXTURES: Fixture[] = [
-  {
-    id: "fix-001",
-    league: "Premier League",
-    leagueCountry: "England",
-    homeTeam: "Arsenal",
-    awayTeam: "Manchester City",
-    kickoff: "2026-03-29T15:00:00Z",
-    oddsHome: 2.45,
-    oddsDraw: 3.3,
-    oddsAway: 2.75,
-  },
-  {
-    id: "fix-002",
-    league: "Premier League",
-    leagueCountry: "England",
-    homeTeam: "Liverpool",
-    awayTeam: "Chelsea",
-    kickoff: "2026-03-29T17:30:00Z",
-    oddsHome: 1.85,
-    oddsDraw: 3.6,
-    oddsAway: 4.1,
-  },
-  {
-    id: "fix-003",
-    league: "La Liga",
-    leagueCountry: "Spain",
-    homeTeam: "Real Madrid",
-    awayTeam: "Barcelona",
-    kickoff: "2026-03-29T20:00:00Z",
-    oddsHome: 2.1,
-    oddsDraw: 3.4,
-    oddsAway: 3.25,
-  },
-  {
-    id: "fix-004",
-    league: "La Liga",
-    leagueCountry: "Spain",
-    homeTeam: "Atletico Madrid",
-    awayTeam: "Sevilla",
-    kickoff: "2026-03-30T14:00:00Z",
-    oddsHome: 1.75,
-    oddsDraw: 3.5,
-    oddsAway: 4.8,
-  },
-  {
-    id: "fix-005",
-    league: "Serie A",
-    leagueCountry: "Italy",
-    homeTeam: "AC Milan",
-    awayTeam: "Inter Milan",
-    kickoff: "2026-03-30T17:45:00Z",
-    oddsHome: 2.9,
-    oddsDraw: 3.15,
-    oddsAway: 2.4,
-  },
-  {
-    id: "fix-006",
-    league: "Bundesliga",
-    leagueCountry: "Germany",
-    homeTeam: "Bayern Munich",
-    awayTeam: "Borussia Dortmund",
-    kickoff: "2026-03-30T17:30:00Z",
-    oddsHome: 1.55,
-    oddsDraw: 4.2,
-    oddsAway: 5.5,
-  },
-  {
-    id: "fix-007",
-    league: "Ligue 1",
-    leagueCountry: "France",
-    homeTeam: "PSG",
-    awayTeam: "Marseille",
-    kickoff: "2026-03-30T20:45:00Z",
-    oddsHome: 1.4,
-    oddsDraw: 4.8,
-    oddsAway: 7.0,
-  },
-  {
-    id: "fix-008",
-    league: "Premier League",
-    leagueCountry: "England",
-    homeTeam: "Tottenham",
-    awayTeam: "Newcastle",
-    kickoff: "2026-03-31T14:00:00Z",
-    oddsHome: 2.3,
-    oddsDraw: 3.4,
-    oddsAway: 3.0,
-  },
-];
+import { MOCK_FIXTURES, type AccumulatorLeg, type AccumulatorFixture } from "@/lib/mocks/fixtures/trading-pages";
 
 const MAX_LEGS = 12;
 const MIN_LEGS = 2;
@@ -150,7 +37,7 @@ export default function AccumulatorBuilderPage() {
 
   const selectedFixtureIds = new Set(legs.map((l) => l.fixtureId));
 
-  const addLeg = (fixture: Fixture, selection: "home" | "draw" | "away") => {
+  const addLeg = (fixture: AccumulatorFixture, selection: "home" | "draw" | "away") => {
     if (legs.length >= MAX_LEGS) return;
     if (selectedFixtureIds.has(fixture.id)) return;
 
@@ -178,7 +65,7 @@ export default function AccumulatorBuilderPage() {
     });
   };
 
-  const selectionLabel = (sel: "home" | "draw" | "away", fixture: Fixture) => {
+  const selectionLabel = (sel: "home" | "draw" | "away", fixture: AccumulatorFixture) => {
     if (sel === "home") return fixture.homeTeam;
     if (sel === "away") return fixture.awayTeam;
     return "Draw";

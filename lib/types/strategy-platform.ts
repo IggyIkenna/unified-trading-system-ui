@@ -4,9 +4,9 @@
 // =============================================================================
 
 // Taxonomy imports — SSOT for enums lives in taxonomy.ts
-import type { StrategyArchetype, AssetClass, TestingStage } from "./taxonomy";
+import type { StrategyArchetype, AssetClass, TestingStage } from "@/lib/taxonomy";
 export type { StrategyArchetype, AssetClass, TestingStage };
-export { STRATEGY_ARCHETYPES, ASSET_CLASSES, TESTING_STAGES } from "./taxonomy";
+export { STRATEGY_ARCHETYPES, ASSET_CLASSES, TESTING_STAGES } from "@/lib/taxonomy";
 
 // Strategy lifecycle stages
 export const STRATEGY_LIFECYCLE_STAGES = [
@@ -58,14 +58,7 @@ export interface StrategyConfig {
   parameters: Record<string, number | string | boolean>;
   riskLimits: RiskLimits;
   executionConfig: ExecutionConfig;
-  status:
-    | "draft"
-    | "backtest"
-    | "validated"
-    | "paper"
-    | "shadow"
-    | "live"
-    | "deprecated";
+  status: "draft" | "backtest" | "validated" | "paper" | "shadow" | "live" | "deprecated";
   createdAt: string;
   createdBy: string;
   approvedAt: string | null;
@@ -455,12 +448,7 @@ export interface SignalOverlapMetrics {
 
 export interface StrategyAlert {
   id: string;
-  type:
-    | "backtest_complete"
-    | "validation_failed"
-    | "drift_detected"
-    | "config_expired"
-    | "review_required";
+  type: "backtest_complete" | "validation_failed" | "drift_detected" | "config_expired" | "review_required";
   severity: "info" | "warning" | "critical";
   configId: string;
   backtestRunId: string | null;

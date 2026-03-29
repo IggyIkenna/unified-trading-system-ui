@@ -4,7 +4,7 @@ import * as React from "react";
 import { createChart, LineSeries, ColorType } from "lightweight-charts";
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { cn } from "@/lib/utils";
-import type { EquityPoint } from "@/lib/backtest-analytics-types";
+import type { EquityPoint } from "@/lib/types/backtest-analytics";
 import { bumpDuplicateTimes } from "@/lib/lightweight-charts-series";
 
 export interface EquityCurveSeries {
@@ -22,10 +22,7 @@ interface OverlaidEquityCurvesProps {
   normalize?: boolean;
 }
 
-function toChartData(
-  points: EquityPoint[],
-  normalize: boolean,
-): { time: Time; value: number }[] {
+function toChartData(points: EquityPoint[], normalize: boolean): { time: Time; value: number }[] {
   if (points.length === 0) return [];
   const base = points[0].equity || 1;
   return bumpDuplicateTimes(
@@ -36,12 +33,7 @@ function toChartData(
   );
 }
 
-export function OverlaidEquityCurves({
-  curves,
-  height = 260,
-  className,
-  normalize = true,
-}: OverlaidEquityCurvesProps) {
+export function OverlaidEquityCurves({ curves, height = 260, className, normalize = true }: OverlaidEquityCurvesProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -96,25 +88,16 @@ export function OverlaidEquityCurves({
   }, [curves, normalize]);
 
   if (curves.length === 0) {
-    return (
-      <p className="text-xs text-muted-foreground">
-        Select completed backtests with equity data to compare.
-      </p>
-    );
+    return <p className="text-xs text-muted-foreground">Select completed backtests with equity data to compare.</p>;
   }
 
   return (
     <div className={cn("space-y-2", className)}>
-      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-        Indexed equity (overlay)
-      </h4>
+      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Indexed equity (overlay)</h4>
       <div className="flex flex-wrap gap-3 text-[10px]">
         {curves.map((c) => (
           <span key={c.id} className="flex items-center gap-1.5">
-            <span
-              className="size-2 rounded-full shrink-0"
-              style={{ backgroundColor: c.color }}
-            />
+            <span className="size-2 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
             <span className="text-muted-foreground">{c.label}</span>
           </span>
         ))}

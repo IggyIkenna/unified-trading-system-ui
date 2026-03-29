@@ -5,10 +5,11 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Zap, Clock, TrendingDown } from "lucide-react";
 import type { ArbOpportunity } from "./types";
-import { MOCK_ARB_STREAM } from "./mock-data";
+import { MOCK_ARB_STREAM } from "@/lib/mocks/fixtures/sports-data";
 import { fmtOdds, fmtCurrency, fmtRelativeTime } from "./helpers";
 import { ArbBadge, LeagueBadge } from "./shared";
 import { useToast } from "@/hooks/use-toast";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatPercent } from "@/lib/utils/formatters";
 
 // ─── Decay timer for active arbs ─────────────────────────────────────────────
@@ -147,19 +148,23 @@ function ClosedArbCard({ arb }: { arb: ArbOpportunity }) {
 function useArbStream(threshold: number) {
   const [arbs, setArbs] = React.useState<ArbOpportunity[]>(MOCK_ARB_STREAM);
   const [newIds, setNewIds] = React.useState<Set<string>>(new Set());
+  const streamTickRef = React.useRef(0);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
+      streamTickRef.current += 1;
+      const t = streamTickRef.current;
       setArbs((prev) => {
         const decayed = prev.filter((a) => !a.isActive);
         if (decayed.length === 0) return prev;
-        const target = decayed[Math.floor(Math.random() * decayed.length)];
+        const pickIdx = Math.min(decayed.length - 1, Math.floor(mock01(t, 401) * decayed.length));
+        const target = decayed[pickIdx];
         const reactivated: ArbOpportunity = {
           ...target,
           isActive: true,
           detectedAt: new Date().toISOString(),
           decayedAt: undefined,
-          arbPct: Math.max(0.5, target.arbPct + (Math.random() - 0.5) * 0.5),
+          arbPct: Math.max(0.5, target.arbPct + (mock01(t, 402) - 0.5) * 0.5),
         };
         setNewIds((ids) => new Set([...ids, reactivated.id]));
         setTimeout(

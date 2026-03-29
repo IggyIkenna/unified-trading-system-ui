@@ -14,7 +14,7 @@ import type {
   BenchmarkComparison,
   KpiBarItem,
   MonthlyReturn,
-} from "./backtest-analytics-types";
+} from "@/lib/types/backtest-analytics";
 
 // ─── Seeded random for deterministic mocks ──────────────────────────────────
 
@@ -66,11 +66,7 @@ export function generateEquityCurve(
 
 // ─── Trade Markers Generator ────────────────────────────────────────────────
 
-export function generateTradeMarkers(
-  seed: number,
-  days: number = 90,
-  avgTradesPerDay: number = 1.5,
-): TradeMarker[] {
+export function generateTradeMarkers(seed: number, days: number = 90, avgTradesPerDay: number = 1.5): TradeMarker[] {
   const rng = seededRandom(seed);
   const markers: TradeMarker[] = [];
   const startTime = Math.floor(new Date("2026-01-01").getTime() / 1000);
@@ -123,10 +119,7 @@ export function generatePnlDistribution(
 
   const buckets: PnlBucket[] = bucketDefs.map((def, i) => ({
     ...def,
-    count: Math.max(
-      1,
-      Math.round((weights[i] / total) * totalTrades * (0.8 + rng() * 0.4)),
-    ),
+    count: Math.max(1, Math.round((weights[i] / total) * totalTrades * (0.8 + rng() * 0.4))),
   }));
 
   const lossBuckets = buckets.filter((b) => b.max_pct <= 0);
@@ -136,19 +129,11 @@ export function generatePnlDistribution(
   const totalProfits = profitBuckets.reduce((s, b) => s + b.count, 0);
 
   const avgLossPct =
-    totalLosses > 0
-      ? lossBuckets.reduce(
-          (s, b) => s + ((b.min_pct + b.max_pct) / 2) * b.count,
-          0,
-        ) / totalLosses
-      : 0;
+    totalLosses > 0 ? lossBuckets.reduce((s, b) => s + ((b.min_pct + b.max_pct) / 2) * b.count, 0) / totalLosses : 0;
 
   const avgProfitPct =
     totalProfits > 0
-      ? profitBuckets.reduce(
-          (s, b) => s + ((b.min_pct + b.max_pct) / 2) * b.count,
-          0,
-        ) / totalProfits
+      ? profitBuckets.reduce((s, b) => s + ((b.min_pct + b.max_pct) / 2) * b.count, 0) / totalProfits
       : 0;
 
   return {
@@ -184,8 +169,7 @@ export function generateDirectionPerformance(
     gross_profit: Math.round(grossProfit),
     gross_profit_pct: Math.round((grossProfit / 100000) * 10000) / 100,
     gross_loss: Math.round(-grossLoss),
-    profit_factor:
-      grossLoss > 0 ? Math.round((grossProfit / grossLoss) * 100) / 100 : 0,
+    profit_factor: grossLoss > 0 ? Math.round((grossProfit / grossLoss) * 100) / 100 : 0,
     commission_paid: Math.round(commission),
     expected_payoff: Math.round(netProfit / totalTrades),
     total_trades: totalTrades,
@@ -199,16 +183,13 @@ export function generateDirectionPerformance(
     avg_winning_trade_pct: Math.round((avgWin / 100000) * 10000) / 100,
     avg_losing_trade: Math.round(-avgLoss),
     avg_losing_trade_pct: Math.round((avgLoss / 100000) * 10000) / 100,
-    ratio_avg_win_loss:
-      avgLoss > 0 ? Math.round((avgWin / avgLoss) * 100) / 100 : 0,
+    ratio_avg_win_loss: avgLoss > 0 ? Math.round((avgWin / avgLoss) * 100) / 100 : 0,
     largest_win: Math.round(largestWin),
     largest_win_pct: Math.round((largestWin / 100000) * 10000) / 100,
-    largest_win_as_pct_of_gross:
-      grossProfit > 0 ? Math.round((largestWin / grossProfit) * 1000) / 10 : 0,
+    largest_win_as_pct_of_gross: grossProfit > 0 ? Math.round((largestWin / grossProfit) * 1000) / 10 : 0,
     largest_loss: Math.round(-largestLoss),
     largest_loss_pct: Math.round((largestLoss / 100000) * 10000) / 100,
-    largest_loss_as_pct_of_gross:
-      grossLoss > 0 ? Math.round((largestLoss / grossLoss) * 1000) / 10 : 0,
+    largest_loss_as_pct_of_gross: grossLoss > 0 ? Math.round((largestLoss / grossLoss) * 1000) / 10 : 0,
     avg_bars_in_trades: Math.round(5 + rng() * 8),
     avg_bars_in_winning: Math.round(7 + rng() * 10),
     avg_bars_in_losing: Math.round(3 + rng() * 5),
@@ -235,10 +216,8 @@ export function generateCapitalEfficiency(
     cagr_short: Math.round(cagr * (0.2 + rng() * 0.2) * 10000) / 100,
     return_on_initial_capital: Math.round((netProfit / 100000) * 10000) / 100,
     account_size_required: Math.round(maxDrawdown),
-    return_on_account_size:
-      maxDrawdown > 0 ? Math.round((netProfit / maxDrawdown) * 100) / 100 : 0,
-    net_profit_pct_of_largest_loss:
-      Math.round((netProfit / (maxDrawdown * 0.3)) * 100) / 100,
+    return_on_account_size: maxDrawdown > 0 ? Math.round((netProfit / maxDrawdown) * 100) / 100 : 0,
+    net_profit_pct_of_largest_loss: Math.round((netProfit / (maxDrawdown * 0.3)) * 100) / 100,
   };
 }
 
@@ -272,10 +251,7 @@ export function generateRunupDrawdownStats(seed: number): RunupDrawdownStats {
 
 // ─── Monthly Returns (heatmap) ────────────────────────────────────────────────
 
-export function generateMonthlyReturns(
-  seed: number,
-  months: number = 18,
-): MonthlyReturn[] {
+export function generateMonthlyReturns(seed: number, months: number = 18): MonthlyReturn[] {
   const rng = seededRandom(seed);
   const out: MonthlyReturn[] = [];
   const now = new Date();
@@ -300,10 +276,7 @@ export function generateMonthlyReturns(
 
 // ─── Benchmark Generator ────────────────────────────────────────────────────
 
-export function generateBenchmark(
-  seed: number,
-  strategyReturn: number = 23400,
-): BenchmarkComparison {
+export function generateBenchmark(seed: number, strategyReturn: number = 23400): BenchmarkComparison {
   const rng = seededRandom(seed);
   const buyHold = strategyReturn * (0.5 + rng() * 0.6);
 
@@ -311,8 +284,7 @@ export function generateBenchmark(
     buy_hold_return: Math.round(buyHold),
     buy_hold_return_pct: Math.round((buyHold / 100000) * 10000) / 100,
     strategy_outperformance: Math.round(strategyReturn - buyHold),
-    strategy_outperformance_pct:
-      Math.round(((strategyReturn - buyHold) / 100000) * 10000) / 100,
+    strategy_outperformance_pct: Math.round(((strategyReturn - buyHold) / 100000) * 10000) / 100,
   };
 }
 
@@ -333,26 +305,11 @@ export function generateBacktestAnalytics(
 
   const equity = generateEquityCurve(seed, days, 100000, netProfit / 100000);
   const markers = generateTradeMarkers(seed + 1, days, totalTrades / days);
-  const { buckets, avgProfitPct, avgLossPct } = generatePnlDistribution(
-    seed + 2,
-    totalTrades,
-  );
+  const { buckets, avgProfitPct, avgLossPct } = generatePnlDistribution(seed + 2, totalTrades);
 
-  const allPerf = generateDirectionPerformance(
-    seed + 3,
-    totalTrades,
-    netProfit,
-  );
-  const longPerf = generateDirectionPerformance(
-    seed + 4,
-    Math.round(totalTrades * 0.58),
-    netProfit * 0.68,
-  );
-  const shortPerf = generateDirectionPerformance(
-    seed + 5,
-    Math.round(totalTrades * 0.42),
-    netProfit * 0.32,
-  );
+  const allPerf = generateDirectionPerformance(seed + 3, totalTrades, netProfit);
+  const longPerf = generateDirectionPerformance(seed + 4, Math.round(totalTrades * 0.58), netProfit * 0.68);
+  const shortPerf = generateDirectionPerformance(seed + 5, Math.round(totalTrades * 0.42), netProfit * 0.32);
 
   const maxDD = Math.abs(allPerf.max_drawdown);
   const capEff = generateCapitalEfficiency(seed + 6, netProfit, maxDD);

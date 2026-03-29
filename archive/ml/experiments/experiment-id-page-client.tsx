@@ -15,7 +15,7 @@ import {
   useModelFamilies,
   useModelVersions,
 } from "@/hooks/api/use-ml-models";
-import { mockRange } from "@/lib/deterministic-mock";
+import { mockRange } from "@/lib/mocks/generators/deterministic";
 import type {
   DatasetSnapshot,
   Experiment,
@@ -23,7 +23,7 @@ import type {
   FeatureSetVersion,
   ModelFamily,
   ModelVersion,
-} from "@/lib/ml-types";
+} from "@/lib/types/ml";
 import {
   Activity,
   AlertTriangle,

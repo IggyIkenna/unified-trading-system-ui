@@ -27,8 +27,8 @@ import {
   type DataCategory,
   type CoverageStatus,
   type CoverageRow,
-} from "@/lib/data-service-types";
-import { MOCK_COVERAGE_ROWS } from "@/lib/data-service-mock-data";
+} from "@/lib/types/data-service";
+import { MOCK_COVERAGE_ROWS } from "@/lib/mocks/fixtures/data-service";
 import { useScopedCategories } from "@/hooks/use-scoped-categories";
 import { Lock } from "lucide-react";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";

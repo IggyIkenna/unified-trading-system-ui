@@ -28,6 +28,7 @@ import {
 import * as React from "react";
 import { toast } from "sonner";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { SERVICES, type Service } from "@/lib/reference-data";
 import { useServicesList } from "@/hooks/api/use-service-status";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -46,19 +47,24 @@ interface ServiceStatus extends Service {
   version: string;
 }
 
-const serviceStatuses: ServiceStatus[] = SERVICES.map((service) => ({
-  ...service,
-  instances: Math.floor(Math.random() * 3) + 1,
-  healthyInstances: Math.floor(Math.random() * 3) + 1,
-  cpu: Math.random() * 80 + 10,
-  memory: Math.random() * 70 + 20,
-  requestsPerSec: Math.floor(Math.random() * 500) + 50,
-  errorRate: Math.random() * 2,
-  p50Latency: Math.random() * 10 + 1,
-  p99Latency: Math.random() * 50 + 10,
-  lastDeployed: "2h ago",
-  version: `v${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 20)}`,
-}));
+const serviceStatuses: ServiceStatus[] = SERVICES.map((service, idx) => {
+  const instances = Math.floor(mock01(idx, 1) * 3) + 1;
+  const healthyRaw = Math.floor(mock01(idx, 2) * 3) + 1;
+  const healthyInstances = Math.min(healthyRaw, instances);
+  return {
+    ...service,
+    instances,
+    healthyInstances,
+    cpu: mock01(idx, 3) * 80 + 10,
+    memory: mock01(idx, 4) * 70 + 20,
+    requestsPerSec: Math.floor(mock01(idx, 5) * 500) + 50,
+    errorRate: mock01(idx, 6) * 2,
+    p50Latency: mock01(idx, 7) * 10 + 1,
+    p99Latency: mock01(idx, 8) * 50 + 10,
+    lastDeployed: "2h ago",
+    version: `v${Math.floor(mock01(idx, 9) * 3) + 1}.${Math.floor(mock01(idx, 10) * 10)}.${Math.floor(mock01(idx, 11) * 20)}`,
+  };
+});
 
 // Shard configuration data
 interface ShardInfo {

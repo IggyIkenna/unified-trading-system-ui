@@ -41,7 +41,7 @@ import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-import type { BacktestRun } from "@/lib/strategy-platform-types";
+import type { BacktestRun } from "@/lib/types/strategy-platform";
 
 // Generate mock time series data for a backtest run
 function generateTimeSeriesData(runId: string, days: number = 180) {

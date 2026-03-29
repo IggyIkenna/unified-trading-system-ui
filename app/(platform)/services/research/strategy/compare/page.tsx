@@ -26,7 +26,7 @@ import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-import type { BacktestRun, StrategyConfig } from "@/lib/strategy-platform-types";
+import type { BacktestRun, StrategyConfig } from "@/lib/types/strategy-platform";
 
 // Get backtest metrics for a config
 function getConfigMetrics(configId: string, backtestRuns: BacktestRun[]) {

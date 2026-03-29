@@ -18,7 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Award, ChevronDown, ChevronRight, GitBranch, Play, Settings2, TrendingUp, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ExecutionBacktest } from "@/lib/build-mock-data";
+import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
+import { MOCK_STRATEGY_BACKTESTS } from "@/lib/mocks/fixtures/research-execution-backtests";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
@@ -120,102 +121,6 @@ function getAlgosForType(instructionType: string): AlgoType[] {
 
 // Legacy compat
 const ALL_ALGOS: AlgoType[] = Object.keys(ALGO_DISPLAY_NAMES) as AlgoType[];
-
-const MOCK_STRATEGY_BACKTESTS = [
-  {
-    id: "sbt-001",
-    name: "BTC Momentum v3 — Binance",
-    instructions: [
-      { id: "instr-001", type: "TRADE", instrument: "BTC-USDT", venue: "Binance", defaultAlgo: "VWAP" as AlgoType },
-      { id: "instr-002", type: "TRADE", instrument: "ETH-USDT", venue: "Binance", defaultAlgo: "TWAP" as AlgoType },
-    ],
-  },
-  {
-    id: "sbt-002",
-    name: "ETH Mean-Rev — Hyperliquid",
-    instructions: [
-      {
-        id: "instr-003",
-        type: "TRADE",
-        instrument: "ETH-PERP",
-        venue: "Hyperliquid",
-        defaultAlgo: "ADAPTIVE_TWAP" as AlgoType,
-      },
-      { id: "instr-004", type: "TRADE", instrument: "ETH-USDT", venue: "Hyperliquid", defaultAlgo: "VWAP" as AlgoType },
-    ],
-  },
-  {
-    id: "sbt-003",
-    name: "Multi-Asset Trend — OKX",
-    instructions: [
-      { id: "instr-005", type: "TRADE", instrument: "BTC-USDT", venue: "OKX", defaultAlgo: "VWAP" as AlgoType },
-      { id: "instr-006", type: "TRADE", instrument: "SOL-USDT", venue: "OKX", defaultAlgo: "TWAP" as AlgoType },
-      { id: "instr-007", type: "TRADE", instrument: "ETH-USDT", venue: "OKX", defaultAlgo: "POV_DYNAMIC" as AlgoType },
-    ],
-  },
-  {
-    id: "sbt-004",
-    name: "DeFi Basis — Aave/Uniswap",
-    instructions: [
-      { id: "instr-008", type: "LEND", instrument: "USDC", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
-      {
-        id: "instr-009",
-        type: "SWAP",
-        instrument: "WETH-USDC",
-        venue: "Uniswap",
-        defaultAlgo: "SMART_ORDER_ROUTER" as AlgoType,
-      },
-      {
-        id: "instr-010",
-        type: "FLASH_LOAN",
-        instrument: "USDC",
-        venue: "Aave",
-        defaultAlgo: "BENCHMARK_FILL" as AlgoType,
-      },
-    ],
-  },
-  {
-    id: "sbt-005",
-    name: "SOL Breakout — Binance",
-    instructions: [
-      {
-        id: "instr-011",
-        type: "TRADE",
-        instrument: "SOL-USDT",
-        venue: "Binance",
-        defaultAlgo: "ALMGREN_CHRISS" as AlgoType,
-      },
-    ],
-  },
-  {
-    id: "sbt-006",
-    name: "Options Vol Surface — Deribit",
-    instructions: [
-      {
-        id: "instr-012",
-        type: "TRADE",
-        instrument: "ETH-28MAR-3500-C",
-        venue: "Deribit",
-        defaultAlgo: "PASSIVE_AGGRESSIVE_HYBRID" as AlgoType,
-      },
-      {
-        id: "instr-013",
-        type: "TRADE",
-        instrument: "ETH-28MAR-3500-P",
-        venue: "Deribit",
-        defaultAlgo: "PASSIVE_AGGRESSIVE_HYBRID" as AlgoType,
-      },
-    ],
-  },
-  {
-    id: "sbt-007",
-    name: "Staking Yield — Lido/Aave",
-    instructions: [
-      { id: "instr-014", type: "STAKE", instrument: "ETH", venue: "Lido", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
-      { id: "instr-015", type: "LEND", instrument: "stETH", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
-    ],
-  },
-];
 
 const VENUE_OPTIONS = ["BINANCE", "HYPERLIQUID", "OKX", "DERIBIT", "UNISWAP"] as const;
 

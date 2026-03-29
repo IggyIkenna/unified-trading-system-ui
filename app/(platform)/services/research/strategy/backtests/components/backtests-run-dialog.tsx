@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import type { StrategyTemplate } from "@/lib/strategy-platform-types";
+import type { StrategyTemplate } from "@/lib/types/strategy-platform";
 import { Badge } from "@/components/ui/badge";
 import {
   CollapsibleConfigSection,

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { RunupDrawdownStats } from "@/lib/backtest-analytics-types";
+import type { RunupDrawdownStats } from "@/lib/types/backtest-analytics";
 import { formatPercent } from "@/lib/utils/formatters";
 
 interface RunupsDrawdownsSectionProps {

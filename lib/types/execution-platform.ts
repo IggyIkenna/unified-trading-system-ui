@@ -27,13 +27,7 @@ export type OrderType = "LIMIT" | "MARKET" | "STOP" | "STOP_LIMIT" | "TRAILING";
 
 export type Side = "BUY" | "SELL";
 
-export type ExecutionStatus =
-  | "pending"
-  | "active"
-  | "filled"
-  | "partial"
-  | "cancelled"
-  | "rejected";
+export type ExecutionStatus = "pending" | "active" | "filled" | "partial" | "cancelled" | "rejected";
 
 // ============================================================================
 // Execution Algo Definition

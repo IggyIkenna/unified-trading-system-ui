@@ -9,7 +9,7 @@ import {
   ORGANIZATIONS as TRADING_ORGS,
   CLIENTS as TRADING_CLIENTS,
   STRATEGIES as TRADING_STRATEGIES,
-} from "@/lib/trading-data";
+} from "@/lib/mocks/fixtures/trading-data";
 import { MultiSelectDropdown } from "./multi-select-dropdown";
 import { ContextBarModeControls } from "./context-bar-mode-controls";
 import type { Client, ContextBarProps, ContextState, Organization, Strategy, Underlying } from "./types";

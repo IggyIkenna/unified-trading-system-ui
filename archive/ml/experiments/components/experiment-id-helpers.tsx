@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, RefreshCw, XCircle } from "lucide-react";
 import * as React from "react";
-import type { ExperimentMetrics } from "@/lib/ml-types";
+import type { ExperimentMetrics } from "@/lib/types/ml";
 
 // Context badge component
 export function ContextBadge({ context }: { context: "BATCH" | "LIVE" }) {

@@ -7,8 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { BuildActiveJob, BuildActivity, BuildAlert } from "@/lib/build-mock-data";
-import { BUILD_ACTIVE_JOBS, BUILD_ALERTS, BUILD_OVERVIEW_STATS, BUILD_RECENT_ACTIVITY } from "@/lib/build-mock-data";
+import type { BuildActiveJob, BuildActivity, BuildAlert } from "@/lib/mocks/fixtures/build-data";
+import {
+  BUILD_ACTIVE_JOBS,
+  BUILD_ALERTS,
+  BUILD_OVERVIEW_STATS,
+  BUILD_RECENT_ACTIVITY,
+} from "@/lib/mocks/fixtures/build-data";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import {

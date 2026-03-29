@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import type { FeatureCatalogueEntry } from "@/lib/build-mock-data";
+import type { FeatureCatalogueEntry } from "@/lib/mocks/fixtures/build-data";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, CheckCircle2, Clock, RefreshCw, XCircle } from "lucide-react";
 

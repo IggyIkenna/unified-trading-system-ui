@@ -13,7 +13,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { ApiError } from "@/components/ui/api-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUnifiedTrainingRuns } from "@/hooks/api/use-ml-models";
-import type { RunAnalysis, UnifiedTrainingRun } from "@/lib/ml-types";
+import type { RunAnalysis, UnifiedTrainingRun } from "@/lib/types/ml";
 
 import {
   MLCompareSlotPicker,

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useVolSurface } from "@/hooks/api/use-market-data";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatPercent } from "@/lib/utils/formatters";
 
 // ---------- Types ----------
@@ -55,7 +56,9 @@ function generateMockVolSurface(underlying: string): VolSurfaceResponse {
     { label: "90d", days: 90 },
   ];
 
-  const smiles: VolSmileLine[] = expiryBuckets.map(({ label, days }) => {
+  const underlyingSalt = [...underlying].reduce((acc, c) => acc + c.charCodeAt(0), 0);
+
+  const smiles: VolSmileLine[] = expiryBuckets.map(({ label, days }, expIdx) => {
     const roundedSpot = Math.round(spotPrice / tickSize) * tickSize;
     const baseIv = 0.35 + (days / 365) * 0.08;
     const points: VolSmilePoint[] = [];
@@ -67,7 +70,9 @@ function generateMockVolSurface(underlying: string): VolSurfaceResponse {
       const moneyness = Math.log(strike / spotPrice);
       const skewTerm = -0.08 * moneyness; // Put skew
       const convexityTerm = 0.6 * moneyness * moneyness; // Smile curvature
-      const iv = baseIv + skewTerm + convexityTerm + (Math.random() - 0.5) * 0.005;
+      const strikeIdx = i + halfRange;
+      const iv =
+        baseIv + skewTerm + convexityTerm + (mock01(strikeIdx + expIdx * 20, underlyingSalt + 601) - 0.5) * 0.005;
 
       if (i === 0) atmIv = iv;
       points.push({ strike, iv });

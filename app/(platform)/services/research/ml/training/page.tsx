@@ -42,7 +42,8 @@ import {
   useModelFamilies,
   useUnifiedTrainingRuns,
 } from "@/hooks/api/use-ml-models";
-import type { UnifiedTrainingRun } from "@/lib/ml-types";
+import type { UnifiedTrainingRun } from "@/lib/types/ml";
+import { mockRange } from "@/lib/mocks/generators/deterministic";
 import { cn } from "@/lib/utils";
 
 import { RunDetail } from "./components/training-run-detail";
@@ -128,8 +129,8 @@ function generateResourceData(): {
   for (let i = 0; i < 60; i++) {
     data.push({
       time: i,
-      gpu: 80 + Math.random() * 15,
-      memory: 70 + Math.random() * 10,
+      gpu: mockRange(80, 95, i, 1),
+      memory: mockRange(70, 80, i, 2),
     });
   }
   return data;

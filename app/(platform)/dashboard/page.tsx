@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Icon map for services ────────────────────────────────────────────────────
@@ -180,32 +181,29 @@ export default function DashboardPage() {
 
   const visibleKeys = new Set(visibleServices.map((s) => s.key));
 
-  if (!user) return null;
-
   const showData = hasEntitlement("data-basic") || hasEntitlement("data-pro");
   const showResearch = hasEntitlement("strategy-full") || hasEntitlement("ml-full");
   const showTrading = hasEntitlement("execution-basic") || hasEntitlement("execution-full");
   const showReporting = hasEntitlement("reporting");
-  // Batch/live toggle is only meaningful for users with real-time data access
   const showBatchLiveToggle = showTrading || showResearch;
 
-  // Which lifecycle stages this user can access — filters breadcrumb + activity
   const visibleStages = React.useMemo(() => {
+    if (!user) return [];
     const stages: PlatformLifecycleStage[] = [];
     if (showData) stages.push("acquire");
     if (showResearch) stages.push("build", "promote");
     if (showTrading) stages.push("run", "observe");
     if (showReporting || isAdmin() || isInternal()) stages.push("manage", "report");
-    // Admin/internal see everything
     if (isAdmin() || isInternal()) return PLATFORM_LIFECYCLE_STAGES.slice();
     return stages;
-  }, [showData, showResearch, showTrading, showReporting, isAdmin, isInternal]);
+  }, [user, showData, showResearch, showTrading, showReporting, isAdmin, isInternal]);
 
-  // Map stages to activity feed labels (canonical from PLATFORM_LIFECYCLE_CONFIG)
   const visibleActivityLabels = React.useMemo(
     () => visibleStages.map((s) => PLATFORM_LIFECYCLE_CONFIG[s].label),
     [visibleStages],
   );
+
+  if (!user) return null;
 
   return (
     <div className="bg-background">
@@ -416,13 +414,20 @@ function KPICard({
   );
 }
 
+function serviceKeySalt(key: string): number {
+  return [...key].reduce((acc, c) => acc + c.charCodeAt(0), 0);
+}
+
 function ServiceCard({ service, locked }: { service: ServiceDefinition; locked: boolean }) {
   const Icon = ICON_MAP[service.icon] ?? Database;
   const stageConfig =
     PLATFORM_LIFECYCLE_CONFIG[service.lifecycleStage as PlatformLifecycleStage] ?? PLATFORM_LIFECYCLE_CONFIG.acquire;
 
   // Mock health — in production this comes from the API
-  const health = React.useMemo(() => (locked ? "locked" : Math.random() > 0.9 ? "degraded" : "healthy"), [locked]);
+  const health = React.useMemo(() => {
+    if (locked) return "locked";
+    return mock01(serviceKeySalt(service.key), 701) > 0.9 ? "degraded" : "healthy";
+  }, [locked, service.key]);
 
   if (locked) {
     return (

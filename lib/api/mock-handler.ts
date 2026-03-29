@@ -16,7 +16,7 @@ import {
   getAggregatedTimeSeries,
   getLiveBatchDelta,
   getStrategyPerformance,
-} from "@/lib/trading-data";
+} from "@/lib/mocks/fixtures/trading-data";
 import {
   MOCK_EXECUTION_ALGOS,
   MOCK_VENUES,
@@ -24,7 +24,7 @@ import {
   MOCK_ALGO_BACKTESTS,
   MOCK_EXECUTION_METRICS,
   MOCK_EXECUTION_CANDIDATES,
-} from "@/lib/execution-platform-mock-data";
+} from "@/lib/mocks/fixtures/execution-platform";
 import {
   MODEL_FAMILIES,
   EXPERIMENTS,
@@ -41,14 +41,14 @@ import {
   RUN_COMPARISONS,
   ML_ALERTS,
   buildSyntheticRunComparisons,
-} from "@/lib/ml-mock-data";
+} from "@/lib/mocks/fixtures/ml-data";
 import {
   STRATEGY_TEMPLATES,
   BACKTEST_RUNS,
   STRATEGY_CANDIDATES,
   STRATEGY_ALERTS,
-} from "@/lib/strategy-platform-mock-data";
-import { MOCK_CATALOGUE, MOCK_INSTRUMENTS, MOCK_SHARD_AVAILABILITY } from "@/lib/data-service-mock-data";
+} from "@/lib/mocks/fixtures/strategy-platform";
+import { MOCK_CATALOGUE, MOCK_INSTRUMENTS, MOCK_SHARD_AVAILABILITY } from "@/lib/mocks/fixtures/data-service";
 import {
   getState as getProvisioningState,
   addUser,

@@ -7,8 +7,8 @@ import type {
   Bookmaker,
   ProgressiveStatsSnapshot,
   ProgressiveOddsSnapshot,
-} from "./types";
-import { SUBSCRIBED_BOOKMAKERS } from "./mock-fixtures";
+} from "@/components/trading/sports/types";
+import { SUBSCRIBED_BOOKMAKERS } from "@/lib/mocks/fixtures/sports-fixtures";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -62,10 +62,8 @@ function generateProgressiveSnapshots(durationMin: number): {
     });
 
     // Odds shift as match progresses — away team had the goal at ~35min
-    const homeWin =
-      t < 0.3 ? 2.4 - t * 0.5 : t < 0.5 ? 3.1 + t * 0.8 : 3.8 - t * 0.3;
-    const awayWin =
-      t < 0.3 ? 3.0 - t * 0.3 : t < 0.5 ? 2.0 - t * 0.2 : 1.8 - t * 0.1;
+    const homeWin = t < 0.3 ? 2.4 - t * 0.5 : t < 0.5 ? 3.1 + t * 0.8 : 3.8 - t * 0.3;
+    const awayWin = t < 0.3 ? 3.0 - t * 0.3 : t < 0.5 ? 2.0 - t * 0.2 : 1.8 - t * 0.1;
     const draw = t < 0.5 ? 3.4 + t * 0.2 : 4.2 - t * 0.5;
 
     odds.push({
@@ -172,15 +170,7 @@ export const MOCK_FIXTURES: Fixture[] = [
           "Haaland",
           "Foden",
         ],
-        subs: [
-          "Ortega",
-          "Stones",
-          "Phillips",
-          "Gundogan",
-          "Grealish",
-          "Kovacic",
-          "Bobb",
-        ],
+        subs: ["Ortega", "Stones", "Phillips", "Gundogan", "Grealish", "Kovacic", "Bobb"],
       },
       away: {
         formation: "4-3-3",
@@ -197,15 +187,7 @@ export const MOCK_FIXTURES: Fixture[] = [
           "Nunez",
           "Diaz",
         ],
-        subs: [
-          "Kelleher",
-          "Gomez",
-          "Matip",
-          "Milner",
-          "Elliott",
-          "Jota",
-          "Bajcetic",
-        ],
+        subs: ["Kelleher", "Gomez", "Matip", "Milner", "Elliott", "Jota", "Bajcetic"],
       },
     },
   },
@@ -273,15 +255,7 @@ export const MOCK_FIXTURES: Fixture[] = [
           "Havertz",
           "Martinelli",
         ],
-        subs: [
-          "Neto",
-          "Kiwior",
-          "Timber",
-          "Jorginho",
-          "Trossard",
-          "Jesus",
-          "Nelson",
-        ],
+        subs: ["Neto", "Kiwior", "Timber", "Jorginho", "Trossard", "Jesus", "Nelson"],
       },
       away: {
         formation: "4-2-3-1",
@@ -298,15 +272,7 @@ export const MOCK_FIXTURES: Fixture[] = [
           "Mudryk",
           "Jackson",
         ],
-        subs: [
-          "Petrovic",
-          "Hall",
-          "Chalobah",
-          "Fernandez",
-          "Nkunku",
-          "Madueke",
-          "Guiu",
-        ],
+        subs: ["Petrovic", "Hall", "Chalobah", "Fernandez", "Nkunku", "Madueke", "Guiu"],
       },
     },
   },
@@ -461,15 +427,7 @@ export const MOCK_FIXTURES: Fixture[] = [
           "Gnabry",
           "Kane",
         ],
-        subs: [
-          "Peretz",
-          "Stanišić",
-          "Dier",
-          "Pavlović",
-          "Laimer",
-          "Coman",
-          "Tel",
-        ],
+        subs: ["Peretz", "Stanišić", "Dier", "Pavlović", "Laimer", "Coman", "Tel"],
       },
       away: {
         formation: "4-3-3",
@@ -486,15 +444,7 @@ export const MOCK_FIXTURES: Fixture[] = [
           "Fullkrug",
           "Malen",
         ],
-        subs: [
-          "Meyer",
-          "Bensebaini",
-          "Sule",
-          "Nmecha",
-          "Reyna",
-          "Duranville",
-          "Bynoe-Gittens",
-        ],
+        subs: ["Meyer", "Bensebaini", "Sule", "Nmecha", "Reyna", "Duranville", "Bynoe-Gittens"],
       },
     },
     progressiveStats: bayernDortmundSnapshots.stats,
@@ -1275,8 +1225,7 @@ export const MOCK_ODDS: BookmakerOdds[] = [
 // ─── Arb Opportunities ────────────────────────────────────────────────────────
 
 const NOW = new Date().toISOString();
-const MINS_AGO = (m: number) =>
-  new Date(Date.now() - m * 60 * 1000).toISOString();
+const MINS_AGO = (m: number) => new Date(Date.now() - m * 60 * 1000).toISOString();
 
 export const MOCK_ARB_STREAM: ArbOpportunity[] = [
   {
@@ -1438,12 +1387,8 @@ export const MOCK_BETS: Bet[] = [
     stake: 2000,
     potentialReturn: 3300,
     status: "won",
-    placedAt: new Date(
-      Date.now() - 11 * 24 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000,
-    ).toISOString(),
-    settledAt: new Date(
-      Date.now() - 11 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000,
-    ).toISOString(),
+    placedAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000).toISOString(),
+    settledAt: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
     pnl: 1300,
     isAccumulator: false,
   },
@@ -1459,12 +1404,8 @@ export const MOCK_BETS: Bet[] = [
     stake: 800,
     potentialReturn: 2000,
     status: "lost",
-    placedAt: new Date(
-      Date.now() - 8 * 24 * 60 * 60 * 1000 - 1 * 60 * 60 * 1000,
-    ).toISOString(),
-    settledAt: new Date(
-      Date.now() - 8 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000,
-    ).toISOString(),
+    placedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000 - 1 * 60 * 60 * 1000).toISOString(),
+    settledAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
     pnl: -800,
     isAccumulator: false,
   },
@@ -1524,29 +1465,16 @@ export const MOCK_BETS: Bet[] = [
 // ─── Derived helpers ──────────────────────────────────────────────────────────
 
 /** Get the best (highest) odds for a given fixture+outcome combination across all bookmakers */
-export function getBestOdds(
-  fixtureId: string,
-  outcome: string,
-  market: OddsMarket,
-): BookmakerOdds | undefined {
+export function getBestOdds(fixtureId: string, outcome: string, market: OddsMarket): BookmakerOdds | undefined {
   return MOCK_ODDS.filter(
-    (o) =>
-      o.fixtureId === fixtureId &&
-      o.outcome === outcome &&
-      o.market === market &&
-      !o.isLocked,
+    (o) => o.fixtureId === fixtureId && o.outcome === outcome && o.market === market && !o.isLocked,
   ).sort((a, b) => b.odds - a.odds)[0];
 }
 
 /** Get all odds for a fixture+market combination, grouped by outcome */
-export function getOddsByMarket(
-  fixtureId: string,
-  market: OddsMarket,
-): Map<string, BookmakerOdds[]> {
+export function getOddsByMarket(fixtureId: string, market: OddsMarket): Map<string, BookmakerOdds[]> {
   const result = new Map<string, BookmakerOdds[]>();
-  for (const odd of MOCK_ODDS.filter(
-    (o) => o.fixtureId === fixtureId && o.market === market,
-  )) {
+  for (const odd of MOCK_ODDS.filter((o) => o.fixtureId === fixtureId && o.market === market)) {
     const existing = result.get(odd.outcome) ?? [];
     existing.push(odd);
     result.set(odd.outcome, existing);

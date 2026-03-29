@@ -31,16 +31,7 @@ export const MODEL_ARCHETYPES = [
 export type ModelArchetype = (typeof MODEL_ARCHETYPES)[number];
 
 // Timeframe granularity for cascade predictions
-export const PREDICTION_TIMEFRAMES = [
-  "TICK",
-  "1S",
-  "1M",
-  "5M",
-  "15M",
-  "1H",
-  "4H",
-  "1D",
-] as const;
+export const PREDICTION_TIMEFRAMES = ["TICK", "1S", "1M", "5M", "15M", "1H", "4H", "1D"] as const;
 
 export type PredictionTimeframe = (typeof PREDICTION_TIMEFRAMES)[number];
 
@@ -112,20 +103,8 @@ export interface ExperimentMetrics {
 export interface TrainingRun {
   id: string;
   experimentId: string;
-  status:
-    | "queued"
-    | "initializing"
-    | "training"
-    | "validating"
-    | "completed"
-    | "failed";
-  stage:
-    | "data_loading"
-    | "preprocessing"
-    | "training"
-    | "validation"
-    | "checkpointing"
-    | "finalizing";
+  status: "queued" | "initializing" | "training" | "validating" | "completed" | "failed";
+  stage: "data_loading" | "preprocessing" | "training" | "validation" | "checkpointing" | "finalizing";
   stageProgress: number;
   currentEpoch: number;
   totalEpochs: number;
@@ -159,14 +138,7 @@ export interface ModelVersion {
   modelFamilyId: string;
   version: string;
   experimentId: string;
-  status:
-    | "registered"
-    | "validating"
-    | "validated"
-    | "shadow"
-    | "live"
-    | "deprecated"
-    | "archived";
+  status: "registered" | "validating" | "validated" | "shadow" | "live" | "deprecated" | "archived";
   isChampion: boolean;
   isChallenger: boolean;
   metrics: ModelMetrics;
@@ -237,11 +209,7 @@ export interface ValidationPackage {
   id: string;
   modelVersionId: string;
   status: "pending" | "running" | "passed" | "failed" | "review_required";
-  validationType:
-    | "backtest"
-    | "walk_forward"
-    | "regime_analysis"
-    | "factor_sensitivity";
+  validationType: "backtest" | "walk_forward" | "regime_analysis" | "factor_sensitivity";
   periodStart: string;
   periodEnd: string;
   regimes: RegimeValidation[];
@@ -277,14 +245,7 @@ export interface DeploymentCandidate {
   id: string;
   modelVersionId: string;
   targetStrategyIds: string[];
-  status:
-    | "pending"
-    | "shadow_ready"
-    | "shadow_running"
-    | "gate_1d"
-    | "gate_1w"
-    | "approved"
-    | "rejected";
+  status: "pending" | "shadow_ready" | "shadow_running" | "gate_1d" | "gate_1w" | "approved" | "rejected";
   configVersion: string;
   featureDependencies: FeatureDependencyCheck[];
   shadowResults: ShadowResults | null;

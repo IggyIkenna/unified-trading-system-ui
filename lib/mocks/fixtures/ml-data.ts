@@ -31,7 +31,7 @@ import type {
   ModelConfig,
   FeatureVersionPin,
   QueueStatus,
-} from "./ml-types";
+} from "@/lib/types/ml";
 
 // =============================================================================
 // Model Families
@@ -41,8 +41,7 @@ export const MODEL_FAMILIES: ModelFamily[] = [
   {
     id: "mf-btc-direction",
     name: "BTC Direction Prediction",
-    description:
-      "Multi-timeframe directional prediction for BTC using transformer architecture",
+    description: "Multi-timeframe directional prediction for BTC using transformer architecture",
     archetype: "DIRECTIONAL",
     assetClasses: ["CeFi", "DeFi"],
     currentChampion: "mv-btc-dir-v3.2.1",
@@ -55,8 +54,7 @@ export const MODEL_FAMILIES: ModelFamily[] = [
   {
     id: "mf-eth-volatility",
     name: "ETH Volatility Surface",
-    description:
-      "Real-time volatility surface prediction for ETH options pricing",
+    description: "Real-time volatility surface prediction for ETH options pricing",
     archetype: "MARKET_MAKING",
     assetClasses: ["CeFi"],
     currentChampion: "mv-eth-vol-v2.1.0",
@@ -95,8 +93,7 @@ export const MODEL_FAMILIES: ModelFamily[] = [
   {
     id: "mf-sports-nfl",
     name: "NFL Outcome Predictor",
-    description:
-      "Game outcome and spread prediction for NFL using ensemble methods",
+    description: "Game outcome and spread prediction for NFL using ensemble methods",
     archetype: "SPORTS_ML",
     assetClasses: ["Sports"],
     currentChampion: "mv-nfl-v1.5.0",
@@ -129,8 +126,7 @@ export const EXPERIMENTS: Experiment[] = [
   {
     id: "exp-456",
     name: "BTC Direction v3.3 - Attention Layers",
-    description:
-      "Testing increased attention heads with reduced embedding dimension",
+    description: "Testing increased attention heads with reduced embedding dimension",
     modelFamilyId: "mf-btc-direction",
     status: "running",
     progress: 72,
@@ -307,8 +303,7 @@ export const EXPERIMENTS: Experiment[] = [
   {
     id: "exp-452",
     name: "Funding Rate - LSTM vs Transformer",
-    description:
-      "A/B comparison of LSTM and Transformer for funding prediction",
+    description: "A/B comparison of LSTM and Transformer for funding prediction",
     modelFamilyId: "mf-funding-rate",
     status: "failed",
     progress: 23,
@@ -390,13 +385,7 @@ export const TRAINING_RUNS: TrainingRun[] = [
         createdAt: "2026-03-18T09:30:00Z",
       },
     ],
-    checkpoints: [
-      "ckpt-25.pt",
-      "ckpt-50.pt",
-      "ckpt-75.pt",
-      "ckpt-100.pt",
-      "ckpt-108.pt",
-    ],
+    checkpoints: ["ckpt-25.pt", "ckpt-50.pt", "ckpt-75.pt", "ckpt-100.pt", "ckpt-108.pt"],
   },
   {
     id: "run-453-1",
@@ -710,8 +699,7 @@ export const ML_ALERTS: MLAlert[] = [
     type: "drift",
     severity: "warning",
     modelId: "mv-eth-vol-v2.1.0",
-    message:
-      "Prediction drift detected: model accuracy dropped 4% below baseline",
+    message: "Prediction drift detected: model accuracy dropped 4% below baseline",
     metric: "accuracy",
     currentValue: 0.642,
     threshold: 0.68,
@@ -881,8 +869,7 @@ export const AUDIT_EVENTS: AuditEvent[] = [
       to_stage: "shadow",
       traffic_split: "10%",
     },
-    rationale:
-      "Challenger shows +2.3% accuracy improvement in validation. Starting shadow test.",
+    rationale: "Challenger shows +2.3% accuracy improvement in validation. Starting shadow test.",
   },
   {
     id: "audit-003",
@@ -980,19 +967,12 @@ export const DATASET_SNAPSHOTS: DatasetSnapshot[] = [
   {
     id: "ds-btc-2024-q1-q4",
     name: "BTC Training Data 2024 Q1-Q4",
-    description:
-      "Full year BTC data with orderbook, funding, and price features",
+    description: "Full year BTC data with orderbook, funding, and price features",
     instruments: ["BTCUSDT", "BTCUSD", "BTCUSDT-PERP"],
     dateRange: { start: "2024-01-01", end: "2024-12-31" },
     rowCount: 31536000,
     sizeBytes: 8500000000,
-    features: [
-      "price",
-      "volume",
-      "orderbook_imbalance",
-      "funding_rate",
-      "oi_change",
-    ],
+    features: ["price", "volume", "orderbook_imbalance", "funding_rate", "oi_change"],
     createdAt: "2025-01-05T10:00:00Z",
     createdBy: "data-pipeline",
   },
@@ -1321,20 +1301,14 @@ function generateEpochHistory(
     const trainDecay = Math.exp(-3 * progress);
     const valDecay = Math.exp(-2.5 * progress);
     const noise = Math.sin(i * 7.3) * 0.02;
-    const trainLoss =
-      0.8 * trainDecay + finalTrainLoss * (1 - trainDecay) + noise * 0.3;
+    const trainLoss = 0.8 * trainDecay + finalTrainLoss * (1 - trainDecay) + noise * 0.3;
     const valLoss =
-      0.85 * valDecay +
-      finalValLoss * (1 - valDecay) +
-      noise +
-      (i > bestEpoch ? 0.005 * (i - bestEpoch) : 0);
+      0.85 * valDecay + finalValLoss * (1 - valDecay) + noise + (i > bestEpoch ? 0.005 * (i - bestEpoch) : 0);
     epochs.push({
       epoch: i,
       train_loss: Math.max(0.01, Number(trainLoss.toFixed(4))),
       val_loss: Math.max(0.01, Number(valLoss.toFixed(4))),
-      train_acc: Number(
-        (0.5 + 0.22 * (1 - trainDecay) + noise * 0.1).toFixed(4),
-      ),
+      train_acc: Number((0.5 + 0.22 * (1 - trainDecay) + noise * 0.1).toFixed(4)),
       val_acc: Number((0.5 + 0.2 * (1 - valDecay) + noise * 0.08).toFixed(4)),
       learning_rate: i <= 10 ? 0.0001 * i : 0.001 * Math.pow(0.98, i - 10),
     });
@@ -1353,8 +1327,7 @@ const BTC_DIR_FEATURE_IMPORTANCE: FeatureImportance[] = [
     version: "4.2.1",
     importance_score: 0.28,
     importance_rank: 1,
-    insight:
-      "Strongest signal — L2 orderbook asymmetry drives short-term direction",
+    insight: "Strongest signal — L2 orderbook asymmetry drives short-term direction",
   },
   {
     feature_id: "feat-funding-rate",
@@ -1528,14 +1501,12 @@ const BTC_DIR_DATA_INTEGRITY: DataIntegrityCheck[] = [
   {
     check_name: "no_lookahead_bias",
     status: "pass",
-    message:
-      "All features use t-1 values only; no future data leakage detected",
+    message: "All features use t-1 values only; no future data leakage detected",
   },
   {
     check_name: "embargo_respected",
     status: "pass",
-    message:
-      "14-day embargo between train/test boundaries enforced across all 6 folds",
+    message: "14-day embargo between train/test boundaries enforced across all 6 folds",
   },
   {
     check_name: "no_feature_leakage",
@@ -1545,14 +1516,12 @@ const BTC_DIR_DATA_INTEGRITY: DataIntegrityCheck[] = [
   {
     check_name: "coverage_check",
     status: "pass",
-    message:
-      "99.2% feature coverage across training window (missing: 0.8% due to exchange outages)",
+    message: "99.2% feature coverage across training window (missing: 0.8% due to exchange outages)",
   },
   {
     check_name: "class_balance",
     status: "warn",
-    message:
-      "Slight imbalance: 54.2% UP vs 45.8% DOWN — within acceptable range but monitor",
+    message: "Slight imbalance: 54.2% UP vs 45.8% DOWN — within acceptable range but monitor",
     details: { up_pct: 54.2, down_pct: 45.8, threshold: 60 },
   },
   {
@@ -1563,8 +1532,7 @@ const BTC_DIR_DATA_INTEGRITY: DataIntegrityCheck[] = [
   {
     check_name: "outlier_detection",
     status: "warn",
-    message:
-      "2 features have > 0.5% extreme outliers (>5σ): funding_rate, oi_change_1h",
+    message: "2 features have > 0.5% extreme outliers (>5σ): funding_rate, oi_change_1h",
     details: {
       features_flagged: ["funding_rate", "oi_change_1h"],
       outlier_pct: [0.62, 0.58],
@@ -1594,9 +1562,7 @@ const BTC_DIR_ANALYSIS: RunAnalysis = {
   epoch_history: generateEpochHistory(150, 128, 0.285, 0.298),
   prediction_distribution: {
     buckets: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-    actual_positive_rate: [
-      0.08, 0.15, 0.22, 0.35, 0.42, 0.52, 0.61, 0.72, 0.81, 0.91,
-    ],
+    actual_positive_rate: [0.08, 0.15, 0.22, 0.35, 0.42, 0.52, 0.61, 0.72, 0.81, 0.91],
     predicted_count: [120, 280, 450, 680, 1200, 1350, 1100, 720, 380, 150],
   },
 };
@@ -1792,9 +1758,7 @@ const MOMENTUM_ANALYSIS: RunAnalysis = {
   epoch_history: generateEpochHistory(100, 85, 0.265, 0.285),
   prediction_distribution: {
     buckets: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-    actual_positive_rate: [
-      0.05, 0.12, 0.2, 0.32, 0.45, 0.55, 0.65, 0.75, 0.85, 0.93,
-    ],
+    actual_positive_rate: [0.05, 0.12, 0.2, 0.32, 0.45, 0.55, 0.65, 0.75, 0.85, 0.93],
     predicted_count: [80, 200, 380, 620, 1050, 1250, 980, 650, 320, 100],
   },
 };
@@ -1981,9 +1945,7 @@ const POLY_BTC_ANALYSIS: RunAnalysis = {
   epoch_history: generateEpochHistory(60, 52, 0.305, 0.328),
   prediction_distribution: {
     buckets: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-    actual_positive_rate: [
-      0.06, 0.14, 0.22, 0.34, 0.46, 0.54, 0.63, 0.72, 0.82, 0.9,
-    ],
+    actual_positive_rate: [0.06, 0.14, 0.22, 0.34, 0.46, 0.54, 0.63, 0.72, 0.82, 0.9],
     predicted_count: [60, 150, 310, 520, 890, 1020, 880, 540, 280, 90],
   },
 };
@@ -2063,8 +2025,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
   {
     id: "run-btc-dir-v33",
     name: "BTC Direction v3.3 — Attention Heads",
-    description:
-      "Testing 12 attention heads with reduced embedding dim for BTC directional prediction",
+    description: "Testing 12 attention heads with reduced embedding dim for BTC directional prediction",
     model_family_id: "mf-btc-direction",
     model_family_name: "BTC Direction Prediction",
     status: "running",
@@ -2108,8 +2069,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       priority: "high",
       created_by: "j.chen",
       created_at: "2026-03-17T22:00:00Z",
-      version_note:
-        "Increased attention heads from 8→12, reduced embedding from 512→256",
+      version_note: "Increased attention heads from 8→12, reduced embedding from 512→256",
     },
     metrics: {
       accuracy: 0.718,
@@ -2138,14 +2098,12 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       {
         timestamp: "2026-03-18T09:30:00Z",
         level: "info",
-        message:
-          "Epoch 108/150 — train_loss: 0.298, val_loss: 0.312, lr: 0.000342",
+        message: "Epoch 108/150 — train_loss: 0.298, val_loss: 0.312, lr: 0.000342",
       },
       {
         timestamp: "2026-03-18T09:28:00Z",
         level: "info",
-        message:
-          "Checkpoint saved: ckpt-108.pt (best: ckpt-102.pt @ val_loss 0.295)",
+        message: "Checkpoint saved: ckpt-108.pt (best: ckpt-102.pt @ val_loss 0.295)",
       },
       {
         timestamp: "2026-03-18T09:15:00Z",
@@ -2178,8 +2136,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
   {
     id: "run-nfl-ensemble",
     name: "NFL Ensemble — XGBoost + NN",
-    description:
-      "Adding gradient boosting to neural ensemble for NFL predictions",
+    description: "Adding gradient boosting to neural ensemble for NFL predictions",
     model_family_id: "mf-sports-nfl",
     model_family_name: "NFL Outcome Predictor",
     status: "running",
@@ -2245,8 +2202,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       priority: "normal",
       created_by: "s.williams",
       created_at: "2026-03-18T07:30:00Z",
-      version_note:
-        "Adding XGBoost ensemble member for non-linear interactions",
+      version_note: "Adding XGBoost ensemble member for non-linear interactions",
     },
     metrics: {
       accuracy: 0.612,
@@ -2296,8 +2252,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
   {
     id: "run-exp455-completed",
     name: "ETH Vol Surface — 4h Context",
-    description:
-      "Expanded context window from 1h to 4h for volatility surface prediction",
+    description: "Expanded context window from 1h to 4h for volatility surface prediction",
     model_family_id: "mf-eth-volatility",
     model_family_name: "ETH Volatility Surface",
     status: "completed",
@@ -2363,8 +2318,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       priority: "normal",
       created_by: "m.patel",
       created_at: "2026-03-17T13:00:00Z",
-      version_note:
-        "Expanding context from 1h to 4h to capture longer vol cycles",
+      version_note: "Expanding context from 1h to 4h to capture longer vol cycles",
     },
     metrics: {
       accuracy: 0.685,
@@ -2426,8 +2380,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
   {
     id: "run-exp454-completed",
     name: "Multi-Momentum — Regime Gating",
-    description:
-      "Adding regime detection gating to multi-asset momentum signals",
+    description: "Adding regime detection gating to multi-asset momentum signals",
     model_family_id: "mf-multi-momentum",
     model_family_name: "Multi-Asset Momentum",
     status: "completed",
@@ -2509,8 +2462,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       priority: "normal",
       created_by: "a.kumar",
       created_at: "2026-03-16T19:00:00Z",
-      version_note:
-        "Adding regime-aware gating mechanism to filter momentum signals",
+      version_note: "Adding regime-aware gating mechanism to filter momentum signals",
     },
     metrics: {
       accuracy: 0.742,
@@ -2560,8 +2512,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
   {
     id: "run-poly-btc-completed",
     name: "Polymarket BTC — v1.0 Production Retrain",
-    description:
-      "Completed retrain of Polymarket BTC binary model with on-chain netflow features",
+    description: "Completed retrain of Polymarket BTC binary model with on-chain netflow features",
     model_family_id: "mf-polymarket-btc",
     model_family_name: "Polymarket BTC Predictor",
     status: "completed",
@@ -2673,8 +2624,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
   {
     id: "run-funding-failed",
     name: "Funding Rate — Transformer A/B",
-    description:
-      "A/B comparison of LSTM vs Transformer for funding rate prediction",
+    description: "A/B comparison of LSTM vs Transformer for funding rate prediction",
     model_family_id: "mf-funding-rate",
     model_family_name: "Funding Rate Predictor",
     status: "failed",
@@ -2709,8 +2659,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       priority: "low",
       created_by: "j.chen",
       created_at: "2026-03-17T09:00:00Z",
-      version_note:
-        "Testing transformer vs LSTM for funding rate; LR may be too high",
+      version_note: "Testing transformer vs LSTM for funding rate; LR may be too high",
     },
     metrics: null,
     financial_metrics: null,
@@ -2727,8 +2676,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       {
         timestamp: "2026-03-17T12:15:00Z",
         level: "error",
-        message:
-          "OOM: CUDA out of memory on GPU 1. Tried to allocate 12.4 GiB. Reduce batch_size or model_dim.",
+        message: "OOM: CUDA out of memory on GPU 1. Tried to allocate 12.4 GiB. Reduce batch_size or model_dim.",
       },
       {
         timestamp: "2026-03-17T12:14:00Z",
@@ -2738,8 +2686,7 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
       {
         timestamp: "2026-03-17T11:00:00Z",
         level: "warning",
-        message:
-          "Val loss diverging: 0.742 vs best 0.718 (5 epochs without improvement)",
+        message: "Val loss diverging: 0.742 vs best 0.718 (5 epochs without improvement)",
       },
       {
         timestamp: "2026-03-17T10:00:00Z",
@@ -2832,17 +2779,11 @@ export const UNIFIED_TRAINING_RUNS: UnifiedTrainingRun[] = [
 
 export const ML_PIPELINE_STATUS = {
   total_model_families: MODEL_FAMILIES.length,
-  active_training_runs: UNIFIED_TRAINING_RUNS.filter(
-    (r) => r.status === "running",
-  ).length,
-  queued_jobs: UNIFIED_TRAINING_RUNS.filter((r) => r.status === "queued")
-    .length,
-  completed_today: UNIFIED_TRAINING_RUNS.filter((r) => r.status === "completed")
-    .length,
-  failed_today: UNIFIED_TRAINING_RUNS.filter((r) => r.status === "failed")
-    .length,
-  models_in_production: MODEL_VERSIONS.filter((v) => v.status === "live")
-    .length,
+  active_training_runs: UNIFIED_TRAINING_RUNS.filter((r) => r.status === "running").length,
+  queued_jobs: UNIFIED_TRAINING_RUNS.filter((r) => r.status === "queued").length,
+  completed_today: UNIFIED_TRAINING_RUNS.filter((r) => r.status === "completed").length,
+  failed_today: UNIFIED_TRAINING_RUNS.filter((r) => r.status === "failed").length,
+  models_in_production: MODEL_VERSIONS.filter((v) => v.status === "live").length,
   models_in_shadow: MODEL_VERSIONS.filter((v) => v.status === "shadow").length,
   active_alerts: ML_ALERTS.filter((a) => !a.resolvedAt).length,
   gpu_utilization_avg: 78,
@@ -2867,10 +2808,7 @@ const SYNTHETIC_COMPARISON_KEYS: {
  * When RUN_COMPARISONS has no row for (A,B), derive pairwise stats from embedded
  * financial_metrics on analysis (mock / dev only).
  */
-export function buildSyntheticRunComparisons(
-  runAId: string,
-  runBId: string,
-): RunComparison[] {
+export function buildSyntheticRunComparisons(runAId: string, runBId: string): RunComparison[] {
   const runA = UNIFIED_TRAINING_RUNS.find((r) => r.id === runAId);
   const runB = UNIFIED_TRAINING_RUNS.find((r) => r.id === runBId);
   const fmA = runA?.analysis?.financial_metrics;
@@ -2881,16 +2819,8 @@ export function buildSyntheticRunComparisons(
   for (const { key } of SYNTHETIC_COMPARISON_KEYS) {
     const value_a = fmA[key];
     const value_b = fmB[key];
-    const improvement =
-      value_a !== 0
-        ? ((value_b - value_a) / Math.abs(value_a)) * 100
-        : value_b === value_a
-          ? 0
-          : 100;
-    const seed =
-      (runAId + runBId + key)
-        .split("")
-        .reduce((acc, c) => acc + c.charCodeAt(0), 0) % 1000;
+    const improvement = value_a !== 0 ? ((value_b - value_a) / Math.abs(value_a)) * 100 : value_b === value_a ? 0 : 100;
+    const seed = (runAId + runBId + key).split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % 1000;
     const p_value = 0.015 + (seed % 170) / 1000;
     out.push({
       run_a_id: runAId,

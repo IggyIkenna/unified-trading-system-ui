@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { MonthlyReturn } from "@/lib/backtest-analytics-types";
+import type { MonthlyReturn } from "@/lib/types/backtest-analytics";
 import { formatPercent } from "@/lib/utils/formatters";
 
 interface MonthlyReturnsHeatmapProps {

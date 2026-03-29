@@ -3,10 +3,10 @@
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { CLIENTS } from "@/lib/trading-data";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import type { Bet, Fixture, FootballLeague } from "@/components/trading/sports/types";
-import { MOCK_FIXTURES, MOCK_BETS } from "@/components/trading/sports/mock-data";
-import { DEFAULT_ARB_THRESHOLD } from "@/components/trading/sports/mock-fixtures";
+import { MOCK_FIXTURES, MOCK_BETS } from "@/lib/mocks/fixtures/sports-data";
+import { DEFAULT_ARB_THRESHOLD } from "@/lib/mocks/fixtures/sports-fixtures";
 import { isLive, isCompleted, isUpcoming } from "@/components/trading/sports/helpers";
 
 export type SportsDateRange = "today" | "week" | "all";
@@ -86,9 +86,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
   // Check if selected org has a sports desk
   const hasSportsDesk = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return true; // no filter = show all
-    return CLIENTS.some(
-      (c) => globalScope.organizationIds.includes(c.orgId) && c.id === "sports-desk",
-    );
+    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && c.id === "sports-desk");
   }, [globalScope.organizationIds]);
   const [filters, setFilters] = React.useState<GlobalFilters>({
     leagues: [],

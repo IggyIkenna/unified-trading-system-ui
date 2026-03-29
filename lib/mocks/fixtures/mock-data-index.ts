@@ -6,7 +6,7 @@
  * and can be reset via resetDemo().
  */
 
-export * from "./seed";
+export * from "./mock-data-seed";
 
 import {
   SEED_POSITIONS,
@@ -21,32 +21,24 @@ import {
   type SeedAlert,
   type SeedStrategy,
   type SeedPnlDay,
-} from "./seed";
+} from "./mock-data-seed";
 
 // ── Scope resolution ─────────────────────────────────────────────────────────
 
 /** Resolve strategy IDs from org/client/strategy scope cascade */
-function resolveStrategyIds(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
-): string[] | null {
+function resolveStrategyIds(orgIds: string[], clientIds: string[], strategyIds: string[]): string[] | null {
   // Explicit strategy filter takes priority
   if (strategyIds.length > 0) return strategyIds;
 
   // Client filter → get strategies for those clients
   if (clientIds.length > 0) {
-    const ids = SEED_STRATEGIES
-      .filter((s) => clientIds.includes(s.clientId))
-      .map((s) => s.id);
+    const ids = SEED_STRATEGIES.filter((s) => clientIds.includes(s.clientId)).map((s) => s.id);
     return ids.length > 0 ? ids : [];
   }
 
   // Org filter → get all strategies for those orgs
   if (orgIds.length > 0) {
-    const ids = SEED_STRATEGIES
-      .filter((s) => orgIds.includes(s.orgId))
-      .map((s) => s.id);
+    const ids = SEED_STRATEGIES.filter((s) => orgIds.includes(s.orgId)).map((s) => s.id);
     return ids.length > 0 ? ids : [];
   }
 
@@ -56,51 +48,31 @@ function resolveStrategyIds(
 
 // ── Filtered accessors ───────────────────────────────────────────────────────
 
-export function getPositionsForScope(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
-): SeedPosition[] {
+export function getPositionsForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedPosition[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_POSITIONS;
   return SEED_POSITIONS.filter((p) => resolved.includes(p.strategyId));
 }
 
-export function getOrdersForScope(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
-): SeedOrder[] {
+export function getOrdersForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedOrder[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_ORDERS;
   return SEED_ORDERS.filter((o) => resolved.includes(o.strategyId));
 }
 
-export function getTradesForScope(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
-): SeedTrade[] {
+export function getTradesForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedTrade[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_TRADES;
   return SEED_TRADES.filter((t) => resolved.includes(t.strategyId));
 }
 
-export function getAlertsForScope(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
-): SeedAlert[] {
+export function getAlertsForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedAlert[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_ALERTS;
   return SEED_ALERTS.filter((a) => resolved.includes(a.strategyId));
 }
 
-export function getStrategiesForScope(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
-): SeedStrategy[] {
+export function getStrategiesForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedStrategy[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_STRATEGIES;
   return SEED_STRATEGIES.filter((s) => resolved.includes(s.id));
@@ -121,11 +93,7 @@ export function getPnlForScope(
 }
 
 /** Aggregate daily P&L across all in-scope strategies */
-export function getAggregatedPnlForScope(
-  orgIds: string[],
-  clientIds: string[],
-  strategyIds: string[],
-): SeedPnlDay[] {
+export function getAggregatedPnlForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedPnlDay[] {
   const pnlMap = getPnlForScope(orgIds, clientIds, strategyIds);
   const daily = new Map<string, number>();
   for (const days of Object.values(pnlMap)) {

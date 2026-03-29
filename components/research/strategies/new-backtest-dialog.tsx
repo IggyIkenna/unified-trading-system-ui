@@ -13,17 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import type { StrategyTemplate } from "@/lib/strategy-platform-types";
+import type { StrategyTemplate } from "@/lib/types/strategy-platform";
 import { FlaskConical, Play } from "lucide-react";
 
 export function NewBacktestDialog({
@@ -79,9 +73,8 @@ export function NewBacktestDialog({
             New Strategy Backtest
           </DialogTitle>
           <DialogDescription>
-            Configure signal backtest (minimal slippage). Wire-up to API in a
-            later iteration; this form captures the full institutional parameter
-            surface.
+            Configure signal backtest (minimal slippage). Wire-up to API in a later iteration; this form captures the
+            full institutional parameter surface.
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] px-6">
@@ -107,9 +100,7 @@ export function NewBacktestDialog({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="SHARD_1">SHARD_1 (CeFi core)</SelectItem>
-                    <SelectItem value="SHARD_2">
-                      SHARD_2 (Alt venues)
-                    </SelectItem>
+                    <SelectItem value="SHARD_2">SHARD_2 (Alt venues)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -117,10 +108,7 @@ export function NewBacktestDialog({
 
             <div className="space-y-2">
               <Label>Strategy Template</Label>
-              <Select
-                value={selectedTemplate}
-                onValueChange={setSelectedTemplate}
-              >
+              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a strategy template..." />
                 </SelectTrigger>
@@ -129,9 +117,7 @@ export function NewBacktestDialog({
                     <SelectItem key={t.id} value={t.id}>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{t.name}</span>
-                        <span className="text-muted-foreground text-xs">
-                          {t.archetype}
-                        </span>
+                        <span className="text-muted-foreground text-xs">{t.archetype}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -171,24 +157,14 @@ export function NewBacktestDialog({
               </div>
               <div className="space-y-2">
                 <Label>Warmup bars</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={warmupBars}
-                  onChange={(e) => setWarmupBars(e.target.value)}
-                />
+                <Input type="number" min="0" value={warmupBars} onChange={(e) => setWarmupBars(e.target.value)} />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Max concurrent signals</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  value={maxConcurrent}
-                  onChange={(e) => setMaxConcurrent(e.target.value)}
-                />
+                <Input type="number" min="1" value={maxConcurrent} onChange={(e) => setMaxConcurrent(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>Instrument</Label>
@@ -197,13 +173,7 @@ export function NewBacktestDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {[
-                      "BTC-USDT",
-                      "ETH-USDT",
-                      "SOL-USDT",
-                      "ETH-PERP",
-                      "BTC-PERP",
-                    ].map((i) => (
+                    {["BTC-USDT", "ETH-USDT", "SOL-USDT", "ETH-PERP", "BTC-PERP"].map((i) => (
                       <SelectItem key={i} value={i}>
                         {i}
                       </SelectItem>
@@ -216,14 +186,9 @@ export function NewBacktestDialog({
             <div className="flex items-center justify-between rounded-lg border border-border/50 px-3 py-2">
               <div>
                 <p className="text-sm font-medium">Portfolio mode</p>
-                <p className="text-xs text-muted-foreground">
-                  One backtest, multiple symbols (cross-asset limits)
-                </p>
+                <p className="text-xs text-muted-foreground">One backtest, multiple symbols (cross-asset limits)</p>
               </div>
-              <Switch
-                checked={portfolioMode}
-                onCheckedChange={setPortfolioMode}
-              />
+              <Switch checked={portfolioMode} onCheckedChange={setPortfolioMode} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -238,31 +203,18 @@ export function NewBacktestDialog({
               </div>
               <div className="space-y-2">
                 <Label>Max DD stop (%)</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  value={maxDdStopPct}
-                  onChange={(e) => setMaxDdStopPct(e.target.value)}
-                />
+                <Input type="number" min="0" value={maxDdStopPct} onChange={(e) => setMaxDdStopPct(e.target.value)} />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Start Date</Label>
-                <Input
-                  type="date"
-                  value={dateStart}
-                  onChange={(e) => setDateStart(e.target.value)}
-                />
+                <Input type="date" value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>End Date</Label>
-                <Input
-                  type="date"
-                  value={dateEnd}
-                  onChange={(e) => setDateEnd(e.target.value)}
-                />
+                <Input type="date" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)} />
               </div>
             </div>
 
@@ -272,10 +224,7 @@ export function NewBacktestDialog({
                 checked={saveAsTemplate}
                 onCheckedChange={(c) => setSaveAsTemplate(c === true)}
               />
-              <label
-                htmlFor="save-as-template"
-                className="text-sm text-muted-foreground cursor-pointer"
-              >
+              <label htmlFor="save-as-template" className="text-sm text-muted-foreground cursor-pointer">
                 Save as template (demo — local only until API exists)
               </label>
             </div>
@@ -290,8 +239,7 @@ export function NewBacktestDialog({
               if (saveAsTemplate) {
                 toast({
                   title: "Template saved (demo)",
-                  description:
-                    "Registry write will connect when the strategy API is wired.",
+                  description: "Registry write will connect when the strategy API is wired.",
                 });
               }
               setSaveAsTemplate(false);

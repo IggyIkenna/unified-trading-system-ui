@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useAmendOrder, useCancelOrder, useOrders } from "@/hooks/api/use-orders";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { getOrdersForScope } from "@/lib/mock-data";
-import { SEED_STRATEGIES } from "@/lib/mock-data/seed";
+import { getOrdersForScope } from "@/lib/mocks/fixtures/mock-data-index";
+import { SEED_STRATEGIES } from "@/lib/mocks/fixtures/mock-data-seed";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import * as React from "react";
 
 type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
@@ -140,7 +141,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
 
     // Fall back to seed data
     const seed = getOrdersForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds);
-    return seed.map((s) => {
+    return seed.map((s, idx) => {
       const strat = SEED_STRATEGIES.find((st) => st.id === s.strategyId);
       return {
         order_id: s.id,
@@ -148,15 +149,15 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
         side: s.side.toUpperCase() as "BUY" | "SELL",
         type: s.type,
         price: s.price,
-        mark_price: s.price * (1 + (Math.random() - 0.5) * 0.002),
+        mark_price: s.price * (1 + (mock01(idx, 701) - 0.5) * 0.002),
         quantity: s.quantity,
         filled: s.filledQty,
         status: s.status,
         venue: s.venue,
         strategy_id: s.strategyId,
         strategy_name: strat?.name ?? s.strategyId,
-        edge_bps: Math.round((Math.random() * 20 - 5) * 10) / 10,
-        instant_pnl: Math.round((Math.random() * 200 - 50) * 100) / 100,
+        edge_bps: Math.round((mock01(idx, 702) * 20 - 5) * 10) / 10,
+        instant_pnl: Math.round((mock01(idx, 703) * 200 - 50) * 100) / 100,
         created_at: s.timestamp,
       };
     });

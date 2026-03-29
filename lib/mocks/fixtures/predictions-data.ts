@@ -4,8 +4,8 @@ import type {
   OdumInstrument,
   PredictionArbOpportunity,
   UnderlyingDataPoint,
-} from "./types";
-import { seededRandom, generateSeries } from "./helpers";
+} from "@/components/trading/predictions/types";
+import { seededRandom, generateSeries } from "@/components/trading/predictions/helpers";
 
 // Change this seed to get different mock data
 export const MOCK_SEED = 42;
@@ -27,7 +27,7 @@ function makeUnderlyingSeries(
   startOdds: number,
   endOdds: number,
   n: number,
-  seed: number
+  seed: number,
 ): UnderlyingDataPoint[] {
   const prices = generateSeries(n, startPrice, endPrice, startPrice * 0.005, seed);
   const odds = generateSeries(n, startOdds, endOdds, 3, seed + 1);

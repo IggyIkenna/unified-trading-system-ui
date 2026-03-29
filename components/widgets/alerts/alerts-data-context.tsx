@@ -5,7 +5,7 @@ import type { FilterDefinition } from "@/components/platform/filter-bar";
 
 export type AlertFilterBarValues = Record<string, string | string[] | Date | { start: Date; end: Date } | undefined>;
 import { useAcknowledgeAlert, useAlerts, useEscalateAlert, useResolveAlert } from "@/hooks/api/use-alerts";
-import { getAlertsForScope } from "@/lib/mock-data";
+import { getAlertsForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { toast } from "sonner";
@@ -100,7 +100,15 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
   const [severityFilter, setSeverityFilter] = React.useState<string>("all");
   const [searchQuery, setSearchQuery] = React.useState<string>("");
 
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: scope.organizationIds, clientIds: scope.clientIds, strategyIds: scope.strategyIds }), [scope.organizationIds, scope.clientIds, scope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: scope.organizationIds,
+        clientIds: scope.clientIds,
+        strategyIds: scope.strategyIds,
+      }),
+    [scope.organizationIds, scope.clientIds, scope.strategyIds],
+  );
 
   const filteredAlerts = React.useMemo(() => {
     return allAlerts.filter((alert) => {

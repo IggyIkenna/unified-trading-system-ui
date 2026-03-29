@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cloud, Download, Zap, ArrowRight, Check, Info } from "lucide-react";
-import type { CloudProvider, AccessMode, DataOrg } from "@/lib/data-service-types";
-import { PRICING_MODELS } from "@/lib/data-service-types";
+import type { CloudProvider, AccessMode, DataOrg } from "@/lib/types/data-service";
+import { PRICING_MODELS } from "@/lib/types/data-service";
 import { formatNumber } from "@/lib/utils/formatters";
 
 interface CloudPricingSelectorProps {

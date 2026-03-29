@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { Activity, AlertOctagon, Ban, Clock, Shield, Timer, TrendingDown, Users, Zap } from "lucide-react";
 import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { MOCK_ENTITIES } from "@/lib/mocks/fixtures/kill-switch-entities";
 
 // Exit playbook types
 const EXIT_PLAYBOOKS = [
@@ -92,36 +93,6 @@ const ACTIVE_KILL_SWITCHES = [
     affectedExposure: 2450000,
   },
 ];
-
-// Mock data for dropdowns
-const MOCK_ENTITIES = {
-  firms: [
-    { id: "odum", name: "Odum Research" },
-    { id: "alpha", name: "Alpha Capital" },
-  ],
-  clients: [
-    { id: "apex-capital", name: "Apex Capital" },
-    { id: "meridian", name: "Meridian Fund" },
-    { id: "quantedge", name: "QuantEdge HK" },
-  ],
-  strategies: [
-    { id: "DEFI_ETH_BASIS_SCE_1H", name: "ETH Basis Trade" },
-    { id: "CEFI_BTC_MM_EVT_TICK", name: "BTC Market Making" },
-    { id: "CEFI_ETH_OPT_MM_EVT_TICK", name: "ETH Options MM" },
-  ],
-  venues: [
-    { id: "binance", name: "Binance" },
-    { id: "okx", name: "OKX" },
-    { id: "deribit", name: "Deribit" },
-    { id: "hyperliquid", name: "Hyperliquid" },
-    { id: "aave", name: "Aave V3" },
-  ],
-  instruments: [
-    { id: "btc-usdt", name: "BTC/USDT" },
-    { id: "eth-usdt", name: "ETH/USDT" },
-    { id: "eth-perp", name: "ETH-PERP" },
-  ],
-};
 
 interface KillSwitchPanelProps {
   className?: string;

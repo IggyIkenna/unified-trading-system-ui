@@ -27,7 +27,7 @@ import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { useToast } from "@/hooks/use-toast";
 import type { PredictionMarket, MarketCategory, MarketVenue, SortOption } from "./types";
-import { MOCK_MARKETS } from "./mock-data";
+import { MOCK_MARKETS } from "@/lib/mocks/fixtures/predictions-data";
 import { fmtVolume, probColour } from "./helpers";
 import { VenueChip, LiveDot, ProbBadge, YesNoButtons } from "./shared";
 

@@ -19,7 +19,7 @@ import {
   ArrowLeftRight,
   Minus,
 } from "lucide-react";
-import type { TimeSeriesPoint } from "@/lib/trading-data";
+import type { TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
 import { formatPercent } from "@/lib/utils/formatters";
 
 type ViewMode = "live" | "batch" | "split" | "delta";

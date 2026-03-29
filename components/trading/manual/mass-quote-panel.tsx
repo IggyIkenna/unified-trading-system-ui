@@ -10,6 +10,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { usePlaceOrder } from "@/hooks/api/use-orders";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { AlertTriangle, CheckCircle2, LayoutGrid, XCircle } from "lucide-react";
@@ -56,6 +57,7 @@ export function MassQuotePanel() {
   const [submitting, setSubmitting] = React.useState(false);
   const [lastAction, setLastAction] = React.useState<"quoted" | "cancelled" | null>(null);
   const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+  const quoteTickRef = React.useRef(0);
 
   const activeQuotes = quotes.filter((q) => q.active);
 
@@ -155,13 +157,15 @@ export function MassQuotePanel() {
 
     const ms = refreshInterval === "100ms" ? 100 : refreshInterval === "500ms" ? 500 : 1000;
     intervalRef.current = setInterval(() => {
+      quoteTickRef.current += 1;
+      const tick = quoteTickRef.current;
       setQuotes((prev) =>
-        prev.map((q) => {
+        prev.map((q, qi) => {
           if (!q.active) return q;
           const bid = parseFloat(q.bidPrice) || 0;
           const ask = parseFloat(q.askPrice) || 0;
           if (bid <= 0) return q;
-          const jitter = bid * 0.00001 * (Math.random() - 0.5);
+          const jitter = bid * 0.00001 * (mock01(tick * 1000 + qi, 200) - 0.5);
           return {
             ...q,
             bidPrice: formatNumber(bid + jitter, 2),

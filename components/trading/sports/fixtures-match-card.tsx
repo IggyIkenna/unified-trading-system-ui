@@ -7,7 +7,7 @@ import { AlertTriangle, Cloud, Zap, Clock, Flag } from "lucide-react";
 import type { Fixture, MatchStats } from "./types";
 import { isLive, isCompleted, fmtOdds } from "./helpers";
 import { StatusPill, LeagueBadge, ArbBadge, FormDots } from "./shared";
-import { MOCK_ARB_STREAM, getBestOdds } from "./mock-data";
+import { MOCK_ARB_STREAM, getBestOdds } from "@/lib/mocks/fixtures/sports-data";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const CREST_COLOURS: Record<string, string> = {
@@ -262,8 +262,9 @@ function PreMatchCard({
   onSelect?: () => void;
   onOpenDetail?: (f: Fixture, tab?: "stats" | "odds-history" | "replay") => void;
 }) {
+  const [now] = React.useState(() => Date.now());
   const kickoff = new Date(fixture.kickoff);
-  const diffMs = kickoff.getTime() - Date.now();
+  const diffMs = kickoff.getTime() - now;
   const diffH = Math.floor(diffMs / (1000 * 60 * 60));
   const diffM = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
   const countdown =

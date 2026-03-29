@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import type { Fixture, OddsMarket } from "./types";
-import { ARB_THRESHOLD_OPTIONS, DEFAULT_ARB_THRESHOLD } from "./mock-fixtures";
+import { ARB_THRESHOLD_OPTIONS, DEFAULT_ARB_THRESHOLD } from "@/lib/mocks/fixtures/sports-fixtures";
 import { ArbGrid } from "./arb-grid";
 import { ArbStream } from "./arb-stream";
 

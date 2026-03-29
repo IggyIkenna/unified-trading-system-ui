@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { DirectionPerformance, BenchmarkComparison } from "@/lib/backtest-analytics-types";
+import type { DirectionPerformance, BenchmarkComparison } from "@/lib/types/backtest-analytics";
 import { ProfitStructureChart } from "./profit-structure-chart";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 

@@ -34,13 +34,13 @@ import {
   MOCK_MARKET_STRUCTURE_EVENTS,
   MOCK_CALENDAR_HOLIDAYS,
   MOCK_CORPORATE_ACTIONS,
-} from "@/lib/data-service-mock-data";
+} from "@/lib/mocks/fixtures/data-service";
 import type {
   EconomicEventImportance,
   EconomicEventType,
   MarketStructureEventType,
   CorporateActionType,
-} from "@/lib/data-service-types";
+} from "@/lib/types/data-service";
 
 // ─── Shared helpers ────────────────────────────────────────────────────────────
 

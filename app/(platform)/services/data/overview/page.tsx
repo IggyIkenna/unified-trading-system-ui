@@ -15,13 +15,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useScopedCategories } from "@/hooks/use-scoped-categories";
-import { MOCK_ACTIVE_JOBS, MOCK_ALERTS, MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
+import { MOCK_ACTIVE_JOBS, MOCK_ALERTS, MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
 import {
   DATA_CATEGORY_LABELS,
   type DataCategory,
   type JobInfo,
   type PipelineStageSummary,
-} from "@/lib/data-service-types";
+} from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
 import {
   Activity,

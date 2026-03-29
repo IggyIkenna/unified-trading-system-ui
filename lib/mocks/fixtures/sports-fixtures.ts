@@ -1,30 +1,11 @@
-import type { FootballLeague, Bookmaker, OddsMarket } from "./types";
+import type { FootballLeague, Bookmaker, OddsMarket } from "@/components/trading/sports/types";
 
-export const FOOTBALL_LEAGUES: FootballLeague[] = [
-  "EPL",
-  "La Liga",
-  "Bundesliga",
-  "Serie A",
-  "Ligue 1",
-  "UCL",
-  "UEL",
-];
+export const FOOTBALL_LEAGUES: FootballLeague[] = ["EPL", "La Liga", "Bundesliga", "Serie A", "Ligue 1", "UCL", "UEL"];
 
-export const BOOKMAKERS: Bookmaker[] = [
-  "bet365",
-  "pinnacle",
-  "unibet",
-  "marathon",
-  "betfair_exchange",
-  "polymarket",
-];
+export const BOOKMAKERS: Bookmaker[] = ["bet365", "pinnacle", "unibet", "marathon", "betfair_exchange", "polymarket"];
 
 // Bookmakers the mock client is subscribed to — others show FOMO lock
-export const SUBSCRIBED_BOOKMAKERS: Bookmaker[] = [
-  "bet365",
-  "pinnacle",
-  "unibet",
-];
+export const SUBSCRIBED_BOOKMAKERS: Bookmaker[] = ["bet365", "pinnacle", "unibet"];
 
 export const ODDS_MARKETS: OddsMarket[] = [
   "FT Result",

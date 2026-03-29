@@ -23,8 +23,8 @@ import {
   type DataCategory,
   type DataFolder,
   type Timeframe,
-} from "@/lib/data-service-types";
-import { MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/data-service-mock-data";
+} from "@/lib/types/data-service";
+import { MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/mocks/fixtures/data-service";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const ALL_TIMEFRAMES: Timeframe[] = ["1m", "5m", "15m", "1h", "4h", "1d"];

@@ -42,14 +42,19 @@ import {
   Settings,
   Bell,
 } from "lucide-react";
-import { MOCK_ETL_PIPELINES, MOCK_VENUE_COVERAGE, MOCK_DATA_GAPS, ETL_SUMMARY } from "@/lib/data-service-mock-data";
+import {
+  MOCK_ETL_PIPELINES,
+  MOCK_VENUE_COVERAGE,
+  MOCK_DATA_GAPS,
+  ETL_SUMMARY,
+} from "@/lib/mocks/fixtures/data-service";
 import {
   DATA_CATEGORY_LABELS,
   VENUES_BY_CATEGORY,
   type DataCategory,
   type ETLStatus,
   type ETLStage,
-} from "@/lib/data-service-types";
+} from "@/lib/types/data-service";
 import { formatNumber } from "@/lib/utils/formatters";
 
 const ETL_STAGE_LABELS: Record<ETLStage, string> = {

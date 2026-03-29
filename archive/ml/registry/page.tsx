@@ -12,21 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ArrowUpDown,
   CheckCircle2,
@@ -44,12 +31,8 @@ import * as React from "react";
 import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  useMLDeployments,
-  useModelFamilies,
-  useModelVersions,
-} from "@/hooks/api/use-ml-models";
-import type { ModelVersion } from "@/lib/ml-types";
+import { useMLDeployments, useModelFamilies, useModelVersions } from "@/hooks/api/use-ml-models";
+import type { ModelVersion } from "@/lib/types/ml";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -99,13 +82,8 @@ function RegistrySortIcon({
   currentField: SortField;
   dir: "asc" | "desc";
 }) {
-  if (currentField !== field)
-    return <ArrowUpDown className="size-3 opacity-30" />;
-  return dir === "desc" ? (
-    <ChevronDown className="size-3" />
-  ) : (
-    <ChevronUp className="size-3" />
-  );
+  if (currentField !== field) return <ArrowUpDown className="size-3 opacity-30" />;
+  return dir === "desc" ? <ChevronDown className="size-3" /> : <ChevronUp className="size-3" />;
 }
 
 // ---------------------------------------------------------------------------
@@ -125,8 +103,7 @@ export default function RegistryPage() {
 
   const MODEL_VERSIONS: ModelVersion[] = (versionsData as any)?.data ?? [];
   const MODEL_FAMILIES: Array<any> = (familiesData as any)?.data ?? [];
-  const CHAMPION_CHALLENGER_PAIRS: Array<any> =
-    (deploymentsData as any)?.championChallengerPairs ?? [];
+  const CHAMPION_CHALLENGER_PAIRS: Array<any> = (deploymentsData as any)?.championChallengerPairs ?? [];
 
   const isLoading = verLoading || famLoading || depLoading;
 
@@ -141,9 +118,7 @@ export default function RegistryPage() {
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
   const [compareSet, setCompareSet] = React.useState<Set<string>>(new Set());
   const [deployDialog, setDeployDialog] = React.useState<string | null>(null);
-  const [deployTarget, setDeployTarget] = React.useState<"shadow" | "live">(
-    "shadow",
-  );
+  const [deployTarget, setDeployTarget] = React.useState<"shadow" | "live">("shadow");
 
   // Filter
   const filtered = versions.filter((v) => {
@@ -182,9 +157,7 @@ export default function RegistryPage() {
       setSortDir((d) => (d === "desc" ? "asc" : "desc"));
     } else {
       setSortField(field);
-      setSortDir(
-        field === "maxDrawdown" || field === "latencyP50" ? "asc" : "desc",
-      );
+      setSortDir(field === "maxDrawdown" || field === "latencyP50" ? "asc" : "desc");
     }
   }
 
@@ -250,18 +223,12 @@ export default function RegistryPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              Model Registry
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight">Model Registry</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              {versions.length} registered versions &middot;{" "}
-              {versions.filter((v) => v.status === "live").length} live
+              {versions.length} registered versions &middot; {versions.filter((v) => v.status === "live").length} live
             </p>
           </div>
-          <Select
-            value={familyFilter}
-            onValueChange={(v) => setFamilyFilter(v === "__all__" ? "" : v)}
-          >
+          <Select value={familyFilter} onValueChange={(v) => setFamilyFilter(v === "__all__" ? "" : v)}>
             <SelectTrigger className="w-56">
               <SelectValue placeholder="Filter by family..." />
             </SelectTrigger>
@@ -285,12 +252,8 @@ export default function RegistryPage() {
             </h2>
             {CHAMPION_CHALLENGER_PAIRS.map((pair) => {
               const champion = versions.find((v) => v.id === pair.championId);
-              const challenger = versions.find(
-                (v) => v.id === pair.challengerId,
-              );
-              const family = MODEL_FAMILIES.find(
-                (f) => f.id === pair.modelFamilyId,
-              );
+              const challenger = versions.find((v) => v.id === pair.challengerId);
+              const family = MODEL_FAMILIES.find((f) => f.id === pair.modelFamilyId);
 
               if (!champion || !challenger) return null;
 
@@ -313,8 +276,7 @@ export default function RegistryPage() {
                           </Badge>
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          Traffic: {pair.trafficSplit.champion}% /{" "}
-                          {pair.trafficSplit.challenger}%
+                          Traffic: {pair.trafficSplit.champion}% / {pair.trafficSplit.challenger}%
                         </span>
                       </div>
 
@@ -323,9 +285,7 @@ export default function RegistryPage() {
                         <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 space-y-2">
                           <div className="flex items-center gap-2">
                             <Crown className="size-4 text-emerald-400" />
-                            <span className="font-mono text-sm font-medium">
-                              v{champion.version}
-                            </span>
+                            <span className="font-mono text-sm font-medium">v{champion.version}</span>
                             <Badge
                               variant="outline"
                               className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
@@ -335,22 +295,12 @@ export default function RegistryPage() {
                           </div>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div>
-                              <span className="text-muted-foreground">
-                                Accuracy
-                              </span>
-                              <p className="font-mono font-medium">
-                                {fmtPct(
-                                  pair.comparisonMetrics.championAccuracy,
-                                )}
-                              </p>
+                              <span className="text-muted-foreground">Accuracy</span>
+                              <p className="font-mono font-medium">{fmtPct(pair.comparisonMetrics.championAccuracy)}</p>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">
-                                Sharpe
-                              </span>
-                              <p className="font-mono font-medium">
-                                {fmtNum(pair.comparisonMetrics.championSharpe)}
-                              </p>
+                              <span className="text-muted-foreground">Sharpe</span>
+                              <p className="font-mono font-medium">{fmtNum(pair.comparisonMetrics.championSharpe)}</p>
                             </div>
                           </div>
                         </div>
@@ -359,9 +309,7 @@ export default function RegistryPage() {
                         <div className="rounded-lg border border-blue-500/20 bg-blue-500/5 p-3 space-y-2">
                           <div className="flex items-center gap-2">
                             <Shield className="size-4 text-blue-400" />
-                            <span className="font-mono text-sm font-medium">
-                              v{challenger.version}
-                            </span>
+                            <span className="font-mono text-sm font-medium">v{challenger.version}</span>
                             <Badge
                               variant="outline"
                               className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
@@ -371,38 +319,22 @@ export default function RegistryPage() {
                           </div>
                           <div className="grid grid-cols-2 gap-2 text-xs">
                             <div>
-                              <span className="text-muted-foreground">
-                                Accuracy
-                              </span>
+                              <span className="text-muted-foreground">Accuracy</span>
                               <p className="font-mono font-medium">
-                                {fmtPct(
-                                  pair.comparisonMetrics.challengerAccuracy,
-                                )}
+                                {fmtPct(pair.comparisonMetrics.challengerAccuracy)}
                               </p>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">
-                                Sharpe
-                              </span>
-                              <p className="font-mono font-medium">
-                                {fmtNum(
-                                  pair.comparisonMetrics.challengerSharpe,
-                                )}
-                              </p>
+                              <span className="text-muted-foreground">Sharpe</span>
+                              <p className="font-mono font-medium">{fmtNum(pair.comparisonMetrics.challengerSharpe)}</p>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>
-                          Significance:{" "}
-                          {fmtPct(pair.comparisonMetrics.significanceLevel)}
-                        </span>
-                        <span>
-                          Started{" "}
-                          {new Date(pair.startedAt).toLocaleDateString()}
-                        </span>
+                        <span>Significance: {fmtPct(pair.comparisonMetrics.significanceLevel)}</span>
+                        <span>Started {new Date(pair.startedAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -425,29 +357,16 @@ export default function RegistryPage() {
               <TableHeader>
                 <TableRow className="border-border/50 hover:bg-transparent">
                   <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Version
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Family
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Status
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Role
-                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Version</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Family</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Role</TableHead>
                   <TableHead
                     className="text-xs text-muted-foreground cursor-pointer select-none"
                     onClick={() => handleSort("accuracy")}
                   >
                     <span className="flex items-center gap-1">
-                      Accuracy{" "}
-                      <RegistrySortIcon
-                        field="accuracy"
-                        currentField={sortField}
-                        dir={sortDir}
-                      />
+                      Accuracy <RegistrySortIcon field="accuracy" currentField={sortField} dir={sortDir} />
                     </span>
                   </TableHead>
                   <TableHead
@@ -455,12 +374,7 @@ export default function RegistryPage() {
                     onClick={() => handleSort("sharpe")}
                   >
                     <span className="flex items-center gap-1">
-                      Sharpe{" "}
-                      <RegistrySortIcon
-                        field="sharpe"
-                        currentField={sortField}
-                        dir={sortDir}
-                      />
+                      Sharpe <RegistrySortIcon field="sharpe" currentField={sortField} dir={sortDir} />
                     </span>
                   </TableHead>
                   <TableHead
@@ -468,12 +382,7 @@ export default function RegistryPage() {
                     onClick={() => handleSort("maxDrawdown")}
                   >
                     <span className="flex items-center gap-1">
-                      Max DD{" "}
-                      <RegistrySortIcon
-                        field="maxDrawdown"
-                        currentField={sortField}
-                        dir={sortDir}
-                      />
+                      Max DD <RegistrySortIcon field="maxDrawdown" currentField={sortField} dir={sortDir} />
                     </span>
                   </TableHead>
                   <TableHead
@@ -481,55 +390,36 @@ export default function RegistryPage() {
                     onClick={() => handleSort("latencyP50")}
                   >
                     <span className="flex items-center gap-1">
-                      Latency P50{" "}
-                      <RegistrySortIcon
-                        field="latencyP50"
-                        currentField={sortField}
-                        dir={sortDir}
-                      />
+                      Latency P50 <RegistrySortIcon field="latencyP50" currentField={sortField} dir={sortDir} />
                     </span>
                   </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Predictions
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Actions
-                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Predictions</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sorted.map((ver) => {
-                  const family = MODEL_FAMILIES.find(
-                    (f) => f.id === ver.modelFamilyId,
-                  );
+                  const family = MODEL_FAMILIES.find((f) => f.id === ver.modelFamilyId);
                   return (
                     <TableRow
                       key={ver.id}
                       className={`border-border/30 ${compareSet.has(ver.id) ? "bg-blue-500/5" : ""}`}
                     >
                       <TableCell>
-                        <button
-                          onClick={() => toggleCompare(ver.id)}
-                          className="p-0.5 rounded hover:bg-muted"
-                        >
+                        <button onClick={() => toggleCompare(ver.id)} className="p-0.5 rounded hover:bg-muted">
                           <GitCompare
                             className={`size-3.5 ${compareSet.has(ver.id) ? "text-blue-400" : "text-muted-foreground"}`}
                           />
                         </button>
                       </TableCell>
                       <TableCell>
-                        <span className="font-mono font-medium text-sm">
-                          v{ver.version}
-                        </span>
+                        <span className="font-mono font-medium text-sm">v{ver.version}</span>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">
                         {family?.name ?? ver.modelFamilyId}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={versionStatusColor(ver.status)}
-                        >
+                        <Badge variant="outline" className={versionStatusColor(ver.status)}>
                           {ver.status}
                         </Badge>
                       </TableCell>
@@ -553,40 +443,30 @@ export default function RegistryPage() {
                           </Badge>
                         )}
                         {!ver.isChampion && !ver.isChallenger && (
-                          <span className="text-muted-foreground text-xs">
-                            --
-                          </span>
+                          <span className="text-muted-foreground text-xs">--</span>
                         )}
                       </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {fmtPct(ver.metrics.accuracy)}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {fmtNum(ver.metrics.sharpe)}
-                      </TableCell>
+                      <TableCell className="font-mono text-sm">{fmtPct(ver.metrics.accuracy)}</TableCell>
+                      <TableCell className="font-mono text-sm">{fmtNum(ver.metrics.sharpe)}</TableCell>
                       <TableCell className="font-mono text-sm text-red-400">
                         {fmtPct(ver.metrics.maxDrawdown)}
                       </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {fmtLatency(ver.metrics.inferenceLatencyP50)}
-                      </TableCell>
+                      <TableCell className="font-mono text-sm">{fmtLatency(ver.metrics.inferenceLatencyP50)}</TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">
                         {ver.metrics.predictionCount.toLocaleString()}
                       </TableCell>
                       <TableCell>
-                        {ver.status !== "live" &&
-                          ver.status !== "deprecated" &&
-                          ver.status !== "archived" && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 text-xs"
-                              onClick={() => setDeployDialog(ver.id)}
-                            >
-                              <Rocket className="size-3" />
-                              Deploy
-                            </Button>
-                          )}
+                        {ver.status !== "live" && ver.status !== "deprecated" && ver.status !== "archived" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs"
+                            onClick={() => setDeployDialog(ver.id)}
+                          >
+                            <Rocket className="size-3" />
+                            Deploy
+                          </Button>
+                        )}
                         {ver.status === "live" && (
                           <span className="text-xs text-emerald-400 flex items-center gap-1">
                             <CheckCircle2 className="size-3" />
@@ -611,11 +491,7 @@ export default function RegistryPage() {
                   <GitCompare className="size-4 text-blue-400" />
                   Version Comparison ({compareVersions.length})
                 </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCompareSet(new Set())}
-                >
+                <Button variant="ghost" size="sm" onClick={() => setCompareSet(new Set())}>
                   <X className="size-3" />
                   Clear
                 </Button>
@@ -626,13 +502,9 @@ export default function RegistryPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border/50">
-                      <th className="text-left py-2 pr-4 text-xs text-muted-foreground font-medium">
-                        Metric
-                      </th>
+                      <th className="text-left py-2 pr-4 text-xs text-muted-foreground font-medium">Metric</th>
                       {compareVersions.map((ver) => {
-                        const family = MODEL_FAMILIES.find(
-                          (f) => f.id === ver.modelFamilyId,
-                        );
+                        const family = MODEL_FAMILIES.find((f) => f.id === ver.modelFamilyId);
                         return (
                           <th
                             key={ver.id}
@@ -641,9 +513,7 @@ export default function RegistryPage() {
                             <div>
                               <span className="font-mono">v{ver.version}</span>
                               <br />
-                              <span className="text-[10px]">
-                                {family?.name}
-                              </span>
+                              <span className="text-[10px]">{family?.name}</span>
                             </div>
                           </th>
                         );
@@ -704,27 +574,15 @@ export default function RegistryPage() {
                       ] as const
                     ).map((metric) => {
                       const values = compareVersions.map(
-                        (v) =>
-                          v.metrics[
-                            metric.key as keyof typeof v.metrics
-                          ] as number,
+                        (v) => v.metrics[metric.key as keyof typeof v.metrics] as number,
                       );
-                      const best = metric.lower
-                        ? Math.min(...values)
-                        : Math.max(...values);
+                      const best = metric.lower ? Math.min(...values) : Math.max(...values);
 
                       return (
-                        <tr
-                          key={metric.key}
-                          className="border-b border-border/30"
-                        >
-                          <td className="py-2 pr-4 text-muted-foreground text-xs">
-                            {metric.label}
-                          </td>
+                        <tr key={metric.key} className="border-b border-border/30">
+                          <td className="py-2 pr-4 text-muted-foreground text-xs">{metric.label}</td>
                           {compareVersions.map((ver) => {
-                            const val = ver.metrics[
-                              metric.key as keyof typeof ver.metrics
-                            ] as number;
+                            const val = ver.metrics[metric.key as keyof typeof ver.metrics] as number;
                             const isBest = val === best;
                             return (
                               <td
@@ -770,10 +628,7 @@ export default function RegistryPage() {
             <div className="space-y-3 py-2">
               <div className="space-y-2">
                 <Label>Deployment Target</Label>
-                <Select
-                  value={deployTarget}
-                  onValueChange={(v) => setDeployTarget(v as "shadow" | "live")}
-                >
+                <Select value={deployTarget} onValueChange={(v) => setDeployTarget(v as "shadow" | "live")}>
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -786,9 +641,8 @@ export default function RegistryPage() {
               {deployTarget === "live" && (
                 <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
                   <p className="text-xs text-amber-300">
-                    Deploying to live will replace the current champion model.
-                    This action will immediately route 100% of traffic to this
-                    version.
+                    Deploying to live will replace the current champion model. This action will immediately route 100%
+                    of traffic to this version.
                   </p>
                 </div>
               )}
@@ -799,11 +653,7 @@ export default function RegistryPage() {
               </Button>
               <Button
                 onClick={handleDeploy}
-                className={
-                  deployTarget === "live"
-                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
-                    : ""
-                }
+                className={deployTarget === "live" ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}
               >
                 <Rocket className="size-4" />
                 Deploy to {deployTarget === "live" ? "Live" : "Shadow"}

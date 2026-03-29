@@ -35,7 +35,7 @@ import { ApiError } from "@/components/ui/api-error";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMLDeployments, useModelFamilies, useModelVersions } from "@/hooks/api/use-ml-models";
-import type { ModelVersion } from "@/lib/ml-types";
+import type { ModelVersion } from "@/lib/types/ml";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------

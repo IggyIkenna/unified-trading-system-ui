@@ -20,13 +20,7 @@ export interface DataOrg {
 
 // ─── Sharding dimensions (match internal: category/venue/folder/data_type/date) ─
 
-export type DataCategory =
-  | "cefi"
-  | "tradfi"
-  | "defi"
-  | "onchain_perps"
-  | "prediction_market"
-  | "sports";
+export type DataCategory = "cefi" | "tradfi" | "defi" | "onchain_perps" | "prediction_market" | "sports";
 
 export const DATA_CATEGORY_LABELS: Record<DataCategory, string> = {
   cefi: "Crypto CeFi",
@@ -43,10 +37,7 @@ export const DATA_CATEGORY_LABELS: Record<DataCategory, string> = {
  * "data-basic" grants cefi only; "data-pro" grants cefi + tradfi + defi + onchain_perps.
  * sports and prediction_market require explicit future entitlements (currently internal-only).
  */
-export const CATEGORY_ENTITLEMENT_MAP: Record<
-  DataCategory,
-  "data-basic" | "data-pro" | "internal-only"
-> = {
+export const CATEGORY_ENTITLEMENT_MAP: Record<DataCategory, "data-basic" | "data-pro" | "internal-only"> = {
   cefi: "data-basic",
   tradfi: "data-pro",
   defi: "data-pro",
@@ -57,16 +48,7 @@ export const CATEGORY_ENTITLEMENT_MAP: Record<
 
 export const VENUES_BY_CATEGORY: Record<DataCategory, string[]> = {
   cefi: ["binance", "bybit", "coinbase", "okx", "deribit", "upbit"],
-  tradfi: [
-    "databento",
-    "tardis",
-    "yahoo_finance",
-    "fred",
-    "ibkr",
-    "ecb",
-    "ofr",
-    "openbb",
-  ],
+  tradfi: ["databento", "tardis", "yahoo_finance", "fred", "ibkr", "ecb", "ofr", "openbb"],
   defi: [
     "uniswap_v3",
     "uniswap_v4",
@@ -131,14 +113,7 @@ export type DataType =
   | "settlement_prices"
   | "tick";
 
-export type ProcessedTimeframe =
-  | "15s"
-  | "1m"
-  | "5m"
-  | "15m"
-  | "1h"
-  | "4h"
-  | "24h";
+export type ProcessedTimeframe = "15s" | "1m" | "5m" | "15m" | "1h" | "4h" | "24h";
 
 // ─── Access models ────────────────────────────────────────────────────────────
 
@@ -169,11 +144,7 @@ export const PRICING_MODELS: Record<AccessMode, AccessPricing> = {
 
 // ─── Plan tiers ───────────────────────────────────────────────────────────────
 
-export type DataPlanTier =
-  | "starter"
-  | "professional"
-  | "institutional"
-  | "enterprise";
+export type DataPlanTier = "starter" | "professional" | "institutional" | "enterprise";
 
 export interface DataPlan {
   tier: DataPlanTier;
@@ -202,12 +173,7 @@ export const DATA_PLANS: DataPlan[] = [
     queryLimitGb: 500,
     categories: ["cefi", "tradfi"],
     historyYears: 4,
-    features: [
-      "2 categories",
-      "All data types",
-      "API + WebSocket",
-      "Priority support",
-    ],
+    features: ["2 categories", "All data types", "API + WebSocket", "Priority support"],
   },
   {
     tier: "institutional",
@@ -216,33 +182,16 @@ export const DATA_PLANS: DataPlan[] = [
     queryLimitGb: 2000,
     categories: ["cefi", "tradfi", "defi", "onchain_perps"],
     historyYears: 6,
-    features: [
-      "4 categories",
-      "All data types",
-      "Egress included 500GB/mo",
-      "Dedicated support",
-    ],
+    features: ["4 categories", "All data types", "Egress included 500GB/mo", "Dedicated support"],
   },
   {
     tier: "enterprise",
     name: "Enterprise",
     monthlyPrice: 0, // custom
     queryLimitGb: -1, // unlimited
-    categories: [
-      "cefi",
-      "tradfi",
-      "defi",
-      "onchain_perps",
-      "prediction_market",
-      "sports",
-    ],
+    categories: ["cefi", "tradfi", "defi", "onchain_perps", "prediction_market", "sports"],
     historyYears: 6,
-    features: [
-      "All categories",
-      "Custom instruments",
-      "Unlimited egress",
-      "SLA + white-glove",
-    ],
+    features: ["All categories", "Custom instruments", "Unlimited egress", "SLA + white-glove"],
   },
 ];
 
@@ -276,12 +225,7 @@ export interface CatalogueEntry {
 }
 
 // Freshness cell for heatmap: keyed by ISO date string
-export type FreshnessStatus =
-  | "complete"
-  | "partial"
-  | "missing"
-  | "not_expected"
-  | "stale";
+export type FreshnessStatus = "complete" | "partial" | "missing" | "not_expected" | "stale";
 
 export interface DateFreshnessMap {
   [isoDate: string]: FreshnessStatus;
@@ -361,12 +305,7 @@ export type ETLStage =
   | "store_aws" // Replicate to AWS storage
   | "index"; // Index for query performance
 
-export type ETLStatus =
-  | "healthy"
-  | "degraded"
-  | "failed"
-  | "pending"
-  | "disabled";
+export type ETLStatus = "healthy" | "degraded" | "failed" | "pending" | "disabled";
 
 export interface ETLPipelineConfig {
   id: string;
@@ -489,12 +428,7 @@ export interface PipelineStageSummary {
 // ─── Job Tracking ─────────────────────────────────────────────────────────────
 
 export type JobType = "download" | "process" | "backfill" | "reprocess";
-export type JobStatus =
-  | "queued"
-  | "running"
-  | "completed"
-  | "failed"
-  | "cancelled";
+export type JobStatus = "queued" | "running" | "completed" | "failed" | "cancelled";
 
 export interface JobInfo {
   id: string;
@@ -578,15 +512,7 @@ export interface CorporateAction {
 
 export type EconomicEventImportance = "high" | "medium" | "low";
 
-export type EconomicEventType =
-  | "fomc"
-  | "nfp"
-  | "cpi"
-  | "gdp"
-  | "pce"
-  | "initial_claims"
-  | "election"
-  | "other_macro";
+export type EconomicEventType = "fomc" | "nfp" | "cpi" | "gdp" | "pce" | "initial_claims" | "election" | "other_macro";
 
 export interface EconomicEvent {
   id: string;
@@ -651,12 +577,7 @@ export interface DeployRequest {
 
 // ─── Coverage Matrix ──────────────────────────────────────────────────────────
 
-export type CoverageStatus =
-  | "complete"
-  | "partial"
-  | "missing"
-  | "not_applicable"
-  | "in_progress";
+export type CoverageStatus = "complete" | "partial" | "missing" | "not_applicable" | "in_progress";
 
 export interface CoverageCell {
   status: CoverageStatus;

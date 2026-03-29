@@ -10,13 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { FeatureEtlJob } from "@/lib/build-mock-data";
+import type { FeatureEtlJob } from "@/lib/mocks/fixtures/build-data";
 import {
   FEATURE_ETL_HEATMAP,
   FEATURE_ETL_HISTORY,
   FEATURE_ETL_JOBS,
   FEATURE_ETL_SERVICES,
-} from "@/lib/build-mock-data";
+} from "@/lib/mocks/fixtures/build-data";
 import { cn } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, formatDistanceToNow } from "date-fns";

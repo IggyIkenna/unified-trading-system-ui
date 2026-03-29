@@ -16,33 +16,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
+import {
+  MOCK_GREEKS,
+  MOCK_MODEL_COMPARISON,
+  type GreeksRow,
+  type ModelComparison,
+  type PricingModel,
+  type Underlying,
+} from "@/lib/mocks/fixtures/trading-pages";
 import { Activity, Calculator, TrendingUp, Zap } from "lucide-react";
 import * as React from "react";
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-type PricingModel = "black-scholes" | "svi" | "sabr" | "heston" | "mixed";
-type Underlying = "BTC" | "ETH";
-
-interface GreeksRow {
-  strike: number;
-  delta: number;
-  gamma: number;
-  theta: number;
-  vega: number;
-  rho: number;
-}
-
-interface ModelComparison {
-  strike: number;
-  moneyness: string;
-  bs: number;
-  svi: number;
-  sabr: number;
-  heston: number;
-  marketMid: number;
-  closest: PricingModel;
-}
 
 // ── Mock Data ────────────────────────────────────────────────────────────────
 
@@ -137,36 +120,6 @@ const greeksColumns: ColumnDef<GreeksRow>[] = [
       </span>
     ),
   },
-];
-
-const MOCK_GREEKS: GreeksRow[] = [
-  { strike: 60000, delta: 0.89, gamma: 0.00002, theta: -12.45, vega: 48.2, rho: 18.3 },
-  { strike: 62000, delta: 0.82, gamma: 0.00003, theta: -15.67, vega: 62.1, rho: 16.8 },
-  { strike: 64000, delta: 0.72, gamma: 0.00004, theta: -19.34, vega: 78.5, rho: 14.9 },
-  { strike: 65000, delta: 0.65, gamma: 0.00005, theta: -22.1, vega: 89.3, rho: 13.4 },
-  { strike: 66000, delta: 0.57, gamma: 0.00005, theta: -24.56, vega: 95.7, rho: 11.9 },
-  { strike: 67000, delta: 0.51, gamma: 0.00006, theta: -25.89, vega: 98.2, rho: 10.5 },
-  { strike: 68000, delta: 0.44, gamma: 0.00005, theta: -24.78, vega: 96.1, rho: 9.2 },
-  { strike: 70000, delta: 0.32, gamma: 0.00004, theta: -20.45, vega: 82.4, rho: 7.1 },
-  { strike: 72000, delta: 0.22, gamma: 0.00003, theta: -15.89, vega: 64.8, rho: 5.3 },
-  { strike: 75000, delta: 0.12, gamma: 0.00002, theta: -9.67, vega: 42.1, rho: 3.2 },
-];
-
-const MOCK_MODEL_COMPARISON: ModelComparison[] = [
-  {
-    strike: 60000,
-    moneyness: "0.89",
-    bs: 8234,
-    svi: 8189,
-    sabr: 8212,
-    heston: 8201,
-    marketMid: 8205,
-    closest: "heston",
-  },
-  { strike: 64000, moneyness: "0.95", bs: 5102, svi: 5078, sabr: 5089, heston: 5095, marketMid: 5090, closest: "sabr" },
-  { strike: 67000, moneyness: "0.99", bs: 3456, svi: 3423, sabr: 3440, heston: 3448, marketMid: 3442, closest: "sabr" },
-  { strike: 70000, moneyness: "1.04", bs: 2187, svi: 2201, sabr: 2195, heston: 2190, marketMid: 2193, closest: "sabr" },
-  { strike: 75000, moneyness: "1.11", bs: 987, svi: 1012, sabr: 1005, heston: 998, marketMid: 1002, closest: "heston" },
 ];
 
 // ── Model Parameter Configs ─────────────────────────────────────────────────

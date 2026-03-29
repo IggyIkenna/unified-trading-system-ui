@@ -1,4 +1,4 @@
-import type { CandidateStrategy, PromotionStage } from "./types";
+import type { CandidateStrategy, PromotionStage } from "@/components/promote/types";
 import {
   buildDocumentationChecklist,
   CHAMPION_BTC_V2,
@@ -17,7 +17,7 @@ import {
   TRADFI_FEATURES,
   WALK_FORWARD_LONG,
   WALK_FORWARD_SHORT,
-} from "./mock-fixtures";
+} from "@/lib/mocks/fixtures/promote-fixtures";
 
 function stages(
   map: Record<
@@ -247,11 +247,7 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
       monitoringPlan: [
         {
           period: "0–24h",
-          checks: [
-            "Fill quality vs shadow",
-            "Funding sign flip count",
-            "PnL bridge",
-          ],
+          checks: ["Fill quality vs shadow", "Funding sign flip count", "PnL bridge"],
         },
         {
           period: "1w",
@@ -259,11 +255,7 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
         },
         { period: "1m", checks: ["Drift dashboard", "MRM attestation"] },
       ],
-      escalationContacts: [
-        "oncall-crypto@risk",
-        "Head of Execution",
-        "CIO office",
-      ],
+      escalationContacts: ["oncall-crypto@risk", "Head of Execution", "CIO office"],
     },
   },
   {
@@ -673,27 +665,15 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
     ],
     deploymentPlan: {
       targetEnv: "prod / MM cluster east-1",
-      rollbackConditions: [
-        "Maker fill rate < 92% 4h rolling",
-        "Inventory breach > 15m",
-        "Venue disconnect storm",
-      ],
+      rollbackConditions: ["Maker fill rate < 92% 4h rolling", "Inventory breach > 15m", "Venue disconnect storm"],
       monitoringPlan: [
         {
           period: "24h",
-          checks: [
-            "Quote age histogram",
-            "Adverse selection ratio",
-            "PnL vs mid",
-          ],
+          checks: ["Quote age histogram", "Adverse selection ratio", "PnL vs mid"],
         },
         { period: "1w", checks: ["Cross-venue basis", "Fee tier drift"] },
       ],
-      escalationContacts: [
-        "mm-oncall@exec",
-        "Marcus Williams (CRO)",
-        "James Liu (Exec)",
-      ],
+      escalationContacts: ["mm-oncall@exec", "Marcus Williams (CRO)", "James Liu (Exec)"],
     },
   },
   {
@@ -1388,11 +1368,7 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
     ],
     deploymentPlan: {
       targetEnv: "prod / sports sleeve UK",
-      rollbackConditions: [
-        "CLV deterioration 2w",
-        "Stake limit breaches",
-        "Feed SLA miss",
-      ],
+      rollbackConditions: ["CLV deterioration 2w", "Stake limit breaches", "Feed SLA miss"],
       monitoringPlan: [
         {
           period: "match-day",

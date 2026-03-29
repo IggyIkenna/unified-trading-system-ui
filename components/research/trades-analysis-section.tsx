@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { DirectionPerformance, PnlBucket } from "@/lib/backtest-analytics-types";
+import type { DirectionPerformance, PnlBucket } from "@/lib/types/backtest-analytics";
 import { PnlDistributionHistogram } from "./pnl-distribution-histogram";
 import { WinLossDonut } from "./win-loss-donut";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";

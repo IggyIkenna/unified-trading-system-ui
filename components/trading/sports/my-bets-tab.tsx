@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Ban, CheckCircle2, ChevronRight, Clock, DollarSign, Layers, XCircle } from "lucide-react";
 import * as React from "react";
 import { fmtCurrency, fmtOdds, fmtRelativeTime } from "./helpers";
-import { MOCK_BETS } from "./mock-data";
+import { MOCK_BETS } from "@/lib/mocks/fixtures/sports-data";
 import { KpiTile, LeagueBadge } from "./shared";
 import type { AccumulatorLeg, Bet, BetStatus } from "./types";
 import { formatNumber } from "@/lib/utils/formatters";

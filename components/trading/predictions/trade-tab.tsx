@@ -13,7 +13,7 @@ import { Search, Clock, BarChart3, TrendingUp, CheckCircle2 } from "lucide-react
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { useToast } from "@/hooks/use-toast";
 import type { PredictionMarket, PredictionQuickTradeParams } from "./types";
-import { MOCK_MARKETS, MOCK_RECENT_FILLS } from "./mock-data";
+import { MOCK_MARKETS, MOCK_RECENT_FILLS } from "@/lib/mocks/fixtures/predictions-data";
 import { fmtVolume, calcKellyStake, fmtUsdPrecise, fmtRelativeTime } from "./helpers";
 import { VenueChip, LiveDot, ProbBadge } from "./shared";
 

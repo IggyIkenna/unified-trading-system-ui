@@ -2,7 +2,7 @@
 
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { getStrategiesForScope, type SeedStrategy } from "@/lib/mock-data";
+import { getStrategiesForScope, type SeedStrategy } from "@/lib/mocks/fixtures/mock-data-index";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import {

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { CLIENTS } from "@/lib/trading-data";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
@@ -91,9 +91,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   // Check if selected org has a DeFi desk
   const hasDefiDesk = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return true; // no filter = show all
-    return CLIENTS.some(
-      (c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk",
-    );
+    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk");
   }, [globalScope.organizationIds]);
   const [selectedChain, setSelectedChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
