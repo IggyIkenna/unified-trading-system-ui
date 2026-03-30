@@ -13,7 +13,6 @@ const TRADING_NAV_PATH_LABELS: { path: string; label: string }[] = [
   { path: "/services/trading/sports/accumulators", label: "Accumulators" },
   { path: "/services/trading/sports/bet", label: "Place Bets" },
   { path: "/services/trading/defi/staking", label: "Staking" },
-  { path: "/services/trading/accounts/saft", label: "SAFT" },
   { path: "/services/trading/strategies/model-portfolios", label: "Model Portfolios" },
   { path: "/services/trading/strategies/grid", label: "Grid" },
   { path: "/services/trading/custom", label: "Custom" },

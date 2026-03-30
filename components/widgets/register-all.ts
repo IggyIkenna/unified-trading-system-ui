@@ -1,6 +1,6 @@
 /**
  * Barrel that eagerly registers ALL widget domains into the widget registry.
- * Imported once in the trading layout so every page's catalogue shows all 104 widgets.
+ * Imported once in the trading layout so every page's catalogue shows all registered widgets.
  */
 import "./accounts/register";
 import "./alerts/register";

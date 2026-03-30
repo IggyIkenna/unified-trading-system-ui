@@ -23,7 +23,6 @@ import {
   Cpu,
   Database,
   DollarSign,
-  FileText,
   GitFork,
   Layers,
   LayoutDashboard,
@@ -296,8 +295,7 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
   { label: "Alerts", href: "/services/trading/alerts", icon: Bell },
   { label: "Book", href: "/services/trading/book", icon: BookMarked },
-  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet, exact: true },
-  { label: "SAFT", href: "/services/trading/accounts/saft", icon: FileText },
+  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
   { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
   { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
   // ── DeFi family ───────────────────────────────────────────────────────────

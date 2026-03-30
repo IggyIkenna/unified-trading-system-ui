@@ -260,7 +260,6 @@ const STANDALONE_PAGES = new Set([
   "/services/trading/predictions/aggregators",
   "/services/trading/defi/staking",
   "/services/trading/strategies/model-portfolios",
-  "/services/trading/accounts/saft",
 ]);
 
 function useWidgetTab(): string | null {

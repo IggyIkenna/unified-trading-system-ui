@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 import type { WidgetPlacement } from "@/components/widgets/widget-registry";
 import { getWidget } from "@/components/widgets/widget-registry";
 import { getPresetsForTab } from "@/components/widgets/preset-registry";
-import { buildDefaultProfile } from "@/components/widgets/default-profile";
+import { buildDefaultProfile, buildFullProfile } from "@/components/widgets/default-profile";
 
 export interface Workspace {
   id: string;
@@ -762,17 +762,37 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
 
       ensureProfiles: () => {
         const state = get();
-        if (state.profiles.length > 0) return;
         const defaultProfile = buildDefaultProfile();
-        const current = snapshotCurrentProfile(state);
-        if (Object.keys(current.tabs).length > 0) {
-          current.name = "My Workspace";
-          set({
-            profiles: [defaultProfile, current],
-            activeProfileId: current.id,
-          });
-        } else {
-          set({ profiles: [defaultProfile], activeProfileId: defaultProfile.id });
+        const fullProfile = buildFullProfile();
+
+        const insertFullAfterDefault = (profiles: WorkspaceProfile[]): WorkspaceProfile[] => {
+          if (profiles.some((p) => p.id === "full")) return profiles;
+          const next = [...profiles];
+          const defaultIdx = next.findIndex((p) => p.id === "default");
+          const insertAt = defaultIdx >= 0 ? defaultIdx + 1 : 0;
+          next.splice(insertAt, 0, fullProfile);
+          return next;
+        };
+
+        if (state.profiles.length === 0) {
+          const current = snapshotCurrentProfile(state);
+          if (Object.keys(current.tabs).length > 0) {
+            current.name = "My Workspace";
+            set({
+              profiles: insertFullAfterDefault([defaultProfile, current]),
+              activeProfileId: current.id,
+            });
+          } else {
+            set({
+              profiles: [defaultProfile, fullProfile],
+              activeProfileId: defaultProfile.id,
+            });
+          }
+          return;
+        }
+
+        if (!state.profiles.some((p) => p.id === "full")) {
+          set({ profiles: insertFullAfterDefault(state.profiles) });
         }
       },
 
