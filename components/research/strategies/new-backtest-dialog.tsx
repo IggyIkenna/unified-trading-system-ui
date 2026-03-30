@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import type { StrategyTemplate } from "@/lib/types/strategy-platform";
@@ -66,7 +65,7 @@ export function NewBacktestDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-[560px] max-h-[90vh] flex flex-col p-0 gap-0">
+      <DialogContent className="sm:max-w-[560px] max-h-[90vh] flex flex-col overflow-hidden p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-2 shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <FlaskConical className="size-5 text-amber-400" />
@@ -77,8 +76,8 @@ export function NewBacktestDialog({
             full institutional parameter surface.
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[60vh] px-6">
-          <div className="space-y-5 py-2 pr-3">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6">
+          <div className="space-y-5 py-2 pr-1 pb-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <Label>Strategy Type</Label>
@@ -229,7 +228,7 @@ export function NewBacktestDialog({
               </label>
             </div>
           </div>
-        </ScrollArea>
+        </div>
         <DialogFooter className="px-6 py-4 border-t shrink-0">
           <Button variant="outline" onClick={onClose}>
             Cancel
