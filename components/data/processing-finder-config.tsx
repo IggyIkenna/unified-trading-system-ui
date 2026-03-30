@@ -3,8 +3,8 @@
 /**
  * FinderBrowser column configuration for /services/data/processing
  *
- * Hierarchy: Category → Venue → Instrument Type (folder) → Timeframe
- * Source: sharding_config dimensions: [category, venue, instrument_type, date, timeframe]
+ * Hierarchy: Category → Venue → Instrument Type (folder) → Instrument → Timeframe
+ * Source: sharding_config dimensions: [category, venue, instrument_type, instrument, date, timeframe]
  */
 
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +22,15 @@ import {
   FOLDERS_BY_CATEGORY,
   type DataCategory,
   type DataFolder,
+  type InstrumentEntry,
   type Timeframe,
 } from "@/lib/types/data-service";
-import { MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/mocks/fixtures/data-service";
+import {
+  MOCK_INSTRUMENTS,
+  MOCK_INSTRUMENT_COUNTS,
+  MOCK_PIPELINE_STAGES,
+  MOCK_TIMEFRAME_STATUS,
+} from "@/lib/mocks/fixtures/data-service";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const ALL_TIMEFRAMES: Timeframe[] = ["1m", "5m", "15m", "1h", "4h", "1d"];
@@ -38,19 +44,25 @@ const TIMEFRAME_LABELS: Record<Timeframe, string> = {
   "1d": "Daily",
 };
 
-function getTimeframeCompletion(venue: string, folder: string, timeframe: Timeframe): number {
+function getTimeframeCompletion(venue: string, folder: string, timeframe: Timeframe, instrumentKey?: string): number {
   const match = MOCK_TIMEFRAME_STATUS.find((t) => t.timeframe === timeframe);
-  if (match) return match.completionPct;
-  // Fallback: higher timeframes have lower completion (blocked by upstream)
-  const baseByTf: Record<Timeframe, number> = {
-    "1m": 12,
-    "5m": 8,
-    "15m": 5,
-    "1h": 3,
-    "4h": 2,
-    "1d": 1,
-  };
-  return baseByTf[timeframe] ?? 0;
+  let base = match
+    ? match.completionPct
+    : ((
+        {
+          "1m": 12,
+          "5m": 8,
+          "15m": 5,
+          "1h": 3,
+          "4h": 2,
+          "1d": 1,
+        } as Record<Timeframe, number>
+      )[timeframe] ?? 0);
+  if (instrumentKey) {
+    const tweak = instrumentKey.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % 21;
+    base = Math.max(0, Math.min(100, base + tweak - 10));
+  }
+  return base;
 }
 
 const CATEGORY_BADGE: Record<DataCategory, string> = {
@@ -165,10 +177,15 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
     getCount: () => null,
   },
   {
-    id: "timeframe",
-    label: "Timeframes",
-    width: "flex-1",
+    id: "instrument",
+    label: "Instrument",
+    width: "w-[200px]",
+    defaultWidthPx: 200,
+    minWidthPx: 140,
     visibleWhen: (sel) => sel["folder"] !== null,
+    paginate: true,
+    showSearch: true,
+    searchPlaceholder: "Filter instruments…",
     getItems: (sel): FinderItem[] => {
       const { venue, folder } = (sel["folder"]?.data ?? {}) as {
         folder: DataFolder;
@@ -176,12 +193,40 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
         cat: DataCategory;
       };
       if (!venue || !folder) return [];
+      return MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder).map((inst) => ({
+        id: inst.instrumentKey,
+        label: inst.symbol,
+        data: inst,
+      }));
+    },
+    renderLabel: (item) => {
+      const inst = item.data as InstrumentEntry;
+      return (
+        <span
+          className={cn("flex-1 min-w-0 font-medium font-mono break-words leading-snug text-left", finderText.body)}
+        >
+          {inst.symbol}
+        </span>
+      );
+    },
+    renderIcon: () => null,
+    getCount: () => null,
+  },
+  {
+    id: "timeframe",
+    label: "Timeframes",
+    width: "flex-1",
+    visibleWhen: (sel) => sel["instrument"] !== null,
+    getItems: (sel): FinderItem[] => {
+      const inst = sel["instrument"]?.data as InstrumentEntry | undefined;
+      if (!inst?.venue || !inst.folder) return [];
+      const { venue, folder, instrumentKey, symbol } = inst;
       return ALL_TIMEFRAMES.map((tf) => {
-        const pct = getTimeframeCompletion(venue, folder, tf);
+        const pct = getTimeframeCompletion(venue, folder, tf, instrumentKey);
         return {
           id: tf,
           label: TIMEFRAME_LABELS[tf],
-          data: { tf, venue, folder, completionPct: pct },
+          data: { tf, venue, folder, symbol, instrumentKey, completionPct: pct },
         };
       });
     },
@@ -208,20 +253,47 @@ export function getProcessingContextStats(selections: FinderSelections): FinderC
   const catData = selections["category"]?.data as { cat: DataCategory; completionPct: number } | undefined;
   const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
   const folderData = selections["folder"]?.data as { folder: DataFolder; venue: string; cat: DataCategory } | undefined;
+  const instSelected = selections["instrument"]?.data as InstrumentEntry | undefined;
   const tfData = selections["timeframe"]?.data as
-    | { tf: Timeframe; venue: string; folder: string; completionPct: number }
+    | {
+        tf: Timeframe;
+        venue: string;
+        folder: string;
+        symbol?: string;
+        instrumentKey?: string;
+        completionPct: number;
+      }
     | undefined;
 
   if (tfData) {
     const pct = tfData.completionPct;
     const color = pct >= 50 ? "bg-emerald-400" : pct >= 20 ? "bg-yellow-400" : "bg-red-400";
+    const sym = tfData.symbol ? `${tfData.symbol} · ` : "";
     return {
-      name: `${tfData.venue.replace(/_/g, " ")} · ${TIMEFRAME_LABELS[tfData.tf]}`,
+      name: `${sym}${tfData.venue.replace(/_/g, " ")} · ${TIMEFRAME_LABELS[tfData.tf]}`,
       metrics: [
         { label: "timeframe", value: tfData.tf },
         { label: "completion", value: pct, format: "percent" },
       ],
       progressBar: { value: pct, color },
+    };
+  }
+
+  if (instSelected) {
+    const avgPct = Math.round(
+      ALL_TIMEFRAMES.reduce(
+        (s, tf) => s + getTimeframeCompletion(instSelected.venue, instSelected.folder, tf, instSelected.instrumentKey),
+        0,
+      ) / ALL_TIMEFRAMES.length,
+    );
+    const color = avgPct >= 50 ? "bg-emerald-400" : avgPct >= 20 ? "bg-yellow-400" : "bg-red-400";
+    return {
+      name: instSelected.symbol,
+      metrics: [
+        { label: "timeframes", value: ALL_TIMEFRAMES.length },
+        { label: "avg completion", value: avgPct, format: "percent" },
+      ],
+      progressBar: { value: avgPct, color },
     };
   }
 

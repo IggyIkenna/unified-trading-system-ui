@@ -2,7 +2,7 @@
 
 /**
  * /services/data/raw — Raw data ingestion status.
- * FinderBrowser layout: Category → Venue → Instrument Type → Data Type
+ * FinderBrowser layout: Category → Venue → Instrument Type → Instrument → Data Type
  * Shows completion %, date range, and freshness per data type.
  */
 
@@ -13,6 +13,7 @@ import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
+import type { InstrumentEntry } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { AlertTriangle, CheckCircle2, Download, RefreshCw } from "lucide-react";
@@ -21,14 +22,15 @@ import { AlertTriangle, CheckCircle2, Download, RefreshCw } from "lucide-react";
 
 function RawDataDetail({ selections }: { selections: FinderSelections }) {
   const dtItem = selections["datatype"];
+  const instItem = selections["instrument"];
   const folderData = selections["folder"]?.data as { folder: string; venue: string; cat: string } | undefined;
-  const venueData = selections["venue"]?.data as { venue: string; cat: string } | undefined;
 
   if (dtItem) {
-    const { dt, venue, folder, completionPct } = dtItem.data as {
+    const { dt, venue, folder, symbol, completionPct } = dtItem.data as {
       dt: string;
       venue: string;
       folder: string;
+      symbol?: string;
       completionPct: number;
     };
     const color = completionPct >= 90 ? "text-emerald-400" : completionPct >= 70 ? "text-yellow-400" : "text-red-400";
@@ -40,6 +42,7 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Data Type</p>
           <p className="text-sm font-semibold font-mono capitalize">{dt.replace(/_/g, " ")}</p>
           <p className="text-xs text-muted-foreground">
+            {symbol ? `${symbol} · ` : ""}
             {venue.replace(/_/g, " ")} / {folder.replace(/_/g, " ")}
           </p>
         </div>
@@ -84,11 +87,24 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
     );
   }
 
+  if (instItem) {
+    const inst = instItem.data as InstrumentEntry | null;
+    return (
+      <div className="p-4 space-y-3">
+        <p className="text-sm font-semibold font-mono">{inst?.symbol ?? instItem.label}</p>
+        {inst?.instrumentKey && (
+          <p className="text-xs text-muted-foreground font-mono break-all">{inst.instrumentKey}</p>
+        )}
+        <p className="text-xs text-muted-foreground">Select a data type to see completion and download options</p>
+      </div>
+    );
+  }
+
   if (folderData) {
     return (
       <div className="p-4 space-y-3">
         <p className="text-sm font-semibold capitalize">{folderData.folder.replace(/_/g, " ")}</p>
-        <p className="text-xs text-muted-foreground">Select a data type to see completion details</p>
+        <p className="text-xs text-muted-foreground">Select an instrument, then a data type</p>
       </div>
     );
   }
@@ -97,7 +113,9 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
       <Download className="size-8 mb-2 opacity-20" />
       <p className="text-sm font-medium text-muted-foreground">No data type selected</p>
-      <p className="text-xs text-muted-foreground/60 mt-1">Drill down to see completion % and configure downloads</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">
+        Drill down by venue, type, and instrument to see completion and configure downloads
+      </p>
     </div>
   );
 }

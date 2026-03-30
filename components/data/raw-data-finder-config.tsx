@@ -3,8 +3,8 @@
 /**
  * FinderBrowser column configuration for /services/data/raw
  *
- * Hierarchy: Category → Venue → Instrument Type (folder) → Data Type
- * Source: sharding_config dimensions: [category, venue, instrument_type, data_type, date]
+ * Hierarchy: Category → Venue → Instrument Type (folder) → Instrument → Data Type
+ * Source: sharding_config dimensions: [category, venue, instrument_type, instrument, data_type, date]
  */
 
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,7 @@ import {
   type DataCategory,
   type DataFolder,
   type DataType,
+  type InstrumentEntry,
 } from "@/lib/types/data-service";
 import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -57,9 +58,9 @@ function getDataTypesForFolderVenue(venue: string, folder: DataFolder, cat: Data
   return [...all];
 }
 
-// Mock completion percentages by data type (seeded deterministically)
-function getDataTypeCompletion(venue: string, folder: string, dataType: string): number {
-  const seed = (venue.length + folder.length + dataType.length) % 100;
+// Mock completion percentages by data type (seeded deterministically; optional instrument for per-symbol variance)
+function getDataTypeCompletion(venue: string, folder: string, dataType: string, instrumentKey?: string): number {
+  const seed = (venue.length + folder.length + dataType.length + (instrumentKey?.length ?? 0)) % 100;
   const vals: Record<string, number> = {
     ohlcv: 95,
     trades: 88,
@@ -205,24 +206,64 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
     renderIcon: () => null,
   },
   {
-    id: "datatype",
-    label: "Data Types",
-    width: "flex-1",
+    id: "instrument",
+    label: "Instrument",
+    width: "w-[200px]",
+    defaultWidthPx: 200,
+    minWidthPx: 140,
     visibleWhen: (sel) => sel["folder"] !== null,
+    paginate: true,
+    showSearch: true,
+    searchPlaceholder: "Filter instruments…",
     getItems: (sel): FinderItem[] => {
-      const { venue, folder, cat } = (sel["folder"]?.data ?? {}) as {
+      const { venue, folder } = (sel["folder"]?.data ?? {}) as {
         folder: DataFolder;
         venue: string;
         cat: DataCategory;
       };
       if (!venue || !folder) return [];
-      const dataTypes = getDataTypesForFolderVenue(venue, folder, cat);
+      return MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder).map((inst) => ({
+        id: inst.instrumentKey,
+        label: inst.symbol,
+        data: inst,
+      }));
+    },
+    renderLabel: (item) => {
+      const inst = item.data as InstrumentEntry;
+      return (
+        <span
+          className={cn("flex-1 min-w-0 font-medium font-mono break-words leading-snug text-left", finderText.body)}
+        >
+          {inst.symbol}
+        </span>
+      );
+    },
+    renderIcon: () => null,
+    getCount: () => null,
+  },
+  {
+    id: "datatype",
+    label: "Data Types",
+    width: "flex-1",
+    visibleWhen: (sel) => sel["instrument"] !== null,
+    getItems: (sel): FinderItem[] => {
+      const inst = sel["instrument"]?.data as InstrumentEntry | undefined;
+      if (!inst?.venue || !inst.folder) return [];
+      const dataTypes =
+        inst.dataTypes.length > 0 ? inst.dataTypes : getDataTypesForFolderVenue(inst.venue, inst.folder, inst.category);
       return dataTypes.map((dt) => {
-        const pct = getDataTypeCompletion(venue, folder, dt);
+        const pct = getDataTypeCompletion(inst.venue, inst.folder, dt, inst.instrumentKey);
         return {
           id: dt,
           label: dt.replace(/_/g, " "),
-          data: { dt, venue, folder, completionPct: pct },
+          data: {
+            dt,
+            venue: inst.venue,
+            folder: inst.folder,
+            symbol: inst.symbol,
+            instrumentKey: inst.instrumentKey,
+            completionPct: pct,
+          },
         };
       });
     },
@@ -252,17 +293,48 @@ export function getRawDataContextStats(selections: FinderSelections): FinderCont
   const catData = selections["category"]?.data as { cat: DataCategory; completionPct: number } | undefined;
   const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
   const folderData = selections["folder"]?.data as { folder: DataFolder; venue: string; cat: DataCategory } | undefined;
+  const instSelected = selections["instrument"]?.data as InstrumentEntry | undefined;
   const dtData = selections["datatype"]?.data as
-    | { dt: string; venue: string; folder: string; completionPct: number }
+    | {
+        dt: string;
+        venue: string;
+        folder: string;
+        symbol?: string;
+        instrumentKey?: string;
+        completionPct: number;
+      }
     | undefined;
 
   if (dtData) {
     const pct = dtData.completionPct;
     const color = pct >= 90 ? "bg-emerald-400" : pct >= 70 ? "bg-yellow-400" : "bg-red-400";
+    const sym = dtData.symbol ? `${dtData.symbol} · ` : "";
     return {
-      name: `${dtData.venue.replace(/_/g, " ")} · ${dtData.dt.replace(/_/g, " ")}`,
+      name: `${sym}${dtData.venue.replace(/_/g, " ")} · ${dtData.dt.replace(/_/g, " ")}`,
       metrics: [{ label: "completion", value: pct, format: "percent" }],
       progressBar: { value: pct, color },
+    };
+  }
+
+  if (instSelected) {
+    const dts =
+      instSelected.dataTypes.length > 0
+        ? instSelected.dataTypes
+        : getDataTypesForFolderVenue(instSelected.venue, instSelected.folder, instSelected.category);
+    const avgPct = Math.round(
+      dts.reduce(
+        (s, dt) => s + getDataTypeCompletion(instSelected.venue, instSelected.folder, dt, instSelected.instrumentKey),
+        0,
+      ) / Math.max(1, dts.length),
+    );
+    const color = avgPct >= 90 ? "bg-emerald-400" : avgPct >= 70 ? "bg-yellow-400" : "bg-red-400";
+    return {
+      name: instSelected.symbol,
+      metrics: [
+        { label: "data types", value: dts.length },
+        { label: "avg completion", value: avgPct, format: "percent" },
+      ],
+      progressBar: { value: avgPct, color },
     };
   }
 

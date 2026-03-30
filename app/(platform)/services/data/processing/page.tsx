@@ -2,7 +2,7 @@
 
 /**
  * /services/data/processing — Processed candle data status.
- * FinderBrowser layout: Category → Venue → Instrument Type → Timeframe
+ * FinderBrowser layout: Category → Venue → Instrument Type → Instrument → Timeframe
  * Shows completion % per timeframe (1m → 5m → 15m → 1h → 4h → 1d).
  */
 
@@ -13,7 +13,7 @@ import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/mocks/fixtures/data-service";
-import type { Timeframe } from "@/lib/types/data-service";
+import type { InstrumentEntry, Timeframe } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { AlertTriangle, CheckCircle2, Clock, Cpu, RefreshCw } from "lucide-react";
@@ -33,13 +33,15 @@ const ALL_TIMEFRAMES: Timeframe[] = ["1m", "5m", "15m", "1h", "4h", "1d"];
 
 function ProcessingDetail({ selections }: { selections: FinderSelections }) {
   const tfItem = selections["timeframe"];
+  const instItem = selections["instrument"];
   const folderData = selections["folder"]?.data as { folder: string; venue: string; cat: string } | undefined;
 
   if (tfItem) {
-    const { tf, venue, folder, completionPct } = tfItem.data as {
+    const { tf, venue, folder, symbol, completionPct } = tfItem.data as {
       tf: Timeframe;
       venue: string;
       folder: string;
+      symbol?: string;
       completionPct: number;
     };
     const color = completionPct >= 50 ? "text-emerald-400" : completionPct >= 20 ? "text-yellow-400" : "text-red-400";
@@ -53,6 +55,7 @@ function ProcessingDetail({ selections }: { selections: FinderSelections }) {
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Timeframe</p>
           <p className="text-sm font-semibold font-mono">{tf}</p>
           <p className="text-xs text-muted-foreground">
+            {symbol ? `${symbol} · ` : ""}
             {venue.replace(/_/g, " ")} / {folder.replace(/_/g, " ")} / {TIMEFRAME_LABELS[tf]} candles
           </p>
         </div>
@@ -117,11 +120,24 @@ function ProcessingDetail({ selections }: { selections: FinderSelections }) {
     );
   }
 
+  if (instItem) {
+    const inst = instItem.data as InstrumentEntry | null;
+    return (
+      <div className="p-4 space-y-3">
+        <p className="text-sm font-semibold font-mono">{inst?.symbol ?? instItem.label}</p>
+        {inst?.instrumentKey && (
+          <p className="text-xs text-muted-foreground font-mono break-all">{inst.instrumentKey}</p>
+        )}
+        <p className="text-xs text-muted-foreground">Select a timeframe to see OHLCV completion details</p>
+      </div>
+    );
+  }
+
   if (folderData) {
     return (
       <div className="p-4 space-y-3">
         <p className="text-sm font-semibold capitalize">{folderData.folder.replace(/_/g, " ")}</p>
-        <p className="text-xs text-muted-foreground">Select a timeframe to see completion details</p>
+        <p className="text-xs text-muted-foreground">Select an instrument, then a timeframe</p>
       </div>
     );
   }
@@ -130,7 +146,9 @@ function ProcessingDetail({ selections }: { selections: FinderSelections }) {
     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
       <Cpu className="size-8 mb-2 opacity-20" />
       <p className="text-sm font-medium text-muted-foreground">No timeframe selected</p>
-      <p className="text-xs text-muted-foreground/60 mt-1">Drill down to see OHLCV completion per timeframe</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">
+        Drill down by venue, type, and instrument to see OHLCV completion per timeframe
+      </p>
     </div>
   );
 }
