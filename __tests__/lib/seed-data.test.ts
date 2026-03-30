@@ -3,6 +3,7 @@ import {
   getPositionsForScope,
   getOrdersForScope,
   getTradesForScope,
+  getTradesForPosition,
   getAlertsForScope,
   getStrategiesForScope,
   getPnlForScope,
@@ -27,6 +28,26 @@ describe("Seed Data", () => {
     expect(orgs.has("vertex-partners")).toBe(true);
     expect(orgs.has("meridian-fund")).toBe(true);
     expect(orgs.has("atlas-ventures")).toBe(true);
+  });
+
+  it("links every position to seed trades with matching net quantity", () => {
+    for (const p of SEED_POSITIONS) {
+      const trades = getTradesForPosition(p.id);
+      expect(trades.length).toBeGreaterThanOrEqual(2);
+      let net = 0;
+      for (const t of trades) {
+        expect(t.positionId).toBe(p.id);
+        expect(t.instrument).toBe(p.instrument);
+        expect(t.strategyId).toBe(p.strategyId);
+        expect(t.venue).toBe(p.venue);
+        net += t.side === "buy" ? t.quantity : -t.quantity;
+      }
+      if (p.side === "long") {
+        expect(net).toBeCloseTo(p.quantity, 2);
+      } else {
+        expect(net).toBeCloseTo(-p.quantity, 2);
+      }
+    }
   });
 
   it("uses org IDs that match trading-data fixtures", () => {

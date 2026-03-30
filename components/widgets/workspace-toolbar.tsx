@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/components/shared/spinner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,14 +20,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Spinner } from "@/components/shared/spinner";
 import type { SyncStatus } from "@/lib/stores/workspace-store";
 import { useActiveWorkspace, useWorkspaceStore } from "@/lib/stores/workspace-store";
 import {
   Camera,
   Cloud,
   CloudOff,
-  Copy,
   Download,
   History,
   Layers,

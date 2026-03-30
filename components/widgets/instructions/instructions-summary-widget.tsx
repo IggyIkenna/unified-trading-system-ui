@@ -1,6 +1,6 @@
 "use client";
 
-import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
+import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useInstructionsData } from "./instructions-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -23,5 +23,11 @@ export function InstructionsSummaryWidget(_props: WidgetComponentProps) {
     },
   ];
 
-  return <KpiStrip metrics={metrics} columns={5} className="rounded-md h-full" />;
+  return (
+    <KpiSummaryWidget
+      metrics={metrics}
+      storageKey="uts-instructions-summary-kpi-layout"
+      className="rounded-md h-full"
+    />
+  );
 }

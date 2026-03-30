@@ -42,6 +42,8 @@ export interface SeedOrder {
 
 export interface SeedTrade {
   id: string;
+  /** Links fills to a position row for drill-down */
+  positionId: string;
   instrument: string;
   venue: string;
   side: "buy" | "sell";
@@ -1156,363 +1158,90 @@ export const SEED_ORDERS: SeedOrder[] = [
 
 // ── Trades ───────────────────────────────────────────────────────────────────
 
-function trd(
-  id: string,
-  inst: string,
-  venue: string,
-  side: "buy" | "sell",
-  qty: number,
-  price: number,
-  type: "Exchange" | "OTC" | "DeFi" | "Manual",
-  daysAgo: number,
-  orgId: string,
-  clientId: string,
-  stratId: string,
-  counterparty: string,
-): SeedTrade {
-  const d = new Date();
-  d.setDate(d.getDate() - daysAgo);
-  d.setHours(Math.floor(Math.random() * 14) + 8);
-  const sd = new Date(d);
-  sd.setDate(sd.getDate() + 2);
-  const fees = Math.round(qty * price * 0.001 * 100) / 100;
-  return {
-    id,
-    instrument: inst,
-    venue,
-    side,
-    quantity: qty,
-    price,
-    fees,
-    total: Math.round((qty * price + (side === "buy" ? fees : -fees)) * 100) / 100,
-    tradeType: type,
-    status: daysAgo > 2 ? "settled" : "pending",
-    counterparty,
-    timestamp: d.toISOString(),
-    settlementDate: sd.toISOString(),
-    orgId,
-    clientId,
-    strategyId: stratId,
-  };
+function hashSeedString(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
 }
 
-export const SEED_TRADES: SeedTrade[] = [
-  // Odum Internal
-  trd(
-    "trd-001",
-    "BTC-USDT",
-    "Binance",
-    "buy",
-    2.5,
-    64200,
-    "Exchange",
-    12,
-    "odum",
-    "delta-one",
-    "strat-btc-mom-alpha",
-    "Binance",
-  ),
-  trd(
-    "trd-002",
-    "BTC-PERP",
-    "Hyperliquid",
-    "buy",
-    1.8,
-    65100,
-    "Exchange",
-    10,
-    "odum",
-    "delta-one",
-    "strat-btc-mom-alpha",
-    "Hyperliquid",
-  ),
-  trd(
-    "trd-003",
-    "ETH-USDT",
-    "Binance",
-    "buy",
-    15,
-    3180,
-    "Exchange",
-    8,
-    "odum",
-    "delta-one",
-    "strat-btc-mom-alpha",
-    "Binance",
-  ),
-  trd(
-    "trd-004",
-    "ETH-USDT",
-    "Binance",
-    "buy",
-    25,
-    3250,
-    "Exchange",
-    6,
-    "odum",
-    "delta-one",
-    "strat-eth-basis-alpha",
-    "Binance",
-  ),
-  trd(
-    "trd-005",
-    "ETH-PERP",
-    "Hyperliquid",
-    "sell",
-    25,
-    3260,
-    "Exchange",
-    6,
-    "odum",
-    "delta-one",
-    "strat-eth-basis-alpha",
-    "Hyperliquid",
-  ),
-  trd("trd-006", "WETH", "Uniswap", "buy", 20, 3200, "DeFi", 14, "odum", "defi-desk", "strat-defi-yield", "Uniswap V3"),
-  trd("trd-007", "USDC", "Aave", "buy", 50000, 1.0, "DeFi", 15, "odum", "defi-desk", "strat-defi-yield", "Aave V3"),
-  trd(
-    "trd-008",
-    "BTC-USDT",
-    "OTC Desk",
-    "buy",
-    5,
-    63500,
-    "OTC",
-    20,
-    "odum",
-    "delta-one",
-    "strat-btc-mom-alpha",
-    "Cumberland",
-  ),
-  // Apex Capital
-  trd(
-    "trd-009",
-    "BTC-USDT",
-    "Binance",
-    "buy",
-    5,
-    63800,
-    "Exchange",
-    15,
-    "alpha-capital",
-    "alpha-main",
-    "strat-btc-mom-apex",
-    "Binance",
-  ),
-  trd(
-    "trd-010",
-    "BTC-PERP",
-    "Hyperliquid",
-    "buy",
-    3,
-    64500,
-    "Exchange",
-    12,
-    "alpha-capital",
-    "alpha-main",
-    "strat-btc-mom-apex",
-    "Hyperliquid",
-  ),
-  trd(
-    "trd-011",
-    "BTC-CALL-70K",
-    "Deribit",
-    "buy",
-    2,
-    2800,
-    "Exchange",
-    8,
-    "alpha-capital",
-    "alpha-main",
-    "strat-opts-vol-apex",
-    "Deribit",
-  ),
-  trd(
-    "trd-012",
-    "BTC-USDT",
-    "OTC Desk",
-    "buy",
-    3,
-    64000,
-    "OTC",
-    18,
-    "alpha-capital",
-    "alpha-main",
-    "strat-btc-mom-apex",
-    "Galaxy Digital",
-  ),
-  trd(
-    "trd-013",
-    "BTC-USDT",
-    "Binance",
-    "buy",
-    1,
-    67350,
-    "Exchange",
-    1,
-    "alpha-capital",
-    "alpha-crypto",
-    "strat-xexch-apex",
-    "Binance",
-  ),
-  trd(
-    "trd-014",
-    "BTC-USDT",
-    "Hyperliquid",
-    "sell",
-    1,
-    67410,
-    "Exchange",
-    1,
-    "alpha-capital",
-    "alpha-crypto",
-    "strat-xexch-apex",
-    "Hyperliquid",
-  ),
-  // Zenith Partners
-  trd(
-    "trd-015",
-    "BTC-CALL-70K",
-    "Deribit",
-    "buy",
-    5,
-    2600,
-    "Exchange",
-    10,
-    "vertex-partners",
-    "vertex-core",
-    "strat-opts-zen",
-    "Deribit",
-  ),
-  trd(
-    "trd-016",
-    "BTC-PUT-65K",
-    "Deribit",
-    "sell",
-    5,
-    1800,
-    "Exchange",
-    10,
-    "vertex-partners",
-    "vertex-core",
-    "strat-opts-zen",
-    "Deribit",
-  ),
-  trd(
-    "trd-017",
-    "ETH-CALL-4K",
-    "Deribit",
-    "buy",
-    20,
-    160,
-    "Exchange",
-    7,
-    "vertex-partners",
-    "vertex-core",
-    "strat-opts-zen",
-    "Deribit",
-  ),
-  // Meridian Fund
-  trd(
-    "trd-018",
-    "BTC-USDT",
-    "Binance",
-    "buy",
-    3,
-    65400,
-    "Exchange",
-    9,
-    "meridian-fund",
-    "meridian-systematic",
-    "strat-ml-dir-mer",
-    "Binance",
-  ),
-  trd(
-    "trd-019",
-    "ETH-USDT",
-    "Binance",
-    "buy",
-    20,
-    3280,
-    "Exchange",
-    7,
-    "meridian-fund",
-    "meridian-systematic",
-    "strat-ml-dir-mer",
-    "Binance",
-  ),
-  trd(
-    "trd-020",
-    "BTC-USDT",
-    "OTC Desk",
-    "buy",
-    2,
-    66000,
-    "OTC",
-    5,
-    "meridian-fund",
-    "meridian-discretionary",
-    "strat-disc-mer",
-    "Wintermute",
-  ),
-  trd(
-    "trd-021",
-    "LINK-USDT",
-    "Binance",
-    "buy",
-    500,
-    14.2,
-    "Exchange",
-    11,
-    "meridian-fund",
-    "meridian-discretionary",
-    "strat-disc-mer",
-    "Binance",
-  ),
-  // Atlas Ventures
-  trd(
-    "trd-022",
-    "BTC-USDT",
-    "Binance",
-    "buy",
-    1.5,
-    65800,
-    "Exchange",
-    8,
-    "atlas-ventures",
-    "atlas-growth",
-    "strat-btc-mom-atlas",
-    "Binance",
-  ),
-  trd(
-    "trd-023",
-    "WETH",
-    "Uniswap",
-    "buy",
-    15,
-    3150,
-    "DeFi",
-    12,
-    "atlas-ventures",
-    "atlas-defi",
-    "strat-defi-atlas",
-    "Uniswap V3",
-  ),
-  trd(
-    "trd-024",
-    "UNI",
-    "Uniswap",
-    "buy",
-    400,
-    6.8,
-    "DeFi",
-    10,
-    "atlas-ventures",
-    "atlas-defi",
-    "strat-defi-atlas",
-    "Uniswap V3",
-  ),
-];
+function roundSeedQty(n: number): number {
+  return Math.round(n * 10000) / 10000;
+}
+
+/** Split `total` into `parts` positive weights that sum to `total` (for 2–5 fills per position). */
+function splitSeedQuantity(total: number, parts: number, seed: number): number[] {
+  if (parts <= 1) return [roundSeedQty(total)];
+  const weights: number[] = [];
+  let wsum = 0;
+  for (let i = 0; i < parts; i++) {
+    const w = 0.5 + ((seed + i * 7919) % 1000) / 1000;
+    weights.push(w);
+    wsum += w;
+  }
+  const out: number[] = [];
+  let acc = 0;
+  for (let i = 0; i < parts - 1; i++) {
+    const q = roundSeedQty((total * weights[i]!) / wsum);
+    out.push(q);
+    acc += q;
+  }
+  out.push(roundSeedQty(total - acc));
+  return out;
+}
+
+function tradeTypeForVenue(venue: string): "Exchange" | "OTC" | "DeFi" | "Manual" {
+  if (venue === "Uniswap" || venue === "Aave") return "DeFi";
+  if (venue === "OTC Desk") return "OTC";
+  return "Exchange";
+}
+
+/** One synthetic fill set per position: quantities sum to position size; sides match long/short. */
+function buildSeedTradesForPositions(positions: SeedPosition[]): SeedTrade[] {
+  const trades: SeedTrade[] = [];
+  for (const pos of positions) {
+    const h = hashSeedString(pos.id);
+    const n = 2 + (h % 4);
+    const quantities = splitSeedQuantity(pos.quantity, n, h);
+    const type = tradeTypeForVenue(pos.venue);
+    const counterparty = pos.venue === "Uniswap" ? "Uniswap V3" : pos.venue === "Aave" ? "Aave V3" : pos.venue;
+    for (let i = 0; i < n; i++) {
+      const daysAgo = 1 + ((h + i * 3) % 20);
+      const d = new Date();
+      d.setDate(d.getDate() - daysAgo);
+      d.setHours(8 + (h % 12), 0, 0, 0);
+      const sd = new Date(d);
+      sd.setDate(sd.getDate() + 2);
+      const priceJitter = 1 + (((h + i * 13) % 200) - 100) / 100000;
+      const price = Math.round(pos.entryPrice * priceJitter * 100) / 100;
+      const qty = quantities[i]!;
+      const side: "buy" | "sell" = pos.side === "long" ? "buy" : "sell";
+      const fees = Math.round(qty * price * 0.001 * 100) / 100;
+      const total = Math.round((qty * price + (side === "buy" ? fees : -fees)) * 100) / 100;
+      trades.push({
+        id: `trd-${pos.id}-${i + 1}`,
+        positionId: pos.id,
+        instrument: pos.instrument,
+        venue: pos.venue,
+        side,
+        quantity: qty,
+        price,
+        fees,
+        total,
+        tradeType: type,
+        status: daysAgo > 2 ? "settled" : "pending",
+        counterparty,
+        timestamp: d.toISOString(),
+        settlementDate: sd.toISOString(),
+        orgId: pos.orgId,
+        clientId: pos.clientId,
+        strategyId: pos.strategyId,
+      });
+    }
+  }
+  return trades;
+}
+
+export const SEED_TRADES: SeedTrade[] = buildSeedTradesForPositions(SEED_POSITIONS);
 
 // ── Alerts ───────────────────────────────────────────────────────────────────
 

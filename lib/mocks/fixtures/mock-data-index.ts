@@ -66,6 +66,11 @@ export function getTradesForScope(orgIds: string[], clientIds: string[], strateg
   return SEED_TRADES.filter((t) => resolved.includes(t.strategyId));
 }
 
+/** Trades linked to a position row (drill-down). */
+export function getTradesForPosition(positionId: string): SeedTrade[] {
+  return SEED_TRADES.filter((t) => t.positionId === positionId);
+}
+
 export function getAlertsForScope(orgIds: string[], clientIds: string[], strategyIds: string[]): SeedAlert[] {
   const resolved = resolveStrategyIds(orgIds, clientIds, strategyIds);
   if (!resolved) return SEED_ALERTS;

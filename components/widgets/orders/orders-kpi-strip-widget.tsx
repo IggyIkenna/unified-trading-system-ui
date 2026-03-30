@@ -1,7 +1,7 @@
 "use client";
 
 import type { WidgetComponentProps } from "../widget-registry";
-import { KpiStrip, type KpiMetric } from "@/components/shared";
+import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import { useOrdersData } from "./orders-data-context";
 
 export function OrdersKpiStripWidget(_props: WidgetComponentProps) {
@@ -16,11 +16,17 @@ export function OrdersKpiStripWidget(_props: WidgetComponentProps) {
       sentiment: summary.partial > 0 ? "negative" : "neutral",
     },
     { label: "Filled", value: isLoading ? "—" : summary.filled, sentiment: "positive" },
+    {
+      label: "Rejected",
+      value: isLoading ? "—" : summary.rejected,
+      sentiment: summary.rejected > 0 ? "negative" : "neutral",
+    },
+    {
+      label: "Failed",
+      value: isLoading ? "—" : summary.failed,
+      sentiment: summary.failed > 0 ? "negative" : "neutral",
+    },
   ];
 
-  return (
-    <div className="h-full flex items-center p-2">
-      <KpiStrip metrics={metrics} columns={4} className="w-full" />
-    </div>
-  );
+  return <KpiSummaryWidget metrics={metrics} storageKey="uts-orders-kpi-layout" />;
 }

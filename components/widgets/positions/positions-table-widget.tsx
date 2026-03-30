@@ -3,19 +3,23 @@
 import { FilterBar } from "@/components/shared/filter-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataFreshness } from "@/components/shared/data-freshness";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Spinner } from "@/components/shared/spinner";
 import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, Filter, RefreshCw } from "lucide-react";
+import type { AssetClassFilter } from "./positions-data-context";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, ExternalLink, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import { usePositionsData, type PositionRecord } from "./positions-data-context";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { formatPercent } from "@/lib/utils/formatters";
 
 const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "instrument", header: "Instrument" },
@@ -23,10 +27,27 @@ const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "quantity", header: "Quantity", format: "number" },
   { key: "entry_price", header: "Entry Price", format: "currency" },
   { key: "current_price", header: "Current Price", format: "currency" },
-  { key: "pnl", header: "P&L", format: "currency" },
+  { key: "today_pnl", header: "Today's P&L", format: "currency" },
+  { key: "net_pnl", header: "Net P&L", format: "currency" },
   { key: "venue", header: "Venue" },
   { key: "updated_at", header: "Updated" },
 ];
+
+function PnlCell({ abs, pct }: { abs: number; pct: number }) {
+  return (
+    <div className="flex flex-col items-end">
+      <span className={cn("font-mono font-medium", abs >= 0 ? "pnl-positive" : "pnl-negative")}>
+        {abs >= 0 ? "+" : ""}${formatCurrency(Math.abs(abs))}
+      </span>
+      <span
+        className={cn("text-[10px] font-mono", pct >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}
+      >
+        {pct >= 0 ? "+" : ""}
+        {formatPercent(pct, 2)}
+      </span>
+    </div>
+  );
+}
 
 export function PositionsTableWidget(_props: WidgetComponentProps) {
   const {
@@ -37,18 +58,22 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
     isLive,
     classifyInstrument,
     getInstrumentRoute,
-    isDeFiVenue,
     filterDefs,
     filterValues,
     handleFilterChange,
     resetFilters,
-    instrumentTypeFilter,
-    setInstrumentTypeFilter,
-    instrumentTypes,
+    instrumentTypeFilters,
+    toggleInstrumentTypeFilter,
+    assetClassOptions,
     strategyFilter,
   } = usePositionsData();
 
-  const [showFilters, setShowFilters] = React.useState(true);
+  const assetClassLabel =
+    instrumentTypeFilters.length === 0
+      ? "All asset classes"
+      : instrumentTypeFilters.length === 1
+        ? instrumentTypeFilters[0]
+        : `${instrumentTypeFilters.length} classes`;
 
   const columns: DataTableColumn<PositionRecord>[] = React.useMemo(
     () => [
@@ -117,60 +142,24 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
           `$${row.current_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       },
       {
-        key: "pnl",
-        label: "P&L",
+        key: "today_pnl",
+        label: "Today's P&L",
         sortable: true,
         align: "right" as const,
-        accessor: (row) => (
-          <div className="flex flex-col items-end">
-            <span className={cn("font-mono font-medium", row.pnl >= 0 ? "pnl-positive" : "pnl-negative")}>
-              {row.pnl >= 0 ? "+" : ""}${formatCurrency(Math.abs(row.pnl))}
-            </span>
-            <span
-              className={cn(
-                "text-[10px] font-mono",
-                row.pnl_pct >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
-              )}
-            >
-              {row.pnl_pct >= 0 ? "+" : ""}
-              {formatPercent(row.pnl_pct, 2)}
-            </span>
-          </div>
-        ),
+        accessor: (row) => <PnlCell abs={row.today_pnl} pct={row.today_pnl_pct} />,
+      },
+      {
+        key: "net_pnl",
+        label: "Net P&L",
+        sortable: true,
+        align: "right" as const,
+        accessor: (row) => <PnlCell abs={row.net_pnl} pct={row.net_pnl_pct} />,
       },
       {
         key: "venue",
         label: "Venue",
         sortable: true,
         accessor: "venue" as keyof PositionRecord,
-      },
-      {
-        key: "health_factor",
-        label: "Health",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) => {
-          if (!isDeFiVenue(row.venue) || row.health_factor == null) {
-            return <span className="text-muted-foreground">—</span>;
-          }
-          return (
-            <div className="flex flex-col items-end">
-              <span
-                className={cn(
-                  "font-mono font-medium",
-                  row.health_factor >= 2.0 && "text-emerald-500",
-                  row.health_factor >= 1.5 && row.health_factor < 2.0 && "text-amber-500",
-                  row.health_factor < 1.5 && "text-rose-500",
-                )}
-              >
-                {formatNumber(row.health_factor, 2)}
-              </span>
-              <span className="text-[9px] text-muted-foreground">
-                {formatPercent(((row.health_factor - 1.0) / row.health_factor) * 100, 0)} to liq
-              </span>
-            </div>
-          );
-        },
       },
       {
         key: "updated_at",
@@ -180,8 +169,24 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         accessor: "updated_at" as keyof PositionRecord,
         className: "text-muted-foreground",
       },
+      {
+        key: "trades",
+        label: "Trades",
+        sortable: false,
+        align: "right" as const,
+        accessor: (row) => (
+          <Link
+            href={`/services/trading/positions/trades?position_id=${encodeURIComponent(row.id)}`}
+            className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium"
+          >
+            View trades
+            <ExternalLink className="size-3 shrink-0" />
+          </Link>
+        ),
+        minWidth: 110,
+      },
     ],
-    [classifyInstrument, getInstrumentRoute, isDeFiVenue],
+    [classifyInstrument, getInstrumentRoute],
   );
 
   if (isLoading) {
@@ -208,14 +213,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
-        <button
-          onClick={() => setShowFilters((f) => !f)}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-        >
-          <Filter className="size-3" />
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </button>
+      <div className="flex items-center justify-end px-3 py-1.5 border-b border-border/40">
         <div className="flex items-center gap-1.5">
           <DataFreshness lastUpdated={new Date()} isWebSocket={isLive} isBatch={!isLive} />
           <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => refetchPositions()}>
@@ -229,37 +227,52 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
           />
         </div>
       </div>
-      {showFilters && (
-        <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
-          <FilterBar
-            filters={filterDefs}
-            values={filterValues}
-            onChange={handleFilterChange}
-            onReset={resetFilters}
-            className="border-b-0 px-0 py-0"
-          />
-          <div className="flex items-center gap-1 mt-1.5 flex-wrap">
-            {instrumentTypes.map((type) => (
-              <Button
-                key={type}
-                variant={instrumentTypeFilter === type ? "default" : "outline"}
-                size="sm"
-                className="h-7 px-3 text-xs"
-                onClick={() => setInstrumentTypeFilter(type)}
-              >
-                {type}
+      <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
+        <FilterBar
+          filters={filterDefs}
+          values={filterValues}
+          onChange={handleFilterChange}
+          onReset={resetFilters}
+          className="border-b-0 px-0 py-0"
+        />
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 gap-1 text-xs">
+                {assetClassLabel}
+                <ChevronDown className="size-3.5 opacity-60" />
               </Button>
-            ))}
-            {strategyFilter !== "all" && (
-              <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
-                <Button variant="outline" size="sm" className="h-7 text-xs">
-                  View Strategy Details
-                </Button>
-              </Link>
-            )}
-          </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-3" align="start">
+              <p className="text-[10px] text-muted-foreground mb-2">Asset class (multi-select)</p>
+              <div className="space-y-2">
+                {assetClassOptions.map((opt: AssetClassFilter) => (
+                  <div key={opt} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`asset-${opt}`}
+                      checked={instrumentTypeFilters.includes(opt)}
+                      onCheckedChange={() => toggleInstrumentTypeFilter(opt)}
+                    />
+                    <Label htmlFor={`asset-${opt}`} className="text-xs font-normal cursor-pointer">
+                      {opt}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/40">
+                Empty selection = all classes
+              </p>
+            </PopoverContent>
+          </Popover>
+          {strategyFilter !== "all" && (
+            <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
+              <Button variant="outline" size="sm" className="h-8 text-xs">
+                View Strategy Details
+              </Button>
+            </Link>
+          )}
         </div>
-      )}
+      </div>
       <DataTableWidget<PositionRecord>
         columns={columns}
         data={filteredPositions}

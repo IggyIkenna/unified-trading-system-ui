@@ -362,8 +362,16 @@
           "route": "/services/trading/positions",
           "file": "app/(platform)/services/trading/positions/page.tsx",
           "state": "REAL",
-          "lines": 642,
-          "api_hooks": ["usePositions", "useBalances", "useWebSocket"]
+          "lines": 23,
+          "api_hooks": ["usePositions", "useWebSocket"]
+        },
+        {
+          "label": "Position trades",
+          "route": "/services/trading/positions/trades",
+          "file": "app/(platform)/services/trading/positions/trades/page.tsx",
+          "state": "REAL",
+          "lines": 157,
+          "api_hooks": []
         },
         {
           "label": "Orders",

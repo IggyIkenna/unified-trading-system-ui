@@ -1,23 +1,24 @@
 "use client";
 
-import { FilterBar, type FilterDefinition } from "@/components/shared/filter-bar";
+import { FilterBar } from "@/components/shared/filter-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/shared/data-table";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
 import type { ColumnDef } from "@tanstack/react-table";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, Filter, Pencil, RefreshCw, XCircle } from "lucide-react";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, Pencil, RefreshCw, XCircle } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
-import { classifyInstrument, useOrdersData, type InstrumentType, type OrderRecord } from "./orders-data-context";
+import { classifyInstrument, useOrdersData, type AssetClassFilter, type OrderRecord } from "./orders-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-
-const INSTRUMENT_TYPES: InstrumentType[] = ["All", "Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
 
 const STATUS_COLORS: Record<string, string> = {
   FILLED: "border-[var(--status-live)] text-[var(--status-live)]",
@@ -290,70 +291,22 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
     refetch,
     cancelOrder,
     openAmendDialog,
-    searchQuery,
-    setSearchQuery,
-    venueFilter,
-    setVenueFilter,
-    statusFilter,
-    setStatusFilter,
-    instrumentTypeFilter,
-    setInstrumentTypeFilter,
+    filterDefs,
+    filterValues,
+    handleFilterChange,
     resetFilters,
-    uniqueVenues,
-    uniqueStatuses,
+    instrumentTypeFilters,
+    toggleInstrumentTypeFilter,
+    assetClassOptions,
+    strategyFilter,
   } = useOrdersData();
 
-  const [showFilters, setShowFilters] = React.useState(true);
-
-  const filterDefs: FilterDefinition[] = React.useMemo(
-    () => [
-      {
-        key: "search",
-        label: "Search",
-        type: "search" as const,
-        placeholder: "Search by order ID, instrument, venue...",
-      },
-      {
-        key: "venue",
-        label: "Venue",
-        type: "select" as const,
-        options: uniqueVenues.map((v) => ({ value: v, label: v })),
-      },
-      {
-        key: "status",
-        label: "Status",
-        type: "select" as const,
-        options: uniqueStatuses.map((s) => ({ value: s, label: s })),
-      },
-    ],
-    [uniqueVenues, uniqueStatuses],
-  );
-
-  const filterValues = React.useMemo(
-    () => ({
-      search: searchQuery || undefined,
-      venue: venueFilter !== "all" ? venueFilter : undefined,
-      status: statusFilter !== "all" ? statusFilter : undefined,
-    }),
-    [searchQuery, venueFilter, statusFilter],
-  );
-
-  const handleFilterChange = React.useCallback(
-    (key: string, value: unknown) => {
-      switch (key) {
-        case "search":
-          setSearchQuery((value as string) || "");
-          break;
-        case "venue":
-          setVenueFilter((value as string) || "all");
-          break;
-        case "status":
-          setStatusFilter((value as string) || "all");
-          break;
-      }
-    },
-    [setSearchQuery, setVenueFilter, setStatusFilter],
-  );
+  const assetClassLabel =
+    instrumentTypeFilters.length === 0
+      ? "All asset classes"
+      : instrumentTypeFilters.length === 1
+        ? instrumentTypeFilters[0]
+        : `${instrumentTypeFilters.length} classes`;
 
   const columns = React.useMemo(() => buildColumns(cancelOrder, openAmendDialog), [cancelOrder, openAmendDialog]);
 
@@ -380,15 +333,8 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
-        <button
-          onClick={() => setShowFilters((f) => !f)}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-        >
-          <Filter className="size-3" />
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </button>
+    <div className="h-full flex flex-col overflow-hidden min-h-0">
+      <div className="flex items-center justify-end px-3 py-1.5 border-b border-border/40">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => refetch()}>
             <RefreshCw className="size-3" />
@@ -401,32 +347,54 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
           />
         </div>
       </div>
-      {showFilters && (
-        <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
-          <FilterBar
-            filters={filterDefs}
-            values={filterValues}
-            onChange={handleFilterChange}
-            onReset={resetFilters}
-            className="border-b-0"
-          />
-          <div className="flex items-center gap-1 flex-wrap mt-1.5">
-            {INSTRUMENT_TYPES.map((type) => (
-              <Button
-                key={type}
-                variant={instrumentTypeFilter === type ? "default" : "outline"}
-                size="sm"
-                className="h-7 px-3 text-xs"
-                onClick={() => setInstrumentTypeFilter(type)}
-              >
-                {type}
+      <div className="px-3 py-2 border-b border-border/30 bg-muted/20 shrink-0">
+        <FilterBar
+          filters={filterDefs}
+          values={filterValues}
+          onChange={handleFilterChange}
+          onReset={resetFilters}
+          className="border-b-0 px-0 py-0"
+        />
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 gap-1 text-xs">
+                {assetClassLabel}
+                <ChevronDown className="size-3.5 opacity-60" />
               </Button>
-            ))}
-          </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-3" align="start">
+              <p className="text-[10px] text-muted-foreground mb-2">Asset class (multi-select)</p>
+              <div className="space-y-2">
+                {assetClassOptions.map((opt: AssetClassFilter) => (
+                  <div key={opt} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`orders-asset-${opt}`}
+                      checked={instrumentTypeFilters.includes(opt)}
+                      onCheckedChange={() => toggleInstrumentTypeFilter(opt)}
+                    />
+                    <Label htmlFor={`orders-asset-${opt}`} className="text-xs font-normal cursor-pointer">
+                      {opt}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/40">
+                Empty selection = all classes
+              </p>
+            </PopoverContent>
+          </Popover>
+          {strategyFilter !== "all" && (
+            <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
+              <Button variant="outline" size="sm" className="h-8 text-xs">
+                View Strategy Details
+              </Button>
+            </Link>
+          )}
         </div>
-      )}
-      <div className="flex-1 overflow-auto">
-        <Card className="border-0 rounded-none">
+      </div>
+      <div className="flex-1 overflow-auto min-h-0">
+        <Card className="border-0 rounded-none h-full">
           <CardContent className="p-0">
             <DataTable
               columns={columns}

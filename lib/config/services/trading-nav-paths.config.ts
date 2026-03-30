@@ -27,6 +27,7 @@ const TRADING_NAV_PATH_LABELS: { path: string; label: string }[] = [
   { path: "/services/trading/alerts", label: "Alerts" },
   { path: "/services/trading/overview", label: "Overview" },
   { path: "/services/trading/terminal", label: "Terminal" },
+  { path: "/services/trading/positions/trades", label: "Trades" },
   { path: "/services/trading/positions", label: "Positions" },
   { path: "/services/trading/orders", label: "Orders" },
   { path: "/services/trading/book", label: "Book" },

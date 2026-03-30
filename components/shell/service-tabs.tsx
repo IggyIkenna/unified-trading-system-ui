@@ -30,6 +30,7 @@ import {
   LineChart,
   Lock,
   MonitorDot,
+  ScrollText,
   ShieldAlert,
   TrendingUp,
   Trophy,
@@ -300,6 +301,7 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
   { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
   { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
+  { label: "Instructions", href: "/services/trading/instructions", icon: ScrollText },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
     label: "DeFi",

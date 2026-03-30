@@ -16,7 +16,8 @@ export { FilterBarWidget } from "./filter-bar-widget";
 export * from "./finder";
 export { GateCheckRow, type GateCheckRowProps } from "./gate-check-row";
 export { StatusIcon, statusBg, statusColor, type GateStatus } from "./gate-status";
-export { KpiStrip, type KpiMetric } from "./kpi-strip";
+export { KpiStrip, type KpiMetric, type KpiLayoutMode } from "./kpi-strip";
+export { KpiSummaryWidget, KPI_SUMMARY_LAYOUT_OPTIONS, type KpiSummaryWidgetProps } from "./kpi-summary-widget";
 export {
   MetricCard,
   type MetricCardProps,

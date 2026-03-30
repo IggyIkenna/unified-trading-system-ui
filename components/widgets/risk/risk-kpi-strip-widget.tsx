@@ -1,7 +1,7 @@
 "use client";
 
 import type { WidgetComponentProps } from "../widget-registry";
-import { KpiStrip, type KpiMetric } from "@/components/shared";
+import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import { useRiskData, formatCurrency } from "./risk-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
 
@@ -18,7 +18,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
     varSummary,
   } = useRiskData();
 
-  const metrics: KpiMetric[] = [
+  const baseMetrics: KpiMetric[] = [
     { label: "Firm P&L", value: "+$1.04M", sentiment: "positive" },
     { label: "Net Exposure", value: "$5.2M", sentiment: "neutral" },
     { label: "Margin Used", value: "47%", sentiment: "neutral" },
@@ -50,13 +50,15 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
     { label: "Kill Switches", value: String(killedStrategies.size + 1), sentiment: "negative" },
   ];
 
-  if (varSummary) {
-    metrics.push(
-      { label: "Hist VaR 99%", value: formatCurrency(-varSummary.historical_var_99), sentiment: "negative" },
-      { label: "Param VaR 99%", value: formatCurrency(-varSummary.parametric_var_99), sentiment: "negative" },
-      { label: "CVaR 99%", value: formatCurrency(-varSummary.cvar_99), sentiment: "negative" },
-    );
-  }
+  const extendedMetrics: KpiMetric[] = varSummary
+    ? [
+        { label: "Hist VaR 99%", value: formatCurrency(-varSummary.historical_var_99), sentiment: "negative" },
+        { label: "Param VaR 99%", value: formatCurrency(-varSummary.parametric_var_99), sentiment: "negative" },
+        { label: "CVaR 99%", value: formatCurrency(-varSummary.cvar_99), sentiment: "negative" },
+      ]
+    : [];
 
-  return <KpiStrip metrics={metrics.slice(0, 9)} columns={3} className="h-full" />;
+  const metrics = [...baseMetrics, ...extendedMetrics].slice(0, 9);
+
+  return <KpiSummaryWidget metrics={metrics} storageKey="uts-risk-kpi-strip-layout" className="h-full" />;
 }

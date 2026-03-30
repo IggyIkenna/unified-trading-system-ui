@@ -1,6 +1,6 @@
 "use client";
 
-import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
+import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useAlertsData } from "./alerts-data-context";
 
@@ -34,5 +34,5 @@ export function AlertsKpiStripWidget(_props: WidgetComponentProps) {
     },
   ];
 
-  return <KpiStrip metrics={metrics} columns={4} />;
+  return <KpiSummaryWidget metrics={metrics} storageKey="uts-alerts-kpi-layout" />;
 }
