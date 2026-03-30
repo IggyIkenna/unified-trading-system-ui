@@ -39,8 +39,6 @@ import * as React from "react";
 
 import { ApiError } from "@/components/shared/api-error";
 
-import "@/components/widgets/overview/register";
-
 function seedToStrategyPerformanceRow(s: SeedStrategy): StrategyPerformanceRow {
   return {
     id: s.id,

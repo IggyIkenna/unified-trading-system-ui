@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/widgets/register-all";
 import { TRADING_TABS } from "@/components/shell/service-tabs";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";

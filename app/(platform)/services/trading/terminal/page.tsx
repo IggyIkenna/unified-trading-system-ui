@@ -28,8 +28,6 @@ import {
   type TerminalInstrument,
 } from "@/components/widgets/terminal/terminal-data-context";
 
-import "@/components/widgets/terminal/register";
-
 const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
   { symbol: "BTC/USDT", name: "Bitcoin", venue: "Binance", category: "CeFi", midPrice: 87234.56, change: 1.23 },
   { symbol: "ETH/USDT", name: "Ethereum", venue: "Binance", category: "CeFi", midPrice: 2045.78, change: -0.45 },

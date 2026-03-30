@@ -58,34 +58,37 @@
   - Form fields (checkboxes, switches, dropdowns, date ranges, inputs — consistent primitives)
 - **Source:** UI-UX-Enhancements.md § sharded components list
 
-### 2.3 Workspace selection across all pages
+### 2.3 Widget catalogue — show ALL widgets on every page, grouped with details
 
-- [ ] doc
-- [ ] done
-- **What:** Currently workspace selection (WorkspaceToolbar) only appears on trading widget tabs. Should be available on all service pages that use WidgetGrid.
+- [x] doc
+- [x] done (2026-03-30)
+- **What:** The widget catalogue drawer (`widget-catalog-drawer.tsx`) currently only shows widgets whose `register.ts` has been side-effect imported by the current route page. All 104 widgets should be visible from every page.
+- **Implemented:** `components/widgets/register-all.ts` barrel imported once in `trading/layout.tsx`; catalogue rewritten using `FinderBrowser` (2-column category+widget + detail panel + "Add to Workspace" button). `widget-catalog-finder-config.tsx` holds column defs + context stats.
+- **Source:** UI-UX-Enhancements.md § Widgets Enhancements, user direction 2026-03-30
+
+### 2.4 Workspace export/import — workspace-level (all pages), not per-tab
+
+- [x] doc
+- [x] done (2026-03-30)
+- **What:** Workspace export/import currently covers only the active workspace on the current tab. It should operate at the **workspace level** — exporting/importing all pages' widget layouts in a single JSON file.
+- **Implemented:** `WorkspaceProfile` type (version 2 JSON) bundles all tabs + custom panels. `exportProfile` / `importProfile` / `saveCurrentAsProfile` / `duplicateProfile` / `deleteProfile` added to workspace-store. Profile selector and profile-level export/import moved into `WorkspaceToolbar`. Import auto-renames duplicates; names are unique (case-insensitive).
+- **Source:** UI-UX-Enhancements.md § Widgets Enhancements, user direction 2026-03-30
+
+### 2.5 Add widget button + workspace toolbar on all pages
+
+- [x] doc
+- [x] done (2026-03-30)
+- **What:** `WorkspaceToolbar` (Add Widget, workspace select, export/import, edit mode) currently only renders on trading widget tabs. Should be available on all service pages that use `WidgetGrid`.
+- **Implemented:** `WorkspaceToolbar` renders for all trading widget tabs via `useWidgetTab()` in `trading/layout.tsx`, including all 17 standard tabs and dynamically routed custom panels (`custom-<id>`). Profile selector, Add Widget, edit mode, undo, camera screenshot, layout snapshot history, and overflow menu are all present.
 - **Source:** UI-UX-Enhancements.md § Widgets Enhancements
 
-### 2.4 Workspace export — cover all pages
+### 2.6 Cross-tab widget adding (enabled by §2.3 catalogue fix)
 
-- [ ] doc
-- [ ] done
-- **What:** Workspace export currently only covers the current page's widgets. Should export the user's full workspace across all pages they have access to.
+- [x] doc
+- [x] done (2026-03-30)
+- **What:** Once all widgets are visible from all pages (§2.3), users can add any widget to any tab. Widgets that need a domain-specific data provider should either auto-wrap with the provider or show a "native tab" hint. Ultimate goal: user creates their own workspace from scratch (with backend limits).
+- **Implemented:** All 104 widgets are visible from every page via `register-all.ts`. The catalogue's "Add to Workspace" button calls `addWidget(tab, widgetId)` for the current tab. Singleton widgets show disabled state if already placed. Native-tab hints shown via `availableOn` badges in the detail panel.
 - **Source:** UI-UX-Enhancements.md § Widgets Enhancements
-
-### 2.5 Add widget button placement
-
-- [ ] doc
-- [ ] done
-- **What:** Better placement of "Add Widget" buttons and workspace selection controls. Current placement is inconsistent.
-- **Source:** UI-UX-Enhancements.md § Widgets Enhancements
-
-### 2.6 Cross-tab widget adding
-
-- [ ] doc
-- [ ] done
-- **What:** Once widgets are properly merged, allow adding widgets from other tabs into the current workspace. Ultimate goal: user creates their own workspace from scratch (with backend limits). This removes the need for the service tab navbar entirely.
-- **Source:** UI-UX-Enhancements.md § Widgets Enhancements
-- **Note:** Big feature — depends on widget merging (§4) being complete first.
 
 ### 2.7 Top navbar layout — breadcrumbs and filters
 
@@ -147,7 +150,15 @@
 
 ---
 
-## 4. Widget Merging — Trading Panel
+## 4. Widget Merging & Workspace Architecture
+
+**Scope (updated 2026-03-30):** §4 covers three pillars:
+
+1. **Widget merging** (§4.1–4.10): Consolidate small widgets into larger integrated panels where it makes sense. Not aggressive — review what remains once all widgets are visible via §2.3. Most merging is already scoped below.
+2. **Default workspace** (§4.11): ✅ Done — `buildDefaultProfile()` in `components/widgets/default-profile.ts` creates a Default profile from all 17 tab presets.
+3. **Workspace-level selection** (§4.12): ✅ Done — Profile selector in toolbar applies to all tabs + custom panels at once. `setActiveProfile` restores tab layouts and custom panel list together. Custom panels are saved per profile; switching profiles swaps the nav panel list.
+
+**Future work (not now):** Once the above is working, create additional themed workspace presets (Compact, Extensive, Trader, etc.) similar to what platforms like Binance/Deribit provide — pre-configured layouts per use case so users don't have to customize from scratch.
 
 ### 4.1 Positions: KPI + table → single widget
 
@@ -228,6 +239,24 @@
 - **Current:** `markets-controls` + flow/book/latency/recon (9 widgets)
 - **Target:** Controls + main surface merged; recon/latency can stay as satellites.
 - **Files:** `components/widgets/markets/register.ts`
+
+### 4.11 Default workspace — cross-tab preset with all pages
+
+- [ ] doc
+- [ ] done
+- **What:** Create a single "Default" workspace profile that provides sensible widget layouts for ALL tabs (overview, terminal, positions, orders, alerts, strategies, pnl, risk, markets, sports, predictions, instructions, book, accounts, bundles, defi, options). Each tab gets its widgets placed according to domain group and type. Currently presets are registered per-tab in each `register.ts` — there is no concept of a cross-tab workspace profile.
+- **Implementation:** Introduce a `WorkspaceProfile` type in `workspace-store.ts` that bundles `Record<string, Workspace>` (one workspace per tab) + metadata (name, description, isPreset). Register the "Default" profile at startup. Custom pages a user creates are included in the profile.
+- **Source:** User direction 2026-03-30
+
+### 4.12 Workspace selection — apply to ALL pages, not just current tab
+
+- [ ] doc
+- [ ] done
+- **What:** When a user selects a workspace (profile), it should apply across all pages simultaneously — not just the current tab. Currently `setActiveWorkspace(tab, id)` only updates `activeWorkspaceId[tab]`, so switching workspace on the positions page doesn't affect the orders page.
+- **Current behavior:** `activeWorkspaceId` is `Record<string, string>` — independent per tab. Each tab has its own list of workspaces.
+- **Target behavior:** A workspace profile (§4.11) bundles all tabs. Selecting "Default" vs "My Custom Layout" switches all tabs at once. The workspace selector dropdown shows profiles, not per-tab workspaces.
+- **Export/import alignment:** Ties into §2.4 — exporting a workspace profile exports all tabs; importing replaces/adds a full profile.
+- **Source:** User direction 2026-03-30
 
 ---
 
@@ -335,8 +364,9 @@
 
 - [ ] doc
 - [ ] done
-- **What:** "Try to make saving workspace possible as well" — the widget layout workspace saving exists, but a full "named workspace" that saves filters + layout + active tab across all pages is not yet implemented.
+- **What:** A full "named workspace" that saves filters + layout + active tab across all pages is not yet implemented. The layout side is being addressed by §4.11 (workspace profiles) and §4.12 (profile-level selection). This task adds saving global scope filter state (Org/Client/Strategy) as part of the workspace profile, so restoring a profile also restores the user's filter context.
 - **Source:** Ikenna 2026-03-28
+- **Depends on:** §4.11, §4.12
 
 ---
 
@@ -561,7 +591,7 @@
 | 1. Nav & Shell Bugs                | 3           | 3            | 3           |
 | 2. UI-UX Enhancements              | 7           | 0            | 0           |
 | 3. Component Centralization        | 6           | 1            | 0           |
-| 4. Widget Merging                  | 10          | 0            | 0           |
+| 4. Widget Merging & Workspace      | 12          | 0            | 0           |
 | 5. Mock Data Centralization        | 6           | 6            | 6           |
 | 6. Mock Data Alignment             | 5           | 1            | 0           |
 | 7. Cross-Page Filter Cohesion      | 2           | 0            | 0           |
@@ -571,7 +601,7 @@
 | 11. Code Org (file splits)         | 6 groups    | 1            | 1           |
 | 12. Error Handling                 | 5           | 5            | 5           |
 | 13. Shared Component Consolidation | 9           | 9            | 9           |
-| **TOTAL**                          | **73**      | **22**       | **24**      |
+| **TOTAL**                          | **75**      | **22**       | **24**      |
 
 > **Phased out (later):** §8 (all), §9.1, §10.10, §2.6 (cross-tab widgets — depends on §4)
 >

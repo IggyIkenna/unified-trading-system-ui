@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import type { WidgetPlacement } from "@/components/widgets/widget-registry";
 import { getWidget } from "@/components/widgets/widget-registry";
 import { getPresetsForTab } from "@/components/widgets/preset-registry";
+import { buildDefaultProfile } from "@/components/widgets/default-profile";
 
 export interface Workspace {
   id: string;
@@ -29,6 +30,19 @@ export interface WorkspaceSnapshot {
 
 export type SyncStatus = "local" | "syncing" | "synced" | "error";
 
+/** A workspace profile bundles one workspace per tab — selecting a profile applies to all pages. */
+export interface WorkspaceProfile {
+  id: string;
+  name: string;
+  isPreset: boolean;
+  /** One workspace per tab — keys are tab strings (e.g. "positions", "overview", "custom-<panelId>") */
+  tabs: Record<string, Workspace>;
+  /** Custom panels belonging to this profile (nav + `custom-${id}` workspaces in `tabs`). Omitted in legacy persisted profiles. */
+  customPanels?: CustomPanel[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 const MAX_UNDO_STACK = 30;
 const MAX_SNAPSHOTS_PER_WORKSPACE = 20;
 
@@ -40,13 +54,15 @@ interface WorkspaceState {
   snapshots: Record<string, WorkspaceSnapshot[]>;
   undoStack: Record<string, Workspace[]>;
   syncStatus: SyncStatus;
+  profiles: WorkspaceProfile[];
+  activeProfileId: string;
 }
 
 interface WorkspaceActions extends WorkspaceState {
   ensureTab: (tab: string) => void;
   setActiveWorkspace: (tab: string, id: string) => void;
   saveWorkspace: (tab: string, workspace: Workspace) => void;
-  duplicateWorkspace: (tab: string, id: string, newName: string) => void;
+  duplicateWorkspace: (tab: string, id: string, newName: string) => boolean;
   deleteWorkspace: (tab: string, id: string) => void;
   updateLayout: (tab: string, layouts: WidgetPlacement[]) => void;
   addWidget: (tab: string, widgetId: string) => WidgetPlacement | null;
@@ -66,6 +82,13 @@ interface WorkspaceActions extends WorkspaceState {
   undo: (tab: string) => boolean;
   pushUndo: (tab: string) => void;
   setSyncStatus: (status: SyncStatus) => void;
+  setActiveProfile: (profileId: string) => void;
+  exportProfile: (profileId: string) => string;
+  importProfile: (json: string) => boolean;
+  saveCurrentAsProfile: (name: string) => string | null;
+  deleteProfile: (profileId: string) => void;
+  duplicateProfile: (profileId: string, newName: string) => string | null;
+  ensureProfiles: () => void;
   reset: () => void;
 }
 
@@ -73,6 +96,22 @@ const STORAGE_KEY = "unified-workspace-layouts";
 
 function normalizedCustomPanelName(name: string): string {
   return name.trim().toLowerCase();
+}
+
+/** Case-insensitive unique label for profiles, per-tab workspaces, and layout snapshots. */
+function normalizedWorkspaceLabel(name: string): string {
+  return normalizedCustomPanelName(name);
+}
+
+function uniqueImportedProfileName(state: WorkspaceState, desired: string): string {
+  const base = desired.trim() || "Imported";
+  let candidate = base;
+  let i = 0;
+  while (state.profiles.some((p) => normalizedWorkspaceLabel(p.name) === normalizedWorkspaceLabel(candidate))) {
+    i += 1;
+    candidate = `${base} (${i})`;
+  }
+  return candidate;
 }
 
 function buildInitialState(): WorkspaceState {
@@ -84,6 +123,8 @@ function buildInitialState(): WorkspaceState {
     snapshots: {},
     undoStack: {},
     syncStatus: "local",
+    profiles: [],
+    activeProfileId: "",
   };
 }
 
@@ -108,6 +149,79 @@ function findOpenPosition(
     }
   }
   return { x: 0, y: maxY };
+}
+
+function snapshotCurrentProfile(state: WorkspaceState): WorkspaceProfile {
+  const tabs: Record<string, Workspace> = {};
+  for (const [tab, wsList] of Object.entries(state.workspaces)) {
+    const activeId = state.activeWorkspaceId[tab];
+    const ws = wsList.find((w) => w.id === activeId) ?? wsList[0];
+    if (ws) tabs[tab] = JSON.parse(JSON.stringify(ws));
+  }
+  const customPanels = JSON.parse(JSON.stringify(state.customPanels)) as CustomPanel[];
+  for (const p of customPanels) {
+    const tab = `custom-${p.id}`;
+    if (tabs[tab]) continue;
+    const wsList = state.workspaces[tab];
+    const activeId = state.activeWorkspaceId[tab];
+    const ws = wsList?.find((w) => w.id === activeId) ?? wsList?.[0];
+    if (ws) tabs[tab] = JSON.parse(JSON.stringify(ws));
+  }
+  const now = new Date().toISOString();
+  return {
+    id: `profile-current-${Date.now()}`,
+    name: "My Workspace",
+    isPreset: false,
+    tabs,
+    customPanels,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+function profileCustomPanels(profile: WorkspaceProfile): CustomPanel[] {
+  const customTabKeys = Object.keys(profile.tabs).filter((t) => t.startsWith("custom-"));
+  const hasCustomTabs = customTabKeys.length > 0;
+  const stored = profile.customPanels;
+  if (Array.isArray(stored) && stored.length > 0) {
+    return JSON.parse(JSON.stringify(stored)) as CustomPanel[];
+  }
+  if (Array.isArray(stored) && stored.length === 0 && !hasCustomTabs) {
+    return [];
+  }
+  if (!hasCustomTabs) {
+    return [];
+  }
+  const inferred: CustomPanel[] = [];
+  for (const tab of customTabKeys) {
+    const id = tab.slice("custom-".length);
+    if (!id || inferred.some((p) => p.id === id)) continue;
+    inferred.push({ id, name: `Panel ${inferred.length + 1}` });
+  }
+  return inferred;
+}
+
+/** Default empty workspace for a custom panel tab when a profile lists the panel but has no tab entry (e.g. legacy export). */
+function defaultCustomTabWorkspace(tab: string): Workspace {
+  const now = new Date().toISOString();
+  const wsId = `${tab}-default`;
+  return {
+    id: wsId,
+    name: "Default",
+    tab,
+    isPreset: false,
+    layouts: [],
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+/** Keep the active non-preset profile in sync when custom panels change (so switching profiles does not drop new panels). */
+function mapActiveUserProfile(s: WorkspaceState, map: (p: WorkspaceProfile) => WorkspaceProfile): WorkspaceProfile[] {
+  const activeId = s.activeProfileId;
+  const active = s.profiles.find((p) => p.id === activeId);
+  if (!active?.id || active.isPreset) return s.profiles;
+  return s.profiles.map((p) => (p.id === activeId ? map(p) : p));
 }
 
 export const useWorkspaceStore = create<WorkspaceActions>()(
@@ -147,24 +261,31 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
           return { workspaces: { ...s.workspaces, [tab]: updated } };
         }),
 
-      duplicateWorkspace: (tab, id, newName) =>
-        set((s) => {
-          const source = s.workspaces[tab]?.find((w) => w.id === id);
-          if (!source) return s;
-          const newId = `${tab}-${Date.now()}`;
-          const clone: Workspace = {
-            ...source,
-            id: newId,
-            name: newName,
-            isPreset: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          return {
-            workspaces: { ...s.workspaces, [tab]: [...(s.workspaces[tab] ?? []), clone] },
-            activeWorkspaceId: { ...s.activeWorkspaceId, [tab]: newId },
-          };
-        }),
+      duplicateWorkspace: (tab, id, newName) => {
+        const trimmed = newName.trim();
+        if (!trimmed) return false;
+        const state = get();
+        const key = normalizedWorkspaceLabel(trimmed);
+        if (state.workspaces[tab]?.some((w) => normalizedWorkspaceLabel(w.name) === key)) {
+          return false;
+        }
+        const source = state.workspaces[tab]?.find((w) => w.id === id);
+        if (!source) return false;
+        const newId = `${tab}-${Date.now()}`;
+        const clone: Workspace = {
+          ...source,
+          id: newId,
+          name: trimmed,
+          isPreset: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        set((s) => ({
+          workspaces: { ...s.workspaces, [tab]: [...(s.workspaces[tab] ?? []), clone] },
+          activeWorkspaceId: { ...s.activeWorkspaceId, [tab]: newId },
+        }));
+        return true;
+      },
 
       deleteWorkspace: (tab, id) =>
         set((s) => {
@@ -328,23 +449,47 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
           createdAt: now,
           updatedAt: now,
         };
-        set((s) => ({
-          customPanels: [...s.customPanels, { id, name: trimmed }],
-          workspaces: { ...s.workspaces, [tab]: [defaultWorkspace] },
-          activeWorkspaceId: { ...s.activeWorkspaceId, [tab]: wsId },
-        }));
+        const wsSnapshot = JSON.parse(JSON.stringify(defaultWorkspace)) as Workspace;
+        set((s) => {
+          const nextPanels = [...s.customPanels, { id, name: trimmed }];
+          return {
+            customPanels: nextPanels,
+            workspaces: { ...s.workspaces, [tab]: [defaultWorkspace] },
+            activeWorkspaceId: { ...s.activeWorkspaceId, [tab]: wsId },
+            profiles: mapActiveUserProfile(s, (p) => ({
+              ...p,
+              customPanels: JSON.parse(JSON.stringify(nextPanels)) as CustomPanel[],
+              tabs: { ...p.tabs, [tab]: JSON.parse(JSON.stringify(wsSnapshot)) as Workspace },
+              updatedAt: new Date().toISOString(),
+            })),
+          };
+        });
         return id;
       },
 
       deleteCustomPanel: (id) =>
         set((s) => {
           const tab = `custom-${id}`;
+          const nextPanels = s.customPanels.filter((p) => p.id !== id);
           const { [tab]: _removed, ...remainingWorkspaces } = s.workspaces;
           const { [tab]: _removedActive, ...remainingActive } = s.activeWorkspaceId;
+          const { [tab]: _removedSnaps, ...remainingSnapshots } = s.snapshots;
+          const { [tab]: _removedUndo, ...remainingUndo } = s.undoStack;
           return {
-            customPanels: s.customPanels.filter((p) => p.id !== id),
+            customPanels: nextPanels,
             workspaces: remainingWorkspaces,
             activeWorkspaceId: remainingActive,
+            snapshots: remainingSnapshots,
+            undoStack: remainingUndo,
+            profiles: mapActiveUserProfile(s, (p) => {
+              const { [tab]: _t, ...restTabs } = p.tabs;
+              return {
+                ...p,
+                tabs: restTabs,
+                customPanels: JSON.parse(JSON.stringify(nextPanels)) as CustomPanel[],
+                updatedAt: new Date().toISOString(),
+              };
+            }),
           };
         }),
 
@@ -356,20 +501,34 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
         if (state.customPanels.some((p) => p.id !== id && normalizedCustomPanelName(p.name) === key)) {
           return;
         }
-        set((s) => ({
-          customPanels: s.customPanels.map((p) => (p.id === id ? { ...p, name: trimmed } : p)),
-        }));
+        set((s) => {
+          const nextPanels = s.customPanels.map((p) => (p.id === id ? { ...p, name: trimmed } : p));
+          return {
+            customPanels: nextPanels,
+            profiles: mapActiveUserProfile(s, (p) => ({
+              ...p,
+              customPanels: JSON.parse(JSON.stringify(nextPanels)) as CustomPanel[],
+              updatedAt: new Date().toISOString(),
+            })),
+          };
+        });
       },
 
       saveSnapshot: (tab, name) => {
+        const trimmed = name.trim();
+        if (!trimmed) return null;
         const state = get();
+        const key = normalizedWorkspaceLabel(trimmed);
+        if (state.snapshots[tab]?.some((s) => normalizedWorkspaceLabel(s.name) === key)) {
+          return null;
+        }
         const activeId = state.activeWorkspaceId[tab];
         const ws = state.workspaces[tab]?.find((w) => w.id === activeId);
         if (!ws) return null;
         const snapshotId = `snap-${Date.now()}`;
         const snapshot: WorkspaceSnapshot = {
           id: snapshotId,
-          name,
+          name: trimmed,
           workspace: JSON.parse(JSON.stringify(ws)),
           createdAt: new Date().toISOString(),
         };
@@ -444,6 +603,179 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
 
       setSyncStatus: (status) => set({ syncStatus: status }),
 
+      setActiveProfile: (profileId) => {
+        const state = get();
+        const profile = state.profiles.find((p) => p.id === profileId);
+        if (!profile) return;
+
+        const customPanels = profileCustomPanels(profile);
+        const allowedCustomTabs = new Set(customPanels.map((p) => `custom-${p.id}`));
+
+        const newWorkspaces = { ...state.workspaces };
+        const newActiveWorkspaceId = { ...state.activeWorkspaceId };
+        const newSnapshots = { ...state.snapshots };
+
+        for (const key of Object.keys(newWorkspaces)) {
+          if (!key.startsWith("custom-")) continue;
+          if (!allowedCustomTabs.has(key)) {
+            delete newWorkspaces[key];
+            delete newActiveWorkspaceId[key];
+            delete newSnapshots[key];
+          }
+        }
+
+        const tabsToApply: Record<string, Workspace> = { ...profile.tabs };
+        for (const p of customPanels) {
+          const tab = `custom-${p.id}`;
+          if (!tabsToApply[tab]) {
+            tabsToApply[tab] = defaultCustomTabWorkspace(tab);
+          }
+        }
+
+        for (const [tab, ws] of Object.entries(tabsToApply)) {
+          const wsClone = JSON.parse(JSON.stringify(ws)) as Workspace;
+          const tabList = newWorkspaces[tab] ?? [];
+          const idx = tabList.findIndex((w) => w.id === wsClone.id);
+          newWorkspaces[tab] = idx >= 0 ? tabList.map((w, i) => (i === idx ? wsClone : w)) : [...tabList, wsClone];
+          newActiveWorkspaceId[tab] = wsClone.id;
+        }
+
+        set({
+          activeProfileId: profileId,
+          activeWorkspaceId: newActiveWorkspaceId,
+          workspaces: newWorkspaces,
+          customPanels,
+          snapshots: newSnapshots,
+        });
+      },
+
+      exportProfile: (profileId) => {
+        const state = get();
+        const profile = state.profiles.find((p) => p.id === profileId);
+        if (!profile) {
+          const current = snapshotCurrentProfile(state);
+          return JSON.stringify({ version: 2, profile: current }, null, 2);
+        }
+        return JSON.stringify({ version: 2, profile }, null, 2);
+      },
+
+      importProfile: (json) => {
+        try {
+          const parsed = JSON.parse(json);
+          if (parsed?.version === 2 && parsed?.profile?.tabs) {
+            const incoming = parsed.profile as WorkspaceProfile;
+            const now = new Date().toISOString();
+            const newId = `profile-imported-${Date.now()}`;
+            const stateBefore = get();
+            const uniqueName = uniqueImportedProfileName(stateBefore, incoming.name);
+            const profile: WorkspaceProfile = {
+              ...incoming,
+              id: newId,
+              name: uniqueName,
+              isPreset: false,
+              customPanels: incoming.customPanels ?? [],
+              createdAt: now,
+              updatedAt: now,
+            };
+            set((s) => ({
+              profiles: [...s.profiles, profile],
+            }));
+            get().setActiveProfile(newId);
+            return true;
+          }
+          if (parsed?.version === 1 && parsed?.workspace) {
+            const tab = parsed.workspace.tab as string;
+            return get().importWorkspace(tab || "overview", json);
+          }
+          return false;
+        } catch {
+          return false;
+        }
+      },
+
+      saveCurrentAsProfile: (name) => {
+        const trimmed = name.trim();
+        if (!trimmed) return null;
+        const state = get();
+        const key = normalizedWorkspaceLabel(trimmed);
+        if (state.profiles.some((p) => normalizedWorkspaceLabel(p.name) === key)) {
+          return null;
+        }
+        const profile = snapshotCurrentProfile(state);
+        const newId = `profile-${Date.now()}`;
+        const now = new Date().toISOString();
+        const saved: WorkspaceProfile = {
+          ...profile,
+          id: newId,
+          name: trimmed,
+          isPreset: false,
+          createdAt: now,
+          updatedAt: now,
+        };
+        set((s) => ({
+          profiles: [...s.profiles, saved],
+          activeProfileId: newId,
+        }));
+        return newId;
+      },
+
+      deleteProfile: (profileId) => {
+        const state = get();
+        const filtered = state.profiles.filter((p) => p.id !== profileId);
+        const wasActive = state.activeProfileId === profileId;
+        const newActiveId = wasActive ? (filtered[0]?.id ?? "") : state.activeProfileId;
+        set({ profiles: filtered, activeProfileId: newActiveId });
+        if (wasActive && newActiveId) {
+          get().setActiveProfile(newActiveId);
+        }
+        if (wasActive && !newActiveId) {
+          set({ customPanels: [], snapshots: {} });
+        }
+      },
+
+      duplicateProfile: (profileId, newName) => {
+        const trimmed = newName.trim();
+        if (!trimmed) return null;
+        const state = get();
+        const key = normalizedWorkspaceLabel(trimmed);
+        if (state.profiles.some((p) => normalizedWorkspaceLabel(p.name) === key)) {
+          return null;
+        }
+        const source = state.profiles.find((p) => p.id === profileId);
+        if (!source) return null;
+        const newId = `profile-${Date.now()}`;
+        const now = new Date().toISOString();
+        const clone: WorkspaceProfile = {
+          ...JSON.parse(JSON.stringify(source)),
+          id: newId,
+          name: trimmed,
+          isPreset: false,
+          createdAt: now,
+          updatedAt: now,
+        };
+        set((s) => ({
+          profiles: [...s.profiles, clone],
+          activeProfileId: newId,
+        }));
+        return newId;
+      },
+
+      ensureProfiles: () => {
+        const state = get();
+        if (state.profiles.length > 0) return;
+        const defaultProfile = buildDefaultProfile();
+        const current = snapshotCurrentProfile(state);
+        if (Object.keys(current.tabs).length > 0) {
+          current.name = "My Workspace";
+          set({
+            profiles: [defaultProfile, current],
+            activeProfileId: current.id,
+          });
+        } else {
+          set({ profiles: [defaultProfile], activeProfileId: defaultProfile.id });
+        }
+      },
+
       reset: () => set(buildInitialState()),
     }),
     {
@@ -454,6 +786,8 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
         editMode: s.editMode,
         customPanels: s.customPanels,
         snapshots: s.snapshots,
+        profiles: s.profiles,
+        activeProfileId: s.activeProfileId,
       }),
     },
   ),

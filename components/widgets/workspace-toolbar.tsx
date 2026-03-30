@@ -13,6 +13,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -28,17 +29,55 @@ import {
   Copy,
   Download,
   History,
+  Layers,
   Lock,
   MoreHorizontal,
   Plus,
   RotateCcw,
+  Save,
   Trash2,
   Undo2,
   Unlock,
   Upload,
 } from "lucide-react";
 import * as React from "react";
+import { toast } from "sonner";
 import { WidgetCatalogDrawer } from "./widget-catalog-drawer";
+
+const WORKSPACE_CAPTURE_ROOT_ID = "widget-fullscreen-boundary";
+
+async function savePngWithPicker(blob: Blob, suggestedName: string): Promise<"saved" | "cancelled"> {
+  type SavePickerWin = typeof globalThis & {
+    showSaveFilePicker?: (options: {
+      suggestedName?: string;
+      types?: Array<{ description: string; accept: Record<string, string[]> }>;
+    }) => Promise<{
+      createWritable: () => Promise<{ write: (data: Blob) => Promise<void>; close: () => Promise<void> }>;
+    }>;
+  };
+  const w = globalThis as SavePickerWin;
+  if (typeof w.showSaveFilePicker === "function") {
+    try {
+      const handle = await w.showSaveFilePicker({
+        suggestedName,
+        types: [{ description: "PNG image", accept: { "image/png": [".png"] } }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return "saved";
+    } catch (err) {
+      if ((err as { name?: string }).name === "AbortError") return "cancelled";
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = suggestedName;
+  a.click();
+  URL.revokeObjectURL(url);
+  return "saved";
+}
 
 interface WorkspaceToolbarProps {
   tab: string;
@@ -46,24 +85,32 @@ interface WorkspaceToolbarProps {
 
 const EMPTY_WORKSPACES: readonly never[] = [];
 const EMPTY_ARR: readonly never[] = [];
+const EMPTY_PROFILES: readonly never[] = [];
 
 export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   const ensureTab = useWorkspaceStore((s) => s.ensureTab);
-  React.useEffect(() => ensureTab(tab), [ensureTab, tab]);
+  const ensureProfiles = useWorkspaceStore((s) => s.ensureProfiles);
+  React.useEffect(() => {
+    ensureTab(tab);
+    ensureProfiles();
+  }, [ensureTab, ensureProfiles, tab]);
+
+  const profiles = useWorkspaceStore((s) => s.profiles ?? EMPTY_PROFILES);
+  const activeProfileId = useWorkspaceStore((s) => s.activeProfileId);
+  const setActiveProfile = useWorkspaceStore((s) => s.setActiveProfile);
+  const exportProfile = useWorkspaceStore((s) => s.exportProfile);
+  const importProfile = useWorkspaceStore((s) => s.importProfile);
+  const saveCurrentAsProfile = useWorkspaceStore((s) => s.saveCurrentAsProfile);
+  const deleteProfile = useWorkspaceStore((s) => s.deleteProfile);
 
   const workspaces = useWorkspaceStore((s) => s.workspaces[tab] ?? EMPTY_WORKSPACES);
   const activeId = useWorkspaceStore((s) => s.activeWorkspaceId[tab]);
   const editMode = useWorkspaceStore((s) => s.editMode);
   const setActiveWorkspace = useWorkspaceStore((s) => s.setActiveWorkspace);
-  const duplicateWorkspace = useWorkspaceStore((s) => s.duplicateWorkspace);
-  const deleteWorkspace = useWorkspaceStore((s) => s.deleteWorkspace);
   const toggleEditMode = useWorkspaceStore((s) => s.toggleEditMode);
-  const exportWorkspace = useWorkspaceStore((s) => s.exportWorkspace);
-  const importWorkspace = useWorkspaceStore((s) => s.importWorkspace);
 
   const saveSnapshot = useWorkspaceStore((s) => s.saveSnapshot);
   const restoreSnapshot = useWorkspaceStore((s) => s.restoreSnapshot);
-  const deleteSnapshot = useWorkspaceStore((s) => s.deleteSnapshot);
   const undo = useWorkspaceStore((s) => s.undo);
   const pushUndo = useWorkspaceStore((s) => s.pushUndo);
   const undoStack = useWorkspaceStore((s) => s.undoStack[tab] ?? EMPTY_ARR);
@@ -71,60 +118,102 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   const syncStatus = useWorkspaceStore((s) => s.syncStatus);
 
   const activeWs = useActiveWorkspace(tab);
+  const activeProfile = React.useMemo(
+    () => profiles.find((p) => p.id === activeProfileId),
+    [profiles, activeProfileId],
+  );
+
   const [catalogOpen, setCatalogOpen] = React.useState(false);
-  const [saveAsOpen, setSaveAsOpen] = React.useState(false);
-  const [saveAsName, setSaveAsName] = React.useState("");
+  const [saveProfileOpen, setSaveProfileOpen] = React.useState(false);
+  const [saveProfileName, setSaveProfileName] = React.useState("");
   const [snapshotOpen, setSnapshotOpen] = React.useState(false);
   const [snapshotName, setSnapshotName] = React.useState("");
-  const [historyOpen, setHistoryOpen] = React.useState(false);
+  const [capturingScreenshot, setCapturingScreenshot] = React.useState(false);
   const importRef = React.useRef<HTMLInputElement>(null);
 
-  const handleExport = React.useCallback(() => {
-    if (!activeId) return;
-    const json = exportWorkspace(tab, activeId);
+  const handleExportProfile = React.useCallback(() => {
+    const json = exportProfile(activeProfileId);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `workspace-${activeWs?.name ?? tab}-${Date.now()}.json`;
+    a.download = `workspace-profile-${activeProfile?.name ?? "export"}-${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [activeId, activeWs?.name, exportWorkspace, tab]);
+  }, [activeProfileId, activeProfile?.name, exportProfile]);
 
-  const handleImport = React.useCallback(
+  const handleImportProfile = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result as string;
-        importWorkspace(tab, text);
+        importProfile(text);
       };
       reader.readAsText(file);
       e.target.value = "";
     },
-    [importWorkspace, tab],
+    [importProfile],
   );
 
-  const handleSaveAs = React.useCallback(() => {
-    if (!activeId || !saveAsName.trim()) return;
-    duplicateWorkspace(tab, activeId, saveAsName.trim());
-    setSaveAsOpen(false);
-    setSaveAsName("");
-  }, [activeId, saveAsName, duplicateWorkspace, tab]);
-
-  const handleReset = React.useCallback(() => {
-    if (!activeWs?.isPreset || !activeId) return;
-    setActiveWorkspace(tab, activeId);
-  }, [activeWs, activeId, setActiveWorkspace, tab]);
+  const handleSaveProfileAs = React.useCallback(() => {
+    if (!saveProfileName.trim()) return;
+    const id = saveCurrentAsProfile(saveProfileName.trim());
+    if (id === null) {
+      toast.error("A workspace profile with this name already exists (names are case-insensitive).");
+      return;
+    }
+    setSaveProfileOpen(false);
+    setSaveProfileName("");
+    toast.success("Workspace profile saved.");
+  }, [saveProfileName, saveCurrentAsProfile]);
 
   const handleSaveSnapshot = React.useCallback(() => {
     if (!snapshotName.trim()) return;
     pushUndo(tab);
-    saveSnapshot(tab, snapshotName.trim());
+    const id = saveSnapshot(tab, snapshotName.trim());
+    if (id === null) {
+      toast.error("A layout snapshot with this name already exists on this tab (names are case-insensitive).");
+      return;
+    }
     setSnapshotOpen(false);
     setSnapshotName("");
+    toast.success("Layout snapshot saved. Restore it from the history menu.");
   }, [snapshotName, saveSnapshot, pushUndo, tab]);
+
+  const handleWorkspaceScreenshot = React.useCallback(async () => {
+    const el = document.getElementById(WORKSPACE_CAPTURE_ROOT_ID);
+    if (!el || !(el instanceof HTMLElement)) {
+      toast.error("Could not find the workspace area to capture.");
+      return;
+    }
+    setCapturingScreenshot(true);
+    try {
+      // html-to-image uses the browser to paint the node (Tailwind v4’s oklab() breaks html2canvas’s CSS parser).
+      const { toBlob } = await import("html-to-image");
+      const blob = await toBlob(el, {
+        pixelRatio: Math.min(2, window.devicePixelRatio || 1),
+        backgroundColor: "#0a0a0a",
+        cacheBust: true,
+      });
+      if (!blob) {
+        toast.error("Could not encode the screenshot.");
+        return;
+      }
+      const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+      const suggested = `workspace-${tab}-${stamp}.png`;
+      const outcome = await savePngWithPicker(blob, suggested);
+      if (outcome === "saved") {
+        toast.success("Screenshot saved.");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Screenshot capture failed.");
+    } finally {
+      setCapturingScreenshot(false);
+    }
+  }, [tab]);
 
   const handleUndo = React.useCallback(() => {
     undo(tab);
@@ -153,10 +242,31 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
   return (
     <>
       <div className="flex items-center gap-2 px-2 py-0.5 border-b border-border bg-card/50 shrink-0">
-        {/* Workspace selector */}
+        {/* Profile selector */}
+        {profiles.length > 0 && (
+          <>
+            <Select value={activeProfileId ?? ""} onValueChange={(v) => setActiveProfile(v)}>
+              <SelectTrigger className="h-7 w-[150px] text-xs">
+                <Layers className="size-3 mr-1 shrink-0 text-muted-foreground" />
+                <SelectValue placeholder="Profile" />
+              </SelectTrigger>
+              <SelectContent>
+                {profiles.map((p) => (
+                  <SelectItem key={p.id} value={p.id} className="text-xs">
+                    {p.name}
+                    {p.isPreset && <span className="ml-1 text-[10px] text-muted-foreground">(preset)</span>}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="h-4 w-px bg-border" />
+          </>
+        )}
+
+        {/* Per-tab workspace selector (secondary) */}
         <Select value={activeId ?? ""} onValueChange={(v) => setActiveWorkspace(tab, v)}>
-          <SelectTrigger className="h-7 w-[160px] text-xs">
-            <SelectValue placeholder="Select workspace" />
+          <SelectTrigger className="h-7 w-[140px] text-xs">
+            <SelectValue placeholder="Tab layout" />
           </SelectTrigger>
           <SelectContent>
             {workspaces.map((ws) => (
@@ -200,18 +310,16 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
           <Undo2 className="size-3.5" />
         </Button>
 
-        {/* Save snapshot */}
+        {/* Screenshot workspace as PNG (save location via system dialog or download) */}
         <Button
           variant="ghost"
           size="sm"
           className="h-7 gap-1 text-xs"
-          onClick={() => {
-            setSnapshotName(`Snapshot ${snapshots.length + 1}`);
-            setSnapshotOpen(true);
-          }}
-          title="Save snapshot"
+          onClick={() => void handleWorkspaceScreenshot()}
+          disabled={capturingScreenshot}
+          title="Save workspace screenshot as PNG"
         >
-          <Camera className="size-3.5" />
+          {capturingScreenshot ? <Spinner size="sm" className="size-3.5" /> : <Camera className="size-3.5" />}
         </Button>
 
         {/* Version history */}
@@ -248,66 +356,80 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
         {/* Sync indicator */}
         {syncIcon}
 
-        {/* Actions */}
+        {/* Actions menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
               <MoreHorizontal className="size-3.5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel className="text-[10px] text-muted-foreground font-normal uppercase tracking-wider">
+              Workspace Profile
+            </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                setSaveAsName("");
-                setSaveAsOpen(true);
+                setSaveProfileName("");
+                setSaveProfileOpen(true);
               }}
             >
-              <Copy className="size-3.5 mr-2" />
-              <span className="text-xs">Save As...</span>
+              <Save className="size-3.5 mr-2" />
+              <span className="text-xs">Save Profile As...</span>
             </DropdownMenuItem>
-            {activeWs?.isPreset && (
-              <DropdownMenuItem onClick={handleReset}>
-                <RotateCcw className="size-3.5 mr-2" />
-                <span className="text-xs">Reset to Default</span>
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleExport}>
+            <DropdownMenuItem onClick={handleExportProfile}>
               <Download className="size-3.5 mr-2" />
-              <span className="text-xs">Export JSON</span>
+              <span className="text-xs">Export Profile JSON</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => importRef.current?.click()}>
               <Upload className="size-3.5 mr-2" />
-              <span className="text-xs">Import JSON</span>
+              <span className="text-xs">Import Profile JSON</span>
             </DropdownMenuItem>
-            {activeWs && !activeWs.isPreset && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-rose-400 focus:text-rose-400"
-                  onClick={() => deleteWorkspace(tab, activeWs.id)}
-                >
-                  <Trash2 className="size-3.5 mr-2" />
-                  <span className="text-xs">Delete Workspace</span>
-                </DropdownMenuItem>
-              </>
+            {activeProfile && !activeProfile.isPreset && (
+              <DropdownMenuItem
+                className="text-rose-400 focus:text-rose-400"
+                onClick={() => deleteProfile(activeProfile.id)}
+              >
+                <Trash2 className="size-3.5 mr-2" />
+                <span className="text-xs">Delete Profile</span>
+              </DropdownMenuItem>
+            )}
+
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-[10px] text-muted-foreground font-normal uppercase tracking-wider">
+              Current Tab
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => {
+                setSnapshotName(`Snapshot ${snapshots.length + 1}`);
+                setSnapshotOpen(true);
+              }}
+            >
+              <History className="size-3.5 mr-2" />
+              <span className="text-xs">Save layout snapshot…</span>
+            </DropdownMenuItem>
+            {activeWs?.isPreset && (
+              <DropdownMenuItem onClick={() => activeId && setActiveWorkspace(tab, activeId)}>
+                <RotateCcw className="size-3.5 mr-2" />
+                <span className="text-xs">Reset Tab to Default</span>
+              </DropdownMenuItem>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
+        <input ref={importRef} type="file" accept=".json" className="hidden" onChange={handleImportProfile} />
       </div>
 
       {/* Widget catalog drawer */}
       <WidgetCatalogDrawer tab={tab} open={catalogOpen} onOpenChange={setCatalogOpen} />
 
-      {/* Save Snapshot dialog */}
+      {/* Layout snapshot (restore from History); image screenshots use the camera button */}
       <Dialog open={snapshotOpen} onOpenChange={setSnapshotOpen}>
         <DialogContent className="sm:max-w-[340px]">
           <DialogHeader>
-            <DialogTitle className="text-sm">Save Snapshot</DialogTitle>
+            <DialogTitle className="text-sm">Save layout snapshot</DialogTitle>
             <DialogDescription className="text-xs">
-              Save a named version of the current layout. You can restore it later.
+              Save a named copy of this tab&apos;s widget layout. Restore it from the history menu next to the camera
+              button.
             </DialogDescription>
           </DialogHeader>
           <Input
@@ -322,34 +444,36 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
               Cancel
             </Button>
             <Button size="sm" onClick={handleSaveSnapshot} disabled={!snapshotName.trim()}>
-              <Camera className="size-3.5 mr-1.5" />
+              <History className="size-3.5 mr-1.5" />
               Save
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Save As dialog */}
-      <Dialog open={saveAsOpen} onOpenChange={setSaveAsOpen}>
+      {/* Save Profile As dialog */}
+      <Dialog open={saveProfileOpen} onOpenChange={setSaveProfileOpen}>
         <DialogContent className="sm:max-w-[340px]">
           <DialogHeader>
-            <DialogTitle className="text-sm">Save Workspace As</DialogTitle>
+            <DialogTitle className="text-sm">Save Workspace Profile</DialogTitle>
             <DialogDescription className="text-xs">
-              Create a copy of the current workspace with a new name.
+              Save all current tab layouts as a named workspace profile. Switching profiles applies to all pages at
+              once.
             </DialogDescription>
           </DialogHeader>
           <Input
-            value={saveAsName}
-            onChange={(e) => setSaveAsName(e.target.value)}
-            placeholder="Workspace name"
+            value={saveProfileName}
+            onChange={(e) => setSaveProfileName(e.target.value)}
+            placeholder="Profile name"
             className="text-sm"
-            onKeyDown={(e) => e.key === "Enter" && handleSaveAs()}
+            onKeyDown={(e) => e.key === "Enter" && handleSaveProfileAs()}
           />
           <DialogFooter>
-            <Button variant="ghost" size="sm" onClick={() => setSaveAsOpen(false)}>
+            <Button variant="ghost" size="sm" onClick={() => setSaveProfileOpen(false)}>
               Cancel
             </Button>
-            <Button size="sm" onClick={handleSaveAs} disabled={!saveAsName.trim()}>
+            <Button size="sm" onClick={handleSaveProfileAs} disabled={!saveProfileName.trim()}>
+              <Save className="size-3.5 mr-1.5" />
               Save
             </Button>
           </DialogFooter>

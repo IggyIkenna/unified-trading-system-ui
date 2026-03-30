@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { BookTradeDataProvider } from "@/components/widgets/book/book-data-context";
 
-import "@/components/widgets/book/register";
-
 function BookPageContent() {
   return (
     <BookTradeDataProvider>

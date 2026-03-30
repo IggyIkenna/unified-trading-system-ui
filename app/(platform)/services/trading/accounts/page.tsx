@@ -6,8 +6,6 @@ import { AccountsDataProvider, useAccountsData } from "@/components/widgets/acco
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { Suspense } from "react";
 
-import "@/components/widgets/accounts/register";
-
 function AccountsWorkspaceBody() {
   const { isLoading, error, refetch } = useAccountsData();
 

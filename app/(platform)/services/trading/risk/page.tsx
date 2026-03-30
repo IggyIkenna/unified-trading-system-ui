@@ -36,8 +36,6 @@ import {
   COMPONENT_TO_RISK_TYPE,
 } from "@/components/widgets/risk/risk-data-context";
 
-import "@/components/widgets/risk/register";
-
 const VAR_METHOD_MULTIPLIERS: Record<string, number> = {
   historical: 1.0,
   parametric: 0.92,

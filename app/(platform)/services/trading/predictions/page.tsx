@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { PredictionsDataProvider } from "@/components/widgets/predictions/predictions-data-context";
 
-import "@/components/widgets/predictions/register";
-
 function PredictionsPageContent() {
   return (
     <PredictionsDataProvider>
