@@ -300,7 +300,7 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "Risk", href: "/services/trading/risk", icon: ShieldAlert },
   { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
   { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
-  { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
+  { label: "Strategies", href: "/services/trading/strategies", icon: Layers, requiredEntitlement: "strategy-families" },
   { label: "Instructions", href: "/services/trading/instructions", icon: ScrollText },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
@@ -311,6 +311,7 @@ export const TRADING_TABS: ServiceTab[] = [
     familyGroup: "DeFi",
     familyIcon: "Layers",
     exact: true,
+    requiredEntitlement: "defi-trading",
   },
   {
     label: "Bundles",
@@ -335,6 +336,7 @@ export const TRADING_TABS: ServiceTab[] = [
     familyGroup: "Sports",
     familyIcon: "Trophy",
     exact: true,
+    requiredEntitlement: "sports-trading",
   },
   {
     label: "Place Bets",
@@ -359,6 +361,7 @@ export const TRADING_TABS: ServiceTab[] = [
     familyGroup: "Options & Futures",
     familyIcon: "BarChart3",
     exact: true,
+    requiredEntitlement: "options-trading",
   },
   {
     label: "Combo Builder",
@@ -380,6 +383,7 @@ export const TRADING_TABS: ServiceTab[] = [
     label: "Predictions",
     href: "/services/trading/predictions",
     icon: Lightbulb,
+    requiredEntitlement: "predictions-trading",
     group: "Predictions",
     familyGroup: "Predictions",
     familyIcon: "TrendingUp",

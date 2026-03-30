@@ -11,4 +11,5 @@ export const MOCK_SWAP_ROUTE: SwapRoute = {
   expectedOutput: 3456.12,
   gasEstimateEth: 0.0042,
   gasEstimateUsd: 14.52,
+  algo_type: "SOR_DEX",
 };

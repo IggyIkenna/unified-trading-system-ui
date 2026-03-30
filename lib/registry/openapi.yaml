@@ -2279,8 +2279,9 @@ paths:
         when viewing corporate-actions which is TRADFI-only).\n\nArgs:\n    service:\
         \ Service name (e.g., \"instruments-service\", \"corporate-actions\")\n\n\
         Returns:\n    {\"service\": str, \"categories\": List[str]}\n\nExamples:\n\
-        \    - instruments-service: [\"CEFI\", \"DEFI\", \"TRADFI\"]\n    - corporate-actions:\
-        \ [\"TRADFI\"]\n    - features-calendar-service: []  # No category dimension"
+        \    - instruments-service: [\"CEFI\", \"DEFI\", \"TRADFI\"]  # CORRECT-LOCAL\n\
+        \    - corporate-actions: [\"TRADFI\"]\n    - features-calendar-service: []\
+        \  # No category dimension"
       operationId: get_service_categories_api_capabilities_service_categories__service__get
       security:
       - APIKeyHeader: []
@@ -3841,7 +3842,12 @@ paths:
       - unified-trading-api
       - execution
       summary: Create Order
-      description: 'Place a new order (mock: persists to store, real: routes to execution-service).'
+      description: 'Place a new order + auto-create/update position + fill record.
+
+
+        Mock mode: creates order, fill, and position records so GET endpoints
+
+        return realistic data after trades are placed.'
       operationId: create_order_execution_orders_post
       security:
       - APIKeyHeader: []
@@ -3977,6 +3983,63 @@ paths:
                 title: Response Get Algos Execution Algos Get
       security:
       - APIKeyHeader: []
+  /unified-trading-api/execution/grid-configs:
+    get:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Get Grid Configs
+      description: 'Get saved grid config library — named config sets with their fixed
+        + grid params.
+
+
+        Each grid config is a saved "folder" that references a grid run.
+
+        Use grid_run_id to find the child backtest results.'
+      operationId: get_grid_configs_execution_grid_configs_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: domain
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by domain: strategy, execution, ml'
+          title: Domain
+        description: 'Filter by domain: strategy, execution, ml'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Grid Configs Execution Grid Configs Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/execution/backtests:
     get:
       tags:
@@ -4020,6 +4083,199 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Create Backtest
+      description: "Create a backtest — supports both single-run and grid search.\n\
+        \nGrid search mode (body contains 'grid_parameters'):\n  Expands parameter\
+        \ combinations into individual backtest configs,\n  persists each to the store,\
+        \ and returns the parent run with children.\n\nSingle mode (no 'grid_parameters'):\n\
+        \  Creates a single backtest record."
+      operationId: create_backtest_execution_backtests_post
+      security:
+      - APIKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Backtest Execution Backtests Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/sports/bets:
+    post:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Place Sports Bet
+      description: "Place a sports bet.\n\nMock mode: creates a bet record in the\
+        \ store with PENDING status,\nthen auto-settles via paper trading adapter\
+        \ simulation.\nReal mode: routes to execution-service sports_execution adapters\n\
+        which connect to the bookmaker API/exchange/browser.\n\nBody schema matches\
+        \ UAC BetOrder:\n  fixture_id, market, outcome, bookmaker, odds, stake, side\
+        \ (BACK/LAY),\n  bet_type (single/accumulator), legs (for accumulators)."
+      operationId: place_sports_bet_execution_sports_bets_post
+      security:
+      - APIKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Place Sports Bet Execution Sports Bets Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Get Sports Bets
+      description: Get user's sports bets with optional status filter.
+      operationId: get_sports_bets_execution_sports_bets_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by bet status
+          title: Status
+        description: Filter by bet status
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Sports Bets Execution Sports Bets Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/sports/bets/{bet_id}/cancel:
+    post:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Cancel Sports Bet
+      description: Cancel an unmatched sports bet.
+      operationId: cancel_sports_bet_execution_sports_bets__bet_id__cancel_post
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: bet_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Bet Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Cancel Sports Bet Execution Sports Bets  Bet Id  Cancel
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/defi/execute:
+    post:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Execute Defi Operation
+      description: 'Execute a DeFi operation (stake, lend, swap, borrow, flash_loan).
+
+
+        Creates the operation record + corresponding position.'
+      operationId: execute_defi_operation_execution_defi_execute_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Body
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Execute Defi Operation Execution Defi Execute Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
   /unified-trading-api/positions/active:
     get:
       tags:
@@ -5322,7 +5578,12 @@ paths:
       - unified-trading-api
       - reporting
       summary: Generate Report
-      description: 'Generate a report (mock: creates record, real: proxies to client-reporting-api).'
+      description: 'Generate a report + auto-create invoice if applicable.
+
+
+        Mock mode: creates report record, optionally creates invoice
+
+        and settlement records as side effects.'
       operationId: generate_report_reporting_generate_post
       responses:
         '200':
@@ -8794,6 +9055,70 @@ paths:
           content:
             application/json:
               schema: {}
+  /alerting-service/alerts/delivery-status/{alert_id}:
+    get:
+      tags:
+      - alerting-service
+      - delivery
+      summary: Get Delivery Status
+      description: "Return delivery records for a given alert_id.\n\nScans GCS history\
+        \ partitions (last 7 days) for matching records.\n\nReturns:\n    JSON object\
+        \ with ``alert_id`` and a list of ``records``."
+      operationId: get_delivery_status_alerts_delivery_status__alert_id__get
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Alert Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Delivery Status Alerts Delivery Status  Alert
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /alerting-service/alerts/delivery-status:
+    post:
+      tags:
+      - alerting-service
+      - delivery
+      summary: Create Delivery Record
+      description: Record a new delivery record. Persists in mock state when CLOUD_MOCK_MODE=true.
+      operationId: create_delivery_record_alerts_delivery_status_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Record
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Delivery Record Alerts Delivery Status Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /execution-service/manual/instruction:
     post:
       tags:

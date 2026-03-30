@@ -10,6 +10,8 @@ import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry";
 import { getTradesForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@/lib/config/services/trading.config";
 import { MOCK_TRADES, type BookTrade } from "@/lib/mocks/fixtures/book-trades";
+import type { InstructionType, AlgoType } from "@/lib/types/defi";
+import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 
 export type { BookAlgoType, BookCategoryTab } from "@/lib/config/services/trading.config";
 export type { BookTrade };
@@ -73,6 +75,17 @@ export interface BookTradeDataContextValue {
   setAlgo: (a: BookAlgoType) => void;
   algoParams: { duration: string; slices: string; displayQty: string; benchmark: string };
   setAlgoParam: (key: string, value: string) => void;
+
+  // DeFi-specific fields (active when category === "defi")
+  defiInstructionType: InstructionType;
+  setDefiInstructionType: (t: InstructionType) => void;
+  defiAlgo: AlgoType;
+  setDefiAlgo: (a: AlgoType) => void;
+  maxSlippageBps: number;
+  setMaxSlippageBps: (v: number) => void;
+  /** Algos available for the currently selected DeFi instruction type */
+  availableDefiAlgos: AlgoType[];
+  isDefiCategory: boolean;
 
   counterparty: string;
   setCounterparty: (v: string) => void;
@@ -180,6 +193,25 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
   const [bilateralTerms, setBilateralTerms] = React.useState("");
   const [isdaReference, setIsdaReference] = React.useState("");
   const isOtcCategory = category === "otc";
+  const isDefiCategory = category === "defi";
+
+  // DeFi-specific state
+  const [defiInstructionType, setDefiInstructionType] = React.useState<InstructionType>("SWAP");
+  const [defiAlgo, setDefiAlgo] = React.useState<AlgoType>("SOR_DEX");
+  const [maxSlippageBps, setMaxSlippageBps] = React.useState<number>(50);
+
+  const availableDefiAlgos: AlgoType[] = React.useMemo(
+    () => INSTRUCTION_ALGO_MAP[defiInstructionType] ?? [],
+    [defiInstructionType],
+  );
+
+  // When instruction type changes, reset algo to first available
+  React.useEffect(() => {
+    const algos = INSTRUCTION_ALGO_MAP[defiInstructionType];
+    if (algos && algos.length > 0 && !algos.includes(defiAlgo)) {
+      setDefiAlgo(algos[0]);
+    }
+  }, [defiInstructionType, defiAlgo]);
 
   const [orderState, setOrderState] = React.useState<BookOrderState>("idle");
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -410,6 +442,15 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
       setIsdaReference,
       isOtcCategory,
 
+      defiInstructionType,
+      setDefiInstructionType,
+      defiAlgo,
+      setDefiAlgo,
+      maxSlippageBps,
+      setMaxSlippageBps,
+      availableDefiAlgos,
+      isDefiCategory,
+
       orderState,
       setOrderState,
       errorMessage,
@@ -458,6 +499,11 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
       bilateralTerms,
       isdaReference,
       isOtcCategory,
+      defiInstructionType,
+      defiAlgo,
+      maxSlippageBps,
+      availableDefiAlgos,
+      isDefiCategory,
       orderState,
       errorMessage,
       complianceResult,

@@ -78,12 +78,24 @@ export const UNRECONCILED_ITEMS = [
   },
 ];
 
-export const VENUES = ["All", "Binance", "Deribit", "OKX", "Bybit", "Hyperliquid"];
+export const VENUES = [
+  "All",
+  "Binance",
+  "Deribit",
+  "OKX",
+  "Bybit",
+  "Hyperliquid",
+  "AAVEV3-ETHEREUM",
+  "UNISWAPV3-ETHEREUM",
+  "ETHENA-ETHEREUM",
+];
 export const BREAK_TYPES: Array<{ value: string; label: string }> = [
   { value: "all", label: "All Types" },
   { value: "position", label: "Position" },
   { value: "pnl", label: "PnL" },
   { value: "fee", label: "Fee" },
+  { value: "balance", label: "Balance" },
+  { value: "gas", label: "Gas" },
 ];
 export const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "all", label: "All Statuses" },
@@ -91,4 +103,5 @@ export const STATUS_OPTIONS: Array<{ value: string; label: string }> = [
   { value: "investigating", label: "Investigating" },
   { value: "resolved", label: "Resolved" },
   { value: "rejected", label: "Rejected" },
+  { value: "accepted", label: "Accepted" },
 ];

@@ -32,6 +32,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `lend-s-${n++}`,
         protocol: p.name,
+        venue_id: p.venue_id,
         category: "Lending supply",
         detail: `Best: ${bestSupply.asset}`,
         apyPct: bestSupply.apy,
@@ -40,6 +41,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `lend-b-${n++}`,
         protocol: p.name,
+        venue_id: p.venue_id,
         category: "Lending borrow",
         detail: `Best: ${bestBorrow.asset}`,
         apyPct: bestBorrow.apy,
@@ -50,6 +52,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `stake-${n++}`,
         protocol: s.name,
+        venue_id: s.venue_id,
         category: "Staking",
         detail: s.asset,
         apyPct: s.apy,
@@ -60,6 +63,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `lp-${n++}`,
         protocol: lp.name,
+        venue_id: lp.venue_id,
         category: "LP",
         detail: `${lp.token0}/${lp.token1}`,
         apyPct: lp.apr24h,

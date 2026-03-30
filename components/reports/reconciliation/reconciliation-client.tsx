@@ -30,7 +30,7 @@ import {
   UNRECONCILED_ITEMS,
   VENUES,
 } from "./reconciliation-constants";
-import type { ReconciliationRecord, ReconciliationStatus } from "./reconciliation-types";
+import type { ReconciliationRecord, ReconciliationResolution, ReconciliationStatus } from "./reconciliation-types";
 import { ReconciliationLoadingSkeleton } from "./reconciliation-loading-skeleton";
 
 export function ReconciliationPageClient() {
@@ -44,12 +44,18 @@ export function ReconciliationPageClient() {
   const [resolvingBreak, setResolvingBreak] = React.useState<ReconciliationRecord | null>(null);
   const [resolveAction, setResolveAction] = React.useState<"accept" | "reject" | "investigate">("accept");
   const [resolveNote, setResolveNote] = React.useState("");
-  const [localOverrides, setLocalOverrides] = React.useState<Record<string, ReconciliationStatus>>({});
+  const [localOverrides, setLocalOverrides] = React.useState<
+    Record<string, { status: ReconciliationStatus; resolution?: ReconciliationResolution }>
+  >({});
 
   const history: ReconciliationRecord[] = React.useMemo(() => {
     const raw = (apiData as Record<string, unknown>)?.history as ReconciliationRecord[] | undefined;
     const base = raw ?? FALLBACK_HISTORY;
-    return base.map((r) => (localOverrides[r.id] ? { ...r, status: localOverrides[r.id] } : r));
+    return base.map((r) => {
+      const override = localOverrides[r.id];
+      if (!override) return r;
+      return { ...r, status: override.status, resolution: override.resolution };
+    });
   }, [apiData, localOverrides]);
 
   const filtered = React.useMemo(() => {
@@ -95,13 +101,21 @@ export function ReconciliationPageClient() {
   const handleConfirmResolve = React.useCallback(() => {
     if (!resolvingBreak || resolveNote.length < 10) return;
     const statusMap: Record<"accept" | "reject" | "investigate", ReconciliationStatus> = {
-      accept: "resolved",
+      accept: "accepted",
       reject: "rejected",
       investigate: "investigating",
     };
+    const resolutionMap: Record<"accept" | "reject" | "investigate", ReconciliationResolution | undefined> = {
+      accept: "system_correct",
+      reject: "chain_correct",
+      investigate: undefined,
+    };
     setLocalOverrides((prev) => ({
       ...prev,
-      [resolvingBreak.id]: statusMap[resolveAction],
+      [resolvingBreak.id]: {
+        status: statusMap[resolveAction],
+        resolution: resolutionMap[resolveAction],
+      },
     }));
     setResolvingBreak(null);
     setResolveNote("");
@@ -300,6 +314,7 @@ export function ReconciliationPageClient() {
                   },
                   { key: "delta", header: "Delta", format: "currency" },
                   { key: "status", header: "Status" },
+                  { key: "resolution", header: "Resolution" },
                 ]}
                 filename="reconciliation-history"
               />

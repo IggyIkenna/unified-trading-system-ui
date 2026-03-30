@@ -123,12 +123,18 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
         onClick={() => {
           executeDeFiOrder({
             client_id: "internal-trader",
-            instrument_id: `${protocol.toUpperCase()}:${operation}:${selected.asset}`,
-            venue: protocol,
+            strategy_id: "ETHENA_BENCHMARK",
+            instruction_type: operation,
+            algo_type: "BENCHMARK_FILL",
+            instrument_id: `${selected.venue_id}:${operation}:${selected.asset}`,
+            venue: selected.venue_id,
             side: operation === "STAKE" ? "buy" : "sell",
             order_type: "market",
             quantity: amountNum,
             price: selected.apy,
+            max_slippage_bps: 50,
+            expected_output: amountNum,
+            benchmark_price: selected.apy,
             asset_class: "DeFi",
             lane: "defi",
           });

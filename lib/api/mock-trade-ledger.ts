@@ -306,6 +306,10 @@ export function placeMockOrder(params: PlaceOrderParams): MockOrder {
         updated_at: new Date().toISOString(),
       };
       persist();
+      // Notify listeners (e.g. positions context) that an order was filled
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("mock-order-filled", { detail: { orderId: id } }));
+      }
     }
   }, 200);
 

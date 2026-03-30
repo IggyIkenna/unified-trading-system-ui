@@ -1,6 +1,6 @@
 import { registerWidget } from "../widget-registry";
 import { registerPresets } from "../preset-registry";
-import { ArrowLeftRight, BarChart3, Coins, Droplets, Landmark, Send, Wallet, Zap } from "lucide-react";
+import { ArrowLeftRight, BarChart3, Coins, Droplets, History, Landmark, Send, Settings, Wallet, Zap } from "lucide-react";
 import { DeFiWalletSummaryWidget } from "./defi-wallet-summary-widget";
 import { DeFiLendingWidget } from "./defi-lending-widget";
 import { DeFiSwapWidget } from "./defi-swap-widget";
@@ -9,6 +9,8 @@ import { DeFiStakingWidget } from "./defi-staking-widget";
 import { DeFiFlashLoansWidget } from "./defi-flash-loans-widget";
 import { DeFiTransferWidget } from "./defi-transfer-widget";
 import { DeFiRatesOverviewWidget } from "./defi-rates-overview-widget";
+import { DeFiTradeHistoryWidget } from "./defi-trade-history-widget";
+import { DeFiStrategyConfigWidget } from "./defi-strategy-config-widget";
 
 registerPresets("defi", [
   {
@@ -39,6 +41,7 @@ registerPresets("defi", [
       { widgetId: "defi-lending", instanceId: "defi-lending-adv", x: 0, y: 9, w: 4, h: 5 },
       { widgetId: "defi-swap", instanceId: "defi-swap-adv", x: 4, y: 9, w: 4, h: 5 },
       { widgetId: "defi-staking", instanceId: "defi-staking-adv", x: 8, y: 9, w: 4, h: 5 },
+      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-1", x: 0, y: 14, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -171,4 +174,36 @@ registerWidget({
   availableOn: ["defi"],
   singleton: true,
   component: DeFiRatesOverviewWidget,
+});
+
+registerWidget({
+  id: "defi-trade-history",
+  label: "Trade History",
+  description: "Executed instructions with instant P&L decomposition and running totals.",
+  icon: History,
+  minW: 6,
+  minH: 3,
+  defaultW: 12,
+  defaultH: 5,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiTradeHistoryWidget,
+});
+
+registerWidget({
+  id: "defi-strategy-config",
+  label: "Strategy Config",
+  description: "View and edit configuration for active DeFi strategies.",
+  icon: Settings,
+  minW: 3,
+  minH: 4,
+  defaultW: 4,
+  defaultH: 6,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiStrategyConfigWidget,
 });

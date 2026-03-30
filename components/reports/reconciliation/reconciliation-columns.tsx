@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { type ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2, XCircle, Search, ArrowRight, PenLine } from "lucide-react";
-import type { BreakType, ReconciliationRecord, ReconciliationStatus } from "./reconciliation-types";
+import type { BreakType, ReconciliationRecord, ReconciliationResolution, ReconciliationStatus } from "./reconciliation-types";
 import { formatNumber } from "@/lib/utils/formatters";
 
 export function buildHistoryColumns(handlers: {
@@ -58,13 +58,53 @@ export function buildHistoryColumns(handlers: {
       cell: ({ row }) => <span className="flex justify-end">{statusBadge(row.original.status)}</span>,
     },
     {
+      id: "resolution",
+      header: () => <span className="flex justify-end">Resolution</span>,
+      cell: ({ row }) => {
+        const res = row.original.resolution;
+        if (!res) return <span className="flex justify-end text-[10px] text-muted-foreground">--</span>;
+        return <span className="flex justify-end">{resolutionBadge(res)}</span>;
+      },
+    },
+    {
       id: "actions",
       header: () => <span className="flex justify-end">Actions</span>,
       cell: ({ row }) => {
         const record = row.original;
         return (
           <div className="flex justify-end items-center gap-1">
-            {record.status !== "resolved" && (
+            {record.status === "pending" && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-1.5 gap-1 text-[10px] text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                  onClick={() => handlers.onResolveAction(record, "accept")}
+                >
+                  <CheckCircle2 className="size-3" />
+                  Accept
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-1.5 gap-1 text-[10px] text-amber-500 hover:text-amber-400 hover:bg-amber-500/10"
+                  onClick={() => handlers.onResolveAction(record, "reject")}
+                >
+                  <XCircle className="size-3" />
+                  Reject
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-1.5 gap-1 text-[10px] text-blue-500 hover:text-blue-400 hover:bg-blue-500/10"
+                  onClick={() => handlers.onResolveAction(record, "investigate")}
+                >
+                  <Search className="size-3" />
+                  Investigate
+                </Button>
+              </>
+            )}
+            {record.status !== "pending" && record.status !== "resolved" && (
               <>
                 <Button
                   variant="ghost"
@@ -131,6 +171,8 @@ function breakTypeBadge(bt: BreakType) {
       className: "border-[var(--pnl-negative)] text-[var(--pnl-negative)]",
     },
     fee: { className: "border-primary text-primary" },
+    balance: { className: "border-[var(--surface-config)] text-[var(--surface-config)]" },
+    gas: { className: "border-[var(--muted-foreground)] text-[var(--muted-foreground)]" },
   };
   const style = map[bt];
   return (
@@ -146,10 +188,29 @@ function statusBadge(status: ReconciliationStatus) {
     pending: "bg-[var(--status-warning)]/10 text-[var(--status-warning)]",
     investigating: "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]",
     rejected: "bg-[var(--pnl-negative)]/10 text-[var(--pnl-negative)]",
+    accepted: "bg-[var(--status-live)]/10 text-[var(--status-live)]",
   };
   return (
     <Badge variant="outline" className={`text-[10px] capitalize ${map[status]}`}>
       {status}
+    </Badge>
+  );
+}
+
+function resolutionBadge(resolution: ReconciliationResolution) {
+  const map: Record<ReconciliationResolution, string> = {
+    system_correct: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+    chain_correct: "bg-amber-500/10 text-amber-400 border-amber-500/30",
+    adjusted: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+  };
+  const labelMap: Record<ReconciliationResolution, string> = {
+    system_correct: "System Correct",
+    chain_correct: "Chain Correct",
+    adjusted: "Adjusted",
+  };
+  return (
+    <Badge variant="outline" className={`text-[10px] ${map[resolution]}`}>
+      {labelMap[resolution]}
     </Badge>
   );
 }

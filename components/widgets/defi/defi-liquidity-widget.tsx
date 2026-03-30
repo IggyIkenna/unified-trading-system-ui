@@ -154,12 +154,18 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
           const amountNum = parseFloat(amount) || 0;
           executeDeFiOrder({
             client_id: "internal-trader",
-            instrument_id: `UNISWAPV3:LP:${pool.name}`,
-            venue: "Uniswap",
+            strategy_id: "AMM_LP",
+            instruction_type: operation,
+            algo_type: "AMM_CONCENTRATED",
+            instrument_id: `${pool.venue_id}:LP:${pool.name}`,
+            venue: pool.venue_id,
             side: operation === "ADD_LIQUIDITY" ? "buy" : "sell",
             order_type: "market",
             quantity: amountNum,
             price: pool.apr24h,
+            max_slippage_bps: 50,
+            expected_output: amountNum,
+            benchmark_price: pool.apr24h,
             asset_class: "DeFi",
             lane: "defi",
           });

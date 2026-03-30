@@ -1,6 +1,8 @@
-export type BreakType = "position" | "pnl" | "fee";
+export type BreakType = "position" | "pnl" | "fee" | "balance" | "gas";
 
-export type ReconciliationStatus = "resolved" | "pending" | "investigating" | "rejected";
+export type ReconciliationStatus = "resolved" | "pending" | "investigating" | "rejected" | "accepted";
+
+export type ReconciliationResolution = "system_correct" | "chain_correct" | "adjusted";
 
 export interface ReconciliationRecord {
   id: string;
@@ -11,4 +13,5 @@ export interface ReconciliationRecord {
   batchValue: number;
   delta: number;
   status: ReconciliationStatus;
+  resolution?: ReconciliationResolution;
 }

@@ -121,4 +121,58 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
     delta: 1.38,
     status: "resolved",
   },
+
+  // ---------------------------------------------------------------------------
+  // DeFi Reconciliation (on-chain vs system)
+  // ---------------------------------------------------------------------------
+  {
+    id: "DREC-001",
+    date: "2026-03-30",
+    venue: "AAVEV3-ETHEREUM",
+    breakType: "position",
+    liveValue: 100013.25,
+    batchValue: 100000.0,
+    delta: 13.25,
+    status: "pending",
+  },
+  {
+    id: "DREC-002",
+    date: "2026-03-30",
+    venue: "HYPERLIQUID",
+    breakType: "position",
+    liveValue: -30.05,
+    batchValue: -30.0,
+    delta: -0.05,
+    status: "resolved",
+  },
+  {
+    id: "DREC-003",
+    date: "2026-03-29",
+    venue: "UNISWAPV3-ETHEREUM",
+    breakType: "fee",
+    liveValue: 45.82,
+    batchValue: 44.5,
+    delta: 1.32,
+    status: "investigating",
+  },
+  {
+    id: "DREC-004",
+    date: "2026-03-29",
+    venue: "AAVEV3-ETHEREUM",
+    breakType: "balance",
+    liveValue: 96.002,
+    batchValue: 96.0,
+    delta: 0.002,
+    status: "resolved",
+  },
+  {
+    id: "DREC-005",
+    date: "2026-03-28",
+    venue: "ETHENA-ETHEREUM",
+    breakType: "pnl",
+    liveValue: 268.5,
+    batchValue: 265.0,
+    delta: 3.5,
+    status: "resolved",
+  },
 ];

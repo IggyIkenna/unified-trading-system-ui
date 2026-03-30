@@ -29,6 +29,8 @@ const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "current_price", header: "Current Price", format: "currency" },
   { key: "today_pnl", header: "Today's P&L", format: "currency" },
   { key: "net_pnl", header: "Net P&L", format: "currency" },
+  { key: "net_delta", header: "Net Delta", format: "number" },
+  { key: "health_factor", header: "Health Factor", format: "number" },
   { key: "venue", header: "Venue" },
   { key: "updated_at", header: "Updated" },
 ];
@@ -154,6 +156,45 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         sortable: true,
         align: "right" as const,
         accessor: (row) => <PnlCell abs={row.net_pnl} pct={row.net_pnl_pct} />,
+      },
+      {
+        key: "net_delta",
+        label: "Net Delta",
+        sortable: true,
+        align: "right" as const,
+        accessor: (row) =>
+          row.net_delta != null ? (
+            <span className={cn("font-mono text-[11px]", row.net_delta > 0 ? "pnl-positive" : row.net_delta < 0 ? "pnl-negative" : "text-muted-foreground")}>
+              {row.net_delta > 0 ? "+" : ""}
+              {row.net_delta.toFixed(2)}
+            </span>
+          ) : (
+            <span className="text-muted-foreground text-[10px]">--</span>
+          ),
+      },
+      {
+        key: "health_factor",
+        label: "HF",
+        sortable: true,
+        align: "right" as const,
+        accessor: (row) =>
+          row.health_factor != null ? (
+            <Badge
+              variant="outline"
+              className={cn(
+                "font-mono text-[10px] px-1.5 py-0",
+                row.health_factor >= 1.5
+                  ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                  : row.health_factor >= 1.1
+                    ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                    : "bg-rose-500/20 text-rose-400 border-rose-500/30",
+              )}
+            >
+              {row.health_factor.toFixed(2)}
+            </Badge>
+          ) : (
+            <span className="text-muted-foreground text-[10px]">--</span>
+          ),
       },
       {
         key: "venue",

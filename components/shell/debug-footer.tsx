@@ -72,6 +72,7 @@ export function DebugFooter() {
       "client-full": "pm@alphacapital.com",
       "client-premium": "cio@vertex.com",
       "client-data-only": "analyst@betafund.com",
+      "elysium-defi": "patrick@bankelysium.com",
     };
     const email = emails[personaId];
     if (email) {
@@ -94,6 +95,7 @@ export function DebugFooter() {
       desc: "Vertex Partners",
     },
     { id: "client-data-only", label: "Client (Basic)", desc: "Beta Fund" },
+    { id: "elysium-defi", label: "DeFi Client", desc: "Elysium (Patrick)" },
   ];
 
   return (

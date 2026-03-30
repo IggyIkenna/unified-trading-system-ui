@@ -15,6 +15,11 @@ export const ENTITLEMENTS = [
   "execution-full",
   "ml-full",
   "strategy-full",
+  "strategy-families",
+  "defi-trading",
+  "sports-trading",
+  "predictions-trading",
+  "options-trading",
   "reporting",
   "investor-relations",
 ] as const;

@@ -21,12 +21,26 @@ import type {
   ChainPortfolio,
   DeFiFlashPnl,
   DeFiOrderParams,
+  DeFiReconciliationRecord,
   FlashLoanStep,
   LendingProtocol,
   LiquidityPool,
+  PortfolioDeltaComposite,
+  RebalancePreview,
   StakingProtocol,
+  StrategyRiskProfile,
   SwapRoute,
+  TradeHistoryRow,
+  TreasurySnapshot,
 } from "@/lib/types/defi";
+import {
+  STRATEGY_RISK_PROFILES,
+  MOCK_PORTFOLIO_DELTA,
+  MOCK_TREASURY,
+  MOCK_REBALANCE_PREVIEW,
+  DEFI_RECONCILIATION_RECORDS,
+  MOCK_TRADE_HISTORY,
+} from "@/lib/mocks/fixtures/defi-risk";
 
 const MOCK_WALLET = "0x7a23c0ffeebee4f91deadbeef1234567890abcd";
 
@@ -34,16 +48,20 @@ const INITIAL_FLASH_STEPS: FlashLoanStep[] = [
   {
     id: "step-1",
     operationType: "SWAP",
+    algo_type: "SOR_DEX",
     asset: "ETH",
     amount: "100",
-    venue: "Uniswap",
+    venue: "UNISWAPV3-ETHEREUM",
+    max_slippage_bps: 50,
   },
   {
     id: "step-2",
     operationType: "SWAP",
+    algo_type: "SOR_DEX",
     asset: "USDC",
     amount: "345600",
-    venue: "Curve",
+    venue: "CURVE-ETHEREUM",
+    max_slippage_bps: 50,
   },
 ];
 
@@ -80,6 +98,14 @@ export interface DeFiDataContextValue {
   executeDeFiOrder: (params: DeFiOrderParams) => void;
   readOnly?: boolean;
   mode?: string;
+
+  riskProfiles: StrategyRiskProfile[];
+  deltaComposite: PortfolioDeltaComposite;
+  treasury: TreasurySnapshot;
+  tradeHistory: TradeHistoryRow[];
+  reconciliationRecords: DeFiReconciliationRecord[];
+  rebalancePreview: RebalancePreview | null;
+  triggerRebalance: () => void;
 }
 
 const DeFiDataContext = React.createContext<DeFiDataContextValue | null>(null);
@@ -114,15 +140,23 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const [rebalancePreview, setRebalancePreview] = React.useState<RebalancePreview | null>(null);
+
+  const triggerRebalance = React.useCallback(() => {
+    setRebalancePreview(MOCK_REBALANCE_PREVIEW);
+  }, []);
+
   const addFlashStep = React.useCallback(() => {
     setFlashSteps((steps) => [
       ...steps,
       {
         id: `step-${Date.now()}`,
         operationType: "SWAP",
+        algo_type: "SOR_DEX",
         asset: "ETH",
         amount: "",
-        venue: "Uniswap",
+        venue: "UNISWAPV3-ETHEREUM",
+        max_slippage_bps: 50,
       },
     ]);
   }, []);
@@ -200,6 +234,13 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       executeDeFiOrder,
       readOnly: isBatch,
       mode,
+      riskProfiles: STRATEGY_RISK_PROFILES,
+      deltaComposite: MOCK_PORTFOLIO_DELTA,
+      treasury: MOCK_TREASURY,
+      tradeHistory: MOCK_TRADE_HISTORY,
+      reconciliationRecords: DEFI_RECONCILIATION_RECORDS,
+      rebalancePreview,
+      triggerRebalance,
     }),
     [
       selectedChain,
@@ -219,6 +260,8 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       isBatch,
       isPaper,
       mode,
+      rebalancePreview,
+      triggerRebalance,
     ],
   );
 

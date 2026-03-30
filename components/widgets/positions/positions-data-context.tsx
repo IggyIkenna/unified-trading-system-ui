@@ -9,6 +9,8 @@ import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useQueryClient } from "@tanstack/react-query";
+import { getOrders } from "@/lib/api/mock-trade-ledger";
+import type { MockOrder } from "@/lib/api/mock-trade-ledger";
 import type { FilterDefinition } from "@/components/shared/filter-bar";
 
 export type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
@@ -86,6 +88,175 @@ interface PositionRecord {
   margin: number;
   leverage: number;
   updated_at: string;
+  /** DeFi: per-underlying net delta (ETH-equivalent) */
+  net_delta?: number;
+  /** DeFi: AAVE health factor (lending/recursive positions) */
+  health_factor?: number;
+}
+
+// ---------------------------------------------------------------------------
+// DeFi mock positions — appended alongside CeFi/TradFi positions
+// ---------------------------------------------------------------------------
+
+const DEFI_MOCK_POSITIONS: PositionRecord[] = [
+  {
+    id: "defi-aave-ausdc-001",
+    strategy_id: "AAVE_LENDING",
+    strategy_name: "AAVE Lending",
+    instrument: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM",
+    side: "LONG",
+    quantity: 100000,
+    entry_price: 1.0,
+    current_price: 1.0,
+    net_pnl: 13.25,
+    net_pnl_pct: 0.013,
+    today_pnl: 5.86,
+    today_pnl_pct: 0.006,
+    unrealized_pnl: 13.25,
+    venue: "AAVEV3-ETHEREUM",
+    margin: 0,
+    leverage: 1,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: 0,
+    health_factor: undefined,
+  },
+  {
+    id: "defi-basis-eth-spot-001",
+    strategy_id: "BASIS_TRADE",
+    strategy_name: "Multi-Venue Basis Trade",
+    instrument: "WALLET:SPOT_ASSET:ETH",
+    side: "LONG",
+    quantity: 30,
+    entry_price: 3000,
+    current_price: 3010,
+    net_pnl: 300,
+    net_pnl_pct: 0.33,
+    today_pnl: 120,
+    today_pnl_pct: 0.13,
+    unrealized_pnl: 300,
+    venue: "WALLET",
+    margin: 0,
+    leverage: 1,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: 0.3,
+    health_factor: undefined,
+  },
+  {
+    id: "defi-basis-eth-perp-001",
+    strategy_id: "BASIS_TRADE",
+    strategy_name: "Multi-Venue Basis Trade",
+    instrument: "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+    side: "SHORT",
+    quantity: 30,
+    entry_price: 3000,
+    current_price: 3010,
+    net_pnl: -300,
+    net_pnl_pct: -0.33,
+    today_pnl: -120,
+    today_pnl_pct: -0.13,
+    unrealized_pnl: -300,
+    venue: "HYPERLIQUID",
+    margin: 9000,
+    leverage: 10,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: -0.3,
+    health_factor: undefined,
+  },
+  {
+    id: "defi-recursive-collateral-001",
+    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_name: "Recursive Staked Basis (Hedged)",
+    instrument: "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
+    side: "LONG",
+    quantity: 96,
+    entry_price: 3100,
+    current_price: 3150,
+    net_pnl: 4800,
+    net_pnl_pct: 1.61,
+    today_pnl: 1920,
+    today_pnl_pct: 0.65,
+    unrealized_pnl: 4800,
+    venue: "AAVEV3-ETHEREUM",
+    margin: 0,
+    leverage: 2.5,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: 1.2,
+    health_factor: 1.42,
+  },
+  {
+    id: "defi-recursive-debt-001",
+    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_name: "Recursive Staked Basis (Hedged)",
+    instrument: "AAVEV3-ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM",
+    side: "SHORT",
+    quantity: 60,
+    entry_price: 3000,
+    current_price: 3010,
+    net_pnl: -600,
+    net_pnl_pct: -0.33,
+    today_pnl: -240,
+    today_pnl_pct: -0.13,
+    unrealized_pnl: -600,
+    venue: "AAVEV3-ETHEREUM",
+    margin: 0,
+    leverage: 2.5,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: -0.8,
+    health_factor: 1.42,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Derive position deltas from filled DeFi orders in the mock ledger
+// ---------------------------------------------------------------------------
+
+function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
+  const filledDefi = getOrders().filter(
+    (o: MockOrder) => o.asset_class === "DeFi" && o.status === "filled" && o.lane === "defi",
+  );
+
+  // Group by instrument_id to accumulate quantity changes
+  const deltaMap = new Map<string, { order: MockOrder; qtyDelta: number }>();
+  for (const order of filledDefi) {
+    const existing = deltaMap.get(order.instrument_id);
+    const delta = order.side === "buy" ? order.quantity : -order.quantity;
+    if (existing) {
+      existing.qtyDelta += delta;
+    } else {
+      deltaMap.set(order.instrument_id, { order, qtyDelta: delta });
+    }
+  }
+
+  const derived: PositionRecord[] = [];
+  for (const [instrumentId, { order, qtyDelta }] of deltaMap) {
+    // Skip if there's already a hardcoded position with the same instrument
+    const matchId = `defi-ledger-${instrumentId}`;
+    if (existingIds.has(matchId)) continue;
+    // Also skip if qty is zero (fully closed)
+    if (Math.abs(qtyDelta) < 0.000001) continue;
+
+    const price = order.average_fill_price ?? order.price;
+    derived.push({
+      id: matchId,
+      strategy_id: order.strategy_id ?? "UNKNOWN",
+      strategy_name: order.strategy_id ?? "DeFi Order",
+      instrument: instrumentId,
+      side: qtyDelta > 0 ? "LONG" : "SHORT",
+      quantity: Math.abs(qtyDelta),
+      entry_price: price,
+      current_price: price,
+      net_pnl: 0,
+      net_pnl_pct: 0,
+      today_pnl: 0,
+      today_pnl_pct: 0,
+      unrealized_pnl: 0,
+      venue: order.venue,
+      margin: 0,
+      leverage: 1,
+      updated_at: order.updated_at,
+    });
+  }
+  return derived;
 }
 
 interface PositionsSummary {
@@ -130,6 +301,9 @@ interface PositionsDataContextValue {
 
   classifyInstrument: (instrument: string) => AssetClassFilter;
   getInstrumentRoute: (instrument: string, type: AssetClassFilter) => string;
+
+  /** Re-read mock ledger to pick up newly filled DeFi orders as positions */
+  refreshPositions: () => void;
 }
 
 const PositionsDataContext = React.createContext<PositionsDataContextValue | null>(null);
@@ -197,6 +371,12 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
   const [sideFilter, setSideFilter] = React.useState<"all" | "LONG" | "SHORT">("all");
   const [strategyFilter, setStrategyFilter] = React.useState(strategyIdFilter || "all");
   const [instrumentTypeFilters, setInstrumentTypeFilters] = React.useState<AssetClassFilter[]>([]);
+  const [ledgerRefreshCounter, setLedgerRefreshCounter] = React.useState(0);
+
+  /** Trigger a re-derivation of positions from the mock trade ledger */
+  const refreshPositionsFromLedger = React.useCallback(() => {
+    setLedgerRefreshCounter((c) => c + 1);
+  }, []);
 
   const queryClient = useQueryClient();
   const handleWsMessage = React.useCallback(
@@ -240,6 +420,13 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
   );
 
   useWebSocket({ url: "ws://localhost:8030/ws", enabled: isLive, onMessage: handleWsMessage });
+
+  // Auto-refresh positions when a mock DeFi order fills
+  React.useEffect(() => {
+    const handler = () => refreshPositionsFromLedger();
+    window.addEventListener("mock-order-filled", handler);
+    return () => window.removeEventListener("mock-order-filled", handler);
+  }, [refreshPositionsFromLedger]);
 
   React.useEffect(() => {
     if (strategyIdFilter) setStrategyFilter(strategyIdFilter);
@@ -296,11 +483,25 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       });
     }
 
+    // Append DeFi mock positions alongside existing CeFi/TradFi positions
+    const defiIds = new Set(DEFI_MOCK_POSITIONS.map((p) => p.id));
+    if (!result.some((p) => defiIds.has(p.id))) {
+      result = [...result, ...DEFI_MOCK_POSITIONS];
+    }
+
+    // Derive additional positions from filled DeFi orders in the mock ledger
+    const existingIds = new Set(result.map((p) => p.id));
+    const ledgerDerived = deriveDefiPositionDeltas(existingIds);
+    if (ledgerDerived.length > 0) {
+      result = [...result, ...ledgerDerived];
+    }
+
     if (scopeStrategyIds.length > 0) {
       result = result.filter((p) => scopeStrategyIds.includes(p.strategy_id));
     }
     return result;
-  }, [positionsRaw, scopeStrategyIds, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positionsRaw, scopeStrategyIds, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds, ledgerRefreshCounter]);
 
   const filteredPositions = React.useMemo(() => {
     let result = positions;
@@ -442,6 +643,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       isLive,
       classifyInstrument,
       getInstrumentRoute,
+      refreshPositions: refreshPositionsFromLedger,
     }),
     [
       positions,
@@ -463,6 +665,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       filterValues,
       handleFilterChange,
       isLive,
+      refreshPositionsFromLedger,
     ],
   );
 
