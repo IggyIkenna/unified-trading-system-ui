@@ -35,6 +35,44 @@ const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "updated_at", header: "Updated" },
 ];
 
+function formatInstrumentId(id: string): string {
+  const parts = id.split(":");
+  if (parts.length < 3) return id;
+  const [venue, type, symbolPart] = parts;
+  const symbol = symbolPart.split("@")[0];
+
+  const venueLabel: Record<string, string> = {
+    "AAVEV3-ETHEREUM": "Aave V3",
+    "AAVEV3-ARBITRUM": "Aave V3 Arb",
+    "AAVEV3-OPTIMISM": "Aave V3 Op",
+    ETHERFI: "EtherFi",
+    LIDO: "Lido",
+    WALLET: "",
+    HYPERLIQUID: "Hyperliquid",
+    BINANCE: "Binance",
+    COINBASE: "Coinbase",
+    DERIBIT: "Deribit",
+  };
+
+  const typeLabel: Record<string, string> = {
+    PERPETUAL: "PERP",
+    FUTURE: "FUT",
+    OPTION: "OPT",
+    SPOT: "",
+    SPOT_ASSET: "",
+    A_TOKEN: "",
+    DEBT_TOKEN: "",
+    LST: "",
+  };
+
+  const vLabel = Object.prototype.hasOwnProperty.call(venueLabel, venue) ? venueLabel[venue] : venue;
+  const tLabel = Object.prototype.hasOwnProperty.call(typeLabel, type) ? typeLabel[type] : type;
+
+  const suffix = tLabel ? ` ${tLabel}` : "";
+  const venueStr = vLabel ? ` (${vLabel})` : "";
+  return `${symbol}${suffix}${venueStr}`;
+}
+
 function PnlCell({ abs, pct }: { abs: number; pct: number }) {
   return (
     <div className="flex flex-col items-end">
@@ -89,7 +127,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
               href={getInstrumentRoute(row.instrument, classifyInstrument(row.instrument))}
               className="font-mono font-medium text-primary hover:underline cursor-pointer"
             >
-              {row.instrument}
+              {formatInstrumentId(row.instrument)}
             </Link>
             <span className="text-[10px] text-muted-foreground">{row.strategy_name}</span>
           </div>
@@ -164,7 +202,12 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         align: "right" as const,
         accessor: (row) =>
           row.net_delta != null ? (
-            <span className={cn("font-mono text-[11px]", row.net_delta > 0 ? "pnl-positive" : row.net_delta < 0 ? "pnl-negative" : "text-muted-foreground")}>
+            <span
+              className={cn(
+                "font-mono text-[11px]",
+                row.net_delta > 0 ? "pnl-positive" : row.net_delta < 0 ? "pnl-negative" : "text-muted-foreground",
+              )}
+            >
               {row.net_delta > 0 ? "+" : ""}
               {row.net_delta.toFixed(2)}
             </span>
@@ -185,7 +228,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
                 "font-mono text-[10px] px-1.5 py-0",
                 row.health_factor >= 1.5
                   ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                  : row.health_factor >= 1.1
+                  : row.health_factor >= 1.25
                     ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
                     : "bg-rose-500/20 text-rose-400 border-rose-500/30",
               )}

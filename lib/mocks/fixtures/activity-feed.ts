@@ -1,5 +1,5 @@
+import { Bell, Brain, CheckCircle2, Database, FileText, FlaskConical, Play, TrendingUp } from "lucide-react";
 import type * as React from "react";
-import { FlaskConical, Play, Bell, FileText, CheckCircle2, TrendingUp, Brain, Database } from "lucide-react";
 
 export interface ActivityEvent {
   id: string;

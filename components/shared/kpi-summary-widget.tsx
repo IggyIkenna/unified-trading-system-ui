@@ -122,7 +122,7 @@ export function KpiSummaryWidget({ metrics, storageKey, className }: KpiSummaryW
         </div>
       )}
       <div className="min-h-0 min-w-0 flex-1 w-full">
-        <KpiStrip metrics={metrics} layoutMode={layoutMode} fill />
+        <KpiStrip metrics={metrics} layoutMode={layoutMode} fill compact />
       </div>
     </div>
   );

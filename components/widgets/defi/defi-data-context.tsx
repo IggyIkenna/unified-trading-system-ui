@@ -106,6 +106,8 @@ export interface DeFiDataContextValue {
   reconciliationRecords: DeFiReconciliationRecord[];
   rebalancePreview: RebalancePreview | null;
   triggerRebalance: () => void;
+  confirmRebalance: () => void;
+  cancelRebalance: () => void;
 }
 
 const DeFiDataContext = React.createContext<DeFiDataContextValue | null>(null);
@@ -140,10 +142,26 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const [treasury, setTreasury] = React.useState<TreasurySnapshot>(MOCK_TREASURY);
   const [rebalancePreview, setRebalancePreview] = React.useState<RebalancePreview | null>(null);
 
   const triggerRebalance = React.useCallback(() => {
     setRebalancePreview(MOCK_REBALANCE_PREVIEW);
+  }, []);
+
+  const confirmRebalance = React.useCallback(() => {
+    setRebalancePreview(null);
+    setTreasury((prev) => ({
+      ...prev,
+      status: "normal",
+      treasury_pct: 20,
+      treasury_balance_usd: prev.total_aum_usd * 0.2,
+      total_trading_balance_usd: prev.total_aum_usd * 0.8,
+    }));
+  }, []);
+
+  const cancelRebalance = React.useCallback(() => {
+    setRebalancePreview(null);
   }, []);
 
   const addFlashStep = React.useCallback(() => {
@@ -236,11 +254,13 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       mode,
       riskProfiles: STRATEGY_RISK_PROFILES,
       deltaComposite: MOCK_PORTFOLIO_DELTA,
-      treasury: MOCK_TREASURY,
+      treasury,
       tradeHistory: MOCK_TRADE_HISTORY,
       reconciliationRecords: DEFI_RECONCILIATION_RECORDS,
       rebalancePreview,
       triggerRebalance,
+      confirmRebalance,
+      cancelRebalance,
     }),
     [
       selectedChain,
@@ -258,10 +278,12 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       executeDeFiOrder,
       swapRoute,
       isBatch,
-      isPaper,
       mode,
+      treasury,
       rebalancePreview,
       triggerRebalance,
+      confirmRebalance,
+      cancelRebalance,
     ],
   );
 

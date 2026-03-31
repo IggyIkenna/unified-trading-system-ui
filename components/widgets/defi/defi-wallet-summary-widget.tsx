@@ -11,6 +11,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { DEFI_CHAINS, MOCK_CHAIN_PORTFOLIOS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/mocks/fixtures/defi-transfer";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { useDeFiData } from "./defi-data-context";
+import { DeFiRebalanceDialog } from "./defi-rebalance-dialog";
 import { formatNumber } from "@/lib/utils/formatters";
 
 function truncateAddr(addr: string): string {
@@ -32,11 +33,23 @@ function mockPortfolioUsd(balances: Record<string, number>): number {
 }
 
 export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
-  const { connectedWallet, selectedChain, setSelectedChain, tokenBalances, treasury, deltaComposite, triggerRebalance, rebalancePreview } = useDeFiData();
+  const {
+    connectedWallet,
+    selectedChain,
+    setSelectedChain,
+    tokenBalances,
+    treasury,
+    deltaComposite,
+    triggerRebalance,
+    confirmRebalance,
+    cancelRebalance,
+    rebalancePreview,
+  } = useDeFiData();
 
   const portfolio = React.useMemo(() => mockPortfolioUsd(tokenBalances), [tokenBalances]);
 
-  const treasuryStatusColor = treasury.status === "normal" ? "text-emerald-400" : treasury.status === "low" ? "text-rose-400" : "text-amber-400";
+  const treasuryStatusColor =
+    treasury.status === "normal" ? "text-emerald-400" : treasury.status === "low" ? "text-rose-400" : "text-amber-400";
 
   const metrics: KpiMetric[] = React.useMemo(
     () => [
@@ -91,35 +104,35 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
           <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 font-mono", treasuryStatusColor)}>
             {treasury.status.toUpperCase()}
           </Badge>
-          <span className="font-mono text-muted-foreground">${formatNumber(treasury.treasury_balance_usd, 0)}</span>
+          <span className="font-mono text-muted-foreground">
+            ${formatNumber(treasury.treasury_balance_usd, 0)} ({treasury.treasury_pct}%)
+          </span>
         </div>
         <div className="flex items-center gap-1.5 text-xs">
           <span className="text-muted-foreground">Net Delta</span>
-          <span className={cn("font-mono", deltaComposite.total_delta_usd !== 0 ? "text-amber-400" : "text-emerald-400")}>
+          <span
+            className={cn("font-mono", deltaComposite.total_delta_usd !== 0 ? "text-amber-400" : "text-emerald-400")}
+          >
             ${formatNumber(deltaComposite.total_delta_usd, 0)}
           </span>
         </div>
-        {treasury.status !== "normal" && (
-          <Button variant="outline" size="sm" className="h-6 text-[10px] px-2 ml-auto" onClick={triggerRebalance}>
-            <RefreshCw className="size-3 mr-1" />
-            Rebalance
-          </Button>
-        )}
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn(
+            "h-6 text-[10px] px-2 ml-auto",
+            treasury.status !== "normal" && "border-amber-500/50 text-amber-400 hover:bg-amber-500/10",
+          )}
+          onClick={triggerRebalance}
+          disabled={treasury.status === "normal"}
+        >
+          <RefreshCw className="size-3 mr-1" />
+          Rebalance
+        </Button>
       </div>
 
       {rebalancePreview && (
-        <div className="p-2 rounded-lg border border-amber-500/30 bg-amber-500/5 text-xs space-y-1 mx-1">
-          <div className="flex items-center gap-1.5 font-medium">
-            <RefreshCw className="size-3 text-amber-400" />
-            Rebalance preview: {rebalancePreview.action}
-          </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-muted-foreground font-mono">
-            <span>Treasury {rebalancePreview.treasury_current_pct}%</span>
-            <span>Target {rebalancePreview.treasury_target_pct}%</span>
-            <span>{rebalancePreview.total_instructions} instructions</span>
-            <span>~${formatNumber(rebalancePreview.estimated_gas_usd, 2)} gas</span>
-          </div>
-        </div>
+        <DeFiRebalanceDialog preview={rebalancePreview} onConfirm={confirmRebalance} onCancel={cancelRebalance} />
       )}
 
       <CollapsibleSection title="Portfolio by chain" defaultOpen={true} count={sortedPortfolios.length}>
