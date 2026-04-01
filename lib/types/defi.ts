@@ -75,7 +75,7 @@ export const OPERATION_TYPES = [
   "COLLECT_FEES",
   // DeFi-specific extensions (in strategy-service, not yet in UAC enum)
   "TRANSFER",
-  "TRADE",        // CeFi perp trade (maps to InstructionType.TRADE)
+  "TRADE", // CeFi perp trade (maps to InstructionType.TRADE)
   "STAKE",
   "UNSTAKE",
   "FLASH_BORROW",
@@ -238,6 +238,8 @@ export type RiskLevel = "low" | "medium" | "high" | "critical";
 
 export interface StrategyRiskProfile {
   strategy_id: DeFiStrategyId;
+  /** Mock/demo: synthetic Aave-style health factor for weighted portfolio HF */
+  health_factor?: number;
   /** Smart contract / oracle / governance risk */
   protocol_risk: RiskLevel;
   /** Individual token price collapse exposure */

@@ -19,14 +19,13 @@ import * as React from "react";
  * Debug Footer — ONLY visible in mock mode.
  * Shows: Reset Demo, current persona, mock mode badge, persona switcher.
  * Visibility controlled by NEXT_PUBLIC_MOCK_API env var or API health check mock_mode flag.
+ * Rendered in document flow below UnifiedShell’s main (not fixed) so it does not cover page content.
  */
 export function DebugFooter() {
   const { user, loginByEmail } = useAuth();
   const router = useRouter();
   const [mockMode, setMockMode] = React.useState(false);
-  const [pendingPersona, setPendingPersona] = React.useState<string | null>(
-    null,
-  );
+  const [pendingPersona, setPendingPersona] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     // Check env var first
@@ -101,13 +100,10 @@ export function DebugFooter() {
   return (
     <footer
       data-slot="debug-footer"
-      className="fixed bottom-0 left-0 right-0 z-50 flex flex-wrap items-center justify-between gap-2 border-t border-amber-500/20 bg-amber-950/90 px-4 py-1.5 text-xs backdrop-blur-sm sm:flex-nowrap"
+      className="shrink-0 w-full flex flex-wrap items-center justify-between gap-2 border-t border-amber-500/20 bg-amber-950/90 px-4 py-1.5 text-xs backdrop-blur-sm sm:flex-nowrap"
     >
       <div className="flex items-center gap-3">
-        <Badge
-          variant="outline"
-          className="border-amber-500/30 text-amber-400 gap-1"
-        >
+        <Badge variant="outline" className="border-amber-500/30 text-amber-400 gap-1">
           <Bug className="size-3" />
           Mock Mode
         </Badge>
@@ -142,9 +138,7 @@ export function DebugFooter() {
               >
                 <div className="flex flex-col">
                   <span className="text-sm">{p.label}</span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {p.desc}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground">{p.desc}</span>
                 </div>
               </DropdownMenuItem>
             ))}

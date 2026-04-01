@@ -1,24 +1,25 @@
 "use client";
 
-import * as React from "react";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
-import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
-import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
 import {
-  DEFI_CHAINS,
-  GAS_TOKEN_MIN_THRESHOLDS,
-  MOCK_CHAIN_PORTFOLIOS,
-  MOCK_TOKEN_BALANCES,
-  getMockBridgeRoutes,
-} from "@/lib/mocks/fixtures/defi-transfer";
+  DEFI_RECONCILIATION_RECORDS,
+  MOCK_PORTFOLIO_DELTA,
+  MOCK_REBALANCE_PREVIEW,
+  MOCK_TRADE_HISTORY,
+  MOCK_TREASURY,
+  STRATEGY_RISK_PROFILES,
+  computeWeightedMockHealthFactor,
+} from "@/lib/mocks/fixtures/defi-risk";
+import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
+import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
+import { DEFI_CHAINS, MOCK_TOKEN_BALANCES, getMockBridgeRoutes } from "@/lib/mocks/fixtures/defi-transfer";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type {
   BridgeRouteQuote,
-  ChainPortfolio,
   DeFiFlashPnl,
   DeFiOrderParams,
   DeFiReconciliationRecord,
@@ -33,14 +34,7 @@ import type {
   TradeHistoryRow,
   TreasurySnapshot,
 } from "@/lib/types/defi";
-import {
-  STRATEGY_RISK_PROFILES,
-  MOCK_PORTFOLIO_DELTA,
-  MOCK_TREASURY,
-  MOCK_REBALANCE_PREVIEW,
-  DEFI_RECONCILIATION_RECORDS,
-  MOCK_TRADE_HISTORY,
-} from "@/lib/mocks/fixtures/defi-risk";
+import * as React from "react";
 
 const MOCK_WALLET = "0x7a23c0ffeebee4f91deadbeef1234567890abcd";
 
@@ -125,8 +119,9 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
   const [flashSteps, setFlashSteps] = React.useState<FlashLoanStep[]>(INITIAL_FLASH_STEPS);
   const [transferMode, setTransferMode] = React.useState<"send" | "bridge">("send");
+  const [tradeHistory, setTradeHistory] = React.useState<TradeHistoryRow[]>(MOCK_TRADE_HISTORY);
 
-  const healthFactor = 1.85;
+  const healthFactor = React.useMemo(() => computeWeightedMockHealthFactor(MOCK_TREASURY.per_strategy_balance), []);
 
   const swapRoute = MOCK_SWAP_ROUTE;
 
@@ -197,9 +192,39 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
 
   const bridgeRoutes = React.useMemo<BridgeRouteQuote[]>(() => [], []);
 
-  const executeDeFiOrder = React.useCallback((params: DeFiOrderParams) => {
-    placeMockOrder(params);
-  }, []);
+  const executeDeFiOrder = React.useCallback(
+    (params: DeFiOrderParams) => {
+      placeMockOrder(params);
+
+      // Add new trade to history
+      const newTrade: TradeHistoryRow = {
+        seq: (tradeHistory.length || 0) + 1,
+        timestamp: new Date().toISOString(),
+        instruction_type: params.instruction_type,
+        algo_type: params.algo_type,
+        instrument_id: params.instrument_id,
+        venue: params.venue,
+        amount: params.quantity,
+        price: params.price,
+        expected_output: params.expected_output,
+        actual_output: params.expected_output * (1 - params.max_slippage_bps / 10000),
+        instant_pnl: {
+          gross_pnl: 0,
+          price_slippage_usd: 0,
+          gas_cost_usd: 5, // Mock gas cost
+          trading_fee_usd: 0,
+          bridge_fee_usd: 0,
+          net_pnl: -5,
+          slippage_exceeded: false,
+        },
+        running_pnl: (tradeHistory[tradeHistory.length - 1]?.running_pnl ?? 0) - 5,
+        status: "filled",
+      };
+
+      setTradeHistory((prev) => [...prev, newTrade]);
+    },
+    [tradeHistory],
+  );
 
   // Paper mode: 10x testnet balances; Batch mode: read-only flag
   // When an org without a DeFi desk is selected, show zero balances
@@ -255,7 +280,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       riskProfiles: STRATEGY_RISK_PROFILES,
       deltaComposite: MOCK_PORTFOLIO_DELTA,
       treasury,
-      tradeHistory: MOCK_TRADE_HISTORY,
+      tradeHistory,
       reconciliationRecords: DEFI_RECONCILIATION_RECORDS,
       rebalancePreview,
       triggerRebalance,
@@ -267,6 +292,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       selectedLendingProtocol,
       adjustedTokenBalances,
       adjustedLendingProtocols,
+      healthFactor,
       flashSteps,
       flashPnl,
       transferMode,
@@ -280,6 +306,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       isBatch,
       mode,
       treasury,
+      tradeHistory,
       rebalancePreview,
       triggerRebalance,
       confirmRebalance,

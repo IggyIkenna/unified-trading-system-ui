@@ -1,18 +1,19 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CollapsibleSection } from "@/components/shared/collapsible-section";
-import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { DEFI_CHAINS, MOCK_CHAIN_PORTFOLIOS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/mocks/fixtures/defi-transfer";
+import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
+import type { LendingProtocol, LiquidityPool, StakingProtocol } from "@/lib/types/defi";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import * as React from "react";
 import { useDeFiData } from "./defi-data-context";
 import { DeFiRebalanceDialog } from "./defi-rebalance-dialog";
-import { formatNumber } from "@/lib/utils/formatters";
 
 function truncateAddr(addr: string): string {
   if (addr.length < 12) return addr;
@@ -32,6 +33,59 @@ function mockPortfolioUsd(balances: Record<string, number>): number {
   );
 }
 
+type KeyRateRow = {
+  id: string;
+  protocol: string;
+  asset: string;
+  supplyApy: number;
+  borrowApy: number | null;
+};
+
+function buildKeyRateRows(
+  lendingProtocols: LendingProtocol[],
+  stakingProtocols: StakingProtocol[],
+  liquidityPools: LiquidityPool[],
+): KeyRateRow[] {
+  const out: KeyRateRow[] = [];
+  let n = 0;
+  for (const p of lendingProtocols) {
+    let bestSupply = { asset: p.assets[0] ?? "", apy: 0 };
+    let bestBorrow = { asset: p.assets[0] ?? "", apy: 0 };
+    for (const a of p.assets) {
+      const s = p.supplyApy[a] ?? 0;
+      const b = p.borrowApy[a] ?? 0;
+      if (s > bestSupply.apy) bestSupply = { asset: a, apy: s };
+      if (b > bestBorrow.apy) bestBorrow = { asset: a, apy: b };
+    }
+    out.push({
+      id: `kr-lend-${n++}`,
+      protocol: p.name,
+      asset: bestSupply.asset || "—",
+      supplyApy: bestSupply.apy,
+      borrowApy: bestBorrow.apy,
+    });
+  }
+  for (const s of stakingProtocols) {
+    out.push({
+      id: `kr-stake-${n++}`,
+      protocol: s.name,
+      asset: s.asset,
+      supplyApy: s.apy,
+      borrowApy: null,
+    });
+  }
+  for (const lp of liquidityPools) {
+    out.push({
+      id: `kr-lp-${n++}`,
+      protocol: lp.name,
+      asset: `${lp.token0}/${lp.token1}`,
+      supplyApy: lp.apr24h,
+      borrowApy: null,
+    });
+  }
+  return [...out].sort((a, b) => b.supplyApy - a.supplyApy).slice(0, 5);
+}
+
 export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
   const {
     connectedWallet,
@@ -44,6 +98,9 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     confirmRebalance,
     cancelRebalance,
     rebalancePreview,
+    lendingProtocols,
+    stakingProtocols,
+    liquidityPools,
   } = useDeFiData();
 
   const portfolio = React.useMemo(() => mockPortfolioUsd(tokenBalances), [tokenBalances]);
@@ -77,6 +134,11 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
   const totalPortfolioUsd = React.useMemo(
     () => sortedPortfolios.reduce((sum, cp) => sum + cp.totalUsd, 0),
     [sortedPortfolios],
+  );
+
+  const keyRateRows = React.useMemo(
+    () => buildKeyRateRows(lendingProtocols, stakingProtocols, liquidityPools),
+    [lendingProtocols, stakingProtocols, liquidityPools],
   );
 
   return (
@@ -180,6 +242,37 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
               </tr>
             </tfoot>
           </table>
+        </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Key Rates" defaultOpen={false} count={keyRateRows.length}>
+        <div className="px-1 pb-1">
+          {keyRateRows.length === 0 ? (
+            <p className="text-[10px] text-muted-foreground py-1">No rate data</p>
+          ) : (
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                  <th className="text-left py-1 font-medium">Protocol</th>
+                  <th className="text-left py-1 font-medium">Asset</th>
+                  <th className="text-right py-1 font-medium">Supply APY</th>
+                  <th className="text-right py-1 font-medium">Borrow APY</th>
+                </tr>
+              </thead>
+              <tbody>
+                {keyRateRows.map((row) => (
+                  <tr key={row.id} className="border-b border-border/30 last:border-0">
+                    <td className="py-1 font-medium">{row.protocol}</td>
+                    <td className="py-1 font-mono text-muted-foreground">{row.asset}</td>
+                    <td className="py-1 text-right font-mono tabular-nums">{formatNumber(row.supplyApy, 2)}%</td>
+                    <td className="py-1 text-right font-mono tabular-nums">
+                      {row.borrowApy === null ? "—" : `${formatNumber(row.borrowApy, 2)}%`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </CollapsibleSection>
     </div>

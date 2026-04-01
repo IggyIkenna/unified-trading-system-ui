@@ -1,5 +1,3 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import {
   ArrowLeftRight,
   BarChart3,
@@ -12,16 +10,18 @@ import {
   Wallet,
   Zap,
 } from "lucide-react";
-import { DeFiWalletSummaryWidget } from "./defi-wallet-summary-widget";
-import { DeFiLendingWidget } from "./defi-lending-widget";
-import { DeFiSwapWidget } from "./defi-swap-widget";
-import { DeFiLiquidityWidget } from "./defi-liquidity-widget";
-import { DeFiStakingWidget } from "./defi-staking-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { DeFiFlashLoansWidget } from "./defi-flash-loans-widget";
-import { DeFiTransferWidget } from "./defi-transfer-widget";
+import { DeFiLendingWidget } from "./defi-lending-widget";
+import { DeFiLiquidityWidget } from "./defi-liquidity-widget";
 import { DeFiRatesOverviewWidget } from "./defi-rates-overview-widget";
-import { DeFiTradeHistoryWidget } from "./defi-trade-history-widget";
+import { DeFiStakingWidget } from "./defi-staking-widget";
 import { DeFiStrategyConfigWidget } from "./defi-strategy-config-widget";
+import { DeFiSwapWidget } from "./defi-swap-widget";
+import { DeFiTradeHistoryWidget } from "./defi-trade-history-widget";
+import { DeFiTransferWidget } from "./defi-transfer-widget";
+import { DeFiWalletSummaryWidget } from "./defi-wallet-summary-widget";
 
 registerPresets("defi", [
   {
@@ -34,8 +34,8 @@ registerPresets("defi", [
       { widgetId: "defi-lending", instanceId: "defi-lending-1", x: 0, y: 2, w: 4, h: 6 },
       { widgetId: "defi-swap", instanceId: "defi-swap-1", x: 4, y: 2, w: 4, h: 6 },
       { widgetId: "defi-staking", instanceId: "defi-staking-1", x: 8, y: 2, w: 4, h: 6 },
-      { widgetId: "defi-rates-overview", instanceId: "defi-rates-overview-1", x: 0, y: 8, w: 8, h: 4 },
-      { widgetId: "defi-transfer", instanceId: "defi-transfer-1", x: 8, y: 8, w: 4, h: 4 },
+      { widgetId: "defi-transfer", instanceId: "defi-transfer-1", x: 0, y: 8, w: 4, h: 5 },
+      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-1", x: 4, y: 8, w: 8, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -47,12 +47,13 @@ registerPresets("defi", [
     isPreset: true,
     layouts: [
       { widgetId: "defi-wallet-summary", instanceId: "defi-wallet-summary-adv", x: 0, y: 0, w: 12, h: 2 },
-      { widgetId: "defi-flash-loans", instanceId: "defi-flash-loans-1", x: 0, y: 2, w: 6, h: 7 },
-      { widgetId: "defi-liquidity", instanceId: "defi-liquidity-1", x: 6, y: 2, w: 6, h: 7 },
-      { widgetId: "defi-lending", instanceId: "defi-lending-adv", x: 0, y: 9, w: 4, h: 5 },
-      { widgetId: "defi-swap", instanceId: "defi-swap-adv", x: 4, y: 9, w: 4, h: 5 },
-      { widgetId: "defi-staking", instanceId: "defi-staking-adv", x: 8, y: 9, w: 4, h: 5 },
-      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-1", x: 0, y: 14, w: 12, h: 5 },
+      { widgetId: "defi-lending", instanceId: "defi-lending-adv", x: 0, y: 2, w: 4, h: 6 },
+      { widgetId: "defi-swap", instanceId: "defi-swap-adv", x: 4, y: 2, w: 4, h: 6 },
+      { widgetId: "defi-staking", instanceId: "defi-staking-adv", x: 8, y: 2, w: 4, h: 6 },
+      { widgetId: "defi-liquidity", instanceId: "defi-liquidity-1", x: 0, y: 8, w: 12, h: 7 },
+      { widgetId: "defi-transfer", instanceId: "defi-transfer-adv", x: 0, y: 15, w: 4, h: 5 },
+      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-adv", x: 4, y: 15, w: 8, h: 5 },
+      { widgetId: "defi-strategy-config", instanceId: "defi-strategy-config-adv", x: 0, y: 20, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

@@ -10,6 +10,7 @@ import { AlertTriangle, ArrowDown, Shield } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
+import { calculateHealthFactorDelta, getAssetParams } from "@/lib/mocks/fixtures/defi-protocol-params";
 import { useDeFiData } from "./defi-data-context";
 
 export function DeFiLendingWidget(_props: WidgetComponentProps) {
@@ -31,7 +32,13 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
   const borrowApy = selectedProtocol ? (selectedProtocol.borrowApy[asset] ?? 0) : 0;
 
   const amountNum = parseFloat(amount) || 0;
-  const hfDelta = operation === "LEND" || operation === "REPAY" ? amountNum * 0.01 : -(amountNum * 0.015);
+
+  // Get asset parameters from DeFi protocol data (realistic Aave/Morpho/Compound values)
+  const assetParams = getAssetParams("AAVEV3", asset);
+  const amountUsd = amountNum * (assetParams?.price_usd ?? 1);
+
+  // Health factor changes based on protocol parameters and operation type
+  const hfDelta = calculateHealthFactorDelta("AAVEV3", asset, operation, amountUsd, currentHf);
   const newHf = Math.max(0, currentHf + hfDelta);
 
   React.useEffect(() => {
@@ -45,11 +52,11 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="space-y-3 p-1">
+    <div className="space-y-3 p-1" data-testid="defi-lending-widget">
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Protocol</label>
         <Select value={selectedLendingProtocol} onValueChange={setSelectedLendingProtocol}>
-          <SelectTrigger>
+          <SelectTrigger data-testid="protocol-select">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -78,6 +85,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                   : "",
             )}
             onClick={() => setOperation(op)}
+            data-testid={`operation-button-${op}`}
           >
             {op}
           </Button>
@@ -87,7 +95,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Asset</label>
         <Select value={asset} onValueChange={setAsset}>
-          <SelectTrigger>
+          <SelectTrigger data-testid="asset-select">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -112,13 +120,14 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="font-mono"
+          data-testid="amount-input"
         />
       </div>
 
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Max slippage</label>
         <Select value={String(maxSlippageBps)} onValueChange={(v) => setMaxSlippageBps(Number(v))}>
-          <SelectTrigger className="h-8 text-xs">
+          <SelectTrigger className="h-8 text-xs" data-testid="slippage-select">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -132,10 +141,39 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
       </div>
 
       {amountNum > 0 && (
-        <div className="flex items-center justify-between text-xs px-1">
+        <div className="flex items-center justify-between text-xs px-1" data-testid="expected-output">
           <span className="text-muted-foreground">Expected output</span>
           <span className="font-mono">
-            {formatNumber(amountNum * (1 - maxSlippageBps / 10000), 4)} {asset}
+            {(() => {
+              const slippageMultiplier = 1 - maxSlippageBps / 10000;
+              let outputAmount = amountNum * slippageMultiplier;
+              let outputAsset = asset;
+
+              // Different expected outputs based on operation
+              if (operation === "LEND") {
+                // LEND: convert to aToken (1:1 at current liquidity index)
+                outputAsset = `a${asset}`;
+                outputAmount = amountNum * slippageMultiplier;
+              } else if (operation === "BORROW") {
+                // BORROW: borrowed amount with interest rate applied
+                outputAsset = asset;
+                outputAmount = amountNum * slippageMultiplier;
+              } else if (operation === "WITHDRAW") {
+                // WITHDRAW: aToken burned, underlying + accrued yield received
+                outputAsset = asset;
+                // Add ~0.5% yield accrual for demo (varies by APY)
+                const yieldMultiplier = 1.005;
+                outputAmount = amountNum * yieldMultiplier * slippageMultiplier;
+              } else if (operation === "REPAY") {
+                // REPAY: debt reduction (principal + accrued interest)
+                outputAsset = asset;
+                // Interest accrual ~0.3% (lower than lending yield)
+                const interestMultiplier = 1.003;
+                outputAmount = amountNum * interestMultiplier * slippageMultiplier;
+              }
+
+              return `${formatNumber(outputAmount, 4)} ${outputAsset}`;
+            })()}
           </span>
         </div>
       )}
@@ -143,11 +181,15 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
       <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Supply APY</span>
-          <span className="font-mono text-emerald-400">{formatPercent(supplyApy, 2)}</span>
+          <span className="font-mono text-emerald-400" data-testid="supply-apy">
+            {formatPercent(supplyApy, 2)}
+          </span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Borrow APY</span>
-          <span className="font-mono text-rose-400">{formatPercent(borrowApy, 2)}</span>
+          <span className="font-mono text-rose-400" data-testid="borrow-apy">
+            {formatPercent(borrowApy, 2)}
+          </span>
         </div>
       </div>
 
@@ -164,6 +206,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                 "text-lg font-mono font-bold",
                 currentHf >= 1.5 ? "text-emerald-400" : currentHf >= 1.1 ? "text-amber-400" : "text-rose-400",
               )}
+              data-testid="current-hf"
             >
               {formatNumber(currentHf, 2)}
             </p>
@@ -176,6 +219,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                 "text-lg font-mono font-bold",
                 newHf >= 1.5 ? "text-emerald-400" : newHf >= 1.1 ? "text-amber-400" : "text-rose-400",
               )}
+              data-testid="after-hf"
             >
               {amountNum > 0 ? formatNumber(newHf, 2) : "—"}
             </p>
@@ -220,6 +264,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
             description: `${operation} ${amountNum} ${asset} on ${selectedLendingProtocol} (mock ledger)`,
           });
         }}
+        data-testid="execute-button"
       >
         {operation} {asset}
       </Button>

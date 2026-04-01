@@ -138,10 +138,10 @@ export const SEED_STRATEGIES: SeedStrategy[] = [
     orgId: "odum",
     clientId: "quant-fund",
   },
-  // Odum Internal — DeFi Ops
+  // Odum Internal — DeFi Ops (canonical strategy_id matches backend factory keys)
   {
-    id: "strat-defi-yield",
-    name: "DeFi Yield Farm",
+    id: "AAVE_LENDING",
+    name: "AAVE Lending",
     archetype: "yield",
     status: "live",
     sharpe: 1.65,
@@ -281,8 +281,8 @@ export const SEED_STRATEGIES: SeedStrategy[] = [
     clientId: "atlas-growth",
   },
   {
-    id: "strat-defi-atlas",
-    name: "DeFi Yield Farm",
+    id: "RECURSIVE_STAKED_BASIS",
+    name: "Recursive Staked Basis (Hedged)",
     archetype: "yield",
     status: "live",
     sharpe: 1.88,
@@ -485,11 +485,59 @@ export const SEED_POSITIONS: SeedPosition[] = [
     "strat-xexch-arb-beta",
     "Cross-Exchange Arb",
   ),
-  // Odum Internal — DeFi Ops
-  pos("pos-013", "WETH", "Uniswap", "long", 20, 3200, 3420, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-014", "USDC", "Aave", "long", 50000, 1.0, 1.0, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-015", "AAVE", "Uniswap", "long", 45, 92, 105, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-016", "UNI", "Uniswap", "long", 300, 7.2, 8.1, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  // Odum Internal — DeFi Ops (canonical instrument_id + venue_id)
+  pos(
+    "pos-013",
+    "ETHERFI:LST:WEETH@ETHEREUM",
+    "ETHERFI-ETHEREUM",
+    "long",
+    20,
+    3200,
+    3420,
+    "odum",
+    "defi-desk",
+    "AAVE_LENDING",
+    "AAVE Lending",
+  ),
+  pos(
+    "pos-014",
+    "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM",
+    "AAVEV3-ETHEREUM",
+    "long",
+    50000,
+    1.0,
+    1.0,
+    "odum",
+    "defi-desk",
+    "AAVE_LENDING",
+    "AAVE Lending",
+  ),
+  pos(
+    "pos-015",
+    "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+    "HYPERLIQUID",
+    "short",
+    20,
+    3200,
+    3420,
+    "odum",
+    "defi-desk",
+    "AAVE_LENDING",
+    "AAVE Lending",
+  ),
+  pos(
+    "pos-016",
+    "UNISWAPV3-ETHEREUM:SPOT_ASSET:UNI@ETHEREUM",
+    "UNISWAPV3-ETHEREUM",
+    "long",
+    300,
+    7.2,
+    8.1,
+    "odum",
+    "defi-desk",
+    "AAVE_LENDING",
+    "AAVE Lending",
+  ),
 
   // Apex Capital — Global Macro
   pos(
@@ -801,42 +849,42 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-040",
-    "WETH",
-    "Uniswap",
+    "ETHERFI:LST:WEETH@ETHEREUM",
+    "ETHERFI-ETHEREUM",
     "long",
     15,
     3150,
     3420,
     "atlas-ventures",
     "atlas-defi",
-    "strat-defi-atlas",
-    "DeFi Yield Farm",
+    "RECURSIVE_STAKED_BASIS",
+    "Recursive Staked Basis (Hedged)",
   ),
   pos(
     "pos-041",
-    "UNI",
-    "Uniswap",
-    "long",
-    400,
-    6.8,
-    8.1,
+    "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+    "HYPERLIQUID",
+    "short",
+    15,
+    3260,
+    3420,
     "atlas-ventures",
     "atlas-defi",
-    "strat-defi-atlas",
-    "DeFi Yield Farm",
+    "RECURSIVE_STAKED_BASIS",
+    "Recursive Staked Basis (Hedged)",
   ),
   pos(
     "pos-042",
-    "AAVE",
-    "Aave",
+    "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
+    "AAVEV3-ETHEREUM",
     "long",
     30,
-    88,
-    105,
+    3350,
+    3420,
     "atlas-ventures",
     "atlas-defi",
-    "strat-defi-atlas",
-    "DeFi Yield Farm",
+    "RECURSIVE_STAKED_BASIS",
+    "Recursive Staked Basis (Hedged)",
   ),
 ];
 
@@ -954,11 +1002,25 @@ export const SEED_ORDERS: SeedOrder[] = [
     "quant-fund",
     "strat-xexch-arb-beta",
   ),
-  ord("ord-006", "WETH", "Uniswap", "buy", 5, 3410, 5, "filled", "market", 2, "odum", "defi-desk", "strat-defi-yield"),
+  ord(
+    "ord-006",
+    "ETHERFI:LST:WEETH@ETHEREUM",
+    "ETHERFI-ETHEREUM",
+    "buy",
+    5,
+    3410,
+    5,
+    "filled",
+    "market",
+    2,
+    "odum",
+    "defi-desk",
+    "AAVE_LENDING",
+  ),
   ord(
     "ord-007",
-    "AAVE",
-    "Uniswap",
+    "UNISWAPV3-ETHEREUM:SPOT_ASSET:UNI@ETHEREUM",
+    "UNISWAPV3-ETHEREUM",
     "buy",
     10,
     100,
@@ -968,7 +1030,7 @@ export const SEED_ORDERS: SeedOrder[] = [
     3,
     "odum",
     "defi-desk",
-    "strat-defi-yield",
+    "AAVE_LENDING",
   ),
   // Apex Capital
   ord(
@@ -1126,8 +1188,8 @@ export const SEED_ORDERS: SeedOrder[] = [
   ),
   ord(
     "ord-018",
-    "WETH",
-    "Uniswap",
+    "ETHERFI:LST:WEETH@ETHEREUM",
+    "ETHERFI-ETHEREUM",
     "buy",
     5,
     3380,
@@ -1137,12 +1199,12 @@ export const SEED_ORDERS: SeedOrder[] = [
     2,
     "atlas-ventures",
     "atlas-defi",
-    "strat-defi-atlas",
+    "RECURSIVE_STAKED_BASIS",
   ),
   ord(
     "ord-019",
-    "UNI",
-    "Uniswap",
+    "UNISWAPV3-ETHEREUM:SPOT_ASSET:UNI@ETHEREUM",
+    "UNISWAPV3-ETHEREUM",
     "buy",
     100,
     7.5,
@@ -1152,7 +1214,7 @@ export const SEED_ORDERS: SeedOrder[] = [
     0,
     "atlas-ventures",
     "atlas-defi",
-    "strat-defi-atlas",
+    "RECURSIVE_STAKED_BASIS",
   ),
 ];
 
@@ -1190,9 +1252,28 @@ function splitSeedQuantity(total: number, parts: number, seed: number): number[]
 }
 
 function tradeTypeForVenue(venue: string): "Exchange" | "OTC" | "DeFi" | "Manual" {
-  if (venue === "Uniswap" || venue === "Aave") return "DeFi";
+  if (
+    venue.startsWith("UNISWAPV3-") ||
+    venue.startsWith("UNISWAPV4-") ||
+    venue.startsWith("AAVEV3-") ||
+    venue.startsWith("ETHERFI-") ||
+    venue.startsWith("MORPHO-") ||
+    venue.startsWith("CURVE-")
+  ) {
+    return "DeFi";
+  }
   if (venue === "OTC Desk") return "OTC";
   return "Exchange";
+}
+
+function counterpartyLabelForVenue(venue: string): string {
+  if (venue.startsWith("UNISWAPV4-")) return "Uniswap V4";
+  if (venue.startsWith("UNISWAPV3-")) return "Uniswap V3";
+  if (venue.startsWith("AAVEV3-")) return "Aave V3";
+  if (venue.startsWith("ETHERFI-")) return "EtherFi";
+  if (venue.startsWith("MORPHO-")) return "Morpho";
+  if (venue.startsWith("CURVE-")) return "Curve";
+  return venue;
 }
 
 /** One synthetic fill set per position: quantities sum to position size; sides match long/short. */
@@ -1203,7 +1284,7 @@ function buildSeedTradesForPositions(positions: SeedPosition[]): SeedTrade[] {
     const n = 2 + (h % 4);
     const quantities = splitSeedQuantity(pos.quantity, n, h);
     const type = tradeTypeForVenue(pos.venue);
-    const counterparty = pos.venue === "Uniswap" ? "Uniswap V3" : pos.venue === "Aave" ? "Aave V3" : pos.venue;
+    const counterparty = counterpartyLabelForVenue(pos.venue);
     for (let i = 0; i < n; i++) {
       const daysAgo = 1 + ((h + i * 3) % 20);
       const d = new Date();
@@ -1292,12 +1373,12 @@ export const SEED_ALERTS: SeedAlert[] = [
   ),
   alrt(
     "alert-003",
-    "DeFi Yield Farm: Aave health factor below 1.5",
+    "AAVE Lending: Aave health factor below 1.5",
     "critical",
     "defi-monitor",
     1,
     "odum",
-    "strat-defi-yield",
+    "AAVE_LENDING",
     false,
   ),
   alrt(
@@ -1392,12 +1473,12 @@ export const SEED_ALERTS: SeedAlert[] = [
   ),
   alrt(
     "alert-013",
-    "DeFi Yield Farm: gas price spike on Ethereum (>50 gwei)",
+    "Recursive Staked Basis: gas price spike on Ethereum (>50 gwei)",
     "medium",
     "defi-monitor",
     2,
     "atlas-ventures",
-    "strat-defi-atlas",
+    "RECURSIVE_STAKED_BASIS",
     false,
   ),
   alrt(
@@ -1410,56 +1491,56 @@ export const SEED_ALERTS: SeedAlert[] = [
     "strat-btc-mom-atlas",
     true,
   ),
-  // DeFi-specific alerts
+  // DeFi-specific alerts (strategy IDs = DeFi factory keys where noted; empty = book-level)
   alrt(
     "alert-defi-001",
-    "Health Factor Below Threshold — AAVEV3-ETHEREUM HF dropped to 1.18 (threshold: 1.25). Deleverage recommended.",
+    "Health Factor Critical — RECURSIVE_STAKED_BASIS: HF dropped to 1.18 — liquidation risk",
     "critical",
     "defi-monitor",
     1,
     "odum",
-    "strat-defi-yield",
+    "RECURSIVE_STAKED_BASIS",
     false,
   ),
   alrt(
     "alert-defi-002",
-    "Funding Rate Negative (Hyperliquid) — ETH funding rate on Hyperliquid turned negative (-0.002%). Consider reducing position.",
+    "Funding Rate Negative — ETH-USDC funding rate went negative on Hyperliquid: -0.02% (threshold: 0%)",
     "medium",
     "defi-monitor",
     3,
     "odum",
-    "strat-defi-yield",
+    "BASIS_TRADE",
     false,
   ),
   alrt(
     "alert-defi-003",
-    "Treasury Below Minimum Threshold — Treasury at 8% of AUM (minimum: 10%). Strategies should reduce positions to refill.",
+    "Treasury Low — Treasury allocation at 8% — below 15% minimum threshold",
     "high",
-    "defi-monitor",
+    "treasury-monitor",
     5,
     "odum",
-    "strat-defi-yield",
-    true,
+    "",
+    false,
   ),
   alrt(
     "alert-defi-004",
-    "Impermanent Loss Exceeds Fee Income — ETH/USDC LP: IL at $450 vs fees at $320. Consider widening range or exiting.",
+    "IL Exceeds Fees — UNISWAPV3-ETHEREUM ETH/USDC pool: impermanent loss ($420) exceeds accumulated fees ($180)",
     "medium",
     "defi-monitor",
     6,
-    "atlas-ventures",
-    "strat-defi-atlas",
+    "odum",
+    "AMM_LP",
     false,
   ),
   alrt(
     "alert-defi-005",
-    "weETH/ETH Rate Deviation — weETH/ETH rate deviated 1.2% from entry. Approaching 2% depeg tolerance.",
+    "LST Depeg Warning — weETH/ETH exchange rate deviation 1.2% (threshold: 0.5%) — EtherFi oracle delay possible",
     "high",
     "defi-monitor",
     8,
-    "atlas-ventures",
-    "strat-defi-atlas",
-    true,
+    "odum",
+    "STAKED_BASIS",
+    false,
   ),
 ];
 
@@ -1483,7 +1564,7 @@ export const SEED_PNL_DAILY: Record<string, SeedPnlDay[]> = {
   "strat-eth-basis-alpha": generateDailyPnl(30, 1200, 1500),
   "strat-ml-dir-beta": generateDailyPnl(30, 1800, 3000),
   "strat-xexch-arb-beta": generateDailyPnl(30, 800, 500),
-  "strat-defi-yield": generateDailyPnl(30, 1500, 2000),
+  AAVE_LENDING: generateDailyPnl(30, 1500, 2000),
   "strat-flash-arb": generateDailyPnl(30, 400, 600),
   "strat-sports-arb": generateDailyPnl(30, 600, 800),
   "strat-btc-mom-apex": generateDailyPnl(30, 4500, 6000),
@@ -1495,5 +1576,5 @@ export const SEED_PNL_DAILY: Record<string, SeedPnlDay[]> = {
   "strat-eth-basis-mer": generateDailyPnl(30, 900, 1100),
   "strat-disc-mer": generateDailyPnl(30, 500, 2500),
   "strat-btc-mom-atlas": generateDailyPnl(30, 1800, 2800),
-  "strat-defi-atlas": generateDailyPnl(30, 1200, 1800),
+  RECURSIVE_STAKED_BASIS: generateDailyPnl(30, 1200, 1800),
 };

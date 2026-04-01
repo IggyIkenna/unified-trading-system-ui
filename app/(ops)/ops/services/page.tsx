@@ -1,37 +1,34 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useServicesList } from "@/hooks/api/use-service-status";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { SERVICES, type Service } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import {
-  Server,
-  Database,
-  Cpu,
-  Activity,
-  Search,
-  RefreshCw,
-  ExternalLink,
-  CheckCircle2,
   AlertTriangle,
-  XCircle,
   ArrowUpRight,
-  ArrowDownRight,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
+  Cpu,
+  Database,
+  ExternalLink,
   Layers,
+  RefreshCw,
+  Search,
+  Server,
+  XCircle,
 } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { mock01 } from "@/lib/mocks/generators/deterministic";
-import { SERVICES, type Service } from "@/lib/reference-data";
-import { useServicesList } from "@/hooks/api/use-service-status";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // Extend services with runtime status
 interface ServiceStatus extends Service {

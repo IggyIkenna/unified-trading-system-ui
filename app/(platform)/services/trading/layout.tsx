@@ -1,43 +1,41 @@
 "use client";
 
-import "@/components/widgets/register-all";
+import { EntitlementGate, hasAnyEntitlement } from "@/components/platform/entitlement-gate";
+import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { TRADING_TABS } from "@/components/shell/service-tabs";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
-import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
-import { BatchLiveRail } from "@/components/platform/batch-live-rail";
-import { ErrorBoundary } from "@/components/shared/error-boundary";
-import { EntitlementGate } from "@/components/platform/entitlement-gate";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import "@/components/widgets/register-all";
+import { WorkspaceToolbar } from "@/components/widgets/workspace-toolbar";
+import { useAlertsSummary } from "@/hooks/api/use-alerts";
+import { useNewsFeed, type NewsSeverity } from "@/hooks/api/use-news";
+import { useOrders } from "@/hooks/api/use-orders";
+import { usePositionsSummary } from "@/hooks/api/use-positions";
+import { useServiceHealth } from "@/hooks/api/use-service-status";
 import { useAuth } from "@/hooks/use-auth";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { usePositionsSummary } from "@/hooks/api/use-positions";
-import { useAlertsSummary } from "@/hooks/api/use-alerts";
-import { useServiceHealth } from "@/hooks/api/use-service-status";
-import { useOrders } from "@/hooks/api/use-orders";
-import { useNewsFeed, type NewsSeverity } from "@/hooks/api/use-news";
-import { useRef, useState } from "react";
-import { usePathname } from "next/navigation";
-import type { ImperativePanelHandle } from "react-resizable-panels";
-import { WorkspaceToolbar } from "@/components/widgets/workspace-toolbar";
 import { useWorkspaceSync } from "@/lib/stores/workspace-sync";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 import {
   Activity,
   AlertTriangle,
-  TrendingUp,
-  Wallet,
-  Server,
-  ArrowUpRight,
   ArrowDownRight,
+  ArrowUpRight,
   Lock,
   Newspaper,
   PanelRightClose,
   PanelRightOpen,
+  Server,
+  TrendingUp,
+  Wallet,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { formatNumber } from "@/lib/utils/formatters";
+import { usePathname } from "next/navigation";
+import { useRef, useState } from "react";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 
 const SEVERITY_DOT: Record<NewsSeverity, string> = {
   breaking: "bg-rose-500",
@@ -48,7 +46,7 @@ const SEVERITY_DOT: Record<NewsSeverity, string> = {
 
 function TradingSidebar() {
   const { hasEntitlement, isAdmin, isInternal } = useAuth();
-  const canSeeInternalData = isAdmin() || isInternal() || hasEntitlement("execution-basic");
+  const canSeeInternalData = isAdmin() || isInternal() || hasAnyEntitlement(["execution-basic"], hasEntitlement);
 
   const { data: positionsSummary } = usePositionsSummary();
   const { data: alertsSummary } = useAlertsSummary();
