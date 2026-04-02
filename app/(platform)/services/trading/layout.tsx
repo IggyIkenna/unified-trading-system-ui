@@ -258,6 +258,7 @@ const STANDALONE_PAGES = new Set([
   "/services/trading/predictions/aggregators",
   "/services/trading/defi/staking",
   "/services/trading/strategies/model-portfolios",
+  "/services/trading/strategies/basis-trade",
 ]);
 
 function useWidgetTab(): string | null {

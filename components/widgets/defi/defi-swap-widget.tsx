@@ -12,17 +12,33 @@ import { toast } from "@/hooks/use-toast";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
+import {
+  BASIS_TRADE_MOCK_DATA,
+  calculateBasisTradeFundingImpact,
+  calculateBasisTradeCostOfCarry,
+} from "@/lib/mocks/fixtures/defi-basis-trade";
 import { DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
 import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
-export function DeFiSwapWidget(_props: WidgetComponentProps) {
+export function DeFiSwapWidget(props: WidgetComponentProps) {
   const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
   const tokens = swapTokens as string[];
 
-  const [tokenIn, setTokenIn] = React.useState("ETH");
-  const [tokenOut, setTokenOut] = React.useState("USDC");
+  // Check if this widget is in basis-trade mode
+  const isBasisTrade = props.config?.mode === "basis-trade";
+  const isStakedBasis = props.config?.mode === "staked-basis";
+
+  const [tokenIn, setTokenIn] = React.useState("USDT");
+  const [tokenOut, setTokenOut] = React.useState("ETH");
+
+  React.useEffect(() => {
+    if (isStakedBasis) {
+      setTokenIn("USDT");
+      setTokenOut("weETH");
+    }
+  }, [isStakedBasis]);
   const [amountIn, setAmountIn] = React.useState("");
   const [slippage, setSlippage] = React.useState("0.5");
   const [algoType, setAlgoType] = React.useState<AlgoType>("SOR_DEX");
@@ -162,6 +178,61 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         </Select>
       </div>
 
+      {isStakedBasis && (
+        <>
+          <Separator className="my-2" />
+          <CollapsibleSection title="Staked basis — swap leg" defaultOpen={true}>
+            <p className="text-xs text-muted-foreground px-1 pb-2">
+              SOR swap stable → weETH (EtherFi LST). Then use{" "}
+              <span className="font-mono text-foreground">Transfer &amp; Bridge</span> for Hyperliquid margin and{" "}
+              <span className="font-mono text-foreground">Book</span> for ETH-USDC perp short to complete delta-neutral
+              deployment.
+            </p>
+          </CollapsibleSection>
+        </>
+      )}
+
+      {isBasisTrade && amountIn && (
+        <>
+          <Separator className="my-2" />
+          <CollapsibleSection title="Basis Trade Metrics" defaultOpen={true}>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="space-y-1">
+                <div className="text-muted-foreground">Funding APY</div>
+                <div className="font-mono font-semibold text-green-600">
+                  {formatPercent(calculateBasisTradeFundingImpact(tokenOut) / 100, 1)}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-muted-foreground">Cost of Carry</div>
+                <div className="font-mono font-semibold text-amber-500">
+                  {formatPercent(calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut) / 100, 2)}
+                </div>
+              </div>
+              <div className="space-y-1 col-span-2">
+                <div className="text-muted-foreground">Net APY</div>
+                <div
+                  className={cn(
+                    "font-mono font-bold",
+                    calculateBasisTradeFundingImpact(tokenOut) >
+                      calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut)
+                      ? "text-green-600"
+                      : "text-red-500",
+                  )}
+                >
+                  {formatPercent(
+                    (calculateBasisTradeFundingImpact(tokenOut) -
+                      calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut)) /
+                      100,
+                    1,
+                  )}
+                </div>
+              </div>
+            </div>
+          </CollapsibleSection>
+        </>
+      )}
+
       {route && (
         <CollapsibleSection title="Route details" defaultOpen={false}>
           <div className="px-2 pb-2 space-y-2">
@@ -182,9 +253,7 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
               <Separator />
               <div className="grid grid-cols-2 gap-1 text-xs">
                 <span className="text-muted-foreground">Algo</span>
-                <span className="font-mono">
-                  {swapAlgos.find((a) => a.value === algoType)?.label ?? algoType}
-                </span>
+                <span className="font-mono">{swapAlgos.find((a) => a.value === algoType)?.label ?? algoType}</span>
                 <span className="text-muted-foreground">Price impact</span>
                 <span className={cn("font-mono", route.priceImpactPct > 0.5 ? "text-rose-400" : "text-emerald-400")}>
                   {formatPercent(route.priceImpactPct, 2)}
@@ -206,7 +275,7 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         onClick={() => {
           executeDeFiOrder({
             client_id: "internal-trader",
-            strategy_id: "BASIS_TRADE",
+            strategy_id: isBasisTrade ? "BASIS_TRADE" : isStakedBasis ? "STAKED_BASIS" : "AAVE_LENDING",
             instruction_type: "SWAP",
             algo_type: algoType,
             instrument_id: `SWAP:${tokenIn}-${tokenOut}`,
@@ -223,13 +292,21 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
           });
           setAmountIn("");
           toast({
-            title: "Swap submitted",
+            title: isStakedBasis
+              ? "Staked basis swap submitted"
+              : isBasisTrade
+                ? "Basis trade swap submitted"
+                : "Swap submitted",
             description: `${amountNum} ${tokenIn} → ${tokenOut} (mock ledger)`,
           });
         }}
       >
         <ArrowLeftRight className="size-4 mr-2" />
-        Swap {tokenIn} for {tokenOut}
+        {isStakedBasis
+          ? "Execute staked-basis swap (USDT → weETH)"
+          : isBasisTrade
+            ? "Execute Basis Trade Swap"
+            : `Swap ${tokenIn} for ${tokenOut}`}
       </Button>
     </div>
   );

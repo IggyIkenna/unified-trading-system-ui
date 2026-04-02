@@ -95,7 +95,7 @@ registerWidget({
 registerWidget({
   id: "defi-swap",
   label: "DeFi Swap",
-  description: "Token pair, amount, slippage, route with price impact and gas.",
+  description: "Token pair, amount, slippage, route with price impact and gas. Supports basis trade mode.",
   icon: ArrowLeftRight,
   minW: 3,
   minH: 4,
