@@ -50,11 +50,15 @@ export function WidgetScroll({
   return (
     <ScrollAreaPrimitive.Root
       data-slot="widget-scroll"
-      className={cn("relative h-full w-full overflow-hidden", className)}
+      className={cn("relative flex h-full min-h-0 w-full flex-col overflow-hidden", className)}
     >
       <ScrollAreaPrimitive.Viewport
         data-slot="widget-scroll-viewport"
-        className={cn("h-full w-full rounded-[inherit]", showHorizontal && "overflow-x-auto", viewportClassName)}
+        className={cn(
+          "min-h-0 min-w-0 flex-1 rounded-[inherit]",
+          showHorizontal && "overflow-x-auto",
+          viewportClassName,
+        )}
         style={{ overflowY: showVertical ? undefined : "hidden" }}
       >
         {children}

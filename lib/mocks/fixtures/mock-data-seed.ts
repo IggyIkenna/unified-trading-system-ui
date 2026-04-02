@@ -105,8 +105,8 @@ export const SEED_STRATEGIES: SeedStrategy[] = [
     clientId: "delta-one",
   },
   {
-    id: "strat-eth-basis-alpha",
-    name: "ETH Basis Trade",
+    id: "BASIS_TRADE",
+    name: "Multi-Venue Basis Trade",
     archetype: "basis",
     status: "live",
     sharpe: 2.14,
@@ -147,6 +147,17 @@ export const SEED_STRATEGIES: SeedStrategy[] = [
     sharpe: 1.65,
     mtdReturn: 5.4,
     aum: 4800000,
+    orgId: "odum",
+    clientId: "defi-desk",
+  },
+  {
+    id: "STAKED_BASIS",
+    name: "Staked Basis (weETH)",
+    archetype: "basis",
+    status: "live",
+    sharpe: 1.72,
+    mtdReturn: 4.8,
+    aum: 3200000,
     orgId: "odum",
     clientId: "defi-desk",
   },
@@ -390,8 +401,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
     3420,
     "odum",
     "delta-one",
-    "strat-eth-basis-alpha",
-    "ETH Basis Trade",
+    "BASIS_TRADE",
+    "Multi-Venue Basis Trade",
   ),
   pos(
     "pos-006",
@@ -403,8 +414,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
     3420,
     "odum",
     "delta-one",
-    "strat-eth-basis-alpha",
-    "ETH Basis Trade",
+    "BASIS_TRADE",
+    "Multi-Venue Basis Trade",
   ),
   // Odum Internal — Desk Beta (ML Directional + Cross-Exchange Arb)
   pos(
@@ -496,8 +507,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
     3420,
     "odum",
     "defi-desk",
-    "AAVE_LENDING",
-    "AAVE Lending",
+    "STAKED_BASIS",
+    "Staked Basis (weETH)",
   ),
   pos(
     "pos-014",
@@ -522,8 +533,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
     3420,
     "odum",
     "defi-desk",
-    "AAVE_LENDING",
-    "AAVE Lending",
+    "STAKED_BASIS",
+    "Staked Basis (weETH)",
   ),
   pos(
     "pos-016",
@@ -970,7 +981,7 @@ export const SEED_ORDERS: SeedOrder[] = [
     1,
     "odum",
     "delta-one",
-    "strat-eth-basis-alpha",
+    "BASIS_TRADE",
   ),
   ord(
     "ord-004",
@@ -1015,7 +1026,7 @@ export const SEED_ORDERS: SeedOrder[] = [
     2,
     "odum",
     "defi-desk",
-    "AAVE_LENDING",
+    "STAKED_BASIS",
   ),
   ord(
     "ord-007",
@@ -1368,7 +1379,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "venue-monitor",
     4,
     "odum",
-    "strat-eth-basis-alpha",
+    "BASIS_TRADE",
     true,
   ),
   alrt(
@@ -1561,7 +1572,8 @@ function generateDailyPnl(days: number, avgDaily: number, vol: number): SeedPnlD
 
 export const SEED_PNL_DAILY: Record<string, SeedPnlDay[]> = {
   "strat-btc-mom-alpha": generateDailyPnl(30, 2800, 4000),
-  "strat-eth-basis-alpha": generateDailyPnl(30, 1200, 1500),
+  BASIS_TRADE: generateDailyPnl(30, 1200, 1500),
+  STAKED_BASIS: generateDailyPnl(30, 950, 1400),
   "strat-ml-dir-beta": generateDailyPnl(30, 1800, 3000),
   "strat-xexch-arb-beta": generateDailyPnl(30, 800, 500),
   AAVE_LENDING: generateDailyPnl(30, 1500, 2000),

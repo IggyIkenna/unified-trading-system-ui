@@ -1,6 +1,18 @@
 import type { SwapRoute } from "@/lib/types/defi";
 
-export const SWAP_TOKENS = ["ETH", "USDC", "USDT", "DAI", "WBTC", "LINK", "UNI", "AAVE", "CRV", "LDO"] as const;
+export const SWAP_TOKENS = [
+  "ETH",
+  "USDC",
+  "USDT",
+  "DAI",
+  "weETH",
+  "WBTC",
+  "LINK",
+  "UNI",
+  "AAVE",
+  "CRV",
+  "LDO",
+] as const;
 
 export type SwapToken = (typeof SWAP_TOKENS)[number];
 

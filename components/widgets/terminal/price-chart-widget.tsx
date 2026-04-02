@@ -6,7 +6,6 @@ import { CandlestickChart } from "@/components/trading/candlestick-chart";
 import { DepthChart } from "@/components/trading/order-book";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useTerminalData } from "./terminal-data-context";
 import {
   Area,
@@ -70,7 +69,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
   } = useTerminalData();
 
   return (
-    <Card className="h-full border-0 rounded-none flex flex-col">
+    <Card className="flex min-h-0 w-full flex-1 flex-col gap-0 border-0 rounded-none p-0 shadow-none">
       <CardHeader className="pb-2 pt-2 px-3 shrink-0">
         <div className="flex items-center justify-end gap-1">
           {(["candles", "line", "depth", "options"] as const).map((ct) => (
@@ -111,58 +110,62 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
           ))}
         </div>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 p-0">
+      <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
         {chartType === "candles" && (
-          <div className="h-full p-2">
+          <div className="relative min-h-0 min-h-[120px] flex-1 p-2">
             <CandlestickChart
+              absoluteFill
+              className="absolute inset-0"
               data={candleData as never}
               indicators={indicatorOverlays as never}
             />
           </div>
         )}
         {chartType === "line" && (
-          <div className="h-full p-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={candleData.map((c) => ({
-                  time: (c as Record<string, unknown>).time,
-                  value: (c as Record<string, unknown>).close,
-                }))}
-              >
-                <defs>
-                  <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--pnl-positive)" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="var(--pnl-positive)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="time" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                <Tooltip
-                  contentStyle={{
-                    background: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    fontSize: 11,
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="var(--pnl-positive)"
-                  fill="url(#lineGrad)"
-                  strokeWidth={1.5}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="relative min-h-0 min-h-[120px] flex-1 p-2">
+            <div className="absolute inset-0">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={candleData.map((c) => ({
+                    time: (c as Record<string, unknown>).time,
+                    value: (c as Record<string, unknown>).close,
+                  }))}
+                >
+                  <defs>
+                    <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--pnl-positive)" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="var(--pnl-positive)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="time" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <Tooltip
+                    contentStyle={{
+                      background: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      fontSize: 11,
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="value"
+                    stroke="var(--pnl-positive)"
+                    fill="url(#lineGrad)"
+                    strokeWidth={1.5}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         )}
         {chartType === "depth" && (
-          <div className="h-full p-2">
+          <div className="flex min-h-0 flex-1 flex-col overflow-auto p-2">
             <DepthChart bids={bids} asks={asks} midPrice={livePrice} symbol={selectedInstrument.symbol} />
           </div>
         )}
         {chartType === "options" && (
-          <div className="h-full p-2 space-y-4 overflow-auto">
+          <div className="flex min-h-0 flex-1 flex-col space-y-4 overflow-auto p-2">
             <OptionsChain underlying={selectedInstrument.symbol} venue={selectedInstrument.venue} />
             <VolSurfaceChart underlying={selectedInstrument.symbol} />
           </div>

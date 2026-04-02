@@ -71,7 +71,7 @@ function WidgetBody({
 }) {
   const Component = definition.component;
   return (
-    <WidgetScroll axes="both" className="flex-1 min-h-0">
+    <WidgetScroll axes="both" className="min-h-0 flex-1">
       {hasAccess ? (
         <WidgetContextGuard widgetLabel={definition.label}>
           <WidgetErrorBoundary widgetLabel={definition.label}>

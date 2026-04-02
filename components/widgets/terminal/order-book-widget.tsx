@@ -8,7 +8,7 @@ export function OrderBookWidget(_props: WidgetComponentProps) {
   const { selectedInstrument, bids, asks, livePrice, spread, spreadBps } = useTerminalData();
 
   return (
-    <div className="h-full overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <OrderBook
         symbol={selectedInstrument.symbol}
         bids={bids}

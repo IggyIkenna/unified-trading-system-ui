@@ -420,6 +420,18 @@
           "lines": 270
         },
         {
+          "route": "/services/trading/strategies/basis-trade",
+          "file": "app/(platform)/services/trading/strategies/basis-trade/page.tsx",
+          "state": "REAL",
+          "lines": 42
+        },
+        {
+          "route": "/services/trading/strategies/staked-basis",
+          "file": "app/(platform)/services/trading/strategies/staked-basis/page.tsx",
+          "state": "REAL",
+          "lines": 75
+        },
+        {
           "route": "/services/trading/strategies/[id]",
           "file": "app/(platform)/services/trading/strategies/[id]/page.tsx",
           "state": "REAL",

@@ -59,8 +59,16 @@ export function OrderBook({
     return `$${(size * price).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
   };
 
+  const embedded = hideTitle;
+
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card
+      className={cn(
+        "overflow-hidden",
+        embedded && "h-full min-h-0 flex flex-col gap-0 rounded-none border-0 bg-transparent py-0 shadow-none",
+        className,
+      )}
+    >
       {!hideTitle && (
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -110,15 +118,15 @@ export function OrderBook({
         </CardHeader>
       )}
 
-      <CardContent className="pt-0 px-0">
-        <div className="grid grid-cols-2 gap-0">
+      <CardContent className={cn("pt-0 px-0", embedded && "flex min-h-0 flex-1 flex-col overflow-hidden pb-0")}>
+        <div className={cn("grid grid-cols-2 gap-0", embedded && "min-h-0 flex-1 grid-rows-1 overflow-hidden")}>
           {/* Bids (left side - green) */}
-          <div className="border-r border-border">
-            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground">
+          <div className="flex min-h-0 min-w-0 flex-col border-r border-border">
+            <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/30 px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
               <span>Size</span>
               <span>Bid Price</span>
             </div>
-            <div className="max-h-[400px] overflow-y-auto">
+            <div className={cn("overflow-y-auto", embedded ? "min-h-0 flex-1" : "max-h-[400px]")}>
               {bids.map((bid, i) => {
                 const barWidth = (bid.total / maxVolume) * 100;
                 return (
@@ -139,14 +147,6 @@ export function OrderBook({
                     <span className="relative z-10 font-mono text-emerald-400 font-medium">
                       {formatPrice(bid.price)}
                     </span>
-
-                    {/* Hover tooltip with cumulative */}
-                    <div className="absolute left-full ml-2 hidden group-hover:block px-2 py-1 bg-popover border border-border rounded text-[10px] shadow-lg whitespace-nowrap z-20">
-                      <div>Cumulative: {formatSize(bid.total, bid.price)}</div>
-                      <div>
-                        Size: {formatNumber(bid.size, 4)} {symbol.split("/")[0]}
-                      </div>
-                    </div>
                   </div>
                 );
               })}
@@ -154,12 +154,12 @@ export function OrderBook({
           </div>
 
           {/* Asks (right side - red) */}
-          <div>
-            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-muted/30 text-[10px] font-medium text-muted-foreground">
+          <div className="flex min-h-0 min-w-0 flex-col">
+            <div className="flex shrink-0 items-center justify-between border-b border-border bg-muted/30 px-3 py-1.5 text-[10px] font-medium text-muted-foreground">
               <span>Ask Price</span>
               <span>Size</span>
             </div>
-            <div className="max-h-[400px] overflow-y-auto">
+            <div className={cn("overflow-y-auto", embedded ? "min-h-0 flex-1" : "max-h-[400px]")}>
               {asks.map((ask, i) => {
                 const barWidth = (ask.total / maxVolume) * 100;
                 return (
@@ -175,14 +175,6 @@ export function OrderBook({
                     <span className="relative z-10 font-mono text-muted-foreground group-hover:text-foreground">
                       {formatSize(ask.size, ask.price)}
                     </span>
-
-                    {/* Hover tooltip with cumulative */}
-                    <div className="absolute right-full mr-2 hidden group-hover:block px-2 py-1 bg-popover border border-border rounded text-[10px] shadow-lg whitespace-nowrap z-20">
-                      <div>Cumulative: {formatSize(ask.total, ask.price)}</div>
-                      <div>
-                        Size: {formatNumber(ask.size, 4)} {symbol.split("/")[0]}
-                      </div>
-                    </div>
                   </div>
                 );
               })}
@@ -191,7 +183,7 @@ export function OrderBook({
         </div>
 
         {/* Last price indicator */}
-        <div className="flex items-center justify-center py-2 border-t border-border">
+        <div className="flex shrink-0 items-center justify-center border-t border-border py-2">
           <span className="text-sm font-mono font-medium">
             Last:{" "}
             <span className={cn(lastPrice >= midPrice ? "text-emerald-400" : "text-rose-400")}>

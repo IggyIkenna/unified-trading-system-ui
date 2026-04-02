@@ -54,8 +54,17 @@ import { StrategyDetailTabPanels } from "./components/strategy-detail-tab-panels
 import { StrategyDetailArchetypePanel } from "./components/strategy-detail-archetype-panel";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
+function decodeStrategyRouteId(raw: string): string {
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
 export function StrategyDetailPageClient({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id: rawId } = use(params);
+  const id = decodeStrategyRouteId(rawId);
   const { mode, isLive, isBatch } = useExecutionMode();
   const { data: perfData, isLoading, isError, error, refetch } = useStrategyPerformance();
   const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.strategies ?? [];
@@ -127,7 +136,10 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
     ];
   }, [strategy]);
 
-  if (isLoading) {
+  const hasRegistryFallback = registryStrategy !== undefined;
+
+  // Registry-backed strategies must render even when /api/trading/performance fails (demo, offline, proxy).
+  if (isLoading && !hasRegistryFallback) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center p-8">
         <Spinner size="lg" className="text-muted-foreground" />
@@ -135,7 +147,7 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
     );
   }
 
-  if (isError) {
+  if (isError && !hasRegistryFallback) {
     return (
       <div className="p-8">
         <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load strategy" />
