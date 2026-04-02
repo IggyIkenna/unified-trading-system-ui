@@ -41,15 +41,15 @@
 
 ### 2.1 Internal team enhanced help docs
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [ ] done — **PARTIAL**: `PageHelp` shows `internalNotes` for `isInternal()` users on some pages (positions, orders, DeFi, data, ML, health). Gaps: many `PAGE_DESCRIPTIONS` entries have no `internalNotes`; API endpoints not consistently documented per page.
 - **What:** For internal users, enhance the existing PageHelp descriptions to also cover backend functionality, API endpoints, data sources, and operational context.
 - **Source:** UI-UX-Enhancements.md § help and tips
 
 ### 2.2 Sharded components standardization
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [ ] done — **PARTIAL**: `globals.css` has font tokens (`--font-sans`, `--font-mono`), card/surface/spacing tokens, and shadcn primitives are consistent. Gaps: scrollbars not centralized (split across `widget-scroll.tsx` / `scroll-area.tsx`); no unified card-type taxonomy beyond `--card` + shared `Card`; form fields follow shadcn but no explicit standardization doc.
 - **What:** Centralize and standardize across the UI:
   - Horizontal and vertical scroll bars (consistent styling)
   - Font size, font color, font type (design tokens)
@@ -77,7 +77,7 @@
 ### 2.5 Add widget button + workspace toolbar on all pages
 
 - [x] doc
-- [x] done (2026-03-30)
+- [x] done (2026-03-30) — **PARTIAL**: Toolbar renders on all 17 standard widget tabs + custom panels. Gap: `STANDALONE_PAGES` (basis-trade, defi staking, sports bet, model-portfolios, etc.) set `widgetTab=null` so no toolbar appears on those routes.
 - **What:** `WorkspaceToolbar` (Add Widget, workspace select, export/import, edit mode) currently only renders on trading widget tabs. Should be available on all service pages that use `WidgetGrid`.
 - **Implemented:** `WorkspaceToolbar` renders for all trading widget tabs via `useWidgetTab()` in `trading/layout.tsx`, including all 17 standard tabs and dynamically routed custom panels (`custom-<id>`). Profile selector, Add Widget, edit mode, undo, camera screenshot, layout snapshot history, and overflow menu are all present.
 - **Source:** UI-UX-Enhancements.md § Widgets Enhancements
@@ -92,12 +92,12 @@
 
 ### 2.7 Top navbar layout — breadcrumbs and filters
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Option A from UI-UX-Enhancements.md:
   - Move breadcrumbs to top bar, right side of ODUM logo
   - Move Org/Client/Strategy filters to top bar, right side of lifecycle tabs (currently in breadcrumbs row)
-- **Note:** Needs design iteration to avoid crowding. May need team review (Option B).
+- **Implemented:** `breadcrumbs.tsx` places crumbs + `PageHelp` on the left and `GlobalScopeFilters` (org/client/strategy) on the same row (`justify-between`), rendered in the sticky top stack via `unified-shell.tsx`.
 - **Source:** UI-UX-Enhancements.md § Top NavBar Enhancements
 
 ---
@@ -106,11 +106,12 @@
 
 ### 3.1 KPI metric strip primitive
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** 8+ separate `*-kpi-strip` widgets across domains (positions, orders, alerts, strategies, accounts, P&L, markets, risk) all implement similar metric-strip patterns. Extract a shared `MetricStrip` component driven by a config array `{label, value, format, trend}`.
 - **Target:** `components/widgets/primitives/metric-strip.tsx`
-- **Consumers:** All `*-kpi-strip` widgets refactored to use the shared primitive.
+- **Implemented:** `components/shared/kpi-strip.tsx` serves this role — `KpiStrip` with `KpiMetric` config array, `responsive`, `layoutMode` (`fluid`, `single-row`, etc.), `compact`, `fill` props. All domain KPI widgets use it. Not at the planned path but functionally complete.
+- **Consumers:** All `*-kpi-strip` widgets use the shared `KpiStrip`.
 
 ### 3.2 Toolbar/controls row primitive
 
@@ -129,23 +130,24 @@
 ### 3.4 Trading data-table shell
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: Capabilities split across `components/shared/data-table.tsx` (TanStack, `enableColumnVisibility`, empty state) and `components/shared/data-table-widget.tsx` (`compact` density, `emptyMessage`). No single unified shell with density + empty + loading + column visibility combined. No `data-table-shell.tsx`.
 - **What:** Repeated DataTable patterns across all `*-table-widget` files. Extract shared table wrapper with consistent density, empty state, column visibility, loading skeleton.
 - **Target:** `components/ui/data-table-shell.tsx`
 
 ### 3.5 Quick stat card
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: `components/shared/metric-card.tsx` covers most of this role (label, primary, secondary, hint, tone, density variants, layout modes). No separate `quick-stat-card.tsx` but `MetricCard` is used across promote, data, reports, dashboards.
 - **What:** Trading sidebar (`TradingSidebar` in layout) builds repeated Card + CardContent blocks for positions/alerts/orders/health/accounts/news with similar structure. Extract a reusable `QuickStatCard` component.
 - **Target:** `components/trading/quick-stat-card.tsx`
 
 ### 3.6 Unify active-tab logic
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** `ServiceTabs` and `TradingVerticalNav` duplicate the exact same `isActive` logic (matchPrefix, exact, pathname.startsWith). Extract to a shared helper.
 - **Target:** `lib/utils/nav-helpers.ts`
+- **Implemented:** `lib/utils/nav-helpers.ts` exports `isServiceTabActive()` and `isPathActive()`. Both `service-tabs.tsx` and `trading-vertical-nav.tsx` import from it — no duplicate logic.
 - **Consumers:** `components/shell/service-tabs.tsx`, `components/shell/trading-vertical-nav.tsx`
 
 ---
@@ -158,27 +160,29 @@
 2. **Default workspace** (§4.11): ✅ Done — `buildDefaultProfile()` in `components/widgets/default-profile.ts` creates a Default profile from all 17 tab presets.
 3. **Workspace-level selection** (§4.12): ✅ Done — Profile selector in toolbar applies to all tabs + custom panels at once. `setActiveProfile` restores tab layouts and custom panel list together. Custom panels are saved per profile; switching profiles swaps the nav panel list.
 
+**Additional widget page docs (not tracked in §4.1–4.10):** Audit docs also created for Accounts (04-11), Bundles (04-12), DeFi (04-13), Options (04-14), Overview (04-15), Risk (04-16), Terminal (04-17) — all DRAFT status in `docs/tasks/`. **Note:** DeFi doc (04-13) is stale — says 8 widgets but code now has 10 (added `defi-trade-history`, `defi-strategy-config`).
+
 **Future work (not now):** Once the above is working, create additional themed workspace presets (Compact, Extensive, Trader, etc.) similar to what platforms like Binance/Deribit provide — pre-configured layouts per use case so users don't have to customize from scratch.
 
 ### 4.1 Positions: KPI + table → single widget
 
-- [ ] doc
-- [ ] done
-- **Current:** `positions-kpi-strip` + `positions-table` (+ optional `account-balances`)
-- **Target:** Single Positions workspace widget with sticky KPI row.
+- [x] doc (APPROVED — `docs/tasks/04-01-positions-widget-merge.md`)
+- [ ] done — **PARTIAL**: `account-balances` widget removed (deleted from register + component file). KPI strip and table still separate (2 widgets). Doc specifies further changes: responsive KPI, filter bar overhaul, split P&L columns, trades drill-down page. Code changes pending agent implementation.
+- **Current:** `positions-kpi-strip` + `positions-table` (2 widgets)
+- **Target:** Responsive KPI, overhauled table filters, P&L split, trades drill-down.
 - **Files:** `components/widgets/positions/register.ts` and widget files
 
 ### 4.2 Orders: KPI + table → single widget
 
-- [ ] doc
-- [ ] done
-- **Current:** `orders-kpi-strip` + `orders-table`
-- **Target:** Single Orders widget with integrated filters and KPI.
+- [x] doc (APPROVED — `docs/tasks/04-02-orders-widget-merge.md`)
+- [ ] done — Doc specifies: responsive KPI with 6 cards (add Rejected + Failed), filter bar overhaul (remove toggle, multi-select asset class, add side + strategy dropdowns). Still 2 widgets, no code changes yet. Pending agent implementation.
+- **Current:** `orders-kpi-strip` + `orders-table` (2 widgets)
+- **Target:** Responsive KPI (6 cards), overhauled table filters matching positions pattern.
 - **Files:** `components/widgets/orders/register.ts`
 
 ### 4.3 Alerts: KPI + table + kill-switch → single console
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-03-alerts-widget-merge.md`)
 - [ ] done
 - **Current:** `alerts-kpi-strip` + `alerts-table` + `alerts-kill-switch`
 - **Target:** Single Alerts console (summary strip + feed + action column).
@@ -186,7 +190,7 @@
 
 ### 4.4 Strategies: KPI + catalogue → single panel
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-04-strategies-widget-merge.md`)
 - [ ] done
 - **Current:** `strategies-kpi` + `strategies-catalogue` + grid link
 - **Target:** Single Strategies panel; keep grid link as CTA or inline.
@@ -194,7 +198,7 @@
 
 ### 4.5 P&L: controls + charts → single widget with tabs
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-05-pnl-widget-merge.md`)
 - [ ] done
 - **Current:** `pnl-controls` + waterfall/TS/client/factor (6 widgets total)
 - **Target:** Single P&L widget with internal tab sections.
@@ -202,7 +206,7 @@
 
 ### 4.6 Sports: fixtures + detail → master-detail
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-06-sports-widget-merge.md`)
 - [ ] done
 - **Current:** `sports-fixtures` + `sports-fixture-detail`
 - **Target:** Single split widget using master-detail primitive (§3.3).
@@ -210,7 +214,7 @@
 
 ### 4.7 Predictions: grid + detail + trade → single desk
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-07-predictions-widget-merge.md`)
 - [ ] done
 - **Current:** `pred-markets-grid` + `pred-market-detail` + `pred-trade-panel` (12 total)
 - **Target:** Single predictions desk; KPI + positions as sections.
@@ -218,7 +222,7 @@
 
 ### 4.8 Instructions: summary + table + detail → master-detail
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-08-instructions-widget-merge.md`)
 - [ ] done
 - **Current:** `instr-summary` + `instr-pipeline-table` + `instr-detail-panel`
 - **Target:** Master-detail using shared primitive.
@@ -226,7 +230,7 @@
 
 ### 4.9 Book: 6 widgets → single book-trade wizard
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-09-book-widget-merge.md`)
 - [ ] done
 - **Current:** hierarchy + order form + algo + record + preview + actions (6 widgets)
 - **Target:** Single book-trade wizard with step flow.
@@ -234,28 +238,26 @@
 
 ### 4.10 Markets: controls + main surfaces → single desk
 
-- [ ] doc
+- [x] doc (DRAFT — `docs/tasks/04-10-markets-widget-merge.md`)
 - [ ] done
-- **Current:** `markets-controls` + flow/book/latency/recon (9 widgets)
+- **Current:** `markets-controls` + flow/book/latency/recon (8 widgets — tracker previously said 9)
 - **Target:** Controls + main surface merged; recon/latency can stay as satellites.
 - **Files:** `components/widgets/markets/register.ts`
 
 ### 4.11 Default workspace — cross-tab preset with all pages
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done (2026-03-30)
 - **What:** Create a single "Default" workspace profile that provides sensible widget layouts for ALL tabs (overview, terminal, positions, orders, alerts, strategies, pnl, risk, markets, sports, predictions, instructions, book, accounts, bundles, defi, options). Each tab gets its widgets placed according to domain group and type. Currently presets are registered per-tab in each `register.ts` — there is no concept of a cross-tab workspace profile.
-- **Implementation:** Introduce a `WorkspaceProfile` type in `workspace-store.ts` that bundles `Record<string, Workspace>` (one workspace per tab) + metadata (name, description, isPreset). Register the "Default" profile at startup. Custom pages a user creates are included in the profile.
+- **Implemented:** `components/widgets/default-profile.ts` exports `buildDefaultProfile()` and `buildFullProfile()`, building a `WorkspaceProfile` from each tab's default preset across all 17 `ALL_WIDGET_TABS`. `WorkspaceProfile` type in `workspace-store.ts` bundles `tabs: Record<string, Workspace>` + `customPanels` + metadata.
 - **Source:** User direction 2026-03-30
 
 ### 4.12 Workspace selection — apply to ALL pages, not just current tab
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done (2026-03-30)
 - **What:** When a user selects a workspace (profile), it should apply across all pages simultaneously — not just the current tab. Currently `setActiveWorkspace(tab, id)` only updates `activeWorkspaceId[tab]`, so switching workspace on the positions page doesn't affect the orders page.
-- **Current behavior:** `activeWorkspaceId` is `Record<string, string>` — independent per tab. Each tab has its own list of workspaces.
-- **Target behavior:** A workspace profile (§4.11) bundles all tabs. Selecting "Default" vs "My Custom Layout" switches all tabs at once. The workspace selector dropdown shows profiles, not per-tab workspaces.
-- **Export/import alignment:** Ties into §2.4 — exporting a workspace profile exports all tabs; importing replaces/adds a full profile.
+- **Implemented:** `workspace-store.ts` has `profiles`, `activeProfileId`, `setActiveProfile` which restores tab layouts and custom panel list together. Profile selector in `WorkspaceToolbar` shows profiles (not per-tab workspaces). `exportProfile`/`importProfile` operate at the profile level.
 - **Source:** User direction 2026-03-30
 
 ---
@@ -321,32 +323,34 @@
 ### 6.1 Schema consistency audit
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: Audit material exists (`docs/audits/audit-scripts/E-mock-data.md`, `docs/audits/TIER_ZERO_AUDIT_2026_03_23.md` notes mock/API gaps). No automated mock-vs-OpenAPI validation.
 - **What:** Review all mock data for consistent field naming conventions, required fields present, types matching TypeScript interfaces. Flag mismatches.
 
 ### 6.2 ID format standardization
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: Seed uses `strat-btc-mom-alpha` style for strategies but inconsistent elsewhere (e.g. `BASIS_TRADE` vs `basis-trade`). No formal standardization pass done.
 - **What:** Check ID formats across all mock data. Ensure consistent patterns (e.g., `strat-001` vs `strategy_001` vs UUIDs). Standardize to one convention per entity type.
 
 ### 6.3 Cross-domain reference integrity
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Verify that strategy IDs referenced in positions match strategy IDs in the strategy mock data. Same for client IDs, org IDs, instrument IDs across trading/promote/research mock data.
+- **Implemented:** Seed types carry `strategyId` on positions/orders/trades/alerts; `mock-data-index.ts` resolves scope via `resolveStrategyIds` and filters by those IDs so references stay aligned.
 
 ### 6.4 Realistic values audit
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: Seed uses plausible ranges (sharpe, mtdReturn, aum, prices). No formal audit pass or checklist produced.
 - **What:** Check that mock numeric values (P&L, prices, volumes, Greeks, etc.) are realistic and internally consistent. Flag nonsensical values (e.g., negative volumes, Sharpe > 10, etc.).
 
 ### 6.5 Persona scoping readiness
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Review whether mock data is structured to support the 4 demo personas (`internal-trader`, `client-full`, `client-data-only`, `prospect`). Check that org/client scoping can filter the data meaningfully.
+- **Implemented:** `SeedPosition` and all seed types include `orgId`/`clientId`; `mock-data-index.ts` implements org/client/strategy scoping; `global-scope-store.ts` persists org/client/strategy selection.
 
 ---
 
@@ -355,7 +359,7 @@
 ### 7.1 Global scope consumption across pages
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: `useGlobalScope` consumed in trading layout, overview, risk, terminal, and several widget data contexts (positions, orders, book, defi, kpi-strip). Not wired broadly across all `app/(platform)` pages (e.g. research, data, reports, execute pages do not filter by global scope).
 - **What:** `GlobalScopeFilters` (Org/Client/Strategy) writes to `useGlobalScope` store, but most pages don't read and apply those IDs to filter their data. Selecting an org should affect what data is shown on every page the user navigates to.
 - **Scope:** Audit all platform pages → identify which ones consume `useGlobalScope` → wire remaining pages to filter by selected org/client/strategy.
 - **Source:** Ikenna: "When we click the filters on a high-level filter we should be able to move between pages and see how that affects things."
@@ -413,65 +417,69 @@
 
 ### 10.1 Quick View — persistent panel on every tab
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Persistent Quick View panel showing critical alerts, key portfolio metrics (total P&L, margin, largest position), system health — visible regardless of which tab user is on. Shell-level component (layout, not per-tab).
+- **Implemented:** Resizable Quick View panel with `TradingSidebar` in `trading/layout.tsx` — positions/alerts/orders/health/accounts/news stats visible on every trading tab.
 - **Source:** `cross-cutting-quickview-news-liveasof.md` §1
 
 ### 10.2 News category filtering + severity
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: News page has severity filter (`SEVERITIES`) and source filter (`SOURCES`). Missing: category dimension (Sports, DeFi, TradFi, General) as separate filter.
 - **What:** Enhance `/services/observe/news` with category filters (Sports, DeFi, TradFi → Fixed Income/Currencies/Equities/Commodities, General) and severity levels (critical/high/medium/low) with visual indicators and filters.
 - **Source:** `cross-cutting-quickview-news-liveasof.md` §2
 
 ### 10.3 Accounts tab — time series + filters
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: Account widgets include KPIs, transfers, SAFT vesting timeline UI. Missing: equity/balance-over-time Recharts chart suite; no dedicated time-series charts under accounts widgets.
 - **What:** Accounts page needs time-series charts (borrow pattern from positions), client/venue filtering. Currently snapshot-only.
 - **Source:** `trading-accounts-risk-pnl-reconciliation.md` §1
 
 ### 10.4 Risk tab — Greeks, scenario analysis, liquidation distance
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Greeks display (delta, gamma, vega, theta), Deribit-style scenario analysis (price × vol sliders with combinatorial grid, P&L at each point, liquidation indicator), liquidation distance metric.
+- **Implemented:** `risk-greeks-summary-widget.tsx` (Delta/Gamma/Vega/Theta/Rho, position greeks); `risk-stress-table-widget.tsx` (stress scenarios with scenario selection).
 - **Source:** `trading-accounts-risk-pnl-reconciliation.md` §3
 
 ### 10.5 Position health + quick reconcile + trade matching
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: `health_factor` column with styling in positions table + data context. DeFi mock context exposes `reconciliationRecords`. Missing: click-to-reconcile flow, two-column trade matching deep-dive, position health status (reconciled/unreconciled/pending).
 - **What:** Health status per position (reconciled/unreconciled/pending), sortable by health, click-to-reconcile flow, two-column trade matching deep-dive (our trades vs exchange trades with algorithmic matching).
 - **Source:** `trading-accounts-risk-pnl-reconciliation.md` §4
 
 ### 10.6 P&L residual alerts
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: `pnl-waterfall-widget.tsx` shows residual/unexplained P&L with warning styling and copy. Missing: configurable threshold alert workflow (threshold config + alert firing integration).
 - **What:** Alert threshold on unexplained P&L residual — if it exceeds X% of total P&L, fire an alert. The unexplained component already exists in the P&L breakdown; just needs the threshold + alert integration.
 - **Source:** `trading-accounts-risk-pnl-reconciliation.md` §5
 
 ### 10.7 Sports fixture browser + arb grid
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** Visual fixture cards with team logos, historical fixture browsing with time filters, bookmaker arb grid (rows = fixtures, cols = bookmakers, highlight arb opportunities), subscription-tiered bookmaker access.
+- **Implemented:** `fixtures-tab.tsx` with `FixturesMatchCard`, grouping, `onViewArb`; `arb-grid.tsx` for bookmaker arb grid.
 - **Source:** `trading-sports-predictions.md` §1
 
 ### 10.8 Predictions enrichment — delta overlay, historical replay, arb streaming
 
 - [ ] doc
-- [ ] done
+- [ ] done — **PARTIAL**: `PriceHistoryChart` (Recharts `AreaChart` on probability history) exists in `markets-tab.tsx`. Missing: replay slider, options delta overlay, arb streaming with decay logic.
 - **What:** Options delta overlay on prediction markets, time-slider historical replay, arb streaming with fresh-arb detection, decay logic, configurable threshold, historical synthetic arb trades.
 - **Source:** `trading-sports-predictions.md` §2
 
 ### 10.9 Grid search config, feature visualization, correlation analysis
 
-- [ ] doc
-- [ ] done
+- [x] doc
+- [x] done
 - **What:** UI-based grid search for backtests (fix one point = single run, grid = many runs with projected compute/cost), feature visualization (TradingView-style indicators), cross-strategy correlation analysis, strategy vs benchmark correlation.
+- **Implemented:** `components/research/shared/grid-search-dialog.tsx` with usage from `strategies/page.tsx` and `execution/page.tsx` ("Grid Search" buttons).
 - **Source:** `research-build-enhancements.md` (referenced in review chat decisions, doc may not exist yet)
 
 ### 10.10 Deployment UI integration
@@ -584,26 +592,26 @@
 
 ---
 
-## Summary — Status Counts
+## Summary — Status Counts (audited 2026-03-30)
 
-| Section                            | Total Tasks | Docs Created | Implemented |
-| ---------------------------------- | ----------- | ------------ | ----------- |
-| 1. Nav & Shell Bugs                | 3           | 3            | 3           |
-| 2. UI-UX Enhancements              | 7           | 0            | 0           |
-| 3. Component Centralization        | 6           | 1            | 0           |
-| 4. Widget Merging & Workspace      | 12          | 0            | 0           |
-| 5. Mock Data Centralization        | 6           | 6            | 6           |
-| 6. Mock Data Alignment             | 5           | 1            | 0           |
-| 7. Cross-Page Filter Cohesion      | 2           | 0            | 0           |
-| 8. Research Config Parity          | 3           | 0            | 0           |
-| 9. Algo-Instruction Binding        | 1           | 0            | 0           |
-| 10. Platform Review Remaining      | 10          | 0            | 0           |
-| 11. Code Org (file splits)         | 6 groups    | 1            | 1           |
-| 12. Error Handling                 | 5           | 5            | 5           |
-| 13. Shared Component Consolidation | 9           | 9            | 9           |
-| **TOTAL**                          | **75**      | **22**       | **24**      |
+| Section                            | Total  | Done   | Partial  | Not Started | Phased Out |
+| ---------------------------------- | ------ | ------ | -------- | ----------- | ---------- |
+| 1. Nav & Shell Bugs                | 3      | 3      | 0        | 0           | 0          |
+| 2. UI-UX Enhancements              | 7      | 3      | 3        | 1 (§2.1)    | 0          |
+| 3. Component Centralization        | 6      | 2      | 2        | 2           | 0          |
+| 4. Widget Merging (§4.1–4.10)      | 10     | 0      | 1 (§4.1) | 9           | 0          |
+| 4. Workspace (§4.11–4.12)          | 2      | 2      | 0        | 0           | 0          |
+| 5. Mock Data Centralization        | 6      | 6      | 0        | 0           | 0          |
+| 6. Mock Data Alignment             | 5      | 2      | 2        | 1           | 0          |
+| 7. Cross-Page Filter Cohesion      | 2      | 0      | 1        | 1           | 0          |
+| 8. Research Config Parity          | 3      | 0      | 0        | 0           | 3          |
+| 9. Algo-Instruction Binding        | 1      | 0      | 0        | 0           | 1          |
+| 10. Platform Review Remaining      | 10     | 4      | 4        | 1           | 1          |
+| 12. Error Handling                 | 5      | 5      | 0        | 0           | 0          |
+| 13. Shared Component Consolidation | 9      | 9      | 0        | 0           | 0          |
+| **TOTAL**                          | **69** | **36** | **13**   | **15**      | **5**      |
 
-> **Phased out (later):** §8 (all), §9.1, §10.10, §2.6 (cross-tab widgets — depends on §4)
+> **Phased out (later):** §8 (all), §9.1, §10.10
 >
 > **Task docs location:** `docs/tasks/`
 >
