@@ -333,7 +333,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
   }
 
   return (
-    <div className={cn("flex items-center gap-0.5", className)}>
+    <div className={cn("flex flex-wrap items-center gap-0.5", className)}>
       <CompactMultiSelect
         icon={<Building2 className="size-3 text-primary" />}
         items={organizations}
@@ -352,7 +352,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
         )}
         dropdownWidthClass="w-64"
       />
-      <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
+      <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
       <CompactMultiSelect
         icon={<Users className="size-3" />}
         items={filteredClients}
@@ -377,7 +377,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
         )}
         dropdownWidthClass="w-64"
       />
-      <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
+      <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
       <CompactMultiSelect
         icon={<BarChart3 className="size-3" />}
         items={filteredStrategies}

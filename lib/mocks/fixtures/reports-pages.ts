@@ -97,42 +97,42 @@ export const SEED_SETTLEMENTS = [
   {
     id: "STL-001",
     instrument: "BTC-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     quantity: 2.5,
     value: 168125,
     status: "settled",
     date: "2026-03-28",
-    counterparty: "Binance",
+    counterparty: "BINANCE-SPOT",
   },
   {
     id: "STL-002",
     instrument: "ETH-PERP",
-    venue: "Hyperliquid",
+    venue: "HYPERLIQUID",
     quantity: 15,
     value: 51300,
     status: "settled",
     date: "2026-03-28",
-    counterparty: "Hyperliquid",
+    counterparty: "HYPERLIQUID",
   },
   {
     id: "STL-003",
     instrument: "SOL-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     quantity: 120,
     value: 17400,
     status: "pending",
     date: "2026-03-28",
-    counterparty: "Binance",
+    counterparty: "BINANCE-SPOT",
   },
   {
     id: "STL-004",
     instrument: "BTC-28MAR-68000-C",
-    venue: "Deribit",
+    venue: "DERIBIT",
     quantity: 5,
     value: 9250,
     status: "settled",
     date: "2026-03-27",
-    counterparty: "Deribit",
+    counterparty: "DERIBIT",
   },
 ];
 export const SEED_PORTFOLIO = [
@@ -143,10 +143,10 @@ export const SEED_PORTFOLIO = [
   { client: "Core Strategy", aum: 12300000, pnl: -48000, pnlPct: -0.39, positions: 4 },
 ];
 export const SEED_BALANCES = [
-  { venue: "Binance", currency: "USDT", free: 2_450_000, locked: 820_000, total: 3_270_000 },
-  { venue: "Hyperliquid", currency: "USDC", free: 1_800_000, locked: 450_000, total: 2_250_000 },
-  { venue: "Deribit", currency: "BTC", free: 12.5, locked: 5.2, total: 17.7 },
-  { venue: "Aave V3", currency: "WETH", free: 45, locked: 0, total: 45 },
+  { venue: "BINANCE-SPOT", currency: "USDT", free: 2_450_000, locked: 820_000, total: 3_270_000 },
+  { venue: "HYPERLIQUID", currency: "USDC", free: 1_800_000, locked: 450_000, total: 2_250_000 },
+  { venue: "DERIBIT", currency: "BTC", free: 12.5, locked: 5.2, total: 17.7 },
+  { venue: "AAVEV3-ETHEREUM", currency: "WETH", free: 45, locked: 0, total: 45 },
 ];
 export const SEED_TRANSFERS: Array<{
   time: string;
@@ -159,17 +159,17 @@ export const SEED_TRANSFERS: Array<{
 }> = [
   {
     time: "2026-03-28T13:22:00Z",
-    from: "Binance",
-    to: "Hyperliquid",
+    from: "BINANCE-SPOT",
+    to: "HYPERLIQUID",
     amount: "$500,000",
     status: "confirmed",
     confirmations: "12/12",
   },
-  { time: "2026-03-28T10:15:00Z", from: "Deribit", to: "Binance", amount: "2.5 BTC", status: "settled" },
+  { time: "2026-03-28T10:15:00Z", from: "DERIBIT", to: "BINANCE-SPOT", amount: "2.5 BTC", status: "settled" },
   {
     time: "2026-03-27T18:42:00Z",
-    from: "Uniswap",
-    to: "Aave V3",
+    from: "UNISWAPV3-ETHEREUM",
+    to: "AAVEV3-ETHEREUM",
     amount: "10 WETH",
     status: "confirmed",
     confirmations: "35/35",
@@ -203,7 +203,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-a3f8e1",
     date: "2026-03-22",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     instrument: "BTC-USDT",
     side: "buy",
     expectedAmount: 48250.0,
@@ -214,7 +214,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-b7c2d4",
     date: "2026-03-22",
-    venue: "Deribit",
+    venue: "DERIBIT",
     instrument: "ETH-PERP",
     side: "sell",
     expectedAmount: 3180.5,
@@ -225,7 +225,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-c9e0f2",
     date: "2026-03-21",
-    venue: "OKX",
+    venue: "OKX-SPOT",
     instrument: "SOL-USDT",
     side: "buy",
     expectedAmount: 142.3,
@@ -236,7 +236,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-d1a3b5",
     date: "2026-03-21",
-    venue: "Bybit",
+    venue: "BYBIT",
     instrument: "BTC-USDT",
     side: "sell",
     expectedAmount: 47980.0,
@@ -247,7 +247,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-e4f6c8",
     date: "2026-03-21",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     instrument: "ETH-USDT",
     side: "buy",
     expectedAmount: 3195.75,
@@ -258,7 +258,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-f2d8a0",
     date: "2026-03-20",
-    venue: "Hyperliquid",
+    venue: "HYPERLIQUID",
     instrument: "ARB-USDT",
     side: "buy",
     expectedAmount: 1.82,
@@ -269,7 +269,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-g5b1e3",
     date: "2026-03-20",
-    venue: "Deribit",
+    venue: "DERIBIT",
     instrument: "BTC-28MAR26-C",
     side: "sell",
     expectedAmount: 2450.0,
@@ -280,7 +280,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-h8c4f6",
     date: "2026-03-20",
-    venue: "OKX",
+    venue: "OKX-SPOT",
     instrument: "DOGE-USDT",
     side: "buy",
     expectedAmount: 0.168,
@@ -291,7 +291,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-i0d7a9",
     date: "2026-03-19",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     instrument: "AVAX-USDT",
     side: "sell",
     expectedAmount: 38.42,
@@ -302,7 +302,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-j3e9b1",
     date: "2026-03-19",
-    venue: "Bybit",
+    venue: "BYBIT",
     instrument: "ETH-USDT",
     side: "buy",
     expectedAmount: 3210.0,
@@ -313,7 +313,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-k6f2c4",
     date: "2026-03-19",
-    venue: "Hyperliquid",
+    venue: "HYPERLIQUID",
     instrument: "OP-USDT",
     side: "sell",
     expectedAmount: 2.14,
@@ -324,7 +324,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-l9a4d7",
     date: "2026-03-18",
-    venue: "Deribit",
+    venue: "DERIBIT",
     instrument: "ETH-PERP",
     side: "buy",
     expectedAmount: 3150.25,
@@ -335,7 +335,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-m2b6e0",
     date: "2026-03-18",
-    venue: "OKX",
+    venue: "OKX-SPOT",
     instrument: "BTC-USDT",
     side: "sell",
     expectedAmount: 47500.0,
@@ -346,7 +346,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-n5c8f3",
     date: "2026-03-17",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     instrument: "LINK-USDT",
     side: "buy",
     expectedAmount: 14.85,
@@ -357,7 +357,7 @@ export const MOCK_SETTLEMENTS: Settlement[] = [
   {
     id: "STL-o8d1a6",
     date: "2026-03-17",
-    venue: "Bybit",
+    venue: "BYBIT",
     instrument: "SOL-USDT",
     side: "sell",
     expectedAmount: 138.9,

@@ -77,15 +77,20 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
         {ltvLimits.length > 0 && (
           <CollapsibleSection title="DeFi Health Factor (Aave v3)" defaultOpen={true} count={ltvLimits.length}>
             <div className="space-y-2 pt-1">
-              {ltvLimits.map((limit) => (
+              {ltvLimits.map((limit) => {
+                // LTV is stored as ratio (0.72). HF = 1 / LTV. Display HF, not LTV.
+                const hf = limit.value > 0 ? (1 / limit.value) : 0;
+                const hfLimit = limit.limit > 0 ? (1 / limit.limit) : 2;
+                return (
                 <LimitBar
                   key={limit.id}
-                  label={`${limit.name} (${limit.entity})`}
-                  value={limit.value}
-                  limit={limit.limit}
-                  unit={limit.unit}
+                  label={`${limit.entity} HF (= 1/LTV)`}
+                  value={Math.round(hf * 100) / 100}
+                  limit={Math.round(hfLimit * 100) / 100}
+                  unit="HF"
                 />
-              ))}
+                );
+              })}
             </div>
           </CollapsibleSection>
         )}
@@ -108,8 +113,9 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                     }}
                     formatter={(value: number) => [formatNumber(value, 2), "HF"]}
                   />
-                  <ReferenceLine y={1.0} stroke="var(--destructive)" strokeDasharray="5 5" />
-                  <ReferenceLine y={1.5} stroke="var(--warning)" strokeDasharray="5 5" />
+                  <ReferenceLine y={1.0} stroke="var(--destructive)" strokeDasharray="5 5" label={{ value: "Liquidation 1.0", position: "right", fontSize: 8 }} />
+                  <ReferenceLine y={1.2} stroke="#f97316" strokeDasharray="4 4" label={{ value: "Emergency 1.2", position: "right", fontSize: 8 }} />
+                  <ReferenceLine y={1.5} stroke="var(--warning)" strokeDasharray="5 5" label={{ value: "Deleverage 1.5", position: "right", fontSize: 8 }} />
                   <Area
                     type="monotone"
                     dataKey="hf"

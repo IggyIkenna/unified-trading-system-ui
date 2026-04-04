@@ -16,9 +16,18 @@ interface InstrumentEntry {
 }
 
 interface InstrumentsResponse {
-  instruments: InstrumentEntry[];
-  total: number;
-  persona: string;
+  data: InstrumentEntry[];
+  /** @deprecated use `data` — kept for backward compat */
+  instruments?: InstrumentEntry[];
+  total?: number;
+  persona?: string;
+  venues?: string[];
+  pagination?: {
+    page: number;
+    page_size: number;
+    total: number;
+    has_next: boolean;
+  };
 }
 
 interface CatalogueEntry {

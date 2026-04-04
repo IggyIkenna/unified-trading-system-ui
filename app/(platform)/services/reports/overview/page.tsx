@@ -165,7 +165,7 @@ export default function ReportsPage() {
             <Skeleton className="h-9 w-40" />
           </div>
         </div>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
               <CardContent className="pt-4">
@@ -222,7 +222,7 @@ export default function ReportsPage() {
         </PageHeader>
 
         {/* Summary — premium KPI strip with institutional spacing */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
@@ -276,7 +276,7 @@ export default function ReportsPage() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="portfolio" className="space-y-6">
-          <TabsList>
+          <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="portfolio" className="gap-2">
               <BarChart3 className="size-4" />
               Portfolio
@@ -339,7 +339,7 @@ export default function ReportsPage() {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-8">
+                        <div className="flex flex-wrap items-center gap-4 sm:gap-8">
                           <div className="text-right">
                             <p className="text-xs text-muted-foreground">MTD</p>
                             <PnLChange value={row.mtdReturn} size="sm" />

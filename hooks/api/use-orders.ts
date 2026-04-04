@@ -1,13 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
+
+type OrdersResponse = GatewayApiResponse<"/api/execution/orders">;
+type AlgosResponse = GatewayApiResponse<"/api/execution/algos">;
+type VenuesResponse = GatewayApiResponse<"/api/execution/venues">;
+type BacktestsResponse = GatewayApiResponse<"/api/execution/backtests">;
 
 export function useOrders() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<OrdersResponse>({
     queryKey: ["orders", user?.id],
-    queryFn: () => apiFetch("/api/execution/orders", token),
+    queryFn: () =>
+      typedFetch<OrdersResponse>("/api/execution/orders", token),
     enabled: !!user,
   });
 }
@@ -15,9 +22,10 @@ export function useOrders() {
 export function useAlgos() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<AlgosResponse>({
     queryKey: ["algos", user?.id],
-    queryFn: () => apiFetch("/api/execution/algos", token),
+    queryFn: () =>
+      typedFetch<AlgosResponse>("/api/execution/algos", token),
     enabled: !!user,
   });
 }
@@ -25,9 +33,10 @@ export function useAlgos() {
 export function useVenues() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<VenuesResponse>({
     queryKey: ["execution-venues", user?.id],
-    queryFn: () => apiFetch("/api/execution/venues", token),
+    queryFn: () =>
+      typedFetch<VenuesResponse>("/api/execution/venues", token),
     enabled: !!user,
   });
 }
@@ -35,9 +44,10 @@ export function useVenues() {
 export function useExecutionBacktests() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<BacktestsResponse>({
     queryKey: ["execution-backtests", user?.id],
-    queryFn: () => apiFetch("/api/execution/backtests", token),
+    queryFn: () =>
+      typedFetch<BacktestsResponse>("/api/execution/backtests", token),
     enabled: !!user,
   });
 }

@@ -20,7 +20,7 @@ export const STRATEGY_RISK_PROFILES: StrategyRiskProfile[] = [
     basis_risk: "low",
     funding_rate_risk: "low",
     liquidity_risk_pct: 0.05,
-    risk_notes: "Pure lending. No leverage, no perp. Risk = AAVE smart contract + stablecoin depeg.",
+    risk_notes: "Pure lending. No leverage, no perp. Risk = AAVEV3-ETHEREUM smart contract + stablecoin depeg.",
   },
   {
     strategy_id: "BASIS_TRADE",

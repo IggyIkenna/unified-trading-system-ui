@@ -15,7 +15,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 0.15,
       price: 67234.5,
-      venue: "Binance",
+      venue: "BINANCE-SPOT",
     },
     fill: {
       fillPrice: 67236.8,
@@ -38,7 +38,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 2.5,
       price: 3456.2,
-      venue: "Binance",
+      venue: "BINANCE-SPOT",
     },
     fill: {
       fillPrice: 3456.2,
@@ -61,7 +61,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 5000,
       price: 1.0002,
-      venue: "Uniswap",
+      venue: "UNISWAPV3-ETHEREUM",
     },
     fill: {
       fillPrice: 1.0005,
@@ -84,7 +84,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 100,
       price: 3456.0,
-      venue: "Aave",
+      venue: "AAVEV3-ETHEREUM",
     },
     fill: {
       fillPrice: 3456.0,
@@ -107,7 +107,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "SELL",
       quantity: 0.08,
       price: 67280.0,
-      venue: "OKX",
+      venue: "OKX-SPOT",
     },
     fill: {
       fillPrice: 67275.3,
@@ -130,7 +130,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 500,
       price: 2.1,
-      venue: "Betfair",
+      venue: "BETFAIR",
     },
     fill: {
       fillPrice: 2.08,
@@ -153,7 +153,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 32,
       price: 3456.78,
-      venue: "Lido",
+      venue: "LIDO-ETHEREUM",
     },
     fill: null,
   },
@@ -171,7 +171,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 1000,
       price: 0.62,
-      venue: "Polymarket",
+      venue: "POLYMARKET",
     },
     fill: {
       fillPrice: 0.63,
@@ -194,7 +194,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 50,
       price: 156.42,
-      venue: "Deribit",
+      venue: "DERIBIT",
     },
     fill: {
       fillPrice: 156.45,
@@ -217,7 +217,7 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       side: "BUY",
       quantity: 10000,
       price: 1.0,
-      venue: "Uniswap",
+      venue: "UNISWAPV3-ETHEREUM",
     },
     fill: {
       fillPrice: 1.0,

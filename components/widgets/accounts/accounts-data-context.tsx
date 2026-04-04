@@ -37,7 +37,7 @@ const AccountsDataContext = React.createContext<AccountsDataContextValue | null>
 function coerceBalances(raw: unknown): BalanceRecord[] {
   if (!raw) return [];
   const r = raw as Record<string, unknown>;
-  const arr = Array.isArray(r) ? r : r.balances;
+  const arr = Array.isArray(r) ? r : (r.data ?? r.balances);
   return Array.isArray(arr) ? (arr as BalanceRecord[]) : [];
 }
 

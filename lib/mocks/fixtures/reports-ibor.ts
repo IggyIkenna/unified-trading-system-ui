@@ -55,7 +55,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-001",
     instrument: "BTC-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     quantity: 2.4521,
     costBasis: 118430.0,
     marketValue: 122600.0,
@@ -71,7 +71,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-002",
     instrument: "ETH-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     quantity: 18.75,
     costBasis: 59062.5,
     marketValue: 61875.0,
@@ -87,7 +87,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-003",
     instrument: "SOL-USDT",
-    venue: "OKX",
+    venue: "OKX-SPOT",
     quantity: 340.0,
     costBasis: 47600.0,
     marketValue: 51000.0,
@@ -102,7 +102,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-004",
     instrument: "BTC-28MAR26-C-52000",
-    venue: "Deribit",
+    venue: "DERIBIT",
     quantity: 10.0,
     costBasis: 28500.0,
     marketValue: 34200.0,
@@ -118,7 +118,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-005",
     instrument: "AAVE-WETH LP",
-    venue: "Uniswap V3",
+    venue: "UNISWAPV3-ETHEREUM",
     quantity: 1.0,
     costBasis: 42000.0,
     marketValue: 43260.0,
@@ -133,7 +133,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-006",
     instrument: "ETH-PERP",
-    venue: "Hyperliquid",
+    venue: "HYPERLIQUID",
     quantity: -15.0,
     costBasis: -49500.0,
     marketValue: -49875.0,
@@ -148,7 +148,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-007",
     instrument: "AVAX-USDT",
-    venue: "Bybit",
+    venue: "BYBIT",
     quantity: 850.0,
     costBasis: 29750.0,
     marketValue: 30600.0,
@@ -163,7 +163,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-008",
     instrument: "wstETH Collateral",
-    venue: "Aave V3",
+    venue: "AAVEV3-ETHEREUM",
     quantity: 12.5,
     costBasis: 41250.0,
     marketValue: 42500.0,
@@ -179,7 +179,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-009",
     instrument: "LINK-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     quantity: 2400.0,
     costBasis: 36000.0,
     marketValue: 38400.0,
@@ -194,7 +194,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-010",
     instrument: "ARB-USDT",
-    venue: "OKX",
+    venue: "OKX-SPOT",
     quantity: 15000.0,
     costBasis: 16500.0,
     marketValue: 18000.0,
@@ -208,7 +208,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-011",
     instrument: "BTC-PERP",
-    venue: "Deribit",
+    venue: "DERIBIT",
     quantity: 1.5,
     costBasis: 72750.0,
     marketValue: 74250.0,
@@ -224,7 +224,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-012",
     instrument: "OP-USDT",
-    venue: "Bybit",
+    venue: "BYBIT",
     quantity: 8000.0,
     costBasis: 17600.0,
     marketValue: 18400.0,
@@ -236,7 +236,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-013",
     instrument: "USDC Lending",
-    venue: "Aave V3",
+    venue: "AAVEV3-ETHEREUM",
     quantity: 50000.0,
     costBasis: 50000.0,
     marketValue: 50210.0,
@@ -251,7 +251,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-014",
     instrument: "DOGE-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     quantity: 120000.0,
     costBasis: 19200.0,
     marketValue: 20400.0,
@@ -263,7 +263,7 @@ export const MOCK_POSITIONS: Position[] = [
   {
     id: "POS-015",
     instrument: "ETH-28MAR26-P-2800",
-    venue: "Deribit",
+    venue: "DERIBIT",
     quantity: -5.0,
     costBasis: -4250.0,
     marketValue: -2100.0,
@@ -284,16 +284,16 @@ export const MOCK_JOURNAL: JournalEntry[] = [
     id: "JRN-001",
     timestamp: "2026-03-28T14:32:00Z",
     entryType: "Trade",
-    description: "Buy 0.15 BTC-USDT on Binance",
+    description: "Buy 0.15 BTC-USDT on BINANCE-SPOT",
     quantity: 0.15,
     value: 7237.5,
-    counterparty: "Binance",
+    counterparty: "BINANCE-SPOT",
   },
   {
     id: "JRN-002",
     timestamp: "2026-03-28T13:45:00Z",
     entryType: "Transfer",
-    description: "USDC transfer from Aave to Binance",
+    description: "USDC transfer from AAVEV3-ETHEREUM to BINANCE-SPOT",
     quantity: 25000,
     value: 25000,
     counterparty: "Internal",
@@ -302,10 +302,10 @@ export const MOCK_JOURNAL: JournalEntry[] = [
     id: "JRN-003",
     timestamp: "2026-03-28T12:10:00Z",
     entryType: "Trade",
-    description: "Sell 5.0 ETH-PERP on Hyperliquid",
+    description: "Sell 5.0 ETH-PERP on HYPERLIQUID",
     quantity: -5.0,
     value: -16600.0,
-    counterparty: "Hyperliquid",
+    counterparty: "HYPERLIQUID",
   },
   {
     id: "JRN-004",
@@ -314,16 +314,16 @@ export const MOCK_JOURNAL: JournalEntry[] = [
     description: "Funding rate settlement ETH-PERP",
     quantity: 0,
     value: -18.42,
-    counterparty: "Hyperliquid",
+    counterparty: "HYPERLIQUID",
   },
   {
     id: "JRN-005",
     timestamp: "2026-03-28T10:00:00Z",
     entryType: "Trade",
-    description: "Buy 1200 LINK-USDT on Binance",
+    description: "Buy 1200 LINK-USDT on BINANCE-SPOT",
     quantity: 1200,
     value: 18000,
-    counterparty: "Binance",
+    counterparty: "BINANCE-SPOT",
   },
   {
     id: "JRN-006",
@@ -338,10 +338,10 @@ export const MOCK_JOURNAL: JournalEntry[] = [
     id: "JRN-007",
     timestamp: "2026-03-28T08:30:00Z",
     entryType: "Transfer",
-    description: "ETH deposit to Aave V3",
+    description: "ETH deposit to AAVEV3-ETHEREUM",
     quantity: 2.5,
     value: 8250.0,
-    counterparty: "Aave V3",
+    counterparty: "AAVEV3-ETHEREUM",
   },
   {
     id: "JRN-008",
@@ -359,7 +359,7 @@ export const MOCK_JOURNAL: JournalEntry[] = [
     description: "Yield accrual on USDC lending position",
     quantity: 0,
     value: 42.0,
-    counterparty: "Aave V3",
+    counterparty: "AAVEV3-ETHEREUM",
   },
   {
     id: "JRN-010",
@@ -368,7 +368,7 @@ export const MOCK_JOURNAL: JournalEntry[] = [
     description: "Staking reward distribution wstETH",
     quantity: 0.003,
     value: 9.9,
-    counterparty: "Lido",
+    counterparty: "LIDO-ETHEREUM",
   },
 ];
 

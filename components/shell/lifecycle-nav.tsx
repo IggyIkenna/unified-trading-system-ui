@@ -157,9 +157,9 @@ export function LifecycleNav({
       )}
     >
       {/* Left: Logo + Lifecycle stages */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 min-w-0">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group mr-2">
+        <Link href="/" className="flex items-center gap-2 group mr-1 shrink-0">
           <img
             src="/images/odum-logo.png"
             alt="Odum Research"
@@ -169,7 +169,7 @@ export function LifecycleNav({
         </Link>
 
         {/* Lifecycle stage navigation */}
-        <div className="flex items-center">
+        <div className="flex items-center overflow-x-auto [-webkit-overflow-scrolling:touch] scrollbar-none">
           {navItems.map((nav, idx) => {
             const Icon = stageIcons[nav.stage];
             const isActive = currentStage === nav.stage;
@@ -197,7 +197,7 @@ export function LifecycleNav({
                         className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium cursor-not-allowed"
                         aria-disabled
                       >
-                        <Icon className="size-3.5" />
+                        <Icon className="size-3.5 shrink-0" />
                         <span className="hidden lg:inline">{nav.label}</span>
                         <Lock className="size-3 opacity-40 hidden sm:block" />
                       </span>
@@ -209,7 +209,7 @@ export function LifecycleNav({
                           isActive ? "text-primary" : "",
                         )}
                       >
-                        <Icon className="size-3.5" />
+                        <Icon className="size-3.5 shrink-0" />
                         <span className="hidden lg:inline">{nav.label}</span>
                       </Link>
                     )}
@@ -302,7 +302,7 @@ export function LifecycleNav({
       </div>
 
       {/* Centre: 3-way mode selector — the USP */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="hidden sm:flex flex-1 items-center justify-center">
         <div className="flex items-center rounded-full border border-border/60 bg-muted/30 p-0.5">
           <button
             onClick={() => setMode("live")}
@@ -344,7 +344,7 @@ export function LifecycleNav({
       </div>
 
       {/* Right: Dashboard, Search, Notifications, Org, User */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 shrink-0">
         <Link
           href="/dashboard"
           className={cn(
@@ -355,7 +355,7 @@ export function LifecycleNav({
           )}
         >
           <LayoutDashboard className="size-3.5 shrink-0" />
-          <span className="hidden sm:inline">Dashboard</span>
+          <span className="hidden md:inline">Dashboard</span>
         </Link>
 
         {/* Search */}
@@ -364,8 +364,8 @@ export function LifecycleNav({
           className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-secondary text-muted-foreground hover:text-foreground text-xs"
         >
           <Search className="size-3.5" />
-          <span className="hidden sm:inline">Search</span>
-          <kbd className="hidden sm:flex h-5 items-center gap-0.5 rounded border border-border bg-muted px-1.5 font-mono text-[10px]">
+          <span className="hidden lg:inline">Search</span>
+          <kbd className="hidden lg:flex h-5 items-center gap-0.5 rounded border border-border bg-muted px-1.5 font-mono text-[10px]">
             <span className="text-xs">⌘</span>K
           </kbd>
         </button>
@@ -373,15 +373,15 @@ export function LifecycleNav({
         {/* API / env status indicator */}
         <ApiStatusIndicator />
 
-        <div className="w-px h-5 bg-border" />
+        <div className="w-px h-5 bg-border hidden sm:block" />
 
         {/* Notifications — real alert count + dropdown */}
         <NotificationBell />
 
         {/* Org display */}
-        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs pointer-events-none">
+        <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs pointer-events-none hidden sm:flex">
           <Building2 className="size-3.5" />
-          <span className="hidden sm:inline max-w-24 truncate">{orgName}</span>
+          <span className="hidden lg:inline max-w-24 truncate">{orgName}</span>
         </Button>
 
         {/* User menu */}

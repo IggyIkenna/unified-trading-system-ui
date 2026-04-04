@@ -184,8 +184,8 @@ export function CandidateBasket({
                 size="sm"
                 className={cn("gap-2 relative", !isEmpty && "bg-primary/10 border-primary/20 text-primary", className)}
               >
-                <ShoppingBasket className="size-4" />
-                Candidates
+                <ShoppingBasket className="size-4 shrink-0" />
+                <span className="hidden sm:inline">Candidates</span>
                 {!isEmpty && (
                   <Badge
                     variant="default"

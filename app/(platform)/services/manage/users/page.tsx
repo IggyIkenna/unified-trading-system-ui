@@ -20,10 +20,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
-import { Users, Plus, Search, Shield, Clock, UserPlus } from "lucide-react";
+import { Users, Plus, Search, Shield, Clock, UserPlus, ArrowRight } from "lucide-react";
 import { useOrganizationsList, useOrgMembers } from "@/hooks/api/use-organizations";
 import { ApiError } from "@/components/shared/api-error";
 import { EmptyState } from "@/components/shared/empty-state";
+import { useAuth } from "@/hooks/use-auth";
+import Link from "next/link";
 
 interface User {
   id: string;
@@ -38,6 +40,7 @@ interface User {
 const ROLES = ["admin", "internal", "client", "viewer"];
 
 export default function UsersManagementPage() {
+  const { isAdmin } = useAuth();
   const {
     data: orgsData,
     isLoading: orgsLoading,
@@ -184,12 +187,21 @@ export default function UsersManagementPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {isAdmin() && (
+        <div className="bg-primary/5 border-b border-primary/10 px-6 py-2 flex items-center gap-2 text-sm">
+          <Shield className="size-4 text-primary" />
+          <span>Admin — full provisioning management available</span>
+          <Link href="/admin/users" className="ml-auto flex items-center gap-1 text-primary hover:underline text-xs font-medium">
+            Open Admin Console <ArrowRight className="size-3" />
+          </Link>
+        </div>
+      )}
       <div className="border-b border-border">
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
             <PageHeader
               title="User Management"
-              description="Manage users, roles, and access across all organizations"
+              description={isAdmin() ? "Read-only directory — use the Admin Console for full management." : "Manage users, roles, and access across all organizations"}
             />
             <div className="flex items-center gap-2">
               <ExportDropdown

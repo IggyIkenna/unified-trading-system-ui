@@ -389,7 +389,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
           queryClient.setQueryData(["positions", undefined], (old: unknown) => {
             if (!old) return old;
             const oldData = old as Record<string, unknown>;
-            const oldPositions = (oldData.positions ?? oldData) as Record<string, unknown>[];
+            const oldPositions = ((oldData as Record<string, unknown>).data ?? (oldData as Record<string, unknown>).positions ?? oldData) as Record<string, unknown>[];
             if (!Array.isArray(oldPositions)) return old;
             const updateMap = new Map(
               updatedPositions.map((p) => [
@@ -411,7 +411,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
               }
               return p;
             });
-            return { ...oldData, positions: merged };
+            return { ...oldData, data: merged };
           });
         }
       }
@@ -444,7 +444,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
 
   const positions: PositionRecord[] = React.useMemo(() => {
     const raw = positionsRaw as Record<string, unknown> | undefined;
-    const arr = raw ? (Array.isArray(raw) ? raw : (raw as Record<string, unknown>).positions) : undefined;
+    const arr = raw ? (Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).positions)) : undefined;
     let result: PositionRecord[] = [];
 
     if (Array.isArray(arr) && arr.length > 0) {

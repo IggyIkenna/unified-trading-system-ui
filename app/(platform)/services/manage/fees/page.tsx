@@ -27,11 +27,8 @@ export default function FeeManagementPage() {
   const { data: orgsData } = useOrganizationsList();
   const { data: subsData } = useSubscriptions();
   const orgs =
-    (
-      orgsData as {
-        organizations?: Array<{ id: string; name: string; type: string }>;
-      }
-    )?.organizations ?? [];
+    (orgsData as { data?: Array<{ id: string; name: string; type: string }>; organizations?: Array<{ id: string; name: string; type: string }> })?.data ??
+    (orgsData as { organizations?: Array<{ id: string; name: string; type: string }> })?.organizations ?? [];
   const [subscriptions, setSubscriptions] = React.useState([
     {
       orgId: "acme",

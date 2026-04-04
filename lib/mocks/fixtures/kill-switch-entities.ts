@@ -14,11 +14,11 @@ export const MOCK_ENTITIES = {
     { id: "CEFI_ETH_OPT_MM_EVT_TICK", name: "ETH Options MM" },
   ],
   venues: [
-    { id: "binance", name: "Binance" },
-    { id: "okx", name: "OKX" },
-    { id: "deribit", name: "Deribit" },
-    { id: "hyperliquid", name: "Hyperliquid" },
-    { id: "aave", name: "Aave V3" },
+    { id: "BINANCE-SPOT", name: "BINANCE-SPOT" },
+    { id: "OKX-SPOT", name: "OKX-SPOT" },
+    { id: "DERIBIT", name: "DERIBIT" },
+    { id: "HYPERLIQUID", name: "HYPERLIQUID" },
+    { id: "AAVEV3-ETHEREUM", name: "AAVEV3-ETHEREUM" },
   ],
   instruments: [
     { id: "btc-usdt", name: "BTC/USDT" },

@@ -2,12 +2,12 @@
   "_meta": {
     "description": "SSOT for UI structure. 9-service architecture per CITADEL_VISION_2026_03_22. Agents MUST read this before any structural changes.",
     "version": "4.0.0",
-    "last_updated": "2026-03-29",
+    "last_updated": "2026-04-01",
     "architecture": "9 services, 3 APIs (auth-api, client-reporting-api, unified-trading-api), direct-to-tabs routing, static preview on port 3100",
-    "total_page_files_on_disk": 91,
-    "total_unique_routes": 79,
-    "real_pages": 73,
-    "stub_pages": 4,
+    "total_page_files_on_disk": 142,
+    "total_unique_routes": 139,
+    "real_pages": 130,
+    "stub_pages": 6,
     "delegate_pages": 3,
     "changes_v4": [
       "Dashboard rewritten as service hub (was trading command center)",

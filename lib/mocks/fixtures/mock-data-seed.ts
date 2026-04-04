@@ -291,6 +291,56 @@ export const SEED_STRATEGIES: SeedStrategy[] = [
     orgId: "atlas-ventures",
     clientId: "atlas-defi",
   },
+
+  // Odum Internal — TradFi Desk
+  {
+    id: "strat-cme-basis",
+    name: "CME Basis Trade",
+    archetype: "basis",
+    status: "live",
+    sharpe: 2.35,
+    mtdReturn: 1.8,
+    aum: 15000000,
+    orgId: "odum",
+    clientId: "tradfi-desk",
+  },
+  {
+    id: "strat-equity-stat-arb",
+    name: "Equity Stat Arb",
+    archetype: "arbitrage",
+    status: "live",
+    sharpe: 1.72,
+    mtdReturn: 2.4,
+    aum: 8000000,
+    orgId: "odum",
+    clientId: "tradfi-desk",
+  },
+
+  // Apex Capital — Sports
+  {
+    id: "strat-sports-arb-apex",
+    name: "Sports Live Arb",
+    archetype: "arbitrage",
+    status: "live",
+    sharpe: 3.45,
+    mtdReturn: 4.8,
+    aum: 1800000,
+    orgId: "alpha-capital",
+    clientId: "alpha-sports",
+  },
+
+  // Meridian Fund — TradFi
+  {
+    id: "strat-commodity-trend",
+    name: "Commodity Trend",
+    archetype: "momentum",
+    status: "live",
+    sharpe: 1.28,
+    mtdReturn: 3.2,
+    aum: 6200000,
+    orgId: "meridian-fund",
+    clientId: "meridian-macro",
+  },
 ];
 
 // ── Positions ────────────────────────────────────────────────────────────────
@@ -331,7 +381,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-001",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     2.5,
     64200,
@@ -344,7 +394,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-002",
     "BTC-PERP",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "long",
     1.8,
     65100,
@@ -357,7 +407,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-003",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     15,
     3180,
@@ -370,7 +420,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-004",
     "SOL-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     120,
     132,
@@ -383,7 +433,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-005",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     25,
     3250,
@@ -396,7 +446,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-006",
     "ETH-PERP",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "short",
     25,
     3260,
@@ -410,7 +460,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-007",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     1.2,
     66800,
@@ -423,7 +473,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-008",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "short",
     10,
     3500,
@@ -436,7 +486,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-009",
     "SOL-USDT",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "long",
     80,
     138,
@@ -449,7 +499,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-010",
     "MATIC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     5000,
     0.72,
@@ -462,7 +512,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-011",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     0.5,
     67200,
@@ -475,7 +525,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-012",
     "BTC-USDT",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "short",
     0.5,
     67280,
@@ -486,16 +536,16 @@ export const SEED_POSITIONS: SeedPosition[] = [
     "Cross-Exchange Arb",
   ),
   // Odum Internal — DeFi Ops
-  pos("pos-013", "WETH", "Uniswap", "long", 20, 3200, 3420, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-014", "USDC", "Aave", "long", 50000, 1.0, 1.0, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-015", "AAVE", "Uniswap", "long", 45, 92, 105, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
-  pos("pos-016", "UNI", "Uniswap", "long", 300, 7.2, 8.1, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-013", "WETH", "UNISWAPV3-ETHEREUM", "long", 20, 3200, 3420, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-014", "USDC", "AAVEV3-ETHEREUM", "long", 50000, 1.0, 1.0, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-015", "AAVE", "UNISWAPV3-ETHEREUM", "long", 45, 92, 105, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
+  pos("pos-016", "UNI", "UNISWAPV3-ETHEREUM", "long", 300, 7.2, 8.1, "odum", "defi-desk", "strat-defi-yield", "DeFi Yield Farm"),
 
   // Apex Capital — Global Macro
   pos(
     "pos-017",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     5,
     63800,
@@ -508,7 +558,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-018",
     "BTC-PERP",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "long",
     3,
     64500,
@@ -521,7 +571,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-019",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     30,
     3100,
@@ -533,8 +583,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-020",
-    "BTC-CALL-70K",
-    "Deribit",
+    "BTC-26JUN26-70000-C",
+    "DERIBIT",
     "long",
     2,
     2800,
@@ -546,8 +596,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-021",
-    "BTC-PUT-60K",
-    "Deribit",
+    "BTC-26JUN26-60000-P",
+    "DERIBIT",
     "long",
     3,
     1200,
@@ -559,8 +609,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-022",
-    "ETH-CALL-4K",
-    "Deribit",
+    "ETH-26JUN26-4000-C",
+    "DERIBIT",
     "long",
     10,
     180,
@@ -574,7 +624,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-023",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     1,
     67350,
@@ -587,7 +637,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-024",
     "BTC-USDT",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "short",
     1,
     67410,
@@ -600,7 +650,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-025",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     8,
     3415,
@@ -614,8 +664,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   // Zenith Partners — Options
   pos(
     "pos-026",
-    "BTC-CALL-70K",
-    "Deribit",
+    "BTC-26JUN26-70000-C",
+    "DERIBIT",
     "long",
     5,
     2600,
@@ -627,8 +677,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-027",
-    "BTC-PUT-65K",
-    "Deribit",
+    "BTC-26JUN26-65000-P",
+    "DERIBIT",
     "short",
     5,
     1800,
@@ -640,8 +690,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-028",
-    "ETH-CALL-4K",
-    "Deribit",
+    "ETH-26JUN26-4000-C",
+    "DERIBIT",
     "long",
     20,
     160,
@@ -653,8 +703,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-029",
-    "ETH-PUT-3K",
-    "Deribit",
+    "ETH-26JUN26-3000-P",
+    "DERIBIT",
     "short",
     15,
     220,
@@ -666,8 +716,8 @@ export const SEED_POSITIONS: SeedPosition[] = [
   ),
   pos(
     "pos-030",
-    "BTC-CALL-75K",
-    "Deribit",
+    "BTC-26JUN26-75000-C",
+    "DERIBIT",
     "short",
     3,
     1400,
@@ -682,7 +732,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-031",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     3,
     65400,
@@ -695,7 +745,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-032",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     20,
     3280,
@@ -708,7 +758,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-033",
     "SOL-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "short",
     60,
     152,
@@ -721,7 +771,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-034",
     "ETH-USDT",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "long",
     12,
     3300,
@@ -734,7 +784,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-035",
     "ETH-PERP",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "short",
     12,
     3310,
@@ -748,7 +798,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-036",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     2,
     66000,
@@ -761,7 +811,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-037",
     "LINK-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     500,
     14.2,
@@ -776,7 +826,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-038",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     1.5,
     65800,
@@ -789,7 +839,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-039",
     "SOL-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "long",
     100,
     128,
@@ -802,7 +852,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-040",
     "WETH",
-    "Uniswap",
+    "UNISWAPV3-ETHEREUM",
     "long",
     15,
     3150,
@@ -815,7 +865,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-041",
     "UNI",
-    "Uniswap",
+    "UNISWAPV3-ETHEREUM",
     "long",
     400,
     6.8,
@@ -828,7 +878,7 @@ export const SEED_POSITIONS: SeedPosition[] = [
   pos(
     "pos-042",
     "AAVE",
-    "Aave",
+    "AAVEV3-ETHEREUM",
     "long",
     30,
     88,
@@ -837,6 +887,132 @@ export const SEED_POSITIONS: SeedPosition[] = [
     "atlas-defi",
     "strat-defi-atlas",
     "DeFi Yield Farm",
+  ),
+
+  // Odum Internal — TradFi Desk (CME Basis + Equity Stat Arb)
+  pos("pos-043", "ESM6", "CME", "long", 10, 5420, 5485, "odum", "tradfi-desk", "strat-cme-basis", "CME Basis Trade"),
+  pos("pos-044", "NQM6", "CME", "short", 5, 19800, 19650, "odum", "tradfi-desk", "strat-cme-basis", "CME Basis Trade"),
+  pos("pos-045", "CLN6", "CME", "long", 20, 72.4, 74.8, "odum", "tradfi-desk", "strat-cme-basis", "CME Basis Trade"),
+  pos(
+    "pos-046",
+    "AAPL",
+    "NASDAQ",
+    "long",
+    200,
+    178.5,
+    184.2,
+    "odum",
+    "tradfi-desk",
+    "strat-equity-stat-arb",
+    "Equity Stat Arb",
+  ),
+  pos(
+    "pos-047",
+    "MSFT",
+    "NASDAQ",
+    "short",
+    150,
+    422,
+    418,
+    "odum",
+    "tradfi-desk",
+    "strat-equity-stat-arb",
+    "Equity Stat Arb",
+  ),
+  pos(
+    "pos-048",
+    "JPM",
+    "NYSE",
+    "long",
+    300,
+    198,
+    205,
+    "odum",
+    "tradfi-desk",
+    "strat-equity-stat-arb",
+    "Equity Stat Arb",
+  ),
+
+  // Apex Capital — Sports Live Arb
+  pos(
+    "pos-049",
+    "CHELSEA-ARSENAL",
+    "MULTI_VENUE",
+    "long",
+    5000,
+    1.85,
+    1.92,
+    "alpha-capital",
+    "alpha-sports",
+    "strat-sports-arb-apex",
+    "Sports Live Arb",
+  ),
+  pos(
+    "pos-050",
+    "BARCELONA-REAL_MADRID",
+    "MULTI_VENUE",
+    "long",
+    3000,
+    2.1,
+    2.25,
+    "alpha-capital",
+    "alpha-sports",
+    "strat-sports-arb-apex",
+    "Sports Live Arb",
+  ),
+  pos(
+    "pos-051",
+    "MAN_CITY-LIVERPOOL",
+    "MULTI_VENUE",
+    "short",
+    4000,
+    1.72,
+    1.68,
+    "alpha-capital",
+    "alpha-sports",
+    "strat-sports-arb-apex",
+    "Sports Live Arb",
+  ),
+
+  // Meridian Fund — Commodity Trend
+  pos(
+    "pos-052",
+    "GCQ6",
+    "CME",
+    "long",
+    15,
+    2340,
+    2418,
+    "meridian-fund",
+    "meridian-macro",
+    "strat-commodity-trend",
+    "Commodity Trend",
+  ),
+  pos(
+    "pos-053",
+    "SIU6",
+    "CME",
+    "long",
+    10,
+    28.5,
+    29.8,
+    "meridian-fund",
+    "meridian-macro",
+    "strat-commodity-trend",
+    "Commodity Trend",
+  ),
+  pos(
+    "pos-054",
+    "ZWN6",
+    "CME",
+    "short",
+    8,
+    580,
+    565,
+    "meridian-fund",
+    "meridian-macro",
+    "strat-commodity-trend",
+    "Commodity Trend",
   ),
 ];
 
@@ -882,7 +1058,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-001",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     0.5,
     67500,
@@ -897,7 +1073,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-002",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     5,
     3380,
@@ -912,7 +1088,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-003",
     "ETH-PERP",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "sell",
     5,
     3400,
@@ -927,7 +1103,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-004",
     "SOL-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     50,
     140,
@@ -942,7 +1118,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-005",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "sell",
     0.3,
     68000,
@@ -954,11 +1130,11 @@ export const SEED_ORDERS: SeedOrder[] = [
     "quant-fund",
     "strat-xexch-arb-beta",
   ),
-  ord("ord-006", "WETH", "Uniswap", "buy", 5, 3410, 5, "filled", "market", 2, "odum", "defi-desk", "strat-defi-yield"),
+  ord("ord-006", "WETH", "UNISWAPV3-ETHEREUM", "buy", 5, 3410, 5, "filled", "market", 2, "odum", "defi-desk", "strat-defi-yield"),
   ord(
     "ord-007",
     "AAVE",
-    "Uniswap",
+    "UNISWAPV3-ETHEREUM",
     "buy",
     10,
     100,
@@ -974,7 +1150,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-008",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     2,
     66800,
@@ -988,8 +1164,8 @@ export const SEED_ORDERS: SeedOrder[] = [
   ),
   ord(
     "ord-009",
-    "BTC-CALL-70K",
-    "Deribit",
+    "BTC-26JUN26-70000-C",
+    "DERIBIT",
     "buy",
     1,
     2900,
@@ -1004,7 +1180,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-010",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     0.5,
     67300,
@@ -1019,7 +1195,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-011",
     "BTC-USDT",
-    "Hyperliquid",
+    "HYPERLIQUID",
     "sell",
     0.5,
     67380,
@@ -1034,8 +1210,8 @@ export const SEED_ORDERS: SeedOrder[] = [
   // Zenith Partners
   ord(
     "ord-012",
-    "BTC-CALL-70K",
-    "Deribit",
+    "BTC-26JUN26-70000-C",
+    "DERIBIT",
     "buy",
     2,
     2700,
@@ -1049,8 +1225,8 @@ export const SEED_ORDERS: SeedOrder[] = [
   ),
   ord(
     "ord-013",
-    "ETH-PUT-3K",
-    "Deribit",
+    "ETH-26JUN26-3000-P",
+    "DERIBIT",
     "sell",
     5,
     200,
@@ -1066,7 +1242,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-014",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     1,
     66200,
@@ -1081,7 +1257,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-015",
     "ETH-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "sell",
     8,
     3450,
@@ -1096,7 +1272,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-016",
     "LINK-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     200,
     14.5,
@@ -1112,7 +1288,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-017",
     "BTC-USDT",
-    "Binance",
+    "BINANCE-SPOT",
     "buy",
     0.5,
     66000,
@@ -1127,7 +1303,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-018",
     "WETH",
-    "Uniswap",
+    "UNISWAPV3-ETHEREUM",
     "buy",
     5,
     3380,
@@ -1142,7 +1318,7 @@ export const SEED_ORDERS: SeedOrder[] = [
   ord(
     "ord-019",
     "UNI",
-    "Uniswap",
+    "UNISWAPV3-ETHEREUM",
     "buy",
     100,
     7.5,
@@ -1153,6 +1329,102 @@ export const SEED_ORDERS: SeedOrder[] = [
     "atlas-ventures",
     "atlas-defi",
     "strat-defi-atlas",
+  ),
+  // TradFi — CME Basis
+  ord("ord-020", "ESM6", "CME", "buy", 5, 5440, 5, "filled", "market", 2, "odum", "tradfi-desk", "strat-cme-basis"),
+  ord("ord-021", "NQM6", "CME", "sell", 3, 19750, 0, "open", "limit", 0, "odum", "tradfi-desk", "strat-cme-basis"),
+  // TradFi — Equity Stat Arb
+  ord(
+    "ord-022",
+    "AAPL",
+    "NASDAQ",
+    "buy",
+    100,
+    180,
+    100,
+    "filled",
+    "limit",
+    3,
+    "odum",
+    "tradfi-desk",
+    "strat-equity-stat-arb",
+  ),
+  ord(
+    "ord-023",
+    "MSFT",
+    "NASDAQ",
+    "sell",
+    50,
+    420,
+    0,
+    "open",
+    "limit",
+    0,
+    "odum",
+    "tradfi-desk",
+    "strat-equity-stat-arb",
+  ),
+  // Sports — Live Arb
+  ord(
+    "ord-024",
+    "CHELSEA-ARSENAL",
+    "MULTI_VENUE",
+    "buy",
+    2000,
+    1.88,
+    2000,
+    "filled",
+    "market",
+    1,
+    "alpha-capital",
+    "alpha-sports",
+    "strat-sports-arb-apex",
+  ),
+  ord(
+    "ord-025",
+    "MAN_CITY-LIVERPOOL",
+    "MULTI_VENUE",
+    "sell",
+    1500,
+    1.7,
+    0,
+    "open",
+    "limit",
+    0,
+    "alpha-capital",
+    "alpha-sports",
+    "strat-sports-arb-apex",
+  ),
+  // Commodity Trend
+  ord(
+    "ord-026",
+    "GCQ6",
+    "CME",
+    "buy",
+    5,
+    2360,
+    5,
+    "filled",
+    "market",
+    4,
+    "meridian-fund",
+    "meridian-macro",
+    "strat-commodity-trend",
+  ),
+  ord(
+    "ord-027",
+    "ZWN6",
+    "CME",
+    "sell",
+    3,
+    575,
+    0,
+    "open",
+    "limit",
+    0,
+    "meridian-fund",
+    "meridian-macro",
+    "strat-commodity-trend",
   ),
 ];
 
@@ -1190,8 +1462,10 @@ function splitSeedQuantity(total: number, parts: number, seed: number): number[]
 }
 
 function tradeTypeForVenue(venue: string): "Exchange" | "OTC" | "DeFi" | "Manual" {
-  if (venue === "Uniswap" || venue === "Aave") return "DeFi";
+  if (venue.startsWith("UNISWAP") || venue.startsWith("AAVEV3") || venue.startsWith("BALANCER") || venue.startsWith("CURVE")) return "DeFi";
   if (venue === "OTC Desk") return "OTC";
+  if (venue.startsWith("CME") || venue.startsWith("ICE") || venue.startsWith("NYSE") || venue.startsWith("NASDAQ") || venue.startsWith("CBOE")) return "Exchange";
+  if (venue === "MULTI_VENUE") return "Exchange"; // Sports
   return "Exchange";
 }
 
@@ -1203,7 +1477,7 @@ function buildSeedTradesForPositions(positions: SeedPosition[]): SeedTrade[] {
     const n = 2 + (h % 4);
     const quantities = splitSeedQuantity(pos.quantity, n, h);
     const type = tradeTypeForVenue(pos.venue);
-    const counterparty = pos.venue === "Uniswap" ? "Uniswap V3" : pos.venue === "Aave" ? "Aave V3" : pos.venue;
+    const counterparty = pos.venue.startsWith("UNISWAP") ? "Uniswap V3" : pos.venue.startsWith("AAVEV3") ? "Aave V3" : pos.venue;
     for (let i = 0; i < n; i++) {
       const daysAgo = 1 + ((h + i * 3) % 20);
       const d = new Date();
@@ -1461,6 +1735,58 @@ export const SEED_ALERTS: SeedAlert[] = [
     "strat-defi-atlas",
     true,
   ),
+  // TradFi alerts
+  alrt(
+    "alert-tradfi-001",
+    "CME Basis: ESM6 basis widened to 15bps — exceeds 10bps threshold",
+    "high",
+    "market-monitor",
+    2,
+    "odum",
+    "strat-cme-basis",
+    false,
+  ),
+  alrt(
+    "alert-tradfi-002",
+    "Equity Stat Arb: AAPL/MSFT pair z-score at 2.8σ — rebalance signal triggered",
+    "medium",
+    "strategy-health",
+    4,
+    "odum",
+    "strat-equity-stat-arb",
+    false,
+  ),
+  alrt(
+    "alert-tradfi-003",
+    "Commodity Trend: Gold (GCQ6) broke above 200-day MA — new long signal confirmed",
+    "low",
+    "strategy-health",
+    6,
+    "meridian-fund",
+    "strat-commodity-trend",
+    true,
+  ),
+  // Sports alerts
+  alrt(
+    "alert-sports-001",
+    "Sports Arb: Chelsea-Arsenal spread collapsed — book imbalance detected on Bet365 leg",
+    "high",
+    "execution-monitor",
+    1,
+    "alpha-capital",
+    "strat-sports-arb-apex",
+    false,
+  ),
+  alrt(
+    "alert-sports-002",
+    "Sports Arb: Pinnacle line moved 3.2% on Barcelona-Real Madrid — recalculating arb window",
+    "medium",
+    "market-monitor",
+    3,
+    "alpha-capital",
+    "strat-sports-arb-apex",
+    false,
+  ),
 ];
 
 // ── Daily P&L per strategy (last 30 days) ────────────────────────────────────
@@ -1496,4 +1822,11 @@ export const SEED_PNL_DAILY: Record<string, SeedPnlDay[]> = {
   "strat-disc-mer": generateDailyPnl(30, 500, 2500),
   "strat-btc-mom-atlas": generateDailyPnl(30, 1800, 2800),
   "strat-defi-atlas": generateDailyPnl(30, 1200, 1800),
+  // TradFi strategies
+  "strat-cme-basis": generateDailyPnl(30, 3200, 2000),
+  "strat-equity-stat-arb": generateDailyPnl(30, 1600, 2400),
+  // Sports strategies
+  "strat-sports-arb-apex": generateDailyPnl(30, 900, 1200),
+  // Commodity
+  "strat-commodity-trend": generateDailyPnl(30, 2100, 3200),
 };

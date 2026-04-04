@@ -159,7 +159,7 @@ export default function MissingDataPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-semibold text-rose-400">{criticalCount}</p>
@@ -228,7 +228,7 @@ export default function MissingDataPage() {
       </div>
 
       <Card>
-        <CardContent className="p-0 pt-4 px-4 pb-4">
+        <CardContent className="p-0 pt-4 px-4 pb-4 overflow-x-auto">
           <DataTable
             columns={gapColumns}
             data={filtered}

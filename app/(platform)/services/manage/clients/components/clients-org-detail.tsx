@@ -54,7 +54,7 @@ export function ClientsOrgDetail({
 
       <div className="container px-4 py-8 md:px-6">
         <Tabs defaultValue="overview">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="subscription">Subscription</TabsTrigger>

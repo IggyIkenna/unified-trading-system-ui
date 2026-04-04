@@ -132,7 +132,7 @@ export function ServiceTabs({
     <div className={cn("border-b border-border bg-card/30", className)}>
       <div
         className={cn(
-          "flex items-center gap-2 px-4 sm:px-6",
+          "flex flex-wrap items-center gap-2 px-4 sm:px-6",
           alignEnd && !rightSlot && "justify-end",
           (!alignEnd || rightSlot) && !tabsSpread && "justify-between",
           tabsSpread && !rightSlot && "min-w-0",
@@ -140,7 +140,7 @@ export function ServiceTabs({
       >
         <nav
           className={cn(
-            "flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]",
+            "flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch] scrollbar-none",
             alignEnd && "justify-end",
             tabsSpread && "min-w-0 w-full flex-1 justify-stretch gap-0.5 sm:gap-1",
           )}
@@ -196,7 +196,7 @@ export function ServiceTabs({
           })}
         </nav>
 
-        {rightSlot && <div className="flex items-center gap-2 pl-4 py-2 shrink-0">{rightSlot}</div>}
+        {rightSlot && <div className="flex items-center gap-2 py-2 shrink-0 ml-auto">{rightSlot}</div>}
       </div>
     </div>
   );
@@ -434,9 +434,12 @@ export const REPORTS_TABS: ServiceTab[] = [
 // Grouped: User Management | Operations | Configuration
 export const ADMIN_TABS: ServiceTab[] = [
   // ── User Management ─────────────────────────────────────────────────────
-  { label: "Users", href: "/admin/users" },
+  { label: "Users", href: "/admin/users", exact: true },
   { label: "Access Requests", href: "/admin/users/requests" },
   { label: "Onboard", href: "/admin/users/onboard" },
+  { label: "Templates", href: "/admin/users/templates", requiredEntitlement: "admin" },
+  { label: "Firebase Users", href: "/admin/users/firebase", requiredEntitlement: "admin" },
+  { label: "Health Checks", href: "/admin/users/health-checks", requiredEntitlement: "admin" },
   { label: "Organisations", href: "/admin/organizations", matchPrefix: "/admin/organizations" },
   // ── Operations ──────────────────────────────────────────────────────────
   { label: "Services", href: "/ops/services", group: "Operations" },
