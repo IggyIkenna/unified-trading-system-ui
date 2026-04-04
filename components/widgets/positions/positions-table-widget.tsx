@@ -1,26 +1,26 @@
 "use client";
 
+import { DataFreshness } from "@/components/shared/data-freshness";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { FilterBar } from "@/components/shared/filter-bar";
+import { Spinner } from "@/components/shared/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataFreshness } from "@/components/shared/data-freshness";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Spinner } from "@/components/shared/spinner";
-import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
-import type { AssetClassFilter } from "./positions-data-context";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, ExternalLink, RefreshCw, Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatPercent } from "@/lib/utils/formatters";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, ExternalLink, Info, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
+import type { AssetClassFilter } from "./positions-data-context";
 import { usePositionsData, type PositionRecord } from "./positions-data-context";
-import { formatPercent } from "@/lib/utils/formatters";
 
 const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "instrument", header: "Instrument" },
@@ -96,7 +96,6 @@ function deriveCanonicalId(row: PositionRecord): string {
 
   return `${venue}:${type}:${instrument}`;
 }
-}
 
 function PnlCell({ abs, pct }: { abs: number; pct: number }) {
   return (
@@ -149,30 +148,30 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         accessor: (row) => {
           const canonicalId = deriveCanonicalId(row);
           return (
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1">
-              <Link
-                href={getInstrumentRoute(row.instrument, classifyInstrument(row.instrument))}
-                className="font-mono font-medium text-primary hover:underline cursor-pointer"
-              >
-                {formatInstrumentId(row.instrument)}
-              </Link>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="size-2.5 text-muted-foreground cursor-help shrink-0" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[280px]">
-                    <div className="space-y-0.5">
-                      <p className="text-[10px] font-medium text-muted-foreground">Canonical ID</p>
-                      <p className="font-mono text-xs select-all">{canonicalId}</p>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1">
+                <Link
+                  href={getInstrumentRoute(row.instrument, classifyInstrument(row.instrument))}
+                  className="font-mono font-medium text-primary hover:underline cursor-pointer"
+                >
+                  {formatInstrumentId(row.instrument)}
+                </Link>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="size-2.5 text-muted-foreground cursor-help shrink-0" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-[280px]">
+                      <div className="space-y-0.5">
+                        <p className="text-[10px] font-medium text-muted-foreground">Canonical ID</p>
+                        <p className="font-mono text-xs select-all">{canonicalId}</p>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <span className="text-[10px] text-muted-foreground">{row.strategy_name}</span>
             </div>
-            <span className="text-[10px] text-muted-foreground">{row.strategy_name}</span>
-          </div>
           );
         },
         minWidth: 160,
